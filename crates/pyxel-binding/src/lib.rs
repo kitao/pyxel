@@ -9,7 +9,6 @@
     clippy::cast_sign_loss,
     clippy::float_cmp,
     clippy::many_single_char_names,
-    clippy::multiple_crate_versions,
     clippy::needless_pass_by_value,
     clippy::too_many_arguments,
     clippy::too_many_lines,

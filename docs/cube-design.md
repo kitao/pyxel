@@ -1501,7 +1501,7 @@ def draw(self):
 
 ---
 
-## 16. The update Pipeline
+## 16. The Update Pipeline
 
 The per-frame `Node.update()` runs the following pipeline over the
 node's subtree. Each phase operates on the entire tree before the next

@@ -3,6 +3,7 @@ import inspect
 import pytest
 
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel import Image
 
 from pyxel.cube import (
@@ -28,7 +29,6 @@ class TestAttributes:
         assert n.name == ""
         assert n.active is True
         assert n.visible is True
-        # transform reads as Mat4.IDENTITY by default.
         assert n.transform == Mat4.IDENTITY
         # Cascade attributes are None on a freshly constructed Node so
         # they inherit from the closest non-None ancestor.
@@ -39,9 +39,9 @@ class TestAttributes:
 
     def test_constructor_rejects_unused_arguments(self):
         assert str(inspect.signature(Node)) == "()"
-        with pytest.raises(TypeError, match="takes no arguments"):
+        with raises_exact(TypeError, "Node() takes no arguments"):
             Node(1)
-        with pytest.raises(TypeError, match="takes no arguments"):
+        with raises_exact(TypeError, "Node() takes no arguments"):
             Node(name="player")
 
     def test_subclass_constructor_keeps_python_arguments(self):
@@ -88,8 +88,6 @@ class TestAttributes:
         n = Node()
         collider = Collider()
         n.collider = collider
-        # Verify the round-trip through the cascade slot (set, read
-        # back, reset to None).
         assert isinstance(n.collider, Collider)
         n.collider = None
         assert n.collider is None
@@ -104,7 +102,7 @@ class TestColliderContactBasics:
         assert "Collider(" in repr(c)
 
     def test_contact_not_user_constructible(self):
-        with pytest.raises(TypeError, match="cannot create .*Contact.* instances"):
+        with raises_exact(TypeError, "cannot create 'builtins.Contact' instances"):
             Contact()
 
 
@@ -136,7 +134,6 @@ class TestHierarchy:
         c = Node()
         p1.add_child(c)
         p2.add_child(c)
-        # add_child re-parents: child should no longer be in p1.
         assert len(p1.children) == 0
         assert len(p2.children) == 1
 
@@ -145,14 +142,14 @@ class TestHierarchy:
         p2 = Node()
         c = Node()
         p2.add_child(c)
-        with pytest.raises(ValueError, match="remove_child requires a direct child"):
+        with raises_exact(ValueError, "remove_child requires a direct child"):
             p1.remove_child(c)
         assert c.parent is p2
         assert p2.children == (c,)
 
     def test_add_child_rejects_self_parenting(self):
         n = Node()
-        with pytest.raises(ValueError, match="add_child would create a cycle"):
+        with raises_exact(ValueError, "add_child would create a cycle"):
             n.add_child(n)
         assert n.parent is None
         assert n.children == ()
@@ -163,7 +160,7 @@ class TestHierarchy:
         leaf = Node()
         root.add_child(mid)
         mid.add_child(leaf)
-        with pytest.raises(ValueError, match="add_child would create a cycle"):
+        with raises_exact(ValueError, "add_child would create a cycle"):
             leaf.add_child(root)
         assert root.parent is None
         assert mid.parent is root
@@ -554,25 +551,61 @@ _UNIT_QUAD_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 # Geometry primitives reject the unsupported billboard keyword.
 class TestBillboardKwargRemoved:
     @pytest.mark.parametrize(
-        "call",
+        ("call", "method"),
         [
-            lambda n: n.line(Vec3.ZERO, Vec3(1, 0, 0), 7, billboard=1),
-            lambda n: n.tri(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1),
-            lambda n: n.trib(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1),
-            lambda n: n.rect(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
-            lambda n: n.rectb(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
-            lambda n: n.elli(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
-            lambda n: n.ellib(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
-            lambda n: n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1),
-            lambda n: n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1),
-            lambda n: n.plane(
-                Mat4.IDENTITY, pyxel.images[0], _UNIT_QUAD_UVS, 1.0, 1.0, billboard=1
+            (lambda n: n.line(Vec3.ZERO, Vec3(1, 0, 0), 7, billboard=1), "line"),
+            (
+                lambda n: n.tri(
+                    Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1
+                ),
+                "tri",
             ),
-            lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_PRIMITIVE, billboard=1),
+            (
+                lambda n: n.trib(
+                    Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1
+                ),
+                "trib",
+            ),
+            (lambda n: n.rect(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "rect"),
+            (lambda n: n.rectb(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "rectb"),
+            (lambda n: n.elli(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "elli"),
+            (lambda n: n.ellib(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "ellib"),
+            (lambda n: n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1), "box"),
+            (lambda n: n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1), "boxb"),
+            (
+                lambda n: n.plane(
+                    Mat4.IDENTITY,
+                    pyxel.images[0],
+                    _UNIT_QUAD_UVS,
+                    1.0,
+                    1.0,
+                    billboard=1,
+                ),
+                "plane",
+            ),
+            (
+                lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_PRIMITIVE, billboard=1),
+                "prim",
+            ),
+        ],
+        ids=[
+            "line",
+            "tri",
+            "trib",
+            "rect",
+            "rectb",
+            "elli",
+            "ellib",
+            "box",
+            "boxb",
+            "plane",
+            "prim",
         ],
     )
-    def test_billboard_kwarg_rejected(self, call):
-        with pytest.raises(TypeError, match="unexpected keyword argument 'billboard'"):
+    def test_billboard_kwarg_rejected(self, call, method):
+        with raises_exact(
+            TypeError, f"Node.{method}() got an unexpected keyword argument 'billboard'"
+        ):
             call(Node())
 
 
@@ -601,7 +634,9 @@ class TestCameraCascade:
 
     def test_draw_without_camera_raises(self):
         n = Node()
-        with pytest.raises(ValueError, match="draw requires a camera"):
+        with raises_exact(
+            ValueError, "draw requires a camera on this node or an ancestor"
+        ):
             n.draw(0, 0, 64, 64)
 
     def test_camera_clear_color_roundtrip(self):

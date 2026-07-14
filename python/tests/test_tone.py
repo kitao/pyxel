@@ -67,7 +67,7 @@ class TestTone:
         assert wf[0] == 64
         assert wf[1] == 128
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Tone.waveform is deprecated. Use Tone.wavetable instead.\n"
 
     def test_noise_aliases_mode_deprecated(self, capfd):
         tone = pyxel.Tone()
@@ -75,11 +75,11 @@ class TestTone:
         result = tone.noise  # type: ignore[attr-defined]
         assert result == 1
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Tone.noise is deprecated. Use Tone.mode instead.\n"
 
     def test_noise_setter_deprecated(self, capfd):
         tone = pyxel.Tone()
         tone.noise = 2  # type: ignore[attr-defined]
         assert tone.mode == 2
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Tone.noise is deprecated. Use Tone.mode instead.\n"

@@ -79,7 +79,7 @@ class TestMusic:
         assert len(result) == len(msc.seqs)
         assert list(result[0]) == [0, 1]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead.\n"
 
 
 class TestMusicSeqs:
@@ -228,7 +228,7 @@ class TestMusicSeqs:
         msc.seqs.from_list([[10, 20], [30, 40]])  # type: ignore[attr-defined]
         assert list(msc.seqs[0]) == [10, 20]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Seqs.from_list() is deprecated. Use slice assignment instead.\n"
 
     def test_seqs_to_list_deprecated(self, capfd):
         msc = pyxel.Music()
@@ -237,4 +237,4 @@ class TestMusicSeqs:
         assert isinstance(result, list)
         assert result[0] == [5, 6]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Seqs.to_list() is deprecated. Use list(seq) instead.\n"

@@ -86,7 +86,10 @@ class TestChannel:
         ch = pyxel.Channel()
         ch.play(snd, tick=60)  # type: ignore[call-arg]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert (
+            out
+            == "tick option of Channel.play is deprecated. Use sec option instead.\n"
+        )
         ch.stop()
 
     def test_stop_when_not_playing(self):

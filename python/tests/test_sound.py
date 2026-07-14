@@ -173,7 +173,7 @@ class TestSoundMml:
         # 'x' character triggers old MML syntax detection.
         snd.mml("T120 X1 O4 CDEF")
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Old MML syntax is deprecated. Use new syntax instead.\n"
         # Old syntax: 4 notes x 4 steps (default l8) x 7 ticks (t120).
         assert snd.total_sec() == pytest.approx(16 * 7 / 120, abs=1e-3)
 
@@ -181,7 +181,9 @@ class TestSoundMml:
         snd = pyxel.Sound()
         snd.old_mml("T120 O4 L4 CDEF")  # type: ignore[attr-defined]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert (
+            out == "Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead.\n"
+        )
         # 4 notes x 8 steps (l4) x 7 ticks (t120).
         assert snd.total_sec() == pytest.approx(32 * 7 / 120, abs=1e-3)
 

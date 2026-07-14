@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel import Image
 from pyxel.cube import Camera, Mat4, Mesh, Motion, Node, Vec3
 
@@ -298,7 +299,10 @@ def test_from_glb_warns_and_autoselects_mask_colkey_on_collision(tmp_path, capfd
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey != 8
     assert mesh.col_img.pget(0, 1) == mesh.colkey
-    assert "colkey collides" in err
+    assert err == (
+        "Pyxel warning: GLB alpha mask colkey collides with an opaque texture color; "
+        "selecting a fallback colkey\n"
+    )
 
 
 def test_from_glb_warns_and_ignores_mask_when_palette_is_full(tmp_path, capfd):
@@ -323,7 +327,10 @@ def test_from_glb_warns_and_ignores_mask_when_palette_is_full(tmp_path, capfd):
 
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey is None
-    assert "unused colkey" in err
+    assert err == (
+        "Pyxel warning: GLB alpha mask requires an unused colkey color; alpha mask is "
+        "ignored\n"
+    )
 
 
 def test_from_glb_warns_when_mask_colkey_collision_has_no_fallback(tmp_path, capfd):
@@ -348,8 +355,12 @@ def test_from_glb_warns_when_mask_colkey_collision_has_no_fallback(tmp_path, cap
 
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey is None
-    assert "colkey collides" in err
-    assert "alpha mask is ignored" in err
+    assert err == (
+        "Pyxel warning: GLB alpha mask colkey collides with an opaque texture color; "
+        "selecting a fallback colkey\n"
+        "Pyxel warning: GLB alpha mask requires an unused colkey color; alpha mask is "
+        "ignored\n"
+    )
 
 
 def test_from_glb_loads_multiple_flat_materials(tmp_path):
@@ -392,7 +403,9 @@ def test_from_glb_warns_and_loads_materialless_primitive(tmp_path, capfd):
 
     assert len(mesh.primitives) == 3
     assert 8 in _render_mesh_colors(mesh)
-    assert "material is missing" in err
+    assert err == (
+        "Pyxel warning: GLB primitive material is missing; default mesh material is used\n"
+    )
 
 
 def test_from_glb_loads_unused_extra_material_and_texture(tmp_path):
@@ -416,7 +429,10 @@ def test_from_glb_warns_and_ignores_unsupported_texture_usage(tmp_path, capfd):
     _, err = capfd.readouterr()
 
     assert isinstance(mesh.col_img, Image)
-    assert "unsupported texture usage" in err
+    assert err == (
+        "Pyxel warning: GLB unsupported texture usage; non-base-color textures are "
+        "ignored\n"
+    )
 
 
 def test_from_glb_warns_and_ignores_material_animation(tmp_path, capfd):
@@ -426,13 +442,16 @@ def test_from_glb_warns_and_ignores_material_animation(tmp_path, capfd):
     _, err = capfd.readouterr()
 
     assert isinstance(mesh.col_img, Image)
-    assert "animation pointer" in err
+    assert err == (
+        "Pyxel warning: GLB animation pointer/material animation is not supported; "
+        "animations are ignored\n"
+    )
 
 
 def test_from_glb_rejects_external_buffer(tmp_path):
     path = write_external_buffer_glb(tmp_path / "external_buffer.glb")
 
-    with pytest.raises(ValueError, match="external buffers"):
+    with raises_exact(ValueError, "GLB external buffers are not supported"):
         Mesh.from_glb(str(path))
 
 
@@ -442,21 +461,24 @@ def test_from_glb_rejects_external_image(tmp_path):
     # The gltf import of a GLB slice rejects any image URI itself, so
     # the failure surfaces as an import error rather than the parser's
     # own external-image message.
-    with pytest.raises(ValueError, match="external reference"):
+    with raises_exact(
+        ValueError,
+        f"Failed to read GLB '{path}': external reference in slice only import",
+    ):
         Mesh.from_glb(str(path))
 
 
 def test_from_glb_rejects_non_triangle_mode(tmp_path):
     path = write_line_mode_glb(tmp_path / "lines.glb")
 
-    with pytest.raises(ValueError, match="only triangle primitives"):
+    with raises_exact(ValueError, "GLB only triangle primitives are supported"):
         Mesh.from_glb(str(path))
 
 
 def test_from_glb_rejects_non_indexed_vertex_count_not_multiple_of_3(tmp_path):
     path = write_non_indexed_glb(tmp_path / "ragged.glb", vertex_count=4)
 
-    with pytest.raises(ValueError, match="multiple of 3"):
+    with raises_exact(ValueError, "GLB triangle vertex count must be a multiple of 3"):
         Mesh.from_glb(str(path))
 
 
@@ -467,7 +489,9 @@ def test_from_glb_warns_and_loads_base_mesh_for_morph_targets(tmp_path, capfd):
     _, err = capfd.readouterr()
 
     assert isinstance(mesh.col_img, Image)
-    assert "morph targets" in err
+    assert err == (
+        "Pyxel warning: GLB mesh morph targets are not supported; base mesh is used\n"
+    )
 
 
 def test_from_glb_warns_and_loads_base_mesh_for_skins(tmp_path, capfd):
@@ -477,7 +501,10 @@ def test_from_glb_warns_and_loads_base_mesh_for_skins(tmp_path, capfd):
     _, err = capfd.readouterr()
 
     assert isinstance(mesh.col_img, Image)
-    assert "skins" in err
+    assert err == (
+        "Pyxel warning: GLB skins are not supported; skinning is ignored\n"
+        "Pyxel warning: GLB skins are not supported; skinning is ignored\n"
+    )
 
 
 def test_from_glb_warns_and_decomposes_matrix_node_transforms(tmp_path, capfd):
@@ -487,7 +514,10 @@ def test_from_glb_warns_and_decomposes_matrix_node_transforms(tmp_path, capfd):
     _, err = capfd.readouterr()
 
     assert isinstance(mesh.col_img, Image)
-    assert "matrix node transforms" in err
+    assert err == (
+        "Pyxel warning: GLB matrix node transforms are not supported; transform is "
+        "decomposed\n"
+    )
 
 
 def test_from_glb_warns_and_ignores_extra_vertex_attributes(tmp_path, capfd):
@@ -497,7 +527,9 @@ def test_from_glb_warns_and_ignores_extra_vertex_attributes(tmp_path, capfd):
     _, err = capfd.readouterr()
 
     assert isinstance(mesh.col_img, Image)
-    assert "unsupported vertex attribute" in err
+    assert err == (
+        "Pyxel warning: GLB unsupported vertex attribute: Tangents; attribute is ignored\n"
+    )
 
 
 def test_apply_motion_updates_imported_node_tree(tmp_path):
@@ -542,7 +574,9 @@ def test_apply_motion_rejects_unrelated_node_tree(tmp_path):
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")
     mesh = Mesh.from_glb(str(path), fps=30.0)
 
-    with pytest.raises(ValueError, match="Node.from_mesh"):
+    with raises_exact(
+        ValueError, "Node motion methods require a tree created by Node.from_mesh"
+    ):
         Node().apply_motion(mesh.motions[0], 0.0)
 
 

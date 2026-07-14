@@ -4,6 +4,7 @@ import sys
 import pytest
 
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 _COLOR_NAMES = [
     "BLACK",
@@ -408,10 +409,9 @@ class TestSystemSetters:
     ):
         before = self._capture_state()
 
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(ValueError, message):
             pyxel.icon(data, scale)
 
-        assert str(exc.value) == message
         self._assert_state_unchanged(before)
 
     def test_icon_rejects_color_outside_palette_without_changing_state(self):
@@ -419,11 +419,11 @@ class TestSystemSetters:
         pyxel.colors[:] = original_colors[:1]
         before = self._capture_state()
         try:
-            with pytest.raises(ValueError) as exc:
+            with raises_exact(
+                ValueError,
+                "Invalid icon data at row 0, column 0: color 15 exceeds palette size 1",
+            ):
                 pyxel.icon(["f"], 1)
-            assert str(exc.value) == (
-                "Invalid icon data at row 0, column 0: color 15 exceeds palette size 1"
-            )
             self._assert_state_unchanged(before)
         finally:
             pyxel.colors[:] = original_colors

@@ -329,7 +329,9 @@ class TestImageIO:
             )
             assert img1.width == 16
             out = capfd.readouterr().out
-            assert "deprecated" in out.lower()
+            assert (
+                out == "incl_colors option is deprecated. Use include_colors instead.\n"
+            )
 
             img2 = pyxel.Image(32, 32)
             img2.load(0, 0, str(assets_dir / "cat_16x16.png"), incl_colors=True)  # type: ignore[call-arg]

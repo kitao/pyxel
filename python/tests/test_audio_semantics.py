@@ -1,10 +1,11 @@
-from contextlib import contextmanager
 import math
 import struct
 import wave
 
 import pytest
+
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 RATE = 22050
 
@@ -22,14 +23,6 @@ def isolate_audio_resources():
         pyxel.stop()
         pyxel.sounds[60:64] = original_sounds
         pyxel.musics[7] = original_music
-
-
-@contextmanager
-def _raises_exact(exception_type, message):
-    with pytest.raises(exception_type) as exc:
-        yield
-    assert type(exc.value) is exception_type
-    assert str(exc.value) == message
 
 
 def _write_pcm_wav(path, sec=0.05, freq=440.0):
@@ -157,9 +150,9 @@ class TestExtremeInputs:
 
 class TestInvalidInputs:
     def test_speed_zero_raises(self):
-        with _raises_exact(ValueError, "speed must be greater than 0"):
+        with raises_exact(ValueError, "speed must be greater than 0"):
             pyxel.sounds[63].speed = 0
-        with _raises_exact(ValueError, "speed must be greater than 0"):
+        with raises_exact(ValueError, "speed must be greater than 0"):
             pyxel.sounds[63].set("c2", "t", "7", "n", 0)
 
     def test_sub_sample_duration_raises(self, tmp_path):
@@ -167,9 +160,9 @@ class TestInvalidInputs:
         music_path = tmp_path / "music.wav"
         message = "duration_sec is too short to produce an audio sample"
 
-        with _raises_exact(Exception, message):
+        with raises_exact(Exception, message):
             pyxel.sounds[63].save(str(sound_path), 1e-9)
-        with _raises_exact(Exception, message):
+        with raises_exact(Exception, message):
             pyxel.musics[7].save(str(music_path), 1e-9)
 
         assert not sound_path.exists()
@@ -177,7 +170,7 @@ class TestInvalidInputs:
 
     def test_sample_bits_out_of_range_raises(self):
         for bits in [0, 17]:
-            with _raises_exact(ValueError, "sample_bits must be between 1 and 16"):
+            with raises_exact(ValueError, "sample_bits must be between 1 and 16"):
                 pyxel.tones[0].sample_bits = bits
 
     def test_empty_tone_bank_raises(self, tmp_path):
@@ -187,9 +180,9 @@ class TestInvalidInputs:
             pyxel.tones.clear()
             message = "tones must not be empty"
 
-            with _raises_exact(Exception, message):
+            with raises_exact(Exception, message):
                 pyxel.sounds[63].save(str(tmp_path / "out.wav"), 0.1)
-            with _raises_exact(ValueError, message):
+            with raises_exact(ValueError, message):
                 pyxel.play(3, 63)
         finally:
             pyxel.tones[:] = original_tones
@@ -204,7 +197,7 @@ class TestInvalidInputs:
         try:
             pyxel.tones.clear()
 
-            with _raises_exact(Exception, "tones must not be empty"):
+            with raises_exact(Exception, "tones must not be empty"):
                 pyxel.playm(7, loop=True)
 
             assert pyxel.play_pos(0) is None
@@ -227,16 +220,16 @@ class TestInvalidInputs:
         pyxel.musics[7].set([999999], [], [], [])
         message = "Music contains an invalid sound index"
 
-        with _raises_exact(Exception, message):
+        with raises_exact(Exception, message):
             pyxel.musics[7].save(str(tmp_path / "out.wav"), 0.1)
-        with _raises_exact(Exception, message):
+        with raises_exact(Exception, message):
             pyxel.playm(7)
 
     def test_non_finite_duration_raises(self, tmp_path):
         pyxel.sounds[63].set("c2", "t", "7", "n", 30)
-        with _raises_exact(Exception, "duration_sec must be finite"):
+        with raises_exact(Exception, "duration_sec must be finite"):
             pyxel.sounds[63].save(str(tmp_path / "out.wav"), float("nan"))
-        with _raises_exact(Exception, "duration_sec must be finite"):
+        with raises_exact(Exception, "duration_sec must be finite"):
             pyxel.musics[7].save(str(tmp_path / "out.wav"), float("nan"))
 
     def test_invalid_playback_sec_raises(self):
@@ -249,10 +242,10 @@ class TestInvalidInputs:
             lambda sec: channel.play(pyxel.sounds[63], sec=sec, loop=True),
         ]
         for call in calls:
-            with _raises_exact(ValueError, "sec must be finite"):
+            with raises_exact(ValueError, "sec must be finite"):
                 call(float("nan"))
 
         message = "sec must be greater than or equal to 0"
         for call in calls:
-            with _raises_exact(ValueError, message):
+            with raises_exact(ValueError, message):
                 call(-1.0)

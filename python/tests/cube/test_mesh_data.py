@@ -1,5 +1,4 @@
-import pytest
-
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Mesh, Primitive
 
 
@@ -18,7 +17,6 @@ class TestConstruction:
         assert m.transforms == []
         assert m.parents == []
         assert m.names == []
-        # Default col_img is the flat color 7.
         assert m.col_img == 7
         assert m.colkey is None
 
@@ -42,38 +40,37 @@ class TestConstruction:
 
     def test_topological_order_violation_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(
+            ValueError,
+            "Mesh.parents[0] = 1 violates topological order (must be < 0)",
+        ):
             Mesh(
                 primitives=[p, p],
                 transforms=[Mat4(), Mat4()],
                 parents=[1, -1],  # parents[0] = 1 violates parents[i] < i
             )
-        assert str(exc.value) == (
-            "Mesh.parents[0] = 1 violates topological order (must be < 0)"
-        )
 
     def test_parallel_array_length_mismatch_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(
+            ValueError,
+            "Mesh parallel arrays length mismatch: primitives=2, transforms=1, "
+            "parents=2, names=2, material_indices=0",
+        ):
             Mesh(
                 primitives=[p, p],
                 transforms=[Mat4()],  # one short
                 parents=[-1, 0],
             )
-        assert str(exc.value) == (
-            "Mesh parallel arrays length mismatch: primitives=2, transforms=1, "
-            "parents=2, names=2, material_indices=0"
-        )
 
     def test_invalid_parent_index_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(ValueError, "Mesh.parents[0] = -2 < -1"):
             Mesh(
                 primitives=[p],
                 transforms=[Mat4()],
                 parents=[-2],  # only -1 is valid for "no parent"
             )
-        assert str(exc.value) == "Mesh.parents[0] = -2 < -1"
 
     def test_construct_with_none_prims(self):
         # primitives[i] = None represents a pure transform group with no
@@ -97,7 +94,11 @@ class TestConstruction:
 
     def test_names_length_mismatch_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
+        with raises_exact(
+            ValueError,
+            "Mesh parallel arrays length mismatch: primitives=2, transforms=2, "
+            "parents=2, names=1, material_indices=0",
+        ):
             Mesh(
                 primitives=[p, p],
                 transforms=[Mat4(), Mat4()],
@@ -128,7 +129,11 @@ class TestAttributes:
         )
         # Reassigning primitives to a different length without also updating
         # transforms / parents must raise.
-        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
+        with raises_exact(
+            ValueError,
+            "Mesh parallel arrays length mismatch: primitives=2, transforms=1, "
+            "parents=1, names=1, material_indices=0",
+        ):
             m.primitives = [p, p]
         assert len(m.primitives) == 1
 
@@ -136,7 +141,11 @@ class TestAttributes:
         p = _square_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
 
-        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
+        with raises_exact(
+            ValueError,
+            "Mesh parallel arrays length mismatch: primitives=1, transforms=2, "
+            "parents=1, names=1, material_indices=0",
+        ):
             m.transforms = [Mat4(), Mat4()]
 
         assert len(m.transforms) == 1
@@ -145,7 +154,7 @@ class TestAttributes:
         p = _square_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
 
-        with pytest.raises(ValueError, match=r"Mesh.parents\[0\] = -2 < -1"):
+        with raises_exact(ValueError, "Mesh.parents[0] = -2 < -1"):
             m.parents = [-2]
 
         assert m.parents == [-1]
@@ -157,7 +166,11 @@ class TestAttributes:
             transforms=[Mat4()],
             parents=[-1],
         )
-        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
+        with raises_exact(
+            ValueError,
+            "Mesh parallel arrays length mismatch: primitives=1, transforms=1, "
+            "parents=1, names=2, material_indices=0",
+        ):
             m.names = ["root", "extra"]
         assert m.names == [""]
 

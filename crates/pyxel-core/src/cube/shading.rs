@@ -419,7 +419,7 @@ mod tests {
         let r = rc_ref!(&r);
         let dir = *rc_ref!(&r.direction);
         assert_eq!(dir.x, 0.0);
-        assert!((dir.y - (-1.0)).abs() < 1e-6);
+        assert_eq!(dir.y, -1.0);
         assert_eq!(dir.z, 0.0);
     }
 

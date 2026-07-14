@@ -2,7 +2,7 @@ import importlib.util
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
-import pytest
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "generate_docs"
@@ -26,9 +26,8 @@ def test_generate_from_html_rejects_missing_update_texts(tmp_path):
     json_path = tmp_path / "broken.json"
     json_path.write_text('{"ui":{"title":{"en":"Test"}}}', encoding="utf-8")
 
-    with pytest.raises(
-        ValueError,
-        match=r"required function updateTexts\(\) not found$",
+    with raises_exact(
+        ValueError, f"{html_path}: required function updateTexts() not found"
     ):
         generate_docs.generate_from_html(html_path, json_path, "broken")
 
