@@ -5,7 +5,7 @@ use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
 use crate::tone::{ToneMode, ToneSample};
 
 // System defaults
-pub const VERSION: &str = "2.9.7";
+pub const VERSION: &str = "2.9.8";
 pub const BASE_DIR: &str = ".pyxel";
 pub const WINDOW_STATE_ENV: &str = "PYXEL_WINDOW_STATE";
 pub const WATCH_STATE_FILE_ENV: &str = "PYXEL_WATCH_STATE_FILE";
@@ -120,7 +120,7 @@ pub const AUDIO_GAIN_SHIFT: u32 = 14;
 pub const AUDIO_GAIN_SCALE: i64 = 1_i64 << AUDIO_GAIN_SHIFT;
 
 pub const VOICE_CONTROL_RATE: u32 = 60;
-pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 1000; // 1 / 1000 = 1ms
+pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 2000;
 pub const TICKS_PER_QUARTER_NOTE: u32 = 48;
 pub const SOUND_TICKS_PER_SECOND: u32 = 120;
 

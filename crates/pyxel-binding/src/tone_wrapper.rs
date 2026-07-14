@@ -1,3 +1,4 @@
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::utils::MutexFieldMut;
@@ -55,8 +56,15 @@ impl Tone {
     }
 
     #[setter]
-    fn set_sample_bits(&self, sample_bits: u32) {
+    fn set_sample_bits(&self, sample_bits: u32) -> PyResult<()> {
+        if !(1..=pyxel::AUDIO_SAMPLE_BITS).contains(&sample_bits) {
+            return Err(PyValueError::new_err(format!(
+                "sample_bits must be between 1 and {}",
+                pyxel::AUDIO_SAMPLE_BITS
+            )));
+        }
         self.inner_mut().sample_bits = sample_bits;
+        Ok(())
     }
 
     #[getter]

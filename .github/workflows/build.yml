@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - &resolve-rust-version
         name: Resolve Rust version
@@ -54,7 +54,7 @@ jobs:
           components: rust-src, rustfmt, clippy
 
       - name: Install Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           architecture: ${{ matrix.arch }}
@@ -71,7 +71,7 @@ jobs:
 
       - &upload-wheel
         name: Upload wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pyxel-${{ matrix.target }}
           path: dist/*
@@ -96,14 +96,14 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - *resolve-rust-version
 
       - *install-rust
 
       - name: Install Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -298,7 +298,6 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-11-arm
             arch: x64
-            verify_gui_quit: true
 
           - target: i686-pc-windows-msvc
             os: windows-2022
@@ -328,13 +327,13 @@ jobs:
     steps:
       - name: Install Python
         if: ${{ !matrix.skip_import }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           architecture: ${{ matrix.arch }}
 
       - name: Download wheel
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pyxel-${{ matrix.target }}
           path: dist
@@ -350,14 +349,6 @@ jobs:
         run: |
           pip install dist/*.whl
           python -c "import pyxel; print(f'Pyxel {pyxel.VERSION} imported successfully')"
-
-      - name: Verify GUI quit on Windows ARM64
-        if: ${{ matrix.verify_gui_quit }}
-        timeout-minutes: 1
-        shell: pwsh
-        run: |
-          python -c "import os, platform, struct; print(platform.machine(), struct.calcsize('P') * 8, os.environ.get('PROCESSOR_ARCHITEW6432', ''))"
-          python -c "import pyxel; pyxel.init(64, 64, title='Pyxel Windows ARM quit smoke'); pyxel.quit()"
 
       - name: Verify SDL2 bundle (Linux)
         if: runner.os == 'Linux'

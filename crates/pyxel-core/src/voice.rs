@@ -135,7 +135,7 @@ impl Oscillator {
 
 #[derive(Debug)]
 struct EnvelopeSegment {
-    start_tick: u32,
+    start_tick: f32,
     start_level: f32,
     slope: f32,
 }
@@ -143,10 +143,8 @@ struct EnvelopeSegment {
 pub struct Envelope {
     segments: Vec<EnvelopeSegment>,
     segment_index: usize,
-
+    inv_clocks_per_tick: f32,
     enabled: bool,
-    elapsed_ticks: u32,
-    level: f32,
 }
 
 impl Envelope {
@@ -154,11 +152,14 @@ impl Envelope {
 
     fn new() -> Self {
         Self {
-            segments: Vec::new(),
+            segments: vec![EnvelopeSegment {
+                start_tick: 0.0,
+                start_level: 1.0,
+                slope: 0.0,
+            }],
             segment_index: 0,
+            inv_clocks_per_tick: 1.0,
             enabled: false,
-            elapsed_ticks: 0,
-            level: 0.0,
         }
     }
 
@@ -167,7 +168,7 @@ impl Envelope {
     pub fn set(&mut self, initial_level: f32, segments: &[(u32, f32)]) {
         self.segments.clear();
 
-        let mut start_tick = 0;
+        let mut start_tick = 0_u64;
         let mut start_level = initial_level;
 
         for &(duration, target_level) in segments {
@@ -178,30 +179,26 @@ impl Envelope {
             };
 
             self.segments.push(EnvelopeSegment {
-                start_tick,
+                start_tick: start_tick as f32,
                 start_level,
                 slope,
             });
 
-            start_tick += duration;
+            start_tick += u64::from(duration);
             start_level = target_level;
         }
 
         self.segments.push(EnvelopeSegment {
-            start_tick,
+            start_tick: start_tick as f32,
             start_level,
             slope: 0.0,
         });
 
-        // Store newest segments first so playback can walk backward by start tick.
-        self.segments.reverse();
+        self.segment_index = 0;
+    }
 
-        self.segment_index = self.segments.len() - 1;
-        while self.segment_index > 0
-            && self.elapsed_ticks >= self.segments[self.segment_index - 1].start_tick
-        {
-            self.segment_index -= 1;
-        }
+    pub fn set_clocks_per_tick(&mut self, clocks_per_tick: u32) {
+        self.inv_clocks_per_tick = 1.0 / clocks_per_tick as f32;
     }
 
     // State controls
@@ -214,55 +211,38 @@ impl Envelope {
         self.enabled = false;
     }
 
-    fn level(&self) -> f32 {
-        self.level
+    // Level evaluation
+
+    fn reset(&mut self) {
+        self.segment_index = 0;
     }
 
-    // Tick progression
-
-    fn reset_tick(&mut self) {
-        self.elapsed_ticks = 0;
-        self.segment_index = self.segments.len().saturating_sub(1);
-        self.update();
-    }
-
-    fn advance_tick(&mut self, ticks: u32) {
-        if self.enabled {
-            self.elapsed_ticks += ticks;
-        }
-
-        self.update();
-    }
-
-    fn update(&mut self) {
+    // Level at note-relative elapsed clocks; the segment cursor only walks
+    // forward, so callers reset() when elapsed rewinds
+    fn level_at(&mut self, elapsed_clocks: u64) -> f32 {
         if !self.enabled {
-            self.level = 1.0;
-            return;
+            return 1.0;
         }
 
-        while self.segment_index > 0
-            && self.elapsed_ticks >= self.segments[self.segment_index - 1].start_tick
+        let elapsed_ticks = elapsed_clocks as f32 * self.inv_clocks_per_tick;
+        while self.segment_index + 1 < self.segments.len()
+            && elapsed_ticks >= self.segments[self.segment_index + 1].start_tick
         {
-            self.segment_index -= 1;
+            self.segment_index += 1;
         }
 
         let segment = &self.segments[self.segment_index];
-        self.level = if segment.slope == 0.0 {
-            segment.start_level
-        } else {
-            segment.start_level + segment.slope * (self.elapsed_ticks - segment.start_tick) as f32
-        };
+        segment.start_level + segment.slope * (elapsed_ticks - segment.start_tick)
     }
 }
 
 pub struct Vibrato {
     delay_ticks: u32,
     period_ticks: u32,
-    inv_period_ticks: f32,
+    inv_period_ticks: f64,
     semitone_depth: f32,
 
     enabled: bool,
-    elapsed_ticks: u32,
     pitch_multiplier: f32,
 }
 
@@ -277,7 +257,6 @@ impl Vibrato {
             semitone_depth: 0.0,
 
             enabled: false,
-            elapsed_ticks: 0,
             pitch_multiplier: 1.0,
         }
     }
@@ -291,7 +270,7 @@ impl Vibrato {
         if period_ticks != self.period_ticks {
             self.period_ticks = period_ticks;
             self.inv_period_ticks = if period_ticks > 0 {
-                1.0 / period_ticks as f32
+                1.0 / f64::from(period_ticks)
             } else {
                 0.0
             };
@@ -310,35 +289,29 @@ impl Vibrato {
         self.pitch_multiplier
     }
 
-    // Tick progression
+    // Pitch evaluation
 
-    fn reset_tick(&mut self) {
-        // A delayed vibrato restarts per note; without a delay the phase
-        // free-runs across notes so the modulation stays continuous
-        if self.delay_ticks > 0 {
-            self.elapsed_ticks = 0;
-        }
-
-        self.update();
-    }
-
-    fn advance_tick(&mut self, ticks: u32) {
-        if self.enabled {
-            self.elapsed_ticks += ticks;
-        }
-
-        self.update();
-    }
-
-    fn update(&mut self) {
-        if !self.enabled || self.elapsed_ticks < self.delay_ticks {
+    // A delayed vibrato traces its curve per note; without a delay the phase
+    // follows playback time so the modulation stays continuous across notes
+    fn update_at(&mut self, note_ticks: f64, playback_ticks: f64) {
+        if !self.enabled {
             self.pitch_multiplier = 1.0;
             return;
         }
 
-        let phase = (self.elapsed_ticks - self.delay_ticks) as f32 * self.inv_period_ticks;
+        let elapsed_ticks = if self.delay_ticks > 0 {
+            note_ticks - f64::from(self.delay_ticks)
+        } else {
+            playback_ticks
+        };
+        if elapsed_ticks < 0.0 {
+            self.pitch_multiplier = 1.0;
+            return;
+        }
+
+        let phase = elapsed_ticks * self.inv_period_ticks;
         let modulation = 1.0 - 4.0 * ((phase + 0.25).fract() - 0.5).abs();
-        let semitone_offset = modulation * self.semitone_depth;
+        let semitone_offset = modulation as f32 * self.semitone_depth;
 
         self.pitch_multiplier = semitone_to_pitch_multiplier(semitone_offset);
     }
@@ -350,7 +323,6 @@ pub struct Glide {
     semitone_slope: f32,
 
     enabled: bool,
-    elapsed_ticks: u32,
     pitch_multiplier: f32,
 }
 
@@ -364,7 +336,6 @@ impl Glide {
             semitone_slope: 0.0,
 
             enabled: false,
-            elapsed_ticks: 0,
             pitch_multiplier: 1.0,
         }
     }
@@ -395,29 +366,15 @@ impl Glide {
         self.pitch_multiplier
     }
 
-    // Tick progression
+    // Pitch evaluation
 
-    fn reset_tick(&mut self) {
-        self.elapsed_ticks = 0;
-        self.update();
-    }
-
-    fn advance_tick(&mut self, ticks: u32) {
-        if self.enabled {
-            self.elapsed_ticks += ticks;
-        }
-
-        self.update();
-    }
-
-    fn update(&mut self) {
-        if !self.enabled || self.elapsed_ticks >= self.duration_ticks {
+    fn update_at(&mut self, note_ticks: f32) {
+        if !self.enabled || note_ticks >= self.duration_ticks as f32 {
             self.pitch_multiplier = 1.0;
             return;
         }
 
-        let semitone_offset =
-            self.semitone_offset + self.semitone_slope * self.elapsed_ticks as f32;
+        let semitone_offset = self.semitone_offset + self.semitone_slope * note_ticks;
         self.pitch_multiplier = semitone_to_pitch_multiplier(semitone_offset);
     }
 }
@@ -436,10 +393,14 @@ pub struct Voice {
     current_tone_mode: Option<ToneMode>,
     current_tone_revision: Option<u64>,
     current_velocity_cache: f32,
-    remaining_note_clocks: u32,
-    elapsed_note_clocks: u32,
+    remaining_note_clocks: u64,
+    elapsed_note_clocks: u64,
+    playback_ticks: f64,
+    next_modulator_tick_clock: u64,
+    next_gain_update_clock: u64,
     sample_clocks: u32,
-    carryover_sample_clocks: u32,
+    sample_remaining_clocks: u32,
+    carryover_event_clocks: u32,
     control_interval_clocks: u32,
     control_elapsed_clocks: u32,
     last_amplitude: i32,
@@ -476,8 +437,12 @@ impl Voice {
             current_velocity_cache: 0.0,
             remaining_note_clocks: 0,
             elapsed_note_clocks: 0,
+            playback_ticks: 0.0,
+            next_modulator_tick_clock: 0,
+            next_gain_update_clock: 0,
             sample_clocks: 0,
-            carryover_sample_clocks: 0,
+            sample_remaining_clocks: 0,
+            carryover_event_clocks: 0,
             control_interval_clocks,
             control_elapsed_clocks: 0,
             last_amplitude: 0,
@@ -534,19 +499,29 @@ impl Voice {
         assert!(clocks_per_tick > 0);
 
         self.clocks_per_tick = clocks_per_tick;
+        self.envelope.set_clocks_per_tick(clocks_per_tick);
     }
 
     // Playback controls
 
-    pub fn play_note(&mut self, midi_note: f32, velocity_base: f32, duration_clocks: u32) {
+    pub fn play_note(&mut self, midi_note: f32, velocity_base: f32, duration_clocks: u64) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.velocity_base = velocity_base;
-        self.remaining_note_clocks = duration_clocks + self.interp_clocks;
+        self.remaining_note_clocks = duration_clocks.saturating_add(u64::from(self.interp_clocks));
         self.elapsed_note_clocks = 0;
+        self.next_modulator_tick_clock = u64::from(self.clocks_per_tick);
+        self.next_gain_update_clock = u64::from(self.interp_clocks);
+        self.sample_remaining_clocks = 0;
+        self.carryover_event_clocks = 0;
         self.interp_start_gain = None;
         self.interp_end_gain = None;
 
         self.reset_control_clock();
+        self.sample_remaining_clocks = self.sample_clocks;
+    }
+
+    pub(crate) fn reset_playback_clock(&mut self) {
+        self.playback_ticks = 0.0;
     }
 
     fn current_velocity(&self) -> f32 {
@@ -554,12 +529,16 @@ impl Voice {
     }
 
     pub fn cancel_note(&mut self) {
-        self.remaining_note_clocks = self.remaining_note_clocks.min(self.interp_clocks);
+        self.remaining_note_clocks = self
+            .remaining_note_clocks
+            .min(u64::from(self.interp_clocks));
+        self.sample_remaining_clocks = self.sample_clocks;
+        self.carryover_event_clocks = 0;
     }
 
     pub(crate) fn needs_processing(&self) -> bool {
         self.remaining_note_clocks > 0
-            || self.carryover_sample_clocks > 0
+            || self.carryover_event_clocks > 0
             || self.last_amplitude != 0
     }
 
@@ -571,40 +550,40 @@ impl Voice {
         }
 
         let mut blip_buf = blip_buf;
-        let mut clock_offset = clock_offset + self.carryover_sample_clocks;
+        let mut clock_offset = clock_offset;
         let mut clock_count = clock_count;
 
-        // Finish a split oscillator sample from the previous process chunk.
-        if self.carryover_sample_clocks > 0 {
-            let process_clocks = self.carryover_sample_clocks.min(clock_count);
-            self.remaining_note_clocks = self.remaining_note_clocks.saturating_sub(process_clocks);
-            self.elapsed_note_clocks += process_clocks;
-            self.carryover_sample_clocks -= process_clocks;
+        // Finish a split synthesis event from the previous process chunk.
+        if self.carryover_event_clocks > 0 {
+            let process_clocks = self.carryover_event_clocks.min(clock_count);
+            let event_completed = process_clocks == self.carryover_event_clocks;
+            self.advance_event_clock(process_clocks, event_completed);
+            self.carryover_event_clocks -= process_clocks;
+            clock_offset += process_clocks;
             clock_count -= process_clocks;
 
-            if self.carryover_sample_clocks > 0 {
+            if self.carryover_event_clocks > 0 || clock_count == 0 {
                 return;
             }
-
-            self.oscillator.advance_sample();
-            self.advance_control_clock(self.sample_clocks);
         }
 
         // Phase 1: Head crossfade (elapsed < interp, but yield to tail when remaining < interp)
         if self.remaining_note_clocks > 0
             && clock_count > 0
-            && self.elapsed_note_clocks < self.interp_clocks
-            && self.remaining_note_clocks >= self.interp_clocks
+            && self.elapsed_note_clocks < u64::from(self.interp_clocks)
+            && self.remaining_note_clocks >= u64::from(self.interp_clocks)
         {
             let start_gain = *self.interp_start_gain.get_or_insert(self.last_gain);
             let interp = self.interp_clocks as i64;
 
             while self.remaining_note_clocks > 0
                 && clock_count > 0
-                && self.elapsed_note_clocks < self.interp_clocks
-                && self.remaining_note_clocks >= self.interp_clocks
+                && self.elapsed_note_clocks < u64::from(self.interp_clocks)
+                && self.remaining_note_clocks >= u64::from(self.interp_clocks)
             {
-                let mut gain = Self::gain_to_fixed(self.envelope.level() * self.current_velocity());
+                let mut gain = Self::gain_to_fixed(
+                    self.envelope.level_at(self.elapsed_note_clocks) * self.current_velocity(),
+                );
                 let elapsed = self.elapsed_note_clocks as i64;
                 gain =
                     ((start_gain as i64 * (interp - elapsed) + gain as i64 * elapsed + interp / 2)
@@ -614,43 +593,38 @@ impl Voice {
                 self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
                 self.last_gain = gain;
 
-                let process_clocks = self.sample_clocks.min(clock_count);
-                self.remaining_note_clocks =
-                    self.remaining_note_clocks.saturating_sub(process_clocks);
-                self.elapsed_note_clocks += process_clocks;
+                let event_clocks = self.event_clocks();
+                let process_clocks = event_clocks.min(clock_count);
+                self.advance_event_clock(process_clocks, process_clocks == event_clocks);
                 clock_offset += process_clocks;
                 clock_count -= process_clocks;
 
-                if process_clocks < self.sample_clocks {
-                    self.carryover_sample_clocks = self.sample_clocks - process_clocks;
+                if process_clocks < event_clocks {
+                    self.carryover_event_clocks = event_clocks - process_clocks;
                     return;
                 }
-
-                self.oscillator.advance_sample();
-                self.advance_control_clock(self.sample_clocks);
             }
         }
 
         // Phase 2: Bulk (no interpolation)
-        while self.remaining_note_clocks > self.interp_clocks && clock_count > 0 {
-            let gain = Self::gain_to_fixed(self.envelope.level() * self.current_velocity());
+        while self.remaining_note_clocks > u64::from(self.interp_clocks) && clock_count > 0 {
+            let gain = Self::gain_to_fixed(
+                self.envelope.level_at(self.elapsed_note_clocks) * self.current_velocity(),
+            );
             let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
             self.last_gain = gain;
 
-            let process_clocks = self.sample_clocks.min(clock_count);
-            self.remaining_note_clocks = self.remaining_note_clocks.saturating_sub(process_clocks);
-            self.elapsed_note_clocks += process_clocks;
+            let event_clocks = self.event_clocks();
+            let process_clocks = event_clocks.min(clock_count);
+            self.advance_event_clock(process_clocks, process_clocks == event_clocks);
             clock_offset += process_clocks;
             clock_count -= process_clocks;
 
-            if process_clocks < self.sample_clocks {
-                self.carryover_sample_clocks = self.sample_clocks - process_clocks;
+            if process_clocks < event_clocks {
+                self.carryover_event_clocks = event_clocks - process_clocks;
                 return;
             }
-
-            self.oscillator.advance_sample();
-            self.advance_control_clock(self.sample_clocks);
         }
 
         // Phase 3: Tail fade-out (remaining_note_clocks <= interp_clocks)
@@ -666,20 +640,16 @@ impl Voice {
                 self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
                 self.last_gain = gain;
 
-                let process_clocks = self.sample_clocks.min(clock_count);
-                self.remaining_note_clocks =
-                    self.remaining_note_clocks.saturating_sub(process_clocks);
-                self.elapsed_note_clocks += process_clocks;
+                let event_clocks = self.event_clocks();
+                let process_clocks = event_clocks.min(clock_count);
+                self.advance_event_clock(process_clocks, process_clocks == event_clocks);
                 clock_offset += process_clocks;
                 clock_count -= process_clocks;
 
-                if process_clocks < self.sample_clocks {
-                    self.carryover_sample_clocks = self.sample_clocks - process_clocks;
+                if process_clocks < event_clocks {
+                    self.carryover_event_clocks = event_clocks - process_clocks;
                     return;
                 }
-
-                self.oscillator.advance_sample();
-                self.advance_control_clock(self.sample_clocks);
             }
         }
 
@@ -690,6 +660,69 @@ impl Voice {
     }
 
     // Fixed-point helpers
+
+    #[inline]
+    fn event_clocks(&self) -> u32 {
+        // Synthesis controls use their own clock boundaries so low notes
+        // cannot skip short envelopes or modulation.
+        let bounded_delta = |target: u64| {
+            let delta = target.saturating_sub(self.elapsed_note_clocks);
+            if delta == 0 {
+                u32::MAX
+            } else {
+                delta.min(u64::from(u32::MAX)) as u32
+            }
+        };
+        let clocks_until_gain = if self.elapsed_note_clocks < u64::from(self.interp_clocks)
+            || self.envelope.enabled
+            || self.vibrato.enabled
+            || self.glide.enabled
+        {
+            bounded_delta(self.next_gain_update_clock)
+        } else {
+            u32::MAX
+        };
+        self.sample_remaining_clocks
+            .min(self.remaining_note_clocks.min(u64::from(u32::MAX)) as u32)
+            .min(clocks_until_gain)
+            .min(self.control_interval_clocks - self.control_elapsed_clocks)
+    }
+
+    #[inline]
+    fn advance_event_clock(&mut self, clocks: u32, event_completed: bool) {
+        let previous_sample_clocks = self.sample_clocks;
+        self.remaining_note_clocks = self.remaining_note_clocks.saturating_sub(u64::from(clocks));
+        self.elapsed_note_clocks = self.elapsed_note_clocks.saturating_add(u64::from(clocks));
+        self.playback_ticks += f64::from(clocks) / f64::from(self.clocks_per_tick);
+        self.sample_remaining_clocks -= clocks;
+        let oscillator_boundary = self.sample_remaining_clocks == 0;
+
+        if oscillator_boundary && self.remaining_note_clocks > 0 {
+            self.oscillator.advance_sample();
+        }
+
+        if self.elapsed_note_clocks >= self.next_gain_update_clock {
+            let interval = u64::from(self.interp_clocks);
+            self.next_gain_update_clock = (self.elapsed_note_clocks / interval)
+                .saturating_add(1)
+                .saturating_mul(interval);
+        }
+        if event_completed {
+            self.advance_modulator_clock();
+        }
+        self.advance_control_clock(clocks);
+
+        if self.remaining_note_clocks == 0 {
+            self.sample_remaining_clocks = 0;
+        } else if oscillator_boundary {
+            self.sample_remaining_clocks = self.sample_clocks;
+        } else if self.sample_clocks != previous_sample_clocks {
+            let scaled_remaining = u64::from(self.sample_remaining_clocks)
+                .saturating_mul(u64::from(self.sample_clocks))
+                .div_ceil(u64::from(previous_sample_clocks));
+            self.sample_remaining_clocks = scaled_remaining.clamp(1, u64::from(u32::MAX)) as u32;
+        }
+    }
 
     #[inline]
     fn gain_to_fixed(gain: f32) -> i32 {
@@ -711,28 +744,40 @@ impl Voice {
     // Control clock
 
     fn reset_control_clock(&mut self) {
-        self.envelope.reset_tick();
-        self.vibrato.reset_tick();
-        self.glide.reset_tick();
-
+        self.envelope.reset();
+        self.update_modulators();
         self.update_sample_clocks();
     }
 
-    fn advance_control_clock(&mut self, clocks: u32) {
-        self.control_elapsed_clocks += clocks;
+    // Evaluate the modulators at the last crossed note-relative tick boundary
+    // so the curve values never depend on the oscillator sample grid
+    fn update_modulators(&mut self) {
+        let note_ticks = (self.elapsed_note_clocks / u64::from(self.clocks_per_tick)) as f64;
+        self.vibrato.update_at(note_ticks, self.playback_ticks);
+        self.glide.update_at(note_ticks as f32);
+    }
 
-        if self.control_elapsed_clocks >= self.control_interval_clocks {
-            let ticks = self.control_elapsed_clocks / self.clocks_per_tick;
+    fn advance_modulator_clock(&mut self) {
+        if self.elapsed_note_clocks >= self.next_modulator_tick_clock {
+            let elapsed_ticks = self.elapsed_note_clocks / u64::from(self.clocks_per_tick);
+            self.next_modulator_tick_clock = elapsed_ticks
+                .saturating_add(1)
+                .saturating_mul(u64::from(self.clocks_per_tick));
 
-            if ticks > 0 {
-                self.control_elapsed_clocks -= self.clocks_per_tick * ticks;
-
-                self.envelope.advance_tick(ticks);
-                self.vibrato.advance_tick(ticks);
-                self.glide.advance_tick(ticks);
-            }
-
+            self.update_modulators();
             self.update_sample_clocks();
+        }
+    }
+
+    fn advance_control_clock(&mut self, clocks: u32) {
+        // Tone edits are polled at the control rate
+        let clocks_until_control = self.control_interval_clocks - self.control_elapsed_clocks;
+        if clocks >= clocks_until_control {
+            self.control_elapsed_clocks =
+                (clocks - clocks_until_control) % self.control_interval_clocks;
+            self.update_sample_clocks();
+        } else {
+            self.control_elapsed_clocks += clocks;
         }
     }
 
@@ -741,9 +786,11 @@ impl Voice {
 
         let frequency =
             self.base_frequency * self.vibrato.pitch_multiplier() * self.glide.pitch_multiplier();
+        // Floor at one clock so processing always advances
         self.sample_clocks =
             (self.clock_rate as f32 / frequency / self.oscillator.samples_per_cycle() as f32)
-                .round() as u32;
+                .round()
+                .max(1.0) as u32;
     }
 
     // Blip output
@@ -1004,23 +1051,37 @@ mod tests {
         env.set(0.0, &[(10, 1.0)]);
 
         // Disabled envelope level returns 1.0.
-        env.reset_tick();
-        assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
+        assert!(
+            approx_eq(env.level_at(0), 1.0),
+            "disabled: {}",
+            env.level_at(0)
+        );
 
         // Enabled envelope follows the attack ramp.
         env.enable();
-        env.reset_tick();
-        assert!(approx_eq(env.level(), 0.0), "start: {}", env.level());
-
-        env.advance_tick(5);
-        assert!(approx_eq(env.level(), 0.5), "midpoint: {}", env.level());
-
-        env.advance_tick(5);
-        assert!(approx_eq(env.level(), 1.0), "end: {}", env.level());
+        assert!(
+            approx_eq(env.level_at(0), 0.0),
+            "start: {}",
+            env.level_at(0)
+        );
+        assert!(
+            approx_eq(env.level_at(5), 0.5),
+            "midpoint: {}",
+            env.level_at(5)
+        );
+        assert!(
+            approx_eq(env.level_at(10), 1.0),
+            "end: {}",
+            env.level_at(10)
+        );
 
         // Envelope reset restarts from the beginning.
-        env.reset_tick();
-        assert!(approx_eq(env.level(), 0.0), "after reset: {}", env.level());
+        env.reset();
+        assert!(
+            approx_eq(env.level_at(0), 0.0),
+            "after reset: {}",
+            env.level_at(0)
+        );
     }
 
     #[test]
@@ -1028,22 +1089,26 @@ mod tests {
         let mut env = Envelope::new();
         env.set(0.0, &[(10, 1.0), (10, 0.5)]);
         env.enable();
-        env.reset_tick();
 
-        env.advance_tick(10);
-        assert!(approx_eq(env.level(), 1.0), "after attack: {}", env.level());
-
-        env.advance_tick(5);
-        assert!(approx_eq(env.level(), 0.75), "mid decay: {}", env.level());
-
-        env.advance_tick(5);
-        assert!(approx_eq(env.level(), 0.5), "sustain: {}", env.level());
-
-        env.advance_tick(100);
         assert!(
-            approx_eq(env.level(), 0.5),
+            approx_eq(env.level_at(10), 1.0),
+            "after attack: {}",
+            env.level_at(10)
+        );
+        assert!(
+            approx_eq(env.level_at(15), 0.75),
+            "mid decay: {}",
+            env.level_at(15)
+        );
+        assert!(
+            approx_eq(env.level_at(20), 0.5),
+            "sustain: {}",
+            env.level_at(20)
+        );
+        assert!(
+            approx_eq(env.level_at(120), 0.5),
             "sustained hold: {}",
-            env.level()
+            env.level_at(120)
         );
     }
 
@@ -1053,11 +1118,16 @@ mod tests {
         let mut env = Envelope::new();
         env.set(0.0, &[(0, 1.0), (10, 0.5)]);
         env.enable();
-        env.reset_tick();
-        assert!(approx_eq(env.level(), 1.0), "at tick 0: {}", env.level());
-
-        env.advance_tick(10);
-        assert!(approx_eq(env.level(), 0.5), "after decay: {}", env.level());
+        assert!(
+            approx_eq(env.level_at(0), 1.0),
+            "at tick 0: {}",
+            env.level_at(0)
+        );
+        assert!(
+            approx_eq(env.level_at(10), 0.5),
+            "after decay: {}",
+            env.level_at(10)
+        );
     }
 
     #[test]
@@ -1065,22 +1135,21 @@ mod tests {
         let mut env = Envelope::new();
         env.set(0.0, &[(10, 1.0)]);
         env.enable();
-        env.reset_tick();
-        env.advance_tick(5);
-        assert!(approx_eq(env.level(), 0.5), "mid: {}", env.level());
+        assert!(approx_eq(env.level_at(5), 0.5), "mid: {}", env.level_at(5));
 
         // Disabled envelope level returns to 1.0.
         env.disable();
-        env.advance_tick(1);
-        assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
-
-        // Re-enabled envelope continues from elapsed=5, so one more tick gives 0.6.
-        env.enable();
-        env.advance_tick(1);
         assert!(
-            approx_eq(env.level(), 0.6),
+            approx_eq(env.level_at(6), 1.0),
+            "disabled: {}",
+            env.level_at(6)
+        );
+
+        env.enable();
+        assert!(
+            approx_eq(env.level_at(7), 0.7),
             "re-enabled should continue: {}",
-            env.level()
+            env.level_at(7)
         );
     }
 
@@ -1090,11 +1159,30 @@ mod tests {
         let mut env = Envelope::new();
         env.set(0.8, &[]);
         env.enable();
-        env.reset_tick();
-        assert!(approx_eq(env.level(), 0.8), "initial: {}", env.level());
+        assert!(
+            approx_eq(env.level_at(0), 0.8),
+            "initial: {}",
+            env.level_at(0)
+        );
+        assert!(
+            approx_eq(env.level_at(100), 0.8),
+            "sustained: {}",
+            env.level_at(100)
+        );
+    }
 
-        env.advance_tick(100);
-        assert!(approx_eq(env.level(), 0.8), "sustained: {}", env.level());
+    #[test]
+    fn test_envelope_fractional_ticks() {
+        let mut env = Envelope::new();
+        env.set_clocks_per_tick(100);
+        env.set(1.0, &[(2, 0.0)]);
+        env.enable();
+
+        assert_eq!(env.level_at(0), 1.0);
+        assert_eq!(env.level_at(50), 0.75);
+        assert_eq!(env.level_at(100), 0.5);
+        assert_eq!(env.level_at(150), 0.25);
+        assert_eq!(env.level_at(200), 0.0);
     }
 
     // Vibrato
@@ -1105,17 +1193,18 @@ mod tests {
         vib.set(0, 10, 1.0);
 
         // Disabled vibrato multiplier returns 1.0.
+        vib.update_at(5.0, 5.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "disabled: {}",
             vib.pitch_multiplier()
         );
 
-        // Vibrato stays neutral within its delay.
+        // A delayed vibrato follows note time and stays neutral within its
+        // delay even when playback time is far ahead.
         vib.set(10, 20, 2.0);
         vib.enable();
-        vib.reset_tick();
-        vib.advance_tick(5);
+        vib.update_at(5.0, 1000.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "within delay: {}",
@@ -1126,14 +1215,14 @@ mod tests {
         let mut vib = Vibrato::new();
         vib.set(0, 40, 2.0);
         vib.enable();
-        vib.reset_tick();
+        vib.update_at(0.0, 0.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "at start: {}",
             vib.pitch_multiplier()
         );
 
-        vib.advance_tick(10);
+        vib.update_at(0.0, 10.0);
         // Quarter period is the triangle peak: full +2 semitone depth
         let expected = 2.0_f32.powf(2.0 / 12.0);
         assert!(
@@ -1147,12 +1236,12 @@ mod tests {
     fn test_vibrato_triangle_wave_shape() {
         // Verify the triangle wave has correct symmetry over a full period
         let mut vib = Vibrato::new();
-        let period = 100;
-        vib.set(0, period, 2.0);
+        let period = 100.0;
+        vib.set(0, 100, 2.0);
         vib.enable();
-        vib.reset_tick();
 
         // At start: multiplier = 1.0 (zero crossing)
+        vib.update_at(0.0, 0.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "start: {}",
@@ -1160,7 +1249,7 @@ mod tests {
         );
 
         // At half period: should return to ~1.0 (zero crossing)
-        vib.advance_tick(period / 2);
+        vib.update_at(0.0, period / 2.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "half period: {}",
@@ -1168,7 +1257,7 @@ mod tests {
         );
 
         // At three-quarter period: trough of the triangle = full -2 semitone depth
-        vib.advance_tick(period / 4);
+        vib.update_at(0.0, period * 0.75);
         let expected = 2.0_f32.powf(-2.0 / 12.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), expected),
@@ -1177,7 +1266,7 @@ mod tests {
         );
 
         // Back at the zero crossing after a full period
-        vib.advance_tick(period / 4);
+        vib.update_at(0.0, period);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "full period: {}",
@@ -1192,8 +1281,7 @@ mod tests {
         let mut vib = Vibrato::new();
         vib.set(0, 0, 2.0);
         vib.enable();
-        vib.reset_tick();
-        vib.advance_tick(10);
+        vib.update_at(0.0, 10.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "zero period: {}",
@@ -1207,8 +1295,7 @@ mod tests {
         // Zero depth disables modulation even while vibrato is enabled.
         vib.set(0, 20, 0.0);
         vib.enable();
-        vib.reset_tick();
-        vib.advance_tick(10);
+        vib.update_at(0.0, 10.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "zero depth: {}",
@@ -1224,6 +1311,7 @@ mod tests {
         glide.set(12.0, 100);
 
         // Disabled glide multiplier returns 1.0.
+        glide.update_at(0.0);
         assert!(
             approx_eq(glide.pitch_multiplier(), 1.0),
             "disabled: {}",
@@ -1232,14 +1320,14 @@ mod tests {
 
         // Glide starts at its offset and converges to 1.0.
         glide.enable();
-        glide.reset_tick();
+        glide.update_at(0.0);
         assert!(
             approx_eq(glide.pitch_multiplier(), 2.0),
             "start: {}",
             glide.pitch_multiplier()
         );
 
-        glide.advance_tick(50);
+        glide.update_at(50.0);
         let expected = 2.0_f32.powf(6.0 / 12.0);
         assert!(
             (glide.pitch_multiplier() - expected).abs() < 0.01,
@@ -1247,7 +1335,7 @@ mod tests {
             glide.pitch_multiplier()
         );
 
-        glide.advance_tick(50);
+        glide.update_at(100.0);
         assert!(
             approx_eq(glide.pitch_multiplier(), 1.0),
             "end: {}",
@@ -1257,11 +1345,10 @@ mod tests {
 
     #[test]
     fn test_glide_zero_duration() {
-        // Zero duration: slope is 0, stays at 1.0 (elapsed >= duration immediately)
         let mut glide = Glide::new();
         glide.set(12.0, 0);
         glide.enable();
-        glide.reset_tick();
+        glide.update_at(0.0);
         assert!(
             approx_eq(glide.pitch_multiplier(), 1.0),
             "zero duration: {}",
@@ -1275,14 +1362,14 @@ mod tests {
         let mut glide = Glide::new();
         glide.set(-12.0, 100);
         glide.enable();
-        glide.reset_tick();
+        glide.update_at(0.0);
         assert!(
             approx_eq(glide.pitch_multiplier(), 0.5),
             "start at -12 semitones: {}",
             glide.pitch_multiplier()
         );
 
-        glide.advance_tick(100);
+        glide.update_at(100.0);
         assert!(
             approx_eq(glide.pitch_multiplier(), 1.0),
             "converged: {}",
@@ -1295,10 +1382,8 @@ mod tests {
         let mut glide = Glide::new();
         glide.set(12.0, 50);
         glide.enable();
-        glide.reset_tick();
 
-        // Advancing past duration leaves glide at the target pitch.
-        glide.advance_tick(100);
+        glide.update_at(100.0);
         assert!(
             approx_eq(glide.pitch_multiplier(), 1.0),
             "past duration: {}",
@@ -1349,6 +1434,20 @@ mod tests {
     }
 
     #[test]
+    fn test_voice_play_note_preserves_long_duration() {
+        let mut voice = Voice::new(44100, 60, 512);
+        voice.set_tone(make_tone(1, vec![1, 0]));
+        let duration_clocks = u64::from(u32::MAX) + 1;
+
+        voice.play_note(69.0, 1.0, duration_clocks);
+
+        assert_eq!(
+            voice.remaining_note_clocks,
+            duration_clocks + u64::from(voice.interp_clocks)
+        );
+    }
+
+    #[test]
     fn test_voice_play_note_frequencies() {
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
@@ -1377,6 +1476,39 @@ mod tests {
 
         voice.set_clocks_per_tick(100);
         assert_eq!(voice.clocks_per_tick, 100);
+    }
+
+    #[test]
+    fn test_voice_glide_advances_before_slow_oscillator_edge() {
+        let mut voice = Voice::new(44100, 60, 10);
+        voice.set_tone(make_tone(1, vec![1, 0]));
+        voice.set_clocks_per_tick(100);
+        voice.glide.set(12.0, 8);
+        voice.glide.enable();
+        voice.play_note(69.0, 1.0, 800);
+        let initial_multiplier = voice.glide.pitch_multiplier();
+        voice.sample_clocks = 1000;
+        voice.sample_remaining_clocks = 1000;
+
+        voice.process(None, 0, 400);
+
+        assert!(voice.glide.pitch_multiplier() < initial_multiplier);
+    }
+
+    #[test]
+    fn test_voice_short_note_ends_before_slow_oscillator_edge() {
+        let mut voice = Voice::new(44100, 60, 512);
+        voice.set_tone(make_tone(1, vec![1, 0]));
+        voice.play_note(69.0, 1.0, 100);
+        voice.sample_clocks = 1000;
+        voice.sample_remaining_clocks = 1000;
+
+        voice.process(None, 0, 100 + voice.interp_clocks + 1);
+
+        assert_eq!(voice.remaining_note_clocks, 0);
+        assert_eq!(voice.carryover_event_clocks, 0);
+        assert_eq!(voice.sample_remaining_clocks, 0);
+        assert!(!voice.needs_processing());
     }
 
     #[test]
@@ -1426,10 +1558,15 @@ mod tests {
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 10000);
+        voice.sample_clocks = 1000;
+        voice.sample_remaining_clocks = 1000;
+        voice.process(None, 0, 1);
+        assert!(voice.carryover_event_clocks > 0);
 
         voice.cancel_note();
-        // cancel_note clamps the remainder to exactly the fade-out interpolation window
-        assert_eq!(voice.remaining_note_clocks, voice.interp_clocks);
+
+        assert_eq!(voice.remaining_note_clocks, u64::from(voice.interp_clocks));
+        assert_eq!(voice.carryover_event_clocks, 0);
     }
 
     #[test]
@@ -1441,15 +1578,10 @@ mod tests {
         voice.play_note(69.0, 1.0, 100);
         assert!(voice.needs_processing(), "after play_note");
 
-        // Process enough clocks to finish the note
         voice.process(None, 0, 100 + voice.interp_clocks + 1);
-        // The note duration is exhausted but sub-sample carryover is still pending
         assert_eq!(voice.remaining_note_clocks, 0);
-        assert!(voice.needs_processing(), "carryover still pending");
-
-        // Flushing the carryover returns the voice to idle
-        voice.process(None, 0, voice.sample_clocks);
-        assert!(!voice.needs_processing(), "should be idle after carryover");
+        assert_eq!(voice.carryover_event_clocks, 0);
+        assert!(!voice.needs_processing());
     }
 
     #[test]
@@ -1519,11 +1651,18 @@ mod tests {
 
     #[test]
     fn test_voice_process_split_invariant() {
-        // The audio thread drives process() in arbitrary clock chunks; carryover
-        // must make any chunking produce the same output as one full pass.
+        // The audio thread drives process() in arbitrary clock chunks; event
+        // carryover must make any chunking match one full pass.
         let make = || {
             let mut voice = Voice::new(44100, 60, 512);
             voice.set_tone(make_tone(1, vec![1, 0]));
+            voice.set_clocks_per_tick(100);
+            voice.envelope.set(1.0, &[(20, 0.25)]);
+            voice.envelope.enable();
+            voice.vibrato.set(2, 12, 1.0);
+            voice.vibrato.enable();
+            voice.glide.set(4.0, 20);
+            voice.glide.enable();
             voice.play_note(69.0, 1.0, 4410);
             let mut blip_buf = BlipBuf::new(4096);
             blip_buf.set_rates(44100.0, 22050.0);
@@ -1604,6 +1743,66 @@ mod tests {
             *gains.last().unwrap(),
             0,
             "did not fade to silence: {gains:?}"
+        );
+    }
+
+    #[test]
+    fn test_voice_modulators_are_note_relative() {
+        // Delayed vibrato and glide must trace the same per-note value curve
+        // no matter how much audio played before the note. Application timing
+        // may shift by up to one oscillator sample, so distinct values are
+        // compared instead of per-sample readings.
+        let collect = |pre_notes: u32| {
+            let mut voice = Voice::new(44100, 60, 22);
+            voice.set_tone(make_tone(1, vec![1, 0]));
+            voice.set_clocks_per_tick(100);
+            voice.vibrato.set(2, 8, 12.0);
+            voice.vibrato.enable();
+            voice.glide.set(12.0, 8);
+            voice.glide.enable();
+
+            for _ in 0..pre_notes {
+                voice.play_note(69.0, 1.0, 517);
+                voice.process(None, 0, 517);
+            }
+
+            voice.play_note(69.0, 1.0, 1000);
+            let mut values = Vec::new();
+            for _ in 0..24 {
+                voice.process(None, 0, 50);
+                let value = (
+                    voice.vibrato.pitch_multiplier(),
+                    voice.glide.pitch_multiplier(),
+                );
+                if values.last() != Some(&value) {
+                    values.push(value);
+                }
+            }
+            values
+        };
+
+        let baseline = collect(0);
+        assert_eq!(baseline, collect(1));
+        assert_eq!(baseline, collect(3));
+    }
+
+    #[test]
+    fn test_voice_vibrato_phase_remains_precise_after_long_history() {
+        let multiplier_after_history = |history_ticks| {
+            let mut voice = Voice::new(44100, 60, 22);
+            voice.set_tone(make_tone(1, vec![1, 0]));
+            voice.set_clocks_per_tick(100);
+            voice.vibrato.set(0, 16, 12.0);
+            voice.vibrato.enable();
+            voice.playback_ticks = history_ticks + 5.0;
+
+            voice.play_note(69.0, 1.0, 400);
+            voice.vibrato.pitch_multiplier()
+        };
+
+        assert_eq!(
+            multiplier_after_history(0.0),
+            multiplier_after_history(16_777_216.0)
         );
     }
 }
