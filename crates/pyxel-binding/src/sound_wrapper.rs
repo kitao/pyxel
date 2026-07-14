@@ -1,4 +1,4 @@
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 
 use crate::utils::MutexFieldMut;
@@ -99,8 +99,10 @@ impl Sound {
     }
 
     #[setter]
-    fn set_speed(&self, speed: pyxel::SoundSpeed) {
+    fn set_speed(&self, speed: pyxel::SoundSpeed) -> PyResult<()> {
+        pyxel::Sound::validate_speed(speed).map_err(PyValueError::new_err)?;
         self.inner_mut().speed = speed;
+        Ok(())
     }
 
     // Data operations
@@ -113,6 +115,7 @@ impl Sound {
         effects: &str,
         speed: pyxel::SoundSpeed,
     ) -> PyResult<()> {
+        pyxel::Sound::validate_speed(speed).map_err(PyValueError::new_err)?;
         self.inner_mut()
             .set(notes, tones, volumes, effects, speed)
             .map_err(PyException::new_err)

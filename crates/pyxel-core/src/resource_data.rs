@@ -163,6 +163,12 @@ struct SoundData {
 }
 
 impl SoundData {
+    fn validate(&self, index: usize) -> Result<(), String> {
+        Sound::validate_speed(self.speed).map_err(|_| {
+            format!("Invalid resource data: sounds[{index}].speed must be greater than 0")
+        })
+    }
+
     fn from_sound(sound: &RcSound) -> Self {
         let sound = audio_ref!(sound);
         Self {
@@ -265,6 +271,11 @@ impl ResourceData {
         if !exclude_tilemaps {
             for (index, tilemap) in self.tilemaps.iter().enumerate() {
                 tilemap.validate(index, image_count)?;
+            }
+        }
+        if !exclude_sounds {
+            for (index, sound) in self.sounds.iter().enumerate() {
+                sound.validate(index)?;
             }
         }
 

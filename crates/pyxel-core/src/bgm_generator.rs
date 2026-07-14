@@ -2245,11 +2245,17 @@ impl Pyxel {
         let mml_list = generate_bgm_mml(preset, transpose, instrumentation, seed);
 
         if play.unwrap_or(false) {
-            for (ch, mml) in mml_list.iter().enumerate() {
+            let channels = pyxel::channels();
+            for (channel, mml) in channels.iter().zip(&mml_list) {
                 let sound = Sound::new();
                 if audio_mut!(sound).set_mml(mml).is_ok() {
                     let _lock = crate::audio::AudioLock::lock();
-                    audio_mut!(pyxel::channels()[ch]).play_sound(sound, None, true, false);
+                    if audio_mut!(channel)
+                        .play_sound(sound, None, true, false)
+                        .is_err()
+                    {
+                        break;
+                    }
                 }
             }
         }

@@ -283,45 +283,115 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     Ok(commands)
 }
 
-pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
-    let mut total_clocks = 0;
-    let mut command_index = 0;
-    let mut repeat_points: Vec<(usize, u32)> = Vec::new();
-    let mut clocks_per_tick = bpm_to_clocks_per_tick(DEFAULT_TEMPO);
+// A duration is input_tempo_ticks * incoming clocks-per-tick + fixed_clocks.
+#[derive(Clone, Copy, Default)]
+struct DurationTransform {
+    input_tempo_ticks: u128,
+    fixed_clocks: u128,
+    final_tempo: Option<u32>,
+}
 
-    // Walk repeat commands while accumulating finite playback clocks.
-    while command_index < commands.len() {
-        let command = &commands[command_index];
-        command_index += 1;
-        match command {
-            MmlCommand::Tempo {
-                clocks_per_tick: new_clocks_per_tick,
-            } => {
-                clocks_per_tick = *new_clocks_per_tick;
-            }
-            MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
-                total_clocks += clocks_per_tick * *duration_ticks;
-            }
-            MmlCommand::RepeatStart => {
-                // Store the command index after RepeatStart for loopback.
-                repeat_points.push((command_index, 0));
-            }
-            MmlCommand::RepeatEnd { play_count } => {
-                if *play_count == 0 {
-                    // Repeat count 0 is infinite, so total duration is unbounded.
-                    return None;
-                }
-                if let Some((start_index, count)) = repeat_points.pop() {
-                    if count + 1 < *play_count {
-                        repeat_points.push((start_index, count + 1));
-                        command_index = start_index;
-                    }
-                }
-            }
-            _ => {}
+impl DurationTransform {
+    fn then(self, next: Self) -> Option<Self> {
+        let (input_tempo_ticks, next_fixed_clocks) = if let Some(tempo) = self.final_tempo {
+            (
+                self.input_tempo_ticks,
+                next.input_tempo_ticks.checked_mul(u128::from(tempo))?,
+            )
+        } else {
+            (
+                self.input_tempo_ticks.checked_add(next.input_tempo_ticks)?,
+                0,
+            )
+        };
+        let fixed_clocks = self
+            .fixed_clocks
+            .checked_add(next_fixed_clocks)?
+            .checked_add(next.fixed_clocks)?;
+
+        Some(Self {
+            input_tempo_ticks,
+            fixed_clocks,
+            final_tempo: next.final_tempo.or(self.final_tempo),
+        })
+    }
+
+    fn repeated(self, play_count: u32) -> Option<Self> {
+        if play_count == 0 {
+            return None;
+        }
+
+        let play_count = u128::from(play_count);
+        if let Some(tempo) = self.final_tempo {
+            let repeated_clocks = self
+                .input_tempo_ticks
+                .checked_mul(u128::from(tempo))?
+                .checked_add(self.fixed_clocks)?
+                .checked_mul(play_count - 1)?;
+            Some(Self {
+                fixed_clocks: self.fixed_clocks.checked_add(repeated_clocks)?,
+                ..self
+            })
+        } else {
+            Some(Self {
+                input_tempo_ticks: self.input_tempo_ticks.checked_mul(play_count)?,
+                fixed_clocks: self.fixed_clocks.checked_mul(play_count)?,
+                final_tempo: None,
+            })
         }
     }
-    Some(total_clocks as f32 / AUDIO_CLOCK_RATE as f32)
+}
+
+fn duration_transform(commands: &[MmlCommand]) -> Option<DurationTransform> {
+    let mut transforms = vec![DurationTransform::default()];
+
+    for command in commands {
+        let next = match command {
+            MmlCommand::Tempo { clocks_per_tick } => DurationTransform {
+                final_tempo: Some(*clocks_per_tick),
+                ..DurationTransform::default()
+            },
+            MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
+                DurationTransform {
+                    input_tempo_ticks: u128::from(*duration_ticks),
+                    ..DurationTransform::default()
+                }
+            }
+            MmlCommand::RepeatStart => {
+                transforms.push(DurationTransform::default());
+                continue;
+            }
+            MmlCommand::RepeatEnd { play_count } => {
+                if transforms.len() == 1 {
+                    return None;
+                }
+                let repeated = transforms.pop()?;
+                repeated.repeated(*play_count)?
+            }
+            _ => DurationTransform::default(),
+        };
+        let transform = transforms.last_mut()?;
+        *transform = transform.then(next)?;
+    }
+
+    if transforms.len() != 1 {
+        return None;
+    }
+    transforms.pop()
+}
+
+pub(crate) fn total_duration_clocks(commands: &[MmlCommand]) -> Option<u128> {
+    let transform = duration_transform(commands)?;
+    transform
+        .input_tempo_ticks
+        .checked_mul(u128::from(bpm_to_clocks_per_tick(DEFAULT_TEMPO)))?
+        .checked_add(transform.fixed_clocks)
+}
+
+pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
+    let total_clocks = total_duration_clocks(commands)?;
+    let duration_sec = total_clocks as f64 / f64::from(AUDIO_CLOCK_RATE);
+    (duration_sec <= f64::from(f32::MAX)).then_some(duration_sec as f32)
 }
 
 // Stream primitives
@@ -635,7 +705,9 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
 // Unit conversions
 
 fn bpm_to_clocks_per_tick(bpm: u32) -> u32 {
-    (AUDIO_CLOCK_RATE as f32 * 60.0 / (bpm as f32 * TICKS_PER_QUARTER_NOTE as f32)).round() as u32
+    let numerator = u64::from(AUDIO_CLOCK_RATE) * 60;
+    let denominator = u64::from(bpm) * u64::from(TICKS_PER_QUARTER_NOTE);
+    ((numerator + denominator / 2) / denominator).max(1) as u32
 }
 
 fn gate_time_to_gate_ratio(gate_time: u32) -> f32 {
@@ -693,6 +765,10 @@ mod tests {
                 _ => None,
             })
             .collect()
+    }
+
+    fn duration_sec_for_clocks(clocks: u128) -> f32 {
+        (clocks as f64 / f64::from(AUDIO_CLOCK_RATE)) as f32
     }
 
     // Basic notes
@@ -916,7 +992,6 @@ mod tests {
             MmlCommand::Tempo { clocks_per_tick } => Some(*clocks_per_tick),
             _ => None,
         });
-        // bpm_to_clocks_per_tick(120) = (1_789_773.0 * 60.0 / (120.0 * 48.0)).round() = 18643
         assert_eq!(cpt, Some(18643));
     }
 
@@ -1256,16 +1331,20 @@ mod tests {
     fn test_total_duration_sec_quarter_note_at_120bpm() {
         let cmds = parse("T120 C4");
         let sec = total_duration_sec(&cmds).unwrap();
-        // Quarter note at 120 BPM ~= 0.5 seconds
-        assert!((sec - 0.5).abs() < 0.001, "expected ~0.5, got {sec}");
+        let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE);
+
+        assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
     #[test]
     fn test_total_duration_sec_tempo_change() {
         let cmds = parse("T120 C4 T60 C4");
         let sec = total_duration_sec(&cmds).unwrap();
-        // 0.5s (120bpm quarter) + 1.0s (60bpm quarter) ~= 1.5s
-        assert!((sec - 1.5).abs() < 0.01, "expected ~1.5, got {sec}");
+        let clocks = u128::from(
+            (bpm_to_clocks_per_tick(120) + bpm_to_clocks_per_tick(60)) * TICKS_PER_QUARTER_NOTE,
+        );
+
+        assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
     #[test]
@@ -1279,25 +1358,29 @@ mod tests {
     fn test_total_duration_sec_finite_repeat() {
         let cmds = parse("T120 [C4]2");
         let sec = total_duration_sec(&cmds).unwrap();
-        let single = total_duration_sec(&parse("T120 C4")).unwrap();
-        assert!(
-            (sec - single * 2.0).abs() < 0.01,
-            "expected ~{}, got {sec}",
-            single * 2.0
-        );
+        let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE * 2);
+
+        assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
     #[test]
     fn test_total_duration_sec_nested_repeat() {
         let cmds = parse("T120 [[C4]2]3");
         let sec = total_duration_sec(&cmds).unwrap();
-        let single = total_duration_sec(&parse("T120 C4")).unwrap();
-        // Inner loop plays 2 times, outer loop plays 3 times -> 6 total notes
-        assert!(
-            (sec - single * 6.0).abs() < 0.01,
-            "expected ~{}, got {sec}",
-            single * 6.0
-        );
+        let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE * 2 * 3);
+
+        assert_eq!(sec, duration_sec_for_clocks(clocks));
+    }
+
+    #[test]
+    fn test_total_duration_sec_repeat_carries_tempo_between_iterations() {
+        let cmds = parse("T120 [C4 T60 D4]3");
+        let sec = total_duration_sec(&cmds).unwrap();
+        let clocks = u128::from(TICKS_PER_QUARTER_NOTE)
+            * (u128::from(bpm_to_clocks_per_tick(120))
+                + u128::from(bpm_to_clocks_per_tick(60)) * 5);
+
+        assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
     #[test]

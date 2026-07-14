@@ -227,6 +227,12 @@ class TestSaveLoad:
                 "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 3\ndata = [[0, 0]]\n",
                 "Invalid resource data: tilemaps[0].imgsrc 3 is out of range 0..3",
             ),
+            (
+                "format_version = 1\n"
+                "images = []\ntilemaps = []\nmusics = []\n"
+                "[[sounds]]\nnotes = []\ntones = []\nvolumes = []\neffects = []\nspeed = 0\n",
+                "Invalid resource data: sounds[0].speed must be greater than 0",
+            ),
         ],
     )
     def test_malformed_resource_has_exact_error(self, tmp_path, toml_text, message):
