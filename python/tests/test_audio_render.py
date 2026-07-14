@@ -38,6 +38,20 @@ CLASSIC_SOUNDS = [
     ("f0ra4r f0ra4r f0ra4r f0f0a4r", "n", "6622 6622 6622 6422", "f", 25),
 ]
 
+# Every classic effect on short notes verifies sub-tick timing
+EFFECT_SWEEP_SOUND = (
+    "c2d2e2f2g2a2 c2d2e2f2g2a2",
+    "s",
+    "7",
+    "nsvfhq nsvfhq",
+    4,
+)
+
+MML_MODULATION = (
+    "T120 O4 L16 @VIB1{0,12,100} @VIB1 C D @VIB2{6,12,100} @VIB2 E F @VIB0 "
+    "@GLI1{-200,12} @GLI1 G A @GLI2{*,*} @GLI2 B >C< T90 @VIB1 C D"
+)
+
 # Title music MML quoted from 09_shooter.py
 MML_PARTS = [
     "T128 Q96 @2 @ENV1{127,6,96} O4 L16 @VIB1{36,18,25} K-2"
@@ -118,6 +132,20 @@ class TestAudioRender:
         finally:
             _pop_sounds(len(sounds))
         _compare_or_update("mml_music", path, update_references)
+
+    def test_classic_effects(self, tmp_path, update_references):
+        snd = pyxel.Sound()
+        snd.set(*EFFECT_SWEEP_SOUND)
+        path = tmp_path / "out.wav"
+        snd.save(str(path), 0.5)
+        _compare_or_update("classic_effects", path, update_references)
+
+    def test_mml_modulation(self, tmp_path, update_references):
+        snd = pyxel.Sound()
+        snd.mml(MML_MODULATION)
+        path = tmp_path / "out.wav"
+        snd.save(str(path), 2.0)
+        _compare_or_update("mml_modulation", path, update_references)
 
     def test_pcm_sound(self, tmp_path, update_references):
         snd = pyxel.Sound()

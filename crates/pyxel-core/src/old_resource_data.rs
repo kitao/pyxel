@@ -178,6 +178,13 @@ impl ResourceItem for Sound {
                             i + 1
                         )
                     })?;
+                    if Sound::validate_speed(self.speed).is_err() {
+                        return Err(format!(
+                            "sound speed {} in '{entry}' at line {} is out of range 1..65536",
+                            self.speed,
+                            i + 1
+                        ));
+                    }
                 }
                 _ => {}
             }
@@ -374,4 +381,24 @@ fn parse_hex_values(
         )?);
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sound_rejects_zero_speed() {
+        let sound = Sound::new();
+        let input = "none\nnone\nnone\nnone\n0";
+
+        let error = audio_mut!(sound)
+            .deserialize(0, input, "pyxel_resource/sound00")
+            .unwrap_err();
+
+        assert_eq!(
+            error,
+            "sound speed 0 in 'pyxel_resource/sound00' at line 5 is out of range 1..65536"
+        );
+    }
 }

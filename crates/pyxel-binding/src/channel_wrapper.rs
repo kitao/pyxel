@@ -1,6 +1,7 @@
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 
+use crate::audio_wrapper::validate_sec;
 use crate::sound_wrapper::Sound;
 
 define_audio_wrapper!(Channel, pyxel::Channel, pyxel::RcChannel);
@@ -56,6 +57,7 @@ impl Channel {
         } else {
             sec
         };
+        validate_sec(sec)?;
         let should_loop = r#loop.unwrap_or(false);
         let resume = resume.unwrap_or(false);
         let _lock = pyxel::AudioLock::lock();
@@ -68,7 +70,9 @@ impl Channel {
             (u32, {
                 let sound = pyxel::sounds().get(snd as usize).cloned()
                     .ok_or_else(|| invalid_index_error!("snd", "sound"))?;
-                self.inner_mut().play_sound(sound, sec, should_loop, resume);
+                self.inner_mut()
+                    .play_sound(sound, sec, should_loop, resume)
+                    .map_err(PyValueError::new_err)?;
             }),
 
             (Vec<u32>, {
@@ -77,16 +81,22 @@ impl Channel {
                     validate_index!(i, all_sounds.len(), "snd", "sound", list);
                 }
                 let sounds = snd.iter().map(|&i| all_sounds[i as usize].clone()).collect();
-                self.inner_mut().play(sounds, sec, should_loop, resume);
+                self.inner_mut()
+                    .play(sounds, sec, should_loop, resume)
+                    .map_err(PyValueError::new_err)?;
             }),
 
             (Sound, {
-                self.inner_mut().play_sound(snd.inner, sec, should_loop, resume);
+                self.inner_mut()
+                    .play_sound(snd.inner, sec, should_loop, resume)
+                    .map_err(PyValueError::new_err)?;
             }),
 
             (Vec<Sound>, {
                 let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
-                self.inner_mut().play(sounds, sec, should_loop, resume);
+                self.inner_mut()
+                    .play(sounds, sec, should_loop, resume)
+                    .map_err(PyValueError::new_err)?;
             }),
 
             (String, {
