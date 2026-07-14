@@ -256,6 +256,9 @@ pub fn init(
         graphics,
     });
 
+    // Audio::start() looks unconditional here even in headless mode —
+    // that's intentional. See audio.rs's own #[cfg(feature =
+    // "no_headless_audio")]-gated Audio::start() implementations for why.
     Audio::start();
     if !headless {
         pyxel().update_screen_params();

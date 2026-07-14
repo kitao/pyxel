@@ -60,7 +60,35 @@ impl AudioStreamRenderer {
 // Audio output
 
 impl Audio {
+    // Default (feature disabled): unchanged from v2.8.5 — always
+    // starts real SDL2 audio output, headless or not, so a headless
+    // script that wants to hear real audio through SDL2 still gets it.
+    #[cfg(not(feature = "no_headless_audio"))]
     pub fn start() {
+        let mut stream_renderer = AudioStreamRenderer::new();
+
+        platform::start_audio(
+            AUDIO_SAMPLE_RATE,
+            AUDIO_BUFFER_SAMPLES,
+            move |out: &mut [i16]| {
+                stream_renderer.render(out);
+            },
+        );
+    }
+
+    // Opt-in only (see `no_headless_audio` in Cargo.toml): crates that
+    // drive render_samples() externally themselves (see
+    // examples/headless_audio.rs) can ask not to also start this SDL2
+    // callback thread, which would otherwise race with their own
+    // manual calls on the same channel/voice state — this was
+    // observed in practice as roughly-doubled playback speed and
+    // audio noise/distortion when both ran at once.
+    #[cfg(feature = "no_headless_audio")]
+    pub fn start() {
+        if platform::is_headless() {
+            return;
+        }
+
         let mut stream_renderer = AudioStreamRenderer::new();
 
         platform::start_audio(
