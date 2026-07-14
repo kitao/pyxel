@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.9.9
+
+- Exposed public access to Audio::render_samples() for headless use
+
 ## 2.9.8
 
 - Updated Rust to version nightly-2026-07-14
