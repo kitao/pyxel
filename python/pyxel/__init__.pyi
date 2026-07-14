@@ -376,7 +376,6 @@ GAMEPAD4_BUTTON_DPAD_DOWN: int
 GAMEPAD4_BUTTON_DPAD_LEFT: int
 GAMEPAD4_BUTTON_DPAD_RIGHT: int
 
-# Font class
 class Font:
     def __init__(self, filename: str, font_size: float = 10.0) -> None:
         """Create a Font instance from a font file (BDF/OTF/TTF/TTC).
@@ -400,7 +399,6 @@ class Font:
         """
         ...
 
-# Image class
 class Image:
     width: int
     """The width of the image."""
@@ -794,7 +792,6 @@ class Image:
         """
         ...
 
-# Tilemap class
 class Tilemap:
     width: int
     """The width of the tilemap."""
@@ -1111,7 +1108,6 @@ class Tilemap:
         """
         ...
 
-# Channel class
 class Channel:
     gain: float
     """The gain (volume) of the channel. Defaults to 0.125."""
@@ -1152,7 +1148,6 @@ class Channel:
         """
         ...
 
-# Tone class
 class Tone:
     mode: int
     """Tone mode (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise)."""
@@ -1171,7 +1166,6 @@ class Tone:
         """
         ...
 
-# Sound class
 class Sound:
     notes: list[int]
     """List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1."""
@@ -1286,7 +1280,6 @@ class Sound:
         """
         ...
 
-# Music class
 class Music:
     seqs: list[list[int]]
     """A two-dimensional list of sounds (0-63) across multiple channels."""

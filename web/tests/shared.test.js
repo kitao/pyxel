@@ -150,5 +150,5 @@ test("initPage reports malformed JSON without building", async () => {
   await settlePromises();
 
   assert.equal(buildCount, 0);
-  assert.match(errors[0][1].message, /invalid JSON/);
+  assert.equal(errors[0][1].message, "invalid JSON");
 });

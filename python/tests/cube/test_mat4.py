@@ -1,7 +1,6 @@
 from math import isclose
 
-import pytest
-
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Quat, Vec3
 
 
@@ -38,7 +37,6 @@ class TestConstants:
                 assert m[i, j] == (1.0 if i == j else 0.0)
 
     def test_singleton_identity(self):
-        # The identity constant is a shared immutable instance.
         assert Mat4.IDENTITY is Mat4.IDENTITY
 
 
@@ -65,7 +63,7 @@ class TestElementAccess:
         assert m[2, 3] == 7.0
 
     def test_getitem_out_of_range(self):
-        with pytest.raises(IndexError, match="Mat4 index out of range"):
+        with raises_exact(IndexError, "Mat4 index out of range"):
             _ = Mat4.IDENTITY[4, 0]
 
 

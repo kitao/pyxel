@@ -1103,7 +1103,7 @@
     "apiref_body": {
       "en": "A complete list of Pyxel APIs is available at {0}.",
       "cn": "Pyxel 的完整 API 列表请参阅 {0}。",
-      "de": "Eine vollständige Liste der Pyxel-APIs finden Sie unter {0}.",
+      "de": "Eine vollständige Liste der APIs von Pyxel finden Sie unter {0}.",
       "es": "La lista completa de las API de Pyxel está disponible en {0}.",
       "fr": "La liste complète des API Pyxel est disponible sur {0}.",
       "it": "L'elenco completo delle API di Pyxel è disponibile su {0}.",

@@ -50,7 +50,9 @@ class TestPlay:
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.play(3, 0, tick=120)  # type: ignore[call-arg]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert (
+            out == "tick option of pyxel.play is deprecated. Use sec option instead.\n"
+        )
         pyxel.stop(3)
 
 
@@ -78,7 +80,9 @@ class TestPlaym:
         pyxel.musics[0].set([0])
         pyxel.playm(0, tick=240)  # type: ignore[call-arg]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert (
+            out == "tick option of pyxel.playm is deprecated. Use sec option instead.\n"
+        )
         pyxel.stop()
 
 
@@ -162,16 +166,18 @@ class TestDeprecatedAccessors:
         result = pyxel.channel(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Channel)
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert (
+            out == "pyxel.channel(ch) is deprecated. Use pyxel.channels[ch] instead.\n"
+        )
 
     def test_sound_function_returns_sound_instance(self, capfd):
         result = pyxel.sound(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Sound)
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "pyxel.sound(snd) is deprecated. Use pyxel.sounds[snd] instead.\n"
 
     def test_music_function_returns_music_instance(self, capfd):
         result = pyxel.music(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Music)
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "pyxel.music(msc) is deprecated. Use pyxel.musics[msc] instead.\n"

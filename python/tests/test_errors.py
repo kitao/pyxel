@@ -4,23 +4,24 @@ import sys
 import pytest
 
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 class TestTypeErrors:
     def test_sin_wrong_deg_type(self):
-        with pytest.raises(TypeError, match="must be real number, not str"):
+        with raises_exact(TypeError, "must be real number, not str"):
             pyxel.sin("abc")  # type: ignore[arg-type]
 
     def test_pset_wrong_x_type(self):
-        with pytest.raises(TypeError, match="must be real number, not str"):
+        with raises_exact(TypeError, "must be real number, not str"):
             pyxel.pset("a", 0, 0)  # type: ignore[arg-type]
 
     def test_clamp_wrong_x_type(self):
-        with pytest.raises(TypeError, match="must be real number, not str"):
+        with raises_exact(TypeError, "must be real number, not str"):
             pyxel.clamp("a", 0, 10)  # type: ignore[arg-type]
 
     def test_rect_wrong_types(self):
-        with pytest.raises(TypeError, match="must be real number, not str"):
+        with raises_exact(TypeError, "must be real number, not str"):
             pyxel.rect("a", "b", "c", "d", "e")  # type: ignore[arg-type]
 
     @pytest.mark.parametrize(
@@ -100,79 +101,74 @@ class TestTypeErrors:
         ],
     )
     def test_polymorphic_argument_rejects_unsupported_type(self, operation, message):
-        with pytest.raises(TypeError) as exc:
+        with raises_exact(TypeError, message):
             operation()
 
-        assert str(exc.value) == message
-
     def test_btn_wrong_type(self):
-        with pytest.raises(
-            TypeError, match="'str' object cannot be interpreted as an integer"
+        with raises_exact(
+            TypeError, "'str' object cannot be interpreted as an integer"
         ):
             pyxel.btn("not_a_key")  # type: ignore[arg-type]
 
     def test_sound_set_wrong_speed_type(self):
         snd = pyxel.Sound()
-        with pytest.raises(
-            TypeError, match="'str' object cannot be interpreted as an integer"
+        with raises_exact(
+            TypeError, "'str' object cannot be interpreted as an integer"
         ):
             snd.set("c2", "s", "7", "n", "fast")  # type: ignore[arg-type]
 
     def test_image_set_wrong_data_type(self):
         img = pyxel.Image(8, 8)
-        with pytest.raises(
-            TypeError, match="'int' object is not an instance of 'Sequence'"
-        ):
+        with raises_exact(TypeError, "'int' object is not an instance of 'Sequence'"):
             img.set(0, 0, 12345)  # type: ignore[arg-type]
 
     def test_btnp_wrong_type(self):
-        with pytest.raises(
-            TypeError, match="'str' object cannot be interpreted as an integer"
+        with raises_exact(
+            TypeError, "'str' object cannot be interpreted as an integer"
         ):
             pyxel.btnp("not_a_key")  # type: ignore[arg-type]
 
     def test_btnr_wrong_type(self):
-        with pytest.raises(
-            TypeError, match="'str' object cannot be interpreted as an integer"
+        with raises_exact(
+            TypeError, "'str' object cannot be interpreted as an integer"
         ):
             pyxel.btnr("not_a_key")  # type: ignore[arg-type]
 
 
 class TestIndexErrors:
     def test_images_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.images[999]
 
     def test_images_negative_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.images[-999]
 
     def test_sounds_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.sounds[999]
 
     def test_tilemaps_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.tilemaps[999]
 
     def test_colors_negative_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.colors[-9999]
 
     def test_channels_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.channels[999]
 
     def test_tones_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.tones[999]
 
     def test_musics_out_of_range(self):
-        with pytest.raises(IndexError, match="list index out of range"):
+        with raises_exact(IndexError, "list index out of range"):
             _ = pyxel.musics[999]
 
     def test_images_boundary_valid(self):
-        # Last valid index should not raise
         assert isinstance(pyxel.images[pyxel.NUM_IMAGES - 1], pyxel.Image)
         assert isinstance(pyxel.images[-1], pyxel.Image)
 
@@ -193,42 +189,39 @@ class TestIndexErrors:
         ids=["generic-sequence", "music-seqs"],
     )
     def test_pop_from_empty_sequence(self, operation):
-        with pytest.raises(IndexError) as exc:
+        with raises_exact(IndexError, "pop from empty list"):
             operation()
-
-        assert str(exc.value) == "pop from empty list"
 
 
 class TestAttributeErrors:
     def test_nonexistent_attribute(self):
-        with pytest.raises(
-            AttributeError,
-            match="module 'pyxel' has no attribute 'nonexistent_attribute'",
+        with raises_exact(
+            AttributeError, "module 'pyxel' has no attribute 'nonexistent_attribute'"
         ):
             _ = pyxel.nonexistent_attribute  # type: ignore[attr-defined]
 
     def test_nonexistent_constant(self):
-        with pytest.raises(
-            AttributeError, match="module 'pyxel' has no attribute 'FAKE_CONSTANT'"
+        with raises_exact(
+            AttributeError, "module 'pyxel' has no attribute 'FAKE_CONSTANT'"
         ):
             _ = pyxel.FAKE_CONSTANT  # type: ignore[attr-defined]
 
 
 class TestPartialArgErrors:
     def test_clip_partial_args(self):
-        with pytest.raises(TypeError, match=r"clip\(\) takes 0 or 4 arguments"):
+        with raises_exact(TypeError, "clip() takes 0 or 4 arguments"):
             pyxel.clip(10, 20)  # type: ignore[call-overload]
 
     def test_clip_three_args(self):
-        with pytest.raises(TypeError, match=r"clip\(\) takes 0 or 4 arguments"):
+        with raises_exact(TypeError, "clip() takes 0 or 4 arguments"):
             pyxel.clip(10, 20, 30)  # type: ignore[call-overload]
 
     def test_camera_one_arg(self):
-        with pytest.raises(TypeError, match=r"camera\(\) takes 0 or 2 arguments"):
+        with raises_exact(TypeError, "camera() takes 0 or 2 arguments"):
             pyxel.camera(10)  # type: ignore[call-overload]
 
     def test_pal_one_arg(self):
-        with pytest.raises(TypeError, match=r"pal\(\) takes 0 or 2 arguments"):
+        with raises_exact(TypeError, "pal() takes 0 or 2 arguments"):
             pyxel.pal(1)  # type: ignore[call-overload]
 
 
@@ -248,10 +241,8 @@ class TestValueErrors:
     def test_canvas_constructor_rejects_oversized_dimensions(
         self, factory, args, message
     ):
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(ValueError, message):
             factory(*args)
-
-        assert str(exc.value) == message
 
     @pytest.mark.parametrize(
         ("operation", "message"),
@@ -331,10 +322,8 @@ class TestValueErrors:
         ],
     )
     def test_resource_index_constraint_message(self, operation, message):
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(ValueError, message):
             operation()
-
-        assert str(exc.value) == message
 
     def test_legacy_resource_index_messages_in_isolated_process(self):
         code = """
@@ -384,7 +373,9 @@ assert_value_error(
     def test_scroll_bar_requires_exactly_one_dimension(self, dimensions):
         from pyxel.editor.widgets.scroll_bar import ScrollBar
 
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(
+            ValueError, "width or height must be specified, but not both"
+        ):
             ScrollBar(
                 None,
                 0,
@@ -394,8 +385,6 @@ assert_value_error(
                 value=0,
                 **dimensions,
             )
-
-        assert str(exc.value) == "width or height must be specified, but not both"
 
 
 class TestInlineDataErrors:
@@ -424,10 +413,8 @@ class TestInlineDataErrors:
         image = pyxel.Image(2, 2)
         image.cls(7)
 
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(ValueError, message):
             image.set(0, 0, data)
-
-        assert str(exc.value) == message
         assert [image.pget(x, y) for y in range(2) for x in range(2)] == [7] * 4
 
     @pytest.mark.parametrize(
@@ -460,10 +447,8 @@ class TestInlineDataErrors:
         tilemap = pyxel.Tilemap(2, 2, 0)
         tilemap.cls((7, 7))
 
-        with pytest.raises(ValueError) as exc:
+        with raises_exact(ValueError, message):
             tilemap.set(0, 0, data)
-
-        assert str(exc.value) == message
         assert [tilemap.pget(x, y) for y in range(2) for x in range(2)] == [(7, 7)] * 4
 
 
@@ -471,14 +456,12 @@ class TestMmlErrors:
     # Binding raises plain Exception; pin via message to verify error specificity.
     def test_sound_mml_invalid_syntax(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception) as exc:
+        with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
             snd.mml("Z")
-        assert str(exc.value) == "MML:0: Unexpected character 'Z'"
 
     def test_play_mml_invalid_syntax(self):
-        with pytest.raises(Exception) as exc:
+        with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
             pyxel.play(0, "Z")
-        assert str(exc.value) == "MML:0: Unexpected character 'Z'"
 
     def test_sound_mml_old_syntax_uses_legacy_error_contract(self):
         code = """
@@ -502,48 +485,58 @@ else:
 
     def test_sound_set_notes_invalid(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception, match="Invalid sound note"):
+        with raises_exact(Exception, "Invalid sound note 'z'"):
             snd.set_notes("ZZZZZZ!!!")
 
     def test_sound_set_tones_invalid(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception, match="Invalid sound tone"):
+        with raises_exact(Exception, "Invalid sound tone 'z'"):
             snd.set_tones("ZZZZZZ!!!")
 
     def test_sound_set_volumes_invalid(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception, match="Invalid sound volume"):
+        with raises_exact(Exception, "Invalid sound volume 'z'"):
             snd.set_volumes("ZZZZZZ!!!")
 
     def test_sound_set_effects_invalid(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception, match="Invalid sound effect"):
+        with raises_exact(Exception, "Invalid sound effect 'z'"):
             snd.set_effects("ZZZZZZ!!!")
 
 
 class TestFileErrors:
     def test_load_nonexistent_pyxres(self):
-        with pytest.raises(Exception, match="Failed to open file"):
+        with raises_exact(
+            Exception, "Failed to open file '/nonexistent/path/file.pyxres'"
+        ):
             pyxel.load("/nonexistent/path/file.pyxres")
 
     def test_load_nonexistent_image(self):
-        with pytest.raises(Exception, match="Failed to open file"):
+        with raises_exact(
+            Exception, "Failed to open file '/nonexistent/path/image.png'"
+        ):
             pyxel.Image.from_image("/nonexistent/path/image.png")
 
     def test_failed_from_image_keeps_palette(self):
         # A failed load must not clear the shared palette even with include_colors.
         colors_before = list(pyxel.colors)
-        with pytest.raises(Exception, match="Failed to open file"):
+        with raises_exact(
+            Exception, "Failed to open file '/nonexistent/path/image.png'"
+        ):
             pyxel.Image.from_image("/nonexistent/path/image.png", include_colors=True)
         assert list(pyxel.colors) == colors_before
 
     def test_load_nonexistent_font(self):
-        with pytest.raises(Exception, match="Failed to open file"):
+        with raises_exact(
+            Exception, "Failed to open file '/nonexistent/path/font.bdf'"
+        ):
             pyxel.Font("/nonexistent/path/font.bdf")
 
     def test_load_nonexistent_pcm(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception, match="Failed to open file"):
+        with raises_exact(
+            Exception, "Failed to open file '/nonexistent/path/sound.wav'"
+        ):
             snd.pcm("/nonexistent/path/sound.wav")
 
 
@@ -551,17 +544,19 @@ class TestPanicErrors:
     # Pin the exact type so a future migration to ValueError shows up as a test diff.
 
     def test_btnv_non_analog_key_panics(self, panic_exception):
-        with pytest.raises(panic_exception, match="non-analog key"):
+        with raises_exact(
+            panic_exception, "button_value is called with a non-analog key 0x61"
+        ):
             pyxel.btnv(pyxel.KEY_A)
 
     def test_gen_bgm_invalid_preset_panics(self, panic_exception):
-        with pytest.raises(panic_exception, match="invalid preset"):
+        with raises_exact(panic_exception, "invalid preset"):
             pyxel.gen_bgm(99, 0, 0, 1)
 
     def test_gen_bgm_invalid_transpose_panics(self, panic_exception):
-        with pytest.raises(panic_exception, match="invalid transpose"):
+        with raises_exact(panic_exception, "invalid transpose"):
             pyxel.gen_bgm(0, 99, 0, 1)
 
     def test_gen_bgm_invalid_instrumentation_panics(self, panic_exception):
-        with pytest.raises(panic_exception, match="invalid instrumentation"):
+        with raises_exact(panic_exception, "invalid instrumentation"):
             pyxel.gen_bgm(0, 0, 99, 1)

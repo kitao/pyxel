@@ -1,6 +1,7 @@
 import pytest
 
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 from pyxel.cube import (
     Camera,
@@ -202,7 +203,7 @@ class TestRaycast:
 
     def test_raycasthit_not_user_constructible(self):
         # RaycastHit is an engine-built payload with no public constructor.
-        with pytest.raises(TypeError, match="cannot create .*RaycastHit.* instances"):
+        with raises_exact(TypeError, "cannot create 'builtins.RaycastHit' instances"):
             RaycastHit()
 
 

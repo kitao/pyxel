@@ -19,6 +19,7 @@
 
 - Updated Rust to version nightly-2026-07-13
 - Updated glow crate to version 0.18
+- Updated GitHub Actions dependencies and wheel verification workflow
 - Fixed malformed resource and inline data causing crashes or partial updates
 - Fixed oversized screen, image, and tilemap dimensions creating invalid buffers
 - Fixed invalid MML repeat counts being treated as infinite repeats

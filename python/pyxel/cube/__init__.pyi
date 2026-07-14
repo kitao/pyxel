@@ -4,7 +4,6 @@ from typing import Iterator, overload
 
 from pyxel import Font, Image
 
-# Vec3 class
 class Vec3:
     ZERO: Vec3
     ONE: Vec3
@@ -58,7 +57,6 @@ class Vec3:
     def to_local_dir(self, mat: Mat4) -> Vec3: ...
     def to_world_dir(self, mat: Mat4) -> Vec3: ...
 
-# Mat4 class
 class Mat4:
     IDENTITY: Mat4
 
@@ -113,7 +111,6 @@ class Mat4:
     def to_local_dir(self, mat: Mat4) -> Mat4: ...
     def to_world_dir(self, mat: Mat4) -> Mat4: ...
 
-# Quat class
 class Quat:
     IDENTITY: Quat
 
@@ -174,7 +171,6 @@ class Quat:
     # Interpolation
     def slerp(self, other: Quat, t: float) -> Quat: ...
 
-# Camera class
 class Camera:
     transform: Mat4
     fov: float
@@ -324,7 +320,6 @@ class RaycastHit:
     def distance(self) -> float: ...
     def __repr__(self) -> str: ...
 
-# Node class
 class Node:
     # Data attributes
     name: str

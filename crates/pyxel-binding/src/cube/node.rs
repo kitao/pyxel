@@ -102,9 +102,6 @@ impl Node {
         }
     }
 
-    // Some paths use only the mutable accessor, but keeping both accessors
-    // mirrors the wrapper macro and keeps call sites uniform.
-    #[allow(dead_code)]
     pub(crate) fn inner_ref(&self) -> std::cell::Ref<'_, pyxel::cube::Node> {
         rc_ref!(self.inner)
     }

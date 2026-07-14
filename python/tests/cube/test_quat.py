@@ -1,7 +1,6 @@
 from math import isclose, sqrt
 
-import pytest
-
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Quat, Vec3
 
 
@@ -43,7 +42,6 @@ class TestConstants:
         assert Quat.IDENTITY == Quat(0, 0, 0, 1)
 
     def test_singleton_identity(self):
-        # The identity constant is a shared immutable instance.
         assert Quat.IDENTITY is Quat.IDENTITY
 
 
@@ -80,7 +78,7 @@ class TestSequence:
         assert q[3] == 4.0
 
     def test_getitem_out_of_range(self):
-        with pytest.raises(IndexError, match="Quat index out of range"):
+        with raises_exact(IndexError, "Quat index out of range"):
             _ = Quat(1, 2, 3, 4)[4]
 
     def test_iter(self):

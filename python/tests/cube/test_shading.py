@@ -2,6 +2,7 @@ import pytest
 
 import pyxel
 
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Shading, Vec3
 
 
@@ -15,7 +16,6 @@ class TestDefault:
         assert repr(s).startswith("Shading(")
 
     def test_direction_default(self):
-        # Default direction points straight down.
         s = Shading(palette())
         assert s.direction == Vec3(0, -1, 0)
 
@@ -28,24 +28,24 @@ class TestIndexing:
 
     def test_out_of_range_col(self):
         s = Shading(palette())
-        with pytest.raises(IndexError, match="Shading index out of range"):
+        with raises_exact(IndexError, "Shading index out of range"):
             _ = s[100, 0]
 
     def test_out_of_range_level(self):
         s = Shading(palette())
-        with pytest.raises(IndexError, match="Shading index out of range"):
+        with raises_exact(IndexError, "Shading index out of range"):
             _ = s[0, 4]
 
     def test_negative_col_raises(self):
         # The binding key is (usize, usize); a negative int always fails
         # unsigned extraction before the range check.
         s = Shading(palette())
-        with pytest.raises(OverflowError, match="negative int"):
+        with raises_exact(OverflowError, "can't convert negative int to unsigned"):
             _ = s[-1, 0]
 
     def test_negative_level_raises(self):
         s = Shading(palette())
-        with pytest.raises(OverflowError, match="negative int"):
+        with raises_exact(OverflowError, "can't convert negative int to unsigned"):
             _ = s[0, -1]
 
 

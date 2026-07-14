@@ -579,9 +579,11 @@ impl Channel {
                 }
                 MmlCommand::RepeatEnd { play_count } => {
                     if let Some((index, count, iteration_start_clock)) = self.repeat_points.pop() {
-                        if *play_count == 0 && self.sound_elapsed_clocks == iteration_start_clock {
-                            self.command_index = self.commands.len();
-                            self.repeat_points.clear();
+                        if self.sound_elapsed_clocks == iteration_start_clock {
+                            if *play_count == 0 {
+                                self.command_index = self.commands.len();
+                                self.repeat_points.clear();
+                            }
                             continue;
                         }
 
@@ -1023,5 +1025,19 @@ mod tests {
         channel.process(None, 1);
 
         assert!(!channel.is_playing);
+    }
+
+    #[test]
+    fn test_finite_zero_duration_repeat_continues() {
+        let sound = Sound::new();
+        audio_mut!(sound).set_mml("[T120]2147483647 C").unwrap();
+        let channel = Channel::new();
+        let mut channel = audio_mut!(channel);
+        channel.play(vec![sound], None, false, false).unwrap();
+
+        channel.process(None, 1);
+
+        assert!(channel.is_playing);
+        assert_eq!(channel.sound_elapsed_clocks, 1);
     }
 }

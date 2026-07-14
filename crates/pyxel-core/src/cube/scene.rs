@@ -122,7 +122,8 @@ thread_local! {
 // Namespace for stateless pipeline and spatial-query operations on a subtree
 pub struct Scene;
 
-// Deterministic core pipeline and spatial queries
+// Spatial-query kernels keep shapes, transforms, velocities, and tolerances
+// explicit so hot-path calls stay stateless and avoid parameter objects.
 
 #[allow(clippy::too_many_arguments)]
 impl Scene {

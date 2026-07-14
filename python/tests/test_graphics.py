@@ -484,10 +484,12 @@ class TestDeprecatedAccessors:
         result = pyxel.image(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Image)
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "pyxel.image(img) is deprecated. Use pyxel.images[img] instead.\n"
 
     def test_tilemap_function_returns_tilemap_instance(self, capfd):
         result = pyxel.tilemap(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Tilemap)
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert (
+            out == "pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead.\n"
+        )

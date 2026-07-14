@@ -47,7 +47,7 @@
 #define STEEP_DIRECTION_THRESHOLD 2.2
 #define DOMINANT_DIRECTION_THRESHOLD 3.6
 
-float DistYCbCr(vec3 pixA, vec3 pixB) {
+float distYCbCr(vec3 pixA, vec3 pixB) {
     const vec3 w = vec3(0.2627, 0.6780, 0.0593);
     const float scaleB = 0.5 / (1.0 - w.b);
     const float scaleR = 0.5 / (1.0 - w.r);
@@ -59,11 +59,11 @@ float DistYCbCr(vec3 pixA, vec3 pixB) {
     return sqrt(((LUMINANCE_WEIGHT * Y) * (LUMINANCE_WEIGHT * Y)) + (Cb * Cb) + (Cr * Cr));
 }
 
-bool IsPixEqual(const vec3 pixA, const vec3 pixB) {
-    return (DistYCbCr(pixA, pixB) < EQUAL_COLOR_TOLERANCE);
+bool isPixEqual(const vec3 pixA, const vec3 pixB) {
+    return (distYCbCr(pixA, pixB) < EQUAL_COLOR_TOLERANCE);
 }
 
-float get_left_ratio(vec2 center, vec2 origin, vec2 direction, vec2 scale) {
+float getLeftRatio(vec2 center, vec2 origin, vec2 direction, vec2 scale) {
     vec2 P0 = center - origin;
     vec2 proj = direction * (dot(P0, direction) / dot(direction, direction));
     vec2 distv = P0 - proj;
@@ -120,8 +120,8 @@ void main() {
     //                    -|G|H|I|x
     //                    -|-|x|x|-
     if (!((eq(E, F) && eq(H, I)) || (eq(E, H) && eq(F, I)))) {
-        float dist_H_F = DistYCbCr(G, E) + DistYCbCr(E, C) + DistYCbCr(P(0, 2), I) + DistYCbCr(I, P(2., 0.)) + (4.0 * DistYCbCr(H, F));
-        float dist_E_I = DistYCbCr(D, H) + DistYCbCr(H, P(1, 2)) + DistYCbCr(B, F) + DistYCbCr(F, P(2., 1.)) + (4.0 * DistYCbCr(E, I));
+        float dist_H_F = distYCbCr(G, E) + distYCbCr(E, C) + distYCbCr(P(0, 2), I) + distYCbCr(I, P(2., 0.)) + (4.0 * distYCbCr(H, F));
+        float dist_E_I = distYCbCr(D, H) + distYCbCr(H, P(1, 2)) + distYCbCr(B, F) + distYCbCr(F, P(2., 1.)) + (4.0 * distYCbCr(E, I));
         bool dominantGradient = (DOMINANT_DIRECTION_THRESHOLD * dist_H_F) < dist_E_I;
         blendResult.z = ((dist_H_F < dist_E_I) && neq(E, F) && neq(E, H)) ? ((dominantGradient) ? BLEND_DOMINANT : BLEND_NORMAL) : BLEND_NONE;
     }
@@ -132,8 +132,8 @@ void main() {
     //                    x|G|H|I|-
     //                    -|x|x|-|-
     if (!((eq(D, E) && eq(G, H)) || (eq(D, G) && eq(E, H)))) {
-        float dist_G_E = DistYCbCr(P(-2., 1.), D) + DistYCbCr(D, B) + DistYCbCr(P(-1., 2.), H) + DistYCbCr(H, F) + (4.0 * DistYCbCr(G, E));
-        float dist_D_H = DistYCbCr(P(-2., 0.), G) + DistYCbCr(G, P(0., 2.)) + DistYCbCr(A, E) + DistYCbCr(E, I) + (4.0 * DistYCbCr(D, H));
+        float dist_G_E = distYCbCr(P(-2., 1.), D) + distYCbCr(D, B) + distYCbCr(P(-1., 2.), H) + distYCbCr(H, F) + (4.0 * distYCbCr(G, E));
+        float dist_D_H = distYCbCr(P(-2., 0.), G) + distYCbCr(G, P(0., 2.)) + distYCbCr(A, E) + distYCbCr(E, I) + (4.0 * distYCbCr(D, H));
         bool dominantGradient = (DOMINANT_DIRECTION_THRESHOLD * dist_D_H) < dist_G_E;
         blendResult.w = ((dist_G_E > dist_D_H) && neq(E, D) && neq(E, H)) ? ((dominantGradient) ? BLEND_DOMINANT : BLEND_NORMAL) : BLEND_NONE;
     }
@@ -144,8 +144,8 @@ void main() {
     //                    -|-|H|I|-
     //                    -|-|-|-|-
     if (!((eq(B, C) && eq(E, F)) || (eq(B, E) && eq(C, F)))) {
-        float dist_E_C = DistYCbCr(D, B) + DistYCbCr(B, P(1., -2.)) + DistYCbCr(H, F) + DistYCbCr(F, P(2., -1.)) + (4.0 * DistYCbCr(E, C));
-        float dist_B_F = DistYCbCr(A, E) + DistYCbCr(E, I) + DistYCbCr(P(0., -2.), C) + DistYCbCr(C, P(2., 0.)) + (4.0 * DistYCbCr(B, F));
+        float dist_E_C = distYCbCr(D, B) + distYCbCr(B, P(1., -2.)) + distYCbCr(H, F) + distYCbCr(F, P(2., -1.)) + (4.0 * distYCbCr(E, C));
+        float dist_B_F = distYCbCr(A, E) + distYCbCr(E, I) + distYCbCr(P(0., -2.), C) + distYCbCr(C, P(2., 0.)) + (4.0 * distYCbCr(B, F));
         bool dominantGradient = (DOMINANT_DIRECTION_THRESHOLD * dist_B_F) < dist_E_C;
         blendResult.y = ((dist_E_C > dist_B_F) && neq(E, B) && neq(E, F)) ? ((dominantGradient) ? BLEND_DOMINANT : BLEND_NORMAL) : BLEND_NONE;
     }
@@ -156,8 +156,8 @@ void main() {
     //                    -|G|H|-|-
     //                    -|-|-|-|-
     if (!((eq(A, B) && eq(D, E)) || (eq(A, D) && eq(B, E)))) {
-        float dist_D_B = DistYCbCr(P(-2., 0.), A) + DistYCbCr(A, P(0., -2.)) + DistYCbCr(G, E) + DistYCbCr(E, C) + (4.0 * DistYCbCr(D, B));
-        float dist_A_E = DistYCbCr(P(-2., -1.), D) + DistYCbCr(D, H) + DistYCbCr(P(-1., -2.), B) + DistYCbCr(B, F) + (4.0 * DistYCbCr(A, E));
+        float dist_D_B = distYCbCr(P(-2., 0.), A) + distYCbCr(A, P(0., -2.)) + distYCbCr(G, E) + distYCbCr(E, C) + (4.0 * distYCbCr(D, B));
+        float dist_A_E = distYCbCr(P(-2., -1.), D) + distYCbCr(D, H) + distYCbCr(P(-1., -2.), B) + distYCbCr(B, F) + (4.0 * distYCbCr(A, E));
         bool dominantGradient = (DOMINANT_DIRECTION_THRESHOLD * dist_D_B) < dist_A_E;
         blendResult.x = ((dist_D_B < dist_A_E) && neq(E, D) && neq(E, B)) ? ((dominantGradient) ? BLEND_DOMINANT : BLEND_NORMAL) : BLEND_NONE;
     }
@@ -170,11 +170,11 @@ void main() {
     //                    -|G|H|I|x
     //                    -|-|x|x|-
     if (blendResult.z != BLEND_NONE) {
-        float dist_F_G = DistYCbCr(F, G);
-        float dist_H_C = DistYCbCr(H, C);
+        float dist_F_G = distYCbCr(F, G);
+        float dist_H_C = distYCbCr(H, C);
         bool doLineBlend = (blendResult.z == BLEND_DOMINANT ||
-            !((blendResult.y != BLEND_NONE && !IsPixEqual(E, G)) || (blendResult.w != BLEND_NONE && !IsPixEqual(E, C)) ||
-            (IsPixEqual(G, H) && IsPixEqual(H, I) && IsPixEqual(I, F) && IsPixEqual(F, C) && !IsPixEqual(E, I))));
+            !((blendResult.y != BLEND_NONE && !isPixEqual(E, G)) || (blendResult.w != BLEND_NONE && !isPixEqual(E, C)) ||
+            (isPixEqual(G, H) && isPixEqual(H, I) && isPixEqual(I, F) && isPixEqual(F, C) && !isPixEqual(E, I))));
 
         vec2 origin = vec2(0.0, 1.0 / sqrt(2.0));
         vec2 direction = vec2(1.0, -1.0);
@@ -186,8 +186,8 @@ void main() {
             direction.y -= haveSteepLine ? 1.0 : 0.0;
         }
 
-        vec3 blendPix = mix(H, F, step(DistYCbCr(E, F), DistYCbCr(E, H)));
-        res = mix(res, blendPix, get_left_ratio(pos, origin, direction, scale));
+        vec3 blendPix = mix(H, F, step(distYCbCr(E, F), distYCbCr(E, H)));
+        res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
 
     // Pixel Tap Mapping: -|-|-|-|-
@@ -196,11 +196,11 @@ void main() {
     //                    x|G|H|I|-
     //                    -|x|x|-|-
     if (blendResult.w != BLEND_NONE) {
-        float dist_H_A = DistYCbCr(H, A);
-        float dist_D_I = DistYCbCr(D, I);
+        float dist_H_A = distYCbCr(H, A);
+        float dist_D_I = distYCbCr(D, I);
         bool doLineBlend = (blendResult.w == BLEND_DOMINANT ||
-            !((blendResult.z != BLEND_NONE && !IsPixEqual(E, A)) || (blendResult.x != BLEND_NONE && !IsPixEqual(E, I)) ||
-            (IsPixEqual(A, D) && IsPixEqual(D, G) && IsPixEqual(G, H) && IsPixEqual(H, I) && !IsPixEqual(E, G))));
+            !((blendResult.z != BLEND_NONE && !isPixEqual(E, A)) || (blendResult.x != BLEND_NONE && !isPixEqual(E, I)) ||
+            (isPixEqual(A, D) && isPixEqual(D, G) && isPixEqual(G, H) && isPixEqual(H, I) && !isPixEqual(E, G))));
 
         vec2 origin = vec2(-1.0 / sqrt(2.0), 0.0);
         vec2 direction = vec2(1.0, 1.0);
@@ -211,8 +211,8 @@ void main() {
             direction.y += haveShallowLine ? 1.0 : 0.0;
             direction.x += haveSteepLine ? 1.0 : 0.0;
         }
-        vec3 blendPix = mix(H, D, step(DistYCbCr(E, D), DistYCbCr(E, H)));
-        res = mix(res, blendPix, get_left_ratio(pos, origin, direction, scale));
+        vec3 blendPix = mix(H, D, step(distYCbCr(E, D), distYCbCr(E, H)));
+        res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
 
     // Pixel Tap Mapping: -|-|x|x|-
@@ -221,11 +221,11 @@ void main() {
     //                    -|-|H|I|-
     //                    -|-|-|-|-
     if (blendResult.y != BLEND_NONE) {
-        float dist_B_I = DistYCbCr(B, I);
-        float dist_F_A = DistYCbCr(F, A);
+        float dist_B_I = distYCbCr(B, I);
+        float dist_F_A = distYCbCr(F, A);
         bool doLineBlend = (blendResult.y == BLEND_DOMINANT ||
-            !((blendResult.x != BLEND_NONE && !IsPixEqual(E, I)) || (blendResult.z != BLEND_NONE && !IsPixEqual(E, A)) ||
-            (IsPixEqual(I, F) && IsPixEqual(F, C) && IsPixEqual(C, B) && IsPixEqual(B, A) && !IsPixEqual(E, C))));
+            !((blendResult.x != BLEND_NONE && !isPixEqual(E, I)) || (blendResult.z != BLEND_NONE && !isPixEqual(E, A)) ||
+            (isPixEqual(I, F) && isPixEqual(F, C) && isPixEqual(C, B) && isPixEqual(B, A) && !isPixEqual(E, C))));
 
         vec2 origin = vec2(1.0 / sqrt(2.0), 0.0);
         vec2 direction = vec2(-1.0, -1.0);
@@ -237,8 +237,8 @@ void main() {
             direction.x -= haveSteepLine ? 1.0 : 0.0;
         }
 
-        vec3 blendPix = mix(F, B, step(DistYCbCr(E, B), DistYCbCr(E, F)));
-        res = mix(res, blendPix, get_left_ratio(pos, origin, direction, scale));
+        vec3 blendPix = mix(F, B, step(distYCbCr(E, B), distYCbCr(E, F)));
+        res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
 
     // Pixel Tap Mapping: -|x|x|-|-
@@ -247,11 +247,11 @@ void main() {
     //                    -|G|H|-|-
     //                    -|-|-|-|-
     if (blendResult.x != BLEND_NONE) {
-        float dist_D_C = DistYCbCr(D, C);
-        float dist_B_G = DistYCbCr(B, G);
+        float dist_D_C = distYCbCr(D, C);
+        float dist_B_G = distYCbCr(B, G);
         bool doLineBlend = (blendResult.x == BLEND_DOMINANT ||
-            !((blendResult.w != BLEND_NONE && !IsPixEqual(E, C)) || (blendResult.y != BLEND_NONE && !IsPixEqual(E, G)) ||
-            (IsPixEqual(C, B) && IsPixEqual(B, A) && IsPixEqual(A, D) && IsPixEqual(D, G) && !IsPixEqual(E, A))));
+            !((blendResult.w != BLEND_NONE && !isPixEqual(E, C)) || (blendResult.y != BLEND_NONE && !isPixEqual(E, G)) ||
+            (isPixEqual(C, B) && isPixEqual(B, A) && isPixEqual(A, D) && isPixEqual(D, G) && !isPixEqual(E, A))));
 
         vec2 origin = vec2(0.0, -1.0 / sqrt(2.0));
         vec2 direction = vec2(-1.0, 1.0);
@@ -263,8 +263,8 @@ void main() {
             direction.y += haveSteepLine ? 1.0 : 0.0;
         }
 
-        vec3 blendPix = mix(D, B, step(DistYCbCr(E, B), DistYCbCr(E, D)));
-        res = mix(res, blendPix, get_left_ratio(pos, origin, direction, scale));
+        vec3 blendPix = mix(D, B, step(distYCbCr(E, B), distYCbCr(E, D)));
+        res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
 
     FragColor = vec4(res, 1.0);

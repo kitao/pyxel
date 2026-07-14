@@ -348,7 +348,7 @@ class TestTilemapDeprecatedProperties:
         result = tm.image  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Image)
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Tilemap.image is deprecated. Use Tilemap.imgsrc instead.\n"
 
     def test_image_setter_deprecated(self, capfd):
         tm = pyxel.Tilemap(8, 8, 0)
@@ -356,18 +356,18 @@ class TestTilemapDeprecatedProperties:
         tm.image = new_img  # type: ignore[attr-defined]
         assert isinstance(tm.imgsrc, pyxel.Image)
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Tilemap.image is deprecated. Use Tilemap.imgsrc instead.\n"
 
     def test_refimg_property_aliases_imgsrc(self, capfd):
         tm = pyxel.Tilemap(8, 8, 0)
         result = tm.refimg  # type: ignore[attr-defined]
         assert result == 0
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.\n"
 
     def test_refimg_setter_deprecated(self, capfd):
         tm = pyxel.Tilemap(8, 8, 0)
         tm.refimg = 1  # type: ignore[attr-defined]
         assert tm.imgsrc == 1
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.\n"

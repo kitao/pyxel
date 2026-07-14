@@ -14,6 +14,7 @@ import pytest
 
 import pyxel
 import pyxel.cli
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 def _make_app(root: Path) -> Path:
@@ -72,12 +73,12 @@ class TestRunCommand:
         missing = tmp_path / "nope.py"
         with pytest.raises(SystemExit):
             pyxel.cli.run_python_script(str(missing))
-        assert "no such file:" in capsys.readouterr().out
+        assert capsys.readouterr().out == f"no such file: '{missing}'\n"
 
     def test_non_py_file_rejected(self, capsys):
         with pytest.raises(SystemExit):
             pyxel.cli.run_python_script("foo.txt")
-        assert "'run' command only accepts .py files" in capsys.readouterr().out
+        assert capsys.readouterr().out == "'run' command only accepts .py files\n"
 
 
 class TestWatchCommand:
@@ -87,7 +88,7 @@ class TestWatchCommand:
         script.write_text("", encoding="utf-8")
         with pytest.raises(SystemExit):
             pyxel.cli.watch_and_run_python_script(str(missing_dir), str(script))
-        assert "no such directory:" in capsys.readouterr().out
+        assert capsys.readouterr().out == f"no such directory: '{missing_dir}'\n"
 
     def test_missing_script_exits_with_error(self, capsys, tmp_path):
         watch_dir = tmp_path / "dir"
@@ -95,7 +96,7 @@ class TestWatchCommand:
         missing = tmp_path / "nope.py"
         with pytest.raises(SystemExit):
             pyxel.cli.watch_and_run_python_script(str(watch_dir), str(missing))
-        assert "no such file:" in capsys.readouterr().out
+        assert capsys.readouterr().out == f"no such file: '{missing}'\n"
 
     def test_script_outside_dir_rejected(self, capsys, tmp_path):
         watch_dir = tmp_path / "dir"
@@ -104,14 +105,14 @@ class TestWatchCommand:
         outside.write_text("", encoding="utf-8")
         with pytest.raises(SystemExit):
             pyxel.cli.watch_and_run_python_script(str(watch_dir), str(outside))
-        assert "specified file is not under the directory" in capsys.readouterr().out
+        assert capsys.readouterr().out == "specified file is not under the directory\n"
 
     def test_non_py_script_rejected(self, capsys, tmp_path):
         watch_dir = tmp_path / "dir"
         watch_dir.mkdir()
         with pytest.raises(SystemExit):
             pyxel.cli.watch_and_run_python_script(str(watch_dir), "foo.txt")
-        assert "'watch' command only accepts .py files" in capsys.readouterr().out
+        assert capsys.readouterr().out == "'watch' command only accepts .py files\n"
 
 
 class TestPyxelAppMetadata:
@@ -184,14 +185,13 @@ class TestPlayCommand:
         missing = tmp_path / "nope.pyxapp"
         with pytest.raises(SystemExit):
             pyxel.cli.play_pyxel_app(str(missing))
-        assert "no such file:" in capsys.readouterr().out
+        assert capsys.readouterr().out == f"no such file: '{missing}'\n"
 
     def test_non_pyxapp_extension_rejected(self, capsys):
         with pytest.raises(SystemExit):
             pyxel.cli.play_pyxel_app("foo.txt")
-        assert (
-            f"'play' command only accepts {pyxel.APP_FILE_EXTENSION} files"
-            in capsys.readouterr().out
+        assert capsys.readouterr().out == (
+            f"'play' command only accepts {pyxel.APP_FILE_EXTENSION} files\n"
         )
 
     def test_missing_startup_marker_exits_with_exact_error(
@@ -272,7 +272,7 @@ class TestPackage:
         monkeypatch.chdir(tmp_path)
         with pytest.raises(SystemExit):
             pyxel.cli.package_pyxel_app("my_app", "my_app/main.txt")
-        assert "'package' command only accepts .py files" in capsys.readouterr().out
+        assert capsys.readouterr().out == "'package' command only accepts .py files\n"
 
     def test_rejects_startup_script_outside_app_dir(
         self, capsys, tmp_path, monkeypatch
@@ -283,7 +283,7 @@ class TestPackage:
         monkeypatch.chdir(tmp_path)
         with pytest.raises(SystemExit):
             pyxel.cli.package_pyxel_app("my_app", str(outside))
-        assert "specified file is not under the directory" in capsys.readouterr().out
+        assert capsys.readouterr().out == "specified file is not under the directory\n"
 
     def test_stdout_shows_added_files(self, capsys, tmp_path, monkeypatch):
         _make_app(tmp_path)
@@ -303,7 +303,7 @@ class TestPackage:
 
         monkeypatch.setattr(zipfile.ZipFile, "write", raise_on_write)
 
-        with pytest.raises(RuntimeError, match="zip write failed"):
+        with raises_exact(RuntimeError, "zip write failed"):
             pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
 
         assert not (app_dir / pyxel.APP_STARTUP_SCRIPT_FILE).exists()
@@ -346,16 +346,16 @@ class TestApp2exe:
         )
 
     def test_missing_pyxapp_exits_with_error(self, capsys, tmp_path):
+        missing = tmp_path / "nope.pyxapp"
         with pytest.raises(SystemExit):
-            pyxel.cli.create_executable_from_pyxel_app(str(tmp_path / "nope.pyxapp"))
-        assert "no such file:" in capsys.readouterr().out
+            pyxel.cli.create_executable_from_pyxel_app(str(missing))
+        assert capsys.readouterr().out == f"no such file: '{missing}'\n"
 
     def test_non_pyxapp_extension_rejected(self, capsys):
         with pytest.raises(SystemExit):
             pyxel.cli.create_executable_from_pyxel_app("foo.txt")
-        assert (
-            f"'app2exe' command only accepts {pyxel.APP_FILE_EXTENSION} files"
-            in capsys.readouterr().out
+        assert capsys.readouterr().out == (
+            f"'app2exe' command only accepts {pyxel.APP_FILE_EXTENSION} files\n"
         )
 
     def test_extraction_failure_exits_with_exact_error(
@@ -424,16 +424,16 @@ class TestApp2html:
         assert 'name: "bad\\"name\\\\line.pyxapp"' in html
 
     def test_missing_pyxapp_exits_with_error(self, capsys, tmp_path):
+        missing = tmp_path / "nope.pyxapp"
         with pytest.raises(SystemExit):
-            pyxel.cli.create_html_from_pyxel_app(str(tmp_path / "nope.pyxapp"))
-        assert "no such file:" in capsys.readouterr().out
+            pyxel.cli.create_html_from_pyxel_app(str(missing))
+        assert capsys.readouterr().out == f"no such file: '{missing}'\n"
 
     def test_non_pyxapp_extension_rejected(self, capsys):
         with pytest.raises(SystemExit):
             pyxel.cli.create_html_from_pyxel_app("foo.txt")
-        assert (
-            f"'app2html' command only accepts {pyxel.APP_FILE_EXTENSION} files"
-            in capsys.readouterr().out
+        assert capsys.readouterr().out == (
+            f"'app2html' command only accepts {pyxel.APP_FILE_EXTENSION} files\n"
         )
 
 
@@ -477,21 +477,21 @@ class TestErrorHelpers:
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli._exit_with_error("boom")
         assert exc_info.value.code == 1
-        assert "boom" in capsys.readouterr().out
+        assert capsys.readouterr().out == "boom\n"
 
     def test_check_file_exists_missing(self, capsys, tmp_path):
         missing = tmp_path / "nope.py"
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli._check_file_exists(str(missing))
         assert exc_info.value.code == 1
-        assert f"no such file: '{missing}'" in capsys.readouterr().out
+        assert capsys.readouterr().out == f"no such file: '{missing}'\n"
 
     def test_check_dir_exists_missing(self, capsys, tmp_path):
         missing = tmp_path / "nodir"
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli._check_dir_exists(str(missing))
         assert exc_info.value.code == 1
-        assert f"no such directory: '{missing}'" in capsys.readouterr().out
+        assert capsys.readouterr().out == f"no such directory: '{missing}'\n"
 
     def test_check_file_under_dir_outside(self, capsys, tmp_path):
         inside_dir = tmp_path / "dir"
@@ -501,13 +501,13 @@ class TestErrorHelpers:
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli._check_file_under_dir(str(outside), str(inside_dir))
         assert exc_info.value.code == 1
-        assert "specified file is not under the directory" in capsys.readouterr().out
+        assert capsys.readouterr().out == "specified file is not under the directory\n"
 
     def test_complete_extension_rejects_wrong_ext(self, capsys):
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli._complete_extension("foo.txt", "run", ".py")
         assert exc_info.value.code == 1
-        assert "'run' command only accepts .py files" in capsys.readouterr().out
+        assert capsys.readouterr().out == "'run' command only accepts .py files\n"
 
     def test_complete_extension_appends_missing_ext(self):
         assert pyxel.cli._complete_extension("foo", "run", ".py") == "foo.py"
@@ -565,7 +565,7 @@ class TestExtractPyxelAppSafety:
         self._build_zip_with_entry(zip_path, "../evil.txt")
         with pytest.raises(SystemExit):
             pyxel.cli._extract_pyxel_app(str(zip_path))
-        assert "unsafe path in Pyxel app:" in capsys.readouterr().out
+        assert capsys.readouterr().out == "unsafe path in Pyxel app: '../evil.txt'\n"
 
     def test_rejects_absolute_path_entry(self, capsys, tmp_path, monkeypatch):
         monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
@@ -573,4 +573,4 @@ class TestExtractPyxelAppSafety:
         self._build_zip_with_entry(zip_path, "/etc/passwd")
         with pytest.raises(SystemExit):
             pyxel.cli._extract_pyxel_app(str(zip_path))
-        assert "unsafe path in Pyxel app:" in capsys.readouterr().out
+        assert capsys.readouterr().out == "unsafe path in Pyxel app: '/etc/passwd'\n"

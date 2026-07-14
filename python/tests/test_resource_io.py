@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 def _write_legacy_resource(path, entries):
@@ -154,12 +155,10 @@ class TestSaveLoad:
         path = tmp_path / "malformed.pyxres"
         _write_legacy_resource(path, entries)
 
-        with pytest.raises(Exception) as exc:
+        with raises_exact(
+            Exception, f"Failed to load legacy resource file '{path}': {detail}"
+        ):
             pyxel.load(str(path))
-
-        assert (
-            str(exc.value) == f"Failed to load legacy resource file '{path}': {detail}"
-        )
 
     def test_malformed_legacy_resource_does_not_partially_commit(self, tmp_path):
         path = tmp_path / "partial.pyxres"
@@ -178,13 +177,12 @@ class TestSaveLoad:
         archive_entry = f"pyxel_resource/{entry}"
         _mark_zip_entry_encrypted(path, archive_entry)
 
-        with pytest.raises(Exception) as exc:
-            pyxel.load(str(path))
-
-        assert str(exc.value) == (
+        with raises_exact(
+            Exception,
             f"Failed to load legacy resource file '{path}': "
-            f"failed to open '{archive_entry}'"
-        )
+            f"failed to open '{archive_entry}'",
+        ):
+            pyxel.load(str(path))
 
     def test_invalid_sidecar_palette_does_not_partially_commit(self, tmp_path):
         path = tmp_path / "invalid-palette.pyxres"
@@ -203,7 +201,7 @@ class TestSaveLoad:
         with zipfile.ZipFile(path, "w") as zf:
             zf.writestr("pyxel_resource.toml", "format_version = 99\n")
 
-        with pytest.raises(Exception, match="Unsupported resource format version"):
+        with raises_exact(Exception, "Unsupported resource format version '99'"):
             pyxel.load(str(path))
 
     @pytest.mark.parametrize(
@@ -239,10 +237,8 @@ class TestSaveLoad:
         path = tmp_path / "malformed-new.pyxres"
         _write_resource(path, toml_text)
 
-        with pytest.raises(Exception) as exc:
+        with raises_exact(Exception, message):
             pyxel.load(str(path))
-
-        assert str(exc.value) == message
 
     def test_malformed_resource_does_not_partially_commit(self, tmp_path):
         path = tmp_path / "partial-new.pyxres"
@@ -342,7 +338,9 @@ class TestSaveLoad:
         assert list(pyxel.sounds[0].notes) == modified_notes
 
     def test_load_nonexistent_file_raises(self):
-        with pytest.raises(Exception, match="Failed to open file"):
+        with raises_exact(
+            Exception, "Failed to open file '/nonexistent/path/file.pyxres'"
+        ):
             pyxel.load("/nonexistent/path/file.pyxres")
 
     def test_save_creates_file(self, tmp_path):
@@ -360,7 +358,7 @@ class TestSaveLoad:
         path = str(tmp_path / "test_excl_dep.pyxres")
         pyxel.save(path, excl_images=True)  # type: ignore[call-arg]
         out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
+        assert out == "excl_* options are deprecated. Use exclude_* instead.\n"
 
         pyxel.images[0].cls(0)
         pyxel.load(path, excl_images=True)  # type: ignore[call-arg]

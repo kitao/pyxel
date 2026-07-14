@@ -4772,7 +4772,7 @@
           "description": {
             "en": "Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube profile supports embedded buffers/images, base-color materials/textures, and transform animations.",
             "cn": "将 Blockbench 导出的二进制 glTF (.glb) 文件加载为 Mesh。Pyxel Cube 配置支持嵌入缓冲区/图像、基础颜色材质/纹理和变换动画。",
-            "de": "Lädt eine von Blockbench exportierte binäre glTF-Datei (.glb) in ein Mesh. Das Pyxel-Cube-Profil unterstützt eingebettete Buffer/Bilder, Basisfarben-Materialien/-Texturen und Transformationsanimationen.",
+            "de": "Lädt eine von Blockbench exportierte binäre glTF-Datei (.glb) in ein Mesh. Das Profil von Pyxel Cube unterstützt eingebettete Buffer/Bilder, Basisfarben-Materialien/-Texturen und Transformationsanimationen.",
             "es": "Carga en un Mesh un archivo glTF binario (.glb) exportado desde Blockbench. El perfil de Pyxel Cube admite búferes/imágenes embebidos, materiales/texturas de color base y animaciones de transformación.",
             "fr": "Charge dans un Mesh un fichier glTF binaire (.glb) exporté depuis Blockbench. Le profil Pyxel Cube prend en charge les tampons/images intégrés, les matériaux/textures de couleur de base et les animations de transformation.",
             "it": "Carica in un Mesh un file glTF binario (.glb) esportato da Blockbench. Il profilo Pyxel Cube supporta buffer/immagini incorporati, materiali/texture di colore base e animazioni di trasformazione.",

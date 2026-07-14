@@ -1,7 +1,6 @@
 from math import isclose, sqrt
 
-import pytest
-
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Vec3
 
 
@@ -47,7 +46,6 @@ class TestConstants:
         assert Vec3.BACK == Vec3(0, 0, 1)
 
     def test_singleton_identity(self):
-        # The same shared immutable instance is returned on every access.
         assert Vec3.ZERO is Vec3.ZERO
         assert Vec3.UP is Vec3.UP
         assert Vec3.FORWARD is Vec3.FORWARD
@@ -86,7 +84,7 @@ class TestSequence:
 
     def test_getitem_out_of_range(self):
         v = Vec3(1, 2, 3)
-        with pytest.raises(IndexError, match="Vec3 index out of range"):
+        with raises_exact(IndexError, "Vec3 index out of range"):
             _ = v[3]
 
     def test_iter(self):
