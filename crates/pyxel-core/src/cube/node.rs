@@ -90,9 +90,9 @@ impl Node {
     }
 
     fn mark_destroyed_recursive(node: &RcNode) {
-        rc_mut!(node).destroyed = true;
-        let children = rc_ref!(node).children.clone();
-        for child in &children {
+        let mut node_ref = rc_mut!(node);
+        node_ref.destroyed = true;
+        for child in &node_ref.children {
             Self::mark_destroyed_recursive(child);
         }
     }
@@ -124,11 +124,11 @@ impl Node {
     }
 
     fn collect_by_name(node: &RcNode, name: &str, out: &mut Vec<RcNode>) {
-        if rc_ref!(node).name == name {
+        let node_ref = rc_ref!(node);
+        if node_ref.name == name {
             out.push(node.clone());
         }
-        let children = rc_ref!(node).children.clone();
-        for child in &children {
+        for child in &node_ref.children {
             Self::collect_by_name(child, name, out);
         }
     }
@@ -141,12 +141,14 @@ impl Node {
     }
 
     fn collect_by_tags(node: &RcNode, tags: &[String], out: &mut Vec<RcNode>) {
-        let node_tags = rc_ref!(node).tags.clone();
-        if tags.iter().any(|t| node_tags.iter().any(|nt| nt == t)) {
+        let node_ref = rc_ref!(node);
+        if tags
+            .iter()
+            .any(|tag| node_ref.tags.iter().any(|node_tag| node_tag == tag))
+        {
             out.push(node.clone());
         }
-        let children = rc_ref!(node).children.clone();
-        for child in &children {
+        for child in &node_ref.children {
             Self::collect_by_tags(child, tags, out);
         }
     }

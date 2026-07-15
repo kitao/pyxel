@@ -12,7 +12,7 @@ pub const LEVEL_COUNT: usize = 4;
 type Entry = (i32, i32);
 
 pub struct Shading {
-    data: Vec<Vec<Entry>>,
+    data: Vec<[Entry; LEVEL_COUNT]>,
     pub direction: RcVec3,
 }
 
@@ -43,7 +43,7 @@ impl Shading {
         self.data.len()
     }
 
-    fn compute(palette: &[Rgb24]) -> Vec<Vec<Entry>> {
+    fn compute(palette: &[Rgb24]) -> Vec<[Entry; LEVEL_COUNT]> {
         // Score palette candidates against HSV targets shifted by STEP;
         // candidates beyond REJECT_THRESHOLD fall back to the source color.
         const STEP: f32 = 0.01;
@@ -290,7 +290,7 @@ impl Shading {
         (0..n)
             .map(|c| {
                 let (h, s, v) = hsv[c];
-                let mut row: Vec<Entry> = vec![flat(c); LEVEL_COUNT];
+                let mut row = [flat(c); LEVEL_COUNT];
 
                 // Desaturate saturated colors so their highlight moves toward white.
                 let ideal_3 = if v + STEP <= 1.0 {

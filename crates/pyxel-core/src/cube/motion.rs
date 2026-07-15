@@ -98,11 +98,7 @@ impl Motion {
                 continue;
             };
             let (pos, rot, scale) = sampled_parts[channel.part_index].get_or_insert_with(|| {
-                (
-                    base.pos_value(),
-                    *rc_ref!(&base.rot()),
-                    *rc_ref!(&base.scale_vec()),
-                )
+                (base.pos_value(), base.rot_value(), base.scale_vec_value())
             });
             match channel.target {
                 MotionTarget::Translation => *pos = channel.sample_vec3(frame),
@@ -165,21 +161,22 @@ impl MotionChannel {
         if key_count == 1 || frame <= self.inputs[0] {
             return Some((0, 0, 0.0));
         }
-
-        for index in 0..(key_count - 1) {
-            let start = self.inputs[index];
-            let end = self.inputs[index + 1];
-            if frame < end {
-                let t = if end == start {
-                    0.0
-                } else {
-                    ((frame - start) / (end - start)).clamp(0.0, 1.0)
-                };
-                return Some((index, index + 1, t));
-            }
+        if frame.is_nan() {
+            return Some((key_count - 1, key_count - 1, 0.0));
         }
-
-        Some((key_count - 1, key_count - 1, 0.0))
+        let to = self.inputs[..key_count].partition_point(|&time| time <= frame);
+        if to == key_count {
+            return Some((key_count - 1, key_count - 1, 0.0));
+        }
+        let from = to - 1;
+        let start = self.inputs[from];
+        let end = self.inputs[to];
+        let t = if end == start {
+            0.0
+        } else {
+            ((frame - start) / (end - start)).clamp(0.0, 1.0)
+        };
+        Some((from, to, t))
     }
 
     fn sample_vec3(&self, frame: f32) -> Vec3 {
@@ -267,7 +264,7 @@ impl MotionChannel {
         };
         match self.interpolation {
             MotionInterpolation::CubicSpline | MotionInterpolation::Step => *from,
-            MotionInterpolation::Linear => *rc_ref!(&from.slerp(to, t)),
+            MotionInterpolation::Linear => from.slerp_value(to, t),
         }
     }
 
@@ -331,21 +328,19 @@ fn cubic_quat(
         z: h00 * from.z + h10 * dt * out_tangent.z + h01 * to.z + h11 * dt * in_tangent.z,
         w: h00 * from.w + h10 * dt * out_tangent.w + h01 * to.w + h11 * dt * in_tangent.w,
     };
-    *rc_ref!(&quat.normalize())
+    quat.normalize_value()
 }
 
 // Non-Rc transform composition for the per-frame sampling path
 
 // Mirrors Mat4::compose (T * R * S) through the value-typed operator
-// cores, computing a bit-identical transform without the factory
-// chain's Rc temporaries. The quaternion-to-matrix factor keeps its Rc:
-// Quat exposes no value-typed core to build on.
+// cores, computing a bit-identical transform without Rc temporaries.
 fn compose_value(pos: &Vec3, rot: &Quat, scale: &Vec3) -> Mat4 {
     let mut t = Mat4::identity_value();
     t.data[0][3] = pos.x;
     t.data[1][3] = pos.y;
     t.data[2][3] = pos.z;
-    let r = *rc_ref!(&rot.to_matrix());
+    let r = rot.matrix_value();
     let mut s = Mat4::identity_value();
     s.data[0][0] = scale.x;
     s.data[1][1] = scale.y;
@@ -443,6 +438,20 @@ mod tests {
             .find(|(part_index, _)| *part_index == 0)
             .map(|(_, mat)| *mat)
             .expect("part 0 should be sampled")
+    }
+
+    #[test]
+    fn test_key_span_handles_boundaries_and_non_finite_frames() {
+        let mut channel = translation_channel(MotionInterpolation::Linear);
+        channel.inputs = vec![0.0, 10.0, 20.0, 30.0];
+        channel.values = MotionValues::Translations(vec![zero_vec3(); 4]);
+
+        assert_eq!(channel.key_span(f32::NEG_INFINITY), Some((0, 0, 0.0)));
+        assert_eq!(channel.key_span(10.0), Some((1, 2, 0.0)));
+        assert_eq!(channel.key_span(15.0), Some((1, 2, 0.5)));
+        assert_eq!(channel.key_span(30.0), Some((3, 3, 0.0)));
+        assert_eq!(channel.key_span(f32::INFINITY), Some((3, 3, 0.0)));
+        assert_eq!(channel.key_span(f32::NAN), Some((3, 3, 0.0)));
     }
 
     #[test]

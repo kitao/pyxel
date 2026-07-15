@@ -452,8 +452,10 @@ fn make_image_sampler(img: &Image) -> impl Fn(f32, f32, i32, i32) -> i32 + '_ {
     let max_x = (img.width() as i32 - 1).max(0);
     let max_y = (img.height() as i32 - 1).max(0);
     move |u, v, _x, _y| {
-        let xi = ((u * w).floor() as i32).clamp(0, max_x);
-        let yi = ((v * h).floor() as i32).clamp(0, max_y);
+        let xi = (u * w) as i32;
+        let yi = (v * h) as i32;
+        let xi = xi.clamp(0, max_x);
+        let yi = yi.clamp(0, max_y);
         // Indices are already clamped; read directly instead of re-rounding
         // and re-clipping through pixel().
         i32::from(img.canvas.read_data(xi as usize, yi as usize))
@@ -471,8 +473,10 @@ fn make_shaded_sampler<'a>(
     let max_y = (img.height() as i32 - 1).max(0);
     let palette_size = shading.palette_size();
     move |u, v, x, y| {
-        let xi = ((u * w).floor() as i32).clamp(0, max_x);
-        let yi = ((v * h).floor() as i32).clamp(0, max_y);
+        let xi = (u * w) as i32;
+        let yi = (v * h) as i32;
+        let xi = xi.clamp(0, max_x);
+        let yi = yi.clamp(0, max_y);
         // Indices are already clamped; read directly instead of re-rounding
         // and re-clipping through pixel().
         let base = i32::from(img.canvas.read_data(xi as usize, yi as usize));
@@ -1441,6 +1445,47 @@ pub fn text(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn sampler_test_image() -> RcImage {
+        let image = Image::new(2, 2);
+        let mut image_ref = rc_mut!(&image);
+        image_ref.canvas.write_data(0, 0, 1);
+        image_ref.canvas.write_data(1, 0, 2);
+        image_ref.canvas.write_data(0, 1, 3);
+        image_ref.canvas.write_data(1, 1, 4);
+        drop(image_ref);
+        image
+    }
+
+    #[test]
+    fn test_image_sampler_truncates_and_clamps_uvs() {
+        let image = sampler_test_image();
+        let image_ref = rc_ref!(&image);
+        let sample = make_image_sampler(&image_ref);
+
+        assert_eq!(sample(-0.25, 0.1, 0, 0), 1);
+        assert_eq!(sample(0.49, 0.49, 0, 0), 1);
+        assert_eq!(sample(0.5, 0.1, 0, 0), 2);
+        assert_eq!(sample(0.1, 0.5, 0, 0), 3);
+        assert_eq!(sample(1.25, 1.25, 0, 0), 4);
+    }
+
+    #[test]
+    fn test_shaded_sampler_uses_same_uv_clamping() {
+        let image = sampler_test_image();
+        let shading = Shading::new(&[0; 5]);
+        for color in 0..5 {
+            rc_mut!(&shading).set(color, 0, (color as i32 + 10, color as i32 + 10));
+        }
+        let image_ref = rc_ref!(&image);
+        let shading_ref = rc_ref!(&shading);
+        let sample = make_shaded_sampler(&image_ref, &shading_ref, 0);
+
+        assert_eq!(sample(-0.25, 0.1, 0, 0), 11);
+        assert_eq!(sample(0.5, 0.1, 0, 0), 12);
+        assert_eq!(sample(0.1, 0.5, 0, 0), 13);
+        assert_eq!(sample(1.25, 1.25, 0, 0), 14);
+    }
 
     #[test]
     fn test_prim_topology_errors_name_the_invalid_input() {

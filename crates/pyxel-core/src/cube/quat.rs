@@ -139,6 +139,11 @@ impl Quat {
     }
 
     pub fn from_matrix(mat: &Mat4) -> RcQuat {
+        let q = Self::from_matrix_value(mat);
+        Self::new(q.x, q.y, q.z, q.w)
+    }
+
+    pub(crate) fn from_matrix_value(mat: &Mat4) -> Self {
         // Shepperd's method: branch on trace / largest diagonal so the
         // extraction divides by the largest quaternion component.
         let m = &mat.data;
@@ -149,28 +154,28 @@ impl Quat {
             let x = (m[2][1] - m[1][2]) / s;
             let y = (m[0][2] - m[2][0]) / s;
             let z = (m[1][0] - m[0][1]) / s;
-            Self::new(x, y, z, w)
+            Self { x, y, z, w }
         } else if m[0][0] > m[1][1] && m[0][0] > m[2][2] {
             let s = (1.0 + m[0][0] - m[1][1] - m[2][2]).sqrt() * 2.0;
             let w = (m[2][1] - m[1][2]) / s;
             let x = 0.25 * s;
             let y = (m[0][1] + m[1][0]) / s;
             let z = (m[0][2] + m[2][0]) / s;
-            Self::new(x, y, z, w)
+            Self { x, y, z, w }
         } else if m[1][1] > m[2][2] {
             let s = (1.0 + m[1][1] - m[0][0] - m[2][2]).sqrt() * 2.0;
             let w = (m[0][2] - m[2][0]) / s;
             let x = (m[0][1] + m[1][0]) / s;
             let y = 0.25 * s;
             let z = (m[1][2] + m[2][1]) / s;
-            Self::new(x, y, z, w)
+            Self { x, y, z, w }
         } else {
             let s = (1.0 + m[2][2] - m[0][0] - m[1][1]).sqrt() * 2.0;
             let w = (m[1][0] - m[0][1]) / s;
             let x = (m[0][2] + m[2][0]) / s;
             let y = (m[1][2] + m[2][1]) / s;
             let z = 0.25 * s;
-            Self::new(x, y, z, w)
+            Self { x, y, z, w }
         }
     }
 
@@ -246,11 +251,26 @@ impl Quat {
     }
 
     pub fn normalize(&self) -> RcQuat {
+        let q = self.normalize_value();
+        Self::new(q.x, q.y, q.z, q.w)
+    }
+
+    pub(crate) fn normalize_value(&self) -> Self {
         let len = self.length();
         if len == 0.0 {
-            return Self::identity();
+            return Self {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                w: 1.0,
+            };
         }
-        Self::new(self.x / len, self.y / len, self.z / len, self.w / len)
+        Self {
+            x: self.x / len,
+            y: self.y / len,
+            z: self.z / len,
+            w: self.w / len,
+        }
     }
 
     pub fn length(&self) -> f32 {
@@ -275,8 +295,11 @@ impl Quat {
     // Conversions
 
     pub fn to_matrix(&self) -> RcMat4 {
-        let q = self.normalize();
-        let q = rc_ref!(&q);
+        Mat4::from_rows(self.matrix_value().data)
+    }
+
+    pub(crate) fn matrix_value(&self) -> Mat4 {
+        let q = self.normalize_value();
         let xx = q.x * q.x;
         let yy = q.y * q.y;
         let zz = q.z * q.z;
@@ -286,12 +309,14 @@ impl Quat {
         let wx = q.w * q.x;
         let wy = q.w * q.y;
         let wz = q.w * q.z;
-        Mat4::from_rows([
-            [1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz), 2.0 * (xz + wy), 0.0],
-            [2.0 * (xy + wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz - wx), 0.0],
-            [2.0 * (xz - wy), 2.0 * (yz + wx), 1.0 - 2.0 * (xx + yy), 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ])
+        Mat4 {
+            data: [
+                [1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz), 2.0 * (xz + wy), 0.0],
+                [2.0 * (xy + wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz - wx), 0.0],
+                [2.0 * (xz - wy), 2.0 * (yz + wx), 1.0 - 2.0 * (xx + yy), 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        }
     }
 
     pub fn to_euler(&self) -> RcVec3 {
@@ -337,6 +362,11 @@ impl Quat {
     // Interpolation
 
     pub fn slerp(&self, other: &Self, t: f32) -> RcQuat {
+        let q = self.slerp_value(other, t);
+        Self::new(q.x, q.y, q.z, q.w)
+    }
+
+    pub(crate) fn slerp_value(&self, other: &Self, t: f32) -> Self {
         let mut cos_theta = self.dot(other);
         let (other_x, other_y, other_z, other_w);
         if cos_theta < 0.0 {
@@ -358,18 +388,23 @@ impl Quat {
             let z = self.z + t * (other_z - self.z);
             let w = self.w + t * (other_w - self.w);
             let len = (x * x + y * y + z * z + w * w).sqrt();
-            return Self::new(x / len, y / len, z / len, w / len);
+            return Self {
+                x: x / len,
+                y: y / len,
+                z: z / len,
+                w: w / len,
+            };
         }
         let theta = cos_theta.acos();
         let sin_theta = theta.sin();
         let a = ((1.0 - t) * theta).sin() / sin_theta;
         let b = (t * theta).sin() / sin_theta;
-        Self::new(
-            self.x * a + other_x * b,
-            self.y * a + other_y * b,
-            self.z * a + other_z * b,
-            self.w * a + other_w * b,
-        )
+        Self {
+            x: self.x * a + other_x * b,
+            y: self.y * a + other_y * b,
+            z: self.z * a + other_z * b,
+            w: self.w * a + other_w * b,
+        }
     }
 }
 
@@ -577,6 +612,7 @@ mod tests {
             30.0,
         );
         let m = rc_ref!(&q).to_matrix();
+        assert_eq!(rc_ref!(&q).matrix_value(), *rc_ref!(&m));
         let v = Vec3 {
             x: 1.0,
             y: 0.0,
@@ -620,6 +656,8 @@ mod tests {
         );
         let s0 = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 0.0));
         let s1 = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 1.0));
+        assert_eq!(rc_ref!(&a).slerp_value(&rc_ref!(&b), 0.0), s0);
+        assert_eq!(rc_ref!(&a).slerp_value(&rc_ref!(&b), 1.0), s1);
         assert!(approx_eq_q(&s0, &rc_ref!(&a)));
         assert!(approx_eq_q(&s1, &rc_ref!(&b)));
     }

@@ -285,13 +285,23 @@ impl Node {
         let sampled = rc_ref!(motion).sample(frame, looping);
         let mut nodes = Vec::new();
         Self::collect_mesh_nodes(root, py, source, &mut nodes);
+        nodes.sort_unstable_by_key(|(part_index, _)| *part_index);
+        let mut node_cursor = 0;
         for (part_index, transform) in sampled {
-            for (node_index, node) in &nodes {
-                if *node_index == part_index {
-                    node.bind(py).borrow().inner_mut().transform =
-                        pyxel::cube::Mat4::from_rows(transform.data);
-                }
+            while node_cursor < nodes.len() && nodes[node_cursor].0 < part_index {
+                node_cursor += 1;
             }
+            let mut matching_cursor = node_cursor;
+            while matching_cursor < nodes.len() && nodes[matching_cursor].0 == part_index {
+                nodes[matching_cursor]
+                    .1
+                    .bind(py)
+                    .borrow()
+                    .inner_mut()
+                    .transform = pyxel::cube::Mat4::from_rows(transform.data);
+                matching_cursor += 1;
+            }
+            node_cursor = matching_cursor;
         }
     }
 }

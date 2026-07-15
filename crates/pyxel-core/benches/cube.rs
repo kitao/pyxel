@@ -59,11 +59,15 @@ const TRIANGLE_POSITIONS: [f32; 9] = [-0.92, -0.92, -2.0, 0.92, -0.92, -2.0, -0.
 
 fn main() {
     bench_raster_flat_triangle();
+    bench_raster_flat_offscreen();
     bench_raster_textured_shaded_triangle();
+    bench_raster_textured_shaded_occluded();
+    bench_raster_textured_shaded_large();
     bench_bvh_query_ray();
     bench_bvh_query_aabb();
     bench_mesh_aabb_from_mesh();
     bench_motion_sample();
+    bench_node_find_by_tags();
     bench_scene_walk_contacts();
 }
 
@@ -73,7 +77,7 @@ fn main() {
 // entry above rasterize_triangle. The depth refill plays the per-frame
 // depth clear so every iteration rasterizes identical pixels.
 fn bench_raster_flat_triangle() {
-    let mut ctx = make_draw_context();
+    let mut ctx = make_draw_context(TARGET_SIZE);
     let world = Mat4::identity_value();
     run_bench("raster_flat_triangle", 6_000, |_| {
         ctx.depth.fill(f32::INFINITY);
@@ -96,11 +100,75 @@ fn bench_raster_flat_triangle() {
     });
 }
 
+// A fully offscreen triangle measures projection and clipping rejection
+// without mixing the result with pixel coverage.
+fn bench_raster_flat_offscreen() {
+    let mut ctx = make_draw_context(TARGET_SIZE);
+    let world = *rc_ref!(&Mat4::from_translation(&Vec3 {
+        x: 100.0,
+        y: 0.0,
+        z: 0.0,
+    }));
+    run_bench("raster_flat_offscreen", 100_000, |_| {
+        draw::prim(
+            &mut ctx,
+            &world,
+            MODE_TRIANGLES,
+            CULL_NONE,
+            black_box(&TRIANGLE_POSITIONS),
+            None,
+            None,
+            None,
+            7,
+            None,
+            None,
+            DrawState::unshaded(),
+        )
+        .unwrap();
+    });
+}
+
 // The same triangle through the textured + shaded sampler path inside
 // draw::prim (make_shaded_sampler is private, so the public prim entry
 // carries the texture + Shading into rasterize_textured_triangle).
 fn bench_raster_textured_shaded_triangle() {
-    let mut ctx = make_draw_context();
+    bench_raster_textured_shaded(
+        "raster_textured_shaded_triangle",
+        3_000,
+        TARGET_SIZE,
+        f32::INFINITY,
+    );
+}
+
+// Fully occluded geometry measures the early-depth path: projection and
+// coverage still run, while hidden pixels must not sample or shade texels.
+fn bench_raster_textured_shaded_occluded() {
+    bench_raster_textured_shaded(
+        "raster_textured_shaded_occluded",
+        6_000,
+        TARGET_SIZE,
+        f32::NEG_INFINITY,
+    );
+}
+
+// Doubling each viewport axis makes the same projected triangle cover
+// roughly four times as many pixels, exposing per-pixel scaling.
+fn bench_raster_textured_shaded_large() {
+    bench_raster_textured_shaded(
+        "raster_textured_shaded_160px",
+        800,
+        TARGET_SIZE * 2,
+        f32::INFINITY,
+    );
+}
+
+fn bench_raster_textured_shaded(
+    name: &str,
+    iters_per_sample: u32,
+    target_size: u32,
+    depth_clear: f32,
+) {
+    let mut ctx = make_draw_context(target_size);
     let world = Mat4::identity_value();
     // The face normal is tilted so the Lambert level lands mid-ramp
     // instead of the degenerate level 0.
@@ -117,8 +185,8 @@ fn bench_raster_textured_shaded_triangle() {
         billboard: BILLBOARD_OFF,
         shading: Some(&shading_ref),
     };
-    run_bench("raster_textured_shaded_triangle", 3_000, |_| {
-        ctx.depth.fill(f32::INFINITY);
+    run_bench(name, iters_per_sample, |_| {
+        ctx.depth.fill(depth_clear);
         draw::prim(
             &mut ctx,
             &world,
@@ -229,6 +297,16 @@ fn bench_motion_sample() {
     });
 }
 
+// Tag lookup across the same 201-node tree, isolated from collision so
+// traversal allocation and comparison costs remain visible.
+fn bench_node_find_by_tags() {
+    let root = make_scene_tree();
+    let enemy_tags = vec![String::from("enemy")];
+    run_bench("node_find_by_tags", 50_000, |_| {
+        black_box(Node::find_by_tags(black_box(&root), black_box(&enemy_tags)).len());
+    });
+}
+
 // Scene pipeline walk over a 201-node tree with 50 sphere colliders (40
 // overlapping pairs): integrate_motion + detect_contacts, plus
 // find_by_tags for the tags path, which those two stages do not read.
@@ -267,28 +345,28 @@ fn run_bench(name: &str, iters_per_sample: u32, mut f: impl FnMut(u32)) {
 
 // Fixtures
 
-// Fixed 80x80 render target with the default camera at the origin. Each
+// Square render target with the default camera at the origin. Each
 // raster iteration refills the depth buffer like a frame clear.
-fn make_draw_context() -> DrawContext {
+fn make_draw_context(target_size: u32) -> DrawContext {
     let camera = Camera::new();
-    let size = TARGET_SIZE as f32;
+    let size = target_size as f32;
     let camera_ref = rc_ref!(&camera);
     let view = view_matrix(&camera_ref);
     let projection = projection_matrix(&camera_ref, size, size);
     drop(camera_ref);
     DrawContext {
-        target: Image::new(TARGET_SIZE, TARGET_SIZE),
+        target: Image::new(target_size, target_size),
         vp: matmul(&projection, &view),
         clip_row: camera_clip_row(&view),
         vp_x: 0.0,
         vp_y: 0.0,
         vp_w: size,
         vp_h: size,
-        clip: compute_clip_rect(0.0, 0.0, size, size, TARGET_SIZE, TARGET_SIZE),
+        clip: compute_clip_rect(0.0, 0.0, size, size, target_size, target_size),
         camera,
-        depth: vec![f32::INFINITY; (TARGET_SIZE * TARGET_SIZE) as usize],
-        depth_w: TARGET_SIZE,
-        depth_h: TARGET_SIZE,
+        depth: vec![f32::INFINITY; (target_size * target_size) as usize],
+        depth_w: target_size,
+        depth_h: target_size,
         vertex_cache: Vec::new(),
         dither_alpha: 1.0,
         depth_test: true,

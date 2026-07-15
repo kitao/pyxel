@@ -353,6 +353,27 @@ pub fn write_pixel(
     depth_test: bool,
     depth_write: bool,
 ) {
+    let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test) else {
+        return;
+    };
+    write_visible_pixel(target, depth, i, x, y, z, col, depth_write);
+}
+
+#[allow(clippy::too_many_arguments)]
+#[allow(
+    clippy::inline_always,
+    reason = "measured per-pixel visibility-check improvement in the Cube raster benchmark"
+)]
+#[inline(always)]
+fn visible_pixel_index(
+    depth: &[f32],
+    depth_w: u32,
+    x: i32,
+    y: i32,
+    z: f32,
+    dither_alpha: f32,
+    depth_test: bool,
+) -> Option<usize> {
     // Bayer-pattern alpha gate. dither_alpha == 1.0 always passes;
     // 0.0 always rejects; intermediate values produce a regular
     // 4x4 stipple pattern.
@@ -360,13 +381,32 @@ pub fn write_pixel(
         let bayer = BAYER4[(y.rem_euclid(4)) as usize][(x.rem_euclid(4)) as usize];
         let threshold = (bayer as f32 + 0.5) / 16.0;
         if (1.0 - dither_alpha) >= threshold {
-            return;
+            return None;
         }
     }
     let i = (y as usize) * depth_w as usize + x as usize;
     if depth_test && z >= depth[i] {
-        return;
+        return None;
     }
+    Some(i)
+}
+
+#[allow(clippy::too_many_arguments)]
+#[allow(
+    clippy::inline_always,
+    reason = "measured per-pixel write improvement in the Cube raster benchmark"
+)]
+#[inline(always)]
+fn write_visible_pixel(
+    target: &mut Image,
+    depth: &mut [f32],
+    i: usize,
+    x: i32,
+    y: i32,
+    z: f32,
+    col: u8,
+    depth_write: bool,
+) {
     if depth_write {
         depth[i] = z;
     }
@@ -440,6 +480,9 @@ pub fn rasterize_triangle(
     let bx_max = max_x.min(clip.right);
     let by_min = min_y.max(clip.top);
     let by_max = max_y.min(clip.bottom);
+    if bx_min > bx_max || by_min > by_max {
+        return;
+    }
     // Winding and top-left ownership are hoisted out of the pixel loop.
     // The half-open edge rule keeps adjacent triangles from drawing the
     // same shared-edge pixel in different orders.
@@ -449,10 +492,8 @@ pub fn rasterize_triangle(
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
     for y in by_min..=by_max {
         let py = y as f32 + 0.5;
-        // Each edge value is monotonic in x, so a row's inside run is one
-        // contiguous span: edges are tested lazily (a failing edge skips
-        // the rest), and once the span has been entered and exited the
-        // remainder of the row is skipped.
+        // A triangle intersects each scanline in one contiguous span. Once
+        // the loop leaves that span, no later pixel on the row can be inside.
         let mut was_inside = false;
         for x in bx_min..=bx_max {
             let p = (x as f32 + 0.5, py);
@@ -537,13 +578,16 @@ pub fn rasterize_textured_triangle<F>(
     let bx_max = max_x.min(clip.right);
     let by_min = min_y.max(clip.top);
     let by_max = max_y.min(clip.bottom);
-    // Same lazy-edge, contiguous-span row scan as rasterize_triangle.
+    if bx_min > bx_max || by_min > by_max {
+        return;
+    }
     let pos_area = area > 0.0;
     let include_w0 = includes_edge_boundary((p1.0, p1.1), (p2.0, p2.1), pos_area);
     let include_w1 = includes_edge_boundary((p2.0, p2.1), (p0.0, p0.1), pos_area);
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
     for y in by_min..=by_max {
         let py = y as f32 + 0.5;
+        // Same lazy-edge, contiguous-span row scan as rasterize_triangle.
         let mut was_inside = false;
         for x in bx_min..=bx_max {
             let p = (x as f32 + 0.5, py);
@@ -573,26 +617,15 @@ pub fn rasterize_textured_triangle<F>(
             let bary1 = w1 * inv_area;
             let bary2 = w2 * inv_area;
             let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
-            let u = bary0 * uv0.0 + bary1 * uv1.0 + bary2 * uv2.0;
-            let v = bary0 * uv0.1 + bary1 * uv1.1 + bary2 * uv2.1;
-            let col = sampler(u, v, x, y);
-            if let Some(key) = colkey {
-                if col == key {
-                    continue;
+            if let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test)
+            {
+                let u = bary0 * uv0.0 + bary1 * uv1.0 + bary2 * uv2.0;
+                let v = bary0 * uv0.1 + bary1 * uv1.1 + bary2 * uv2.1;
+                let col = sampler(u, v, x, y);
+                if colkey.is_none_or(|key| col != key) {
+                    write_visible_pixel(target, depth, i, x, y, z, col as u8, depth_write);
                 }
             }
-            write_pixel(
-                target,
-                depth,
-                depth_w,
-                x,
-                y,
-                z,
-                col as u8,
-                dither_alpha,
-                depth_test,
-                depth_write,
-            );
         }
     }
 }
@@ -1869,6 +1902,47 @@ mod tests {
     }
 
     #[test]
+    fn test_rasterize_triangle_large_split_square_has_no_shared_edge_holes() {
+        const SIZE: u32 = 258;
+        let (img, mut depth, clip) = make_target_and_depth(SIZE, SIZE);
+        let mut img_mut = rc_mut!(&img);
+        rasterize_triangle(
+            &mut img_mut,
+            &mut depth,
+            SIZE,
+            (1.0, 1.0, 0.25),
+            (257.0, 257.0, 0.25),
+            (257.0, 1.0, 0.25),
+            4,
+            4,
+            clip,
+            1.0,
+            true,
+            true,
+        );
+        rasterize_triangle(
+            &mut img_mut,
+            &mut depth,
+            SIZE,
+            (1.0, 1.0, 0.25),
+            (1.0, 257.0, 0.25),
+            (257.0, 257.0, 0.25),
+            4,
+            4,
+            clip,
+            1.0,
+            true,
+            true,
+        );
+
+        for y in 1..257 {
+            for x in 1..257 {
+                assert_eq!(img_mut.canvas.read_data(x, y), 4, "pixel=({x}, {y})");
+            }
+        }
+    }
+
+    #[test]
     fn test_rasterize_triangle_degenerate_skipped() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
         let mut img_mut = rc_mut!(&img);
@@ -2035,6 +2109,61 @@ mod tests {
             true,
         );
         assert_eq!(img_mut.canvas.read_data(4, 4), 7);
+    }
+
+    #[test]
+    fn test_rasterize_textured_triangle_depth_rejection_skips_sampler() {
+        let (img, mut depth, clip) = make_target_and_depth(16, 16);
+        depth.fill(-1.0);
+        let sample_count = std::cell::Cell::new(0);
+        rasterize_textured_triangle(
+            &mut rc_mut!(&img),
+            &mut depth,
+            16,
+            (2.0, 2.0, 0.0),
+            (12.0, 2.0, 0.0),
+            (2.0, 12.0, 0.0),
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+            |_, _, _, _| {
+                sample_count.set(sample_count.get() + 1);
+                7
+            },
+            None,
+            clip,
+            1.0,
+            true,
+            true,
+        );
+        assert_eq!(sample_count.get(), 0);
+    }
+
+    #[test]
+    fn test_rasterize_textured_triangle_zero_alpha_skips_sampler() {
+        let (img, mut depth, clip) = make_target_and_depth(16, 16);
+        let sample_count = std::cell::Cell::new(0);
+        rasterize_textured_triangle(
+            &mut rc_mut!(&img),
+            &mut depth,
+            16,
+            (2.0, 2.0, 0.0),
+            (12.0, 2.0, 0.0),
+            (2.0, 12.0, 0.0),
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+            |_, _, _, _| {
+                sample_count.set(sample_count.get() + 1);
+                7
+            },
+            None,
+            clip,
+            0.0,
+            true,
+            true,
+        );
+        assert_eq!(sample_count.get(), 0);
     }
 
     #[test]
