@@ -505,19 +505,24 @@ impl Voice {
     // Playback controls
 
     pub fn play_note(&mut self, midi_note: f32, velocity_base: f32, duration_clocks: u64) {
+        let previous_sample_clocks = self.sample_clocks;
+        let previous_sample_remaining_clocks = self.sample_remaining_clocks;
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.velocity_base = velocity_base;
         self.remaining_note_clocks = duration_clocks.saturating_add(u64::from(self.interp_clocks));
         self.elapsed_note_clocks = 0;
         self.next_modulator_tick_clock = u64::from(self.clocks_per_tick);
         self.next_gain_update_clock = u64::from(self.interp_clocks);
-        self.sample_remaining_clocks = 0;
         self.carryover_event_clocks = 0;
         self.interp_start_gain = None;
         self.interp_end_gain = None;
 
         self.reset_control_clock();
-        self.sample_remaining_clocks = self.sample_clocks;
+        self.sample_remaining_clocks = Self::rescale_sample_remaining_clocks(
+            previous_sample_remaining_clocks,
+            previous_sample_clocks,
+            self.sample_clocks,
+        );
     }
 
     pub(crate) fn reset_playback_clock(&mut self) {
@@ -662,6 +667,21 @@ impl Voice {
     // Fixed-point helpers
 
     #[inline]
+    fn rescale_sample_remaining_clocks(
+        remaining_clocks: u32,
+        previous_clocks: u32,
+        current_clocks: u32,
+    ) -> u32 {
+        if remaining_clocks == 0 || previous_clocks == 0 {
+            return current_clocks;
+        }
+
+        let scaled_remaining = (u64::from(remaining_clocks) * u64::from(current_clocks))
+            .div_ceil(u64::from(previous_clocks));
+        scaled_remaining.clamp(1, u64::from(u32::MAX)) as u32
+    }
+
+    #[inline]
     fn event_clocks(&self) -> u32 {
         // Synthesis controls use their own clock boundaries so low notes
         // cannot skip short envelopes or modulation.
@@ -717,10 +737,11 @@ impl Voice {
         } else if oscillator_boundary {
             self.sample_remaining_clocks = self.sample_clocks;
         } else if self.sample_clocks != previous_sample_clocks {
-            let scaled_remaining = u64::from(self.sample_remaining_clocks)
-                .saturating_mul(u64::from(self.sample_clocks))
-                .div_ceil(u64::from(previous_sample_clocks));
-            self.sample_remaining_clocks = scaled_remaining.clamp(1, u64::from(u32::MAX)) as u32;
+            self.sample_remaining_clocks = Self::rescale_sample_remaining_clocks(
+                self.sample_remaining_clocks,
+                previous_sample_clocks,
+                self.sample_clocks,
+            );
         }
     }
 

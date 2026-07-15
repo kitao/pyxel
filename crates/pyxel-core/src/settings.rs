@@ -112,15 +112,15 @@ pub const AUDIO_SAMPLE_RATE: u32 = 22_050; // 22.05kHz
 pub const AUDIO_SAMPLE_BITS: u32 = 16;
 pub const AUDIO_CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
 #[cfg(target_os = "emscripten")]
-pub const AUDIO_BUFFER_SAMPLES: u32 = 1024; // 1024 / 22050 * 1000 = 46.4ms
+pub const AUDIO_BUFFER_SAMPLES: u32 = 1024; // 46.4ms at the internal sample rate
 #[cfg(not(target_os = "emscripten"))]
-pub const AUDIO_BUFFER_SAMPLES: u32 = 512; // 512 / 22050 * 1000 = 23.2ms
+pub const AUDIO_BUFFER_SAMPLES: u32 = 512; // 23.2ms at the internal sample rate
 pub const AUDIO_RENDER_STEP_SAMPLES: u32 = 64;
 pub const AUDIO_GAIN_SHIFT: u32 = 14;
 pub const AUDIO_GAIN_SCALE: i64 = 1_i64 << AUDIO_GAIN_SHIFT;
 
 pub const VOICE_CONTROL_RATE: u32 = 60;
-pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 2000;
+pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 1250; // 0.8ms
 pub const TICKS_PER_QUARTER_NOTE: u32 = 48;
 pub const SOUND_TICKS_PER_SECOND: u32 = 120;
 

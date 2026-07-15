@@ -85,6 +85,21 @@ class TestPcmSynthBoundary:
         assert _rms(samples, 0.26, 0.295) > 100, "PCM part after synth is silent"
 
 
+class TestSynthPhaseContinuity:
+    def test_repeated_note_timbre_is_speed_independent(self, tmp_path):
+        fast = pyxel.Sound()
+        fast.set("c2" * 120, "s", "7", "n", 1)
+        slow = pyxel.Sound()
+        slow.set("c2" * 24, "s", "7", "n", 5)
+        fast_path = tmp_path / "fast.wav"
+        slow_path = tmp_path / "slow.wav"
+
+        fast.save(str(fast_path), 0.5)
+        slow.save(str(slow_path), 0.5)
+
+        assert _read_samples(fast_path) == _read_samples(slow_path)
+
+
 class TestPcmSeek:
     def test_loop_seek_wraps(self, tmp_path):
         pcm_path = tmp_path / "pcm.wav"
