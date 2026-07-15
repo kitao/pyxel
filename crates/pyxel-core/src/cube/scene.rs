@@ -113,7 +113,14 @@ pub struct RaycastHitInfo {
     pub distance: f32,
 }
 
-type ColliderEntry = (RcNode, Mat4, Aabb);
+struct ColliderEntry {
+    node: RcNode,
+    world: Mat4,
+    aabb: Aabb,
+    collider: RcCollider,
+    immovable: bool,
+    trigger: bool,
+}
 
 thread_local! {
     static COLLIDER_ENTRY_SCRATCH: RefCell<Vec<ColliderEntry>> = const { RefCell::new(Vec::new()) };
@@ -136,11 +143,11 @@ impl Scene {
     }
 
     fn collect_destroyed_recursive(node: &RcNode, out: &mut Vec<RcNode>) {
-        let children = rc_ref!(node).children.clone();
-        for child in &children {
+        let node_ref = rc_ref!(node);
+        for child in &node_ref.children {
             Self::collect_destroyed_recursive(child, out);
         }
-        if rc_ref!(node).destroyed {
+        if node_ref.destroyed {
             out.push(node.clone());
         }
     }
@@ -172,34 +179,32 @@ impl Scene {
             let coll = rc_ref!(&coll_rc);
             let vel = *rc_ref!(&coll.velocity);
             let avel = *rc_ref!(&coll.angular_velocity);
-            let cur_t = rc_ref!(node).transform.clone();
-            // Velocity is a world-space displacement: left-multiply
-            // by a translation so the body moves along world axes
-            // regardless of its current orientation. Mat4::translate applies
-            // a local-frame shift and would bend a rotating body's path.
-            let t_vel = Mat4::from_translation(&vel);
-            let translated = rc_ref!(&t_vel).mul_mat(&rc_ref!(&cur_t));
             let alen_sq = avel.x * avel.x + avel.y * avel.y + avel.z * avel.z;
-            let final_t = if alen_sq > 1e-12 {
-                let len = alen_sq.sqrt();
-                let axis = Vec3 {
-                    x: avel.x / len,
-                    y: avel.y / len,
-                    z: avel.z / len,
-                };
-                // Spin is applied as a local-frame rotation
-                // (right-multiplication): the body rotates around
-                // its own origin and its world position stays where
-                // `translated` placed it. Left-multiplying R would
-                // rotate the body about the world origin and drag
-                // its position along the orbit.
-                let r = Mat4::from_axis_angle(&axis, len);
-                let result = rc_ref!(&translated).mul_mat(&rc_ref!(&r));
-                result
-            } else {
-                translated
-            };
-            rc_mut!(node).transform = final_t;
+            if vel.x != 0.0 || vel.y != 0.0 || vel.z != 0.0 || alen_sq > 1e-12 {
+                let transform_rc = rc_ref!(node).transform.clone();
+                let mut transform = *rc_ref!(&transform_rc);
+                // Apply the world-space translation as the reduced form of
+                // T * transform, including a non-canonical homogeneous row.
+                let homogeneous = transform.data[3];
+                for (col, &component) in homogeneous.iter().enumerate() {
+                    transform.data[0][col] += vel.x * component;
+                    transform.data[1][col] += vel.y * component;
+                    transform.data[2][col] += vel.z * component;
+                }
+                if alen_sq > 1e-12 {
+                    let len = alen_sq.sqrt();
+                    let axis = Vec3 {
+                        x: avel.x / len,
+                        y: avel.y / len,
+                        z: avel.z / len,
+                    };
+                    // Spin is a local-frame rotation, so it multiplies on
+                    // the right without moving the translation column.
+                    let rotation = Mat4::from_axis_angle_value(&axis, len);
+                    transform = transform.mul_mat_value(&rotation);
+                }
+                rc_mut!(node).transform = Mat4::from_rows(transform.data);
+            }
         }
         let node_ref = rc_ref!(node);
         for child in &node_ref.children {
@@ -213,43 +218,34 @@ impl Scene {
     pub fn detect_contacts(scene_root: &RcNode) -> Vec<ContactPair> {
         Self::with_collider_entries(scene_root, true, |entries| {
             let n = entries.len();
-            let mut pairs: Vec<ContactPair> = Vec::new();
+            let mut pairs: Vec<ContactPair> = Vec::with_capacity(n);
             // O(N^2) broad phase; PS1-scale (~100 dynamics) is in budget.
             for i in 0..n {
                 for j in (i + 1)..n {
-                    if !entries[i].2.overlaps(&entries[j].2) {
+                    let entry_a = &entries[i];
+                    let entry_b = &entries[j];
+                    if !entry_a.aabb.overlaps(&entry_b.aabb) {
                         continue;
                     }
-                    let coll_a_opt = rc_ref!(&entries[i].0).collider.clone();
-                    let coll_b_opt = rc_ref!(&entries[j].0).collider.clone();
-                    let (Some(coll_a_rc), Some(coll_b_rc)) = (coll_a_opt, coll_b_opt) else {
-                        continue;
-                    };
-                    let (mass_a, trigger_a) = {
-                        let coll = rc_ref!(&coll_a_rc);
-                        (
-                            if coll.mesh.is_some() { 0.0 } else { coll.mass },
-                            coll.trigger,
-                        )
-                    };
-                    let (mass_b, trigger_b) = {
-                        let coll = rc_ref!(&coll_b_rc);
-                        (
-                            if coll.mesh.is_some() { 0.0 } else { coll.mass },
-                            coll.trigger,
-                        )
-                    };
-                    if mass_a == 0.0 && mass_b == 0.0 && !trigger_a && !trigger_b {
+                    if entry_a.immovable
+                        && entry_b.immovable
+                        && !entry_a.trigger
+                        && !entry_b.trigger
+                    {
                         continue;
                     }
-                    let contact =
-                        Self::narrow_phase(&entries[i].1, &coll_a_rc, &entries[j].1, &coll_b_rc);
+                    let contact = Self::narrow_phase(
+                        &entry_a.world,
+                        &entry_a.collider,
+                        &entry_b.world,
+                        &entry_b.collider,
+                    );
                     if let Some(geom) = contact {
                         let pair = Self::build_contact_pair(
-                            &entries[i].0,
-                            &coll_a_rc,
-                            &entries[j].0,
-                            &coll_b_rc,
+                            &entry_a.node,
+                            &entry_a.collider,
+                            &entry_b.node,
+                            &entry_b.collider,
                             geom,
                         );
                         pairs.push(pair);
@@ -268,8 +264,16 @@ impl Scene {
         COLLIDER_ENTRY_SCRATCH.with(|scratch| {
             let mut entries = scratch.borrow_mut();
             entries.clear();
-            Self::for_each_collider_entry(scene_root, swept, &mut |node, world, aabb| {
-                entries.push((node.clone(), *world, *aabb));
+            Self::for_each_collider_entry(scene_root, swept, &mut |node, world, aabb, collider| {
+                let collider_ref = rc_ref!(collider);
+                entries.push(ColliderEntry {
+                    node: node.clone(),
+                    world: *world,
+                    aabb: *aabb,
+                    collider: collider.clone(),
+                    immovable: collider_ref.mesh.is_some() || collider_ref.mass == 0.0,
+                    trigger: collider_ref.trigger,
+                });
             });
             let result = f(&entries);
             entries.clear();
@@ -285,7 +289,7 @@ impl Scene {
     fn for_each_collider_entry(
         node: &RcNode,
         swept: bool,
-        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb),
+        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb, &RcCollider),
     ) {
         let parent = Node::parent(node);
         if parent
@@ -302,7 +306,7 @@ impl Scene {
         node: &RcNode,
         parent_world: Option<&Mat4>,
         swept: bool,
-        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb),
+        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb, &RcCollider),
     ) {
         let node_ref = rc_ref!(node);
         if !node_ref.active {
@@ -317,7 +321,7 @@ impl Scene {
                 let velocity = *rc_ref!(&coll.velocity);
                 aabb = Self::swept_aabb(aabb, velocity);
             }
-            f(node, &world, &aabb);
+            f(node, &world, &aabb, coll_rc);
         }
         for child in &node_ref.children {
             Self::for_each_collider_entry_recursive(child, Some(&world), swept, f);
@@ -1170,9 +1174,10 @@ impl Scene {
     ) -> Option<RaycastHitInfo> {
         let direction = Self::normalize_ray_direction(direction)?;
         let mut best: Option<RaycastHitInfo> = None;
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, collider| {
             let Some(hit) = Self::ray_test_one(
                 node,
+                collider,
                 world,
                 aabb,
                 origin,
@@ -1202,9 +1207,10 @@ impl Scene {
             return Vec::new();
         };
         let mut hits: Vec<RaycastHitInfo> = Vec::new();
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, collider| {
             if let Some(hit) = Self::ray_test_one(
                 node,
+                collider,
                 world,
                 aabb,
                 origin,
@@ -1240,6 +1246,7 @@ impl Scene {
 
     fn ray_test_one(
         node: &RcNode,
+        coll_rc: &RcCollider,
         world: &Mat4,
         aabb: &Aabb,
         origin: Vec3,
@@ -1248,8 +1255,7 @@ impl Scene {
         hit_triggers: bool,
         tags_filter: Option<&[String]>,
     ) -> Option<RaycastHitInfo> {
-        let coll_rc = rc_ref!(node).collider.clone()?;
-        let coll = rc_ref!(&coll_rc);
+        let coll = rc_ref!(coll_rc);
         if !hit_triggers && coll.trigger {
             return None;
         }
@@ -1263,7 +1269,7 @@ impl Scene {
             return None;
         }
         let hit = if has_mesh {
-            Self::ray_vs_mesh_collider(origin, direction, world, &coll_rc, max_distance)
+            Self::ray_vs_mesh_collider(origin, direction, world, coll_rc, max_distance)
         } else {
             match classify_shape(size, radius) {
                 ColliderShape::Sphere { r } => {
@@ -1302,12 +1308,8 @@ impl Scene {
         let probe = Aabb::from_sphere(center, radius);
         let mut out: Vec<RcNode> = Vec::new();
         // Test broad-phase candidates against the sphere
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
-            let coll_rc_opt = rc_ref!(node).collider.clone();
-            let Some(coll_rc) = coll_rc_opt else {
-                return;
-            };
-            let coll = rc_ref!(&coll_rc);
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, coll_rc| {
+            let coll = rc_ref!(coll_rc);
             if !hit_triggers && coll.trigger {
                 return;
             }
@@ -1357,12 +1359,8 @@ impl Scene {
         };
         let mut out: Vec<RcNode> = Vec::new();
         // Test broad-phase candidates against the box
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
-            let coll_rc_opt = rc_ref!(node).collider.clone();
-            let Some(coll_rc) = coll_rc_opt else {
-                return;
-            };
-            let coll = rc_ref!(&coll_rc);
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, coll_rc| {
+            let coll = rc_ref!(coll_rc);
             if !hit_triggers && coll.trigger {
                 return;
             }
@@ -4478,5 +4476,43 @@ mod tests {
         let pos_rc = rc_ref!(&n).transform.clone();
         let pos = rc_ref!(&pos_rc).pos();
         assert_eq!(rc_ref!(&pos).x, 0.0, "inactive subtree should not move");
+    }
+
+    #[test]
+    fn test_integrate_motion_preserves_world_translation_and_local_rotation() {
+        let node = Node::new();
+        rc_mut!(&node).transform = Mat4::from_translation(&Vec3 {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        });
+        let collider = sphere_collider(0.5, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 0.0, 0.0);
+        rc_mut!(&collider).angular_velocity = Vec3::new(0.0, 90.0, 0.0);
+        rc_mut!(&node).collider = Some(collider);
+
+        Scene::integrate_motion(&node);
+
+        let translation = Mat4::from_translation(&Vec3 {
+            x: 2.0,
+            y: 2.0,
+            z: 3.0,
+        });
+        let rotation = Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            90.0,
+        );
+        let expected = rc_ref!(&translation).mul_mat_value(&rc_ref!(&rotation));
+        let actual_rc = rc_ref!(&node).transform.clone();
+        let actual = rc_ref!(&actual_rc);
+        for row in 0..4 {
+            for col in 0..4 {
+                assert!((actual.data[row][col] - expected.data[row][col]).abs() < 1e-6);
+            }
+        }
     }
 }

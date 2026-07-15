@@ -69,18 +69,32 @@ impl Mat4 {
     }
 
     pub fn scale_vec(&self) -> RcVec3 {
+        let scale = self.scale_vec_value();
+        Vec3::new(scale.x, scale.y, scale.z)
+    }
+
+    pub(crate) fn scale_vec_value(&self) -> Vec3 {
         let sx =
             (self.data[0][0].powi(2) + self.data[1][0].powi(2) + self.data[2][0].powi(2)).sqrt();
         let sy =
             (self.data[0][1].powi(2) + self.data[1][1].powi(2) + self.data[2][1].powi(2)).sqrt();
         let sz =
             (self.data[0][2].powi(2) + self.data[1][2].powi(2) + self.data[2][2].powi(2)).sqrt();
-        Vec3::new(sx, sy, sz)
+        Vec3 {
+            x: sx,
+            y: sy,
+            z: sz,
+        }
     }
 
     pub fn rot(&self) -> RcQuat {
+        let rot = self.rot_value();
+        Quat::new(rot.x, rot.y, rot.z, rot.w)
+    }
+
+    pub(crate) fn rot_value(&self) -> Quat {
         // Strip scale from the upper-left 3x3 and derive the rotation Quat.
-        let scale = *rc_ref!(&self.scale_vec());
+        let scale = self.scale_vec_value();
         let sx = if scale.x.abs() > 1e-9 { scale.x } else { 1.0 };
         let sy = if scale.y.abs() > 1e-9 { scale.y } else { 1.0 };
         let sz = if scale.z.abs() > 1e-9 { scale.z } else { 1.0 };
@@ -107,7 +121,7 @@ impl Mat4 {
                 [0.0, 0.0, 0.0, 1.0],
             ],
         };
-        Quat::from_matrix(&rot_only)
+        Quat::from_matrix_value(&rot_only)
     }
 
     // Operators
@@ -194,7 +208,44 @@ impl Mat4 {
     }
 
     pub fn from_axis_angle(axis: &Vec3, deg: f32) -> RcMat4 {
-        Self::rotation_axis_angle(axis, deg)
+        Self::from_rows(Self::from_axis_angle_value(axis, deg).data)
+    }
+
+    pub(crate) fn from_axis_angle_value(axis: &Vec3, deg: f32) -> Self {
+        let r = deg.to_radians();
+        let c = r.cos();
+        let s = r.sin();
+        let one_minus_c = 1.0 - c;
+        let len = (axis.x * axis.x + axis.y * axis.y + axis.z * axis.z).sqrt();
+        if len < 1e-12 {
+            return Self::identity_value();
+        }
+        let x = axis.x / len;
+        let y = axis.y / len;
+        let z = axis.z / len;
+        Self {
+            data: [
+                [
+                    c + x * x * one_minus_c,
+                    x * y * one_minus_c - z * s,
+                    x * z * one_minus_c + y * s,
+                    0.0,
+                ],
+                [
+                    y * x * one_minus_c + z * s,
+                    c + y * y * one_minus_c,
+                    y * z * one_minus_c - x * s,
+                    0.0,
+                ],
+                [
+                    z * x * one_minus_c - y * s,
+                    z * y * one_minus_c + x * s,
+                    c + z * z * one_minus_c,
+                    0.0,
+                ],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        }
     }
 
     pub fn from_scale(scale: &Vec3) -> RcMat4 {
@@ -507,38 +558,7 @@ impl Mat4 {
     }
 
     fn rotation_axis_angle(axis: &Vec3, deg: f32) -> RcMat4 {
-        let r = deg.to_radians();
-        let c = r.cos();
-        let s = r.sin();
-        let one_minus_c = 1.0 - c;
-        let len = (axis.x * axis.x + axis.y * axis.y + axis.z * axis.z).sqrt();
-        if len < 1e-12 {
-            return Self::identity();
-        }
-        let x = axis.x / len;
-        let y = axis.y / len;
-        let z = axis.z / len;
-        Self::from_rows([
-            [
-                c + x * x * one_minus_c,
-                x * y * one_minus_c - z * s,
-                x * z * one_minus_c + y * s,
-                0.0,
-            ],
-            [
-                y * x * one_minus_c + z * s,
-                c + y * y * one_minus_c,
-                y * z * one_minus_c - x * s,
-                0.0,
-            ],
-            [
-                z * x * one_minus_c - y * s,
-                z * y * one_minus_c + x * s,
-                c + z * z * one_minus_c,
-                0.0,
-            ],
-            [0.0, 0.0, 0.0, 1.0],
-        ])
+        Self::from_axis_angle(axis, deg)
     }
 
     fn strip_translation(mat: &Self) -> RcMat4 {
@@ -629,6 +649,7 @@ mod tests {
         assert_eq!(m.data[2][2], 4.0);
         let s = deref_v(&m.scale_vec());
         assert!(approx_eq_vec(&s, &v));
+        assert_eq!(m.scale_vec_value(), s);
     }
 
     #[test]
@@ -679,6 +700,7 @@ mod tests {
         assert!(approx_eq_vec(&deref_v(&m.pos()), &pos));
         assert!(approx_eq_vec(&deref_v(&m.scale_vec()), &scale));
         let extracted = m.rot();
+        assert_eq!(m.rot_value(), *rc_ref!(&extracted));
         let extracted_euler = deref_v(&rc_ref!(&extracted).to_euler());
         assert!(approx_eq_vec(&extracted_euler, &rot_euler));
     }
@@ -968,6 +990,7 @@ mod tests {
             z: 0.0,
         };
         let m = Mat4::from_axis_angle(&axis, 90.0);
+        assert_eq!(Mat4::from_axis_angle_value(&axis, 90.0), *rc_ref!(&m));
         let v = Vec3 {
             x: 1.0,
             y: 0.0,
