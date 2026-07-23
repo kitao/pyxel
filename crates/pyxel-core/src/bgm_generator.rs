@@ -1619,7 +1619,7 @@ fn find_lower_harmony_at(
 }
 
 // Lay down a harmony note in `sub`: scan backward from `loc` to find the active master note,
-// then forward to fill the harmony slot without crossing the next master onset.
+// then walk forward filling the harmony slot, re-harmonizing whenever a new master onset appears.
 fn place_harmony(
     sub: &mut [Option<i32>],
     chord_bits: &[i32; 12],
