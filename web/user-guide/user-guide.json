@@ -1531,7 +1531,7 @@
       "ko": "Pyxel은 {0} 하에 라이선스가 부여됩니다. 소프트웨어 또는 그 상당 부분의 모든 사본에 MIT 라이선스 조항 사본과 저작권 고지를 포함하면 독점 소프트웨어에서도 재사용할 수 있습니다.",
       "pt": "O Pyxel é licenciado sob a {0}. Pode ser reutilizado em software proprietário, desde que todas as cópias do software ou suas partes substanciais incluam uma cópia dos termos da Licença MIT e um aviso de copyright.",
       "ru": "Pyxel лицензируется по {0}. Его можно использовать в проприетарном программном обеспечении, при условии, что все копии программного обеспечения или его значительные части содержат копию условий лицензии MIT и уведомление об авторских правах.",
-      "tr": "Pyxel, {0} ile lisanslanmıştır. Tüm kopyalardaki yazılım veya onun önemli bölümleri, MIT Lisansı koşullarını ve telif hakkı bildirimini içermesi koşuluyla özel yazılımda kullanılabilir.",
+      "tr": "Pyxel, {0} ile lisanslanmıştır. Yazılımın tüm kopyalarının veya önemli bölümlerinin MIT Lisansı koşullarının bir kopyasını ve telif hakkı bildirimini içermesi koşuluyla tescilli yazılımlarda yeniden kullanılabilir.",
       "uk": "Pyxel ліцензовано під {0}. Його можна використовувати у власному програмному забезпеченні за умови, що всі копії програмного забезпечення або його істотні частини містять копію умов ліцензії MIT та повідомлення про авторські права."
     },
     "sponsors_title": {

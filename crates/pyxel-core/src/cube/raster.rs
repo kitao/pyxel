@@ -194,8 +194,8 @@ pub fn camera_right_up(camera: &Camera) -> (Vec3, Vec3) {
 pub const ELLIPSE_SEGMENTS: usize = 24;
 
 // Billboard sprite corners: a quad facing the camera, rotated by
-// `angle_deg` in screen space (around view-z). Row-major corner order
-// matches project_rect_corners.
+// `angle_deg` in screen space (around view-z). Corners are returned in
+// row-major order: top-left, top-right, bottom-left, bottom-right.
 pub fn sprite_corners(pos: &Vec3, w: f32, h: f32, angle_deg: f32, camera: &Camera) -> [Vec3; 4] {
     let (right, up) = camera_right_up(camera);
     let rad = angle_deg.to_radians();

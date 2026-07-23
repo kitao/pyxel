@@ -110,7 +110,8 @@ impl Quat {
         }
         if cos_theta < -0.999_999 {
             // Opposite vectors: pick any perpendicular axis and rotate 180°.
-            let axis = if a.x.abs() < 0.9 {
+            let a_len = (a.x * a.x + a.y * a.y + a.z * a.z).sqrt();
+            let axis = if a.x.abs() < 0.9 * a_len {
                 Vec3 {
                     x: 1.0,
                     y: 0.0,
