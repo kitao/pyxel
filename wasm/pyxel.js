@@ -647,7 +647,8 @@ const _hookFileOperations = (pyodide, root) => {
   };
 
   // Hook read-only open/stat calls so files are mirrored lazily.
-  // SDL2 open flags: O_RDONLY | O_STAT
+  // 557056 = O_RDONLY | O_LARGEFILE | O_CLOEXEC, the flag word Emscripten's
+  // SDL2 passes for read-only opens.
   const O_RDONLY_STAT = 557056;
   const open = fs.open.bind(fs);
   fs.open = (path, flags, mode) => {

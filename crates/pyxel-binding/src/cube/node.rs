@@ -444,7 +444,7 @@ impl Node {
     }
 
     // Scene-wide shading cascade. None inherits from the closest non-None
-    // ancestor; Scene seeds a default Shading at construction.
+    // ancestor; when no ancestor sets one, geometry draws unlit.
     #[getter]
     fn shading(&self) -> Option<Shading> {
         self.inner_ref()

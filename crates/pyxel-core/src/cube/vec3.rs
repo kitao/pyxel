@@ -172,9 +172,10 @@ impl Vec3 {
         if theta.abs() < 1e-6 {
             return self.lerp(other, t);
         }
-        if std::f32::consts::PI - theta < 1e-6 {
+        if std::f32::consts::PI - theta < 1e-3 {
             // Anti-parallel vectors: rotate through any perpendicular axis.
-            let axis = if self.x.abs() < 0.9 {
+            let self_len = self.length();
+            let axis = if self.x.abs() < 0.9 * self_len {
                 Vec3 {
                     x: 1.0,
                     y: 0.0,

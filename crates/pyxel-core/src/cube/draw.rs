@@ -82,8 +82,8 @@ impl DrawState<'_> {
     }
 }
 
-// Signed area of the triangle in Y-down screen space. Positive area =
-// CCW winding = front-facing.
+// Signed area of the triangle in Y-down screen space. Front faces (CCW in
+// world space) project to a negative area; back faces project to positive.
 #[inline]
 fn signed_screen_area(p0: (f32, f32, f32), p1: (f32, f32, f32), p2: (f32, f32, f32)) -> f32 {
     (p1.0 - p0.0) * (p2.1 - p0.1) - (p1.1 - p0.1) * (p2.0 - p0.0)
