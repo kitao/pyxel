@@ -32,6 +32,25 @@ class TestListImportedModules:
         # json from nested helper should be tracked as system.
         assert "json" in result["system"]
 
+    def test_extracts_local_submodule_imports(self, tmp_path):
+        script = tmp_path / "main.py"
+        script.write_text("from pkg import helper\n", encoding="utf-8")
+        pkg = tmp_path / "pkg"
+        pkg.mkdir()
+        (pkg / "__init__.py").write_text("", encoding="utf-8")
+        (pkg / "helper.py").write_text("import zlib\n", encoding="utf-8")
+        result = pyxel.utils.list_imported_modules(str(script))
+        assert any("helper.py" in p for p in result["local"])
+        # zlib from the nested submodule should be tracked as system.
+        assert "zlib" in result["system"]
+
+    def test_from_import_attribute_is_not_a_system_module(self, tmp_path):
+        script = tmp_path / "main.py"
+        script.write_text("from pathlib import Path\n", encoding="utf-8")
+        result = pyxel.utils.list_imported_modules(str(script))
+        # Only the package itself is a system module, not the Path attribute.
+        assert result["system"] == ["pathlib"]
+
     def test_handles_relative_imports(self, tmp_path):
         script = tmp_path / "main.py"
         script.write_text("from . import helper\n", encoding="utf-8")

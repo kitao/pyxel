@@ -15,6 +15,18 @@
 - Added a Cube Examples category to the showcase
 - Improved Python API error messages for argument types and indices
 
+## 2.9.9
+
+- Added browser downloads for sound and music saves on Pyxel Web
+- Fixed browser export filenames for captures saved with extensions
+- Fixed empty screencasts exporting a nonexistent file on Pyxel Web
+- Fixed palette corruption when Image.from_image exceeds 256 colors
+- Fixed app2exe hidden imports for from-package submodule imports
+- Fixed Pyxel Editor image bank display after resource file drops
+- Fixed initial button states of Pyxel Editor number pickers
+- Extracted shared web page headers into shared.js
+- Unified rotate/scale blit setup into TransformProjection
+
 ## 2.9.8
 
 - Updated Rust to version nightly-2026-07-14
