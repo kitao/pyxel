@@ -49,6 +49,35 @@ const buildLangSelector = (
   return select;
 };
 
+// Standard page header with title, subtitle, and a language selector that
+// re-renders through the page's text updater.
+const buildPageHeader = (updateFn) => {
+  const header = document.createElement("header");
+  header.className = "flex items-start gap-4 mb-6";
+
+  const titleBlock = document.createElement("div");
+  titleBlock.className = "flex-1 min-w-0 order-first";
+
+  const h1 = document.createElement("h1");
+  h1.className = "font-semibold text-2xl tracking-tight";
+  h1.id = "page-title";
+  titleBlock.appendChild(h1);
+
+  const subtitle = document.createElement("p");
+  subtitle.className = "mt-2 text-gray-300 text-sm";
+  subtitle.id = "page-subtitle";
+  titleBlock.appendChild(subtitle);
+
+  const langSelect = buildLangSelector(data.languages, lang, (v) => {
+    lang = v;
+    updateFn();
+  });
+
+  header.appendChild(langSelect);
+  header.appendChild(titleBlock);
+  return header;
+};
+
 // Shared HTML string helpers for generated static pages
 
 const esc = (s) =>

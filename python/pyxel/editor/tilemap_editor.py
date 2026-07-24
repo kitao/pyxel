@@ -137,6 +137,10 @@ class TilemapEditor(EditorBase):
             print(f"Failed to load tilemap: {e}")
 
     def __on_update(self):
+        imgsrc = pyxel.tilemaps[self.tilemap_index_var].imgsrc
+        if self.image_index_var != imgsrc:
+            self.image_index_var = imgsrc
+
         self.check_tool_button_shortcuts()
 
     def __on_draw(self):

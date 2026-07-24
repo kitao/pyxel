@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -124,6 +126,24 @@ class TestSound:
         path = str(tmp_path / "test_snd_tone9.wav")
         snd.save(path, 0.5)
         assert Path(path).stat().st_size > 0
+
+    def test_save_before_init(self, tmp_path):
+        # Sound.save renders without a window and must work before pyxel.init.
+        path = tmp_path / "no_init.wav"
+        code = (
+            "import pyxel\n"
+            "snd = pyxel.Sound()\n"
+            'snd.set("c2e2", "tt", "77", "nn", 10)\n'
+            f"snd.save({str(path)!r}, 0.1)\n"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert result.returncode == 0, result.stderr
+        assert path.stat().st_size > 0
 
     def test_total_sec(self):
         snd = pyxel.Sound()

@@ -607,53 +607,38 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         scale: f32,
         use_canvas_clip: bool,
     ) {
-        if scale < f32::EPSILON {
+        let Some(proj) = TransformProjection::new(
+            x,
+            y,
+            canvas_x,
+            canvas_y,
+            width,
+            height,
+            self.camera_x,
+            self.camera_y,
+            rotate,
+            scale,
+            self.clip_rect,
+        ) else {
             return;
-        }
+        };
 
-        // Build inverse transform bounds before scanning destination pixels.
-        let x = f32_to_i32(x) - self.camera_x;
-        let y = f32_to_i32(y) - self.camera_y;
-        let canvas_x = f32_to_i32(canvas_x);
-        let canvas_y = f32_to_i32(canvas_y);
-        let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
-        let sign_y = if height < 0.0 { -1.0 } else { 1.0 };
-        let width = f32_to_i32(width).abs();
-        let height = f32_to_i32(height).abs();
-
-        let canvas_area = RectArea::new(canvas_x, canvas_y, width as u32, height as u32)
-            .intersection(if use_canvas_clip {
-                canvas.clip_rect
-            } else {
-                canvas.self_rect
-            });
+        let canvas_area = RectArea::new(
+            proj.src_x,
+            proj.src_y,
+            proj.width as u32,
+            proj.height as u32,
+        )
+        .intersection(if use_canvas_clip {
+            canvas.clip_rect
+        } else {
+            canvas.self_rect
+        });
         if canvas_area.is_empty() {
             return;
         }
 
-        let half_width = (width - 1) as f32 / 2.0;
-        let half_height = (height - 1) as f32 / 2.0;
-        let src_cx = canvas_x as f32 + half_width;
-        let src_cy = canvas_y as f32 + half_height;
-        let dst_cx = x as f32 + half_width;
-        let dst_cy = y as f32 + half_height;
-
-        let rotate = rotate * PI / 180.0;
-        // Positive rotation is clockwise in screen space.
-        let sin = -f32::sin(rotate);
-        let cos = f32::cos(rotate);
-        let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
-        let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
-        let x1 = f32_to_i32(dst_cx - bound_x).max(self.clip_rect.left());
-        let x2 = f32_to_i32(dst_cx + bound_x).min(self.clip_rect.right());
-        let y1 = f32_to_i32(dst_cy - bound_y).max(self.clip_rect.top());
-        let y2 = f32_to_i32(dst_cy + bound_y).min(self.clip_rect.bottom());
-
-        // Pre-compute per-pixel stepping
-        let cos_s = cos / scale;
-        let sin_s = sin / scale;
-        let step_sx = sign_x * cos_s;
-        let step_sy = sign_x * sin_s;
+        let (step_sx, step_sy) = proj.src_step_per_x();
 
         // Fast path: no dithering
         if self.alpha >= 1.0 {
@@ -665,13 +650,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             let ca_b = canvas_area.bottom();
             macro_rules! scan {
                 (|$val:ident, $di:ident| $body:expr) => {
-                    for yi in y1..=y2 {
-                        let oy = (yi as f32 - dst_cy) * sign_y;
-                        let ox0 = (x1 as f32 - dst_cx) * sign_x;
-                        let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
-                        let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
+                    for yi in proj.y1..=proj.y2 {
+                        let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
                         let di_row = dst_w * yi as usize;
-                        for xi in x1..=x2 {
+                        for xi in proj.x1..=proj.x2 {
                             let vx = f32_to_i32(sx);
                             let vy = f32_to_i32(sy);
                             sx += step_sx;
@@ -699,12 +681,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
 
         // Dithering path
-        for yi in y1..=y2 {
-            let oy = (yi as f32 - dst_cy) * sign_y;
-            let ox0 = (x1 as f32 - dst_cx) * sign_x;
-            let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
-            let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
-            for xi in x1..=x2 {
+        for yi in proj.y1..=proj.y2 {
+            let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
+            for xi in proj.x1..=proj.x2 {
                 let vx = f32_to_i32(sx);
                 let vy = f32_to_i32(sy);
                 sx += step_sx;
@@ -1029,6 +1008,105 @@ impl CopyArea {
             width,
             height,
         }
+    }
+}
+
+// Transform projection
+
+pub(crate) struct TransformProjection {
+    src_cx: f32,
+    src_cy: f32,
+    dst_cx: f32,
+    dst_cy: f32,
+    sign_x: f32,
+    sign_y: f32,
+    cos_s: f32,
+    sin_s: f32,
+    pub(crate) src_x: i32,
+    pub(crate) src_y: i32,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
+    pub(crate) x1: i32,
+    pub(crate) x2: i32,
+    pub(crate) y1: i32,
+    pub(crate) y2: i32,
+}
+
+impl TransformProjection {
+    pub(crate) fn new(
+        x: f32,
+        y: f32,
+        src_x: f32,
+        src_y: f32,
+        width: f32,
+        height: f32,
+        offset_x: i32,
+        offset_y: i32,
+        rotate: f32,
+        scale: f32,
+        clip_rect: RectArea,
+    ) -> Option<Self> {
+        if scale < f32::EPSILON {
+            return None;
+        }
+
+        // Build inverse transform bounds before scanning destination pixels.
+        let x = f32_to_i32(x) - offset_x;
+        let y = f32_to_i32(y) - offset_y;
+        let src_x = f32_to_i32(src_x);
+        let src_y = f32_to_i32(src_y);
+        let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
+        let sign_y = if height < 0.0 { -1.0 } else { 1.0 };
+        let width = f32_to_i32(width).abs();
+        let height = f32_to_i32(height).abs();
+
+        let half_width = (width - 1) as f32 / 2.0;
+        let half_height = (height - 1) as f32 / 2.0;
+        let src_cx = src_x as f32 + half_width;
+        let src_cy = src_y as f32 + half_height;
+        let dst_cx = x as f32 + half_width;
+        let dst_cy = y as f32 + half_height;
+
+        let rotate = rotate * PI / 180.0;
+        // Positive rotation is clockwise in screen space.
+        let sin = -f32::sin(rotate);
+        let cos = f32::cos(rotate);
+        let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
+        let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
+
+        Some(Self {
+            src_cx,
+            src_cy,
+            dst_cx,
+            dst_cy,
+            sign_x,
+            sign_y,
+            cos_s: cos / scale,
+            sin_s: sin / scale,
+            src_x,
+            src_y,
+            width,
+            height,
+            x1: f32_to_i32(dst_cx - bound_x).max(clip_rect.left()),
+            x2: f32_to_i32(dst_cx + bound_x).min(clip_rect.right()),
+            y1: f32_to_i32(dst_cy - bound_y).max(clip_rect.top()),
+            y2: f32_to_i32(dst_cy + bound_y).min(clip_rect.bottom()),
+        })
+    }
+
+    // Per-pixel step values (constant for all xi, yi)
+    pub(crate) fn src_step_per_x(&self) -> (f32, f32) {
+        (self.sign_x * self.cos_s, self.sign_x * self.sin_s)
+    }
+
+    // Base source-space position for a given (xi, yi)
+    pub(crate) fn src_base(&self, xi: i32, yi: i32) -> (f32, f32) {
+        let ox = (xi as f32 - self.dst_cx) * self.sign_x;
+        let oy = (yi as f32 - self.dst_cy) * self.sign_y;
+        (
+            self.src_cx + ox * self.cos_s - oy * self.sin_s,
+            self.src_cy + ox * self.sin_s + oy * self.cos_s,
+        )
     }
 }
 

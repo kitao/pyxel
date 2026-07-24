@@ -1,11 +1,10 @@
 use std::collections::HashMap;
-use std::f32::consts::PI;
 use std::path::Path;
 use std::{array, ptr};
 
 use image::imageops;
 
-use crate::canvas::{Canvas, CopyArea, PerspectiveProjection, ToIndex};
+use crate::canvas::{Canvas, CopyArea, PerspectiveProjection, ToIndex, TransformProjection};
 use crate::font::RcFont;
 use crate::rect_area::RectArea;
 use crate::settings::{
@@ -67,11 +66,7 @@ impl Image {
             .map_err(|_| format!("Failed to open file '{filename}'"))?
             .to_rgb8();
 
-        // Reset the palette only after the file is readable so a failed load keeps it intact.
         let mut colors = pyxel::colors();
-        if include_colors {
-            colors.clear();
-        }
         let (width, height) = file_image.dimensions();
         let rc = Self::try_new(width, height)?;
 
@@ -79,6 +74,8 @@ impl Image {
         {
             let mut image = rc_mut!(rc);
             let mut color_table = HashMap::<(u8, u8, u8), Color>::with_capacity(256);
+            // Stage extracted colors locally so a failed load keeps the palette intact.
+            let mut extracted_colors: Vec<Rgb24> = Vec::new();
 
             for y in 0..height {
                 for x in 0..width {
@@ -92,11 +89,11 @@ impl Image {
 
                         if include_colors {
                             assert!(
-                                colors.len() < MAX_COLORS as usize,
+                                extracted_colors.len() < MAX_COLORS as usize,
                                 "Number of colors must be between 1 and {MAX_COLORS}"
                             );
-                            closest_color = colors.len() as Color;
-                            colors.push(
+                            closest_color = extracted_colors.len() as Color;
+                            extracted_colors.push(
                                 ((src_rgb.0 as Rgb24) << 16)
                                     | ((src_rgb.1 as Rgb24) << 8)
                                     | src_rgb.2 as Rgb24,
@@ -123,6 +120,10 @@ impl Image {
                             .write_data(x as usize, y as usize, closest_color);
                     }
                 }
+            }
+
+            if include_colors {
+                *colors = extracted_colors;
             }
         }
 
@@ -640,22 +641,29 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        if scale < f32::EPSILON {
+        // The virtual source region starts at the origin; sampling adds the
+        // tilemap offset.
+        let Some(proj) = TransformProjection::new(
+            x,
+            y,
+            0.0,
+            0.0,
+            width,
+            height,
+            self.canvas.camera_x,
+            self.canvas.camera_y,
+            rotate,
+            scale,
+            self.canvas.clip_rect,
+        ) else {
             return;
-        }
+        };
 
-        // Build inverse transform bounds in the virtual source region.
-        let x = utils::f32_to_i32(x) - self.canvas.camera_x;
-        let y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let tilemap_x = utils::f32_to_i32(tilemap_x);
         let tilemap_y = utils::f32_to_i32(tilemap_y);
-        let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
-        let sign_y = if height < 0.0 { -1.0 } else { 1.0 };
-        let width = utils::f32_to_i32(width).abs();
-        let height = utils::f32_to_i32(height).abs();
         let tilemap = rc_ref!(tilemap);
         let source_area =
-            RectArea::new(0, 0, width as u32, height as u32).intersection(RectArea::new(
+            RectArea::new(0, 0, proj.width as u32, proj.height as u32).intersection(RectArea::new(
                 tilemap_x.saturating_neg(),
                 tilemap_y.saturating_neg(),
                 tilemap.width() * TILE_SIZE,
@@ -664,26 +672,6 @@ impl Image {
         if source_area.is_empty() {
             return;
         }
-
-        let half_width = (width - 1) as f32 / 2.0;
-        let half_height = (height - 1) as f32 / 2.0;
-        let src_cx = half_width;
-        let src_cy = half_height;
-        let dst_cx = x as f32 + half_width;
-        let dst_cy = y as f32 + half_height;
-        let rotate = rotate * PI / 180.0;
-        let sin = -f32::sin(rotate);
-        let cos = f32::cos(rotate);
-        let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
-        let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
-        let x1 = utils::f32_to_i32(dst_cx - bound_x).max(self.canvas.clip_rect.left());
-        let x2 = utils::f32_to_i32(dst_cx + bound_x).min(self.canvas.clip_rect.right());
-        let y1 = utils::f32_to_i32(dst_cy - bound_y).max(self.canvas.clip_rect.top());
-        let y2 = utils::f32_to_i32(dst_cy + bound_y).min(self.canvas.clip_rect.bottom());
-        let cos_s = cos / scale;
-        let sin_s = sin / scale;
-        let step_sx = sign_x * cos_s;
-        let step_sy = sign_x * sin_s;
 
         // Preserve source pixels when the tilemap image aliases the destination.
         let resolved = tilemap.imgsrc.resolve();
@@ -723,15 +711,14 @@ impl Image {
             Some(palette.map_or(pixel, |values| values[pixel as usize]))
         };
 
+        let (step_sx, step_sy) = proj.src_step_per_x();
+
         if self.canvas.alpha >= 1.0 {
             let dst_width = self.canvas.width() as usize;
-            for yi in y1..=y2 {
-                let oy = (yi as f32 - dst_cy) * sign_y;
-                let ox0 = (x1 as f32 - dst_cx) * sign_x;
-                let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
-                let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
+            for yi in proj.y1..=proj.y2 {
+                let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
                 let dst_row = dst_width * yi as usize;
-                for xi in x1..=x2 {
+                for xi in proj.x1..=proj.x2 {
                     let vx = utils::f32_to_i32(sx);
                     let vy = utils::f32_to_i32(sy);
                     sx += step_sx;
@@ -744,12 +731,9 @@ impl Image {
             return;
         }
 
-        for yi in y1..=y2 {
-            let oy = (yi as f32 - dst_cy) * sign_y;
-            let ox0 = (x1 as f32 - dst_cx) * sign_x;
-            let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
-            let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
-            for xi in x1..=x2 {
+        for yi in proj.y1..=proj.y2 {
+            let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
+            for xi in proj.x1..=proj.x2 {
                 let vx = utils::f32_to_i32(sx);
                 let vy = utils::f32_to_i32(sy);
                 sx += step_sx;

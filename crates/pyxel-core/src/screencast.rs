@@ -103,9 +103,10 @@ impl Screencast {
         self.num_captured_screens += 1;
     }
 
-    pub fn save(&mut self, filename: &str, scale: u32) -> Result<(), String> {
+    // Returns whether a GIF file was written; no captured screens write nothing.
+    pub fn save(&mut self, filename: &str, scale: u32) -> Result<bool, String> {
         if self.num_captured_screens == 0 {
-            return Ok(());
+            return Ok(false);
         }
 
         let filename = add_file_extension(filename, ".gif");
@@ -239,7 +240,7 @@ impl Screencast {
         }
 
         self.reset();
-        Ok(())
+        Ok(true)
     }
 
     // Helpers
@@ -533,6 +534,20 @@ mod tests {
     // GIF save
 
     #[test]
+    fn test_save_without_captured_screens_writes_no_file() {
+        let mut screencast = Screencast::new(2, 1);
+        let path = std::env::temp_dir().join(format!(
+            "pyxel_screencast_test_empty_{}.gif",
+            std::process::id()
+        ));
+
+        let wrote = screencast.save(path.to_str().unwrap(), 1).unwrap();
+
+        assert!(!wrote);
+        assert!(!path.exists());
+    }
+
+    #[test]
     fn test_save_gif_with_wraparound_and_overflow() {
         // Two 256-color screens with disjoint palettes: the diff frame needs
         // all 256 new colors plus transparent, forcing the full-frame fallback
@@ -549,7 +564,7 @@ mod tests {
         let path =
             std::env::temp_dir().join(format!("pyxel_screencast_test_{}.gif", std::process::id()));
         let path_str = path.to_str().unwrap();
-        screencast.save(path_str, 1).unwrap();
+        assert!(screencast.save(path_str, 1).unwrap());
         assert_eq!(
             screencast.num_captured_screens, 0,
             "save resets capture state"

@@ -6,6 +6,7 @@ import pytest
 
 import pyxel
 from pyxel import editor as _editor
+from pyxel.editor.widgets import NumberPicker
 
 from _capture import (  # type: ignore[reportMissingImports]
     EDITOR_REFS_DIR,
@@ -68,6 +69,22 @@ class TestEditor:
         run_editor_subprocess(editor, resource, tmp_path)
         results = collect_editor_results(tmp_path)
         compare_screenshots(ref_name, results, EDITOR_REFS_DIR)
+
+
+class TestNumberPicker:
+    def test_initial_buttons_reflect_range_bounds(self):
+        picker = NumberPicker(None, 0, 0, min_value=0, max_value=3, value=0)
+        assert not picker.dec_button.is_enabled_var
+        assert picker.inc_button.is_enabled_var
+
+        picker = NumberPicker(None, 0, 0, min_value=0, max_value=3, value=3)
+        assert picker.dec_button.is_enabled_var
+        assert not picker.inc_button.is_enabled_var
+
+    def test_initial_value_is_clamped(self):
+        picker = NumberPicker(None, 0, 0, min_value=0, max_value=3, value=99)
+        assert picker.value_var == 3
+        assert not picker.inc_button.is_enabled_var
 
 
 class TestUserPal:
