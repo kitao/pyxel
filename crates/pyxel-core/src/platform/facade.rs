@@ -80,9 +80,15 @@ pub fn ticks() -> u32 {
 }
 
 pub fn export_browser_file(filename: &str) {
-    if !is_headless() {
-        with_platform(|platform| platform.export_browser_file(filename));
+    // Sound and Music saves can run before init; skip the export then.
+    if is_headless() {
+        return;
     }
+    PLATFORM.with(|platform| {
+        if let Some(platform) = platform.borrow().as_ref() {
+            platform.export_browser_file(filename);
+        }
+    });
 }
 
 // Window

@@ -221,6 +221,7 @@ impl Audio {
             writer.write_sample(sample).map_err(|_| save_err())?;
         }
         writer.finalize().map_err(|_| save_err())?;
+        platform::export_browser_file(&filename);
 
         // Save MP4 file
         if !use_ffmpeg {
@@ -267,6 +268,7 @@ impl Audio {
         if !output.status.success() {
             return Err("Failed to convert file with FFmpeg".to_string());
         }
+        platform::export_browser_file(&mp4_file);
         Ok(())
     }
 }

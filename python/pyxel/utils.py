@@ -34,6 +34,8 @@ def _track_module(
     dir_path: str,
     level: int,
     name: str,
+    *,
+    allow_system: bool = True,
 ) -> None:
     module_path = _resolve_module_path(dir_path, level, name)
     module_filename = _to_module_filename(module_path)
@@ -41,7 +43,7 @@ def _track_module(
     if module_filename:
         imports[_LOCAL].add(str(Path(module_filename).absolute()))
         _list_imported_modules(imports, module_filename, checked_files)
-    elif level == 0:
+    elif allow_system and level == 0:
         # Only top-level imports can resolve as system modules.
         imports[_SYSTEM].add(name)
 
@@ -73,6 +75,17 @@ def _list_imported_modules(
                     node.level,
                     node.module,
                 )
+                # Track "from package import module" targets that resolve as
+                # local modules; plain attribute imports are not system modules.
+                for alias in node.names:
+                    _track_module(
+                        imports,
+                        checked_files,
+                        dir_path,
+                        node.level,
+                        f"{node.module}.{alias.name}",
+                        allow_system=False,
+                    )
             else:
                 # Track relative imports without module names, such as "from . import foo".
                 for alias in node.names:

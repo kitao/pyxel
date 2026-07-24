@@ -1,6 +1,9 @@
 from pathlib import Path
 
+import PIL.Image
 import pyxel
+
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 class TestImageCreation:
@@ -317,6 +320,22 @@ class TestImageIO:
             assert has_nonzero
         finally:
             pyxel.colors[:] = original_colors
+
+    def test_from_image_with_too_many_colors_keeps_palette(
+        self, tmp_path, panic_exception
+    ):
+        path = tmp_path / "many_colors.png"
+        file_image = PIL.Image.new("RGB", (32, 9))
+        file_image.putdata([(i % 256, i // 256, 0) for i in range(32 * 9)])
+        file_image.save(path)
+        colors_before = list(pyxel.colors)
+
+        with raises_exact(
+            panic_exception, "Number of colors must be between 1 and 256"
+        ):
+            pyxel.Image.from_image(str(path), include_colors=True)
+
+        assert list(pyxel.colors) == colors_before
 
     def test_incl_colors_deprecated(self, capfd, assets_dir):
         # incl_colors is the deprecated alias; warning fires only once per session,

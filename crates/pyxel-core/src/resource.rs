@@ -15,6 +15,7 @@ use crate::settings::{
     BASE_DIR, DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, PALETTE_FILE_EXTENSION,
     RESOURCE_ARCHIVE_NAME, RESOURCE_FILE_EXTENSION, RESOURCE_FORMAT_VERSION,
 };
+use crate::utils::add_file_extension;
 
 pub struct Resource {
     capture_scale: u32,
@@ -194,10 +195,11 @@ impl Pyxel {
             || Self::join_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
             str::to_string,
         );
+        let filename = add_file_extension(&filename, ".png");
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
         rc_ref!(pyxel::screen()).save(&filename, scale)?;
 
-        platform::export_browser_file(&(filename + ".png"));
+        platform::export_browser_file(&filename);
         Ok(())
     }
 
@@ -210,10 +212,11 @@ impl Pyxel {
             || Self::join_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
             str::to_string,
         );
+        let filename = add_file_extension(&filename, ".gif");
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
-        self.resource.screencast.save(&filename, scale)?;
-
-        platform::export_browser_file(&(filename + ".gif"));
+        if self.resource.screencast.save(&filename, scale)? {
+            platform::export_browser_file(&filename);
+        }
         Ok(())
     }
 
@@ -259,19 +262,22 @@ impl Pyxel {
     // Debug dumps
 
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
-        let filename = Self::join_desktop_path(&format!("pyxel-image{image_index}"));
+        let filename = add_file_extension(
+            &Self::join_desktop_path(&format!("pyxel-image{image_index}")),
+            ".png",
+        );
 
         if let Some(image) = pyxel::images().get(image_index as usize) {
             if let Err(e) = rc_ref!(image).save(&filename, 1) {
                 println!("{e}");
                 return;
             }
-            platform::export_browser_file(&(filename + ".png"));
+            platform::export_browser_file(&filename);
         }
     }
 
     pub(crate) fn dump_palette(&self) {
-        let filename = Self::join_desktop_path("pyxel-palette");
+        let filename = add_file_extension(&Self::join_desktop_path("pyxel-palette"), ".png");
         let num_colors = pyxel::colors().len();
         let rc = Image::new(num_colors as u32, 1);
         let mut image = rc_mut!(rc);
@@ -283,7 +289,7 @@ impl Pyxel {
             println!("{e}");
             return;
         }
-        platform::export_browser_file(&(filename + ".png"));
+        platform::export_browser_file(&filename);
     }
 
     // Helpers
