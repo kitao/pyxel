@@ -1070,6 +1070,13 @@ impl Node {
         h: i32,
         target: Option<PyRef<'_, crate::image_wrapper::Image>>,
     ) -> PyResult<()> {
+        // A nested draw would replace the active context and lose the outer
+        // camera's depth buffer; multi-view rendering uses sequential draws.
+        if with_draw_context(|_| ()).is_some() {
+            return Err(PyValueError::new_err(
+                "draw cannot be called from inside on_draw",
+            ));
+        }
         let node_inner = slf.borrow().inner.clone();
         let cam_inner = InnerNode::effective_camera(&node_inner).ok_or_else(|| {
             PyValueError::new_err("draw requires a camera on this node or an ancestor")
@@ -1307,6 +1314,9 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
                 ));
             };
             player.frame += player.speed;
+            // Keep the playhead inside the clip so f32 precision never
+            // degrades during long looping playback.
+            player.frame = rc_ref!(&player.motion).resolve_frame(player.frame, player.looping);
             let node_py = node_bound.clone().unbind();
             Node::apply_motion_inner(
                 &node_py,

@@ -120,6 +120,15 @@ class TestAttributes:
         m.colkey = None
         assert m.colkey is None
 
+    def test_motions_not_writable(self):
+        # motions is engine-built (GLB import); the attribute is read-only.
+        m = Mesh()
+        with raises_exact(
+            AttributeError,
+            "attribute 'motions' of 'builtins.Mesh' objects is not writable",
+        ):
+            m.motions = []
+
     def test_set_prims_revalidates(self):
         p = _square_prim()
         m = Mesh(

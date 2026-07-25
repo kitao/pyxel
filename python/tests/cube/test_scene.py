@@ -291,6 +291,31 @@ class TestOrthoCameraClipping:
         assert pyxel.pget(pyxel.width // 2, pyxel.height // 2) == 11
 
 
+class TestNestedDraw:
+    def test_draw_inside_on_draw_raises_and_keeps_camera_usable(self):
+        # A nested draw would replace the active context and lose the
+        # outer camera's depth buffer; the call is rejected instead
+        # (multi-view rendering uses sequential draws).
+        inner = Node()
+        inner.camera = Camera()
+
+        class Hud(Node):
+            def on_draw(self):
+                inner.draw(0, 0, 8, 8)
+
+        root = Node()
+        root.camera = Camera()
+        root.camera.clear_color = 0
+        hud = Hud()
+        root.add_child(hud)
+        with raises_exact(ValueError, "draw cannot be called from inside on_draw"):
+            root.draw(0, 0, 32, 24)
+
+        # The outer camera state stays intact for the next frame.
+        root.remove_child(hud)
+        root.draw(0, 0, 32, 24)
+
+
 # State set in one Node.on_draw must not leak to siblings or children.
 class TestStateSetterIsolation:
     @staticmethod
