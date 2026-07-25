@@ -233,10 +233,11 @@ class Mesh:
     transforms: list[Mat4]
     parents: list[int]  # -1 = root; parents[i] < i invariant
     names: list[str]
-    motions: list[Motion]
     col_img: int | Image  # default flat color or texture
     colkey: int | None  # transparent color when col_img is Image
 
+    @property
+    def motions(self) -> list[Motion]: ...  # animation clips imported with the mesh
     def __init__(
         self,
         primitives: list[Primitive | None] | None = None,

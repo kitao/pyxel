@@ -555,6 +555,22 @@ def test_play_motion_advances_during_update(tmp_path):
     assert root.transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
 
 
+def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
+    # The playhead wraps into the clip length every update, so looping
+    # playback cannot freeze once the raw frame count would exceed the
+    # f32 integer-precision limit (2^24 frames).
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    root.play_motion(mesh.motions[0], start_frame=float(2**24))
+    root.update()
+    first = root.transform.pos.x
+    root.update()
+
+    assert root.transform.pos.x != first
+
+
 def test_stop_motion_leaves_current_pose(tmp_path):
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")
     mesh = Mesh.from_glb(str(path), fps=30.0)

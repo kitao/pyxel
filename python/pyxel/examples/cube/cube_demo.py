@@ -2,16 +2,7 @@ import math
 import os
 
 import pyxel
-from pyxel.cube import (
-    Camera,
-    Mat4,
-    Mesh,
-    Node,
-    Primitive,
-    Quat,
-    Shading,
-    Vec3,
-)
+from pyxel.cube import Camera, Mat4, Mesh, Node, Primitive, Quat, Shading, Vec3
 
 # Unit icosahedron table (12 vertices on |v|=1, 20 outward triangles).
 # Mirrors `ICOSA_BASE_POSITIONS` / `ICOSA_BASE_TRI_INDICES` in

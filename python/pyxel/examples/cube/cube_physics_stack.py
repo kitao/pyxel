@@ -1,13 +1,7 @@
 import pyxel
-from cube_physics_camera import OrbitCamera
+from pyxel.cube import Collider, Mat4, Node, Shading, Vec3
 
-from pyxel.cube import (
-    Collider,
-    Mat4,
-    Node,
-    Shading,
-    Vec3,
-)
+from cube_physics_camera import OrbitCamera
 
 # Carnival-style 2-high pyramid. Vertical chains of three or more cans
 # collapse under the single-pass resolver (stable stacks are out of

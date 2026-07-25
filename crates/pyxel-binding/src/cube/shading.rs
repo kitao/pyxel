@@ -31,7 +31,7 @@ impl Shading {
 
     fn __repr__(&self) -> String {
         let r = self.inner_ref();
-        format!("Shading({} × {})", r.palette_size(), LEVEL_COUNT)
+        format!("Shading({} x {})", r.palette_size(), LEVEL_COUNT)
     }
 
     fn __getitem__(&self, key: (usize, usize)) -> PyResult<(i32, i32)> {
