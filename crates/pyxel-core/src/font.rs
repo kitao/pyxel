@@ -183,6 +183,20 @@ impl Font {
         text: &str,
         color: Color,
     ) {
+        self.for_each_pixel(x, y, text, |px, py| {
+            if canvas.clip_rect.contains(px, py) {
+                canvas.write_data(px as usize, py as usize, color);
+            }
+        });
+    }
+
+    pub(crate) fn for_each_pixel(
+        &mut self,
+        x: i32,
+        y: i32,
+        text: &str,
+        mut f: impl FnMut(i32, i32),
+    ) {
         let (line_height, ascent) = self.line_metrics();
         let start_x = x;
         let mut x = x;
@@ -196,7 +210,57 @@ impl Font {
             if Self::is_invisible(c) {
                 continue;
             }
-            x += self.draw_glyph(canvas, c, x, y, ascent, color);
+            x += self.glyph_pixels(c, x, y, ascent, &mut f);
+        }
+    }
+
+    fn glyph_pixels(
+        &mut self,
+        c: char,
+        x: i32,
+        y: i32,
+        ascent: i32,
+        f: &mut impl FnMut(i32, i32),
+    ) -> i32 {
+        // Dispatch by font backend
+        match self {
+            Font::Bdf {
+                bounding_box,
+                glyphs,
+            } => {
+                if let Some(glyph) = glyphs.get(&(c as i32)) {
+                    let gx = x + bounding_box.x + glyph.bbx.x;
+                    let gy =
+                        y + bounding_box.y + bounding_box.height - glyph.bbx.y - glyph.bbx.height;
+                    for (i, &row) in glyph.bitmap.iter().enumerate() {
+                        let py = gy + i as i32;
+                        for j in 0..glyph.bbx.width {
+                            if (row >> j) & 1 == 1 {
+                                f(gx + j, py);
+                            }
+                        }
+                    }
+                    glyph.dwidth
+                } else {
+                    0
+                }
+            }
+            Font::Fontdue { font, cache, size } => {
+                let (metrics, bitmap) = cache.entry(c).or_insert_with(|| font.rasterize(c, *size));
+                if metrics.width > 0 {
+                    let gx = x + metrics.xmin;
+                    let gy = (y + ascent) - (metrics.ymin + metrics.height as i32);
+                    for (i, row) in bitmap.chunks_exact(metrics.width).enumerate() {
+                        let py = gy + i as i32;
+                        for (j, &alpha) in row.iter().enumerate() {
+                            if alpha >= ALPHA_THRESHOLD {
+                                f(gx + j as i32, py);
+                            }
+                        }
+                    }
+                }
+                metrics.advance_width.ceil() as i32
+            }
         }
     }
 
@@ -237,7 +301,7 @@ impl Font {
         }
     }
 
-    fn line_metrics(&self) -> (i32, i32) {
+    pub fn line_metrics(&self) -> (i32, i32) {
         match self {
             Font::Bdf { bounding_box, .. } => (bounding_box.height, 0),
             Font::Fontdue { font, size, .. } => {
@@ -251,83 +315,6 @@ impl Font {
                     metrics.new_line_size.ceil() as i32,
                     metrics.ascent.round() as i32,
                 )
-            }
-        }
-    }
-
-    fn draw_glyph(
-        &mut self,
-        canvas: &mut Canvas<Color>,
-        c: char,
-        x: i32,
-        y: i32,
-        ascent: i32,
-        color: Color,
-    ) -> i32 {
-        match self {
-            Font::Bdf {
-                bounding_box,
-                glyphs,
-            } => {
-                if let Some(glyph) = glyphs.get(&(c as i32)) {
-                    Self::draw_bdf_glyph(canvas, x, y, bounding_box, glyph, color);
-                    glyph.dwidth
-                } else {
-                    0
-                }
-            }
-            Font::Fontdue { font, cache, size } => {
-                let (metrics, bitmap) = cache.entry(c).or_insert_with(|| font.rasterize(c, *size));
-                Self::draw_fontdue_glyph(canvas, x, y, ascent, metrics, bitmap, color);
-                metrics.advance_width.ceil() as i32
-            }
-        }
-    }
-
-    fn draw_bdf_glyph(
-        canvas: &mut Canvas<Color>,
-        x: i32,
-        y: i32,
-        bounding_box: &BdfBoundingBox,
-        glyph: &BdfGlyph,
-        color: Color,
-    ) {
-        let x = x + bounding_box.x + glyph.bbx.x;
-        let y = y + bounding_box.y + bounding_box.height - glyph.bbx.y - glyph.bbx.height;
-        for (i, &row) in glyph.bitmap.iter().enumerate() {
-            let py = y + i as i32;
-            for j in 0..glyph.bbx.width {
-                let px = x + j;
-                if canvas.clip_rect.contains(px, py) && (row >> j) & 1 == 1 {
-                    canvas.write_data(px as usize, py as usize, color);
-                }
-            }
-        }
-    }
-
-    fn draw_fontdue_glyph(
-        canvas: &mut Canvas<Color>,
-        x: i32,
-        y: i32,
-        ascent: i32,
-        metrics: &Metrics,
-        bitmap: &[u8],
-        color: Color,
-    ) {
-        if metrics.width == 0 {
-            return;
-        }
-        let x = x + metrics.xmin;
-        let y = (y + ascent) - (metrics.ymin + metrics.height as i32);
-        for (i, row) in bitmap.chunks_exact(metrics.width).enumerate() {
-            let py = y + i as i32;
-            for (j, &alpha) in row.iter().enumerate() {
-                if alpha >= ALPHA_THRESHOLD {
-                    let px = x + j as i32;
-                    if canvas.clip_rect.contains(px, py) {
-                        canvas.write_data(px as usize, py as usize, color);
-                    }
-                }
             }
         }
     }
