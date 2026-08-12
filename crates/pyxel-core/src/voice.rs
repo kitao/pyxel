@@ -819,7 +819,9 @@ impl Voice {
     fn write_sample(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, amplitude: i32) {
         if let Some(blip_buf) = blip_buf {
             if amplitude != self.last_amplitude {
-                blip_buf.add_delta(clock_offset, amplitude - self.last_amplitude);
+                blip_buf
+                    .add_delta(clock_offset, amplitude - self.last_amplitude)
+                    .expect("blip_buf capacity must not be exceeded");
                 self.last_amplitude = amplitude;
             }
         }
@@ -1563,9 +1565,9 @@ mod tests {
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
         let mut blip_buf = BlipBuf::new(4096);
-        blip_buf.set_rates(44100.0, 22050.0);
+        blip_buf.set_rates(44100.0, 22050.0).unwrap();
         voice.process(Some(&mut blip_buf), 0, 1000);
-        blip_buf.end_frame(1000);
+        blip_buf.end_frame(1000).unwrap();
         let mut samples = [0_i16; 4096];
         let count = blip_buf.read_samples(&mut samples, false);
         assert!(
@@ -1686,7 +1688,7 @@ mod tests {
             voice.glide.enable();
             voice.play_note(69.0, 1.0, 4410);
             let mut blip_buf = BlipBuf::new(4096);
-            blip_buf.set_rates(44100.0, 22050.0);
+            blip_buf.set_rates(44100.0, 22050.0).unwrap();
             (voice, blip_buf)
         };
         let chunks = [7, 13, 1, 500, 29, 3000, 2450];
@@ -1702,8 +1704,8 @@ mod tests {
             clock_offset += chunk;
         }
 
-        blip_buf1.end_frame(total);
-        blip_buf2.end_frame(total);
+        blip_buf1.end_frame(total).unwrap();
+        blip_buf2.end_frame(total).unwrap();
         let mut samples1 = [0_i16; 4096];
         let mut samples2 = [0_i16; 4096];
         let count1 = blip_buf1.read_samples(&mut samples1, false);

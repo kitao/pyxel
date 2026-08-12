@@ -211,7 +211,7 @@ mod tests {
 
         let mut v: Vec<i32> = Vec::new();
         repeat_extend!(v, 42, 0);
-        assert!(v.is_empty());
+        assert_eq!(v, [] as [i32; 0]);
     }
 
     #[test]

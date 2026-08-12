@@ -2,6 +2,10 @@
 
 ## 2.9.9
 
+- Updated Rust to version nightly-2026-08-12
+- Updated Pyodide to version 314.0.4
+- Updated blip_buf crate to version 0.2
+- Updated pyo3 crate to version 0.29.2
 - Added browser downloads for sound and music saves on Pyxel Web
 - Fixed browser export filenames for captures saved with extensions
 - Fixed empty screencasts exporting a nonexistent file on Pyxel Web

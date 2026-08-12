@@ -899,7 +899,7 @@ mod tests {
     fn test_rest_only() {
         let cmds = parse("R4 R8");
         assert_eq!(rest_commands(&cmds), [48, 24]);
-        assert!(note_commands(&cmds).is_empty());
+        assert_eq!(note_commands(&cmds), [] as [(u32, u32); 0]);
     }
 
     // Tie & connection

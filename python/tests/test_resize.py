@@ -1,5 +1,4 @@
 import pytest
-
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
@@ -66,11 +65,7 @@ class TestResize:
             pyxel.resize(160, 0)
 
     def test_negative_raises_overflow(self):
-        with raises_exact(
-            OverflowError, "out of range integral type conversion attempted"
-        ):
+        with raises_exact(OverflowError, "number too small to fit in target type"):
             pyxel.resize(-1, 120)
-        with raises_exact(
-            OverflowError, "out of range integral type conversion attempted"
-        ):
+        with raises_exact(OverflowError, "number too small to fit in target type"):
             pyxel.resize(160, -1)

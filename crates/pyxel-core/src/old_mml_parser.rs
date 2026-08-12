@@ -411,7 +411,7 @@ mod tests {
         // Default l8 at q7 yields 3 full steps plus 1 fade-out step of c at octave 2
         let cmds = parse("c");
         assert_eq!(note_commands(&cmds), [(60, 9); 4]);
-        assert!(rest_commands(&cmds).is_empty());
+        assert_eq!(rest_commands(&cmds), [] as [u32; 0]);
     }
 
     #[test]
@@ -465,7 +465,7 @@ mod tests {
         // q8 fills the whole length, so no fade-out step and no trailing rest
         let cmds = parse("q8c");
         assert_eq!(note_commands(&cmds), [(60, 9); 4]);
-        assert!(rest_commands(&cmds).is_empty());
+        assert_eq!(rest_commands(&cmds), [] as [u32; 0]);
         // Every note step stays on the constant-volume envelope slot 0
         assert_eq!(envelope_slots(&cmds), [0]);
     }
@@ -475,7 +475,7 @@ mod tests {
         // c&c spans 8 steps: 7 full + 1 fade-out, with no rest between
         let cmds = parse("c&c");
         assert_eq!(note_commands(&cmds), [(60, 9); 8]);
-        assert!(rest_commands(&cmds).is_empty());
+        assert_eq!(rest_commands(&cmds), [] as [u32; 0]);
     }
 
     // Envelopes and vibrato

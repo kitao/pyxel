@@ -2377,7 +2377,10 @@ mod tests {
         }];
         let bits = chord_bits_per_step(&progression);
         assert_eq!(bits[0], parse_notes_bits(I_MAJOR_NOTES_BITS));
-        assert!(!build_chord_note_pool(&bits[0], 0, 24).is_empty());
+        assert_ne!(
+            build_chord_note_pool(&bits[0], 0, 24),
+            [] as [(i32, i32); 0]
+        );
     }
 
     // The Composer JSON helpers stay out of production pyxel-core builds but

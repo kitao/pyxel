@@ -243,7 +243,9 @@ impl Sound {
 
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples);
-        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
+        blip_buf
+            .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
+            .expect("blip_buf rates must be valid");
 
         Audio::render_samples(&[render_channel], &mut blip_buf, &mut samples);
         Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false))

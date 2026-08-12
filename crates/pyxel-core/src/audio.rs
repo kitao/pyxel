@@ -46,7 +46,9 @@ impl Drop for AudioLock {
 impl AudioStreamRenderer {
     fn new() -> Self {
         let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SAMPLES);
-        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
+        blip_buf
+            .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
+            .expect("blip_buf rates must be valid");
 
         Self { blip_buf }
     }
@@ -113,7 +115,10 @@ impl Audio {
 
             let step_start = written;
 
-            let clocks = match blip_buf.clocks_needed(target_samples) {
+            let clocks = match blip_buf
+                .clocks_needed(target_samples)
+                .expect("blip_buf capacity must not be exceeded")
+            {
                 0 => AUDIO_CLOCKS_PER_SAMPLE,
                 clocks => clocks,
             };
@@ -137,7 +142,9 @@ impl Audio {
                     }
                 }
             }
-            blip_buf.end_frame(clocks);
+            blip_buf
+                .end_frame(clocks)
+                .expect("blip_buf capacity must not be exceeded");
             written += blip_buf.read_samples(&mut out[written..], false);
 
             if needs_pcm {
@@ -155,7 +162,11 @@ impl Audio {
         let mut high = max_samples;
         while low < high {
             let mid = u32::midpoint(low, high);
-            if blip_buf.clocks_needed(mid) < clocks {
+            if blip_buf
+                .clocks_needed(mid)
+                .expect("blip_buf capacity must not be exceeded")
+                < clocks
+            {
                 low = mid + 1;
             } else {
                 high = mid;
@@ -447,7 +458,9 @@ mod tests {
             .unwrap();
 
         let mut blip_buf = BlipBuf::new(num_samples as u32);
-        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
+        blip_buf
+            .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
+            .unwrap();
         let mut samples = vec![0; num_samples];
         for chunk in samples.chunks_mut(chunk_samples) {
             Audio::render_samples(std::slice::from_ref(&channel), &mut blip_buf, chunk);
@@ -502,7 +515,9 @@ mod tests {
             .play(vec![silent_pcm_sound(0)], None, true, false)
             .unwrap();
         let mut blip_buf = BlipBuf::new(64);
-        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
+        blip_buf
+            .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
+            .unwrap();
         let mut samples = [0; 64];
 
         Audio::render_samples(std::slice::from_ref(&channel), &mut blip_buf, &mut samples);
@@ -523,7 +538,9 @@ mod tests {
             })
             .collect();
         let mut blip_buf = BlipBuf::new(64);
-        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
+        blip_buf
+            .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
+            .unwrap();
         let mut samples = [0; 64];
 
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);

@@ -9,7 +9,7 @@ license.workspace = true
 name = "pyxel"
 
 [dependencies]
-blip_buf = "0.1"
+blip_buf = "0.2"
 # wasmbind routes time queries through js-sys for Emscripten/WASM builds
 chrono = { version = "0.4", features = ["wasmbind"] }
 directories = "6.0"
