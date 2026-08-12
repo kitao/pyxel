@@ -1247,7 +1247,7 @@ dependencies = [
 
 [[package]]
 name = "pyxel-binding"
-version = "2.9.8"
+version = "2.9.9"
 dependencies = [
  "pyo3",
  "pyxel-core",
@@ -1256,7 +1256,7 @@ dependencies = [
 
 [[package]]
 name = "pyxel-core"
-version = "2.9.8"
+version = "2.9.9"
 dependencies = [
  "bindgen",
  "blip_buf",
