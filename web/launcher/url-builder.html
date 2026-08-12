@@ -248,7 +248,7 @@
         const filePathNoExt = resolved.path.replace(/\.[^.]+$/, "");
         const command = isEdit ? "edit" : ext === "py" ? "run" : "play";
         const base = new URL("./", location.href).href;
-        let launchUrl = `${base}?${command}=${resolved.user}/${resolved.repo}/${resolved.sha}/${filePathNoExt}`;
+        let launchUrl = `${base}?${command}=${resolved.user}/${resolved.repo}/${resolved.ref}/${filePathNoExt}`;
 
         if (isEdit) {
           launchUrl += `&editor=${editorScreen}`;

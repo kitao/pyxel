@@ -124,7 +124,7 @@ const base64ToUint8 = (b64) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
-// Resolve the ref/path boundary in a GitHub blob URL and pin the result to a
+// Resolve the ref/path boundary in a GitHub blob URL and return the ref with its
 // commit SHA. Trying the longest ref first supports branch names with slashes.
 const resolveGitHubBlobUrl = async (input, fetchImpl = fetch) => {
   let url;

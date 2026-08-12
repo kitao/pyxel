@@ -9,6 +9,8 @@
 - Fixed app2exe hidden imports for from-package submodule imports
 - Fixed Pyxel Editor image bank display after resource file drops
 - Fixed initial button states of Pyxel Editor number pickers
+- Fixed Pyxel Web Launcher URLs pinning apps to a commit SHA
+- Fixed Pyxel Code Maker URLs pinning projects to a commit SHA
 - Extracted shared web page headers into shared.js
 - Unified rotate/scale blit setup into TransformProjection
 

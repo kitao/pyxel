@@ -468,7 +468,8 @@
       }
 
       async function loadFromGitHub(input) {
-        const { user, repo, sha, path } = await resolveGitHubBlobUrl(input);
+        const { user, repo, ref, sha, path } =
+          await resolveGitHubBlobUrl(input);
         const url = `https://raw.githubusercontent.com/${user}/${repo}/${sha}/${path}`;
         const name =
           path
@@ -483,7 +484,7 @@
         await loadProjectFromZip(await res.arrayBuffer(), name);
         updateShareUrl(
           "github",
-          `${user}/${repo}/${sha}/${path.replace(/\.zip$/i, "")}`,
+          `${user}/${repo}/${ref}/${path.replace(/\.zip$/i, "")}`,
         );
       }
 
