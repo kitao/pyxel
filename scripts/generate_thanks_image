@@ -155,8 +155,8 @@ def draw_message_image(thanks_image):
     base_image.text(10, 29, "Thank you for 17,000 stars", 12)
     base_image.text(10 + 14 * 4, 29, "17,000", 9)
 
-    base_image.text(15, 37, "and 1,400,000 downloads!", 12)
-    base_image.text(15 + 4 * 4, 37, "1,400,000", 9)
+    base_image.text(15, 37, "and 1,600,000 downloads!", 12)
+    base_image.text(15 + 4 * 4, 37, "1,600,000", 9)
 
     # Draw layout guide lines for alignment.
     if DRAW_LAYOUT_GUIDES:
