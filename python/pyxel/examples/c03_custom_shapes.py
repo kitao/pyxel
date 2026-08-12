@@ -151,6 +151,7 @@ class Laser(Node):
 
         self.locked_enemies = []
         self.fire_frame = 1
+        self.update_beams()
         pyxel.play(1, 1)
 
     def on_update(self):
@@ -166,21 +167,7 @@ class Laser(Node):
                     return
 
             if self.fire_frame:
-                laser_progress = min(1.0, self.fire_frame / LASER_DURATION)
-                for enemy_index, enemy in enumerate(self.firing_enemies):
-                    self.update_beam(
-                        self.outer_beams[enemy_index],
-                        enemy.center,
-                        enemy_index,
-                        laser_progress,
-                    )
-                    self.update_beam(
-                        self.core_beams[enemy_index],
-                        enemy.center,
-                        enemy_index,
-                        laser_progress,
-                        LASER_CORE_WIDTH,
-                    )
+                self.update_beams()
                 return
 
         if drag_started:
@@ -191,6 +178,23 @@ class Laser(Node):
                     self.lock_enemy(enemy)
         elif pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT) and self.locked_enemies:
             self.start_fire()
+
+    def update_beams(self):
+        laser_progress = min(1.0, self.fire_frame / LASER_DURATION)
+        for enemy_index, enemy in enumerate(self.firing_enemies):
+            self.update_beam(
+                self.outer_beams[enemy_index],
+                enemy.center,
+                enemy_index,
+                laser_progress,
+            )
+            self.update_beam(
+                self.core_beams[enemy_index],
+                enemy.center,
+                enemy_index,
+                laser_progress,
+                LASER_CORE_WIDTH,
+            )
 
     def make_launch_direction(self, enemy_center, enemy_index):
         _, right, _ = self.camera_axes()
