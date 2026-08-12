@@ -2,7 +2,6 @@ import subprocess
 import sys
 
 import pytest
-
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
@@ -361,6 +360,7 @@ assert_value_error(
             [sys.executable, "-c", code],
             capture_output=True,
             text=True,
+            check=False,
         )
 
         assert result.returncode == 0, result.stdout + result.stderr
@@ -399,13 +399,17 @@ class TestInlineDataErrors:
             ),
             (
                 ["0g"],
-                "Invalid image data at row 0, column 1: "
-                "expected hexadecimal digit, got 'g'",
+                (
+                    "Invalid image data at row 0, column 1: "
+                    "expected hexadecimal digit, got 'g'"
+                ),
             ),
             (
                 ["0あ"],
-                "Invalid image data at row 0, column 1: "
-                "expected hexadecimal digit, got 'あ'",
+                (
+                    "Invalid image data at row 0, column 1: "
+                    "expected hexadecimal digit, got 'あ'"
+                ),
             ),
         ],
     )
@@ -424,8 +428,10 @@ class TestInlineDataErrors:
             (["  "], "Invalid tilemap data at row 0: no tiles"),
             (
                 ["000"],
-                "Invalid tilemap data at row 0: hexadecimal digit count 3 "
-                "is not divisible by 4",
+                (
+                    "Invalid tilemap data at row 0: hexadecimal digit count 3 "
+                    "is not divisible by 4"
+                ),
             ),
             (
                 ["00000000", "0000"],
@@ -433,13 +439,17 @@ class TestInlineDataErrors:
             ),
             (
                 ["00z0"],
-                "Invalid tilemap data at row 0, column 2: "
-                "expected hexadecimal digit, got 'z'",
+                (
+                    "Invalid tilemap data at row 0, column 2: "
+                    "expected hexadecimal digit, got 'z'"
+                ),
             ),
             (
                 ["00あ0"],
-                "Invalid tilemap data at row 0, column 2: "
-                "expected hexadecimal digit, got 'あ'",
+                (
+                    "Invalid tilemap data at row 0, column 2: "
+                    "expected hexadecimal digit, got 'あ'"
+                ),
             ),
         ],
     )
@@ -480,6 +490,7 @@ else:
             capture_output=True,
             text=True,
             timeout=10,
+            check=False,
         )
         assert result.returncode == 0, result.stderr
 

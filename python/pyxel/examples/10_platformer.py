@@ -69,10 +69,8 @@ class Player:
 
         self.x, self.y = push_back(self.x, self.y, self.dx, self.dy)
 
-        if self.x < scroll_x:
-            self.x = scroll_x
-        if self.y < 0:
-            self.y = 0
+        self.x = max(self.x, scroll_x)
+        self.y = max(self.y, 0)
 
         self.dx = int(self.dx * 0.8)
         self.is_falling = self.y > last_y

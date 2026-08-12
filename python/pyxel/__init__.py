@@ -15,4 +15,4 @@ if sys.platform == "linux":
         except OSError:
             pass
 
-from .pyxel_binding import *  # type: ignore  # noqa: F403
+from .pyxel_binding import *  # type: ignore

@@ -11,7 +11,6 @@ import zipfile
 from pathlib import Path
 
 import pytest
-
 import pyxel
 import pyxel.cli
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
@@ -338,7 +337,9 @@ class TestApp2exe:
         exe_name = "my_app.exe" if sys.platform == "win32" else "my_app"
         exe = tmp_path / "dist" / "my_app" / exe_name
         assert exe.is_file()
-        result = subprocess.run([str(exe)], capture_output=True, timeout=60)
+        result = subprocess.run(
+            [str(exe)], capture_output=True, timeout=60, check=False
+        )
         assert result.returncode == 0, (
             f"exe failed rc={result.returncode}\n"
             f"stdout={result.stdout.decode(errors='replace')}\n"

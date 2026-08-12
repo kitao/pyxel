@@ -1,7 +1,5 @@
 import pytest
-
 import pyxel
-
 from _capture import (  # type: ignore[reportMissingImports]
     APP_REFS_DIR,
     APPS_DIR,

@@ -1,15 +1,14 @@
+import threading
 from collections.abc import Iterator
 from http.server import ThreadingHTTPServer
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
-import threading
 from types import ModuleType
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
 import pytest
-
 
 ROOT_DIR = Path(__file__).parents[2]
 START_SHOWCASE_PATH = ROOT_DIR / "scripts" / "start_showcase"

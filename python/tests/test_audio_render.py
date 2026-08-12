@@ -54,13 +54,19 @@ MML_MODULATION = (
 
 # Title music MML quoted from 09_shooter.py
 MML_PARTS = [
-    "T128 Q96 @2 @ENV1{127,6,96} O4 L16 @VIB1{36,18,25} K-2"
-    "D8.C8.D4G8AB->CD C8.<F2R FFGA B-8.A8.B-4.GGAB-"
-    "RR>CC<B->C8 D8.D8CD8.<",
-    "T128 Q90 @0 V96 O3 L16"
-    "FFR4 FFR4 <F4> E-E-R4 E-E-R4 <E-4> D-D-R4 D-D-R4 <D-4> E-E-R4 E-E-R4 EEE8",
-    "T128 Q50 @3 L16 @ENV1{48,8,0} @ENV2{127,6,0}"
-    "[@ENV1 O7 FFR4 FFR4 @ENV2 O3 G4]3 @ENV1 O7 FFR4 FFR4 FF @ENV2 O3 G8",
+    (
+        "T128 Q96 @2 @ENV1{127,6,96} O4 L16 @VIB1{36,18,25} K-2"
+        "D8.C8.D4G8AB->CD C8.<F2R FFGA B-8.A8.B-4.GGAB-"
+        "RR>CC<B->C8 D8.D8CD8.<"
+    ),
+    (
+        "T128 Q90 @0 V96 O3 L16"
+        "FFR4 FFR4 <F4> E-E-R4 E-E-R4 <E-4> D-D-R4 D-D-R4 <D-4> E-E-R4 E-E-R4 EEE8"
+    ),
+    (
+        "T128 Q50 @3 L16 @ENV1{48,8,0} @ENV2{127,6,0}"
+        "[@ENV1 O7 FFR4 FFR4 @ENV2 O3 G4]3 @ENV1 O7 FFR4 FFR4 FF @ENV2 O3 G8"
+    ),
 ]
 
 

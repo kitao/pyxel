@@ -2,7 +2,6 @@ import os
 import subprocess
 from pathlib import Path
 
-
 SCRIPT_PATH = Path(__file__).parents[2] / "scripts" / "run_examples"
 
 

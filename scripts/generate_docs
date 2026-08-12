@@ -2,8 +2,9 @@
 
 import html
 import json
-from pathlib import Path
 import re
+import subprocess
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "web"
@@ -463,8 +464,7 @@ class JsEval:
             rest = rest.strip()
             if rest.startswith(","):
                 rest = rest[1:].strip()
-            if rest.startswith(")"):
-                rest = rest[1:]
+            rest = rest.removeprefix(")")
             repl = self.eval(repl_s)
             rm = re.match(r"/(.+?)/(g)?", pat_s)
             if rm:
@@ -916,8 +916,7 @@ def generate_api_reference(json_path, output_name, web_path):
                 lines.append("**Example:**")
                 lines.append("")
                 lines.append("```python")
-                for ex in item["examples"]:
-                    lines.append(ex)
+                lines.extend(item["examples"])
                 lines.append("```")
                 lines.append("")
             if item.get("notes"):
@@ -990,8 +989,15 @@ def generate_mml_commands():
 # Command entry point
 
 if __name__ == "__main__":
+    generated = []
     for html_path, json_path, output_name, web_path in HTML_DOCS:
         generate_from_html(html_path, json_path, output_name, web_path)
+        generated.append(DOCS_DIR / f"{output_name}.md")
     for json_path, output_name, web_path in API_REFERENCE_DOCS:
         generate_api_reference(json_path, output_name, web_path)
+        generated.append(DOCS_DIR / f"{output_name}.md")
     generate_mml_commands()
+    generated.append(DOCS_DIR / "mml-commands.md")
+
+    # Format the generated Markdown so it matches the repo formatter output.
+    subprocess.run(["ruff", "format", "-q", *map(str, generated)], check=True)

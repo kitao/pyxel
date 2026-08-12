@@ -4,10 +4,10 @@
 # text, so the prose stays uniform without manual review.
 
 import json
-from pathlib import Path
 import re
 import subprocess
 import unicodedata
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 

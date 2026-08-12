@@ -397,7 +397,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
     pyxel_app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
     Path(bootstrap_script_file).write_text(
         "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
-        f"str(Path(__file__).parent / {repr(pyxel_app_filename)}))",
+        f"str(Path(__file__).parent / {pyxel_app_filename!r}))",
         encoding="utf-8",
     )
 
@@ -422,7 +422,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
         bootstrap_script_file,
     ]
     print(" ".join(command))
-    result = subprocess.run(command)
+    result = subprocess.run(command, check=False)
     if result.returncode != 0:
         _exit_with_error(f"PyInstaller build failed with exit code {result.returncode}")
 

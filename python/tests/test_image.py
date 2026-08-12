@@ -2,7 +2,6 @@ from pathlib import Path
 
 import PIL.Image
 import pyxel
-
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 

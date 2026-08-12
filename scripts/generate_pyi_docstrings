@@ -2,8 +2,8 @@
 
 import copy
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 API_REF_JSON = ROOT_DIR / "web" / "api-reference" / "api-reference.json"
@@ -212,6 +212,11 @@ def _strip_docstrings(content):
                 while i < len(lines) and '"""' not in lines[i]:
                     i += 1
                 i += 1
+            # Restore the placeholder body that the docstring replaced.
+            if result:
+                prev = result[-1].rstrip()
+                if prev.endswith(":"):
+                    result[-1] = prev + " ..."
             continue
 
         if stripped == "..." and result:
@@ -298,7 +303,6 @@ def _add_docstrings(content, doc_map):
                         result.extend(def_lines)
                         for dl in ds:
                             result.append(dl + "\n")
-                        result.append(body_indent + "...\n")
                         i = j
                         continue
 

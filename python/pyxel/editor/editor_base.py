@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 import pyxel
 
 from .settings import (
@@ -21,7 +23,7 @@ class EditorBase(Widget):
     #   redo (data)
     #   drop (filename)
 
-    _TOOL_HELP = {
+    _TOOL_HELP: ClassVar[dict[int, str]] = {
         TOOL_SELECT: "SELECT:S",
         TOOL_PENCIL: "PENCIL:P",
         TOOL_RECTB: "RECTANGLE:R",

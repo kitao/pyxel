@@ -2,7 +2,6 @@ import subprocess
 import sys
 
 import pytest
-
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
@@ -397,8 +396,10 @@ class TestSystemSetters:
             (
                 ["0g"],
                 1,
-                "Invalid icon data at row 0, column 1: "
-                "expected hexadecimal digit, got 'g'",
+                (
+                    "Invalid icon data at row 0, column 1: "
+                    "expected hexadecimal digit, got 'g'"
+                ),
             ),
             (["0"], 0, "scale must be greater than 0"),
             (["00"], 2**32 - 1, "icon dimensions overflow after scaling"),
@@ -477,6 +478,7 @@ class TestSystemFlow:
             ],
             capture_output=True,
             timeout=10,
+            check=False,
         )
         assert result.returncode == 0, result.stderr.decode()
 
@@ -497,6 +499,7 @@ class TestSystemFlow:
             [sys.executable, "-c", code],
             capture_output=True,
             timeout=10,
+            check=False,
         )
         assert result.returncode == 0, result.stderr.decode()
 
@@ -535,7 +538,11 @@ pyxel.init(8, 8, headless=True)
 assert pyxel.width == 8 and pyxel.height == 8
 """
     result = subprocess.run(
-        [sys.executable, "-c", code], capture_output=True, text=True, timeout=10
+        [sys.executable, "-c", code],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
     )
     assert result.returncode == 0, result.stderr
 
@@ -555,6 +562,10 @@ assert pyxel.width == 8 and pyxel.height == 8
 assert pyxel.screen.width == 8 and pyxel.screen.height == 8
 """
     result = subprocess.run(
-        [sys.executable, "-c", code], capture_output=True, text=True, timeout=10
+        [sys.executable, "-c", code],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
     )
     assert result.returncode == 0, result.stderr

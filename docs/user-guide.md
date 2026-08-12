@@ -117,13 +117,16 @@ import pyxel
 
 pyxel.init(160, 120)
 
+
 def update():
     if pyxel.btnp(pyxel.KEY_Q):
         pyxel.quit()
 
+
 def draw():
     pyxel.cls(0)
     pyxel.rect(10, 10, 20, 20, 11)
+
 
 pyxel.run(update, draw)
 ```
@@ -134,6 +137,7 @@ In an actual application, it is recommended to wrap Pyxel code in a class, as sh
 
 ```python
 import pyxel
+
 
 class App:
     def __init__(self):
@@ -147,6 +151,7 @@ class App:
     def draw(self):
         pyxel.cls(0)
         pyxel.rect(self.x, 0, 8, 8, 9)
+
 
 App()
 ```

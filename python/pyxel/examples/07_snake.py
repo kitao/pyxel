@@ -130,9 +130,10 @@ class App:
         elif pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             if self.direction != RIGHT:
                 self.direction = LEFT
-        elif pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
-            if self.direction != LEFT:
-                self.direction = RIGHT
+        elif (
+            pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        ) and self.direction != LEFT:
+            self.direction = RIGHT
 
     def update_snake(self):
         hx, hy = self.snake[0]
@@ -158,9 +159,13 @@ class App:
 
     def check_death(self):
         hx, hy = self.snake[0]
-        if hx < 0 or hy < SCORE_H or hx >= SCREEN_W or hy >= SCREEN_H:
-            self.die()
-        elif len(self.snake) != len(set(self.snake)):
+        if (
+            hx < 0
+            or hy < SCORE_H
+            or hx >= SCREEN_W
+            or hy >= SCREEN_H
+            or len(self.snake) != len(set(self.snake))
+        ):
             self.die()
 
     def die(self):

@@ -1,6 +1,6 @@
+from collections.abc import Callable
 from typing import (
     Any,
-    Callable,
     overload,
 )
 
@@ -387,7 +387,6 @@ class Font:
         Returns:
             New Font instance
         """
-        ...
     def text_width(self, s: str) -> int:
         """Return the display width of the string s in this font.
 
@@ -397,7 +396,6 @@ class Font:
         Returns:
             Width in pixels
         """
-        ...
 
 class Image:
     width: int
@@ -415,7 +413,6 @@ class Image:
         Returns:
             New Image instance
         """
-        ...
     @staticmethod
     def from_image(
         filename: str,
@@ -430,14 +427,12 @@ class Image:
         Returns:
             Image instance from file
         """
-        ...
     def data_ptr(self) -> Any:
         """Return the raw data pointer of the image as a ctypes c_uint8 array.
 
         Returns:
             Raw data pointer
         """
-        ...
     def set(self, x: int, y: int, data: list[str]) -> None:
         """Set the image at (x, y) using a list of hex-digit strings. Each character represents a color index (0-f).
 
@@ -449,7 +444,6 @@ class Image:
         Example::
             pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])
         """
-        ...
     def load(
         self,
         x: int,
@@ -465,7 +459,6 @@ class Image:
             filename: Image file name (PNG/GIF/JPEG)
             include_colors: Include palette colors from file. Defaults to False.
         """
-        ...
     def save(self, filename: str, scale: int) -> None:
         """Save the image to a file.
 
@@ -473,7 +466,6 @@ class Image:
             filename: Output file name
             scale: Scale factor
         """
-        ...
     @overload
     def clip(self) -> None: ...
     @overload
@@ -493,7 +485,6 @@ class Image:
             w: Width of the clipping area
             h: Height of the clipping area
         """
-        ...
     @overload
     def camera(self) -> None: ...
     @overload
@@ -509,7 +500,6 @@ class Image:
             x: X coordinate
             y: Y coordinate
         """
-        ...
     @overload
     def pal(self) -> None: ...
     @overload
@@ -521,21 +511,18 @@ class Image:
             col1: Color to replace
             col2: Replacement color
         """
-        ...
     def dither(self, alpha: float) -> None:
         """Apply dithering (pseudo-transparency) when drawing. Set alpha in the range 0.0-1.0.
 
         Args:
             alpha: Opacity (0.0: transparent, 1.0: opaque)
         """
-        ...
     def cls(self, col: int) -> None:
         """Clear the screen with color col.
 
         Args:
             col: Color
         """
-        ...
     def pget(self, x: float, y: float) -> int:
         """Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.
 
@@ -546,7 +533,6 @@ class Image:
         Returns:
             Color of the pixel
         """
-        ...
     def pset(self, x: float, y: float, col: int) -> None:
         """Draw a pixel with the color col at (x, y).
 
@@ -555,7 +541,6 @@ class Image:
             y: Y coordinate
             col: Color
         """
-        ...
     def line(self, x1: float, y1: float, x2: float, y2: float, col: int) -> None:
         """Draw a line of color col from (x1, y1) to (x2, y2).
 
@@ -566,7 +551,6 @@ class Image:
             y2: End Y coordinate
             col: Color
         """
-        ...
     def rect(self, x: float, y: float, w: float, h: float, col: int) -> None:
         """Draw a filled rectangle of width w, height h, and color col at (x, y).
 
@@ -577,7 +561,6 @@ class Image:
             h: Height
             col: Color
         """
-        ...
     def rectb(self, x: float, y: float, w: float, h: float, col: int) -> None:
         """Draw the outline of a rectangle of width w, height h, and color col at (x, y).
 
@@ -588,7 +571,6 @@ class Image:
             h: Height
             col: Color
         """
-        ...
     def circ(self, x: float, y: float, r: float, col: int) -> None:
         """Draw a filled circle of radius r and color col at (x, y).
 
@@ -598,7 +580,6 @@ class Image:
             r: Radius
             col: Color
         """
-        ...
     def circb(self, x: float, y: float, r: float, col: int) -> None:
         """Draw the outline of a circle of radius r and color col at (x, y).
 
@@ -608,7 +589,6 @@ class Image:
             r: Radius
             col: Color
         """
-        ...
     def elli(self, x: float, y: float, w: float, h: float, col: int) -> None:
         """Draw a filled ellipse of width w, height h, and color col at (x, y).
 
@@ -619,7 +599,6 @@ class Image:
             h: Height
             col: Color
         """
-        ...
     def ellib(self, x: float, y: float, w: float, h: float, col: int) -> None:
         """Draw the outline of an ellipse of width w, height h, and color col at (x, y).
 
@@ -630,7 +609,6 @@ class Image:
             h: Height
             col: Color
         """
-        ...
     def tri(
         self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float, col: int
     ) -> None:
@@ -645,7 +623,6 @@ class Image:
             y3: Vertex 3 Y
             col: Color
         """
-        ...
     def trib(
         self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float, col: int
     ) -> None:
@@ -660,7 +637,6 @@ class Image:
             y3: Vertex 3 Y
             col: Color
         """
-        ...
     def fill(self, x: float, y: float, col: int) -> None:
         """Fill the area connected with the same color as (x, y) with color col.
 
@@ -669,7 +645,6 @@ class Image:
             y: Y coordinate
             col: Fill color
         """
-        ...
     def blt(
         self,
         x: float,
@@ -697,7 +672,6 @@ class Image:
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
             scale: Scale factor (centered on the copy region). Defaults to 1.
         """
-        ...
     def bltm(
         self,
         x: float,
@@ -725,7 +699,6 @@ class Image:
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
             scale: Scale factor (centered on the copy region). Defaults to 1.
         """
-        ...
     def blt3d(
         self,
         x: float,
@@ -751,7 +724,6 @@ class Image:
             fov: Field of view in degrees. Defaults to 60.
             colkey: Transparent color. If omitted, no transparency.
         """
-        ...
     def bltm3d(
         self,
         x: float,
@@ -777,7 +749,6 @@ class Image:
             fov: Field of view in degrees. Defaults to 60.
             colkey: Transparent color. If omitted, no transparency.
         """
-        ...
     def text(
         self, x: float, y: float, s: str, col: int, font: Font | None = None
     ) -> None:
@@ -790,7 +761,6 @@ class Image:
             col: Color
             font: Custom font. If omitted, the standard font is used.
         """
-        ...
 
 class Tilemap:
     width: int
@@ -811,7 +781,6 @@ class Tilemap:
         Returns:
             New Tilemap instance
         """
-        ...
     @staticmethod
     def from_tmx(filename: str, layer: int) -> Tilemap:
         """Create a Tilemap instance from a TMX file.
@@ -823,14 +792,12 @@ class Tilemap:
         Returns:
             Tilemap instance from TMX file
         """
-        ...
     def data_ptr(self) -> Any:
         """Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
 
         Returns:
             Raw data pointer
         """
-        ...
     def set(self, x: int, y: int, data: list[str]) -> None:
         """Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.
 
@@ -842,7 +809,6 @@ class Tilemap:
         Example::
             pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])
         """
-        ...
     def load(self, x: int, y: int, filename: str, layer: int) -> None:
         """Load the layer (0-) from the TMX file at (x, y).
 
@@ -852,7 +818,6 @@ class Tilemap:
             filename: TMX file name
             layer: Layer number (0-)
         """
-        ...
     @overload
     def clip(self) -> None: ...
     @overload
@@ -872,7 +837,6 @@ class Tilemap:
             w: Width of the clipping area
             h: Height of the clipping area
         """
-        ...
     @overload
     def camera(self) -> None: ...
     @overload
@@ -888,14 +852,12 @@ class Tilemap:
             x: X coordinate
             y: Y coordinate
         """
-        ...
     def cls(self, tile: tuple[int, int]) -> None:
         """Clear the tilemap with tile.
 
         Args:
             tile: Tile (image_x, image_y)
         """
-        ...
     def pget(self, x: float, y: float) -> tuple[int, int]:
         """Get the tile at (x, y). The coordinates are absolute and not affected by the camera offset. A tile is a tuple of (image_tx, image_ty).
 
@@ -906,7 +868,6 @@ class Tilemap:
         Returns:
             (image_tx, image_ty)
         """
-        ...
     def pset(self, x: float, y: float, tile: tuple[int, int]) -> None:
         """Set a tile at (x, y). A tile is a tuple of (image_tx, image_ty).
 
@@ -915,7 +876,6 @@ class Tilemap:
             y: Y coordinate
             tile: Tile as (image_tx, image_ty)
         """
-        ...
     def line(
         self, x1: float, y1: float, x2: float, y2: float, tile: tuple[int, int]
     ) -> None:
@@ -928,7 +888,6 @@ class Tilemap:
             y2: End Y coordinate
             tile: Tile (image_x, image_y)
         """
-        ...
     def rect(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
@@ -941,7 +900,6 @@ class Tilemap:
             h: Height
             tile: Tile (image_x, image_y)
         """
-        ...
     def rectb(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
@@ -954,7 +912,6 @@ class Tilemap:
             h: Height
             tile: Tile (image_x, image_y)
         """
-        ...
     def circ(self, x: float, y: float, r: float, tile: tuple[int, int]) -> None:
         """Draw a filled circle of radius r and tile at (x, y).
 
@@ -964,7 +921,6 @@ class Tilemap:
             r: Radius
             tile: Tile (image_x, image_y)
         """
-        ...
     def circb(self, x: float, y: float, r: float, tile: tuple[int, int]) -> None:
         """Draw the outline of a circle of radius r and tile at (x, y).
 
@@ -974,7 +930,6 @@ class Tilemap:
             r: Radius
             tile: Tile (image_x, image_y)
         """
-        ...
     def elli(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
@@ -987,7 +942,6 @@ class Tilemap:
             h: Height
             tile: Tile (image_x, image_y)
         """
-        ...
     def ellib(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
@@ -1000,7 +954,6 @@ class Tilemap:
             h: Height
             tile: Tile (image_x, image_y)
         """
-        ...
     def tri(
         self,
         x1: float,
@@ -1022,7 +975,6 @@ class Tilemap:
             y3: Vertex 3 Y
             tile: Tile (image_x, image_y)
         """
-        ...
     def trib(
         self,
         x1: float,
@@ -1044,7 +996,6 @@ class Tilemap:
             y3: Vertex 3 Y
             tile: Tile (image_x, image_y)
         """
-        ...
     def fill(self, x: float, y: float, tile: tuple[int, int]) -> None:
         """Fill the area connected with the same tile as (x, y) with tile.
 
@@ -1053,7 +1004,6 @@ class Tilemap:
             y: Y coordinate
             tile: Tile (image_x, image_y)
         """
-        ...
     def collide(
         self,
         x: float,
@@ -1078,7 +1028,6 @@ class Tilemap:
         Returns:
             Adjusted (dx, dy)
         """
-        ...
     def blt(
         self,
         x: float,
@@ -1106,7 +1055,6 @@ class Tilemap:
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
             scale: Scale factor (centered on the copy region). Defaults to 1.
         """
-        ...
 
 class Channel:
     gain: float
@@ -1120,7 +1068,6 @@ class Channel:
         Returns:
             New Channel instance
         """
-        ...
     def play(
         self,
         snd: int | list[int] | Sound | list[Sound] | str,
@@ -1136,17 +1083,14 @@ class Channel:
             loop: Loop playback. Defaults to False.
             resume: Resume previous sound after playback ends. Defaults to False.
         """
-        ...
     def stop(self) -> None:
         """Stop playback on this channel."""
-        ...
     def play_pos(self) -> tuple[int, float] | None:
         """Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
         Returns:
             (sound_index, sec) or None
         """
-        ...
 
 class Tone:
     mode: int
@@ -1164,7 +1108,6 @@ class Tone:
         Returns:
             New Tone instance
         """
-        ...
 
 class Sound:
     notes: list[int]
@@ -1184,7 +1127,6 @@ class Sound:
         Returns:
             New Sound instance
         """
-        ...
     def set(
         self,
         notes: str,
@@ -1202,7 +1144,6 @@ class Sound:
             effects: Effect string
             speed: Playback speed
         """
-        ...
     def set_notes(self, notes: str) -> None:
         """Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Case-insensitive, whitespace is ignored.
 
@@ -1212,7 +1153,6 @@ class Sound:
         Example::
             pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")
         """
-        ...
     def set_tones(self, tones: str) -> None:
         """Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.
 
@@ -1222,7 +1162,6 @@ class Sound:
         Example::
             pyxel.sounds[0].set_tones("ttss pppn")
         """
-        ...
     def set_volumes(self, volumes: str) -> None:
         """Set the volumes with a string of 01234567. Whitespace is ignored.
 
@@ -1232,7 +1171,6 @@ class Sound:
         Example::
             pyxel.sounds[0].set_volumes("7777 7531")
         """
-        ...
     def set_effects(self, effects: str) -> None:
         """Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.
 
@@ -1242,7 +1180,6 @@ class Sound:
         Example::
             pyxel.sounds[0].set_effects("nfnf nvvs")
         """
-        ...
     def mml(self, code: str | None = None) -> None:
         """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page. Call without arguments to exit MML mode and return to normal mode.
 
@@ -1252,7 +1189,6 @@ class Sound:
         Example::
             pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.")
         """
-        ...
     def pcm(self, filename: str | None = None) -> None:
         """Load an audio file (WAV/OGG) for playback. Call without arguments to exit PCM mode and return to normal mode.
 
@@ -1262,7 +1198,6 @@ class Sound:
         Example::
             pyxel.sounds[0].pcm("sounds/bgm.ogg")
         """
-        ...
     def save(self, filename: str, sec: float, ffmpeg: bool = False) -> None:
         """Create a WAV file from the sound with the specified duration in seconds.
 
@@ -1271,14 +1206,12 @@ class Sound:
             sec: Duration in seconds
             ffmpeg: Also create MP4 file (requires FFmpeg). Defaults to False.
         """
-        ...
     def total_sec(self) -> float | None:
         """Return the playback time in seconds. Return None for infinite loops.
 
         Returns:
             Playback time in seconds, or None for infinite loops
         """
-        ...
 
 class Music:
     seqs: list[list[int]]
@@ -1290,7 +1223,6 @@ class Music:
         Returns:
             New Music instance
         """
-        ...
     def set(
         self,
         *seqs: list[int],
@@ -1303,7 +1235,6 @@ class Music:
         Example::
             pyxel.musics[0].set([0, 1], [], [3])
         """
-        ...
     def save(self, filename: str, sec: float, ffmpeg: bool = False) -> None:
         """Create a WAV file from the music with the specified duration in seconds.
 
@@ -1312,7 +1243,6 @@ class Music:
             sec: Duration in seconds
             ffmpeg: Also create MP4 file (requires FFmpeg). Defaults to False.
         """
-        ...
 
 # System
 width: int
@@ -1349,7 +1279,6 @@ def init(
     Example::
         pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)
     """
-    ...
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
     """Start the Pyxel application and call the update function for frame update and the draw function for drawing.
@@ -1358,23 +1287,18 @@ def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
         update: Function to update game logic each frame
         draw: Function to draw the screen each frame
     """
-    ...
 
 def show() -> None:
     """Show the screen and wait until the quit key is pressed."""
-    ...
 
 def flip() -> None:
     """Refresh the screen by one frame. The application exits when the quit key is pressed. This function is not available in the web version."""
-    ...
 
 def quit() -> None:
     """Quit the Pyxel application."""
-    ...
 
 def reset() -> None:
     """Restart the Pyxel application from the beginning."""
-    ...
 
 def title(title: str) -> None:
     """Set the window title.
@@ -1382,7 +1306,6 @@ def title(title: str) -> None:
     Args:
         title: Window title
     """
-    ...
 
 def icon(data: list[str], scale: int, colkey: int | None = None) -> None:
     """Set the application icon. Specify the icon image as a list of strings.
@@ -1392,7 +1315,6 @@ def icon(data: list[str], scale: int, colkey: int | None = None) -> None:
         scale: Scale factor
         colkey: Transparent color. If omitted, no transparency.
     """
-    ...
 
 def perf_monitor(enabled: bool) -> None:
     """Show or hide the performance monitor.
@@ -1400,7 +1322,6 @@ def perf_monitor(enabled: bool) -> None:
     Args:
         enabled: Enable the performance monitor
     """
-    ...
 
 def integer_scale(enabled: bool) -> None:
     """Enable integer scaling for the display.
@@ -1408,7 +1329,6 @@ def integer_scale(enabled: bool) -> None:
     Args:
         enabled: Enable integer scaling
     """
-    ...
 
 def screen_mode(scr: int) -> None:
     """Set the screen mode (0: crisp, 1: smooth, 2: retro).
@@ -1416,7 +1336,6 @@ def screen_mode(scr: int) -> None:
     Args:
         scr: Screen mode number (0: crisp, 1: smooth, 2: retro)
     """
-    ...
 
 def fullscreen(enabled: bool) -> None:
     """Set whether to run in fullscreen mode.
@@ -1424,7 +1343,6 @@ def fullscreen(enabled: bool) -> None:
     Args:
         enabled: Enable fullscreen
     """
-    ...
 
 def resize(width: int, height: int) -> None:
     """Change the screen size at runtime.
@@ -1433,7 +1351,6 @@ def resize(width: int, height: int) -> None:
         width: New screen width in pixels
         height: New screen height in pixels
     """
-    ...
 
 # Resource
 def load(
@@ -1455,7 +1372,6 @@ def load(
     Note:
         If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.
     """
-    ...
 
 def save(
     filename: str,
@@ -1473,7 +1389,6 @@ def save(
         exclude_sounds: Exclude sounds. Defaults to False.
         exclude_musics: Exclude music tracks. Defaults to False.
     """
-    ...
 
 def load_pal(filename: str) -> None:
     """Load a palette file (.pyxpal).
@@ -1481,7 +1396,6 @@ def load_pal(filename: str) -> None:
     Args:
         filename: Palette file name
     """
-    ...
 
 def save_pal(filename: str) -> None:
     """Save a palette file (.pyxpal).
@@ -1489,7 +1403,6 @@ def save_pal(filename: str) -> None:
     Args:
         filename: Palette file name
     """
-    ...
 
 def screenshot(filename: str | None = None, scale: int = 2) -> None:
     """Take a screenshot.
@@ -1498,7 +1411,6 @@ def screenshot(filename: str | None = None, scale: int = 2) -> None:
         filename: File name. If omitted, saved to desktop.
         scale: Scale factor. Defaults to capture_scale.
     """
-    ...
 
 def screencast(filename: str | None = None, scale: int = 2) -> None:
     """Save the screen recording as a GIF file.
@@ -1507,11 +1419,9 @@ def screencast(filename: str | None = None, scale: int = 2) -> None:
         filename: File name. If omitted, saved to desktop.
         scale: Scale factor. Defaults to capture_scale.
     """
-    ...
 
 def reset_screencast() -> None:
     """Reset the screen recording buffer."""
-    ...
 
 def user_data_dir(vendor_name: str, app_name: str) -> str:
     """Return the user data directory created based on vendor_name and app_name. If the directory does not exist, it will be created automatically.
@@ -1526,7 +1436,6 @@ def user_data_dir(vendor_name: str, app_name: str) -> str:
     Example::
         pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter")
     """
-    ...
 
 # Input
 mouse_x: int
@@ -1551,7 +1460,6 @@ def btn(key: int) -> bool:
     Returns:
         True if pressed
     """
-    ...
 
 def btnp(key: int, hold: int = 0, repeat: int = 0) -> bool:
     """Return True if the key is pressed in that frame. When hold and repeat are specified, after holding the key for hold frames, return True every repeat frames.
@@ -1564,7 +1472,6 @@ def btnp(key: int, hold: int = 0, repeat: int = 0) -> bool:
     Returns:
         True if pressed in that frame
     """
-    ...
 
 def btnr(key: int) -> bool:
     """Return True if the key is released in that frame, otherwise return False.
@@ -1575,7 +1482,6 @@ def btnr(key: int) -> bool:
     Returns:
         True if released in that frame
     """
-    ...
 
 def btnv(key: int) -> int:
     """Return the analog value of the specified key (e.g., gamepad axis value).
@@ -1586,7 +1492,6 @@ def btnv(key: int) -> int:
     Returns:
         Analog value of the key
     """
-    ...
 
 def mouse(visible: bool) -> None:
     """Show the mouse cursor if visible is True, and hide it if False. The cursor position continues to update even when hidden.
@@ -1594,7 +1499,6 @@ def mouse(visible: bool) -> None:
     Args:
         visible: Show or hide the cursor
     """
-    ...
 
 def set_btn(key: int, state: bool) -> None:
     """Set the press/release state of the specified key. Mainly for headless mode input simulation.
@@ -1603,7 +1507,6 @@ def set_btn(key: int, state: bool) -> None:
         key: Target key
         state: True for press, False for release
     """
-    ...
 
 def set_btnv(key: int, val: int) -> None:
     """Set the analog value of the specified key. Mainly for headless mode input simulation.
@@ -1612,7 +1515,6 @@ def set_btnv(key: int, val: int) -> None:
         key: Target key
         val: Analog value to set
     """
-    ...
 
 def set_mouse_pos(x: float, y: float) -> None:
     """Set the mouse cursor position. Mainly for headless mode input simulation.
@@ -1621,7 +1523,6 @@ def set_mouse_pos(x: float, y: float) -> None:
         x: X coordinate
         y: Y coordinate
     """
-    ...
 
 def set_input_text(text: str) -> None:
     """Set the text input for the current frame. Replaces any existing text. Mainly for headless mode input simulation.
@@ -1629,7 +1530,6 @@ def set_input_text(text: str) -> None:
     Args:
         text: Text input
     """
-    ...
 
 def set_dropped_files(files: list[str]) -> None:
     """Set the dropped file list for the current frame. Replaces any existing list. Mainly for headless mode input simulation.
@@ -1637,7 +1537,6 @@ def set_dropped_files(files: list[str]) -> None:
     Args:
         files: List of file paths
     """
-    ...
 
 # Graphics
 colors: list[int]
@@ -1671,7 +1570,6 @@ def clip(
         w: Width of the clipping area
         h: Height of the clipping area
     """
-    ...
 
 @overload
 def camera() -> None: ...
@@ -1687,7 +1585,6 @@ def camera(
         x: X coordinate
         y: Y coordinate
     """
-    ...
 
 @overload
 def pal() -> None: ...
@@ -1700,7 +1597,6 @@ def pal(col1: int | None = None, col2: int | None = None) -> None:
         col1: Color to replace
         col2: Replacement color
     """
-    ...
 
 def dither(alpha: float) -> None:
     """Apply dithering (pseudo-transparency) when drawing. Set alpha in the range 0.0-1.0.
@@ -1708,7 +1604,6 @@ def dither(alpha: float) -> None:
     Args:
         alpha: Opacity (0.0: transparent, 1.0: opaque)
     """
-    ...
 
 def cls(col: int) -> None:
     """Clear the screen with color col.
@@ -1716,7 +1611,6 @@ def cls(col: int) -> None:
     Args:
         col: Color
     """
-    ...
 
 def pget(x: float, y: float) -> int:
     """Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.
@@ -1728,7 +1622,6 @@ def pget(x: float, y: float) -> int:
     Returns:
         Color of the pixel
     """
-    ...
 
 def pset(x: float, y: float, col: int) -> None:
     """Draw a pixel of color col at (x, y).
@@ -1738,7 +1631,6 @@ def pset(x: float, y: float, col: int) -> None:
         y: Y coordinate
         col: Color
     """
-    ...
 
 def line(x1: float, y1: float, x2: float, y2: float, col: int) -> None:
     """Draw a line of color col from (x1, y1) to (x2, y2).
@@ -1750,7 +1642,6 @@ def line(x1: float, y1: float, x2: float, y2: float, col: int) -> None:
         y2: End Y coordinate
         col: Color
     """
-    ...
 
 def rect(x: float, y: float, w: float, h: float, col: int) -> None:
     """Draw a filled rectangle of width w, height h, and color col at (x, y).
@@ -1762,7 +1653,6 @@ def rect(x: float, y: float, w: float, h: float, col: int) -> None:
         h: Height
         col: Color
     """
-    ...
 
 def rectb(x: float, y: float, w: float, h: float, col: int) -> None:
     """Draw the outline of a rectangle of width w, height h, and color col at (x, y).
@@ -1774,7 +1664,6 @@ def rectb(x: float, y: float, w: float, h: float, col: int) -> None:
         h: Height
         col: Color
     """
-    ...
 
 def circ(x: float, y: float, r: float, col: int) -> None:
     """Draw a filled circle of radius r and color col at (x, y).
@@ -1785,7 +1674,6 @@ def circ(x: float, y: float, r: float, col: int) -> None:
         r: Radius
         col: Color
     """
-    ...
 
 def circb(x: float, y: float, r: float, col: int) -> None:
     """Draw the outline of a circle of radius r and color col at (x, y).
@@ -1796,7 +1684,6 @@ def circb(x: float, y: float, r: float, col: int) -> None:
         r: Radius
         col: Color
     """
-    ...
 
 def elli(x: float, y: float, w: float, h: float, col: int) -> None:
     """Draw a filled ellipse of width w, height h, and color col at (x, y).
@@ -1808,7 +1695,6 @@ def elli(x: float, y: float, w: float, h: float, col: int) -> None:
         h: Height
         col: Color
     """
-    ...
 
 def ellib(x: float, y: float, w: float, h: float, col: int) -> None:
     """Draw the outline of an ellipse of width w, height h, and color col at (x, y).
@@ -1820,7 +1706,6 @@ def ellib(x: float, y: float, w: float, h: float, col: int) -> None:
         h: Height
         col: Color
     """
-    ...
 
 def tri(
     x1: float,
@@ -1842,7 +1727,6 @@ def tri(
         y3: Vertex 3 Y
         col: Color
     """
-    ...
 
 def trib(
     x1: float,
@@ -1864,7 +1748,6 @@ def trib(
         y3: Vertex 3 Y
         col: Color
     """
-    ...
 
 def fill(x: float, y: float, col: int) -> None:
     """Fill the area connected with the same color as (x, y) with color col.
@@ -1874,7 +1757,6 @@ def fill(x: float, y: float, col: int) -> None:
         y: Y coordinate
         col: Fill color
     """
-    ...
 
 def blt(
     x: float,
@@ -1902,7 +1784,6 @@ def blt(
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
         scale: Scale factor (centered on the copy region). Defaults to 1.
     """
-    ...
 
 def bltm(
     x: float,
@@ -1930,7 +1811,6 @@ def bltm(
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
         scale: Scale factor (centered on the copy region). Defaults to 1.
     """
-    ...
 
 def blt3d(
     x: float,
@@ -1956,7 +1836,6 @@ def blt3d(
         fov: Field of view in degrees. Defaults to 60.
         colkey: Transparent color. If omitted, no transparency.
     """
-    ...
 
 def bltm3d(
     x: float,
@@ -1982,7 +1861,6 @@ def bltm3d(
         fov: Field of view in degrees. Defaults to 60.
         colkey: Transparent color. If omitted, no transparency.
     """
-    ...
 
 def text(x: float, y: float, s: str, col: int, font: Font | None = None) -> None:
     """Draw a string s in color col at (x, y).
@@ -1994,7 +1872,6 @@ def text(x: float, y: float, s: str, col: int, font: Font | None = None) -> None
         col: Color
         font: Custom font. If omitted, the standard font is used.
     """
-    ...
 
 # Audio
 channels: list[Channel]
@@ -2022,7 +1899,6 @@ def play(
         loop: Loop playback. Defaults to False.
         resume: Resume previous sound after playback ends. Defaults to False.
     """
-    ...
 
 def playm(
     msc: int,
@@ -2036,7 +1912,6 @@ def playm(
         sec: Playback start position in seconds. Defaults to 0.
         loop: Loop playback. Defaults to False.
     """
-    ...
 
 def stop(ch: int | None = None) -> None:
     """Stop playback of the specified channel ch (0-3). Call without arguments to stop playback of all channels.
@@ -2044,7 +1919,6 @@ def stop(ch: int | None = None) -> None:
     Args:
         ch: Channel number (0-3)
     """
-    ...
 
 def play_pos(ch: int) -> tuple[int, float] | None:
     """Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.
@@ -2055,7 +1929,6 @@ def play_pos(ch: int) -> tuple[int, float] | None:
     Returns:
         (sound_index, sec) or None
     """
-    ...
 
 def gen_bgm(
     preset: int,
@@ -2076,7 +1949,6 @@ def gen_bgm(
     Returns:
         List of MML strings
     """
-    ...
 
 # Math
 def ceil(x: float) -> int:
@@ -2088,7 +1960,6 @@ def ceil(x: float) -> int:
     Returns:
         Smallest integer >= x
     """
-    ...
 
 def floor(x: float) -> int:
     """Return the largest integer less than or equal to x.
@@ -2099,9 +1970,8 @@ def floor(x: float) -> int:
     Returns:
         Largest integer <= x
     """
-    ...
 
-def clamp(x: int | float, lower: int | float, upper: int | float) -> int | float:
+def clamp(x: float, lower: float, upper: float) -> int | float:
     """Return x clamped between lower and upper.
 
     Args:
@@ -2112,9 +1982,8 @@ def clamp(x: int | float, lower: int | float, upper: int | float) -> int | float
     Returns:
         Clamped value
     """
-    ...
 
-def sgn(x: int | float) -> int | float:
+def sgn(x: float) -> int | float:
     """Return 1 when x is positive, 0 when it is 0, and -1 when it is negative.
 
     Args:
@@ -2123,7 +1992,6 @@ def sgn(x: int | float) -> int | float:
     Returns:
         Sign of the value (1, 0, or -1)
     """
-    ...
 
 def sqrt(x: float) -> float:
     """Return the square root of x.
@@ -2134,7 +2002,6 @@ def sqrt(x: float) -> float:
     Returns:
         Square root of x
     """
-    ...
 
 def sin(deg: float) -> float:
     """Return the sine of deg degrees.
@@ -2145,7 +2012,6 @@ def sin(deg: float) -> float:
     Returns:
         Sine value
     """
-    ...
 
 def cos(deg: float) -> float:
     """Return the cosine of deg degrees.
@@ -2156,7 +2022,6 @@ def cos(deg: float) -> float:
     Returns:
         Cosine value
     """
-    ...
 
 def atan2(y: float, x: float) -> float:
     """Return the arctangent of y/x in degrees.
@@ -2168,7 +2033,6 @@ def atan2(y: float, x: float) -> float:
     Returns:
         Angle in degrees
     """
-    ...
 
 def rseed(seed: int) -> None:
     """Set the seed of the random number generator.
@@ -2176,7 +2040,6 @@ def rseed(seed: int) -> None:
     Args:
         seed: Seed value (non-negative integer)
     """
-    ...
 
 def rndi(a: int, b: int) -> int:
     """Return a random integer from a to b (inclusive).
@@ -2188,7 +2051,6 @@ def rndi(a: int, b: int) -> int:
     Returns:
         Random integer from a to b
     """
-    ...
 
 def rndf(a: float, b: float) -> float:
     """Return a random float from a to b (inclusive).
@@ -2200,7 +2062,6 @@ def rndf(a: float, b: float) -> float:
     Returns:
         Random float from a to b
     """
-    ...
 
 def nseed(seed: int) -> None:
     """Set the seed of Perlin noise.
@@ -2208,7 +2069,6 @@ def nseed(seed: int) -> None:
     Args:
         seed: Seed value (non-negative integer)
     """
-    ...
 
 def noise(x: float, y: float = 0, z: float = 0) -> float:
     """Return the Perlin noise value for the specified coordinates.
@@ -2221,4 +2081,3 @@ def noise(x: float, y: float = 0, z: float = 0) -> float:
     Returns:
         Perlin noise value
     """
-    ...

@@ -1,9 +1,7 @@
 from pathlib import Path
 
 import pytest
-
 import pyxel
-
 from _capture import compare_or_update_all  # type: ignore[reportMissingImports]
 
 ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
@@ -68,7 +66,7 @@ def panic_exception():
     # from a known panic path.
     try:
         pyxel.btnv(pyxel.KEY_A)
-    except BaseException as e:
+    except BaseException as e:  # noqa: BLE001
         return type(e)
     raise RuntimeError("expected a Rust panic but pyxel.btnv(KEY_A) returned normally")
 

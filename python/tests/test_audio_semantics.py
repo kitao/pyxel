@@ -3,7 +3,6 @@ import struct
 import wave
 
 import pytest
-
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 

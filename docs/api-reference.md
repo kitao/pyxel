@@ -43,7 +43,15 @@ Initialize the Pyxel application with the screen size (width, height).
 **Example:**
 
 ```python
-pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)
+pyxel.init(
+    160,
+    120,
+    title="My Pyxel App",
+    fps=60,
+    quit_key=pyxel.KEY_NONE,
+    capture_scale=3,
+    capture_sec=0,
+)
 ```
 
 ### `run(update, draw)` — function

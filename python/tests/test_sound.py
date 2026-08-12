@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 
 import pytest
-
 import pyxel
 
 
@@ -141,6 +140,7 @@ class TestSound:
             capture_output=True,
             text=True,
             timeout=30,
+            check=False,
         )
         assert result.returncode == 0, result.stderr
         assert path.stat().st_size > 0

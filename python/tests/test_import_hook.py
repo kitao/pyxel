@@ -7,7 +7,6 @@ from types import SimpleNamespace
 
 import pytest
 
-
 MODULE_PATH = Path(__file__).parents[2] / "wasm" / "import_hook.py"
 
 

@@ -18,7 +18,7 @@ class ImportHook:
             or fullname in sys.modules
             or fullname in SKIP_MODULES
         ):
-            return None
+            return
         self.imported_modules.add(fullname)
 
         # Skip standard library or installed packages.
@@ -33,7 +33,7 @@ class ImportHook:
                     os.path.realpath(sys.base_prefix)
                 )
             ):
-                return None
+                return
 
         # Find the script that triggered the import.
         caller_file = None
@@ -44,7 +44,7 @@ class ImportHook:
                 break
             frame = frame.f_back
         if not caller_file:
-            return None
+            return
 
         # Trigger file download for missing modules in the caller's directory.
         print(f"Attempting to import '{fullname}'")
@@ -63,7 +63,7 @@ class ImportHook:
             os.path.exists(main_module_path)
             os.path.exists(main_package_path)
 
-        return None
+        return
 
 
 sys.meta_path.insert(0, ImportHook())

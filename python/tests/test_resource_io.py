@@ -2,7 +2,6 @@ import zipfile
 from pathlib import Path
 
 import pytest
-
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
@@ -95,13 +94,17 @@ class TestSaveLoad:
             ),
             (
                 {"image0": "0g"},
-                "invalid hexadecimal digit 'g' in 'pyxel_resource/image0' "
-                "at line 1, column 2",
+                (
+                    "invalid hexadecimal digit 'g' in 'pyxel_resource/image0' "
+                    "at line 1, column 2"
+                ),
             ),
             (
                 {"image0": "0あ"},
-                "invalid hexadecimal digit 'あ' in 'pyxel_resource/image0' "
-                "at line 1, column 2",
+                (
+                    "invalid hexadecimal digit 'あ' in 'pyxel_resource/image0' "
+                    "at line 1, column 2"
+                ),
             ),
             (
                 {"image0": "0\n" * 257},
@@ -109,18 +112,24 @@ class TestSaveLoad:
             ),
             (
                 {"tilemap0": "000"},
-                "invalid tile width in 'pyxel_resource/tilemap0' at line 1: "
-                "expected groups of 4 hexadecimal digits",
+                (
+                    "invalid tile width in 'pyxel_resource/tilemap0' at line 1: "
+                    "expected groups of 4 hexadecimal digits"
+                ),
             ),
             (
                 {"tilemap0": "00z0"},
-                "invalid hexadecimal digit 'z' in 'pyxel_resource/tilemap0' "
-                "at line 1, column 3",
+                (
+                    "invalid hexadecimal digit 'z' in 'pyxel_resource/tilemap0' "
+                    "at line 1, column 3"
+                ),
             ),
             (
                 {"tilemap0": "0000" * 257},
-                "too many tiles in 'pyxel_resource/tilemap0' at line 1: "
-                "got 257, maximum 256",
+                (
+                    "too many tiles in 'pyxel_resource/tilemap0' at line 1: "
+                    "got 257, maximum 256"
+                ),
             ),
             (
                 {"tilemap0": "0000\n" * 256 + "bad\n"},
@@ -128,18 +137,24 @@ class TestSaveLoad:
             ),
             (
                 {"tilemap0": "0000\n" * 256 + "9999\n"},
-                "image index 9999 in 'pyxel_resource/tilemap0' at line 257 "
-                "is out of range 0..3",
+                (
+                    "image index 9999 in 'pyxel_resource/tilemap0' at line 257 "
+                    "is out of range 0..3"
+                ),
             ),
             (
                 {"sound00": "0g"},
-                "invalid hexadecimal digit 'g' in 'pyxel_resource/sound00' "
-                "at line 1, column 2",
+                (
+                    "invalid hexadecimal digit 'g' in 'pyxel_resource/sound00' "
+                    "at line 1, column 2"
+                ),
             ),
             (
                 {"sound00": "0"},
-                "invalid value width in 'pyxel_resource/sound00' at line 1: "
-                "expected groups of 2 hexadecimal digits",
+                (
+                    "invalid value width in 'pyxel_resource/sound00' at line 1: "
+                    "expected groups of 2 hexadecimal digits"
+                ),
             ),
             (
                 {"sound00": "none\nnone\nnone\nnone\nfast\n"},
@@ -165,7 +180,7 @@ class TestSaveLoad:
         _write_legacy_resource(path, {"image0": "1", "tilemap0": "g"})
         pyxel.images[0].cls(7)
 
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="^Failed to load"):
             pyxel.load(str(path))
 
         assert pyxel.images[0].pget(0, 0) == 7
@@ -190,7 +205,7 @@ class TestSaveLoad:
         path.with_suffix(".pyxpal").write_text("not-hex\n", encoding="utf-8")
         pyxel.images[0].cls(7)
 
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="^Failed to parse line"):
             pyxel.load(str(path))
 
         assert pyxel.images[0].pget(0, 0) == 7
@@ -208,27 +223,35 @@ class TestSaveLoad:
         ("toml_text", "message"),
         [
             (
-                "format_version = 1\n"
-                "tilemaps = []\nsounds = []\nmusics = []\n"
-                "[[images]]\nwidth = 1\nheight = 1\ndata = []\n",
+                (
+                    "format_version = 1\n"
+                    "tilemaps = []\nsounds = []\nmusics = []\n"
+                    "[[images]]\nwidth = 1\nheight = 1\ndata = []\n"
+                ),
                 "Invalid resource data: images[0].data must not be empty",
             ),
             (
-                "format_version = 1\n"
-                "images = []\nsounds = []\nmusics = []\n"
-                "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 0\ndata = []\n",
+                (
+                    "format_version = 1\n"
+                    "images = []\nsounds = []\nmusics = []\n"
+                    "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 0\ndata = []\n"
+                ),
                 "Invalid resource data: tilemaps[0].data must not be empty",
             ),
             (
-                "format_version = 1\n"
-                "images = []\nsounds = []\nmusics = []\n"
-                "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 3\ndata = [[0, 0]]\n",
+                (
+                    "format_version = 1\n"
+                    "images = []\nsounds = []\nmusics = []\n"
+                    "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 3\ndata = [[0, 0]]\n"
+                ),
                 "Invalid resource data: tilemaps[0].imgsrc 3 is out of range 0..3",
             ),
             (
-                "format_version = 1\n"
-                "images = []\ntilemaps = []\nmusics = []\n"
-                "[[sounds]]\nnotes = []\ntones = []\nvolumes = []\neffects = []\nspeed = 0\n",
+                (
+                    "format_version = 1\n"
+                    "images = []\ntilemaps = []\nmusics = []\n"
+                    "[[sounds]]\nnotes = []\ntones = []\nvolumes = []\neffects = []\nspeed = 0\n"
+                ),
                 "Invalid resource data: sounds[0].speed must be greater than 0",
             ),
         ],
@@ -251,7 +274,7 @@ class TestSaveLoad:
         )
         pyxel.images[0].cls(7)
 
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="^Invalid resource data"):
             pyxel.load(str(path))
 
         assert pyxel.images[0].pget(0, 0) == 7

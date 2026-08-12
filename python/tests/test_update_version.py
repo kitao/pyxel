@@ -2,7 +2,6 @@ import importlib.util
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
-
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "update_version"
 WORKFLOW_DIR = Path(__file__).parents[2] / ".github/workflows"
 

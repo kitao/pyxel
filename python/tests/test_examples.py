@@ -1,12 +1,10 @@
 from pathlib import Path
 
 import pytest
-
 import pyxel
-
 from _capture import (  # type: ignore[reportMissingImports]
-    EXAMPLES_DIR,
     EXAMPLE_REFS_DIR,
+    EXAMPLES_DIR,
     collect_plan_results,
     run_example_subprocess,
     run_flip_example_subprocess,

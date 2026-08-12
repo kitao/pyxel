@@ -3,16 +3,14 @@ import shutil
 from pathlib import Path
 
 import pytest
-
 import pyxel
-from pyxel import editor as _editor
-from pyxel.editor.widgets import NumberPicker
-
 from _capture import (  # type: ignore[reportMissingImports]
     EDITOR_REFS_DIR,
     collect_editor_results,
     run_editor_subprocess,
 )
+from pyxel import editor as _editor
+from pyxel.editor.widgets import NumberPicker
 
 # Side-effect import: registers pyxel.user_pal. Local rebind silences pyright.
 _ = _editor

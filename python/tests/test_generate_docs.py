@@ -4,7 +4,6 @@ from pathlib import Path
 
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
-
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "generate_docs"
 
 
