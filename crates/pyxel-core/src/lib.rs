@@ -73,6 +73,7 @@ pub use crate::pyxel::{
     reset_callback, screen, sounds, tilemaps, tones, validate_init_params, width, AudioGlobalGuard,
     Pyxel,
 };
+pub use crate::screencast::Screencast;
 pub use crate::settings::*;
 pub use crate::sound::{
     RcSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume,
