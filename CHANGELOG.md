@@ -12,6 +12,7 @@
 - Fixed Pyxel Web Launcher URLs pinning apps to a commit SHA
 - Fixed Pyxel Code Maker URLs pinning projects to a commit SHA
 - Extracted shared web page headers into shared.js
+- Extracted the API reference page logic into api-reference.js
 - Unified rotate/scale blit setup into TransformProjection
 
 ## 2.9.8
