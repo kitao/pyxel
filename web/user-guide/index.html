@@ -41,7 +41,7 @@
         const app = document.getElementById("app");
         app.innerHTML = "";
 
-        app.appendChild(buildPageHeader(updateTexts));
+        app.appendChild(buildPageHeader(updateTexts, buildVariantSwitch()));
 
         // User guide section containers populated by updateTexts
         const wrap = document.createElement("div");

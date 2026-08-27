@@ -1,7 +1,7 @@
 #![warn(clippy::pedantic)]
 // Relax pedantic lints that fire pervasively in engine code without flagging real
-// issues: numeric casts in pixel/audio math, wide hot-path signatures, and
-// doc/must-use nags.
+// issues: numeric casts in pixel/audio math, wide hot-path signatures, cube's
+// manual geometry midpoints, and doc/must-use nags.
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
@@ -11,6 +11,7 @@
     clippy::cast_sign_loss,
     clippy::float_cmp,
     clippy::fn_params_excessive_bools,
+    clippy::manual_midpoint,
     clippy::missing_errors_doc,
     clippy::missing_panics_doc,
     clippy::missing_safety_doc,
@@ -30,6 +31,7 @@ mod audio;
 mod bgm_generator;
 mod canvas;
 mod channel;
+pub mod cube;
 mod font;
 mod graphics;
 mod image;

@@ -151,7 +151,7 @@ function buildPage() {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  app.appendChild(buildPageHeader(updateTexts));
+  app.appendChild(buildPageHeader(updateTexts, buildVariantSwitch()));
 
   // Toolbar for text search and advanced API visibility
   const toolbar = document.createElement("div");

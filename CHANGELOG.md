@@ -1,5 +1,20 @@
 # Change Log
 
+## 3.0.0
+
+- Added the Pyxel Cube software-rendered 3D extension module
+- Added Example C01 for a basic Pyxel Cube scene
+- Added Example C02 for Pyxel Cube drawing primitives
+- Added Example C03 for custom Pyxel Cube drawing primitives
+- Added Example C04 for Pyxel Cube mesh import and motion playback
+- Added Example C05 for Pyxel Cube 3D collision response
+- Added Example C06 for Pyxel Cube 3D physics
+- Added six Pyxel Cube demo scripts under examples/cube/
+- Added Pyxel Cube API reference page
+- Added Pyxel Cube user guide page with a Base/Cube variant switch
+- Added a Cube Examples category to the showcase
+- Improved Python API error messages for argument types and indices
+
 ## 2.9.9
 
 - Updated Rust to version nightly-2026-08-12

@@ -9,9 +9,12 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "web"
 API_REF_JSON = WEB_DIR / "api-reference" / "api-reference.json"
+CUBE_API_REF_JSON = WEB_DIR / "api-reference" / "cube" / "api-reference.json"
 MML_COMMANDS_JSON = WEB_DIR / "mml-studio" / "mml-commands.json"
 USER_GUIDE_HTML = WEB_DIR / "user-guide" / "index.html"
 USER_GUIDE_JSON = WEB_DIR / "user-guide" / "user-guide.json"
+CUBE_USER_GUIDE_HTML = WEB_DIR / "user-guide" / "cube" / "index.html"
+CUBE_USER_GUIDE_JSON = WEB_DIR / "user-guide" / "cube" / "user-guide.json"
 WEB_USAGE_HTML = WEB_DIR / "web-usage" / "index.html"
 WEB_USAGE_JSON = WEB_DIR / "web-usage" / "web-usage.json"
 EDITOR_MANUAL_HTML = WEB_DIR / "editor-manual" / "index.html"
@@ -33,10 +36,14 @@ MARKDOWN_IMAGE_EXCLUDE_URLS = {
 }
 HTML_DOCS = (
     (USER_GUIDE_HTML, USER_GUIDE_JSON, "user-guide", "user-guide"),
+    (CUBE_USER_GUIDE_HTML, CUBE_USER_GUIDE_JSON, "user-guide-cube", "user-guide/cube"),
     (EDITOR_MANUAL_HTML, EDITOR_MANUAL_JSON, "editor-manual", "editor-manual"),
     (WEB_USAGE_HTML, WEB_USAGE_JSON, "web-usage", "web-usage"),
 )
-API_REFERENCE_DOCS = ((API_REF_JSON, "api-reference", "api-reference"),)
+API_REFERENCE_DOCS = (
+    (API_REF_JSON, "api-reference", "api-reference"),
+    (CUBE_API_REF_JSON, "api-reference-cube", "api-reference/cube"),
+)
 
 
 # Shared helpers
