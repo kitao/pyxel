@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel Cube API Reference</title>
+    <link rel="icon" href="../../../wasm/images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <script src="../../shared.js"></script>
+    <script src="../api-reference.js"></script>
+  </head>
+
+  <body class="page min-h-full">
+    <main class="page-container" id="app">
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
+    </main>
+
+    <script>
+      showAdvanced = localStorage.getItem(PYXEL_API_REF_ADVANCED_KEY) === "1";
+      initPage("api-reference.json", buildPage);
+    </script>
+  </body>
+</html>

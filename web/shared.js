@@ -49,9 +49,30 @@ const buildLangSelector = (
   return select;
 };
 
+// Base / Cube variant switch (the Cube variant lives in a /cube/ subdirectory)
+
+const buildVariantSwitch = () => {
+  const onCube = /\/cube\/?$/.test(location.pathname);
+  const sw = document.createElement("div");
+  sw.className = "seg mt-1";
+  const variants = [
+    { label: "Base", href: onCube ? "../" : "./", active: !onCube },
+    { label: "Cube", href: onCube ? "./" : "cube/", active: onCube },
+  ];
+  for (const v of variants) {
+    const seg = document.createElement(v.active ? "span" : "a");
+    seg.className = v.active ? "seg-btn seg-active" : "seg-btn";
+    if (!v.active) seg.href = v.href;
+    seg.textContent = v.label;
+    sw.appendChild(seg);
+  }
+  return sw;
+};
+
 // Standard page header with title, subtitle, and a language selector that
-// re-renders through the page's text updater.
-const buildPageHeader = (updateFn) => {
+// re-renders through the page's text updater. Pages with a Cube variant pass
+// the variant switch as an extra leading control.
+const buildPageHeader = (updateFn, leadingControl = null) => {
   const header = document.createElement("header");
   header.className = "flex items-start gap-4 mb-6";
 
@@ -73,6 +94,7 @@ const buildPageHeader = (updateFn) => {
     updateFn();
   });
 
+  if (leadingControl) header.appendChild(leadingControl);
   header.appendChild(langSelect);
   header.appendChild(titleBlock);
   return header;

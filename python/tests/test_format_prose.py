@@ -75,14 +75,14 @@ class TestCodeSpan:
 
     def test_preserves_api_call_parentheses(self):
         assert (
-            format_prose.format_text("pyxel.run()が呼ばれる", "ja")
-            == "pyxel.run() が呼ばれる"
+            format_prose.format_text("Node.draw()が呼ばれる", "ja")
+            == "Node.draw() が呼ばれる"
         )
 
     def test_preserves_api_call_inside_code_span(self):
         assert (
-            format_prose.format_text("`pyxel.run ()`の例", "ja")
-            == "`pyxel.run ()` の例"
+            format_prose.format_text("`Node.draw ()`の例", "ja")
+            == "`Node.draw ()` の例"
         )
 
     def test_repairs_api_call_spacing(self):

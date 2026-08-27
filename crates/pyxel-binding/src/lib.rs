@@ -1,10 +1,13 @@
 #![warn(clippy::pedantic)]
 // Relax pedantic lints inherent to mirroring the Python API through PyO3: numeric
-// casts, Python-style by-value args and self conventions, and short math names.
+// casts, exact float comparisons, Python-style by-value args and self conventions,
+// and short math names.
 #![allow(
+    clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
     clippy::cast_precision_loss,
     clippy::cast_sign_loss,
+    clippy::float_cmp,
     clippy::many_single_char_names,
     clippy::needless_pass_by_value,
     clippy::too_many_arguments,
@@ -42,6 +45,9 @@ mod math_wrapper;
 mod resource_wrapper;
 mod system_wrapper;
 
+// Cube submodule
+mod cube;
+
 #[pymodule]
 fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     // Drawable classes
@@ -66,6 +72,9 @@ fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     graphics_wrapper::add_graphics_functions(&m)?;
     audio_wrapper::add_audio_functions(&m)?;
     math_wrapper::add_math_functions(&m)?;
+
+    // Cube submodule
+    cube::add_cube_submodule(&m)?;
 
     Ok(())
 }

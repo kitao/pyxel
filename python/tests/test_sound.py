@@ -197,7 +197,7 @@ class TestSoundMml:
         # Old syntax: 4 notes x 4 steps (default l8) x 7 ticks (t120).
         assert snd.total_sec() == pytest.approx(16 * 7 / 120, abs=1e-3)
 
-    def test_old_mml_emits_deprecation(self, capfd):
+    def test_old_mml_emits_deprecation_and_none_exits_mml_mode(self, capfd):
         snd = pyxel.Sound()
         snd.old_mml("T120 O4 L4 CDEF")  # type: ignore[attr-defined]
         out = capfd.readouterr().out
@@ -206,6 +206,9 @@ class TestSoundMml:
         )
         # 4 notes x 8 steps (l4) x 7 ticks (t120).
         assert snd.total_sec() == pytest.approx(32 * 7 / 120, abs=1e-3)
+        snd.old_mml(None)  # type: ignore[attr-defined]
+        # Back on the notes-based path, which is empty for a fresh sound.
+        assert snd.total_sec() == 0.0
 
 
 class TestSoundPcm:

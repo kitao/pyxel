@@ -77,6 +77,34 @@ fn window_title_c_string(title: &str) -> CString {
     CString::new(title).expect("window title NUL bytes are replaced")
 }
 
+fn release_window_resources<DropGlowContext, DeleteSdlContext, DestroyWindow>(
+    gl_context: &mut *mut Context,
+    sdl_gl_context: &mut SDL_GLContext,
+    window: &mut *mut SDL_Window,
+    mut drop_glow_context: DropGlowContext,
+    mut delete_sdl_context: DeleteSdlContext,
+    mut destroy_window: DestroyWindow,
+) where
+    DropGlowContext: FnMut(*mut Context),
+    DeleteSdlContext: FnMut(SDL_GLContext),
+    DestroyWindow: FnMut(*mut SDL_Window),
+{
+    let gl_context = std::mem::replace(gl_context, null_mut());
+    if !gl_context.is_null() {
+        drop_glow_context(gl_context);
+    }
+
+    let sdl_gl_context = std::mem::replace(sdl_gl_context, null_mut());
+    if !sdl_gl_context.is_null() {
+        delete_sdl_context(sdl_gl_context);
+    }
+
+    let window = std::mem::replace(window, null_mut());
+    if !window.is_null() {
+        destroy_window(window);
+    }
+}
+
 #[cfg(target_os = "emscripten")]
 extern "C" {
     fn emscripten_run_script(script: *const std::os::raw::c_char);
@@ -130,6 +158,7 @@ fn saved_audio_device_id_for_start() -> Option<SDL_AudioDeviceID> {
 
 pub struct PlatformSdl2 {
     pub window: *mut SDL_Window,
+    pub sdl_gl_context: SDL_GLContext,
     pub gl_context: *mut Context,
     pub audio_device_id: SDL_AudioDeviceID,
     #[cfg(not(target_os = "emscripten"))]
@@ -148,6 +177,7 @@ impl PlatformSdl2 {
     pub fn new() -> Self {
         Self {
             window: null_mut(),
+            sdl_gl_context: null_mut(),
             gl_context: null_mut(),
             audio_device_id: 0,
             #[cfg(not(target_os = "emscripten"))]
@@ -208,6 +238,7 @@ impl PlatformSdl2 {
     #[cfg(not(target_os = "emscripten"))]
     pub fn quit(&mut self) {
         self.close_audio();
+        self.close_window();
         unsafe { SDL_Quit() };
         std::process::exit(0);
     }
@@ -263,15 +294,17 @@ impl PlatformSdl2 {
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-            if SDL_GL_CreateContext(self.window).is_null() {
+            self.sdl_gl_context = SDL_GL_CreateContext(self.window);
+            if self.sdl_gl_context.is_null() {
                 SDL_GL_SetAttribute(
                     SDL_GL_CONTEXT_PROFILE_MASK,
                     SDL_GL_CONTEXT_PROFILE_ES as i32,
                 );
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+                self.sdl_gl_context = SDL_GL_CreateContext(self.window);
                 assert!(
-                    !SDL_GL_CreateContext(self.window).is_null(),
+                    !self.sdl_gl_context.is_null(),
                     "Failed to create OpenGL context: {}",
                     CStr::from_ptr(SDL_GetError()).to_string_lossy()
                 );
@@ -285,6 +318,22 @@ impl PlatformSdl2 {
             #[cfg(not(target_os = "emscripten"))]
             SDL_RaiseWindow(self.window);
         }
+    }
+
+    #[cfg(not(target_os = "emscripten"))]
+    fn close_window(&mut self) {
+        release_window_resources(
+            &mut self.gl_context,
+            &mut self.sdl_gl_context,
+            &mut self.window,
+            |context| {
+                // SAFETY: init_window created this Box and transferred its
+                // ownership to gl_context exactly once.
+                unsafe { drop(Box::from_raw(context)) };
+            },
+            |context| unsafe { SDL_GL_DeleteContext(context) },
+            |window| unsafe { SDL_DestroyWindow(window) },
+        );
     }
 
     pub fn window_pos(&self) -> (i32, i32) {
@@ -576,16 +625,27 @@ impl PlatformSdl2 {
 impl Drop for PlatformSdl2 {
     fn drop(&mut self) {
         #[cfg(not(target_os = "emscripten"))]
-        self.close_audio();
+        {
+            self.close_audio();
+            self.close_window();
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::cell::RefCell;
+    use std::ffi::c_void;
+    use std::ptr::NonNull;
     #[cfg(not(target_os = "emscripten"))]
     use std::sync::atomic::Ordering;
 
-    use super::{advance_frame_schedule, browser_save_script, window_title_c_string};
+    use glow::Context;
+
+    use super::{
+        advance_frame_schedule, browser_save_script, release_window_resources,
+        window_title_c_string, SDL_Window,
+    };
     #[cfg(not(target_os = "emscripten"))]
     use super::{saved_audio_device_id_for_start, AUDIO_DEVICE_ID};
 
@@ -604,6 +664,54 @@ mod tests {
         let title = window_title_c_string("Py\0xel");
 
         assert_eq!(title.to_str().unwrap(), "Py xel");
+    }
+
+    #[test]
+    fn test_release_window_resources_uses_dependency_order_once() {
+        let original_glow_context = NonNull::<Context>::dangling().as_ptr();
+        let original_sdl_context = NonNull::<c_void>::dangling().as_ptr();
+        let original_window = NonNull::<SDL_Window>::dangling().as_ptr();
+        let mut glow_context = original_glow_context;
+        let mut sdl_context = original_sdl_context;
+        let mut window = original_window;
+        let actions = RefCell::new(Vec::new());
+
+        release_window_resources(
+            &mut glow_context,
+            &mut sdl_context,
+            &mut window,
+            |context| {
+                assert_eq!(context, original_glow_context);
+                actions.borrow_mut().push("drop_glow_context");
+            },
+            |context| {
+                assert_eq!(context, original_sdl_context);
+                actions.borrow_mut().push("delete_sdl_context");
+            },
+            |window| {
+                assert_eq!(window, original_window);
+                actions.borrow_mut().push("destroy_window");
+            },
+        );
+
+        assert_eq!(
+            *actions.borrow(),
+            ["drop_glow_context", "delete_sdl_context", "destroy_window"]
+        );
+        assert!(glow_context.is_null());
+        assert!(sdl_context.is_null());
+        assert!(window.is_null());
+
+        release_window_resources(
+            &mut glow_context,
+            &mut sdl_context,
+            &mut window,
+            |_| actions.borrow_mut().push("drop_glow_context"),
+            |_| actions.borrow_mut().push("delete_sdl_context"),
+            |_| actions.borrow_mut().push("destroy_window"),
+        );
+
+        assert_eq!(actions.borrow().len(), 3);
     }
 
     // Native SDL builds run this; Pyxel Web reuses audio across resets.
