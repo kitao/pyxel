@@ -392,8 +392,7 @@ impl Node {
         self.inner_mut().visible = v;
     }
 
-    // Scene-wide camera cascade. None inherits from the closest non-None
-    // ancestor. Read `effective_camera` in on_draw for billboard math.
+    // None inherits from the nearest ancestor camera; on_draw uses effective_camera.
     #[getter]
     fn camera(&self) -> Option<Camera> {
         self.inner_ref()
@@ -407,8 +406,7 @@ impl Node {
         self.inner_mut().camera = v.as_ref().map(|c| c.inner.clone());
     }
 
-    // Scene-wide shading cascade. None inherits from the closest non-None
-    // ancestor; when no ancestor sets one, geometry draws unlit.
+    // None inherits ancestor shading; without any shading, geometry draws unlit.
     #[getter]
     fn shading(&self) -> Option<Shading> {
         self.inner_ref()
@@ -458,10 +456,8 @@ impl Node {
     fn children<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyTuple>> {
         let core_children = InnerNode::children(&self.inner);
         let mut cache = self.children.borrow_mut();
-        // Resolve each core child to its cached wrapper; wrappers whose
-        // core node left the tree drop out when the cache is rebuilt
-        // below. Wide nodes use a pointer-keyed index so the lookup
-        // stays O(children) instead of O(children^2).
+        // Reconcile wrappers with core children while preserving Python identity.
+        // Wide nodes use a pointer index to keep lookup linear.
         let mut items: Vec<Py<Node>> = Vec::with_capacity(core_children.len());
         if core_children.len() <= Self::CHILD_INDEX_LINEAR_MAX {
             for c_inner in &core_children {
@@ -634,6 +630,12 @@ impl Node {
 
         let source = slf.validate_motion_source(&motion)?;
         let motion_inner = motion.inner.clone();
+        // Bound looping playheads before the first increment to retain small steps.
+        let start_frame = if r#loop {
+            rc_ref!(&motion_inner).resolve_frame(start_frame, true)
+        } else {
+            start_frame
+        };
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
         Self::apply_motion_inner(&self_py, py, &source, &motion_inner, start_frame, r#loop);
         *self_py.bind(py).borrow().motion_player.borrow_mut() = Some(MotionPlayer {
@@ -933,9 +935,7 @@ impl Node {
         });
     }
 
-    // Frame-level pipeline (on_update traversal -> motion playback ->
-    // motion integration -> collision -> on_destroy traversal +
-    // detachment) starting from this Node's subtree.
+    // Each phase visits the whole subtree before the next phase begins.
     fn update(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<()> {
         let root_inner = slf.inner.clone();
         let any = slf.into_pyobject(py)?.into_any();
@@ -1004,8 +1004,7 @@ impl Node {
         if let Some(col) = rc_ref!(&cam_inner).clear_color {
             rc_mut!(&target_rc).clear(col as u8);
         }
-        // Resize cache if needed, then clear; move the buffers out for the
-        // duration of the traversal and put them back when ctx is taken.
+        // Lend camera buffers to the draw context for this traversal.
         rc_mut!(&cam_inner).ensure_depth(target_w, target_h);
         rc_mut!(&cam_inner).clear_depth();
         let depth = std::mem::take(&mut rc_mut!(&cam_inner).depth);
@@ -1223,8 +1222,6 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
 
         if let (Some(mut player), Some(source)) = (player, source) {
             player.frame += player.speed;
-            // Keep the playhead inside the clip so f32 precision never
-            // degrades during long looping playback.
             player.frame = rc_ref!(&player.motion).resolve_frame(player.frame, player.looping);
             let node_py = node_bound.clone().unbind();
             Node::apply_motion_inner(

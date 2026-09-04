@@ -187,3 +187,4 @@ class TestCoordinateConversions:
         inner = Mat4.from_translation(Vec3(15, 0, 0))
         local = inner.to_local(outer)
         assert local.pos == Vec3(5, 0, 0)
+        assert local.to_world(outer) == inner

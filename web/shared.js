@@ -1,4 +1,4 @@
-// Language detection and localized page initialization helpers
+// Language selection
 
 const PYXEL_LANG_KEY = "pyxel-lang";
 
@@ -49,8 +49,6 @@ const buildLangSelector = (
   return select;
 };
 
-// Base / Cube variant switch (the Cube variant lives in a /cube/ subdirectory)
-
 const buildVariantSwitch = () => {
   const onCube = /\/cube(?:\/(?:index\.html)?)?$/.test(location.pathname);
   const sw = document.createElement("div");
@@ -69,9 +67,6 @@ const buildVariantSwitch = () => {
   return sw;
 };
 
-// Standard page header with title, subtitle, and a language selector that
-// re-renders through the page's text updater. Pages with a Cube variant pass
-// the variant switch as an extra leading control.
 const buildPageHeader = (updateFn, leadingControl = null) => {
   const header = document.createElement("header");
   header.className = "flex flex-wrap sm:flex-nowrap items-start gap-4 mb-6";
@@ -100,7 +95,7 @@ const buildPageHeader = (updateFn, leadingControl = null) => {
   return header;
 };
 
-// Shared HTML string helpers for generated static pages
+// HTML helpers
 
 const esc = (s) =>
   String(s)
@@ -130,8 +125,6 @@ const linkChip = (s) => `<span class="link-chip">${esc(s)}</span>`;
 
 const encodeUrlPath = (path) =>
   path.split("/").map(encodeURIComponent).join("/");
-
-// Chunked Base64 and Uint8Array conversion for archive payloads
 
 // Keep spread calls below browser argument limits.
 const BASE64_CHUNK_SIZE = 0x8000;

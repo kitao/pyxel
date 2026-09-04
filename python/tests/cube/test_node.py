@@ -132,7 +132,7 @@ class TestHierarchy:
         ):
             parent.remove_child(child=child)
 
-    def test_add_child_and_remove_child_require_exactly_one_node(self):
+    def test_add_child_and_remove_child_require_node_argument(self):
         parent, child = Node(), Node()
         with raises_exact(
             TypeError,
@@ -403,7 +403,7 @@ class TestStateSetters:
         root.draw(0, 0, 160, 120)
         return pyxel.pget(80, 60)
 
-    def test_setters_callable_outside_draw_are_noop(self):
+    def test_setters_callable_outside_draw(self):
         n = Node()
         n.dither(0.5)
         n.depth_test(False)

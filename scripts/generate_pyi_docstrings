@@ -126,8 +126,7 @@ def _build_doc_map(api_data):
 
 
 def _fallback_item(class_name, func_name, doc_map):
-    # Fall back to module-level graphics function for class drawing methods.
-    # Adapt a copy so class wording does not change module-level descriptions.
+    # Adapt a copy to preserve the module-level descriptions.
     source = doc_map.get((None, func_name))
     if not source:
         return None
@@ -248,7 +247,6 @@ def _add_docstrings(content, doc_map):
         line = lines[i]
         stripped = line.strip()
 
-        # Track the current class scope
         cm = re.match(r"^class (\w+)", line)
         if cm:
             current_class = cm.group(1)
@@ -285,7 +283,6 @@ def _add_docstrings(content, doc_map):
             last_decorator = None
             function_key = (current_class, func_name)
 
-            # Collect the full function signature, including multiline signatures.
             def_lines = []
             j = i
             while j < len(lines):

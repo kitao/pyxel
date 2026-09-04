@@ -671,10 +671,25 @@ def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
 
     root.play_motion(mesh.motions[0], start_frame=float(2**24))
     root.update()
-    first = root.transform.pos.x
+    assert root.transform.pos == Vec3(17.0 / 30.0, 0.0, 0.0)
+    root.update()
+    assert root.transform.pos == Vec3(18.0 / 30.0, 0.0, 0.0)
+
+
+@pytest.mark.parametrize(
+    "start_frame,speed,expected_frame", [(31.0, -1.0, 30.0), (-1.0, 1.0, 0.0)]
+)
+def test_nonloop_motion_advances_before_clamping_start(
+    tmp_path, start_frame, speed, expected_frame
+):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    root.play_motion(mesh.motions[0], loop=False, speed=speed, start_frame=start_frame)
     root.update()
 
-    assert root.transform.pos.x != first
+    assert root.transform.pos == Vec3(expected_frame / 30.0, 0.0, 0.0)
 
 
 def test_stop_motion_leaves_current_pose(tmp_path):

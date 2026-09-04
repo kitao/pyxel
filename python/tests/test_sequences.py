@@ -186,7 +186,7 @@ class TestSeqSetitem:
                 notes.clear()
                 return 2
 
-        with pytest.raises(IndexError):
+        with raises_exact(IndexError, "list assignment index out of range"):
             notes[0] = Value()
         assert list(notes) == []
 

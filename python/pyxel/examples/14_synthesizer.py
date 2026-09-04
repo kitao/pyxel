@@ -1,50 +1,47 @@
 import pyxel
 
 EXTENDED_CHANNELS = [
-    (0.1 / 2.0, 0),  # Lead Melody
-    (0.1 / 2.0, 10),  # Detuned Lead Melody
-    (0.1, 0),  # Sub Melody
-    (0.1 / 3.0, 0),  # Chord Backing 1
-    (0.1 / 3.0, 0),  # Chord Backing 2
-    (0.1 / 3.0, 0),  # Chord Backing 3
-    (0.1, 0),  # Bass Line
+    (0.1 / 2.0, 0),  # Lead melody
+    (0.1 / 2.0, 10),  # Detuned lead melody
+    (0.1, 0),  # Submelody
+    (0.1 / 3.0, 0),  # Chord backing 1
+    (0.1 / 3.0, 0),  # Chord backing 2
+    (0.1 / 3.0, 0),  # Chord backing 3
+    (0.1, 0),  # Bass line
     (0.1, 0),  # Drums
 ]
-# Each extended channel entry is (gain, detune).
-# gain ranges from 0.0 to 1.0.
-# Keep the total gain during simultaneous playback at or below 1.0.
-# detune is the amount of detuning in cents (1/100 of a semitone).
-# Set detune carefully according to the pitch of the notes.
+# Entries are (gain, detune in cents); 100 cents is one semitone.
+# Keep individual and total simultaneous gain at or below 1.0 to avoid clipping.
 
 EXTENDED_TONES = [
-    (  # Custom Wave
+    (  # Custom wave
         0,
         4,
         [15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 13, 12, 11, 10, 9, 8]
         + [7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         0.8,
     ),
-    (  # Sine Wave
+    (  # Sine wave
         0,
         4,
         [8, 9, 10, 12, 13, 14, 14, 15, 15, 15, 14, 14, 13, 12, 10, 9]
         + [8, 6, 5, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3, 5, 6],
         0.4,
     ),
-    (  # Narrow (1:7) Pulse Wave
+    (  # Narrow (1:7) pulse wave
         0,
         4,
         [15] * 4 + [0] * 28,
         0.7,
     ),
-    (  # Saw Wave
+    (  # Saw wave
         0,
         4,
         [15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8]
         + [7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0],
         1.0,
     ),
-    (  # Short Period Noise
+    (  # Short-period noise
         1,
         4,
         [0] * 32,

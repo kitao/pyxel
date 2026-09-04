@@ -92,7 +92,6 @@ def _parse_arg(text):
     text = text.lstrip()
     if not text:
         return "", ""
-    # Split one argument off the front, dispatching on its first character
     if text[0] in ('"', "'"):
         q = text[0]
         i = 1
@@ -233,7 +232,6 @@ class JsEval:
                 i += 1
         return "".join(result)
 
-    # Evaluate the supported JavaScript expression subset into Markdown text.
     def eval(self, expr):
         expr = expr.strip()
         if not expr:
@@ -450,7 +448,6 @@ class JsEval:
     # Expression helpers
 
     def _replace_chain(self, expr):
-        # Handle t("key").replace/replaceAll(...) and esc(t("key")).replace/replaceAll(...)
         m = re.match(r'(?:esc\()?t\("([^"]+)"\)\)?', expr)
         if not m:
             return expr
@@ -592,7 +589,6 @@ class JsEval:
             return self._data.get(m.group(1), [])
         return self._resolve_data_ref(inner)
 
-    # Render a table(headers, rows) call into a Markdown table.
     def _table(self, inner):
         headers_s, rest = _parse_arg(inner.strip())
         rest = _skip_comma(rest)
@@ -618,7 +614,6 @@ class JsEval:
             md += "| " + " | ".join(row) + " |\n"
         return md
 
-    # Evaluate JavaScript map/join template expressions used by manual sections.
     def _map_join(self, expr):
         arr_end = expr.index(".map(")
         arr_str = expr[:arr_end].strip()
@@ -667,7 +662,6 @@ class JsEval:
 
     # Extract JavaScript variables and simple template loops from updateTexts().
     def extract_variables(self, body):
-        # Extract const/let initializers such as const x = expr.
         for m in re.finditer(r"(?:const|let)\s+(\w+)\s*=\s*", body):
             expr_start = m.end()
             j = expr_start
@@ -736,14 +730,12 @@ def _strip_html(text):
 # Document generators
 
 
-# Convert localized web page templates into generated Markdown documents.
 def generate_from_html(html_path, json_path, output_name, web_path=None):
     web_path = web_path or output_name
     html_text = html_path.read_text(encoding="utf-8")
     data = json.loads(json_path.read_text(encoding="utf-8"))
     ev = JsEval(data["ui"], data, web_path)
 
-    # Extract updateTexts() body
     m = re.search(r"function updateTexts\(\)\s*\{", html_text)
     if not m:
         raise ValueError(f"{html_path}: required function updateTexts() not found")
@@ -751,7 +743,6 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
 
     ev.extract_variables(body)
 
-    # Extract innerHTML sections
     lines = []
     innerhtml_pattern = (
         r'(?:\$|document\.getElementById)\("([^"]+)"\)\.innerHTML\s*=\s*`'
@@ -827,12 +818,7 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
 
     title = localize(data["ui"].get("title", ""))
     url = f"{PYXEL_WEB}/{web_path}/"
-    header = (
-        f"# {title}\n\n"
-        f"*This document was auto-generated from the "
-        f"[{title}]({url}) web page, "
-        f"which also offers multilingual support.*\n"
-    )
+    header = f"# {title}\n\n*[Read online in other languages]({url}).*\n"
     raw = header + "\n".join(lines)
 
     # Protect code blocks from tag stripping and whitespace cleanup
@@ -866,7 +852,6 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
-# Render the API reference JSON into the generated Markdown manual.
 def generate_api_reference(json_path, output_name, web_path):
     api_data = json.loads(json_path.read_text(encoding="utf-8"))
     lines = []
@@ -875,14 +860,9 @@ def generate_api_reference(json_path, output_name, web_path):
     url = f"{PYXEL_WEB}/{web_path}/"
     lines.append(f"# {title}")
     lines.append("")
-    lines.append(
-        f"*This document was auto-generated from the "
-        f"[{title}]({url}) web page, "
-        f"which also offers multilingual support.*"
-    )
+    lines.append(f"*[Read online in other languages]({url}).*")
     lines.append("")
 
-    # Emit each category's items and constant groups
     for cat in api_data["categories"]:
         lines.append(f"## {localize(cat['title'])}")
         lines.append("")
@@ -948,7 +928,6 @@ def generate_api_reference(json_path, output_name, web_path):
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
-# Render MML command metadata into a generated Markdown table.
 def generate_mml_commands():
     mml_data = json.loads(MML_COMMANDS_JSON.read_text(encoding="utf-8"))
     lines = []
@@ -957,11 +936,7 @@ def generate_mml_commands():
     url = f"{PYXEL_WEB}/mml-studio/mml-commands.html"
     lines.append(f"# {title}")
     lines.append("")
-    lines.append(
-        f"*This document was auto-generated from the "
-        f"[{title}]({url}) web page, "
-        f"which also offers multilingual support.*"
-    )
+    lines.append(f"*[Read online in other languages]({url}).*")
     lines.append("")
 
     th_cmd = localize(mml_data["ui"]["th_command"])
@@ -998,5 +973,4 @@ if __name__ == "__main__":
     generate_mml_commands()
     generated.append(DOCS_DIR / "mml-commands.md")
 
-    # Format the generated Markdown so it matches the repo formatter output.
     subprocess.run(["ruff", "format", "-q", *map(str, generated)], check=True)

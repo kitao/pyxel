@@ -2,6 +2,15 @@ import pytest
 import pyxel
 
 
+@pytest.fixture(autouse=True)
+def reset_input_state():
+    yield
+    for letter in "ABCDEFGHIJKLM":
+        pyxel.set_btn(getattr(pyxel, f"KEY_{letter}"), False)
+    pyxel.flip()
+    pyxel.set_mouse_pos(0, 0)
+
+
 class TestInputFunctions:
     def test_btnv_returns_int(self):
         # btnv requires an analog key (mouse position/wheel or gamepad axis)
@@ -68,8 +77,6 @@ class TestSetButtonState:
     def test_input_keys_reflects_pressed(self):
         pyxel.set_btn(pyxel.KEY_I, True)
         assert pyxel.KEY_I in pyxel.input_keys
-        pyxel.set_btn(pyxel.KEY_I, False)
-        pyxel.flip()
 
 
 class TestBtnpHoldRepeat:
@@ -79,8 +86,6 @@ class TestBtnpHoldRepeat:
     def test_first_press_returns_true(self):
         pyxel.set_btn(pyxel.KEY_J, True)
         assert pyxel.btnp(pyxel.KEY_J, hold=3, repeat=2) is True
-        pyxel.set_btn(pyxel.KEY_J, False)
-        pyxel.flip()
 
     @pytest.mark.parametrize("hold", [3, 2**31, 2**32 - 1])
     def test_silent_during_hold_window(self, hold):
@@ -90,8 +95,6 @@ class TestBtnpHoldRepeat:
         assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is False
         pyxel.flip()
         assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is False
-        pyxel.set_btn(pyxel.KEY_K, False)
-        pyxel.flip()
 
     def test_repeat_ticks_after_hold(self):
         pyxel.set_btn(pyxel.KEY_L, True)
@@ -105,8 +108,6 @@ class TestBtnpHoldRepeat:
         pyxel.flip()
         # 5 frames after press: next repeat tick
         assert pyxel.btnp(pyxel.KEY_L, hold=3, repeat=2) is True
-        pyxel.set_btn(pyxel.KEY_L, False)
-        pyxel.flip()
 
     def test_repeat_zero_disables_repeat(self):
         pyxel.set_btn(pyxel.KEY_M, True)
@@ -114,8 +115,6 @@ class TestBtnpHoldRepeat:
         for _ in range(8):
             pyxel.flip()
             assert pyxel.btnp(pyxel.KEY_M, hold=3, repeat=0) is False
-        pyxel.set_btn(pyxel.KEY_M, False)
-        pyxel.flip()
 
 
 class TestSetButtonValue:
@@ -136,7 +135,6 @@ class TestSetButtonValue:
         assert pyxel.mouse_wheel == 5
         pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, -3)
         assert pyxel.mouse_wheel == -3
-        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 0)
 
 
 class TestSetMousePos:

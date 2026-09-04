@@ -1,9 +1,7 @@
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::scene::ProjectedVertex;
 
-// View information held independently from Scene so multiple cameras can
-// be swapped per render call. Mutable.
-
+// Each camera retains its render buffers across draws.
 pub struct Camera {
     pub transform: RcMat4,
     pub fov: f32,
@@ -58,8 +56,7 @@ mod tests {
         let c = Camera::new();
         rc_mut!(&c).ensure_depth(4, 4);
         assert_eq!(rc_ref!(&c).depth.len(), 16);
-        // Same size: the buffer is kept, so a written value survives (a
-        // spurious realloc would reset it to INFINITY).
+        // A sentinel detects an unwanted reset when dimensions stay unchanged.
         rc_mut!(&c).depth[0] = 5.0;
         rc_mut!(&c).ensure_depth(4, 4);
         assert_eq!(rc_ref!(&c).depth[0], 5.0);

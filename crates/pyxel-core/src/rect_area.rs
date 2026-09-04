@@ -256,7 +256,6 @@ mod tests {
     #[test]
     fn test_intersection_adjacent_no_overlap() {
         let a = RectArea::new(0, 0, 10, 10);
-        // The second rect starts just past the first rect's right edge.
         let b = RectArea::new(10, 0, 10, 10);
         assert!(a.intersection(b).is_empty());
     }

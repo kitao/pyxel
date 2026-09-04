@@ -3221,18 +3221,18 @@
           "type": "function",
           "signature": "normalize()",
           "description": {
-            "en": "Return a unit quaternion pointing in the same direction.",
-            "cn": "返回指向相同方向的单位四元数。",
-            "de": "Gibt ein Einheitsquaternion in derselben Richtung zurück.",
-            "es": "Devuelve un cuaternión unitario que apunta en la misma dirección.",
-            "fr": "Renvoie un quaternion unitaire pointant dans la même direction.",
-            "it": "Restituisce un quaternione unitario nella stessa direzione.",
+            "en": "Return a unit quaternion representing the same rotation.",
+            "cn": "返回表示相同旋转的单位四元数。",
+            "de": "Gibt ein Einheitsquaternion zurück, das dieselbe Rotation darstellt.",
+            "es": "Devuelve un cuaternión unitario que representa la misma rotación.",
+            "fr": "Renvoie un quaternion unitaire représentant la même rotation.",
+            "it": "Restituisce un quaternione unitario che rappresenta la stessa rotazione.",
             "ja": "同じ回転を表す単位クォータニオンを返す。",
-            "ko": "같은 방향을 가리키는 단위 쿼터니언을 반환합니다.",
-            "pt": "Retorna um quatérnio unitário apontando na mesma direção.",
-            "ru": "Возвращает единичный кватернион в том же направлении.",
-            "tr": "Aynı yöne bakan birim kuaterniyonu döndürür.",
-            "uk": "Повертає одиничний кватерніон у тому самому напрямку."
+            "ko": "같은 회전을 나타내는 단위 쿼터니언을 반환합니다.",
+            "pt": "Retorna um quatérnio unitário que representa a mesma rotação.",
+            "ru": "Возвращает единичный кватернион, представляющий то же вращение.",
+            "tr": "Aynı dönüşü temsil eden birim kuaterniyonu döndürür.",
+            "uk": "Повертає одиничний кватерніон, що представляє те саме обертання."
           },
           "returns": {
             "type": "Quat"

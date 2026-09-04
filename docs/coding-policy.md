@@ -2,238 +2,131 @@
 
 ## Principles
 
-- **Determinism.** A rule produces the same verdict on the same frozen input regardless of who applies it or when. Taste alone never determines a verdict.
-- **Self-applicability.** Every rule applies to every in-scope surface it governs (see Verification > Scope), including the corresponding parts of this document.
-- **Performance first.** Subject to correctness, demonstrated hot-path cost overrides language conventions and idiomatic style.
-- **Cross-file consistency.** Explicit policy determines required departures from language idiom; otherwise language idiom determines the correct form, which comparable sites use uniformly.
-- **Read naturally.** Code reads concisely to a fluent reader of its language; the language's idioms are preferred over invented forms.
+- **Clarity.** Keep what readers need to understand, use, or maintain the project. Prefer direct code and concise explanations; preserve necessary conditions and rationale.
+- **Evidence.** Mechanical rules have reproducible checks. Judgments about naming, prose, and design cite the relevant rule, source, and comparable sites. Personal taste and majority usage do not settle a disagreement.
+- **Consistency.** Apply a correction to the whole affected family, including its public interfaces, translations, generated outputs, and tests.
+- **Performance.** Correctness comes first. Demonstrated hot-path cost can justify a departure from language idiom; elsewhere, prefer idiomatic, readable code.
+- **Self-applicability.** These standards also govern this policy and its [audit procedure](coding-policy-audit.md).
 
-## Standards
+## Source Code
 
-### Source Code
+### Performance
 
-#### Performance
-
-- Code on the hot paths eliminates avoidable cost. The hot paths are:
-  - per-pixel blit and primitive draws (line, circle, rect);
-  - per-pixel 3D rasterization (triangle fill and shading);
+- Review cost on these hot paths:
+  - per-pixel blits and primitive drawing;
+  - per-pixel 3D rasterization and shading;
   - per-sample voice synthesis;
-  - per-frame voice update for MML and BGM;
+  - per-frame MML and BGM voice updates;
   - per-frame 3D collision and BVH queries;
-  - the PyO3 FFI boundary (argument marshaling and return paths);
-  - SIMD or multi-threaded sections.
+  - PyO3 argument marshaling and return paths;
+  - SIMD and multi-threaded sections.
 
-- On hot paths, idiomatic patterns with a measured or mechanically demonstrated avoidable cost are not used.
-  - e.g., per-frame heap allocations (`Vec::new`, `format!`, `Box::new` in inner loops); avoidable copies or type conversions; bounds checks in tight loops; missed SIMD, loop-unrolling, or inlining opportunities.
+- Remove avoidable cost demonstrated by measurement or analysis of the executed path. Justify added complexity by the cost it removes; a suspicious-looking construct alone is not evidence.
+  - e.g., repeated heap growth, copies, conversions, or bounds checks in an inner loop may warrant a change. `Vec::new()` alone does not allocate; inlining, unrolling, and SIMD need evidence of benefit.
 
-- Outside hot paths, code stays idiomatic and readable. Micro-optimization is reserved for the listed hot paths.
-  - e.g., `for x in xs { f(x) }` in a config loader is preferred over a hand-unrolled alternative.
+- Outside these paths, prefer readability over micro-optimization. Extend the hot-path list when measurements establish another performance-critical family.
 
-#### Naming
+### Naming and Interfaces
 
-- Mechanical naming rules (the language's standard case conventions and lint-enforced patterns) apply first.
+- Follow the language's case conventions, lint rules, and idiomatic abbreviations. Keep a clear local name unless it misleads, describes an obsolete concept, or conflicts with comparable sites.
+- File and directory names use consistent base names, separators, and role suffixes within each sibling group. Public URLs, generated paths, and author-titled assets retain their established spelling unless all affected references change together.
+- Use consistent terminology for the same concept. Exact mirrors share names; distinct roles or language boundaries may use different names when their correspondence is clear. Preserve symmetric verb families and avoid redundant owner/type names.
+  - e.g., image and tilemap drawing APIs keep matching operation names; an internal `draw_line` may implement the public `line` API. `Canvas.drawCanvas()` repeats its owner without adding meaning.
+- Resolve API disagreements against the intended public contract, released compatibility, implementation, documentation, and tests. Neither a binding nor a type stub is automatically correct. Intentional public changes update every affected surface together.
+- The `.pyi` records effective parameter defaults. Bindings may use `None` sentinels and resolve them internally; retain `None` in the stub when it represents the actual default behavior.
+  - e.g., `fps=30` documents the resolved value; `display_scale=None` documents automatic selection.
 
-- File and directory names use a policy-compliant, language-idiomatic base-name, separator, and role-suffix pattern uniformly within their sibling group. Public URLs, generated paths, and author-titled assets keep their established spelling unless every mirrored reference is renamed together.
-  - e.g., `*_wrapper.rs` files keep the wrapper suffix, `web/*/index.html` keeps the route directory as the page identity, and `laser-jetman.html` keeps its author-chosen hyphenation.
+### Structure and Formatting
 
-- A symbol referenced from more than one file uses the same base name at every site (function and type names, CSS classes, HTML IDs, i18n keys, public API entries). Suffixed variants of the base name are allowed when each variant is exposed as a separate public entry. When mirrors disagree, the authoritative public surface wins; between a binding and the `.pyi`, the `.pyi` wins. If no authoritative surface exists, the language-idiomatic name is chosen and every mirrored reference is updated together.
-  - e.g., a `pyxel-core` function `gen_bgm` keeps the same base name in `crates/pyxel-binding/src/*_wrapper.rs` and `python/pyxel/__init__.pyi`; if it is split for separate exposure, the split uses suffixes (`gen_bgm_mml`, `gen_bgm_json`) rather than a renaming.
+- Order definitions top-down: high-level structures and public types precede their supporting free functions. Required declarations and order-dependent behavior take precedence.
+- Configuration uses the format's conventional groups. Sort entries alphabetically within a group unless their order carries meaning or the format prescribes another order.
+- Delegate indentation, wrapping, and quoting to `make format` for supported files. Format hand-written Markdown by hand; other files follow their language or format conventions without unrelated reformatting.
+- Separate meaningful chunks with one blank line unless the formatter prescribes otherwise. Do not insert blank lines inside a coherent chunk.
 
-- A name is rewritten when it gives one concept a different base from its peers, breaks a symmetric verb family, repeats its owner or type without distinguishing meaning, or names an obsolete concept.
-  - e.g., `titleBlock` and `titleDiv` for the same UI concept — anti-pattern; `Canvas.drawCanvas()` — anti-pattern (stutter).
+### Comments
 
-- A language's idiomatic abbreviations are kept as-is.
-  - e.g., Python and Rust use `i` for a loop counter and `e` for an exception variable; JavaScript uses `e` for an event and `el` for a DOM element.
+- Write comments in English. Explain non-obvious intent, encodings, numerical assumptions, workarounds, or non-local invariants; do not narrate the code.
+- Keep a shared rationale at the site that owns the decision. Dependent sites may identify the relevant invariant or point to that explanation when needed for local understanding.
+- Use the shortest explanation that preserves the reason. Comparable operations receive comparable detail; complexity, not file length, determines how much is needed.
+- A one-line group label is useful only when language structure does not already identify the group. Use sentence case without decorative banners or a terminal period. Sentence comments use normal punctuation; a single sentence may omit its terminal period.
+  - e.g., `# Event handlers` identifies a group; `i += 1  # increment i` adds nothing.
+- Do not use Rust documentation comments, Python docstrings, or JSDoc blocks except the generated docstrings in `python/pyxel/__init__.pyi`. Edit their source data and regenerate with `scripts/generate_pyi_docstrings`.
+- Explain the current reason without requiring knowledge of a past incident. Avoid self-referential or tautological explanations.
 
-- A locally reasonable name with no peer to harmonize with is left as-is. The rename rule above applies when peers exist; with no peer, taste alone is not grounds for renaming.
-  - e.g., a self-contained file using `titleDiv` stays as it is when no comparable sibling exists; the same name in a file with sibling files using `titleBlock` is renamed to match.
+### Cross-file Consistency
 
-#### Ordering
+- Identify sibling groups by directory, naming pattern, and shared role. A file can belong to several groups. Compare every applicable group; repository-wide prevalence does not determine the correct form.
+- Preserve intentional parallel structure, including image/tilemap operations, binding/API mirrors, and language data. Fix shared defects across all affected members.
+- Standing exceptions to language idiom are limited to the conventions and reasons below. Performance-related departures follow the Performance section:
+  - Exposed members in `crates/pyxel-binding/src/` follow the Python API's names and argument order, including historical names such as `blt` and PyO3's constructor/property conventions. Internal helpers remain idiomatic Rust.
+  - SDL2 call sites retain the external API's C names so calls remain recognizable.
+  - Examples in `python/pyxel/examples/` may keep direct control flow and local names when abstraction would obscure the lesson.
+- Error and warning messages form families by failure kind across files. Python-standard errors retain CPython's exact wording; parameter constraints start with the parameter's public name; other messages follow their family's consistent, idiomatic form.
+  - e.g., `fps must be greater than 0` and `scale must be greater than 0` belong to the same constraint family.
 
-- Definitions are ordered top-down: high-level structures and public types come before the free functions that consume them.
-  - e.g., a Rust file places `pub struct Foo { ... }` and its impls before any free function consuming `Foo`.
+## Testing
 
-- Where the language requires forward declarations, they precede their use, overriding top-down ordering at the local level.
+Use Rust tests for pure internal logic, Python tests for the public API, reference regressions for screenshots and rendered audio, and running samples for manual checks of look, sound, and feel. Test code follows the source standards above.
 
-- Configuration files follow each format's idiomatic grouping; within each group, entries are sorted alphabetically unless the format itself prescribes another order.
-  - e.g., `Cargo.toml` keeps dependencies, build dependencies, features, and release profiles in their conventional tables and sorts entries within each table.
+- Choose coverage by the failure it detects. Unit/API tests are especially useful for numeric boundaries, degenerate inputs, rare branches, determinism, deprecated aliases and warnings, serialization, and errors.
+- Add a test when existing coverage cannot reliably detect the failure or isolate an important contract. Do not repeat the same assertion at another layer without a distinct reason. A theoretically visible or audible failure is not proof that an existing reference case exercises it.
+- Use the manual pass for appearance, sound quality, interaction feel, and device-specific behavior that automated tests cannot establish. Name its cases and record what was actually run; an unperformed manual check provides no coverage evidence.
+- A test's name and comments describe what its assertions establish. Fix or remove tests that cannot fail for the claimed reason, merely repeat implementation steps, or add no protection beyond existing cases.
+- Pin deterministic discrete results and exact-output contracts exactly. Use an explicit numerical tolerance only when justified by precision or the algorithm. Accept alternative outcomes only for genuine nondeterminism, with its cause stated.
+  - e.g., floating-point geometry may need a tolerance; an envelope test must not accept either endpoint merely to pass. Audio-thread timing can justify alternatives for `play_pos()`.
+- Every automated test runs in `make test`.
 
-#### Comments
+## Documentation
 
-- Every comment is in English.
+### Reader and Prose
 
-- A comment exists only when it adds intent that neither the code nor an existing comment shows; a shared rationale lives once, at the site that owns the decision, unless another rule requires the repetition. Required cases are mechanical or non-obvious operations (bit-twiddling, format-specific encoding) and non-local invariants.
-  - e.g., `i += 1  # increment i` — anti-pattern; `i += 1  # wrap at frame boundary` — typical; the same workaround explained at its deciding and dependent sites — anti-pattern.
+- Write for the page's intended reader and task. Introductory material gives enough context and a small usable example to take the next step; introduce internal details only when they help that step.
+- Keep each explanation in one authoritative place and link to it when needed. Remove repetition and unnecessary qualification while preserving prerequisites, units, limits, and consequences of destructive operations.
+- Use natural technical writing in each language. Keep terminology consistent across related pages; translate meaning rather than the source language's sentence structure.
+- In Japanese, separate Japanese characters from adjacent alphanumeric tokens with one half-width space. Preserve literal spacing inside code spans.
+  - e.g., 「Web 版 Pyxel」「16 色」「.pyxres ファイル」.
+- Use these adopted Japanese spellings: 「ブラウザ」「エディタ」「パラメータ」「バッファ」「コンストラクタ」「ユーザー」「サーバー」「コンピュータ」. For other terms, choose established technical usage and apply it consistently.
+- Japanese parentheses containing Japanese characters are full-width and sit flush. ASCII-only parentheses are half-width and separated by spaces except next to punctuation.
+  - e.g., 「イメージバンク（Image クラスのインスタンス）のリスト (0-2)」.
 
-- A comment is as short as its intent allows; comments expressing equally complex intent use comparable granularity.
-  - e.g., a five-line header on a short helper where sibling files use one-line headers — anti-pattern (surplus wording); a widget's `# Variables:` and `# Events:` blocks matching the convention across widget files — typical.
+### Translation and Product Names
 
-- A one-line separator comment identifies a meaningful group only when the language's structure does not make the group equally clear; no size threshold alone requires one. It uses the language's idiomatic single-line comment form, in sentence case, without decorative dashes or banners.
-  - e.g., Python `# Event handlers`, Rust `// Constructors`, JavaScript `// HTML helpers`.
+- Japanese is the maintainer's source of truth. Translate through English, then use the English version to check other languages. Resolve suspected meaning loss against Japanese and correct the whole affected chain.
+- Each language uses its own technical conventions and established loanwords. Preserve product names and placeholders; translated descriptions must retain the same conditions and behavior.
+- The product names are Pyxel, Pyxel Cube, Pyxel Editor, Pyxel Showcase, Pyxel Code Maker, Pyxel MML Studio, Pyxel Web Launcher, Pyxel User Examples, and Pyxel Composer. Pyxel Web, Pyxel MML, and Pyxel API may identify the web version, MML variant, and public API respectively.
+- Preserve product-name spelling and casing in every language. A descriptive label may replace a product name where the context makes its reference clear. Other proper nouns keep their author's spelling, spacing, hyphens, and casing.
+  - e.g., write `Pyxel Editor`, not `Pyxel-Editor` or `ピクセルエディタ`; retain an author's title such as `laser-jetman`.
 
-- A label-style comment does not end with a period; a comment of two or more sentences punctuates every sentence, including the last. A single-sentence comment's terminal period is optional; either form is left as-is.
-  - e.g., `// Constructors` (label); `// Playback has ended` and `// Playback has ended.` — both typical single-sentence forms.
+## Release Notes
 
-- No documentation comments (Rust `///`/`//!`, Python docstrings, JSDoc `/** */`) anywhere except `python/pyxel/__init__.pyi`. The `.pyi` docstrings are regenerated by `scripts/generate_pyi_docstrings` and are not hand-edited.
-
-- Every comment is understandable at its site without historical or external context. No self-referential gloss, no tautological phrasing.
-  - e.g., `the Pyxel API (the API of Pyxel)` — anti-pattern (gloss restates the term); `// explanations to aid understanding` — anti-pattern (tautology).
-
-#### Formatting
-
-- Surface formatting (indentation, line wrapping, quoting) is delegated to `make format` for the file types it covers; hand-written `.md` is formatted by hand; every other file follows the standard conventions of its language or data format without unrelated reformatting.
-  - e.g., a Rust match arm is not hand-aligned; a `Cargo.toml` table is not hand-reformatted.
-
-- Exactly one blank line separates meaningful chunks unless `make format` prescribes otherwise. Runs of blank lines and blank lines inside a chunk are not used.
-  - e.g., one blank line between class methods; no double blank between imports; no blank line between a function signature and its first statement.
-
-#### Consistency
-
-- Each file participates in every structurally comparable sibling group identified by a common directory, naming pattern, or shared role. Consistency is judged within each group; codebase-wide prevalence does not determine correctness.
-  - e.g., sibling groups include `crates/pyxel-binding/src/*_wrapper.rs`; `python/pyxel/editor/widgets/*.py`; `python/pyxel/editor/*_editor.py`; HTML pages under `web/*/index.html`; language JSON files under `web/**/*.json`.
-
-- A sibling group is an *exception group* only where this policy names the group, the convention it departs from, and the reason. The exception applies only to that convention; every other rule remains in force.
-  - The exception groups are:
-    - `crates/pyxel-binding/src/*_wrapper.rs`: mirrors the Python API rather than following Rust conventions (snake_case names, Python-style argument ordering, and Pyxel-historical short names like `blt`/`cls`/`pset` rather than the Rust-idiomatic counterparts in `pyxel-core`) and adopts the PyO3 binding conventions (`#[new]` for `__init__`, `#[getter]`/`#[setter]` for Python attributes);
-    - SDL2 call sites: preserve the external SDL2 API's C-style names so calls remain recognizable against its documentation;
-    - samples in `python/pyxel/examples/`: direct control flow and example-local names may stay when production-style decomposition or abstraction would make the sample harder to follow.
-
-- Parallel mirrors — shapes deliberately repeated across sibling files for API symmetry or data-structure parallelism — preserve their shared structure. A correction is applied to every affected mirror rather than preserving a shared defect.
-  - e.g., binding wrappers mirror the Python API one-to-one; image and tilemap drawing primitives mirror each other; each i18n JSON file repeats the `languages` array.
-
-- Error and warning messages form codebase-wide families by failure kind rather than per-file groups: a message that mirrors a standard Python error keeps CPython's exact wording, a parameter constraint starts with the parameter as written, and any other message reuses its family's policy-compliant, language-idiomatic shape and casing rather than introducing a new form.
-  - e.g., `fps must be greater than 0` and `scale must be greater than 0` — typical (one constraint family across files); a lone `draw: <message>` prefix among sentence-style siblings — anti-pattern.
-
-- The `.pyi` API stub records each parameter's effective default — the value the implementation resolves to — while its binding may take `None` as a sentinel and resolve it internally. The `.pyi` default and the binding-signature default may therefore differ; that divergence is intentional, not an inconsistency.
-  - e.g., the `.pyi` writes `init(title="Pyxel", fps=30, ...)` while the binding takes `Option` sentinels and resolves them; `None` stays in the `.pyi` only where `None` is itself the default behavior (`display_scale` auto, `colkey` / `font` none).
-
-### Testing
-
-Tests cover the product in four layers: Rust unit tests for platform-independent pure logic; Python API tests for the public interface surface; reference regression of screenshots from the bundled examples, apps, and editor plus rendered audio; and a manual pass on running samples for look, sound, and feel. Test code itself is in scope for every Source Code rule.
-
-- A behavior is unit-tested when its breakage would not surface in the reference regression or the manual pass. These cases qualify:
-  - numeric boundaries and degenerate inputs (zero, empty, maximum, negative);
-  - rarely-taken branches (special syntax, edge inputs);
-  - determinism contracts whose silent change alters existing users' assets;
-  - compatibility surfaces (deprecated aliases keep working and warn);
-  - save/load and serialization roundtrips;
-  - error paths (exception type and message).
-  - e.g., the BGM generator's seed-determinism snapshot — typical (a silent change rewrites existing users' music).
-
-- A behavior already exercised by the reference regression and the manual pass, whose breakage is plainly visible or audible there, is not duplicated by an internal unit test.
-  - e.g., a music mixing change is caught by the committed audio renders and the manual pass — typical; a unit test re-asserting the same waveform sample-by-sample — anti-pattern (duplicates the reference regression).
-
-- A test verifies what its name and comments claim; a test that cannot fail for the claimed reason is fixed or removed.
-  - e.g., a wraparound test whose inputs never wrap — anti-pattern.
-
-- A deterministic outcome is pinned exactly. An assertion accepting several outcomes is reserved for genuine nondeterminism, with the source named in a comment.
-  - e.g., `play_pos()` may be `None` right after `play()` (audio-thread timing) — typical; "level is 0.0 or 1.0" for a deterministic envelope — anti-pattern.
-
-- Every automated test executes in `make test`.
-
-### Documentation
-
-#### Prose
-
-- Documentation prose reads as natural technical writing in its own language, using the target language's standard conventions for compound-noun chains rather than literal translation from another language.
-  - e.g., English "package installation guide" — typical; "installation of the package guide" — anti-pattern (translationese).
-
-- Japanese text separates Japanese characters from adjacent alphanumeric tokens with a single half-width space, regardless of which file the text lives in; code spans keep their literal spacing.
-  - e.g., 「Web 版 Pyxel」「16 色」「.pyxres ファイル」 — typical; 「Web版」「16色」 — anti-pattern (missing separation).
-
-- Japanese technical loanwords follow the project's adopted spelling rather than a mechanical English-suffix rule. Unlisted terms follow established usage in comparable developer documentation, then stay consistent across sibling documentation.
-  - Adopted spellings: 「ブラウザ」「エディタ」「パラメータ」「バッファ」「コンストラクタ」「ユーザー」「サーバー」「コンピュータ」.
-  - e.g., 「ブラウザ上で実行」 — typical; mixing 「ブラウザ」 and 「ブラウザー」 for one concept in sibling pages — anti-pattern.
-
-- Japanese text chooses parenthesis width by content: parentheses containing Japanese characters are full-width and sit flush; parentheses with ASCII-only content are half-width, separated by half-width spaces except when adjacent to punctuation.
-  - e.g., 「イメージバンク（Image クラスのインスタンス）のリスト (0-2)」 — typical; 「リスト（0-2）」 — anti-pattern (full-width around ASCII-only content).
-
-#### Translation
-
-- The maintainer writes in Japanese; Japanese is the source of truth for translation. Translations route through English first, then to every other language.
-
-- Each target language follows its own technical-writing conventions and retains established English loanwords where the target language conventionally uses them.
-  - e.g., German, Spanish, Italian, and Portuguese keep loanwords like "Editor" and "Gamepad" in English; French instead uses native forms such as "éditeur" and "manette", keeping only product names like "Pyxel Editor" in English.
-
-- A target-language translation is compared against the English version, not the Japanese source.
-  - e.g., a German `"Installation des Pakets Anleitung"` mirrors a Japanese compound-noun chain and is rewritten as `"Paket-Installationsanleitung"`.
-
-#### Proper Nouns
-
-The authoritative Pyxel product names are: Pyxel, Pyxel Cube, Pyxel Editor, Pyxel Showcase, Pyxel Code Maker, Pyxel MML Studio, Pyxel Web Launcher, Pyxel User Examples, and Pyxel Composer. The abbreviations Pyxel Web (the web version), Pyxel MML (the MML variant), and Pyxel API (the public API) may stand in for their full forms.
-
-- Listed product names are not translated and their casing is not altered.
-  - e.g., `Pyxel Editor` in every language — never `pyxel editor`, `Pyxel-Editor`, or `ピクセルエディタ`.
-
-- Every other proper noun retains the author's chosen representation, including hyphens, spacing, and casing.
-  - e.g., `laser-jetman.html` keeps its hyphen; author-titled examples are not renamed to fit a `Pyxel`-prefixed pattern.
-
-- A descriptive label may stand in for a product name when the surrounding context establishes the reference and the label reads naturally there. Outside such contexts, the product name follows the casing rule above.
-  - e.g., a "Related Sites" section that introduces Pyxel Showcase as "the Pyxel community showcase" reads naturally; references to the same product elsewhere still write `Pyxel Showcase`.
-
-### Release Notes
-
-- A `CHANGELOG.md` entry exists when the change carries (a) a concrete user benefit, or (b) a debugger breadcrumb a future maintainer can follow. Changes that match neither are not recorded.
-  - User benefits include: feature addition, bug fix, visible behavior change, performance improvement.
-  - Breadcrumbs include: dependency update; shipped runtime update; build-toolchain update that affects release artifacts; build-configuration change that alters compilation; feature flag addition; internal runtime change; scoped refactor or cleanup; public API rename; release-process change.
-
-- A breadcrumb names a concrete investigation surface; test-only, policy-only, and ignore-file changes are omitted unless they also change product, build, or release behavior.
-  - e.g., `Updated pyo3 crate to version 0.29` remains useful, `Updated dependencies` is too broad, and adding tests or `.gitignore` entries is not a breadcrumb by itself.
-
-- Sub-changes within a single commit are evaluated separately under the rule above.
-  - e.g., a commit that fixes a bug and renames a public type produces two entries; a sub-change that is neither a user benefit nor a breadcrumb is omitted.
-
-- Entries describe the change relative to the previous release. A change to code that has not shipped folds into the entry that introduces that code and does not produce its own entry.
-  - e.g., a fix to a feature added earlier in the same unreleased version is absorbed by that feature's `Added` entry rather than gaining a `Fixed` entry.
-
-- Each entry uses a language-idiomatic verb, grammar form, and level of object specificity. It matches compliant prior entries of the same change category for consistency; prevalence does not determine the form.
-
-- Each entry fits a single line of at most 80 characters; entries typically run around 60 characters. An overlong entry is shortened without losing specificity and is split only when it contains independent sub-changes.
-  - e.g., `Fixed Pyxel Editor color picker cursor shape across palette sizes` (65 chars) fits the typical band; independent user-visible changes become separate entries, while an atomic change is tightened into one line.
-
-- Each entry is verified against the actual code diff, not the commit message. Commit messages may understate or misstate the diff.
-
-- Documentation wording and translation touch-ups bundle into a single summary line.
-  - e.g., `Update web titles and docs wording` covers a commit touching many doc strings.
+- Record a concrete user benefit or a useful investigation clue. These include features, fixes, performance changes, public API changes, and specific dependency, runtime, toolchain, build, release-process, or internal-structure changes.
+- Omit test-only, policy-only, and ignore-file changes unless they also change product, build, or release behavior. A maintenance entry names the affected component and change; generic cleanup claims are insufficient.
+- Evaluate independent changes separately, relative to the previous release, and verify them against the code diff. Changes to an unreleased feature fold into its introductory entry.
+- Use consistent, natural verbs and specificity within each change category. Each entry occupies one line of at most 80 characters; split it only for independent changes.
+- Bundle qualifying documentation and translation improvements into one summary entry.
 
 ## Verification
 
 ### Scope
 
-- This policy applies to every file present in the audit target that is git-tracked or an intended addition and that `.gitattributes` does not mark as `binary`, including this file.
+- Include every git-tracked file and intended addition not marked `binary` by `.gitattributes`, including both policy documents. Review every applicable aspect of a file: path, code, comments, prose, translations, configuration, and test content.
+- Exclude these generated or tool-maintained files:
+  - `*.tmx` and `*.bdf`;
+  - `Cargo.lock` and `*-lock.json`;
+  - `web/styles.css`;
+  - Markdown whose first line begins with `<!-- This file is generated`.
+- An exclusion removes direct style review, not dependency checks. When source changes affect a generated document, package, or other distributed artifact, regenerate it and verify its required correspondence with the source.
 
-- Files excluded because they are toolchain output:
-  - `*.tmx` (Tiled tilemap editor output)
-  - `*.bdf` (font tooling output)
-  - `Cargo.lock` and `*-lock.json` (package-manager lockfiles)
-  - `web/styles.css` (a Tailwind CSS build artifact)
-  - `.md` files whose first line begins with `<!-- This file is generated` (output of `scripts/generate_docs`)
+### Required Checks
 
-- A file's code-side aspects (structure, syntax, identifiers, non-prose elements) remain in scope even when its prose content is reviewed separately.
+- Run `make format` after code or formatter-managed document changes and before committing them.
+- Keep `make lint` and `make lint-wasm` warning-free. Clippy warnings fail the check; each suppression needs a specific justification.
+- After code changes, `make test` must pass before claiming completion. Investigate failures; do not waive them as flaky. Record environment blockers explicitly.
+- For documentation or structured-data changes, run applicable parsers, generators, consistency checks, and `git diff --check`. Verify generation at its source rather than hand-editing output.
+- After substantive policy changes, review both policy documents and every affected rule family. Record changed obligations and their impact on repository practice. This revision review does not certify repository compliance; use the [audit procedure](coding-policy-audit.md) for an exhaustive audit.
 
-### Format, Lint, and Test
+## Maintaining This Policy
 
-- After a code change, `make format` runs before the commit.
-
-- `make lint` (native build) and `make lint-wasm` (WebAssembly build) are warning-free at all times. The two builds use different feature sets and target environments; both pass.
-  - Clippy warnings count as failures. Suppression with `#[allow(...)]` requires that the suppression itself be justified.
-
-- After a code change, `make test` passes before completion is claimed. A flaky failure does not waive the rule; the failure is reproduced and the underlying cause fixed.
-
-## Conventions of This File
-
-- A new concern joins an existing section before a new section is added. A new section is warranted only when no existing section fits.
-  - e.g., a wording guideline for CHANGELOG entries belongs under `Standards > Release Notes`, not as a top-level section.
-
-- Individual past incidents are not recorded. An enduring lesson tightens the nearest existing rule; an example changes only when it clarifies a reusable boundary, replacing or rebalancing existing examples rather than accumulating another case.
-  - e.g., a one-off false-positive finding belongs in a commit message or the contributor's working notes, not as a named bullet here.
-
-- A section with an authoritative enumeration separates the list from the rules. The list appears either in the introductory prose, followed by rule bullets, or as sub-bullets or numbered items under the rule that needs the detail.
-  - e.g., `Standards > Documentation > Proper Nouns` lists product names and abbreviations in its intro and uses bullets for casing rules; `Standards > Source Code > Performance` enumerates hot paths as sub-bullets under the rule that introduces them.
-
-- Each rule may be followed by at most one compact `e.g.,` sub-bullet containing only the examples needed to clarify a reusable boundary.
-  - Hypothetical anti-patterns read clearly as anti-patterns and are not asserted to exist in the code.
-  - An `e.g.` line illustrates its rule and never substitutes for it; matching the example alone does not satisfy the rule.
-  - A language-specific rule names the language in its rule statement.
-
-- After revising any section, the whole file is re-read and its balance is confirmed. Adding or splitting a rule or authoritative enumeration triggers a review of structurally comparable peers for parallel gaps; a change confined to wording or examples does not. Proportionality is checked by section length and bullet count.
+- Integrate enduring lessons into the relevant rule. Do not accumulate incident histories, overlapping rules, or examples that merely repeat the text.
+- Keep authoritative lists at their owning rule or section. Use at most one compact example per rule, only to clarify a boundary; an example does not create a separate requirement.
+- After an edit, reread both documents for contradictions, gaps, and uneven detail. Review analogous rules when an obligation changes. Length and bullet counts can reveal imbalance, but neither establishes clarity or completeness.

@@ -421,104 +421,59 @@ test("loadProjectFromZip sanitizes the project name at assignment", async () => 
   assert.equal(window._project.name, "untitled");
 });
 
-test("buildArchiveBlob writes a canonical startup marker", async () => {
-  let generatedArchive;
-  class FakeJSZip {
-    constructor() {
-      generatedArchive = this;
-      this.files = new Map();
-    }
+for (const [name, root] of [
+  ["Space Game", "Space Game"],
+  ["CON.", "_CON"],
+]) {
+  test(`buildArchiveBlob uses a safe root and canonical startup marker for ${name}`, async () => {
+    let generatedArchive;
+    class FakeJSZip {
+      constructor() {
+        generatedArchive = this;
+        this.files = new Map();
+      }
 
-    file(path, content) {
-      this.files.set(path, content);
-      return this;
-    }
+      file(path, content) {
+        this.files.set(path, content);
+        return this;
+      }
 
-    async generateAsync() {
-      return "archive";
+      async generateAsync() {
+        return "archive";
+      }
     }
-  }
-  const sanitizeProjectName = loadNamedFunction(
-    codeMakerSource,
-    "sanitizeProjectName",
-    {},
-  );
-  const context = {
-    JSZip: FakeJSZip,
-    base64ToUint8: (value) => value,
-    sanitizeProjectName,
-    window: {
-      _project: {
-        name: "Space Game",
-        code: "print('hello')",
-        resource: "resource",
-        files: { ".pyxapp_startup_script": "old.py" },
+    const sanitizeProjectName = loadNamedFunction(
+      codeMakerSource,
+      "sanitizeProjectName",
+      {},
+    );
+    const context = {
+      JSZip: FakeJSZip,
+      base64ToUint8: (value) => value,
+      sanitizeProjectName,
+      window: {
+        _project: {
+          name,
+          code: "print('hello')",
+          resource: "resource",
+          files: { ".pyxapp_startup_script": "old.py" },
+        },
       },
-    },
-  };
-  const buildArchiveBlob = loadNamedFunction(
-    codeMakerSource,
-    "buildArchiveBlob",
-    context,
-  );
+    };
+    const buildArchiveBlob = loadNamedFunction(
+      codeMakerSource,
+      "buildArchiveBlob",
+      context,
+    );
 
-  await buildArchiveBlob();
-
-  assert.equal(
-    generatedArchive.files.get("Space Game/.pyxapp_startup_script"),
-    "main.py",
-  );
-});
-
-test("buildArchiveBlob sanitizes its archive root defensively", async () => {
-  let generatedArchive;
-  class FakeJSZip {
-    constructor() {
-      generatedArchive = this;
-      this.files = new Map();
-    }
-
-    file(path, content) {
-      this.files.set(path, content);
-      return this;
-    }
-
-    async generateAsync() {
-      return "archive";
-    }
-  }
-  const sanitizeProjectName = loadNamedFunction(
-    codeMakerSource,
-    "sanitizeProjectName",
-    {},
-  );
-  const context = {
-    JSZip: FakeJSZip,
-    base64ToUint8: (value) => value,
-    sanitizeProjectName,
-    window: {
-      _project: {
-        name: "CON.",
-        code: "print('hello')",
-        resource: "resource",
-        files: {},
-      },
-    },
-  };
-  const buildArchiveBlob = loadNamedFunction(
-    codeMakerSource,
-    "buildArchiveBlob",
-    context,
-  );
-
-  await buildArchiveBlob();
-
-  assert.equal(context.window._project.name, "_CON");
-  assert.equal(
-    generatedArchive.files.get("_CON/.pyxapp_startup_script"),
-    "main.py",
-  );
-});
+    assert.equal(await buildArchiveBlob(), "archive");
+    assert.equal(context.window._project.name, root);
+    assert.equal(
+      generatedArchive.files.get(`${root}/.pyxapp_startup_script`),
+      "main.py",
+    );
+  });
+}
 
 test("loadFromUrl derives the project name from the URL pathname", async () => {
   const loadedNames = [];

@@ -23,11 +23,8 @@ pub struct BvhNode {
 
 const MAX_LEAF_TRIANGLES: usize = 1;
 
-// Fixed-size traversal stack for the per-frame queries, avoiding a heap
-// allocation per query. The median split halves each subtree, so tree
-// depth is at most ceil(log2(triangle count)) <= 32 (triangle indices
-// are u32), and the pop-one / push-two walk holds at most depth + 1
-// entries at once; 64 leaves ample margin.
+// Median splits bound depth by ceil(log2(triangle count)) <= 32 for u32 indices.
+// Traversal holds at most depth + 1 entries; 64 avoids per-query allocation.
 const QUERY_STACK_CAPACITY: usize = 64;
 
 impl Bvh {
@@ -99,9 +96,7 @@ impl Bvh {
         node_index
     }
 
-    // Walk the tree and call `visit` for every triangle whose owning
-    // leaf's AABB overlaps the query AABB. Branches that miss the
-    // query AABB are pruned without recursion.
+    // Visit triangles whose leaf AABBs overlap the query.
     pub fn query_aabb(&self, query: &Aabb, mut visit: impl FnMut([u32; 3])) {
         if self.nodes.is_empty() {
             return;
@@ -405,10 +400,7 @@ mod tests {
         };
         let mut hits = Vec::new();
         bvh.query_aabb(&query, |tri| hits.push(tri));
-        assert_eq!(hits.len(), 1);
-        let t = hits[0];
-        let v0 = bvh.positions[t[0] as usize];
-        assert!(v0.x < 50.0);
+        assert_eq!(hits, [[0, 1, 2]]);
     }
 
     #[test]
@@ -519,7 +511,6 @@ mod tests {
         assert_eq!(hits, [[0, 1, 2], [3, 4, 5], [6, 7, 8]]);
     }
 
-    // Two widely separated unit triangles shared by the ray-query tests
     fn two_separated_triangles() -> Bvh {
         let positions = vec![
             Vec3 {
@@ -558,8 +549,6 @@ mod tests {
 
     #[test]
     fn test_query_ray_prunes_off_axis_leaf() {
-        // A +Z ray through the first triangle never reaches the x≈100
-        // leaf, so only the near triangle is visited.
         let bvh = two_separated_triangles();
         let mut hits = Vec::new();
         bvh.query_ray(
@@ -576,13 +565,11 @@ mod tests {
             f32::INFINITY,
             |tri| hits.push(tri),
         );
-        assert_eq!(hits.len(), 1);
-        assert!(bvh.positions[hits[0][0] as usize].x < 50.0);
+        assert_eq!(hits, [[0, 1, 2]]);
     }
 
     #[test]
     fn test_query_ray_visits_both_leaves_along_x() {
-        // A +X ray at y=0.5, z=0 passes through both leaf AABBs.
         let bvh = two_separated_triangles();
         let mut hits = Vec::new();
         bvh.query_ray(
@@ -605,8 +592,6 @@ mod tests {
 
     #[test]
     fn test_query_ray_max_t_prunes_far_leaf() {
-        // Same +X ray, but capped before the x≈100 leaf: only the near
-        // triangle is visited. max_t is in direction-length units.
         let bvh = two_separated_triangles();
         let mut hits = 0;
         bvh.query_ray(
@@ -628,7 +613,6 @@ mod tests {
 
     #[test]
     fn test_query_ray_negative_direction_reaches_leaf() {
-        // A -X ray starting beyond the far triangle reaches both leaves.
         let bvh = two_separated_triangles();
         let mut hits = Vec::new();
         bvh.query_ray(
@@ -651,8 +635,6 @@ mod tests {
 
     #[test]
     fn test_query_ray_behind_origin_is_pruned() {
-        // The ray points away from every leaf: nothing is visited
-        // (the [0, max_t] clamp rejects negative-t reaches).
         let bvh = two_separated_triangles();
         let mut hits = 0;
         bvh.query_ray(
@@ -674,8 +656,6 @@ mod tests {
 
     #[test]
     fn test_query_ray_origin_inside_leaf_aabb() {
-        // Starting inside a leaf AABB (t_enter clamps to 0) still visits
-        // that leaf regardless of direction.
         let bvh = two_separated_triangles();
         let mut hits = 0;
         bvh.query_ray(

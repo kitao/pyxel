@@ -17,17 +17,11 @@ class App:
         pyxel.images[0] = pyxel.Image.from_image(
             "assets/urban_rpg.png", include_colors=True
         )
-        # This example loads a PNG file as the tileset image, but you can also use
-        # Pyxel's image bank as the tileset image in the usual way. Images from the
-        # image bank can be saved to the desktop with the shortcut
-        # Shift+Alt(Option)+1/2/3, and loading those images into Tiled allows them to
-        # be used as a tileset image.
+        # To use a Pyxel image bank in Tiled, export it with Shift+Alt(Option)+1/2/3.
 
         for i in range(3):
             pyxel.tilemaps[i] = pyxel.Tilemap.from_tmx("assets/urban_rpg.tmx", i)
-        # Tiled Map Files (.tmx) can be created with Tiled, a 2D level editor. In Tiled,
-        # the tile layout format must be in CSV format, and the tileset image needs to
-        # be of the `Embed in map` type, and the tile size must be 8x8.
+        # In Tiled, use CSV tile data, an embedded tileset, and 8x8 tiles.
 
         self.player = (160, 80, 1, 0)  # (x, y, u, v)
         self.cars = [  # (x, y, dx, image)
@@ -48,11 +42,7 @@ class App:
         if pyxel.frame_count % 240 == 0:
             pyxel.stop()
 
-            # gen_bgm generates a list of MML strings.
-            # Normally, assign them to sounds:
-            #     mml_list = pyxel.gen_bgm(preset, transp, instr, seed)
-            #     pyxel.sounds[0].mml(mml_list[0])
-            # But here, play=True is used for quick playback.
+            # play=True plays immediately; otherwise gen_bgm returns MML for Sound.mml.
             preset = pyxel.rndi(0, 7)
             transp = pyxel.rndi(-5, 5)
             instr = pyxel.rndi(0, 3)

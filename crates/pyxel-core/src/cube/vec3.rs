@@ -1,7 +1,5 @@
 use crate::cube::mat4::Mat4;
 
-// Immutable 3D vector. Arithmetic and transform methods return new values.
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vec3 {
     pub x: f32,
@@ -381,7 +379,6 @@ mod tests {
 
     #[test]
     fn test_to_world_dir_ignores_translation() {
-        // Direction vectors do not pick up the translation column.
         let dir = Vec3 {
             x: 1.0,
             y: 0.0,

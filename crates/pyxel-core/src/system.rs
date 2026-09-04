@@ -313,9 +313,7 @@ impl Pyxel {
         self.reset_screencast();
 
         if !*pyxel::is_headless() {
-            // Keep the current effective scale when possible, so the window
-            // follows a resize naturally in windowed mode on native platforms.
-            // Cap the scale so the new window fits within the display.
+            // Preserve the current scale, capped to fit the resized window on the display.
             #[cfg(not(target_os = "emscripten"))]
             if !platform::is_fullscreen() {
                 let (display_w, display_h) = platform::display_size();

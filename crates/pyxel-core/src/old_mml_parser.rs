@@ -41,7 +41,6 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     // Old MML T=100 maps to Pyxel speed 9 by default.
     sound.speed = 9;
 
-    // Parse old MML commands
     while chars.peek().is_some() {
         if let Some(value) = parse_command(&mut chars, 't')? {
             if value == 0 {
@@ -302,21 +301,18 @@ fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
         return;
     }
 
-    // Expand tone and envelope data over the note length.
     repeat_extend!(&mut sound.tones, note_info.tone, note_info.length);
     for i in 0..note_info.length {
         let env_start = ((note_info.env_start + i) as usize).min(note_info.env_data.len() - 1);
         sound.volumes.push(note_info.env_data[env_start]);
     }
 
-    // Encode rests as silent note/effect spans.
     if note_info.note == -1 {
         repeat_extend!(&mut sound.notes, -1, note_info.length);
         repeat_extend!(&mut sound.effects, EFFECT_NONE, note_info.length);
         return;
     }
 
-    // Emit gated full-length note steps
     let duration = note_info.length * note_info.quantize;
     let num_notes = duration / 8;
     let note_effect = if note_info.vibrato {
@@ -434,13 +430,11 @@ mod tests {
     fn test_tempo_scales_step_ticks() {
         // t100 (default) -> 9 ticks per step; t60 -> 900/60 = 15
         assert_eq!(note_commands(&parse("t60c")), [(60, 15); 4]);
-        // Extreme tempo clamps to the 1-tick minimum step
         assert_eq!(note_commands(&parse("t9000c")), [(60, 1); 4]);
     }
 
     #[test]
     fn test_length_command() {
-        // l16 -> 2 steps: 1 full + 1 fade-out
         assert_eq!(note_commands(&parse("l16c")), [(60, 9); 2]);
     }
 
@@ -454,7 +448,6 @@ mod tests {
 
     #[test]
     fn test_rest() {
-        // r4 -> 8 rest steps
         assert_eq!(rest_commands(&parse("r4")), [9; 8]);
     }
 
@@ -462,11 +455,9 @@ mod tests {
 
     #[test]
     fn test_full_quantize_skips_fadeout() {
-        // q8 fills the whole length, so no fade-out step and no trailing rest
         let cmds = parse("q8c");
         assert_eq!(note_commands(&cmds), [(60, 9); 4]);
         assert_eq!(rest_commands(&cmds), [] as [u32; 0]);
-        // Every note step stays on the constant-volume envelope slot 0
         assert_eq!(envelope_slots(&cmds), [0]);
     }
 
@@ -482,7 +473,6 @@ mod tests {
 
     #[test]
     fn test_envelope_set_and_use() {
-        // x1:7531 defines per-step volumes 7,5,3,1 applied from the note head
         let cmds = parse("x1:7531 x1 c");
         let volumes = volume_commands(&cmds);
         let expected = [1.0, 5.0 / 7.0, 3.0 / 7.0, 1.0 / 7.0];
@@ -494,7 +484,6 @@ mod tests {
 
     #[test]
     fn test_vibrato_applies_to_pending_note() {
-        // '~' after a note plays that note's full-length steps on vibrato slot 1
         let cmds = parse("c~");
         assert!(cmds
             .iter()

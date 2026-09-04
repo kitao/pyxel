@@ -198,17 +198,14 @@ pub fn init(
     let headless = headless.unwrap_or(false);
     *is_headless() = headless;
 
-    // Set dimensions
     *width() = w;
     *height() = h;
     *frame_count() = 0;
 
-    // Default parameters
     let title = title.unwrap_or(DEFAULT_TITLE);
     let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
     let fps = fps.unwrap_or(DEFAULT_FPS);
 
-    // Platform
     platform::init(headless);
 
     if !headless {
@@ -227,7 +224,6 @@ pub fn init(
         platform::init_window(title, window_width, window_height);
     }
 
-    // Resize screen
     rc_mut!(screen()).canvas = Canvas::new(w, h);
     rc_mut!(screen()).palette = array::from_fn(|i| i as Color);
 
@@ -239,7 +235,6 @@ pub fn init(
     input_text().clear();
     dropped_files().clear();
 
-    // Build Pyxel instance
     let system = System::new(fps, quit_key, headless);
     let resource = Resource::new(capture_scale, capture_sec, fps);
     let input = Input::new();

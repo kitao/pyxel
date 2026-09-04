@@ -2,7 +2,7 @@
 
 # Pyxel User Guide
 
-*This document was auto-generated from the [Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.github.io/pyxel/web/user-guide/).*
 
 ![Pyxel](images/pyxel_logo_152x64.png)
 
@@ -64,7 +64,7 @@ To add the Pyxel extension, search for "[Pyxel](https://marketplace.visualstudio
 
 ### Pyxel Command
 
-Installing Pyxel adds the `pyxel` command. Specify a command name after `pyxel` to perform various operations.
+Installing Pyxel adds the `pyxel` command. Follow it with the operation name.
 
 Run it without arguments to see the list of available commands:
 
@@ -129,9 +129,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-The arguments of the `run` function are the `update` function, which processes frame updates, and the `draw` function, which handles screen drawing.
+Pass `update`, which updates the state each frame, and `draw`, which draws the screen, to `run`.
 
-In an actual application, it is recommended to wrap Pyxel code in a class, as shown below:
+A class keeps the application state and its methods together:
 
 ```python
 import pyxel
@@ -154,7 +154,7 @@ class App:
 App()
 ```
 
-For creating simple graphics without animation, you can use the `show` function to simplify your code.
+Use `show` for a simpler program that displays a still image.
 
 ```python
 import pyxel
@@ -179,7 +179,7 @@ It can also be run with the `pyxel run` command:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Additionally, the `pyxel watch` command monitors changes in a specified directory and automatically re-runs the program when changes are detected:
+The `pyxel watch` command reruns the program when files in the specified directory change:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
@@ -209,7 +209,7 @@ The following special key actions are available while a Pyxel application is run
 
 ### Pyxel Editor
 
-Pyxel Editor creates images and sounds used in a Pyxel application.
+Use Pyxel Editor to create images and sounds for your application.
 The created data is saved as a Pyxel resource file (.pyxres).
 
 For detailed usage instructions, see the [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/).
@@ -262,7 +262,7 @@ A Pyxel application file can be converted to an executable with the `pyxel app2e
 
 A complete list of Pyxel APIs is available at [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/).
 
-Pyxel also includes advanced APIs that require specialized knowledge. You can view them by checking the "Advanced" checkbox on the reference page.
+Check "Advanced" on the reference page to show APIs for advanced features.
 
 If you're confident in your skills, try using the Advanced API to create truly amazing works!
 

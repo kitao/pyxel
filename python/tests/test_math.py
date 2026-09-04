@@ -210,9 +210,9 @@ class TestNoise:
 
     def test_noise_seed_reproducible(self):
         pyxel.nseed(42)
-        val1 = pyxel.noise(1.0, 2.0, 3.0)
+        val1 = pyxel.noise(1.5, 2.5, 3.5)
         pyxel.nseed(42)
-        val2 = pyxel.noise(1.0, 2.0, 3.0)
+        val2 = pyxel.noise(1.5, 2.5, 3.5)
         assert val1 == val2
 
     def test_noise_different_seeds_differ(self):
@@ -223,12 +223,10 @@ class TestNoise:
         assert val1 != val2
 
     def test_noise_1d(self):
-        val = pyxel.noise(0.5)
-        assert -1.0 <= val <= 1.0
+        assert pyxel.noise(0.5) == pyxel.noise(0.5, 0.0, 0.0)
 
     def test_noise_2d(self):
-        val = pyxel.noise(0.5, 0.3)
-        assert -1.0 <= val <= 1.0
+        assert pyxel.noise(0.5, 0.3) == pyxel.noise(0.5, 0.3, 0.0)
 
     def test_noise_continuity(self):
         # Nearby inputs should produce nearby outputs (Perlin noise is smooth).

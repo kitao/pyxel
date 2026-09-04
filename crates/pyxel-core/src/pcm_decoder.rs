@@ -43,7 +43,7 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
         .and_then(|params| params.audio())
         .ok_or_else(|| format!("No audio track found in file '{filename}'"))?
         .clone();
-    // Trim encoder delay/padding (gapless); pinned so a default change can't shift decoded length
+    // Trim encoder delay and padding to preserve the decoded sample count.
     let mut decoder = get_codecs()
         .make_audio_decoder(&codec_params, &AudioDecoderOptions::default().gapless(true))
         .map_err(|_| format!("Failed to decode file '{filename}'"))?;

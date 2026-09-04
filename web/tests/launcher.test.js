@@ -15,11 +15,21 @@ const urlBuilderSource = fs.readFileSync(
   "utf8",
 );
 
-test("launcher consumes launch failures through the fatal overlay", () => {
-  assert.match(
-    launcherSource,
-    /Promise\.resolve\(target\)\s*\.then\([\s\S]*?\)\s*\.catch\(_displayFatalErrorOverlay\);/,
-  );
+test("launcher consumes launch failures through the fatal overlay", async () => {
+  const failure = new Error("launch failed");
+  const errors = [];
+  vm.runInNewContext(launcherSource.match(/<script>([\s\S]*?)<\/script>/)[1], {
+    URL,
+    document: { location: "https://example.test/?play=owner.repo.apps.game" },
+    location: { replace: () => assert.fail("unexpected redirect") },
+    launchPyxel: async () => {
+      throw failure;
+    },
+    _displayFatalErrorOverlay: (error) => errors.push(error),
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(errors, [failure]);
 });
 
 test("getFileExt ignores GitHub query strings and line fragments", () => {

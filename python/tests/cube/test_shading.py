@@ -11,7 +11,7 @@ def palette() -> list[int]:
 class TestDefault:
     def test_construction(self):
         s = Shading(palette())
-        assert repr(s).startswith("Shading(")
+        assert repr(s) == "Shading(16 x 4)"
 
     def test_direction_default(self):
         s = Shading(palette())

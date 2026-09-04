@@ -1,6 +1,4 @@
-// Micro-benchmarks for the cube hot paths listed in docs/coding-policy.md:
-// per-pixel 3D rasterization and per-frame 3D collision / BVH queries.
-// All inputs are fixed so runs are deterministic. Run with:
+// Deterministic Cube rasterization, motion, and collision benchmarks. Run with:
 // cargo bench -p pyxel-core --features sdl2_static
 
 use std::hint::black_box;
@@ -34,11 +32,8 @@ macro_rules! rc_mut {
     };
 }
 
-// Timed samples per benchmark; the median over them is reported.
 const SAMPLE_COUNT: usize = 17;
 
-// Raster target size in pixels; the benchmark triangle spans a 64x64-px
-// bounding box inside it.
 const TARGET_SIZE: u32 = 80;
 
 // Grid mesh resolution: GRID_DIVISIONS^2 cells x 2 = 2048 triangles.
@@ -66,9 +61,7 @@ fn main() {
 
 // Benchmarks
 
-// One flat unshaded triangle per iteration through draw::prim, the public
-// entry above rasterize_triangle. The depth refill plays the per-frame
-// depth clear so every iteration rasterizes identical pixels.
+// Clear depth each iteration so every sample rasterizes the same pixels.
 fn bench_raster_flat_triangle() {
     let mut ctx = make_draw_context(TARGET_SIZE);
     let world = Mat4::identity_value();
@@ -121,9 +114,6 @@ fn bench_raster_flat_offscreen() {
     });
 }
 
-// The same triangle through the textured + shaded sampler path inside
-// draw::prim (make_shaded_sampler is private, so the public prim entry
-// carries the texture + Shading into rasterize_textured_triangle).
 fn bench_raster_textured_shaded_triangle() {
     bench_raster_textured_shaded(
         "raster_textured_shaded_triangle",
@@ -199,8 +189,6 @@ fn bench_raster_textured_shaded(
     });
 }
 
-// Ray queries against a 2048-triangle grid BVH, cycling through 16 fixed
-// tilted downward rays scattered over the grid.
 fn bench_bvh_query_ray() {
     let (positions, triangles) = make_grid_geometry();
     let bvh = Bvh::build(positions, triangles);
@@ -224,8 +212,6 @@ fn bench_bvh_query_ray() {
     });
 }
 
-// AABB queries against the same grid BVH, cycling through 16 fixed
-// 1.2-unit query boxes scattered over the grid.
 fn bench_bvh_query_aabb() {
     let (positions, triangles) = make_grid_geometry();
     let bvh = Bvh::build(positions, triangles);
@@ -254,9 +240,7 @@ fn bench_bvh_query_aabb() {
     });
 }
 
-// Aabb::from_mesh over the 2048-triangle grid mesh (1089 vertices) with a
-// fixed rotated + translated world transform, the mesh-collider AABB
-// refresh cost paid per frame per mesh collider.
+// Measure the transformed mesh-collider bounds cost per frame.
 fn bench_mesh_aabb_from_mesh() {
     let mesh = make_grid_mesh();
     let rotation = Mat4::from_axis_angle(
@@ -304,9 +288,7 @@ fn bench_mesh_aabb_many_parts() {
     });
 }
 
-// Motion::sample on a 4-channel x 60-key clip, sweeping a fractional
-// frame across the looping clip. 960 iterations cycle the frame sequence
-// exactly, so every sample runs an identical mix of key spans.
+// Repeat the same fractional-frame sequence in each timed sample.
 fn bench_motion_sample() {
     let motion = make_motion();
     run_bench("motion_sample", 96_000, |i| {
@@ -325,9 +307,7 @@ fn bench_node_find_by_tags() {
     });
 }
 
-// Scene pipeline walk over a 201-node tree with 50 sphere colliders (40
-// overlapping pairs): integrate_motion + detect_contacts, plus
-// find_by_tags for the tags path, which those two stages do not read.
+// Include tag lookup, which the motion and collision stages do not exercise.
 fn bench_scene_walk_contacts() {
     let root = make_scene_tree();
     let enemy_tags = vec![String::from("enemy")];
@@ -339,9 +319,7 @@ fn bench_scene_walk_contacts() {
     });
 }
 
-// Runs one warmup sample plus SAMPLE_COUNT timed samples of
-// `iters_per_sample` iterations each, passing `f` the sample-local
-// iteration index so input cycles repeat identically across samples.
+// Reset the iteration index each sample so input cycles repeat identically.
 fn run_bench(name: &str, iters_per_sample: u32, mut f: impl FnMut(u32)) {
     for i in 0..iters_per_sample {
         f(i);
@@ -361,8 +339,6 @@ fn run_bench(name: &str, iters_per_sample: u32, mut f: impl FnMut(u32)) {
 
 // Fixtures
 
-// Square render target with the default camera at the origin. Each
-// raster iteration refills the depth buffer like a frame clear.
 fn make_draw_context(target_size: u32) -> DrawContext {
     let camera = Camera::new();
     let size = target_size as f32;
@@ -392,7 +368,6 @@ fn make_draw_context(target_size: u32) -> DrawContext {
     }
 }
 
-// 16x16 texture with a deterministic per-pixel color pattern.
 fn make_texture() -> RcImage {
     let image = Image::new(16, 16);
     let mut image_ref = rc_mut!(&image);
@@ -444,7 +419,6 @@ fn grid_probe_point(index: u32, y: f32) -> Vec3 {
     }
 }
 
-// The grid geometry wrapped in a single-part Mesh.
 fn make_grid_mesh() -> RcMesh {
     let (positions, triangles) = make_grid_geometry();
     let primitive = Primitive::new();

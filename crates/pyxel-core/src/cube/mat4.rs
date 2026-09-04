@@ -1,14 +1,10 @@
-// Math primitives follow the standard linear-algebra notation: i/j/k for
-// matrix indices and c/s for cos/sin. Forcing iterator-based matrix code or
-// renaming geometric components hurts readability without clarifying intent.
+// Matrix formulas use indexed loops and conventional i/j/k and c/s notation.
 #![allow(clippy::many_single_char_names, clippy::needless_range_loop)]
 
 use crate::cube::quat::{Quat, RcQuat};
 use crate::cube::vec3::{RcVec3, Vec3};
 
-// Immutable 4x4 matrix. Internal storage is row-major: data[row][col].
-// Transform composition methods return new values.
-
+// Row-major storage: data[row][col].
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Mat4 {
     pub data: [[f32; 4]; 4],
@@ -493,7 +489,6 @@ impl Mat4 {
     }
 
     pub fn to_local_dir(&self, mat: &Self) -> RcMat4 {
-        // Build a translation-stripped inverse
         let r_only = Self::strip_translation(mat);
         let inv_rc = r_only.inverse();
         let result = rc_ref!(&inv_rc).mul_mat(self);

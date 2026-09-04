@@ -1,12 +1,10 @@
-// Quaternion math uses the standard (x, y, z, w) and intermediate scalar
-// names (s, t, m, ...) by convention. Renaming them obscures the algebra.
+// Quaternion formulas use conventional component and scalar names.
 #![allow(clippy::many_single_char_names)]
 
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::vec3::{RcVec3, Vec3};
 
-// Immutable quaternion. Component order is (x, y, z, w) with w as the scalar.
-
+// Component order is (x, y, z, w), with w as the scalar.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Quat {
     pub x: f32,
@@ -380,7 +378,7 @@ impl Quat {
             other_w = other.w;
         }
         if cos_theta > 0.9995 {
-            // Linear interpolation, then normalize
+            // Avoid division by sin(theta) near identical rotations.
             let x = self.x + t * (other_x - self.x);
             let y = self.y + t * (other_y - self.y);
             let z = self.z + t * (other_z - self.z);
@@ -504,9 +502,7 @@ mod tests {
 
     #[test]
     fn test_slerp_nearly_identical_rotations_preserves_midpoint() {
-        // Two nearly-identical rotations trigger the cos > 0.9995 branch
-        // that lerps and normalizes. The interpolated rotation must be a
-        // unit quaternion representing the midpoint orientation.
+        // This angle gap takes the normalized linear-interpolation branch.
         let axis = Vec3 {
             x: 0.0,
             y: 1.0,

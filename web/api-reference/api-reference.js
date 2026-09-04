@@ -82,7 +82,6 @@ function hasDetails(item) {
   );
 }
 
-// Render the expandable detail body for one API entry.
 function buildDetailContent(container, item) {
   container.innerHTML = "";
   const wrap = document.createElement("div");
@@ -146,7 +145,6 @@ function buildDetailContent(container, item) {
   container.appendChild(wrap);
 }
 
-// Build the searchable API reference shell and category sections.
 function buildPage() {
   const app = document.getElementById("app");
   app.innerHTML = "";
@@ -158,7 +156,6 @@ function buildPage() {
     }, buildVariantSwitch()),
   );
 
-  // Toolbar for text search and advanced API visibility
   const toolbar = document.createElement("div");
   toolbar.className = "flex items-center gap-3 mb-4";
 
@@ -204,13 +201,11 @@ function buildPage() {
   if (hasAdvanced) toolbar.appendChild(toggleWrap);
   app.appendChild(toolbar);
 
-  // Empty-state message toggled by updateVisibility
   const noResults = document.createElement("div");
   noResults.id = "no-results";
   noResults.className = "hidden py-8 text-center text-gray-400 text-sm";
   app.appendChild(noResults);
 
-  // Category sections, API rows, and constant groups
   for (const cat of data.categories) {
     const section = document.createElement("details");
     section.open = !cat.collapsed;
@@ -229,7 +224,6 @@ function buildPage() {
     catHeader.appendChild(line);
     section.appendChild(catHeader);
 
-    // Items card (functions, variables, classes, named constants)
     if (cat.items && cat.items.length > 0) {
       const card = document.createElement("div");
       card.className = "card space-y-0 divide-y divide-gray-700";
@@ -246,7 +240,6 @@ function buildPage() {
         row.className = "py-3";
         row.dataset.itemKey = `${cat.id}-${i}`;
 
-        // Signature line with API kind badge and optional advanced mark
         const sigLine = document.createElement("div");
         sigLine.className = "flex items-baseline gap-2";
 
@@ -274,13 +267,11 @@ function buildPage() {
 
         row.appendChild(sigLine);
 
-        // Localized one-line description
         const desc = document.createElement("p");
         desc.className = "mt-1 text-gray-400 text-sm pl-0.5";
         desc.dataset.descKey = `${cat.id}-${i}`;
         row.appendChild(desc);
 
-        // Collapsible parameter, return, example, and note details
         if (hasDetails(item)) {
           const details = document.createElement("details");
           details.className = "mt-1";
@@ -303,7 +294,6 @@ function buildPage() {
       section.appendChild(card);
     }
 
-    // Nested constant groups and section-level details
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];
@@ -401,12 +391,10 @@ function updateTexts() {
   if (advLabel) advLabel.textContent = t("show_advanced");
   document.getElementById("no-results").textContent = t("no_results");
 
-  // Static UI labels such as details toggles
   document.querySelectorAll("[data-ui-key]").forEach((el) => {
     el.textContent = t(el.dataset.uiKey);
   });
 
-  // Category titles and card headings
   for (const cat of data.categories) {
     const el = cached("cat-title", cat.id);
     if (el) el.textContent = t(cat.title);
@@ -414,7 +402,6 @@ function updateTexts() {
     if (el2) el2.textContent = t(cat.title);
   }
 
-  // Entry descriptions, detail bodies, and constant-group labels
   for (const cat of data.categories) {
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
@@ -431,7 +418,6 @@ function updateTexts() {
         const gid = `${cat.id}-cg-${g}`;
         const labelEl = cached("cg-label", gid);
         if (labelEl) labelEl.textContent = t(group.label);
-        // Section labels and per-constant detail text
         if (group.sections) {
           for (let s = 0; s < group.sections.length; s++) {
             const sec = group.sections[s];
@@ -463,14 +449,12 @@ function updateTexts() {
   setDocLang(lang);
 }
 
-// Filter API entries by search text and advanced visibility state.
 function updateVisibility() {
   let totalVisible = 0;
 
   for (const cat of data.categories) {
     let catVisible = 0;
 
-    // API entry rows and their parent item card
     let itemsVisible = 0;
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
@@ -486,7 +470,6 @@ function updateVisibility() {
     }
     catVisible += itemsVisible;
 
-    // Nested constant-group chips and wrapper visibility
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];

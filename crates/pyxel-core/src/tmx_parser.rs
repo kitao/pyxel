@@ -50,7 +50,6 @@ struct TmxMap {
 pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
     let err = |msg| format!("{msg} '{path}'");
 
-    // Load and validate the TMX layer.
     let mut file = File::open(path).map_err(|_| err("Failed to open file"))?;
     let mut tmx_text = String::new();
     file.read_to_string(&mut tmx_text)

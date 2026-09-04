@@ -230,19 +230,17 @@ class CanvasPanel(Widget):
         self._is_dragged = True
         self._is_assist_mode = False
 
-        # SELECT: begin selection
         if self.tool_var == TOOL_SELECT:
             self._reset_edit_canvas()
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
 
-        # PENCIL/RECTB/RECT/CIRCB/CIRC: place initial dot
         elif TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._reset_edit_canvas()
             self._edit_canvas.pset(x, y, self.color_var)
             self._finish_edit_canvas()
 
-        # BUCKET: flood fill and commit immediately
+        # Flood fill commits on mouse-down; other drawing tools commit on release.
         elif self.tool_var == TOOL_BUCKET:
             self._add_pre_history()
             self._reset_edit_canvas()
@@ -292,14 +290,12 @@ class CanvasPanel(Widget):
                 else:
                     x2 = x1 + abs(dy) * (1 if dx > 0 else -1)
 
-            # SELECT: update selection rectangle
             if self.tool_var == TOOL_SELECT:
                 x2 = clamp(x2, 0, 15)
                 y2 = clamp(y2, 0, 15)
                 self._select_x1, self._select_x2 = (x1, x2) if x1 < x2 else (x2, x1)
                 self._select_y1, self._select_y2 = (y1, y2) if y1 < y2 else (y2, y1)
 
-            # PENCIL: freehand or assisted straight line
             elif self.tool_var == TOOL_PENCIL:
                 if self._is_assist_mode:
                     self._reset_edit_canvas()
@@ -311,25 +307,21 @@ class CanvasPanel(Widget):
                     )
                     self._finish_edit_canvas()
 
-            # RECTB: outlined rectangle
             elif self.tool_var == TOOL_RECTB:
                 self._reset_edit_canvas()
                 self._edit_canvas.rectb2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
-            # RECT: filled rectangle
             elif self.tool_var == TOOL_RECT:
                 self._reset_edit_canvas()
                 self._edit_canvas.rect2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
-            # CIRCB: outlined ellipse
             elif self.tool_var == TOOL_CIRCB:
                 self._reset_edit_canvas()
                 self._edit_canvas.ellib2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
-            # CIRC: filled ellipse
             elif self.tool_var == TOOL_CIRC:
                 self._reset_edit_canvas()
                 self._edit_canvas.elli2(x1, y1, x2, y2, self.color_var)

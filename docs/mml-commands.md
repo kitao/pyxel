@@ -2,7 +2,7 @@
 
 # Pyxel MML Commands
 
-*This document was auto-generated from the [Pyxel MML Commands](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html).*
 
 | Command | Description |
 | --- | --- |

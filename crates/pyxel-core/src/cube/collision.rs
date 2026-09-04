@@ -1,6 +1,4 @@
-// Collision routines follow the standard short-letter notation
-// (Möller-Trumbore: h/a/f/s/q/u/v/t). Renaming hurts traceability
-// against the reference formulation.
+// Collision formulas retain conventional notation, including Möller-Trumbore's h/a/f/s/q/u/v/t.
 #![allow(clippy::many_single_char_names)]
 
 use crate::cube::collider::Collider;
@@ -222,7 +220,7 @@ pub fn classify_shape(size: Vec3, radius: f32) -> ColliderShape {
 
 // Resolve a Collider's world-space AABB. The collider may carry a
 // rounded-box family shape or a static mesh; sphere falls out of the
-// rounded-box path with size = Vec3::ZERO.
+// rounded-box path with zero size.
 pub fn collider_aabb(collider: &Collider, transform: &Mat4) -> Aabb {
     if let Some(mesh_rc) = &collider.mesh {
         let mesh = rc_ref!(mesh_rc);
@@ -1600,8 +1598,8 @@ mod tests {
             },
             0.5,
         );
-        assert_eq!(aabb.min.x, 0.5);
-        assert_eq!(aabb.max.x, 1.5);
+        assert_eq!(aabb.min, vec3(0.5, 1.5, 2.5));
+        assert_eq!(aabb.max, vec3(1.5, 2.5, 3.5));
     }
 
     #[test]
@@ -1652,7 +1650,7 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(r.depth, 0.5));
-        assert!(approx_eq(r.normal.x, -1.0));
+        assert_vec3_close(r.normal, vec3(-1.0, 0.0, 0.0));
     }
 
     #[test]
@@ -1676,7 +1674,7 @@ mod tests {
 
     #[test]
     fn test_ray_vs_sphere_hit() {
-        let (t, _, _) = ray_vs_sphere(
+        let (t, point, normal) = ray_vs_sphere(
             Vec3 {
                 x: 0.0,
                 y: 0.0,
@@ -1697,6 +1695,8 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(t, 4.0));
+        assert_vec3_close(point, vec3(0.0, 0.0, -1.0));
+        assert_vec3_close(normal, vec3(0.0, 0.0, -1.0));
     }
 
     #[test]
@@ -1713,7 +1713,7 @@ mod tests {
                 z: 1.0,
             },
         };
-        let (t, _, normal) = ray_vs_aabb(
+        let (t, point, normal) = ray_vs_aabb(
             Vec3 {
                 x: 0.0,
                 y: 0.0,
@@ -1729,12 +1729,13 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(t, 4.0));
-        assert!(approx_eq(normal.z, -1.0));
+        assert_vec3_close(point, vec3(0.0, 0.0, -1.0));
+        assert_vec3_close(normal, vec3(0.0, 0.0, -1.0));
     }
 
     #[test]
     fn test_ray_vs_triangle_hit() {
-        let (t, _, _) = ray_vs_triangle(
+        let (t, point, normal) = ray_vs_triangle(
             Vec3 {
                 x: 0.0,
                 y: 0.0,
@@ -1764,12 +1765,14 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(t, 5.0));
+        assert_vec3_close(point, vec3(0.0, 0.0, 0.0));
+        assert_vec3_close(normal, vec3(0.0, 0.0, -1.0));
     }
 
     #[test]
     fn test_sphere_vs_triangle_hit_above_face() {
         // Triangle in the z=0 plane; sphere center hovers above the
-        // centroid at z=+0.3 with radius 0.5 → 0.2 penetration depth.
+        // face at z=+0.3 with radius 0.5 → 0.2 penetration depth.
         let v0 = Vec3 {
             x: 0.0,
             y: 0.0,
@@ -1798,7 +1801,7 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(r.depth, 0.2));
-        assert!(approx_eq(r.normal.z, 1.0));
+        assert_vec3_close(r.normal, vec3(0.0, 0.0, 1.0));
     }
 
     #[test]
@@ -1923,7 +1926,7 @@ mod tests {
 
     #[test]
     fn test_ray_vs_sphere_max_distance_cap() {
-        // Ray hits at t=4 with infinite cap, misses with cap=3.5.
+        // Ray hits at t=4 with cap=4.5, misses with cap=3.5.
         let origin = Vec3 {
             x: 0.0,
             y: 0.0,
@@ -2167,8 +2170,7 @@ mod tests {
         )
         .unwrap();
         // Closest point should be on the edge segment AB at (0.5, 0, 0).
-        assert!((r.point.x - 0.5).abs() < 1e-4);
-        assert!(r.point.y.abs() < 1e-4);
+        assert_vec3_close(r.point, vec3(0.5, 0.0, 0.0));
         // Depth = sphere radius - distance from center to closest point.
         assert!((r.depth - 0.3).abs() < 1e-4);
     }
@@ -2205,8 +2207,7 @@ mod tests {
         )
         .unwrap();
         // Closest is vertex a (0, 0, 0).
-        assert!(r.point.x.abs() < 1e-4);
-        assert!(r.point.y.abs() < 1e-4);
+        assert_vec3_close(r.point, vec3(0.0, 0.0, 0.0));
     }
 
     #[test]
@@ -2233,7 +2234,7 @@ mod tests {
             z: 0.0,
         };
         let cp = closest_point_on_triangle(p, a, b, c);
-        assert!(cp.x.abs() < 1e-4 && cp.y.abs() < 1e-4);
+        assert_vec3_close(cp, a);
         // Outside near vertex b.
         let p = Vec3 {
             x: 2.0,
@@ -2241,7 +2242,7 @@ mod tests {
             z: 0.0,
         };
         let cp = closest_point_on_triangle(p, a, b, c);
-        assert!((cp.x - 1.0).abs() < 1e-4 && cp.y.abs() < 1e-4);
+        assert_vec3_close(cp, b);
         // Outside near vertex c.
         let p = Vec3 {
             x: -1.0,
@@ -2249,7 +2250,7 @@ mod tests {
             z: 0.0,
         };
         let cp = closest_point_on_triangle(p, a, b, c);
-        assert!(cp.x.abs() < 1e-4 && (cp.y - 1.0).abs() < 1e-4);
+        assert_vec3_close(cp, c);
         // Interior projects straight down to the plane.
         let p = Vec3 {
             x: 0.25,
@@ -2257,9 +2258,7 @@ mod tests {
             z: 5.0,
         };
         let cp = closest_point_on_triangle(p, a, b, c);
-        assert!((cp.x - 0.25).abs() < 1e-4);
-        assert!((cp.y - 0.25).abs() < 1e-4);
-        assert!(cp.z.abs() < 1e-4);
+        assert_vec3_close(cp, vec3(0.25, 0.25, 0.0));
     }
 
     #[test]
@@ -2283,10 +2282,8 @@ mod tests {
         });
         let transform = *rc_ref!(&transform_rc);
         let aabb = collider_aabb(&rc_ref!(&coll), &transform);
-        assert!((aabb.min.x - 0.5).abs() < 1e-4); // 1 - 0.5
-        assert!((aabb.max.x - 1.5).abs() < 1e-4);
-        assert!((aabb.min.y - 1.5).abs() < 1e-4);
-        assert!((aabb.max.y - 2.5).abs() < 1e-4);
+        assert_vec3_close(aabb.min, vec3(0.5, 1.5, 2.5));
+        assert_vec3_close(aabb.max, vec3(1.5, 2.5, 3.5));
     }
 
     #[test]
@@ -2311,9 +2308,9 @@ mod tests {
             },
             0.0,
         );
-        let extent_x = aabb.max.x - aabb.min.x;
-        // sqrt(2) ≈ 1.414; the non-rotated extent would be 1.0.
-        assert!(extent_x > 1.2);
+        let half_diagonal = std::f32::consts::FRAC_1_SQRT_2;
+        assert_vec3_close(aabb.min, vec3(-half_diagonal, -0.5, -half_diagonal));
+        assert_vec3_close(aabb.max, vec3(half_diagonal, 0.5, half_diagonal));
     }
 
     #[test]
@@ -2391,7 +2388,7 @@ mod tests {
             0.0,
         );
         assert!(matches!(s0, ColliderShape::RoundedBox { r, .. } if r == 0.0));
-        // A planar size (one zero component among x/z) is still a box.
+        // A planar size with nonzero X/Z is still a box.
         let plate = classify_shape(
             Vec3 {
                 x: 2.0,
@@ -2424,7 +2421,7 @@ mod tests {
             a,
             b,
         );
-        assert!(approx_eq(mid.y, 0.5));
+        assert_vec3_close(mid, vec3(0.0, 0.5, 0.0));
         let below = closest_point_on_segment(
             Vec3 {
                 x: 0.0,
@@ -2434,7 +2431,7 @@ mod tests {
             a,
             b,
         );
-        assert!(approx_eq(below.y, -1.0));
+        assert_vec3_close(below, a);
         // Degenerate zero-length segment returns the endpoint.
         let pt = closest_point_on_segment(
             Vec3 {
@@ -2445,7 +2442,7 @@ mod tests {
             a,
             a,
         );
-        assert!(approx_eq(pt.y, -1.0));
+        assert_vec3_close(pt, a);
     }
 
     #[test]
@@ -2473,8 +2470,8 @@ mod tests {
                 z: 1.0,
             },
         );
-        assert!(approx_eq(p.x, 0.0) && approx_eq(p.z, 0.0));
-        assert!(approx_eq(q.y, 0.0) && approx_eq(q.z, 1.0));
+        assert_vec3_close(p, vec3(0.0, 0.0, 0.0));
+        assert_vec3_close(q, vec3(0.0, 0.0, 1.0));
         // Parallel overlapping segments: any valid pair has distance 2 on X.
         let (p2, q2) = closest_points_segment_segment(
             Vec3 {
@@ -2523,7 +2520,7 @@ mod tests {
         .unwrap();
         // Closest box point (1, 0, 0); gap 0.4; depth = 0.5 - 0.4 = 0.1.
         assert!(approx_eq(geom.depth, 0.1));
-        assert!(approx_eq(geom.normal.x, 1.0));
+        assert_vec3_close(geom.normal, vec3(1.0, 0.0, 0.0));
         assert!(approx_eq(geom.point.x, 1.0));
     }
 
@@ -2573,7 +2570,7 @@ mod tests {
         .unwrap();
         assert!(approx_eq(geom.depth, 0.1));
         let inv_sqrt2 = 1.0 / std::f32::consts::SQRT_2;
-        assert!(approx_eq(geom.normal.x, inv_sqrt2) && approx_eq(geom.normal.z, inv_sqrt2));
+        assert_vec3_close(geom.normal, vec3(inv_sqrt2, 0.0, inv_sqrt2));
     }
 
     #[test]
@@ -2623,7 +2620,7 @@ mod tests {
             0.0,
         )
         .unwrap();
-        assert!(approx_eq(geom.normal.x, 1.0));
+        assert_vec3_close(geom.normal, vec3(1.0, 0.0, 0.0));
         // Interior margin to +X face = 0.1; depth = 0.1 + 0.3.
         assert!(approx_eq(geom.depth, 0.4));
     }
@@ -2683,15 +2680,12 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(geom.depth, 0.1));
-        assert!(approx_eq(geom.normal.x, 1.0));
+        assert_vec3_close(geom.normal, vec3(1.0, 0.0, 0.0));
     }
 
     #[test]
     fn test_capsule_vs_sphere_cap_hit_rotated() {
-        // Capsule rotated 90° about Z lies along world X; its +local-Y cap
-        // ends up at world (-1, 0, 0) or (1, 0, 0) depending on rotation
-        // sign — probe via the cap nearest to the sphere at (1.7, 0, 0):
-        // closest segment point is (1, 0, 0) either way.
+        // The rotated capsule lies along X; its nearest cap center is (1, 0, 0).
         let rot_rc = Mat4::from_euler(&Vec3 {
             x: 0.0,
             y: 0.0,
@@ -2711,7 +2705,7 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(geom.depth, 0.1));
-        assert!(approx_eq(geom.normal.x, 1.0));
+        assert_vec3_close(geom.normal, vec3(1.0, 0.0, 0.0));
     }
 
     #[test]
@@ -2733,8 +2727,7 @@ mod tests {
 
     #[test]
     fn test_capsule_vs_capsule_parallel_side_contact() {
-        // Two vertical capsules (half_h=1, r=0.3) with centers 0.5 apart on
-        // X: segment distance 0.5, depth = 0.6 - 0.5 = 0.1, normal ±X.
+        // The parallel segments are 0.5 apart: depth = 0.6 - 0.5 = 0.1.
         let m_a = Mat4::identity_value();
         let m_b_rc = Mat4::from_translation(&Vec3 {
             x: 0.5,
@@ -2745,7 +2738,7 @@ mod tests {
         let geom = capsule_vs_capsule(&m_a, 1.0, 0.3, &m_b, 1.0, 0.3).unwrap();
         assert!(approx_eq(geom.depth, 0.1));
         // Normal from b toward a = -X.
-        assert!(approx_eq(geom.normal.x, -1.0));
+        assert_vec3_close(geom.normal, vec3(-1.0, 0.0, 0.0));
     }
 
     #[test]
@@ -2844,10 +2837,7 @@ mod tests {
 
     #[test]
     fn test_capsule_vs_rounded_obb_standing_on_box() {
-        // Vertical capsule (half_h=0.5, r=0.3) hovering 0.05 into the top
-        // of a unit-half box: bottom cap reach = center.y - 0.5 - 0.3.
-        // Capsule center at y = 1.75 → reach to y=0.95, box top at 1.0 →
-        // depth = 0.05; normal from box toward capsule = +Y.
+        // The capsule bottom is 1.75 - 0.5 - 0.3 = 0.95, penetrating the box top by 0.05.
         let cap_rc = Mat4::from_translation(&Vec3 {
             x: 0.0,
             y: 1.75,
@@ -2869,7 +2859,7 @@ mod tests {
         )
         .unwrap();
         assert!(approx_eq(geom.depth, 0.05));
-        assert!(approx_eq(geom.normal.y, 1.0));
+        assert_vec3_close(geom.normal, vec3(0.0, 1.0, 0.0));
     }
 
     #[test]
@@ -2960,18 +2950,13 @@ mod tests {
         let geom = rounded_obb_vs_rounded_obb(&m_a, one, 0.0, &m_b, one, 0.0).unwrap();
         assert!(approx_eq(geom.depth, 0.2));
         // Normal from b toward a = -X.
-        assert!(approx_eq(geom.normal.x, -1.0));
+        assert_vec3_close(geom.normal, vec3(-1.0, 0.0, 0.0));
     }
 
     #[test]
     fn test_obb_vs_obb_rotated_45_diagonal_gap() {
-        // B rotated 45° about Y, centers 2.2 apart along u=(1,0,1)/√2.
-        // Reach along u: A contributes √2 (corner), B contributes 1.0
-        // (aligned axis) → 2.41 > 2.2: overlapping on u, and no other
-        // axis separates either (corner of A pokes B). Verify a contact
-        // IS reported (SAT-completeness sanity check), then verify the
-        // separated placement at 2.6 along u IS rejected (B's aligned
-        // axis: 2.6 > 2.414).
+        // Along u=(1,0,1)/√2, combined reach is √2 + 1: centers 2.2 apart
+        // overlap, while centers 2.6 apart separate on B's aligned axis.
         let m_a = Mat4::identity_value();
         let rot_rc = Mat4::from_euler(&Vec3 {
             x: 0.0,
@@ -2988,7 +2973,6 @@ mod tests {
             z: 1.0,
         };
         assert!(rounded_obb_vs_rounded_obb(&m_a, one, 0.0, &m_b, one, 0.0).is_some());
-        // And at 2.6 along u the same pair must be separated.
         let d2 = 2.6 / std::f32::consts::SQRT_2;
         let shift2_rc = Mat4::from_translation(&Vec3 {
             x: d2,
@@ -3076,7 +3060,7 @@ mod tests {
         let cap = *rc_ref!(&cap_rc);
         let geom = capsule_vs_triangle(&cap, 0.5, 0.3, v0, v1, v2).unwrap();
         assert!(approx_eq(geom.depth, 0.05));
-        assert!(approx_eq(geom.normal.y, 1.0));
+        assert_vec3_close(geom.normal, vec3(0.0, 1.0, 0.0));
     }
 
     #[test]
@@ -3151,7 +3135,7 @@ mod tests {
         };
         let geom = capsule_vs_triangle(&cap, 0.5, 0.3, v0, v1, v2).unwrap();
         assert!(approx_eq(geom.depth, 0.05));
-        assert!(approx_eq(geom.normal.y, 1.0));
+        assert_vec3_close(geom.normal, vec3(0.0, 1.0, 0.0));
     }
 
     #[test]

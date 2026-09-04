@@ -2,7 +2,7 @@
 
 # Pyxel Cube User Guide
 
-*This document was auto-generated from the [Pyxel Cube User Guide](https://kitao.github.io/pyxel/web/user-guide/cube/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.github.io/pyxel/web/user-guide/cube/).*
 
 ## Overview
 

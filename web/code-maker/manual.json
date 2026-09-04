@@ -93,18 +93,18 @@
       "uk": "Огляд"
     },
     "overview_body": {
-      "en": "Pyxel Code Maker is a browser-based online development environment for Pyxel. You can write Python code, create game resources (images, tilemaps, sounds, music), and run your application in the browser without installing anything.",
-      "cn": "Pyxel Code Maker 是基于浏览器的 Pyxel 在线开发环境。无需安装，即可在浏览器中编写 Python 代码、创建游戏资源 (图像、瓦片地图、声音、音乐) 并运行应用程序。",
-      "de": "Pyxel Code Maker ist eine browserbasierte Online-Entwicklungsumgebung für Pyxel. Sie können Python-Code schreiben, Spielressourcen (Bilder, Tilemaps, Sounds, Musik) erstellen und Ihre Anwendung ausführen — alles im Browser ohne Installation.",
-      "es": "Pyxel Code Maker es un entorno de desarrollo en línea basado en navegador para Pyxel. Permite escribir código Python, crear recursos de juego (imágenes, tilemaps, sonidos, música) y ejecutar su aplicación, todo en el navegador sin instalación.",
-      "fr": "Pyxel Code Maker est un environnement de développement en ligne basé sur le navigateur pour Pyxel. Il vous permet d'écrire du code Python, de créer des ressources de jeu (images, tilemaps, sons, musique) et d'exécuter votre application, le tout dans le navigateur sans installation.",
-      "it": "Pyxel Code Maker è un ambiente di sviluppo online basato sul browser per Pyxel. Consente di scrivere codice Python, creare risorse di gioco (immagini, tilemap, suoni, musica) ed eseguire l'applicazione, tutto nel browser senza installazione.",
-      "ja": "Pyxel Code Maker は、Pyxel のブラウザベースのオンライン開発環境です。Python コードの記述、ゲームリソース（画像・タイルマップ・サウンド・ミュージック）の作成、アプリケーションの実行を、インストール不要でブラウザ上で行えます。",
-      "ko": "Pyxel Code Maker는 Pyxel용 브라우저 기반 온라인 개발 환경입니다. 설치 없이 브라우저에서 Python 코드 작성, 게임 리소스(이미지, 타일맵, 사운드, 음악) 생성, 애플리케이션 실행이 가능합니다.",
-      "pt": "O Pyxel Code Maker é um ambiente de desenvolvimento online baseado em navegador para o Pyxel. Permite escrever código Python, criar recursos de jogo (imagens, tilemaps, sons, música) e executar sua aplicação — tudo no navegador sem instalação.",
-      "ru": "Pyxel Code Maker — это браузерная онлайн-среда разработки для Pyxel. Она позволяет писать код на Python, создавать игровые ресурсы (изображения, тайловые карты, звуки, музыку) и запускать приложение — всё в браузере без установки.",
-      "tr": "Pyxel Code Maker, Pyxel için tarayıcı tabanlı bir çevrimiçi geliştirme ortamıdır. Kurulum gerektirmeden tarayıcıda Python kodu yazmanıza, oyun kaynakları (görüntüler, tilemap'ler, sesler, müzik) oluşturmanıza ve uygulamanızı çalıştırmanıza olanak tanır.",
-      "uk": "Pyxel Code Maker — це браузерне онлайн-середовище розробки для Pyxel. Воно дозволяє писати код на Python, створювати ігрові ресурси (зображення, тайлові карти, звуки, музику) та запускати застосунок — усе в браузері без встановлення."
+      "en": "Pyxel Code Maker lets you edit Python code and game resources (images, tilemaps, sounds, music) and run Pyxel apps in your browser. No installation is needed.",
+      "cn": "Pyxel Code Maker 让你在浏览器中编辑 Python 代码和游戏资源 (图像、瓦片地图、声音、音乐)，并运行 Pyxel 应用，无需安装。",
+      "de": "Mit Pyxel Code Maker bearbeiten Sie Python-Code und Spielressourcen (Bilder, Tilemaps, Sounds, Musik) und führen Pyxel-Apps im Browser aus. Eine Installation ist nicht nötig.",
+      "es": "Pyxel Code Maker permite editar código Python y recursos de juego (imágenes, tilemaps, sonidos, música) y ejecutar aplicaciones Pyxel en el navegador. No requiere instalación.",
+      "fr": "Pyxel Code Maker permet de modifier du code Python et des ressources de jeu (images, tilemaps, sons, musique), puis d’exécuter des applications Pyxel dans le navigateur. Aucune installation n’est nécessaire.",
+      "it": "Pyxel Code Maker permette di modificare codice Python e risorse di gioco (immagini, tilemap, suoni, musica) ed eseguire app Pyxel nel browser. Non richiede installazione.",
+      "ja": "Pyxel Code Maker は、ブラウザで Python コードとゲームリソース（画像・タイルマップ・サウンド・ミュージック）を編集し、Pyxel アプリを実行できる開発環境です。インストールは不要です。",
+      "ko": "Pyxel Code Maker로 브라우저에서 Python 코드와 게임 리소스(이미지, 타일맵, 사운드, 음악)를 편집하고 Pyxel 앱을 실행할 수 있습니다. 설치는 필요 없습니다.",
+      "pt": "O Pyxel Code Maker permite editar código Python e recursos de jogo (imagens, tilemaps, sons, música) e executar aplicativos Pyxel no navegador. Não é preciso instalar nada.",
+      "ru": "Pyxel Code Maker позволяет редактировать код Python и игровые ресурсы (изображения, тайловые карты, звуки, музыку) и запускать приложения Pyxel в браузере. Установка не требуется.",
+      "tr": "Pyxel Code Maker ile tarayıcıda Python kodunu ve oyun kaynaklarını (görüntüler, tilemap’ler, sesler, müzik) düzenleyebilir, Pyxel uygulamalarını çalıştırabilirsiniz. Kurulum gerekmez.",
+      "uk": "Pyxel Code Maker дозволяє редагувати код Python та ігрові ресурси (зображення, тайлові карти, звуки, музику) й запускати застосунки Pyxel у браузері. Встановлення не потрібне."
     },
     "layout_title": {
       "en": "Screen Layout",
@@ -331,18 +331,18 @@
       "uk": "Редактор коду"
     },
     "code_body": {
-      "en": "The code editor provides Python syntax highlighting and auto-completion. Write your Pyxel application code here. The default entry point is {0}.",
-      "cn": "代码编辑器提供 Python 语法高亮和自动补全。在这里编写 Pyxel 应用程序代码。默认入口点是 {0}。",
-      "de": "Der Code-Editor bietet Python-Syntaxhervorhebung und Autovervollständigung. Schreiben Sie hier Ihren Pyxel-Anwendungscode. Der Standard-Einstiegspunkt ist {0}.",
-      "es": "El editor de código proporciona resaltado de sintaxis Python y autocompletado. Escriba el código de su aplicación Pyxel aquí. El punto de entrada predeterminado es {0}.",
-      "fr": "L'éditeur de code offre la coloration syntaxique Python et l'autocomplétion. Écrivez le code de votre application Pyxel ici. Le point d'entrée par défaut est {0}.",
-      "it": "L'editor di codice offre evidenziazione della sintassi Python e completamento automatico. Scrivi il codice della tua applicazione Pyxel qui. Il punto di ingresso predefinito è {0}.",
-      "ja": "コードエディタは Python 構文ハイライトとオートコンプリートに対応しています。ここに Pyxel アプリケーションのコードを記述します。デフォルトのエントリポイントは {0} です。",
-      "ko": "코드 에디터는 Python 구문 하이라이팅과 자동 완성을 지원합니다. 여기에 Pyxel 애플리케이션 코드를 작성합니다. 기본 진입점은 {0}입니다.",
-      "pt": "O editor de código oferece destaque de sintaxe Python e autocompletar. Escreva o código da sua aplicação Pyxel aqui. O ponto de entrada padrão é {0}.",
-      "ru": "Редактор кода обеспечивает подсветку синтаксиса Python и автодополнение. Пишите код приложения Pyxel здесь. Точка входа по умолчанию — {0}.",
-      "tr": "Kod düzenleyici Python söz dizimi vurgulama ve otomatik tamamlama sağlar. Pyxel uygulama kodunuzu buraya yazın. Varsayılan giriş noktası {0}'dir.",
-      "uk": "Редактор коду забезпечує підсвічування синтаксису Python та автодоповнення. Пишіть код застосунку Pyxel тут. Точка входу за замовчуванням — {0}."
+      "en": "Write Python code in {0}, with syntax highlighting and auto-completion.",
+      "cn": "在 {0} 中编写 Python 代码，支持语法高亮和自动补全。",
+      "de": "Schreiben Sie Python-Code in {0}, mit Syntaxhervorhebung und Autovervollständigung.",
+      "es": "Escriba código Python en {0}, con resaltado de sintaxis y autocompletado.",
+      "fr": "Écrivez du code Python dans {0}, avec coloration syntaxique et autocomplétion.",
+      "it": "Scrivi codice Python in {0}, con evidenziazione della sintassi e completamento automatico.",
+      "ja": "{0} に Python コードを記述します。構文ハイライトと入力補完に対応しています。",
+      "ko": "{0}에 Python 코드를 작성합니다. 구문 강조와 자동 완성을 지원합니다.",
+      "pt": "Escreva código Python em {0}, com destaque de sintaxe e preenchimento automático.",
+      "ru": "Пишите код Python в {0} с подсветкой синтаксиса и автодополнением.",
+      "tr": "{0} içinde söz dizimi vurgulama ve otomatik tamamlama desteğiyle Python kodu yazın.",
+      "uk": "Пишіть код Python у {0} з підсвічуванням синтаксису та автодоповненням."
     },
     "resource_title": {
       "en": "Resource Editor",
@@ -359,18 +359,18 @@
       "uk": "Редактор ресурсів"
     },
     "resource_body": {
-      "en": "The resource editor is the same as Pyxel's built-in editor. You can create and edit images, tilemaps, sounds, and music. The resource file name is fixed to {0}. The editor operates the same way as in a local Pyxel environment.",
-      "cn": "资源编辑器与 Pyxel 内置编辑器相同。可以创建和编辑图像、瓦片地图、声音和音乐。资源文件名固定为 {0}。操作方式与本地 Pyxel 环境相同。",
-      "de": "Der Ressourcen-Editor ist identisch mit Pyxels integriertem Editor. Er ermöglicht das Erstellen und Bearbeiten von Bildern, Tilemaps, Sounds und Musik. Der Ressourcen-Dateiname ist auf {0} festgelegt. Der Editor funktioniert wie in einer lokalen Pyxel-Umgebung.",
-      "es": "El editor de recursos es el mismo que el editor integrado de Pyxel. Permite crear y editar imágenes, tilemaps, sonidos y música. El nombre del archivo de recursos es fijo: {0}. El editor funciona igual que en un entorno local de Pyxel.",
-      "fr": "L'éditeur de ressources est identique à l'éditeur intégré de Pyxel. Il permet de créer et modifier des images, des tilemaps, des sons et de la musique. Le nom du fichier de ressources est fixé à {0}. L'éditeur fonctionne de la même manière que dans un environnement Pyxel local.",
-      "it": "L'editor di risorse è lo stesso dell'editor integrato di Pyxel. Consente di creare e modificare immagini, tilemap, suoni e musica. Il nome del file di risorse è fisso: {0}. L'editor funziona come in un ambiente Pyxel locale.",
-      "ja": "リソースエディタは Pyxel 内蔵のエディタと同じものです。画像・タイルマップ・サウンド・ミュージックの作成・編集が行えます。リソースファイル名は {0} に固定されています。操作方法はローカルの Pyxel 環境と同様です。",
-      "ko": "리소스 에디터는 Pyxel 내장 에디터와 동일합니다. 이미지, 타일맵, 사운드, 음악을 생성 및 편집할 수 있습니다. 리소스 파일 이름은 {0}로 고정되어 있습니다. 에디터는 로컬 Pyxel 환경과 동일하게 작동합니다.",
-      "pt": "O editor de recursos é o mesmo que o editor integrado do Pyxel. Permite criar e editar imagens, tilemaps, sons e música. O nome do arquivo de recursos é fixo: {0}. O editor funciona da mesma forma que em um ambiente Pyxel local.",
-      "ru": "Редактор ресурсов аналогичен встроенному редактору Pyxel. Позволяет создавать и редактировать изображения, тайловые карты, звуки и музыку. Имя файла ресурсов зафиксировано как {0}. Редактор работает так же, как в локальной среде Pyxel.",
-      "tr": "Kaynak düzenleyici, Pyxel'in yerleşik düzenleyicisiyle aynıdır. Görüntüler, tilemap'ler, sesler ve müzik oluşturmanıza ve düzenlemenize olanak tanır. Kaynak dosya adı {0} olarak sabittir. Düzenleyici, yerel Pyxel ortamıyla aynı şekilde çalışır.",
-      "uk": "Редактор ресурсів аналогічний вбудованому редактору Pyxel. Дозволяє створювати та редагувати зображення, тайлові карти, звуки та музику. Ім'я файлу ресурсів зафіксовано як {0}. Редактор працює так само, як у локальному середовищі Pyxel."
+      "en": "Use Pyxel Editor to edit images, tilemaps, sounds, and music. The resource filename is fixed to {0}.",
+      "cn": "使用 Pyxel Editor 编辑图像、瓦片地图、声音和音乐。资源文件名固定为 {0}。",
+      "de": "Bearbeiten Sie Bilder, Tilemaps, Sounds und Musik mit Pyxel Editor. Der Name der Ressourcendatei ist auf {0} festgelegt.",
+      "es": "Use Pyxel Editor para editar imágenes, tilemaps, sonidos y música. El nombre del archivo de recursos es fijo: {0}.",
+      "fr": "Utilisez Pyxel Editor pour modifier les images, les tilemaps, les sons et la musique. Le nom du fichier de ressources est fixé à {0}.",
+      "it": "Usa Pyxel Editor per modificare immagini, tilemap, suoni e musica. Il nome del file di risorse è fisso: {0}.",
+      "ja": "Pyxel Editor で画像・タイルマップ・サウンド・ミュージックを編集します。リソースファイル名は {0} に固定されています。",
+      "ko": "Pyxel Editor로 이미지, 타일맵, 사운드, 음악을 편집합니다. 리소스 파일 이름은 {0}로 고정되어 있습니다.",
+      "pt": "Use o Pyxel Editor para editar imagens, tilemaps, sons e música. O nome do arquivo de recursos é fixo: {0}.",
+      "ru": "Используйте Pyxel Editor для редактирования изображений, тайловых карт, звуков и музыки. Имя файла ресурсов фиксировано: {0}.",
+      "tr": "Görüntüleri, tilemap’leri, sesleri ve müziği düzenlemek için Pyxel Editor kullanın. Kaynak dosyasının adı {0} olarak sabittir.",
+      "uk": "Використовуйте Pyxel Editor для редагування зображень, тайлових карт, звуків і музики. Ім’я файлу ресурсів фіксоване: {0}."
     },
     "runtime_title": {
       "en": "Runtime Screen",
@@ -415,18 +415,18 @@
       "uk": "Гарячі клавіші"
     },
     "shortcuts_body": {
-      "en": "The following keyboard shortcuts are available. On macOS, use Cmd instead of Ctrl.",
-      "cn": "可以使用以下键盘快捷键。在 macOS 上，使用 Cmd 代替 Ctrl。",
-      "de": "Die folgenden Tastenkombinationen sind verfügbar. Unter macOS verwenden Sie Cmd statt Ctrl.",
-      "es": "Los siguientes atajos de teclado están disponibles. En macOS, use Cmd en lugar de Ctrl.",
-      "fr": "Les raccourcis clavier suivants sont disponibles. Sur macOS, utilisez Cmd au lieu de Ctrl.",
-      "it": "Sono disponibili le seguenti scorciatoie da tastiera. Su macOS, usare Cmd al posto di Ctrl.",
-      "ja": "以下のキーボードショートカットが使用できます。macOS では Ctrl の代わりに Cmd を使用します。",
-      "ko": "다음 키보드 단축키를 사용할 수 있습니다. macOS에서는 Ctrl 대신 Cmd를 사용합니다.",
-      "pt": "Os seguintes atalhos de teclado estão disponíveis. No macOS, use Cmd em vez de Ctrl.",
-      "ru": "Доступны следующие горячие клавиши. На macOS используйте Cmd вместо Ctrl.",
-      "tr": "Aşağıdaki klavye kısayolları kullanılabilir. macOS'ta Ctrl yerine Cmd kullanın.",
-      "uk": "Доступні такі гарячі клавіші. На macOS використовуйте Cmd замість Ctrl."
+      "en": "On macOS, use Cmd instead of Ctrl.",
+      "cn": "在 macOS 上，使用 Cmd 代替 Ctrl。",
+      "de": "Unter macOS verwenden Sie Cmd statt Ctrl.",
+      "es": "En macOS, use Cmd en lugar de Ctrl.",
+      "fr": "Sur macOS, utilisez Cmd au lieu de Ctrl.",
+      "it": "Su macOS, usa Cmd al posto di Ctrl.",
+      "ja": "macOS では Ctrl の代わりに Cmd を使用します。",
+      "ko": "macOS에서는 Ctrl 대신 Cmd를 사용합니다.",
+      "pt": "No macOS, use Cmd em vez de Ctrl.",
+      "ru": "На macOS используйте Cmd вместо Ctrl.",
+      "tr": "macOS’ta Ctrl yerine Cmd kullanın.",
+      "uk": "На macOS використовуйте Cmd замість Ctrl."
     },
     "th_shortcut": {
       "en": "Shortcut",
@@ -471,18 +471,18 @@
       "uk": "Перетягування"
     },
     "drag_drop_body": {
-      "en": "You can import files by dragging and dropping them onto the page. Drop a {0} file to replace the code, or a {1} file to replace the resource. The file type is detected automatically by extension.",
-      "cn": "可以将文件拖放到页面上来导入。拖放 {0} 文件可替换代码，拖放 {1} 文件可替换资源。文件类型根据扩展名自动识别。",
-      "de": "Sie können Dateien importieren, indem Sie sie auf die Seite ziehen und ablegen. Eine {0}-Datei ersetzt den Code, eine {1}-Datei ersetzt die Ressource. Der Dateityp wird automatisch anhand der Erweiterung erkannt.",
-      "es": "Puede importar archivos arrastrándolos y soltándolos en la página. Suelte un archivo {0} para reemplazar el código, o un archivo {1} para reemplazar el recurso. El tipo de archivo se detecta automáticamente por la extensión.",
-      "fr": "Vous pouvez importer des fichiers en les glissant-déposant sur la page. Déposez un fichier {0} pour remplacer le code, ou un fichier {1} pour remplacer la ressource. Le type de fichier est détecté automatiquement par l'extension.",
-      "it": "È possibile importare file trascinandoli e rilasciandoli sulla pagina. Rilasciare un file {0} per sostituire il codice, o un file {1} per sostituire la risorsa. Il tipo di file viene rilevato automaticamente dall'estensione.",
-      "ja": "ページ上にファイルをドラッグ＆ドロップして読み込むことができます。{0} ファイルをドロップするとコードが、{1} ファイルをドロップするとリソースが置き換わります。ファイルの種類は拡張子で自動判別されます。",
-      "ko": "페이지에 파일을 드래그 앤 드롭하여 가져올 수 있습니다. {0} 파일을 드롭하면 코드가, {1} 파일을 드롭하면 리소스가 교체됩니다. 파일 유형은 확장자로 자동 감지됩니다.",
-      "pt": "Você pode importar arquivos arrastando e soltando na página. Solte um arquivo {0} para substituir o código, ou um arquivo {1} para substituir o recurso. O tipo de arquivo é detectado automaticamente pela extensão.",
-      "ru": "Вы можете импортировать файлы, перетаскивая их на страницу. Перетащите файл {0} для замены кода или файл {1} для замены ресурса. Тип файла определяется автоматически по расширению.",
-      "tr": "Dosyaları sayfaya sürükleyip bırakarak içe aktarabilirsiniz. Kodu değiştirmek için {0} dosyasını, kaynağı değiştirmek için {1} dosyasını bırakın. Dosya türü uzantıya göre otomatik olarak algılanır.",
-      "uk": "Ви можете імпортувати файли, перетягуючи їх на сторінку. Перетягніть файл {0} для заміни коду або файл {1} для заміни ресурсу. Тип файлу визначається автоматично за розширенням."
+      "en": "Drop a {0} file onto the page to replace the code, or a {1} file to replace the resources.",
+      "cn": "将 {0} 文件拖放到页面上可替换代码，将 {1} 文件拖放到页面上可替换资源。",
+      "de": "Ziehen Sie eine {0}-Datei auf die Seite, um den Code zu ersetzen, oder eine {1}-Datei, um die Ressourcen zu ersetzen.",
+      "es": "Suelte un archivo {0} en la página para reemplazar el código, o un archivo {1} para reemplazar los recursos.",
+      "fr": "Déposez un fichier {0} sur la page pour remplacer le code, ou un fichier {1} pour remplacer les ressources.",
+      "it": "Trascina un file {0} sulla pagina per sostituire il codice, oppure un file {1} per sostituire le risorse.",
+      "ja": "ページに {0} ファイルをドロップするとコードが、{1} ファイルをドロップするとリソースが置き換わります。",
+      "ko": "페이지에 {0} 파일을 드롭하면 코드가, {1} 파일을 드롭하면 리소스가 교체됩니다.",
+      "pt": "Solte um arquivo {0} na página para substituir o código, ou um arquivo {1} para substituir os recursos.",
+      "ru": "Перетащите файл {0} на страницу, чтобы заменить код, или файл {1}, чтобы заменить ресурсы.",
+      "tr": "Kodu değiştirmek için sayfaya bir {0} dosyası, kaynakları değiştirmek için bir {1} dosyası bırakın.",
+      "uk": "Перетягніть файл {0} на сторінку, щоб замінити код, або файл {1}, щоб замінити ресурси."
     },
     "project_title": {
       "en": "Project Files",
@@ -541,18 +541,18 @@
       "uk": "Обмін через URL"
     },
     "sharing_body": {
-      "en": "When you load a project from Gist, GitHub, or URL, the browser address bar is updated with a shareable link. You can share this URL with others to let them open the same project directly in Pyxel Code Maker.",
-      "cn": "当您从 Gist、GitHub 或 URL 加载项目时，浏览器地址栏会更新为可分享的链接。您可以将此 URL 分享给他人，让他们直接在 Pyxel Code Maker 中打开同一项目。",
-      "de": "Wenn Sie ein Projekt von Gist, GitHub oder URL laden, wird die Adresszeile des Browsers mit einem teilbaren Link aktualisiert. Sie können diese URL mit anderen teilen, damit sie dasselbe Projekt direkt in Pyxel Code Maker öffnen können.",
-      "es": "Cuando carga un proyecto desde Gist, GitHub o URL, la barra de direcciones del navegador se actualiza con un enlace compartible. Puede compartir esta URL con otros para que abran el mismo proyecto directamente en Pyxel Code Maker.",
-      "fr": "Lorsque vous chargez un projet depuis Gist, GitHub ou URL, la barre d'adresse du navigateur est mise à jour avec un lien partageable. Vous pouvez partager cette URL avec d'autres pour qu'ils ouvrent le même projet directement dans Pyxel Code Maker.",
-      "it": "Quando si carica un progetto da Gist, GitHub o URL, la barra degli indirizzi del browser viene aggiornata con un link condivisibile. È possibile condividere questo URL con altri per permettere loro di aprire lo stesso progetto direttamente in Pyxel Code Maker.",
-      "ja": "Gist、GitHub、または URL からプロジェクトを読み込むと、ブラウザのアドレスバーが共有可能なリンクに更新されます。この URL を他の人と共有することで、同じプロジェクトを Pyxel Code Maker で直接開いてもらうことができます。",
-      "ko": "Gist, GitHub 또는 URL에서 프로젝트를 불러오면 브라우저 주소 표시줄이 공유 가능한 링크로 업데이트됩니다. 이 URL을 다른 사람과 공유하여 같은 프로젝트를 Pyxel Code Maker에서 바로 열 수 있습니다.",
-      "pt": "Quando você carrega um projeto do Gist, GitHub ou URL, a barra de endereço do navegador é atualizada com um link compartilhável. Você pode compartilhar esta URL com outros para que abram o mesmo projeto diretamente no Pyxel Code Maker.",
-      "ru": "При загрузке проекта из Gist, GitHub или URL адресная строка браузера обновляется общей ссылкой. Вы можете поделиться этим URL с другими, чтобы они могли открыть тот же проект прямо в Pyxel Code Maker.",
-      "tr": "Gist, GitHub veya URL'den bir proje yüklediğinizde, tarayıcının adres çubuğu paylaşılabilir bir bağlantıyla güncellenir. Bu URL'yi başkalarıyla paylaşarak aynı projeyi doğrudan Pyxel Code Maker'da açmalarını sağlayabilirsiniz.",
-      "uk": "Коли ви завантажуєте проєкт з Gist, GitHub або URL, адресний рядок браузера оновлюється посиланням для обміну. Ви можете поділитися цим URL з іншими, щоб вони могли відкрити той самий проєкт безпосередньо у Pyxel Code Maker."
+      "en": "Loading a project from Gist, GitHub, or a URL updates the address bar with a shareable URL. This URL opens the same project in Pyxel Code Maker.",
+      "cn": "从 Gist、GitHub 或 URL 加载项目后，地址栏会显示可分享的 URL。通过此 URL 可在 Pyxel Code Maker 中打开同一项目。",
+      "de": "Beim Laden eines Projekts von Gist, GitHub oder einer URL erscheint in der Adresszeile eine teilbare URL. Sie öffnet dasselbe Projekt in Pyxel Code Maker.",
+      "es": "Al cargar un proyecto desde Gist, GitHub o una URL, la barra de direcciones muestra una URL para compartir. Esta URL abre el mismo proyecto en Pyxel Code Maker.",
+      "fr": "Charger un projet depuis Gist, GitHub ou une URL affiche une URL partageable dans la barre d’adresse. Cette URL ouvre le même projet dans Pyxel Code Maker.",
+      "it": "Caricando un progetto da Gist, GitHub o un URL, nella barra degli indirizzi compare un URL condivisibile. Questo URL apre lo stesso progetto in Pyxel Code Maker.",
+      "ja": "Gist、GitHub、または URL からプロジェクトを読み込むと、アドレスバーに共有用 URL が表示されます。この URL で同じプロジェクトを Pyxel Code Maker で開けます。",
+      "ko": "Gist, GitHub 또는 URL에서 프로젝트를 불러오면 주소 표시줄에 공유 URL이 표시됩니다. 이 URL로 같은 프로젝트를 Pyxel Code Maker에서 열 수 있습니다.",
+      "pt": "Ao carregar um projeto do Gist, do GitHub ou de uma URL, a barra de endereço exibe uma URL para compartilhar. Essa URL abre o mesmo projeto no Pyxel Code Maker.",
+      "ru": "При загрузке проекта из Gist, GitHub или по URL в адресной строке появляется ссылка для обмена. Она открывает тот же проект в Pyxel Code Maker.",
+      "tr": "Gist, GitHub veya bir URL’den proje yüklediğinizde adres çubuğunda paylaşılabilir bir URL görünür. Bu URL aynı projeyi Pyxel Code Maker’da açar.",
+      "uk": "Після завантаження проєкту з Gist, GitHub або за URL в адресному рядку з’являється посилання для поширення. Воно відкриває той самий проєкт у Pyxel Code Maker."
     }
   },
   "toolbar_items": [
@@ -716,18 +716,18 @@
     {
       "label": "Run",
       "desc": {
-        "en": "Run the application. The current code and resources are applied, and the result is displayed on the runtime screen.",
-        "cn": "运行应用程序。当前代码和资源将被应用，结果显示在运行画面上。",
-        "de": "Die Anwendung ausführen. Der aktuelle Code und die Ressourcen werden angewendet und das Ergebnis auf dem Ausführungsbildschirm angezeigt.",
-        "es": "Ejecutar la aplicación. Se aplican el código y los recursos actuales, y el resultado se muestra en la pantalla de ejecución.",
-        "fr": "Exécuter l'application. Le code et les ressources actuels sont appliqués et le résultat s'affiche sur l'écran d'exécution.",
-        "it": "Eseguire l'applicazione. Il codice e le risorse correnti vengono applicati e il risultato viene visualizzato sullo schermo di esecuzione.",
-        "ja": "アプリケーションを実行します。現在のコードとリソースが反映され、結果が実行画面に表示されます。",
-        "ko": "애플리케이션을 실행합니다. 현재 코드와 리소스가 적용되고 결과가 실행 화면에 표시됩니다.",
-        "pt": "Executar a aplicação. O código e os recursos atuais são aplicados e o resultado é exibido na tela de execução.",
-        "ru": "Запустить приложение. Текущий код и ресурсы применяются, результат отображается на экране выполнения.",
-        "tr": "Uygulamayı çalıştırın. Mevcut kod ve kaynaklar uygulanır ve sonuç çalışma ekranında görüntülenir.",
-        "uk": "Запустити застосунок. Поточний код та ресурси застосовуються, результат відображається на екрані виконання."
+        "en": "Run the application with the current code and resources.",
+        "cn": "使用当前代码和资源运行应用程序。",
+        "de": "Die Anwendung mit dem aktuellen Code und den aktuellen Ressourcen ausführen.",
+        "es": "Ejecutar la aplicación con el código y los recursos actuales.",
+        "fr": "Exécuter l’application avec le code et les ressources actuels.",
+        "it": "Esegui l’applicazione con il codice e le risorse attuali.",
+        "ja": "現在のコードとリソースでアプリケーションを実行します。",
+        "ko": "현재 코드와 리소스로 애플리케이션을 실행합니다.",
+        "pt": "Executar o aplicativo com o código e os recursos atuais.",
+        "ru": "Запустить приложение с текущим кодом и ресурсами.",
+        "tr": "Uygulamayı mevcut kod ve kaynaklarla çalıştırın.",
+        "uk": "Запустити застосунок із поточним кодом і ресурсами."
       }
     }
   ],

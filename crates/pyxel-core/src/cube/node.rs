@@ -9,10 +9,7 @@ use crate::cube::vec3::{RcVec3, Vec3};
 
 pub type WeakNode = Weak<RefCell<Node>>;
 
-// Hierarchy instance. Holds local transform, draw / lifecycle state, and
-// child links. Parent is a weak ref to avoid Rc cycles between parent and
-// children.
-
+// Weak parent links prevent reference cycles with the owned children.
 pub struct Node {
     pub name: String,
     pub transform: RcMat4,
@@ -79,10 +76,7 @@ impl Node {
         rc_mut!(child).parent = None;
     }
 
-    // Flag this node and every descendant as destroyed without touching
-    // parent / child links. The deferred-destruction pass at the end of
-    // Node.update collects the flagged nodes post-order, fires on_destroy,
-    // then detaches.
+    // Keep tree links until Node.update notifies and detaches destroyed nodes leaf-first.
     pub fn destroy(node: &RcNode) {
         let mut node_ref = rc_mut!(node);
         node_ref.destroyed = true;
@@ -181,9 +175,7 @@ impl Node {
         Mat4::from_rows(Self::world_transform_value(node).data)
     }
 
-    // Plain (non-Rc) world transform for the per-command draw path and
-    // the per-frame collision walks: one value-typed multiply per
-    // ancestor instead of an Rc allocation per level.
+    // Compose ancestor transforms without allocating an Rc at each level.
     pub fn world_transform_value(node: &RcNode) -> Mat4 {
         let local_rc = &rc_ref!(node).transform;
         let local = rc_ref!(local_rc);
@@ -202,9 +194,7 @@ impl Node {
         }
     }
 
-    // Effective inheritance: this node's value, or the closest non-None
-    // ancestor's value. Used for `shading` cascade.
-
+    // Shading and camera inherit the closest non-None ancestor value.
     pub fn effective_shading(node: &RcNode) -> Option<RcShading> {
         if let Some(s) = rc_ref!(node).shading.clone() {
             return Some(s);
@@ -212,8 +202,6 @@ impl Node {
         Self::parent(node).and_then(|p| Self::effective_shading(&p))
     }
 
-    // Resolve the cascading `camera`: self if set, else the closest
-    // non-None ancestor's value.
     pub fn effective_camera(node: &RcNode) -> Option<RcCamera> {
         if let Some(c) = rc_ref!(node).camera.clone() {
             return Some(c);
@@ -221,9 +209,7 @@ impl Node {
         Self::parent(node).and_then(|p| Self::effective_camera(&p))
     }
 
-    // Effective gating: parent-dominant. False at any ancestor halts the
-    // subtree. Used for `active` and `visible` cascade.
-
+    // Active and visible are false if any ancestor disables them.
     pub fn effective_active(node: &RcNode) -> bool {
         if !rc_ref!(node).active {
             return false;
@@ -291,8 +277,6 @@ mod tests {
         assert!(!rc_ref!(&root).destroyed);
         assert!(rc_ref!(&mid).destroyed);
         assert!(rc_ref!(&leaf).destroyed);
-        // Tree links untouched (deferred removal happens at the end of
-        // Node.update, not in destroy()).
         assert_eq!(Node::children(&root).len(), 1);
         assert_eq!(Node::children(&mid).len(), 1);
     }
@@ -337,9 +321,6 @@ mod tests {
         let c = Node::new();
         Node::add_child(&p, &c);
         Node::destroy(&c);
-        // Deferred semantics: the flag is set, but parent / child links
-        // survive until Node.update's deferred-destruction pass detaches
-        // them.
         assert!(rc_ref!(&c).destroyed);
         assert_eq!(rc_ref!(&p).children.len(), 1);
         assert!(Node::parent(&c).is_some());
@@ -509,8 +490,6 @@ mod tests {
 
     #[test]
     fn test_forward_normalized_under_non_uniform_scale() {
-        // Even when the transform carries non-uniform scale, forward
-        // returns a unit vector.
         let n = Node::new();
         let scale = Mat4::from_scale(&Vec3 {
             x: 2.0,
@@ -526,13 +505,11 @@ mod tests {
 
     #[test]
     fn test_forward_falls_back_when_column_zero() {
-        // A degenerate transform whose Z column is zero should still
-        // produce a valid forward (default forward = -Z).
         let n = Node::new();
         let zero_z = Mat4::from_rows([
             [1.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0], // <- zero Z column
+            [0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 1.0],
         ]);
         rc_mut!(&n).transform = zero_z;

@@ -2,7 +2,7 @@
 
 # Pyxel API Reference
 
-*This document was auto-generated from the [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.github.io/pyxel/web/api-reference/).*
 
 ## System
 
@@ -61,7 +61,7 @@ Start the Pyxel application and call the update function for frame update and th
 **Parameters:**
 
 - `update` (*callable*) — Function to update game logic each frame
-- `draw` (*callable*) — Function to draw the screen each frame
+- `draw` (*callable*) — Function to draw the screen
 
 ### `show()` — function
 

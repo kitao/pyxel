@@ -4,13 +4,11 @@
 use crate::cube::vec3::{RcVec3, Vec3};
 use crate::image::{rgb24_to_rgb8, Rgb24};
 
-// Palette-derived shading LUT and scene-wide light direction. Each cell is
-// either flat or a 50:50 dither pair.
-
 pub const LEVEL_COUNT: usize = 4;
 
 type Entry = (i32, i32);
 
+// Each palette-derived table cell is a flat color or a 50:50 dither pair.
 pub struct Shading {
     data: Vec<[Entry; LEVEL_COUNT]>,
     pub direction: RcVec3,
@@ -384,8 +382,7 @@ mod tests {
         let mut r_mut = rc_mut!(&r);
         r_mut.set(0, 0, (99, 99));
         r_mut.build(&DEFAULT_COLORS);
-        // Rebuild recomputes the deterministic default-palette entry:
-        // black has no darker shade, so lv 0 stays flat black.
+        // Black has no darker shade, so level 0 stays flat black.
         assert_eq!(r_mut.get(0, 0), (0, 0));
     }
 

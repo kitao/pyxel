@@ -1,11 +1,7 @@
 use crate::cube::mesh::RcMesh;
 use crate::cube::vec3::RcVec3;
 
-// Unified collider: rounded-box family (size + radius) or static mesh
-// terrain, plus behavior flags, physical coefficients, and per-frame
-// motion state. Mesh terrain ignores motion state in collision physics.
-// Detection and contact resolution live in scene.rs.
-
+// A mesh collider is static terrain; only the size/radius family uses motion state.
 pub struct Collider {
     pub size: RcVec3,
     pub radius: f32,

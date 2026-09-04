@@ -27,7 +27,7 @@ class TestConstructor:
 
     def test_attributes_are_floats(self):
         v = Vec3(1, 2, 3)
-        assert isinstance(v.x, float)
+        assert all(isinstance(component, float) for component in (v.x, v.y, v.z))
 
 
 class TestConstants:

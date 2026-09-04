@@ -303,7 +303,6 @@ impl Channel {
                 return;
             }
 
-            // Sound head
             if self.sound_elapsed_clocks == 0 {
                 self.note_duration_clocks = 0;
                 self.command_index = 0;
@@ -331,7 +330,6 @@ impl Channel {
             self.sound_elapsed_clocks += u64::from(process_clocks);
             self.total_elapsed_clocks += u64::from(process_clocks);
 
-            // End of note
             if self.note_duration_clocks == 0 {
                 self.advance_command();
                 if !self.is_playing {
@@ -339,7 +337,6 @@ impl Channel {
                 }
             }
 
-            // End of sound
             if self.note_duration_clocks == 0 {
                 self.sound_index += 1;
                 self.sound_elapsed_clocks = 0;
@@ -536,7 +533,6 @@ impl Channel {
                         * f64::from(self.gate_ratio))
                     .round() as u64;
 
-                    // Glide with auto parameters
                     if let Some((pending_offset, pending_ticks)) = self.glide_pending_params {
                         let resolved_offset = pending_offset
                             .unwrap_or(self.last_midi_note.unwrap_or(midi_note) - midi_note);
@@ -651,7 +647,6 @@ impl Channel {
         let gain_fixed = (self.gain * AUDIO_GAIN_SCALE as f32) as i32;
         let mut offset = 0;
 
-        // Mix source chunks until the output buffer is filled
         while offset < out.len() {
             let mut to_copy = 0;
             let mut end_reached = false;
@@ -894,8 +889,7 @@ mod tests {
         assert!(channel.is_playing);
         assert!(!channel.playing_pcm);
         assert_eq!(channel.sound_index, 1);
-        // Mirror the implementation's sec -> clock -> sample conversion so the
-        // expectation stays exact across f32 rounding at the API boundary
+        // The f32 seconds argument is rounded to clocks, then to whole PCM samples.
         let start_clock = (start_sec * AUDIO_CLOCK_RATE as f32).round() as u64;
         let seek_samples =
             start_clock * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64 - pcm_samples as u64;

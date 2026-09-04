@@ -64,8 +64,7 @@ done
 
 run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
 
-# Exercise watch mode by injecting an error, restoring the file, and auto-exiting.
-# Inline background instead of run_bg: auto-exit here, not driven by Ctrl+C.
+# Watch mode exits automatically after an error-and-recovery cycle.
 WATCH_EXAMPLE=$(example_name 01)
 WORK_DIR="$(mktemp -d)"
 CLEANUP_PATHS+=("$WORK_DIR")
@@ -84,9 +83,7 @@ EOF
 sleep 1
 
 sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
-# Kill the watcher's children first; the worker holding the pyxel window runs
-# as a separate multiprocessing child and is not cleaned up when the parent
-# receives SIGTERM in a backgrounded shell job.
+# The window runs in a child process that outlives SIGTERM to the watcher.
 kill_watch() {
     pkill -P "$BG_PID" 2>/dev/null || true
     kill "$BG_PID" 2>/dev/null || true
