@@ -1,7 +1,6 @@
 import pyxel
-from pyxel.cube import Collider, Mat4, Node, Shading, Vec3
-
 from cube_physics_camera import OrbitCamera
+from pyxel.cube import Collider, Mat4, Node, Shading, Vec3
 
 
 class Target(Node):
@@ -12,7 +11,6 @@ class Target(Node):
         self.collider = Collider(size=self.size, mass=0.0, trigger=True)
 
     def on_collide(self, other, contact):
-        # First-hit self-destruct.
         self.destroy()
 
     def on_draw(self):
@@ -44,7 +42,7 @@ class App:
         pyxel.init(160, 120, title="Cube Physics: Shoot")
         pyxel.mouse(True)
         self.scene = Node()
-        self.scene.shading = Shading([pyxel.colors[i] for i in range(16)])
+        self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         for x in (-3.0, 0.0, 3.0):
             self.scene.add_child(Target(Vec3(x, 0, 0)))
@@ -54,7 +52,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.KEY_ESCAPE):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.scene.add_child(Bullet(Vec3(0, 2, 8), Vec3(0, -0.05, -0.4)))

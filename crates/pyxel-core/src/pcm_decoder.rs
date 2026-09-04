@@ -136,3 +136,17 @@ fn f32_to_i16(sample: f32) -> i16 {
         (sample * i16::MAX as f32) as i16
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_resampling_length_interpolation_and_last_sample() {
+        assert_eq!(
+            resample_linear(&[0.0, 0.5, 1.0], 22050, 44100),
+            [0.0, 0.25, 0.5, 0.75, 1.0, 1.0]
+        );
+        assert_eq!(resample_linear(&[0.0, 0.5, 1.0], 44100, 22050), [0.0, 1.0]);
+    }
+}

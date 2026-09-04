@@ -1,31 +1,12 @@
+import pytest
 import pyxel
 
 
 class TestInputFunctions:
-    def test_btn_returns_bool(self):
-        result = pyxel.btn(pyxel.KEY_SPACE)
-        assert isinstance(result, bool)
-
-    def test_btnp_returns_bool(self):
-        result = pyxel.btnp(pyxel.KEY_SPACE)
-        assert isinstance(result, bool)
-
-    def test_btnp_with_hold_repeat_returns_bool(self):
-        result = pyxel.btnp(pyxel.KEY_SPACE, hold=10, repeat=5)
-        assert isinstance(result, bool)
-
-    def test_btnr_returns_bool(self):
-        result = pyxel.btnr(pyxel.KEY_SPACE)
-        assert isinstance(result, bool)
-
     def test_btnv_returns_int(self):
         # btnv requires an analog key (mouse position/wheel or gamepad axis)
         result = pyxel.btnv(pyxel.MOUSE_WHEEL_X)
         assert isinstance(result, int)
-
-    def test_mouse_visible(self):
-        pyxel.mouse(True)
-        pyxel.mouse(False)
 
 
 class TestInputAttributes:
@@ -71,9 +52,7 @@ class TestSetButtonState:
         pyxel.set_btn(pyxel.KEY_E, True)
         assert pyxel.btnp(pyxel.KEY_E) is True
         pyxel.flip()
-        # btnp is false on next frame (no new press)
         assert pyxel.btnp(pyxel.KEY_E) is False
-        # But btn is still true (key held)
         assert pyxel.btn(pyxel.KEY_E) is True
 
     def test_btnr_false_without_release(self):
@@ -103,13 +82,14 @@ class TestBtnpHoldRepeat:
         pyxel.set_btn(pyxel.KEY_J, False)
         pyxel.flip()
 
-    def test_silent_during_hold_window(self):
+    @pytest.mark.parametrize("hold", [3, 2**31, 2**32 - 1])
+    def test_silent_during_hold_window(self, hold):
         pyxel.set_btn(pyxel.KEY_K, True)
-        assert pyxel.btnp(pyxel.KEY_K, hold=3, repeat=2) is True
+        assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is True
         pyxel.flip()
-        assert pyxel.btnp(pyxel.KEY_K, hold=3, repeat=2) is False
+        assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is False
         pyxel.flip()
-        assert pyxel.btnp(pyxel.KEY_K, hold=3, repeat=2) is False
+        assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is False
         pyxel.set_btn(pyxel.KEY_K, False)
         pyxel.flip()
 

@@ -22,7 +22,6 @@ struct CharStream<'a> {
 }
 
 impl<'a> CharStream<'a> {
-    // Constructors
     fn new(input: &'a str) -> Self {
         Self {
             bytes: input.as_bytes(),
@@ -43,7 +42,6 @@ impl<'a> CharStream<'a> {
         c
     }
 
-    // Error reporting
     fn error(&self, message: &str) -> String {
         format!("MML:{}: {}", self.pos, message)
     }
@@ -77,35 +75,29 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut last_note_index: Option<usize> = None;
     let mut repeat_depth: u32 = 0;
 
-    // Parse MML commands
     while stream.peek().is_some() {
         if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1)? {
-            // T<bpm> - Set tempo (bpm >= 1)
             is_tempo_set = true;
             commands.push(MmlCommand::Tempo {
                 clocks_per_tick: bpm_to_clocks_per_tick(bpm),
             });
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE)? {
-            // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
             is_quantize_set = true;
             quantize = gate_time;
             commands.push(MmlCommand::Quantize {
                 gate_ratio: gate_time_to_gate_ratio(gate_time),
             });
         } else if let Some(vol) = parse_command(&mut stream, "V", RANGE_VOLUME)? {
-            // V<vol> - Set volume level (0 <= vol <= 127)
             is_volume_set = true;
             commands.push(MmlCommand::Volume {
                 level: volume_to_level(vol),
             });
         } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL)? {
-            // K<key_offset> - Transpose key in semitones
             is_transpose_set = true;
             commands.push(MmlCommand::Transpose {
                 semitone_offset: key_offset as f32,
             });
         } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL)? {
-            // Y<offset_cents> - Set detune in cents
             is_detune_set = true;
             commands.push(MmlCommand::Detune {
                 semitone_offset: cents_to_semitones(offset_cents),
@@ -126,28 +118,23 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             is_glide_set = true;
             commands.push(command);
         } else if let Some(tone) = parse_command(&mut stream, "@", RANGE_GE0)? {
-            // @<tone> - Set tone (tone >= 0)
             is_tone_set = true;
             commands.push(MmlCommand::Tone { tone });
         } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE)? {
-            // O<oct> - Set octave (-1 <= oct <= 9)
             octave = oct;
         } else if parse_string(&mut stream, ">").is_ok() {
-            // > - Octave up
             if octave < RANGE_OCTAVE.1 {
                 octave += 1;
             } else {
                 parse_error!(stream, "Octave exceeds maximum {}", octave);
             }
         } else if parse_string(&mut stream, "<").is_ok() {
-            // < - Octave down
             if octave > RANGE_OCTAVE.0 {
                 octave -= 1;
             } else {
                 parse_error!(stream, "Octave is below minimum {}", octave);
             }
         } else if parse_string(&mut stream, "L").is_ok() {
-            // L<len> - Set default note length (1 <= len <= 192)
             note_ticks = parse_length_ticks(&mut stream, note_ticks)?;
         } else if let Some((command, is_connected)) = parse_note(&mut stream, octave, note_ticks)? {
             // C/D/E/F/G/A/B[#+-][<len>][.][&] - Play note (1 <= len <= 192)
@@ -269,7 +256,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             };
             commands.push(MmlCommand::RepeatEnd { play_count: count });
         } else {
-            let c = stream.peek().unwrap();
+            let Some(c) = stream.peek() else { break };
             parse_error!(stream, "Unexpected character '{c}'");
         }
     }
@@ -866,9 +853,7 @@ mod tests {
     fn test_default_length() {
         let cmds = parse("L8 C D E");
         let notes = note_commands(&cmds);
-        for (_, ticks) in &notes {
-            assert_eq!(*ticks, 24, "L8 sets eighth-note ticks");
-        }
+        assert_eq!(notes, [(60, 24), (62, 24), (64, 24)]);
     }
 
     // Rest
@@ -978,14 +963,6 @@ mod tests {
     // Parameter commands: Tempo
 
     #[test]
-    fn test_tempo() {
-        let cmds = parse("T120 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Tempo { .. })));
-    }
-
-    #[test]
     fn test_tempo_value() {
         let cmds = parse("T120 C");
         let cpt = cmds.iter().find_map(|cmd| match cmd {
@@ -998,26 +975,18 @@ mod tests {
     // Parameter commands: Volume
 
     #[test]
-    fn test_volume() {
-        let cmds = parse("V100 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Volume { .. })));
-    }
-
-    #[test]
     fn test_volume_value() {
-        // V127 -> level = 1.0
-        let cmds = parse("V127 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if (*level - 1.0).abs() < 1e-4)));
-
-        // V0 -> level = 0.0
-        let cmds = parse("V0 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if *level == 0.0)));
+        for (mml, expected) in [("V0 C", 0.0), ("V100 C", 100.0 / 127.0), ("V127 C", 1.0)] {
+            let cmds = parse(mml);
+            let levels: Vec<f32> = cmds
+                .iter()
+                .filter_map(|cmd| match cmd {
+                    MmlCommand::Volume { level } => Some(*level),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(levels, [expected], "{mml}");
+        }
     }
 
     // Parameter commands: Quantize
@@ -1026,9 +995,8 @@ mod tests {
     fn test_quantize() {
         let cmds = parse("Q50 C");
         let qvals = quantize_commands(&cmds);
-        // Q50 -> gate_ratio = 0.5
         assert!(
-            qvals.iter().any(|&r| (r - 0.5).abs() < 1e-4),
+            qvals.contains(&0.5),
             "expected gate_ratio 0.5, got {qvals:?}"
         );
     }
@@ -1040,7 +1008,7 @@ mod tests {
         let qvals = quantize_commands(&cmds);
         // Only the Q100 command itself (gate_ratio=1.0), no per-note quantize
         assert_eq!(qvals.len(), 1, "expected only the Q100 command: {qvals:?}");
-        assert!((qvals[0] - 1.0).abs() < 1e-4);
+        assert_eq!(qvals[0], 1.0);
     }
 
     #[test]
@@ -1048,10 +1016,7 @@ mod tests {
         // Connected note (C&) should get gate_ratio=1.0, normal note (D) gets 0.5
         let cmds = parse("Q50 C& D");
         let qvals = quantize_commands(&cmds);
-        assert_eq!(qvals.len(), 3);
-        assert!((qvals[0] - 0.5).abs() < 1e-4, "Q50: {}", qvals[0]);
-        assert!((qvals[1] - 1.0).abs() < 1e-4, "connected: {}", qvals[1]);
-        assert!((qvals[2] - 0.5).abs() < 1e-4, "normal: {}", qvals[2]);
+        assert_eq!(qvals, [0.5, 1.0, 0.5]);
     }
 
     // Parameter commands: Tone, Transpose, Detune
@@ -1069,7 +1034,7 @@ mod tests {
         let cmds = parse("K5 C");
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::Transpose { semitone_offset } if (*semitone_offset - 5.0).abs() < 1e-4
+            MmlCommand::Transpose { semitone_offset } if *semitone_offset == 5.0
         )));
     }
 
@@ -1078,17 +1043,16 @@ mod tests {
         let cmds = parse("K-5 C");
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::Transpose { semitone_offset } if (*semitone_offset + 5.0).abs() < 1e-4
+            MmlCommand::Transpose { semitone_offset } if *semitone_offset == -5.0
         )));
     }
 
     #[test]
     fn test_detune() {
         let cmds = parse("Y50 C");
-        // 50 cents = 0.5 semitones
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::Detune { semitone_offset } if (*semitone_offset - 0.5).abs() < 1e-4
+            MmlCommand::Detune { semitone_offset } if *semitone_offset == 0.5
         )));
     }
 
@@ -1097,9 +1061,11 @@ mod tests {
     #[test]
     fn test_envelope_definition() {
         let cmds = parse("@ENV1{127, 10, 64} C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::EnvelopeSet { slot: 1, .. })));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            MmlCommand::EnvelopeSet { slot: 1, initial_level, segments }
+                if *initial_level == 1.0 && segments.as_ref() == [(10, 64.0 / 127.0)]
+        )));
     }
 
     #[test]
@@ -1107,7 +1073,9 @@ mod tests {
         let cmds = parse("@ENV1{127, 10, 64, 10, 32} C");
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::EnvelopeSet { slot: 1, segments, .. } if segments.len() == 2
+            MmlCommand::EnvelopeSet { slot: 1, initial_level, segments }
+                if *initial_level == 1.0
+                    && segments.as_ref() == [(10, 64.0 / 127.0), (10, 32.0 / 127.0)]
         )));
     }
 
@@ -1124,9 +1092,11 @@ mod tests {
     #[test]
     fn test_vibrato_definition() {
         let cmds = parse("@VIB1{10, 20, 50} C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::VibratoSet { slot: 1, .. })));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            MmlCommand::VibratoSet { slot: 1, delay_ticks: 10, period_ticks: 20, semitone_depth }
+                if *semitone_depth == 0.5
+        )));
     }
 
     // Effect definitions: Glide
@@ -1134,9 +1104,11 @@ mod tests {
     #[test]
     fn test_glide_definition() {
         let cmds = parse("@GLI1{100, 10} C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::GlideSet { slot: 1, .. })));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            MmlCommand::GlideSet { slot: 1, semitone_offset: Some(offset), duration_ticks: Some(10) }
+                if *offset == 1.0
+        )));
     }
 
     #[test]
@@ -1159,9 +1131,9 @@ mod tests {
             cmd,
             MmlCommand::GlideSet {
                 slot: 1,
-                semitone_offset: Some(_),
+                semitone_offset: Some(offset),
                 duration_ticks: None,
-            }
+            } if *offset == 1.0
         )));
 
         let cmds = parse("@GLI1{*, 10} C");
@@ -1215,6 +1187,19 @@ mod tests {
         let no_space = note_commands(&parse("CDE"));
         let with_space = note_commands(&parse("C D E"));
         assert_eq!(no_space, with_space);
+    }
+
+    #[test]
+    fn test_trailing_whitespace() {
+        for mml in ["", "V7", "T120", ">", "@ENV1{127}", "[C]2", "C"] {
+            assert_eq!(
+                format!("{:?}", parse(&format!("{mml} \t\n"))),
+                format!("{:?}", parse(mml)),
+                "{mml:?}"
+            );
+        }
+        assert_parse_error("C& \n", "MML:4: Tie '&' is not followed by a note");
+        assert_parse_error("[V7 \n", "MML:5: Repeat start '[' has no matching ']'");
     }
 
     #[test]

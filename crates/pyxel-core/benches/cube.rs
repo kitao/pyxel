@@ -1,7 +1,5 @@
 // Micro-benchmarks for the cube hot paths listed in docs/coding-policy.md:
 // per-pixel 3D rasterization and per-frame 3D collision / BVH queries.
-// No external harness: each benchmark warms up, times batched iterations
-// with Instant, and prints the median ns/iter over SAMPLE_COUNT samples.
 // All inputs are fixed so runs are deterministic. Run with:
 // cargo bench -p pyxel-core --features sdl2_static
 
@@ -20,7 +18,7 @@ use pyxel::cube::scene::{DrawContext, Scene};
 use pyxel::cube::{
     Camera, Collider, Mat4, Mesh, Motion, Node, Primitive, Quat, RcMesh, RcNode, Shading, Vec3,
 };
-use pyxel::{Image, RcImage, Rgb24};
+use pyxel::{Image, RcImage, DEFAULT_COLORS};
 
 // Mirrors of the crate-internal rc_ref! / rc_mut! macros (utils.rs), which
 // are not exported; benches use the public checked shared-owner aliases.
@@ -38,12 +36,6 @@ macro_rules! rc_mut {
 
 // Timed samples per benchmark; the median over them is reported.
 const SAMPLE_COUNT: usize = 17;
-
-// Default Pyxel 16-color palette for the Shading fixture.
-const PALETTE: [Rgb24; 16] = [
-    0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98, 0xA9C1FF, 0xEEEEEE, 0xD4186C,
-    0xD38441, 0xE9C35B, 0x70C6A9, 0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
-];
 
 // Raster target size in pixels; the benchmark triangle spans a 64x64-px
 // bounding box inside it.
@@ -66,6 +58,7 @@ fn main() {
     bench_bvh_query_ray();
     bench_bvh_query_aabb();
     bench_mesh_aabb_from_mesh();
+    bench_mesh_aabb_many_parts();
     bench_motion_sample();
     bench_node_find_by_tags();
     bench_scene_walk_contacts();
@@ -175,7 +168,7 @@ fn bench_raster_textured_shaded(
     let normals = [0.0, 0.8, 0.6];
     let uvs = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0];
     let texture = make_texture();
-    let shading = Shading::new(&PALETTE);
+    let shading = Shading::new(&DEFAULT_COLORS);
     let shading_ref = rc_ref!(&shading);
     let state = DrawState {
         shaded: true,
@@ -286,6 +279,31 @@ fn bench_mesh_aabb_from_mesh() {
     });
 }
 
+// Cached AABB lookup on a mesh with many parts isolates the steady-state
+// cache validation cost from initial bounds construction.
+fn bench_mesh_aabb_many_parts() {
+    const PART_COUNT: usize = 256;
+    let primitive = Primitive::new();
+    {
+        let mut primitive_ref = rc_mut!(&primitive);
+        primitive_ref.positions = TRIANGLE_POSITIONS.to_vec();
+        primitive_ref.indices = vec![0, 1, 2];
+    }
+    let mesh = Mesh::new();
+    {
+        let mut mesh_ref = rc_mut!(&mesh);
+        mesh_ref.primitives = vec![Some(primitive); PART_COUNT];
+        mesh_ref.transforms = (0..PART_COUNT).map(|_| Mat4::identity()).collect();
+        mesh_ref.parents = vec![-1; PART_COUNT];
+    }
+    let transform = Mat4::identity_value();
+    Aabb::from_mesh(&rc_ref!(&mesh), &transform);
+    run_bench("mesh_aabb_many_parts", 20_000, |_| {
+        let aabb = Aabb::from_mesh(&rc_ref!(&mesh), black_box(&transform));
+        black_box(aabb.min.x + aabb.max.z);
+    });
+}
+
 // Motion::sample on a 4-channel x 60-key clip, sweeping a fractional
 // frame across the looping clip. 960 iterations cycle the frame sequence
 // exactly, so every sample runs an identical mix of key spans.
@@ -320,8 +338,6 @@ fn bench_scene_walk_contacts() {
         black_box(pairs.len() + tagged.len());
     });
 }
-
-// Bench harness
 
 // Runs one warmup sample plus SAMPLE_COUNT timed samples of
 // `iters_per_sample` iterations each, passing `f` the sample-local
@@ -521,7 +537,6 @@ fn make_scene_tree() -> RcNode {
     const LEAVES_PER_GROUP: usize = 19;
     const COLLIDERS_PER_GROUP: usize = 5;
     let root = Node::new();
-    // Build each group and its leaves
     for g in 0..GROUP_COUNT {
         let group = Node::new();
         {

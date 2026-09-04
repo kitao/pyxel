@@ -16,7 +16,7 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
         Loading...
       </div>
     </main>
@@ -38,14 +38,12 @@
         return html + "</tbody></table></div>";
       }
 
-      // Build the web usage guide shell and section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         app.appendChild(buildPageHeader(updateTexts));
 
-        // Web usage section containers populated by updateTexts
         const wrap = document.createElement("div");
         wrap.className = "space-y-6";
         wrap.id = "content";
@@ -61,23 +59,19 @@
         updateTexts();
       }
 
-      // Populate every web usage section from localized JSON content.
       function updateTexts() {
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
         const launcherLink = link("../launcher/", "Pyxel Web Launcher");
 
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", pyxelLink);
 
-        // Introduction paragraph
         document.getElementById("s-intro").innerHTML = `
           <p class="body">${esc(t("intro_body"))}</p>`;
 
-        // Publishing overview
         document.getElementById("s-publishing").innerHTML = `
           <h2 class="section-title">${esc(t("publishing_title"))}</h2>
           <p class="body mb-3">${esc(t("publishing_body"))}</p>
@@ -103,7 +97,6 @@
             ],
           )}`;
 
-        // Code Maker
         const codeMakerLink = link("../code-maker/", "Pyxel Code Maker");
         const codeMakerManualLink = link(
           "../code-maker/manual.html",
@@ -116,7 +109,6 @@
           <p class="body">${t("code_maker_body").replace("{0}", codeMakerLink)}</p>
           <p class="body mt-2">${t("code_maker_manual").replace("{0}", codeMakerManualLink)}</p>`;
 
-        // Web Launcher
         document.getElementById("s-launcher").innerHTML = `
           <h2 class="section-title">${esc(t("launcher_title"))}</h2>
           <p class="body">${t("launcher_body").replace("{0}", launcherLink)}</p>
@@ -128,6 +120,7 @@
               ? "https://kitao.github.io/pyxel/web/launcher/?<コマンド>=<ユーザー名>/<リポジトリ名>/<ブランチ名>/<パス>/<ファイル名（拡張子なし）>"
               : "https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>",
           )}
+          <p class="body mt-2">${esc(t("launcher_url_note"))}</p>
 
           <h3 class="sub-title">${esc(t("launcher_commands_title"))}</h3>
           ${table(
@@ -171,16 +164,14 @@
             .replace("{1}", chip(".pyxapp"))
             .replace("{2}", chip("play"))}</p>`;
 
-        // app2html
         document.getElementById("s-app2html").innerHTML = `
           <h2 class="section-title">${esc(t("app2html_title"))}</h2>
           <p class="body">${t("app2html_body").replace("{0}", chip("pyxel app2html"))}</p>
           ${code("pyxel app2html your_app.pyxapp", "sh")}
           <p class="body">${esc(t("app2html_body2"))}</p>
           <p class="body mt-2">${esc(t("app2html_body3"))}</p>
-          <p class="body mt-2">${t("app2html_gamepad").replace("{0}", chip('gamepad: "enabled"'))}</p>`;
+          <p class="body mt-2">${t("app2html_gamepad").replace("{0}", chip('gamepad: "enabled",'))}</p>`;
 
-        // Custom Elements
         document.getElementById("s-custom-elements").innerHTML = `
           <h2 class="section-title">${esc(t("custom_elements_title"))}</h2>
           <p class="body">${esc(t("custom_elements_body"))}</p>
@@ -189,7 +180,7 @@
           <p class="body">${esc(t("custom_elements_setup_body"))}</p>
           ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"><\/script>', "html")}
           <p class="body">${t("custom_elements_setup_version").replace("{0}", chip("@"))}</p>
-          ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js"><\/script>', "html")}
+          ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.9.9/wasm/pyxel.js"><\/script>', "html")}
 
           <p class="body mt-3">${t("custom_elements_overview")
             .replace("{0}", chip("run"))
@@ -264,9 +255,7 @@ pyxel.show()
           <p class="body">${esc(t("custom_elements_local_body"))}</p>
           <p class="body mt-2">${esc(t("custom_elements_local_body2"))}</p>
           ${code(
-            lang === "ja"
-              ? "python -m http.server\n# Mac や Linux の場合は python3 を使用"
-              : "python -m http.server\n# Use python3 on macOS and Linux",
+            "python -m http.server\n# Use python3 on macOS and Linux",
             "sh",
           )}
           <p class="body">${t("custom_elements_local_access").replace("{0}", chip("http://localhost:8000/test.html"))}</p>`;

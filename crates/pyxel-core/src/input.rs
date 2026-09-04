@@ -36,10 +36,7 @@ impl Pyxel {
     // Query API
 
     pub fn is_button_down(&self, key: Key) -> bool {
-        assert!(
-            !self.is_analog_key(key),
-            "is_button_down is called with an analog key 0x{key:X}"
-        );
+        assert!(!self.is_analog_key(key), "key must be a non-analog key");
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             match key_state {
@@ -58,10 +55,7 @@ impl Pyxel {
         hold_frames: Option<u32>,
         repeat_frames: Option<u32>,
     ) -> bool {
-        assert!(
-            !self.is_analog_key(key),
-            "is_button_pressed is called with an analog key 0x{key:X}"
-        );
+        assert!(!self.is_analog_key(key), "key must be a non-analog key");
 
         let Some((frame_count, key_state)) = self.input.key_states.get(&key) else {
             return false;
@@ -86,15 +80,12 @@ impl Pyxel {
         }
 
         let hold = hold_frames.unwrap_or(0);
-        let elapsed = *pyxel::frame_count() as i32 - (*frame_count + hold) as i32;
-        elapsed >= 0 && elapsed % repeat as i32 == 0
+        let elapsed = pyxel::frame_count().wrapping_sub(*frame_count);
+        elapsed >= hold && (elapsed - hold).is_multiple_of(repeat)
     }
 
     pub fn is_button_released(&self, key: Key) -> bool {
-        assert!(
-            !self.is_analog_key(key),
-            "is_button_released is called with an analog key 0x{key:X}"
-        );
+        assert!(!self.is_analog_key(key), "key must be a non-analog key");
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             match key_state {
@@ -107,10 +98,7 @@ impl Pyxel {
     }
 
     pub fn button_value(&self, key: Key) -> KeyValue {
-        assert!(
-            self.is_analog_key(key),
-            "button_value is called with a non-analog key 0x{key:X}"
-        );
+        assert!(self.is_analog_key(key), "key must be an analog key");
 
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }

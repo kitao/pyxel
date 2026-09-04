@@ -33,14 +33,19 @@ CRATES_DIR := $(ROOT_DIR)/crates
 DIST_DIR := $(ROOT_DIR)/dist
 PYTHON_DIR := $(ROOT_DIR)/python
 SCRIPTS_DIR := $(ROOT_DIR)/scripts
+WASM_DIR := $(ROOT_DIR)/wasm
 WEB_DIR := $(ROOT_DIR)/web
 
 # Extensionless Python scripts, passed to ruff explicitly since it only discovers *.py files
 PYTHON_SCRIPTS = $(shell grep -sl '^\#!/usr/bin/env python3' $(SCRIPTS_DIR)/*)
 
 # Build targets
+PYEMSCRIPTEN_PLATFORM_VERSION := 2026_0
+SOURCE_DATE_EPOCH ?= 315532800
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
 WASM_TARGET := wasm32-unknown-emscripten
+
+export SOURCE_DATE_EPOCH
 
 # WASM path remap flags
 REMAP_SRC_PATH := $(abspath $(ROOT_DIR))
@@ -56,6 +61,7 @@ endif
 CARGO_OPTS := --release --target $(TARGET)
 
 ifeq ($(TARGET),$(WASM_TARGET))
+export MATURIN_PYEMSCRIPTEN_PLATFORM_VERSION := $(PYEMSCRIPTEN_PLATFORM_VERSION)
 # Link SDL2 from the PIC cache so the relocatable side module resolves it statically
 EM_SDL2_PIC_DIR := $(shell em-config CACHE)/sysroot/lib/wasm32-emscripten/pic
 RUSTFLAGS += \
@@ -79,7 +85,7 @@ CARGO_OPTS += --features sdl2_dynamic
 endif
 
 # Tool options
-CLIPPY_OPTS := --all-targets -q -- --no-deps
+CLIPPY_OPTS := --all-targets -q -- --no-deps -D warnings
 MATURIN_OPTS := --manylinux off
 
 # PyO3 environment
@@ -120,7 +126,12 @@ update:
 format:
 	@cd $(CRATES_DIR); cargo fmt -- --emit=files
 	@ruff format $(ROOT_DIR) $(PYTHON_SCRIPTS)
-	@npx --no-install --prefix $(ROOT_DIR)/web prettier --write --log-level warn "$(ROOT_DIR)/**/*.{css,html,js,json}"
+	@npx --no-install --prefix $(ROOT_DIR)/web prettier --write --log-level warn \
+		"$(ROOT_DIR)/.vscode/settings.json" \
+		"$(ROOT_DIR)/.github/workflows/*.{yml,yaml}" \
+		"$(WASM_DIR)/**/*.{css,html,js,json}" \
+		"$(WEB_DIR)/**/*.{css,html,js,json}" \
+		"!$(WEB_DIR)/styles.css"
 	@$(SCRIPTS_DIR)/format_prose
 
 lint:
@@ -159,7 +170,8 @@ lint-wasm:
 
 build-wasm:
 	@embuilder build sdl2 --pic
-	@rm -f $(DIST_DIR)/*-emscripten_*.whl
+	@rm -f $(DIST_DIR)/pyxel-*-emscripten_*.whl \
+		$(DIST_DIR)/pyxel-*-pyemscripten_*.whl
 	@$(MAKE) build TARGET=$(WASM_TARGET)
 	@$(SCRIPTS_DIR)/check_wasm_wheel
 	@$(SCRIPTS_DIR)/install_wasm_wheel

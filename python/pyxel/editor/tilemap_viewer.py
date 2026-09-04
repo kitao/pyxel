@@ -26,7 +26,6 @@ class TilemapViewer(Widget):
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)

@@ -1,5 +1,8 @@
 import math
+import os
 import struct
+import subprocess
+import sys
 import wave
 
 import pytest
@@ -127,14 +130,18 @@ class TestExtremeInputs:
     def test_high_tempo_renders(self, tmp_path):
         snd = pyxel.Sound()
         snd.mml("T5000000 C")
-        snd.save(str(tmp_path / "out.wav"), 0.1)
+        out = tmp_path / "out.wav"
+        snd.save(str(out), 0.1)
+        assert len(_read_samples(out)) == RATE // 10
 
     def test_long_wavetable_renders(self, tmp_path):
         original = list(pyxel.tones[0].wavetable)
         try:
             pyxel.tones[0].wavetable[:] = [8, 0] * 8192
             pyxel.sounds[63].set("c2", "t", "7", "n", 30)
-            pyxel.sounds[63].save(str(tmp_path / "out.wav"), 0.1)
+            out = tmp_path / "out.wav"
+            pyxel.sounds[63].save(str(out), 0.1)
+            assert len(_read_samples(out)) == RATE // 10
         finally:
             pyxel.tones[0].wavetable[:] = original
 
@@ -163,6 +170,36 @@ class TestExtremeInputs:
 
 
 class TestInvalidInputs:
+    def test_sound_index_conversion_revalidates_channel(self):
+        code = """
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+
+class SoundIndex:
+    def __index__(self):
+        pyxel.channels.clear()
+        return 0
+
+try:
+    pyxel.play(0, SoundIndex())
+except ValueError as exc:
+    assert str(exc) == "ch must be a valid channel index"
+else:
+    raise AssertionError("ValueError not raised")
+"""
+        env = os.environ.copy()
+        env["SDL_AUDIODRIVER"] = "dummy"
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
     def test_speed_zero_raises(self):
         with raises_exact(ValueError, "speed must be greater than 0"):
             pyxel.sounds[63].speed = 0
@@ -172,7 +209,7 @@ class TestInvalidInputs:
     def test_sub_sample_duration_raises(self, tmp_path):
         sound_path = tmp_path / "sound.wav"
         music_path = tmp_path / "music.wav"
-        message = "duration_sec is too short to produce an audio sample"
+        message = "sec is too short to produce an audio sample"
 
         with raises_exact(Exception, message):
             pyxel.sounds[63].save(str(sound_path), 1e-9)
@@ -241,9 +278,9 @@ class TestInvalidInputs:
 
     def test_non_finite_duration_raises(self, tmp_path):
         pyxel.sounds[63].set("c2", "t", "7", "n", 30)
-        with raises_exact(Exception, "duration_sec must be finite"):
+        with raises_exact(Exception, "sec must be finite"):
             pyxel.sounds[63].save(str(tmp_path / "out.wav"), float("nan"))
-        with raises_exact(Exception, "duration_sec must be finite"):
+        with raises_exact(Exception, "sec must be finite"):
             pyxel.musics[7].save(str(tmp_path / "out.wav"), float("nan"))
 
     def test_invalid_playback_sec_raises(self):

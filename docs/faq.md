@@ -79,7 +79,7 @@ Pass the developer name (`vendor_name`) and application name (`app_name`) to the
 <details>
 <summary>Can I try Pyxel without installing it?</summary>
 
-With [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/), you can create and run Pyxel apps in your browser. However, it does not support multi-file projects, so a local environment is recommended for full-scale development.
+With [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/), you can create and run Pyxel apps in your browser. However, the code editor only edits `main.py`, so a local environment is recommended when editing projects with multiple Python files.
 
 [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) lets you browse and run sample code and apps in your browser.
 

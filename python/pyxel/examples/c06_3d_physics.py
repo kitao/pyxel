@@ -24,7 +24,15 @@ def make_quad_mesh(corners, color):
 
 
 def apply_contact(node, contact):
-    push = Mat4.from_translation(contact.normal * contact.depth)
+    offset = contact.normal * contact.depth
+    if node.parent is not None:
+        parent_world = node.parent.world_transform
+        offset = (
+            Vec3.ZERO
+            if abs(parent_world.determinant()) < 1e-12
+            else offset.to_local_dir(parent_world)
+        )
+    push = Mat4.from_translation(offset)
     spin = Mat4.from_quat(contact.delta_rotation)
     node.transform = push * node.transform * spin
     node.collider.velocity += contact.delta_velocity
@@ -36,7 +44,7 @@ class QuadSurface(Node):
         super().__init__()
         self.corners = corners
         self.mesh = make_quad_mesh(corners, color)
-        self.collider = Collider(mesh=self.mesh, mass=0.0, friction=0.65)
+        self.collider = Collider(mesh=self.mesh, friction=0.65)
         self.add_child(Node.from_mesh(self.mesh))
 
     def on_draw(self):

@@ -17,7 +17,7 @@ EXTENDED_CHANNELS = [
 # Set detune carefully according to the pitch of the notes.
 
 EXTENDED_TONES = [
-    (  # Sine Wave
+    (  # Custom Wave
         0,
         4,
         [15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 13, 12, 11, 10, 9, 8]

@@ -11,14 +11,8 @@
 
   <body class="page h-full">
     <main class="page-container" id="app">
-      <header class="flex items-start gap-4 mb-6">
-        <select
-          id="lang-select"
-          class="lang-select mt-1"
-          aria-label="Language"
-          style="display: none"
-        ></select>
-        <div class="flex-1 min-w-0 order-first">
+      <header class="flex flex-wrap sm:flex-nowrap items-start gap-4 mb-6">
+        <div class="w-full sm:w-auto sm:flex-1 min-w-0 shrink-0">
           <h1 id="page-title" class="font-semibold text-2xl tracking-tight">
             Pyxel Web Launcher
           </h1>
@@ -33,11 +27,16 @@
             >, a retro game engine for Python.
           </p>
         </div>
+        <select
+          id="lang-select"
+          class="lang-select mt-1"
+          aria-label="Language"
+          style="display: none"
+        ></select>
       </header>
 
       <section class="card">
         <div class="gap-5 grid grid-cols-1">
-          <!-- Startup File -->
           <div class="gap-2 grid">
             <label
               for="startup-file"
@@ -61,7 +60,7 @@
               </li>
               <li>
                 <span id="help-examples"></span>
-                <div class="mt-1 pl-2 grid gap-1">
+                <div class="launcher-examples mt-1 pl-2 grid gap-1">
                   <div id="help-example-py"></div>
                   <div id="help-example-pyxapp"></div>
                   <div id="help-example-pyxres"></div>
@@ -70,9 +69,7 @@
             </ul>
           </div>
 
-          <!-- Options for run/play -->
           <div id="run-play-options">
-            <!-- Virtual Gamepad -->
             <div class="flex items-center gap-2">
               <label
                 for="virtual-gamepad"
@@ -89,7 +86,6 @@
             </div>
           </div>
 
-          <!-- Options for edit -->
           <div id="edit-options" style="display: none">
             <div class="gap-2 grid">
               <label
@@ -115,14 +111,16 @@
             </div>
           </div>
 
-          <!-- Launch URL -->
           <div class="gap-2 grid pt-2">
-            <span class="label" data-i18n="label_launch_url"
+            <span
+              id="label-launch-url"
+              class="label"
+              data-i18n="label_launch_url"
               >Application Launch URL</span
             >
             <a
               id="launch-url"
-              tabindex="0"
+              aria-labelledby="label-launch-url"
               target="_blank"
               rel="noopener noreferrer"
               class="input-link block"
@@ -149,8 +147,12 @@
       let data = null;
       let lang = "en";
 
-      function getFileExt(url) {
-        const match = url.match(/\.([^./?#]+)$/);
+      function getFileExt(value) {
+        let pathname = value;
+        try {
+          pathname = new URL(value).pathname;
+        } catch {}
+        const match = pathname.match(/\.([^./]+)$/);
         return match ? match[1] : "";
       }
 
@@ -158,21 +160,17 @@
         return `<span class="inline-block" style="width:50px">${chip(name)}</span>`;
       }
 
-      // Apply localized launcher copy and example links.
       function updateTexts() {
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Form labels
         document.querySelectorAll("[data-i18n]").forEach((el) => {
           el.textContent = t(el.dataset.i18n);
         });
 
-        // File-type help and example GitHub URLs
         document.getElementById("help-file-type").innerHTML = t(
           "help_file_type",
         )
@@ -194,7 +192,6 @@
         document.getElementById("help-example-pyxres").innerHTML =
           cmdChip("edit") + link(pyxresUrl, pyxresUrl);
 
-        // Footer documentation link
         const docUrl = "../web-usage/";
         document.getElementById("footer-text").innerHTML = t("footer").replace(
           "{0}",
@@ -204,7 +201,6 @@
         setDocLang(lang);
       }
 
-      // Show only the options that apply to the selected startup file type.
       function updateOptions() {
         const ext = getFileExt(document.getElementById("startup-file").value);
         const isEdit = ext === "pyxres";
@@ -216,7 +212,31 @@
           : "none";
       }
 
-      // Convert a GitHub blob URL into the compact launcher URL format.
+      const createLaunchUrl = (
+        base,
+        command,
+        target,
+        editorScreen,
+        virtualGamepad,
+        sourceRef = null,
+        fallbackSha = null,
+      ) => {
+        const url = new URL(base);
+        url.searchParams.set(command, target);
+        if (sourceRef?.includes("/")) {
+          url.searchParams.set("ref", sourceRef);
+          if (/^[0-9a-f]{40}$/i.test(fallbackSha)) {
+            url.searchParams.set("sha", fallbackSha);
+          }
+        }
+        if (command === "edit") {
+          url.searchParams.set("editor", editorScreen);
+        } else if (virtualGamepad) {
+          url.searchParams.set("gamepad", "enabled");
+        }
+        return url.href;
+      };
+
       let launchBuildGeneration = 0;
 
       async function buildLaunchUrl() {
@@ -226,7 +246,8 @@
           document.getElementById("virtual-gamepad").checked;
         const editorScreen = document.getElementById("editor-screen").value;
         const launchLink = document.getElementById("launch-url");
-        launchLink.textContent = launchLink.href = "";
+        launchLink.textContent = "";
+        launchLink.removeAttribute("href");
 
         const ext = getFileExt(startupFile);
         const isEdit = ext === "pyxres";
@@ -248,15 +269,19 @@
         const filePathNoExt = resolved.path.replace(/\.[^.]+$/, "");
         const command = isEdit ? "edit" : ext === "py" ? "run" : "play";
         const base = new URL("./", location.href).href;
-        let launchUrl = `${base}?${command}=${resolved.user}/${resolved.repo}/${resolved.ref}/${filePathNoExt}`;
+        const target = `${resolved.user}/${resolved.repo}/${resolved.ref}/${filePathNoExt}`;
+        const launchUrl = createLaunchUrl(
+          base,
+          command,
+          target,
+          editorScreen,
+          virtualGamepad,
+          resolved.ref,
+          resolved.sha,
+        );
 
-        if (isEdit) {
-          launchUrl += `&editor=${editorScreen}`;
-        } else if (virtualGamepad) {
-          launchUrl += "&gamepad=enabled";
-        }
-
-        launchLink.textContent = launchLink.href = launchUrl;
+        launchLink.textContent = launchUrl;
+        launchLink.href = launchUrl;
       }
 
       document.getElementById("startup-file").addEventListener("input", () => {

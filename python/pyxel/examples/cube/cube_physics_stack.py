@@ -1,12 +1,8 @@
 import pyxel
+from cube_physics_camera import OrbitCamera
 from pyxel.cube import Collider, Mat4, Node, Shading, Vec3
 
-from cube_physics_camera import OrbitCamera
-
-# Carnival-style 2-high pyramid. Vertical chains of three or more cans
-# collapse under the single-pass resolver (stable stacks are out of
-# scope, cube-design.md § 16); a 2-high interlocked pyramid settles
-# with ~0.1 sink and no lateral drift.
+# Keep the pyramid shallow for single-pass collision resolution.
 CAN_LAYOUT = [
     Vec3(-0.85, 0.4, 0),
     Vec3(0.0, 0.4, 0),
@@ -32,10 +28,7 @@ class Can(Node):
         super().__init__()
         self.transform = Mat4.from_translation(pos)
         self.size = Vec3(0.8, 0.8, 0.8)
-        # Stacked AABB-vs-AABB contacts are notoriously hard to settle
-        # under single-pass resolution; restitution > 0 keeps bouncing
-        # forever and a high friction value swings sideways across
-        # the rest frame. Both go to zero so the stack damps quickly.
+        # Avoid bounce and lateral friction impulses while the stack settles.
         self.collider = Collider(
             size=self.size, mass=1.0, restitution=0.0, friction=0.0
         )
@@ -44,9 +37,7 @@ class Can(Node):
         self.collider.velocity += Vec3(0, -0.02, 0)
 
     def on_collide(self, other, contact):
-        push = Mat4.from_translation(contact.normal * contact.depth)
-        self.transform = push * self.transform
-        self.collider.velocity += contact.delta_velocity
+        apply_contact(self, contact)
 
     def on_draw(self):
         self.box(Mat4.IDENTITY, self.size, 8)
@@ -67,12 +58,24 @@ class Bullet(Node):
             self.destroy()
 
     def on_collide(self, other, contact):
-        push = Mat4.from_translation(contact.normal * contact.depth)
-        self.transform = push * self.transform
-        self.collider.velocity += contact.delta_velocity
+        apply_contact(self, contact)
 
     def on_draw(self):
         self.sphere(Vec3.ZERO, 0.3, 14)
+
+
+def apply_contact(node, contact):
+    offset = contact.normal * contact.depth
+    if node.parent is not None:
+        parent_world = node.parent.world_transform
+        offset = (
+            Vec3.ZERO
+            if abs(parent_world.determinant()) < 1e-12
+            else offset.to_local_dir(parent_world)
+        )
+    push = Mat4.from_translation(offset)
+    node.transform = push * node.transform
+    node.collider.velocity += contact.delta_velocity
 
 
 class App:
@@ -80,7 +83,7 @@ class App:
         pyxel.init(160, 120, title="Cube Physics: Stack")
         pyxel.mouse(True)
         self.scene = Node()
-        self.scene.shading = Shading([pyxel.colors[i] for i in range(16)])
+        self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         self.scene.add_child(Floor())
         for pos in CAN_LAYOUT:
@@ -91,7 +94,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.KEY_ESCAPE):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.scene.add_child(Bullet(Vec3(0, 1.0, 8), Vec3(0, 0, -0.4)))

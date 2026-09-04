@@ -12,7 +12,8 @@ import tempfile
 import time
 import uuid
 import zipfile
-from pathlib import Path
+from collections.abc import Callable
+from pathlib import Path, PureWindowsPath
 
 import pyxel
 import pyxel.utils
@@ -23,8 +24,7 @@ _PACKAGE_SKIP_EXTENSIONS = (".gif", ".zip")
 
 
 def cli() -> None:
-    # Pair command signatures with their handlers for usage and dispatch.
-    commands = [
+    commands: list[tuple[list[str], Callable[..., None]]] = [
         (["run", "PYTHON_SCRIPT_FILE(.py)"], run_python_script),
         (
             ["watch", "WATCH_DIR", "PYTHON_SCRIPT_FILE(.py)"],
@@ -47,7 +47,7 @@ def cli() -> None:
         (["copy_examples"], copy_pyxel_examples),
     ]
 
-    def print_usage(command_name=None):
+    def print_usage(command_name: list[str] | None = None) -> None:
         print("usage:")
         for command in commands:
             if command_name is None or command[0] == command_name:
@@ -94,18 +94,13 @@ def _complete_extension(filename, command, valid_ext):
 
 
 def _files_in_dir(dirname):
-    # Exclude dotfiles and dot-directories under dirname to avoid picking up
-    # OS/tool artifacts (e.g. .DS_Store, .git, .vscode), but keep the pyxapp
-    # startup-script file which intentionally starts with '.'
+    # Exclude dotfiles and dot-directories to avoid OS and tool artifacts.
     base = Path(dirname)
     return sorted(
-        str(p)
-        for p in base.rglob("*")
-        if p.is_file()
-        and not any(
-            part.startswith(".") and part != pyxel.APP_STARTUP_SCRIPT_FILE
-            for part in p.relative_to(base).parts
-        )
+        str(path)
+        for path in base.rglob("*")
+        if path.is_file()
+        and not any(part.startswith(".") for part in path.relative_to(base).parts)
     )
 
 
@@ -124,21 +119,49 @@ def _check_file_under_dir(filename, dirname):
         _exit_with_error("specified file is not under the directory")
 
 
+def _resolve_pyxapp_startup_path(
+    application_dir: Path, startup_path: str
+) -> Path | None:
+    if not startup_path:
+        return None
+
+    application_dir = application_dir.resolve()
+    # Try native paths first to preserve POSIX filenames containing backslashes.
+    relative_paths = [Path(startup_path)]
+    portable_path = Path(startup_path.replace("\\", "/"))
+    if portable_path != relative_paths[0] and not PureWindowsPath(startup_path).drive:
+        relative_paths.append(portable_path)
+
+    for relative_path in relative_paths:
+        if relative_path.is_absolute():
+            continue
+        try:
+            startup_file = (application_dir / relative_path).resolve()
+            if startup_file.is_relative_to(application_dir) and startup_file.is_file():
+                return startup_file
+        except (OSError, ValueError):
+            continue
+    return None
+
+
 def _create_app_dir():
     play_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "play"
     play_dir.mkdir(parents=True, exist_ok=True)
 
-    # Clean up stale app dirs from dead processes
     for path in play_dir.glob("*"):
         try:
             pid = int(path.name.split("_")[0])
         except ValueError:
-            shutil.rmtree(path)
+            shutil.rmtree(path, ignore_errors=True)
             continue
         if pyxel._pid_exists(pid):
             continue
-        if time.time() - path.stat().st_mtime > 300:
-            shutil.rmtree(path)
+        try:
+            is_stale = time.time() - path.stat().st_mtime > 300
+        except FileNotFoundError:
+            continue
+        if is_stale:
+            shutil.rmtree(path, ignore_errors=True)
 
     app_dir = play_dir / f"{os.getpid()}_{uuid.uuid4()}"
     if app_dir.exists():
@@ -151,14 +174,13 @@ def _create_watch_state_file():
     watch_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "watch"
     watch_dir.mkdir(parents=True, exist_ok=True)
 
-    # Clean up state files from dead watcher processes
     for path in watch_dir.glob("*"):
         try:
             pid = int(path.name)
         except ValueError:
             continue
         if not pyxel._pid_exists(pid):
-            path.unlink()
+            path.unlink(missing_ok=True)
 
     watch_state_file = watch_dir / str(os.getpid())
     watch_state_file.touch()
@@ -166,7 +188,14 @@ def _create_watch_state_file():
 
 
 def _timestamps_in_dir(dirname):
-    return {str(p): p.stat().st_mtime for p in Path(dirname).rglob("*") if p.is_file()}
+    timestamps = {}
+    for path in Path(dirname).rglob("*"):
+        if path.is_file():
+            try:
+                timestamps[str(path)] = path.stat().st_mtime
+            except FileNotFoundError:
+                continue
+    return timestamps
 
 
 def _run_python_script_in_separate_process(python_script_file):
@@ -191,9 +220,13 @@ def _extract_pyxel_app(pyxel_app_file):
         zf.extractall(app_dir)
 
     for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
-        return str(
-            setting_file.parent / setting_file.read_text(encoding="utf-8").strip()
-        )
+        startup_path = setting_file.read_text(encoding="utf-8").strip()
+        startup_file = _resolve_pyxapp_startup_path(setting_file.parent, startup_path)
+        if startup_file is None:
+            _exit_with_error(
+                f"invalid startup script path in Pyxel app: {startup_path!r}"
+            )
+        return str(startup_file)
     return None
 
 
@@ -249,7 +282,6 @@ def watch_and_run_python_script(watch_dir: str, python_script_file: str) -> None
 
     os.environ[pyxel.WATCH_STATE_FILE_ENV] = _create_watch_state_file()
 
-    # Watch timestamps and restart the worker process on source changes.
     try:
         print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
         cur_time = last_time = time.time()
@@ -282,7 +314,7 @@ def watch_and_run_python_script(watch_dir: str, python_script_file: str) -> None
 
 def get_pyxel_app_metadata(pyxel_app_file: str) -> dict[str, str]:
     _check_file_exists(pyxel_app_file)
-    metadata = {}
+    metadata: dict[str, str] = {}
 
     with zipfile.ZipFile(pyxel_app_file) as zf:
         if not zf.comment:
@@ -344,40 +376,59 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
     _check_file_exists(startup_script_file)
     _check_file_under_dir(startup_script_file, app_dir)
 
+    app_path = Path(app_dir).resolve()
+    startup_path = Path(startup_script_file).resolve()
+    startup_relative_path = startup_path.relative_to(app_path)
+    if any(
+        part.startswith(".") or part == "__pycache__"
+        for part in startup_relative_path.parts
+    ):
+        _exit_with_error("startup script is excluded from the Pyxel app")
+
+    startup_marker = startup_relative_path.as_posix()
+    if startup_marker != startup_marker.strip():
+        _exit_with_error(
+            "startup script path cannot be represented in a Pyxel app: "
+            f"{startup_marker!r}"
+        )
+
     metadata_comment = _make_metadata_comment(startup_script_file)
     if metadata_comment:
         print(metadata_comment)
 
-    # Write the startup marker while archiving the app directory.
-    app_dir = Path(app_dir).resolve()
-    setting_file = app_dir / pyxel.APP_STARTUP_SCRIPT_FILE
-    setting_file.write_text(
-        str(Path(startup_script_file).resolve().relative_to(app_dir)),
-        encoding="utf-8",
+    pyxel_app_path = Path(app_path.name + pyxel.APP_FILE_EXTENSION)
+    temp_app_path = pyxel_app_path.with_name(
+        f".{pyxel_app_path.name}.{uuid.uuid4().hex}.tmp"
     )
-
-    pyxel_app_file = app_dir.name + pyxel.APP_FILE_EXTENSION
-    app_parent_dir = app_dir.parent
+    app_parent_dir = app_path.parent
 
     try:
         with zipfile.ZipFile(
-            pyxel_app_file,
+            temp_app_path,
             "w",
             compression=zipfile.ZIP_DEFLATED,
         ) as zf:
             zf.comment = metadata_comment.encode(encoding="utf-8")
-            for file in _files_in_dir(app_dir):
+            startup_arcname = (
+                Path(app_path.name) / pyxel.APP_STARTUP_SCRIPT_FILE
+            ).as_posix()
+            zf.writestr(startup_arcname, startup_marker)
+            print(f"added '{startup_arcname}'")
+            for file in _files_in_dir(app_path):
+                file_path = Path(file)
+                relative_path = file_path.relative_to(app_path)
                 if (
-                    Path(file).name == pyxel_app_file
-                    or "__pycache__" in file
+                    file_path.name == pyxel_app_path.name
+                    or "__pycache__" in relative_path.parts
                     or file.lower().endswith(_PACKAGE_SKIP_EXTENSIONS)
                 ):
                     continue
-                arcname = str(Path(file).relative_to(app_parent_dir))
-                zf.write(file, arcname)
+                arcname = file_path.relative_to(app_parent_dir).as_posix()
+                zf.write(file_path, arcname)
                 print(f"added '{arcname}'")
+        temp_app_path.replace(pyxel_app_path)
     finally:
-        setting_file.unlink(missing_ok=True)
+        temp_app_path.unlink(missing_ok=True)
 
 
 def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
@@ -386,52 +437,55 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
     )
     _check_file_exists(pyxel_app_file)
 
-    app2exe_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "app2exe"
-    if app2exe_dir.is_dir():
-        shutil.rmtree(app2exe_dir)
-    app2exe_dir.mkdir(parents=True, exist_ok=True)
+    app2exe_root = Path(tempfile.gettempdir()) / pyxel.BASE_DIR
+    app2exe_root.mkdir(parents=True, exist_ok=True)
 
-    # Generate a temporary PyInstaller bootstrap around the Pyxel app.
-    pyxel_app_name = Path(pyxel_app_file).stem
-    bootstrap_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
-    pyxel_app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
-    Path(bootstrap_script_file).write_text(
-        "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
-        f"str(Path(__file__).parent / {pyxel_app_filename!r}))",
-        encoding="utf-8",
-    )
+    with tempfile.TemporaryDirectory(prefix="app2exe-", dir=app2exe_root) as temp_dir:
+        app2exe_dir = Path(temp_dir)
+        pyxel_app_path = Path(pyxel_app_file)
+        pyxel_app_name = pyxel_app_path.stem
+        bootstrap_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
+        pyxel_app_filename = pyxel_app_path.name
+        Path(bootstrap_script_file).write_text(
+            "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
+            f"str(Path(__file__).parent / {pyxel_app_filename!r}))",
+            encoding="utf-8",
+        )
 
-    if importlib.util.find_spec("PyInstaller") is None:
-        _exit_with_error("PyInstaller is not found. Please install it.")
+        if importlib.util.find_spec("PyInstaller") is None:
+            _exit_with_error(
+                "PyInstaller is not installed. Install app2exe support with: "
+                'pip install "pyxel[app2exe]"'
+            )
 
-    startup_script_file = _extract_pyxel_app(pyxel_app_file)
-    if startup_script_file is None:
-        _exit_with_error("Failed to extract startup script from Pyxel app")
+        startup_script_file = _extract_pyxel_app(pyxel_app_file)
+        if startup_script_file is None:
+            _exit_with_error("Failed to extract startup script from Pyxel app")
 
-    modules = pyxel.utils.list_imported_modules(startup_script_file)["system"]
-    hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]
-    command = [
-        sys.executable,
-        "-m",
-        "PyInstaller",
-        "--windowed",
-        "--onedir",
-        "--add-data",
-        f"{pyxel_app_file}{os.pathsep}.",
-        *hidden_imports,
-        bootstrap_script_file,
-    ]
-    print(" ".join(command))
-    result = subprocess.run(command, check=False)
-    if result.returncode != 0:
-        _exit_with_error(f"PyInstaller build failed with exit code {result.returncode}")
+        modules = pyxel.utils.list_imported_modules(startup_script_file)["system"]
+        hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]
+        command = [
+            sys.executable,
+            "-m",
+            "PyInstaller",
+            "--windowed",
+            "--onedir",
+            "--workpath",
+            str(app2exe_dir / "build"),
+            "--specpath",
+            str(app2exe_dir),
+            "--add-data",
+            f"{os.path.abspath(pyxel_app_file)}{os.pathsep}.",
+            *hidden_imports,
+            bootstrap_script_file,
+        ]
+        print(" ".join(command))
+        result = subprocess.run(command, check=False)
 
-    # Clean up temporary build artifacts
-    shutil.rmtree(app2exe_dir, ignore_errors=True)
-    spec_file = Path(pyxel_app_file).with_suffix(".spec")
-    if spec_file.is_file():
-        spec_file.unlink()
-    shutil.rmtree(Path.cwd() / "build", ignore_errors=True)
+        if result.returncode != 0:
+            _exit_with_error(
+                f"PyInstaller build failed with exit code {result.returncode}"
+            )
 
 
 def create_html_from_pyxel_app(pyxel_app_file: str) -> None:

@@ -65,8 +65,6 @@ class TestHash:
         assert len(s) == 2
 
     def test_hash_equal_for_signed_zero(self):
-        # -0.0 == +0.0, so the eq/hash contract requires equal hashes
-        # (the binding normalizes -0.0 to +0.0 before hashing).
         assert Vec3(0.0, 0, 0) == Vec3(-0.0, 0, 0)
         assert hash(Vec3(0.0, 0, 0)) == hash(Vec3(-0.0, 0, 0))
 
@@ -152,15 +150,15 @@ class TestMath:
 class TestTransform:
     def test_normalize_unit(self):
         n = Vec3(3, 4, 0).normalize()
-        assert isclose(n.length(), 1.0, abs_tol=1e-6)
-        assert approx_v(n, Vec3(0.6, 0.8, 0))
+        assert n.length() == 1.0
+        assert n == Vec3(0.6, 0.8, 0)
 
     def test_normalize_zero(self):
         assert Vec3.ZERO.normalize() == Vec3.ZERO
 
     def test_clamp_length_truncates(self):
         v = Vec3(3, 4, 0).clamp_length(2.5)
-        assert isclose(v.length(), 2.5, abs_tol=1e-6)
+        assert v == Vec3(1.5, 2, 0)
 
     def test_clamp_length_keeps_short(self):
         v = Vec3(1, 0, 0).clamp_length(10.0)
@@ -187,8 +185,7 @@ class TestTransform:
         assert approx_v(v, Vec3(s, s, 0), tol=1e-3)
 
     def test_slerp_antiparallel_stays_unit_length(self):
-        # Anti-parallel input rotates through a deterministic perpendicular
-        # axis instead of collapsing to the zero vector.
+        # Antiparallel interpolation uses a deterministic perpendicular axis.
         v = Vec3.RIGHT.slerp(Vec3.LEFT, 0.5)
         assert isclose(v.length(), 1.0, abs_tol=1e-5)
         assert approx_v(v, Vec3(0, 0, 1))

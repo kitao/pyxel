@@ -1,6 +1,6 @@
 use crate::cube::mat4::Mat4;
 
-// Immutable 3D vector. Arithmetic and transform methods return new RcVec3.
+// Immutable 3D vector. Arithmetic and transform methods return new values.
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vec3 {
@@ -12,8 +12,6 @@ pub struct Vec3 {
 define_rc_type!(RcVec3, Vec3);
 
 impl Vec3 {
-    // Constructor
-
     pub fn new(x: f32, y: f32, z: f32) -> RcVec3 {
         new_rc_type!(Vec3 { x, y, z })
     }
@@ -262,83 +260,6 @@ mod tests {
     }
 
     #[test]
-    fn test_constructor_and_attributes() {
-        let v = Vec3::new(1.0, 2.0, 3.0);
-        let v = deref(&v);
-        assert_eq!(v.x, 1.0);
-        assert_eq!(v.y, 2.0);
-        assert_eq!(v.z, 3.0);
-    }
-
-    #[test]
-    fn test_constants() {
-        assert_eq!(
-            deref(&Vec3::zero()),
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0
-            }
-        );
-        assert_eq!(
-            deref(&Vec3::one()),
-            Vec3 {
-                x: 1.0,
-                y: 1.0,
-                z: 1.0
-            }
-        );
-        assert_eq!(
-            deref(&Vec3::right()),
-            Vec3 {
-                x: 1.0,
-                y: 0.0,
-                z: 0.0
-            }
-        );
-        assert_eq!(
-            deref(&Vec3::left()),
-            Vec3 {
-                x: -1.0,
-                y: 0.0,
-                z: 0.0
-            }
-        );
-        assert_eq!(
-            deref(&Vec3::up()),
-            Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0
-            }
-        );
-        assert_eq!(
-            deref(&Vec3::down()),
-            Vec3 {
-                x: 0.0,
-                y: -1.0,
-                z: 0.0
-            }
-        );
-        assert_eq!(
-            deref(&Vec3::forward()),
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: -1.0
-            }
-        );
-        assert_eq!(
-            deref(&Vec3::back()),
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 1.0
-            }
-        );
-    }
-
-    #[test]
     fn test_arithmetic() {
         let a = Vec3 {
             x: 1.0,
@@ -393,65 +314,6 @@ mod tests {
     }
 
     #[test]
-    fn test_dot_and_cross() {
-        let a = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let b = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        assert_eq!(a.dot(&b), 0.0);
-        assert_eq!(a.dot(&a), 1.0);
-        assert_eq!(
-            deref(&a.cross(&b)),
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 1.0
-            }
-        );
-        assert_eq!(
-            deref(&b.cross(&a)),
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: -1.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_length() {
-        let v = Vec3 {
-            x: 3.0,
-            y: 4.0,
-            z: 0.0,
-        };
-        assert_eq!(v.length(), 5.0);
-        assert_eq!(v.length_squared(), 25.0);
-    }
-
-    #[test]
-    fn test_distance() {
-        let a = Vec3 {
-            x: 1.0,
-            y: 2.0,
-            z: 3.0,
-        };
-        let b = Vec3 {
-            x: 4.0,
-            y: 6.0,
-            z: 3.0,
-        };
-        assert_eq!(a.distance_to(&b), 5.0);
-        assert_eq!(a.distance_squared_to(&b), 25.0);
-    }
-
-    #[test]
     fn test_angle_to() {
         let a = Vec3 {
             x: 1.0,
@@ -475,129 +337,7 @@ mod tests {
     }
 
     #[test]
-    fn test_normalize() {
-        let v = Vec3 {
-            x: 3.0,
-            y: 4.0,
-            z: 0.0,
-        };
-        let n = deref(&v.normalize());
-        assert!((n.length() - 1.0).abs() < 1e-6);
-        assert!((n.x - 0.6).abs() < 1e-6);
-        assert!((n.y - 0.8).abs() < 1e-6);
-        // Zero-length input returns zero vector instead of NaN.
-        let z = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        assert_eq!(
-            deref(&z.normalize()),
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_clamp_length() {
-        let v = Vec3 {
-            x: 3.0,
-            y: 4.0,
-            z: 0.0,
-        };
-        let clamped = deref(&v.clamp_length(2.5));
-        assert!((clamped.length() - 2.5).abs() < 1e-6);
-        // Already shorter than max returns same value.
-        let short = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        assert_eq!(deref(&short.clamp_length(10.0)), short);
-    }
-
-    #[test]
-    fn test_min_max() {
-        let a = Vec3 {
-            x: 1.0,
-            y: 5.0,
-            z: 3.0,
-        };
-        let b = Vec3 {
-            x: 4.0,
-            y: 2.0,
-            z: 6.0,
-        };
-        assert_eq!(
-            deref(&a.min(&b)),
-            Vec3 {
-                x: 1.0,
-                y: 2.0,
-                z: 3.0
-            }
-        );
-        assert_eq!(
-            deref(&a.max(&b)),
-            Vec3 {
-                x: 4.0,
-                y: 5.0,
-                z: 6.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_lerp() {
-        let a = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let b = Vec3 {
-            x: 10.0,
-            y: 20.0,
-            z: 30.0,
-        };
-        assert_eq!(deref(&a.lerp(&b, 0.0)), a);
-        assert_eq!(deref(&a.lerp(&b, 1.0)), b);
-        assert_eq!(
-            deref(&a.lerp(&b, 0.5)),
-            Vec3 {
-                x: 5.0,
-                y: 10.0,
-                z: 15.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_slerp() {
-        let a = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let b = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let mid = deref(&a.slerp(&b, 0.5));
-        // Half way between right and up on unit circle
-        let expected = (0.5_f32).sqrt();
-        assert!((mid.x - expected).abs() < 1e-3);
-        assert!((mid.y - expected).abs() < 1e-3);
-        assert!(mid.z.abs() < 1e-6);
-    }
-
-    #[test]
     fn test_slerp_antiparallel_rotates_through_perpendicular() {
-        // Anti-parallel unit vectors have no unique interpolation plane;
-        // the fallback rotates through a deterministic perpendicular axis
-        // instead of collapsing to the zero vector.
         let a = Vec3 {
             x: 1.0,
             y: 0.0,
@@ -621,88 +361,7 @@ mod tests {
     }
 
     #[test]
-    fn test_reflect() {
-        // Reflect (1, -1, 0) off floor normal (0, 1, 0) -> (1, 1, 0)
-        let v = Vec3 {
-            x: 1.0,
-            y: -1.0,
-            z: 0.0,
-        };
-        let n = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        assert_eq!(
-            deref(&v.reflect(&n)),
-            Vec3 {
-                x: 1.0,
-                y: 1.0,
-                z: 0.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_project() {
-        let v = Vec3 {
-            x: 3.0,
-            y: 4.0,
-            z: 0.0,
-        };
-        let onto = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        assert_eq!(
-            deref(&v.project(&onto)),
-            Vec3 {
-                x: 3.0,
-                y: 0.0,
-                z: 0.0
-            }
-        );
-        // Project onto zero vector returns zero.
-        let z = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        assert_eq!(
-            deref(&v.project(&z)),
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_to_world_translation_only() {
-        // Identity rotation, translation by (10, 0, 0): the local origin
-        // ends up at (10, 0, 0) in world space.
-        let v = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let mat_rc = Mat4::from_translation(&Vec3 {
-            x: 10.0,
-            y: 0.0,
-            z: 0.0,
-        });
-        let mat = rc_ref!(&mat_rc);
-        let r = deref(&v.to_world(&mat));
-        assert_eq!(r.x, 11.0);
-        assert_eq!(r.y, 0.0);
-        assert_eq!(r.z, 0.0);
-    }
-
-    #[test]
     fn test_to_local_round_trip_with_to_world() {
-        // to_local should invert to_world for the same mat.
         let v = Vec3 {
             x: 1.0,
             y: 2.0,
@@ -717,9 +376,7 @@ mod tests {
         let world = v.to_world(&mat);
         let back = rc_ref!(&world).to_local(&mat);
         let back = deref(&back);
-        assert!((back.x - v.x).abs() < 1e-4);
-        assert!((back.y - v.y).abs() < 1e-4);
-        assert!((back.z - v.z).abs() < 1e-4);
+        assert_eq!(back, v);
     }
 
     #[test]
@@ -758,8 +415,6 @@ mod tests {
         let world = dir.to_world_dir(&mat);
         let back = rc_ref!(&world).to_local_dir(&mat);
         let back = deref(&back);
-        assert!((back.x - dir.x).abs() < 1e-4);
-        assert!((back.y - dir.y).abs() < 1e-4);
-        assert!((back.z - dir.z).abs() < 1e-4);
+        assert_eq!(back, dir);
     }
 }

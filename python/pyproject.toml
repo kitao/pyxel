@@ -1,17 +1,9 @@
 [build-system]
-requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
+requires = ["maturin>=1.0,<2.0"]
 
 [project]
-name = "pyxel"
-version = "3.0.0"
-description = "A retro game engine for Python"
-readme = "pyxel/README.md"
-requires-python = ">=3.11"
-authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
-license = "MIT"
-license-files = ["pyxel/LICENSE"]
-keywords = ["game", "gamedev", "retro", "pixel-art", "game-engine"]
+authors = [{ email = "takashi.kitao@gmail.com", name = "Takashi Kitao" }]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
@@ -29,6 +21,17 @@ classifiers = [
     "Topic :: Multimedia :: Graphics",
     "Topic :: Multimedia :: Sound/Audio",
 ]
+description = "A retro game engine for Python"
+keywords = ["game", "gamedev", "retro", "pixel-art", "game-engine"]
+license = "MIT"
+license-files = ["pyxel/LICENSE"]
+name = "pyxel"
+readme = "pyxel/README.md"
+requires-python = ">=3.11"
+version = "3.0.0"
+
+[project.optional-dependencies]
+app2exe = ["pyinstaller>=6.22,<7"]
 
 [project.urls]
 Changelog = "https://github.com/kitao/pyxel/blob/main/CHANGELOG.md"
@@ -39,6 +42,7 @@ Repository = "https://github.com/kitao/pyxel.git"
 pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
+exclude = ["**/__pycache__", "**/.ruff_cache", "**/*.pyc", "**/*.pyo", "**/.DS_Store"]
 manifest-path = "../crates/pyxel-binding/Cargo.toml"
 module-name = "pyxel.pyxel_binding"
 

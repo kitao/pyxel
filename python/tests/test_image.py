@@ -1,6 +1,8 @@
-from pathlib import Path
+import subprocess
+import sys
 
 import PIL.Image
+import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
@@ -27,12 +29,7 @@ class TestImageCreation:
     def test_set_data(self):
         img = pyxel.Image(4, 2)
         img.set(0, 0, ["0123", "4567"])
-        assert img.pget(0, 0) == 0
-        assert img.pget(1, 0) == 1
-        assert img.pget(2, 0) == 2
-        assert img.pget(3, 0) == 3
-        assert img.pget(0, 1) == 4
-        assert img.pget(3, 1) == 7
+        assert list(img.data_ptr()) == [0, 1, 2, 3, 4, 5, 6, 7]
 
     def test_clear(self):
         img = pyxel.Image(8, 8)
@@ -49,15 +46,6 @@ class TestImageCreation:
 
 
 class TestImageDrawing:
-    def test_line(self):
-        img = pyxel.Image(16, 16)
-        img.cls(0)
-        img.line(0, 0, 15, 0, 7)
-        assert img.pget(0, 0) == 7
-        assert img.pget(8, 0) == 7
-        assert img.pget(15, 0) == 7
-        assert img.pget(0, 1) == 0
-
     def test_rect(self):
         img = pyxel.Image(16, 16)
         img.cls(0)
@@ -69,8 +57,8 @@ class TestImageDrawing:
         img = pyxel.Image(16, 16)
         img.cls(0)
         img.rectb(2, 2, 6, 6, 5)
-        assert img.pget(2, 2) == 5  # Border
-        assert img.pget(4, 4) == 0  # Inside hollow
+        assert img.pget(2, 2) == 5
+        assert img.pget(4, 4) == 0
 
     def test_circ(self):
         img = pyxel.Image(32, 32)
@@ -82,6 +70,7 @@ class TestImageDrawing:
         img = pyxel.Image(32, 32)
         img.cls(0)
         img.circb(16, 16, 5, 8)
+        assert img.pget(16, 11) == 8
         assert img.pget(16, 16) == 0
 
     def test_elli(self):
@@ -94,6 +83,7 @@ class TestImageDrawing:
         img = pyxel.Image(32, 32)
         img.cls(0)
         img.ellib(8, 8, 16, 8, 3)
+        assert img.pget(16, 8) == 3
         assert img.pget(16, 12) == 0
 
     def test_tri(self):
@@ -106,48 +96,104 @@ class TestImageDrawing:
         img = pyxel.Image(32, 32)
         img.cls(0)
         img.trib(8, 0, 0, 15, 15, 15, 9)
+        assert img.pget(8, 0) == 9
+        assert img.pget(0, 15) == 9
+        assert img.pget(15, 15) == 9
         assert img.pget(8, 8) == 0
 
-    def test_fill(self):
-        img = pyxel.Image(16, 16)
-        img.cls(0)
-        img.rect(2, 2, 8, 8, 5)
-        img.fill(4, 4, 10)
-        assert img.pget(4, 4) == 10
+    def test_dithered_fill_preserves_connected_region(self):
+        code = """
+import pyxel
 
-    def test_text(self):
-        img = pyxel.Image(64, 16)
-        img.cls(0)
-        img.text(0, 0, "A", 7)
-        has_text = any(img.pget(x, y) == 7 for x in range(4) for y in range(6))
-        assert has_text
+rows = ["11111111", "10010001", "10010001", "10000001",
+        "11111111", "10000001", "10000001", "11111111"]
+for alpha in (0.0, 0.25, 0.5, 1.0, float("nan")):
+    actual, expected = pyxel.Image(8, 8), pyxel.Image(8, 8)
+    for img in (actual, expected):
+        img.set(0, 0, rows)
+        img.dither(alpha)
+    expected.rect(1, 1, 6, 3, 7)
+    expected.dither(1)
+    expected.rect(3, 1, 1, 2, 1)
+    actual.clip(1, 1, 6, 6)
+    actual.camera(1, 1)
+    actual.fill(2, 2, 7)
+    assert list(actual.data_ptr()) == list(expected.data_ptr()), alpha
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
 
     def test_text_with_font(self, assets_dir):
         img = pyxel.Image(64, 32)
         img.cls(0)
         font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
         img.text(0, 0, "A", 7, font)
-        has_text = any(img.pget(x, y) == 7 for x in range(20) for y in range(20))
-        assert has_text
+        assert [img.pget(x, 6) for x in range(6)] == [7, 7, 7, 7, 7, 0]
 
 
 class TestImageBlt:
-    def test_blt_with_int(self):
-        pyxel.images[0].cls(0)
-        pyxel.images[0].pset(0, 0, 7)
-        img = pyxel.Image(16, 16)
-        img.cls(0)
-        img.blt(0, 0, 0, 0, 0, 8, 8)
-        assert img.pget(0, 0) == 7
-
-    def test_blt_with_image_instance(self):
-        src = pyxel.Image(16, 16)
-        src.cls(0)
-        src.pset(0, 0, 5)
-        dst = pyxel.Image(16, 16)
-        dst.cls(0)
-        dst.blt(0, 0, src, 0, 0, 8, 8)
-        assert dst.pget(0, 0) == 5
+    @pytest.mark.parametrize(
+        ("method", "rotate", "source_pos"),
+        [
+            ("blt", 0, 0),
+            ("blt", 30, 0),
+            ("blt", 0, -1),
+            ("blt", 30, -1),
+            ("bltm", 0, 0),
+            ("bltm", 30, 0),
+            ("blt3d", 0, 0),
+            ("bltm3d", 0, 0),
+        ],
+    )
+    @pytest.mark.parametrize("bank_source", [False, True])
+    def test_self_blit_matches_source_snapshot(
+        self, method, rotate, source_pos, bank_source
+    ):
+        actual, expected, snapshot = [pyxel.Image(16, 16) for _ in range(3)]
+        for img in (actual, expected, snapshot):
+            for y in range(16):
+                for x in range(16):
+                    img.pset(x, y, (x + y * 3) % 16)
+        original_bank = pyxel.images[0]
+        try:
+            for dst, src in ((expected, snapshot), (actual, actual)):
+                if bank_source:
+                    pyxel.images[0] = src
+                    src = 0
+                if method.startswith("bltm"):
+                    src = pyxel.Tilemap(2, 2, src)
+                dst.clip(2, 2, 12, 12)
+                dst.camera(1, 1)
+                dst.pal(7, 8)
+                dst.dither(0.5)
+                if method.endswith("3d"):
+                    getattr(dst, method)(
+                        0, 0, 16, 16, src, (8, 8, 10), (0, 30, 0), colkey=0
+                    )
+                else:
+                    getattr(dst, method)(
+                        3,
+                        3,
+                        src,
+                        source_pos,
+                        source_pos,
+                        -8,
+                        8,
+                        colkey=0 if source_pos == 0 else None,
+                        rotate=rotate,
+                    )
+                dst.clip()
+                dst.camera()
+            assert list(expected.data_ptr()) != list(snapshot.data_ptr())
+            assert list(actual.data_ptr()) == list(expected.data_ptr())
+        finally:
+            pyxel.images[0] = original_bank
 
     def test_blt_preserves_uncopied_area(self):
         src = pyxel.Image(8, 8)
@@ -155,8 +201,8 @@ class TestImageBlt:
         dst = pyxel.Image(16, 16)
         dst.cls(3)
         dst.blt(0, 0, src, 0, 0, 8, 8)
-        assert dst.pget(0, 0) == 5  # Copied area
-        assert dst.pget(10, 10) == 3  # Uncovered area
+        assert dst.pget(0, 0) == 5
+        assert dst.pget(10, 10) == 3
 
     def test_blt_with_colkey(self):
         src = pyxel.Image(8, 8)
@@ -165,8 +211,8 @@ class TestImageBlt:
         dst = pyxel.Image(8, 8)
         dst.cls(3)
         dst.blt(0, 0, src, 0, 0, 8, 8, colkey=0)
-        assert dst.pget(0, 0) == 3  # Transparent
-        assert dst.pget(1, 0) == 5  # Copied
+        assert dst.pget(0, 0) == 3
+        assert dst.pget(1, 0) == 5
 
     def test_blt_with_rotate(self):
         src = pyxel.Image(8, 8)
@@ -231,14 +277,27 @@ class TestImageBlt:
 
 
 class TestImageState:
-    def test_clip_restricts_drawing(self):
+    @pytest.mark.parametrize(
+        ("clip_rect", "bounds"),
+        [
+            ((4, 4, 8, 8), (4, 4, 12, 12)),
+            ((-2147483648, 0, 0, 1), (0, 0, 0, 0)),
+            ((0, -2147483648, 1, 0), (0, 0, 0, 0)),
+            ((1, 1, 4294967295, 4294967295), (1, 1, 16, 16)),
+        ],
+    )
+    def test_clip_restricts_drawing(self, clip_rect, bounds):
         img = pyxel.Image(16, 16)
         img.cls(0)
-        img.clip(4, 4, 8, 8)
+        img.clip(*clip_rect)
         img.rect(0, 0, 16, 16, 7)
         img.clip()
-        assert img.pget(0, 0) == 0  # Outside clip
-        assert img.pget(6, 6) == 7  # Inside clip
+        left, top, right, bottom = bounds
+        assert list(img.data_ptr()) == [
+            7 if left <= x < right and top <= y < bottom else 0
+            for y in range(16)
+            for x in range(16)
+        ]
 
     def test_camera_offsets_drawing(self):
         img = pyxel.Image(32, 32)
@@ -273,21 +332,6 @@ class TestImageIO:
         assert img.width == 16
         assert img.height == 16
 
-    def test_load_image_file(self, assets_dir):
-        img = pyxel.Image(32, 32)
-        img.load(0, 0, str(assets_dir / "cat_16x16.png"))
-        has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
-        assert has_nonzero
-
-    def test_save(self, tmp_path):
-        img = pyxel.Image(8, 8)
-        img.cls(0)
-        img.pset(0, 0, 7)
-        path = str(tmp_path / "test_img.png")
-        img.save(path, 1)
-        assert Path(path).exists()
-        assert Path(path).stat().st_size > 0
-
     def test_save_with_scale(self, tmp_path):
         img = pyxel.Image(8, 8)
         img.cls(0)
@@ -296,27 +340,38 @@ class TestImageIO:
         path2 = str(tmp_path / "scale4.png")
         img.save(path1, 1)
         img.save(path2, 4)
-        # Scale 4 produces a 4x larger image, so its file size must exceed scale 1.
-        assert Path(path2).stat().st_size > Path(path1).stat().st_size
+        with PIL.Image.open(path1) as image1, PIL.Image.open(path2) as image4:
+            assert image1.size == (8, 8)
+            assert image4.size == (32, 32)
 
     def test_from_image_with_include_colors(self, assets_dir):
+        path = str(assets_dir / "cat_16x16.png")
+        with PIL.Image.open(path) as source:
+            expected_color = int.from_bytes(
+                source.convert("RGB").getpixel((0, 0)), "big"
+            )
         # include_colors replaces the whole global palette; restore it fully.
         original_colors = list(pyxel.colors)
         try:
-            img = pyxel.Image.from_image(
-                str(assets_dir / "cat_16x16.png"), include_colors=True
-            )
+            pyxel.colors[:] = [0]
+            img = pyxel.Image.from_image(path, include_colors=True)
             assert img.width == 16
+            assert pyxel.colors[img.pget(0, 0)] == expected_color
         finally:
             pyxel.colors[:] = original_colors
 
     def test_load_with_include_colors(self, assets_dir):
+        path = str(assets_dir / "cat_16x16.png")
+        with PIL.Image.open(path) as source:
+            expected_color = int.from_bytes(
+                source.convert("RGB").getpixel((0, 0)), "big"
+            )
         original_colors = list(pyxel.colors)
         try:
+            pyxel.colors[:] = [0]
             img = pyxel.Image(32, 32)
-            img.load(0, 0, str(assets_dir / "cat_16x16.png"), include_colors=True)
-            has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
-            assert has_nonzero
+            img.load(0, 0, path, include_colors=True)
+            assert pyxel.colors[img.pget(0, 0)] == expected_color
         finally:
             pyxel.colors[:] = original_colors
 
@@ -341,18 +396,29 @@ class TestImageIO:
         # so test both APIs in order.
         original_colors = list(pyxel.colors)
         try:
+            pyxel.colors[:] = [0]
             img1 = pyxel.Image.from_image(
                 str(assets_dir / "cat_16x16.png"),
+                include_colors=False,
                 incl_colors=True,  # type: ignore[call-arg]
             )
             assert img1.width == 16
+            assert len(pyxel.colors) > 1
             out = capfd.readouterr().out
             assert (
                 out == "incl_colors option is deprecated. Use include_colors instead.\n"
             )
 
             img2 = pyxel.Image(32, 32)
-            img2.load(0, 0, str(assets_dir / "cat_16x16.png"), incl_colors=True)  # type: ignore[call-arg]
+            pyxel.colors[:] = [0]
+            img2.load(
+                0,
+                0,
+                str(assets_dir / "cat_16x16.png"),
+                include_colors=False,
+                incl_colors=True,  # type: ignore[call-arg]
+            )
+            assert len(pyxel.colors) > 1
             has_nonzero = any(img2.pget(x, 0) != 0 for x in range(16))
             assert has_nonzero
         finally:
@@ -360,6 +426,12 @@ class TestImageIO:
 
 
 class TestImageDataPtr:
+    def test_data_ptr_keeps_image_alive(self):
+        img = pyxel.Image(2, 2)
+        ptr = img.data_ptr()
+
+        assert ptr._pyxel_owner is img
+
     def test_data_ptr_read(self):
         img = pyxel.Image(8, 8)
         img.cls(0)

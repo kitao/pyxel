@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
@@ -45,14 +48,12 @@ class TestResize:
     def test_resets_clip_rect(self):
         pyxel.clip(10, 10, 20, 20)
         pyxel.resize(80, 60)
-        # After resize, clip is reset to full screen, so pset at (0, 0) takes effect.
         pyxel.pset(0, 0, 7)
         assert pyxel.pget(0, 0) == 7
 
     def test_resets_camera(self):
         pyxel.camera(50, 50)
         pyxel.resize(80, 60)
-        # After resize, camera offset is reset, so pset(0, 0) draws at (0, 0).
         pyxel.pset(0, 0, 7)
         assert pyxel.pget(0, 0) == 7
 
@@ -69,3 +70,27 @@ class TestResize:
             pyxel.resize(-1, 120)
         with raises_exact(OverflowError, "number too small to fit in target type"):
             pyxel.resize(160, -1)
+
+
+def test_resize_rejects_oversized_screen_without_changing_state():
+    code = """
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+try:
+    pyxel.resize(65536, 65536)
+except ValueError as exc:
+    assert str(exc) == "screen dimensions are too large"
+else:
+    raise AssertionError("oversized resize succeeded")
+assert pyxel.width == 8 and pyxel.height == 8
+assert pyxel.screen.width == 8 and pyxel.screen.height == 8
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr

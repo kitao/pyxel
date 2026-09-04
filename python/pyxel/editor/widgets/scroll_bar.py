@@ -44,7 +44,7 @@ class ScrollBar(Widget):
         self._drag_offset = 0
         self._is_dragged = False
 
-        self.new_var("value_var", value)
+        self.new_var("value_var", self.__on_value_set(value))
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
@@ -82,18 +82,16 @@ class ScrollBar(Widget):
     # Event handlers
 
     def __on_value_set(self, value):
-        return clamp(value, 0, self.scroll_amount)
+        return clamp(value, 0, self.scroll_amount - self.slider_amount)
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
 
     def __on_dec_button_press(self):
-        self.value_var = max(self.value_var - 1, 0)
+        self.value_var -= 1
 
     def __on_inc_button_press(self):
-        self.value_var = min(
-            self.value_var + 1, self.scroll_amount - self.slider_amount
-        )
+        self.value_var += 1
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:

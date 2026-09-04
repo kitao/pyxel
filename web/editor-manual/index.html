@@ -11,7 +11,7 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
         Loading...
       </div>
     </main>
@@ -30,11 +30,10 @@
       let data = null;
       let lang = "en";
 
-      function icon(src, size = 28) {
-        return `<img src="${src}" alt="" class="pix inline-block align-middle" style="width:${size}px;height:${size}px">`;
+      function icon(src) {
+        return `<img src="${src}" alt="" class="pix inline-block align-middle" style="width:28px;height:28px">`;
       }
 
-      // Render helpers shared by manual sections.
       function shortcutTable(items) {
         const ths = t("th_shortcut");
         const tha = t("th_action");
@@ -56,10 +55,10 @@
       function propTable(items) {
         let html = '<div class="space-y-1.5">';
         for (const i of items)
-          html += `<div class="flex items-baseline gap-3">
+          html += `<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <code class="font-mono text-xs text-pink-300 bg-pink-500/10 px-1.5 py-0.5 rounded shrink-0">${esc(i.key)}</code>
-            <span class="text-sm text-gray-200 font-medium shrink-0">${esc(t(i.label))}</span>
-            <span class="text-sm text-gray-400">${esc(t(i.desc))}</span>
+            <span class="text-sm text-gray-200 font-medium">${esc(t(i.label))}</span>
+            <span class="basis-full sm:basis-auto sm:flex-1 text-sm text-gray-400">${esc(t(i.desc))}</span>
           </div>`;
         return html + "</div>";
       }
@@ -89,7 +88,6 @@
         return `<img src="images/${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
       }
 
-      // Render a manual screenshot with labeled area annotations.
       function annotatedImg(src, annotations) {
         let svg = "";
         const colors = ANNOTATION_COLORS;
@@ -127,13 +125,12 @@
         return `<div class="relative my-3"><img src="${src}" alt="" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>`;
       }
 
-      // Render the piano keyboard diagram and octave guide.
       function keyboardDiagram() {
         const kl = data.sound_keyboard_layout;
         const notes = t(kl.notes);
         const blacks = [1, 3, 6, 8, 10]; // indices of sharp notes
         function renderOctave(keys, label) {
-          let html = `<div class="mb-1"><span class="text-[10px] text-gray-500 mb-0.5 block">${esc(label)}</span>`;
+          let html = `<div class="mb-1"><span class="text-[10px] text-gray-400 mb-0.5 block">${esc(label)}</span>`;
           html += '<div class="flex items-end gap-0.5">';
           for (let i = 0; i < 12; i++) {
             const isBlack = blacks.includes(i);
@@ -142,7 +139,7 @@
             const bg = isBlack
               ? "bg-gray-600 border-gray-700 text-gray-200"
               : "bg-gray-200 border-gray-400 text-gray-700";
-            const noteCl = isBlack ? "text-gray-400" : "text-gray-500";
+            const noteCl = "text-gray-400";
             html += `<div class="flex flex-col items-center" style="width:32px">
               <span class="text-[10px] ${noteCl}">${esc(note)}</span>
               <div class="${bg} border rounded-sm flex items-center justify-center" style="width:30px;height:${isBlack ? "28" : "36"}px;${isBlack ? "margin-bottom:8px" : ""}">
@@ -157,7 +154,6 @@
           '<div class="my-3 overflow-x-auto"><div style="min-width:420px">';
         html += renderOctave(kl.upper, t(kl.upper_label));
         html += renderOctave(kl.lower, t(kl.lower_label));
-        // Rest key (shared)
         html += `<div class="mt-1"><div class="flex items-end gap-2">
           <div class="flex flex-col items-center" style="width:32px">
             <span class="text-[10px] text-gray-400">${esc(t(kl.rest_label))}</span>
@@ -170,69 +166,41 @@
         return html;
       }
 
-      // Render the image editor tool icon reference grid.
       function toolIcons() {
-        return iconTable([
-          {
-            icon: "images/tool_select.png",
-            key: "S",
-            desc: data.image_tools[0].desc,
-          },
-          {
-            icon: "images/tool_pencil.png",
-            key: "P",
-            desc: data.image_tools[1].desc,
-          },
-          {
-            icon: "images/tool_rectb.png",
-            key: "R",
-            desc: data.image_tools[2].desc,
-          },
-          {
-            icon: "images/tool_rect.png",
-            key: "Shift+R",
-            desc: data.image_tools[3].desc,
-          },
-          {
-            icon: "images/tool_circb.png",
-            key: "C",
-            desc: data.image_tools[4].desc,
-          },
-          {
-            icon: "images/tool_circ.png",
-            key: "Shift+C",
-            desc: data.image_tools[5].desc,
-          },
-          {
-            icon: "images/tool_bucket.png",
-            key: "B",
-            desc: data.image_tools[6].desc,
-          },
-        ]);
+        const icons = [
+          "select",
+          "pencil",
+          "rectb",
+          "rect",
+          "circb",
+          "circ",
+          "bucket",
+        ];
+        return iconTable(
+          data.image_tools.map((tool, i) => ({
+            icon: `images/tool_${icons[i]}.png`,
+            key: tool.key,
+            desc: tool.desc,
+          })),
+        );
       }
 
-      // Build the manual shell and editor section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         app.appendChild(buildPageHeader(updateTexts));
 
-        // Manual section containers populated by updateTexts
         const wrap = document.createElement("div");
         wrap.className = "space-y-6";
         wrap.id = "content";
         wrap.innerHTML = `
-          <!-- Overview -->
           <section class="card" id="s-overview"></section>
 
-          <!-- Launch -->
           <section class="card" id="s-starting"></section>
 
-          <!-- Common -->
           <section class="card" id="s-common"></section>
 
-          <!-- Image Editor -->
           <details class="mt-6" open id="s-image">
             <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
               <span class="tri" id="s-image-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
@@ -240,7 +208,6 @@
             <div class="card" id="s-image-body"></div>
           </details>
 
-          <!-- Tilemap Editor -->
           <details class="mt-6" open id="s-tilemap">
             <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
               <span class="tri" id="s-tilemap-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
@@ -248,7 +215,6 @@
             <div class="card" id="s-tilemap-body"></div>
           </details>
 
-          <!-- Sound Editor -->
           <details class="mt-6" open id="s-sound">
             <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
               <span class="tri" id="s-sound-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
@@ -256,7 +222,6 @@
             <div class="card" id="s-sound-body"></div>
           </details>
 
-          <!-- Music Editor -->
           <details class="mt-6" open id="s-music">
             <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
               <span class="tri" id="s-music-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
@@ -268,16 +233,13 @@
         updateTexts();
       }
 
-      // Populate all manual sections from localized JSON content.
       function updateTexts() {
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Overview editor cards
         let editorCards = "";
         for (const e of data.overview_editors) {
           editorCards += `<div class="flex items-start gap-3 bg-gray-900/50 rounded-lg px-4 py-3">
@@ -293,12 +255,10 @@
           <p class="body mb-3">${esc(t("overview_body"))}</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${editorCards}</div>`;
 
-        // Launch instructions
         document.getElementById("s-starting").innerHTML =
           `<h2 class="section-title">${esc(t("starting_title"))}</h2>
           <p class="body">${esc(t("starting_body")).replace("{0}", '</p><pre class="bg-gray-900 rounded-lg px-4 py-2.5 my-3 font-mono text-sm text-indigo-300 overflow-x-auto">pyxel edit [PYXEL_RESOURCE_FILE]</pre><p class="body">').replace("{1}", chip("my_resource.pyxres"))}</p>`;
 
-        // Shared editor controls and shortcuts
         document.getElementById("s-common").innerHTML =
           `<h2 class="section-title">${esc(t("common_title"))}</h2>
           <p class="body">${esc(t("common_body"))}</p>
@@ -313,7 +273,6 @@
           <h3 class="sub-title">${esc(t("starting_load_title"))}</h3>
           <p class="body">${esc(t("starting_load_body"))}</p>`;
 
-        // Image editor walkthrough
         document.getElementById("s-image-title").textContent = t("image_title");
         document.getElementById("s-image-body").innerHTML = `
           <h2 class="section-title">${esc(t("image_title"))}</h2>
@@ -347,7 +306,6 @@
           <h3 class="sub-title">${esc(t("image_file_title"))}</h3>
           <p class="body">${esc(t("image_file_body"))}</p>`;
 
-        // Tilemap editor walkthrough
         document.getElementById("s-tilemap-title").textContent =
           t("tilemap_title");
         document.getElementById("s-tilemap-body").innerHTML = `
@@ -384,7 +342,6 @@
           <h3 class="sub-title">${esc(t("tilemap_tmx_title"))}</h3>
           <p class="body">${esc(t("tilemap_tmx_body")).replace("{0}", link("https://www.mapeditor.org/", "Tiled"))}</p>`;
 
-        // Sound editor walkthrough
         document.getElementById("s-sound-title").textContent = t("sound_title");
         document.getElementById("s-sound-body").innerHTML = `
           <h2 class="section-title">${esc(t("sound_title"))}</h2>
@@ -428,7 +385,6 @@
           <p class="body mb-2">${esc(t("sound_effect_body"))}</p>
           ${propTable(data.sound_effects)}`;
 
-        // Music editor walkthrough
         document.getElementById("s-music-title").textContent = t("music_title");
         document.getElementById("s-music-body").innerHTML = `
           <h2 class="section-title">${esc(t("music_title"))}</h2>

@@ -1,4 +1,6 @@
 use std::cell::RefCell;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 use crate::cube::bvh::Bvh;
 use crate::cube::collision::Aabb;
@@ -46,13 +48,14 @@ pub struct Mesh {
     pub materials: Vec<Material>,
     pub material_indices: Vec<Option<usize>>,
     // Lazy collision BVH. Built on first mesh-collider query and invalidated
-    // when the binding replaces geometry or transforms.
+    // when geometry or transforms change.
     pub bvh: RefCell<Option<Bvh>>,
     // Lazy mesh-local AABB (union of every part's positions composed
     // with the identity outer transform). Cached under the same
     // invalidation rules as `bvh`; Aabb::from_mesh lifts its 8 corners by
     // the collider's world transform instead of re-transforming every vertex.
     pub local_aabb: RefCell<Option<Aabb>>,
+    collision_geometry_dirty: Arc<AtomicBool>,
 }
 
 define_rc_type!(RcMesh, Mesh);
@@ -71,6 +74,7 @@ impl Mesh {
             material_indices: Vec::new(),
             bvh: RefCell::new(None),
             local_aabb: RefCell::new(None),
+            collision_geometry_dirty: Arc::new(AtomicBool::new(true)),
         })
     }
 
@@ -83,6 +87,7 @@ impl Mesh {
     // with the identity outer transform); callers transform the query
     // AABB into this frame before traversing.
     pub fn with_collision_bvh<R>(&self, f: impl FnOnce(&Bvh) -> R) -> R {
+        self.refresh_collision_geometry();
         if self.bvh.borrow().is_none() {
             let (positions, triangles) = self.collect_triangles();
             *self.bvh.borrow_mut() = Some(Bvh::build(positions, triangles));
@@ -96,6 +101,7 @@ impl Mesh {
     // the identity outer transform; a mesh without positions yields a
     // degenerate box at the local origin.
     pub fn local_aabb(&self) -> Aabb {
+        self.refresh_collision_geometry();
         if let Some(aabb) = *self.local_aabb.borrow() {
             return aabb;
         }
@@ -147,6 +153,25 @@ impl Mesh {
         aabb
     }
 
+    fn refresh_collision_geometry(&self) {
+        if !self.collision_geometry_dirty.load(Ordering::Relaxed) {
+            return;
+        }
+        *self.bvh.borrow_mut() = None;
+        *self.local_aabb.borrow_mut() = None;
+        for primitive in self.primitives.iter().flatten() {
+            rc_mut!(primitive).register_collision_dependent(&self.collision_geometry_dirty);
+        }
+        self.collision_geometry_dirty
+            .store(false, Ordering::Relaxed);
+    }
+
+    pub fn reset_collision_geometry_tracking(&mut self) {
+        self.collision_geometry_dirty = Arc::new(AtomicBool::new(true));
+        *self.bvh.get_mut() = None;
+        *self.local_aabb.get_mut() = None;
+    }
+
     fn collect_triangles(&self) -> (Vec<Vec3>, Vec<[u32; 3]>) {
         let identity = Mat4::identity_value();
         let world_per_part = self.compose_world_transforms(&identity);
@@ -179,8 +204,7 @@ impl Mesh {
                     t += 3;
                 }
             } else {
-                // Out-of-range indices (negative wraps to a huge usize)
-                // are skipped, mirroring Primitive::compute_normals.
+                // Skip out-of-range indices, including negative values cast to usize.
                 let vert_count = prim.positions.len() / 3;
                 for tri in prim.indices.as_chunks::<3>().0 {
                     let i0 = tri[0] as usize;
@@ -298,14 +322,10 @@ mod tests {
     fn test_new_empty() {
         let m = Mesh::new();
         let m = rc_ref!(&m);
-        assert!(m.primitives.is_empty());
-        assert!(m.transforms.is_empty());
-        assert!(m.parents.is_empty());
-        assert!(m.motions.is_empty());
-        assert!(matches!(m.col_img, ColImage::Color(7)));
+        assert_eq!(m.motions, [] as [RcMotion; 0]);
         assert!(m.colkey.is_none());
-        assert!(m.materials.is_empty());
-        assert!(m.material_indices.is_empty());
+        assert_eq!(m.materials.len(), 0);
+        assert_eq!(m.material_indices, [] as [Option<usize>; 0]);
     }
 
     #[test]
@@ -444,7 +464,6 @@ mod tests {
         let img = crate::image::Image::new(4, 4);
         let ci = ColImage::Image(img);
         let (flat, img_opt) = ci.as_flat_and_image();
-        // Image variant returns flat=0 and the wrapped image.
         assert_eq!(flat, 0);
         assert!(img_opt.is_some());
     }
@@ -536,7 +555,6 @@ mod tests {
         });
         let root: Mat4 = *rc_ref!(&root_rc);
         let world = m.compose_world_transforms(&root);
-        // world[0] = root * T(5,0,0) → position (15, 0, 0)
         assert_eq!(world.len(), 1);
         let pos0_rc = world[0].pos();
         let pos0 = rc_ref!(&pos0_rc);
@@ -571,32 +589,193 @@ mod tests {
         let pos0 = rc_ref!(&pos0_rc);
         let pos1 = rc_ref!(&pos1_rc);
         let pos2 = rc_ref!(&pos2_rc);
-        assert!((pos0.x - 1.0).abs() < 1e-5);
-        assert!((pos1.x - 2.0).abs() < 1e-5);
-        assert!((pos2.x - 3.0).abs() < 1e-5);
+        assert_eq!(pos0.x, 1.0);
+        assert_eq!(pos1.x, 2.0);
+        assert_eq!(pos2.x, 3.0);
     }
 
     #[test]
-    fn test_with_collision_bvh_builds_lazily_and_caches() {
+    fn test_primitive_geometry_change_invalidates_collision_caches() {
         let m = Mesh::new();
+        let prim = Primitive::new();
+        {
+            let mut g = rc_mut!(&prim);
+            g.positions = vec![-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
+            g.indices = vec![0, 1, 2];
+        }
         {
             let mut m = rc_mut!(&m);
-            let prim = Primitive::new();
-            {
-                let mut g = rc_mut!(&prim);
-                g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
-                g.indices = vec![0, 1, 2];
-            }
-            m.primitives = vec![Some(prim)];
+            m.primitives = vec![Some(prim.clone())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1];
         }
+
         let m = rc_ref!(&m);
-        assert!(m.bvh.borrow().is_none());
-        let leaf_count =
-            m.with_collision_bvh(|bvh| bvh.nodes.iter().filter(|n| n.left == -1).count());
-        assert_eq!(leaf_count, 1);
-        assert!(m.bvh.borrow().is_some());
+        assert_eq!(m.local_aabb().max.x, 1.0);
+        let first_x = m.with_collision_bvh(|bvh| bvh.positions[0].x);
+        assert_eq!(first_x, -1.0);
+
+        {
+            let mut primitive = rc_mut!(&prim);
+            for position in primitive.positions.as_chunks_mut::<3>().0 {
+                position[0] += 100.0;
+            }
+            primitive.mark_collision_geometry_changed();
+        }
+
+        assert_eq!(m.local_aabb().min.x, 99.0);
+        let moved_x = m.with_collision_bvh(|bvh| bvh.positions[0].x);
+        assert_eq!(moved_x, 99.0);
+    }
+
+    #[test]
+    fn test_collision_cache_steady_state_does_not_borrow_primitive() {
+        let primitive = Primitive::new();
+        {
+            let mut primitive_ref = rc_mut!(&primitive);
+            primitive_ref.positions = vec![-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
+            primitive_ref.indices = vec![0, 1, 2];
+        }
+        let mesh = Mesh::new();
+        {
+            let mut mesh_ref = rc_mut!(&mesh);
+            mesh_ref.primitives = vec![Some(primitive.clone())];
+            mesh_ref.transforms = vec![Mat4::identity()];
+            mesh_ref.parents = vec![-1];
+        }
+
+        let mesh_ref = rc_ref!(&mesh);
+        assert!(mesh_ref.bvh.borrow().is_none());
+        assert_eq!(mesh_ref.local_aabb().max.x, 1.0);
+        assert_eq!(mesh_ref.with_collision_bvh(|bvh| bvh.positions.len()), 3);
+        assert!(mesh_ref.bvh.borrow().is_some());
+        assert_eq!(
+            mesh_ref.with_collision_bvh(|bvh| bvh.nodes.iter().filter(|n| n.left == -1).count()),
+            1
+        );
+
+        let _primitive_ref = rc_mut!(&primitive);
+        assert_eq!(mesh_ref.local_aabb().max.x, 1.0);
+        assert_eq!(mesh_ref.with_collision_bvh(|bvh| bvh.positions.len()), 3);
+    }
+
+    #[test]
+    fn test_unrelated_primitive_change_does_not_invalidate_collision_cache() {
+        let changed_primitive = Primitive::new();
+        let unchanged_primitive = Primitive::new();
+        for primitive in [&changed_primitive, &unchanged_primitive] {
+            let mut primitive_ref = rc_mut!(primitive);
+            primitive_ref.positions = vec![-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
+            primitive_ref.indices = vec![0, 1, 2];
+        }
+        let changed_mesh = Mesh::new();
+        let unchanged_mesh = Mesh::new();
+        for (mesh, primitive) in [
+            (&changed_mesh, &changed_primitive),
+            (&unchanged_mesh, &unchanged_primitive),
+        ] {
+            let mut mesh_ref = rc_mut!(mesh);
+            mesh_ref.primitives = vec![Some(primitive.clone())];
+            mesh_ref.transforms = vec![Mat4::identity()];
+            mesh_ref.parents = vec![-1];
+        }
+
+        assert_eq!(rc_ref!(&changed_mesh).local_aabb().max.x, 1.0);
+        assert_eq!(rc_ref!(&unchanged_mesh).local_aabb().max.x, 1.0);
+        {
+            let mut primitive_ref = rc_mut!(&changed_primitive);
+            primitive_ref.positions[0] = -2.0;
+            primitive_ref.mark_collision_geometry_changed();
+        }
+
+        let _primitive_ref = rc_mut!(&unchanged_primitive);
+        assert_eq!(rc_ref!(&unchanged_mesh).local_aabb().max.x, 1.0);
+    }
+
+    #[test]
+    fn test_shared_primitive_change_invalidates_every_collision_cache() {
+        let primitive = Primitive::new();
+        {
+            let mut primitive_ref = rc_mut!(&primitive);
+            primitive_ref.positions = vec![-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
+            primitive_ref.indices = vec![0, 1, 2];
+        }
+        let first_mesh = Mesh::new();
+        let second_mesh = Mesh::new();
+        for mesh in [&first_mesh, &second_mesh] {
+            let mut mesh_ref = rc_mut!(mesh);
+            mesh_ref.primitives = vec![Some(primitive.clone())];
+            mesh_ref.transforms = vec![Mat4::identity()];
+            mesh_ref.parents = vec![-1];
+        }
+
+        for mesh in [&first_mesh, &second_mesh] {
+            let mesh_ref = rc_ref!(mesh);
+            assert_eq!(mesh_ref.local_aabb().max.x, 1.0);
+            assert_eq!(mesh_ref.with_collision_bvh(|bvh| bvh.positions[0].x), -1.0);
+        }
+        {
+            let mut primitive_ref = rc_mut!(&primitive);
+            for position in primitive_ref.positions.as_chunks_mut::<3>().0 {
+                position[0] += 100.0;
+            }
+            primitive_ref.mark_collision_geometry_changed();
+        }
+
+        for mesh in [&first_mesh, &second_mesh] {
+            let mesh_ref = rc_ref!(mesh);
+            assert_eq!(mesh_ref.local_aabb().min.x, 99.0);
+            assert_eq!(mesh_ref.with_collision_bvh(|bvh| bvh.positions[0].x), 99.0);
+        }
+    }
+
+    #[test]
+    fn test_replacing_primitives_rebinds_collision_invalidation() {
+        let first_primitive = Primitive::new();
+        let second_primitive = Primitive::new();
+        {
+            let mut primitive_ref = rc_mut!(&first_primitive);
+            primitive_ref.positions = vec![-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
+            primitive_ref.indices = vec![0, 1, 2];
+        }
+        {
+            let mut primitive_ref = rc_mut!(&second_primitive);
+            primitive_ref.positions = vec![9.0, -1.0, 0.0, 11.0, -1.0, 0.0, 10.0, 1.0, 0.0];
+            primitive_ref.indices = vec![0, 1, 2];
+        }
+        let mesh = Mesh::new();
+        {
+            let mut mesh_ref = rc_mut!(&mesh);
+            mesh_ref.primitives = vec![Some(first_primitive.clone())];
+            mesh_ref.transforms = vec![Mat4::identity()];
+            mesh_ref.parents = vec![-1];
+        }
+
+        assert_eq!(rc_ref!(&mesh).local_aabb().min.x, -1.0);
+        {
+            let mut mesh_ref = rc_mut!(&mesh);
+            mesh_ref.primitives[0] = Some(second_primitive.clone());
+            mesh_ref.reset_collision_geometry_tracking();
+        }
+        assert_eq!(rc_ref!(&mesh).local_aabb().min.x, 9.0);
+
+        {
+            let mut primitive_ref = rc_mut!(&first_primitive);
+            primitive_ref.positions[0] = -100.0;
+            primitive_ref.mark_collision_geometry_changed();
+        }
+        {
+            let _second_primitive_ref = rc_mut!(&second_primitive);
+            assert_eq!(rc_ref!(&mesh).local_aabb().min.x, 9.0);
+        }
+        {
+            let mut primitive_ref = rc_mut!(&second_primitive);
+            for position in primitive_ref.positions.as_chunks_mut::<3>().0 {
+                position[0] += 100.0;
+            }
+            primitive_ref.mark_collision_geometry_changed();
+        }
+        assert_eq!(rc_ref!(&mesh).local_aabb().min.x, 109.0);
     }
 
     #[test]
@@ -655,9 +834,7 @@ mod tests {
         let pos1 = rc_ref!(&pos1_rc);
         let pos2 = rc_ref!(&pos2_rc);
         // Siblings inherit identity from root, so each is translated by its own local.
-        assert!((pos1.x - 1.0).abs() < 1e-5);
-        assert!((pos1.y).abs() < 1e-5);
-        assert!((pos2.x).abs() < 1e-5);
-        assert!((pos2.y - 1.0).abs() < 1e-5);
+        assert_eq!((pos1.x, pos1.y), (1.0, 0.0));
+        assert_eq!((pos2.x, pos2.y), (0.0, 1.0));
     }
 }

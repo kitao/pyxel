@@ -9,7 +9,7 @@
 
 **Pyxel** (/ˈpɪksəl/) is a retro game engine for Python.
 
-With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
+With simple specifications inspired by retro gaming consoles, including a 16-color palette and 4 sound channels by default, you can easily enjoy making pixel-art-style games.
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
@@ -25,7 +25,7 @@ Also, this project is developed by one person, kept going by your GitHub stars. 
 
 **Pyxel**（ピクセル）は Python 向けのレトロゲームエンジンです。
 
-使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。
+標準で 16 色のパレットと 4 つのサウンドチャンネルを備えた、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。
 
 Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
 

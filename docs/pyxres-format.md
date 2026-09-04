@@ -39,13 +39,13 @@ format_version = 1
 ...
 ```
 
-The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty fields inside an entry use empty arrays (e.g., `notes = []`), and a section intentionally skipped by `save(..., exclude_*)` is written as an empty array. A normal save writes the runtime banks (3 images, 8 tilemaps, 64 sounds, 8 musics); files with fewer entries are accepted on load.
+The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty fields inside an entry use empty arrays (e.g., `notes = []`), and a section intentionally skipped by `save(..., exclude_*)` is written as an empty array. A save records the current runtime banks, including non-default bank counts and dimensions.
 
 Pyxel currently writes `format_version = 1` for maximum backward compatibility. On load, files with format version up to **4** (the current maximum) are accepted. Files that contain the legacy archive layout (`pyxel_resource/version` + separate files) are detected and loaded with automatic conversion.
 
 ## Images
 
-Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette; 0–255 for the extended palette of up to 256 colors).
+By default, **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette; 0–255 for the extended palette of up to 256 colors).
 
 ```toml
 [[images]]
@@ -68,7 +68,7 @@ For example, a row `[0, 0, 5, 5, 5, 5]` is stored as `[0, 0, 5]`, and an image w
 
 ## Tilemaps
 
-Up to **8 tilemaps**, each **256×256 tiles**. Each tile references an 8×8 pixel region in an image bank.
+By default, **8 tilemaps**, each **256×256 tiles**. Each tile references an 8×8 pixel region in an image bank.
 
 ```toml
 [[tilemaps]]
@@ -84,7 +84,7 @@ All fields are required.
 | --- | --- | --- |
 | `width` | u32 | Tilemap width in tiles |
 | `height` | u32 | Tilemap height in tiles |
-| `imgsrc` | u32 | Source image bank index (0–2) |
+| `imgsrc` | u32 | Source image bank index (0-based) |
 | `data` | array of arrays of u16 | 2D tile data in interleaved format (see below) |
 
 Each tile in the tilemap is a coordinate pair `(tile_x, tile_y)` (`u16`, `u16`) pointing to the position of the 8×8 tile in the source image bank. In the TOML data, these pairs are **interleaved** within each row: `[tx0, ty0, tx1, ty1, ...]`, so each row has `width × 2` elements.
@@ -95,7 +95,7 @@ The same trailing-value compression as images is applied.
 
 ## Sounds
 
-Up to **64 sounds**. Each sound is a sequence of notes with per-note tone, volume, and effect settings.
+By default, **64 sounds**. Each sound is a sequence of notes with per-note tone, volume, and effect settings.
 
 ```toml
 [[sounds]]
@@ -124,7 +124,7 @@ The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the so
 
 ## Musics
 
-Up to **8 music tracks**. Each track arranges sounds across up to **4 channels** for sequential playback.
+By default, **8 music tracks** with **4 channels**. Each track arranges sounds for sequential playback.
 
 ```toml
 [[musics]]
@@ -135,7 +135,7 @@ The `seqs` field is required. Empty music uses an empty array (`seqs = []`).
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `seqs` | array of arrays of u32 | Sound sequences per channel. `seqs[0]` is channel 0, `seqs[1]` is channel 1, etc. Each value is a sound index (0–63) |
+| `seqs` | array of arrays of u32 | Sound sequences per channel. `seqs[0]` is channel 0, `seqs[1]` is channel 1, etc. Each value is a sound index (0-based) |
 
 Trailing empty channels are omitted when saving.
 
@@ -157,7 +157,7 @@ An optional text file with one RGB color per line in 6-digit hexadecimal format.
 | Maximum colors | 256 |
 | Format | One `RRGGBB` hex value per line |
 
-If no `.pyxpal` file is present, the built-in default palette is used:
+If no `.pyxpal` file is present, the current palette is unchanged. The built-in default palette is:
 
 | Index | Color | Hex |
 | --- | --- | --- |

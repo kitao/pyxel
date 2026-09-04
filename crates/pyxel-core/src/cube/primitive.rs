@@ -1,11 +1,10 @@
-use std::sync::OnceLock;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, OnceLock, Weak};
 
 use crate::cube::vec3::Vec3;
 
-// Static vertex-data asset. Carries vertex attributes (positions /
-// normals / uvs) and topology (indices, mode); mode and cull are
-// indices-intrinsic. Shareable across many Node draw calls and Mesh
-// parts. Empty normals / uvs / indices mean "absent".
+// Shared mutable vertex attributes and topology for Node draws and Mesh parts.
+// Empty normals / uvs / indices mean "absent".
 
 pub const MODE_POINTS: i32 = 0;
 pub const MODE_LINES: i32 = 1;
@@ -22,6 +21,7 @@ pub struct Primitive {
     pub indices: Vec<i32>,
     pub mode: i32,
     pub cull: i32,
+    collision_dependents: Vec<Weak<AtomicBool>>,
 }
 
 define_rc_type!(RcPrimitive, Primitive);
@@ -35,7 +35,31 @@ impl Primitive {
             indices: Vec::new(),
             mode: MODE_TRIANGLES,
             cull: CULL_BACK,
+            collision_dependents: Vec::new(),
         })
+    }
+
+    pub fn mark_collision_geometry_changed(&mut self) {
+        self.collision_dependents.retain(|dependent| {
+            let Some(dirty) = dependent.upgrade() else {
+                return false;
+            };
+            dirty.store(true, Ordering::Relaxed);
+            true
+        });
+    }
+
+    pub(crate) fn register_collision_dependent(&mut self, dirty: &Arc<AtomicBool>) {
+        let dependent = Arc::downgrade(dirty);
+        self.collision_dependents
+            .retain(|existing| existing.strong_count() > 0);
+        if !self
+            .collision_dependents
+            .iter()
+            .any(|existing| Weak::ptr_eq(existing, &dependent))
+        {
+            self.collision_dependents.push(dependent);
+        }
     }
 
     // Factories
@@ -51,8 +75,6 @@ impl Primitive {
     pub fn sphere(radius: f32) -> RcPrimitive {
         clone_scaled(unit_sphere_textured(), radius, radius, radius)
     }
-
-    // Normal computation
 
     // Per-face flat normals: one (nx, ny, nz) per triangle, matching the
     // layout draw::prim consumes. Non-triangle topology and empty positions
@@ -161,6 +183,7 @@ pub(crate) fn unit_sphere_wire() -> &'static Primitive {
         indices: unit_icosa_lv1_edge_indices().to_vec(),
         mode: MODE_LINES,
         cull: CULL_NONE,
+        collision_dependents: Vec::new(),
     })
 }
 
@@ -197,6 +220,7 @@ fn make_primitive(
         indices,
         mode,
         cull,
+        collision_dependents: Vec::new(),
     };
     p.compute_normals();
     p
@@ -515,12 +539,21 @@ mod tests {
     fn test_new_defaults() {
         let p = Primitive::new();
         let p = rc_ref!(&p);
-        assert!(p.positions.is_empty());
-        assert!(p.normals.is_empty());
-        assert!(p.uvs.is_empty());
-        assert!(p.indices.is_empty());
+        assert_eq!(p.positions, [] as [f32; 0]);
+        assert_eq!(p.normals, [] as [f32; 0]);
+        assert_eq!(p.uvs, [] as [f32; 0]);
+        assert_eq!(p.indices, [] as [i32; 0]);
         assert_eq!(p.mode, MODE_TRIANGLES);
         assert_eq!(p.cull, CULL_BACK);
+    }
+
+    #[test]
+    fn test_compute_normals_collinear_triangle_is_zero() {
+        let p = Primitive::new();
+        let mut p = rc_mut!(&p);
+        p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0];
+        p.compute_normals();
+        assert_eq!(p.normals, [0.0, 0.0, 0.0]);
     }
 
     #[test]
@@ -534,11 +567,7 @@ mod tests {
         }
         let p = rc_ref!(&p);
         let n = &p.normals;
-        // Per-face normals: 1 triangle -> 3 floats.
-        assert_eq!(n.len(), 3);
-        assert!(n[0].abs() < 1e-5);
-        assert!(n[1].abs() < 1e-5);
-        assert!((n[2] - 1.0).abs() < 1e-5);
+        assert_eq!(n, &[0.0, 0.0, 1.0]);
     }
 
     #[test]
@@ -552,8 +581,7 @@ mod tests {
         }
         let p = rc_ref!(&p);
         let n = &p.normals;
-        assert_eq!(n.len(), 3);
-        assert!((n[2] - 1.0).abs() < 1e-5);
+        assert_eq!(n, &[0.0, 0.0, 1.0]);
     }
 
     #[test]
@@ -576,16 +604,7 @@ mod tests {
         }
         let p = rc_ref!(&p);
         let n = &p.normals;
-        // Face count = 2 -> 6 floats.
-        assert_eq!(n.len(), 6);
-        // Face 0 normal = +Z.
-        assert!(n[0].abs() < 1e-5);
-        assert!(n[1].abs() < 1e-5);
-        assert!((n[2] - 1.0).abs() < 1e-5);
-        // Face 1 normal = +X.
-        assert!((n[3] - 1.0).abs() < 1e-5);
-        assert!(n[4].abs() < 1e-5);
-        assert!(n[5].abs() < 1e-5);
+        assert_eq!(n, &[0.0, 0.0, 1.0, 1.0, 0.0, 0.0]);
     }
 
     #[test]

@@ -59,7 +59,11 @@ def _run_example(script_path, plan, out_dir):
     _patch_init()
     pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
     pyxel.show = lambda: None
-    os.chdir(Path(script_path).parent)
+    script_dir = Path(script_path).parent
+    os.chdir(script_dir)
+    # Match `python script.py`, which puts the script's directory on sys.path
+    # so sibling modules import.
+    sys.path.insert(0, str(script_dir))
     runpy.run_path(str(script_path), run_name="__main__")
     _capture_frames(captured, plan, out_dir)
 

@@ -15,6 +15,10 @@ python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)' || {
 rm -rf "$VENV_DIR"
 python3 -m venv --upgrade-deps "$VENV_DIR"
 
-. "$VENV_DIR/bin/activate"
+if [[ -f "$VENV_DIR/Scripts/python.exe" ]]; then
+    VENV_PYTHON="$VENV_DIR/Scripts/python.exe"
+else
+    VENV_PYTHON="$VENV_DIR/bin/python"
+fi
 
-python3 -m pip install -r "$REQUIREMENTS"
+"$VENV_PYTHON" -m pip install -r "$REQUIREMENTS"

@@ -1,4 +1,6 @@
+import pytest
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 class TestTilemapCreation:
@@ -32,7 +34,6 @@ class TestTilemapCreation:
         result = tm.pget(0, 0)
         assert result == (1, 2)
         assert isinstance(result, tuple)
-        assert len(result) == 2
 
     def test_pset_pget_multiple(self):
         tm = pyxel.Tilemap(8, 8, 0)
@@ -59,6 +60,22 @@ class TestTilemapCreation:
 
 
 class TestTilemapDrawing:
+    @pytest.mark.parametrize(
+        "operation", ["bltm", "bltm3d", "image_bltm", "image_bltm3d"]
+    )
+    def test_invalid_imgsrc_raises(self, operation):
+        tilemap = pyxel.Tilemap(1, 1, 999)
+        image = pyxel.Image(1, 1)
+        with raises_exact(ValueError, "imgsrc references an invalid image index"):
+            if operation == "bltm":
+                pyxel.bltm(0, 0, tilemap, 0, 0, 1, 1)
+            elif operation == "bltm3d":
+                pyxel.bltm3d(0, 0, 1, 1, tilemap, (0, 0, 1), (0, 0, 0))
+            elif operation == "image_bltm":
+                image.bltm(0, 0, tilemap, 0, 0, 1, 1)
+            else:
+                image.bltm3d(0, 0, 1, 1, tilemap, (0, 0, 1), (0, 0, 0))
+
     def test_line(self):
         tm = pyxel.Tilemap(16, 16, 0)
         tm.cls((0, 0))
@@ -66,7 +83,7 @@ class TestTilemapDrawing:
         assert tm.pget(0, 0) == (1, 1)
         assert tm.pget(8, 0) == (1, 1)
         assert tm.pget(15, 0) == (1, 1)
-        assert tm.pget(0, 1) == (0, 0)  # Below line
+        assert tm.pget(0, 1) == (0, 0)
 
     def test_rect(self):
         tm = pyxel.Tilemap(16, 16, 0)
@@ -80,7 +97,7 @@ class TestTilemapDrawing:
         tm.cls((0, 0))
         tm.rectb(2, 2, 6, 6, (3, 3))
         assert tm.pget(2, 2) == (3, 3)
-        assert tm.pget(4, 4) == (0, 0)  # Inside hollow
+        assert tm.pget(4, 4) == (0, 0)
 
     def test_circ(self):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -92,8 +109,8 @@ class TestTilemapDrawing:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.circb(16, 16, 5, (2, 2))
-        assert tm.pget(16, 11) == (2, 2)  # Top of the border
-        assert tm.pget(16, 16) == (0, 0)  # Interior stays empty
+        assert tm.pget(16, 11) == (2, 2)
+        assert tm.pget(16, 16) == (0, 0)
 
     def test_elli(self):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -105,8 +122,8 @@ class TestTilemapDrawing:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.ellib(8, 8, 16, 8, (1, 1))
-        assert tm.pget(16, 8) == (1, 1)  # Top of the border
-        assert tm.pget(16, 12) == (0, 0)  # Interior stays empty
+        assert tm.pget(16, 8) == (1, 1)
+        assert tm.pget(16, 12) == (0, 0)
 
     def test_tri(self):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -118,21 +135,26 @@ class TestTilemapDrawing:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.trib(8, 0, 0, 15, 15, 15, (4, 4))
-        # Border vertices stay set.
         assert tm.pget(8, 0) == (4, 4)
         assert tm.pget(0, 15) == (4, 4)
         assert tm.pget(15, 15) == (4, 4)
-        assert tm.pget(8, 8) == (0, 0)  # Interior stays empty
-
-    def test_fill(self):
-        tm = pyxel.Tilemap(16, 16, 0)
-        tm.cls((0, 0))
-        tm.rect(2, 2, 8, 8, (5, 5))
-        tm.fill(4, 4, (9, 9))
-        assert tm.pget(4, 4) == (9, 9)
+        assert tm.pget(8, 8) == (0, 0)
 
 
 class TestTilemapBlt:
+    @pytest.mark.parametrize("rotate", [0, 30])
+    @pytest.mark.parametrize("source_pos", [0, -1])
+    def test_self_blit_matches_source_snapshot(self, rotate, source_pos):
+        actual, expected, snapshot = [pyxel.Tilemap(8, 8, 0) for _ in range(3)]
+        for tm in (actual, expected, snapshot):
+            for y in range(8):
+                for x in range(8):
+                    tm.pset(x, y, (x, y))
+        for dst, src in ((expected, snapshot), (actual, actual)):
+            dst.blt(2, 2, src, source_pos, source_pos, -4, 4, rotate=rotate)
+        assert list(expected.data_ptr()) != list(snapshot.data_ptr())
+        assert list(actual.data_ptr()) == list(expected.data_ptr())
+
     def test_blt_with_int(self):
         pyxel.tilemaps[0].cls((0, 0))
         pyxel.tilemaps[0].pset(0, 0, (3, 3))
@@ -159,7 +181,6 @@ class TestTilemapBlt:
         dst.blt(0, 0, src, 0, 0, 8, 8, tilekey=(0, 0))
         # (0,0) tiles in src are transparent, dst retains original
         assert dst.pget(0, 0) == (1, 1)
-        # Non-tilekey tiles are copied
         assert dst.pget(1, 0) == (3, 3)
 
     def test_blt_with_rotate(self):
@@ -191,8 +212,8 @@ class TestTilemapState:
         tm.clip(4, 4, 8, 8)
         tm.rect(0, 0, 16, 16, (1, 1))
         tm.clip()
-        assert tm.pget(0, 0) == (0, 0)  # Outside clip
-        assert tm.pget(6, 6) == (1, 1)  # Inside clip
+        assert tm.pget(0, 0) == (0, 0)
+        assert tm.pget(6, 6) == (1, 1)
 
     def test_camera_offsets_drawing(self):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -212,6 +233,7 @@ class TestTilemapIO:
         assert has_nonzero
 
     def test_from_tmx_masks_tile_flip_flags(self, tmp_path):
+        # 2147483650 combines the horizontal flip bit (1 << 31) with tile GID 2.
         tmx_path = tmp_path / "flipped.tmx"
         tmx_path.write_text(
             """<?xml version="1.0" encoding="UTF-8"?>
@@ -229,6 +251,70 @@ class TestTilemapIO:
 
         assert tm.pget(0, 0) == (1, 0)
 
+    @pytest.mark.parametrize(
+        ("columns", "encoding", "layer", "message"),
+        [
+            (0, "csv", 0, "Invalid tileset columns in file"),
+            (1, "base64", 0, "Unsupported encoding in file"),
+            (1, "csv", 1, "Layer 1 not found in file"),
+        ],
+    )
+    def test_from_tmx_rejects_invalid_configuration(
+        self, tmp_path, columns, encoding, layer, message
+    ):
+        tmx_path = tmp_path / "invalid.tmx"
+        tmx_path.write_text(
+            f"""<?xml version="1.0" encoding="UTF-8"?>
+<map tilewidth="8" tileheight="8">
+  <tileset firstgid="1" columns="{columns}"/>
+  <layer width="1" height="1">
+    <data encoding="{encoding}">1</data>
+  </layer>
+</map>
+""",
+            encoding="utf-8",
+        )
+
+        with raises_exact(Exception, f"{message} '{tmx_path}'"):
+            pyxel.Tilemap.from_tmx(str(tmx_path), layer)
+
+    def test_from_tmx_rejects_zero_layer_width(self, tmp_path):
+        tmx_path = tmp_path / "zero_width.tmx"
+        tmx_path.write_text(
+            """<?xml version="1.0" encoding="UTF-8"?>
+<map tilewidth="8" tileheight="8">
+  <tileset firstgid="1" columns="1"/>
+  <layer width="0" height="1">
+    <data encoding="csv">1</data>
+  </layer>
+</map>
+""",
+            encoding="utf-8",
+        )
+
+        with raises_exact(Exception, f"Invalid layer dimensions in file '{tmx_path}'"):
+            pyxel.Tilemap.from_tmx(str(tmx_path), 0)
+
+    def test_from_tmx_rejects_tile_count_mismatch(self, tmp_path):
+        tmx_path = tmp_path / "wrong_tile_count.tmx"
+        tmx_path.write_text(
+            """<?xml version="1.0" encoding="UTF-8"?>
+<map tilewidth="8" tileheight="8">
+  <tileset firstgid="1" columns="1"/>
+  <layer width="2" height="1">
+    <data encoding="csv">1</data>
+  </layer>
+</map>
+""",
+            encoding="utf-8",
+        )
+
+        with raises_exact(
+            Exception,
+            f"Layer data size does not match dimensions in file '{tmx_path}'",
+        ):
+            pyxel.Tilemap.from_tmx(str(tmx_path), 0)
+
     def test_load_tmx(self, assets_dir):
         tm = pyxel.Tilemap(32, 32, 0)
         tm.load(0, 0, str(assets_dir / "urban_rpg.tmx"), 0)
@@ -237,6 +323,12 @@ class TestTilemapIO:
 
 
 class TestTilemapDataPtr:
+    def test_data_ptr_keeps_tilemap_alive(self):
+        tm = pyxel.Tilemap(2, 2, 0)
+        ptr = tm.data_ptr()
+
+        assert ptr._pyxel_owner is tm
+
     def test_data_ptr_read(self):
         tm = pyxel.Tilemap(8, 8, 0)
         tm.cls((0, 0))
@@ -259,7 +351,7 @@ class TestTilemapDataPtr:
         tm.pset(0, 1, (7, 8))
         ptr = tm.data_ptr()
         # Each tile is 2 u16 values, row stride = width * 2.
-        offset = 4 * 2  # width=4, each tile=2 entries
+        offset = 4 * 2
         assert ptr[offset] == 7
         assert ptr[offset + 1] == 8
 
@@ -268,16 +360,9 @@ class TestTilemapCollide:
     def test_collide_no_walls(self):
         tm = pyxel.Tilemap(8, 8, 0)
         tm.cls((0, 0))
-        dx, dy = tm.collide(0, 0, 8, 8, 5.0, 5.0, [])
-        assert dx == 5.0
-        assert dy == 5.0
-
-    def test_collide_returns_tuple_of_floats(self):
-        tm = pyxel.Tilemap(8, 8, 0)
-        tm.cls((0, 0))
-        result = tm.collide(0, 0, 8, 8, 1.0, 1.0, [])
+        result = tm.collide(0, 0, 8, 8, 5.0, 5.0, [])
         assert isinstance(result, tuple)
-        assert len(result) == 2
+        assert result == (5.0, 5.0)
         assert isinstance(result[0], float)
         assert isinstance(result[1], float)
 
@@ -285,23 +370,20 @@ class TestTilemapCollide:
         tm = pyxel.Tilemap(8, 8, 0)
         tm.cls((0, 0))
         wall_tile = (1, 0)
-        tm.pset(2, 0, wall_tile)  # Wall at tile (2, 0) = pixel x=16
+        tm.pset(2, 0, wall_tile)
         dx, dy = tm.collide(0, 0, 8, 8, 100.0, 0.0, [wall_tile])
-        # Collision should stop before the wall.
-        assert 0 < dx < 100.0
-        # The entity width is 8 and the wall starts at x=16, so dx should be 8.0.
+        # The entity ends at x=8; the wall starts at x=16.
         assert dx == 8.0
-        assert dy == 0.0  # No vertical movement
+        assert dy == 0.0
 
     def test_collide_vertical_wall(self):
         tm = pyxel.Tilemap(8, 8, 0)
         tm.cls((0, 0))
         wall_tile = (1, 0)
-        tm.pset(0, 2, wall_tile)  # Wall at tile (0, 2) = pixel y=16
+        tm.pset(0, 2, wall_tile)
         dx, dy = tm.collide(0, 0, 8, 8, 0.0, 100.0, [wall_tile])
-        assert 0 < dy < 100.0
         assert dy == 8.0
-        assert dx == 0.0  # No horizontal movement
+        assert dx == 0.0
 
     def test_collide_no_movement(self):
         tm = pyxel.Tilemap(8, 8, 0)
@@ -338,8 +420,8 @@ class TestTilemapCollide:
         tm.cls((0, 0))
         tm.pset(1, 0, (1, 0))  # Tile exists but not in walls list
         dx, dy = tm.collide(0, 0, 8, 8, 100.0, 0.0, [])
-        assert dx == 100.0  # No collision
-        assert dy == 0.0  # No vertical movement
+        assert dx == 100.0
+        assert dy == 0.0
 
 
 class TestTilemapDeprecatedProperties:
@@ -355,6 +437,8 @@ class TestTilemapDeprecatedProperties:
         new_img = pyxel.Image(256, 256)
         tm.image = new_img  # type: ignore[attr-defined]
         assert isinstance(tm.imgsrc, pyxel.Image)
+        new_img.pset(0, 0, 7)
+        assert tm.imgsrc.pget(0, 0) == 7
         out = capfd.readouterr().out
         assert out == "Tilemap.image is deprecated. Use Tilemap.imgsrc instead.\n"
 
@@ -362,6 +446,8 @@ class TestTilemapDeprecatedProperties:
         tm = pyxel.Tilemap(8, 8, 0)
         result = tm.refimg  # type: ignore[attr-defined]
         assert result == 0
+        tm.imgsrc = pyxel.Image(8, 8)
+        assert tm.refimg is None  # type: ignore[attr-defined]
         out = capfd.readouterr().out
         assert out == "Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.\n"
 

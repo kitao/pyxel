@@ -25,7 +25,7 @@ v = Vec3(1.0, 2.0, 3.0)
 w = (v + Vec3.UP) * 2.0
 ```
 
-**Note:** Import it from the pyxel.cube module. Supports +, -, * and / with a scalar, unary -, ==, len(), indexing, and iteration.
+**Note:** Import it from the pyxel.cube module. Supports vector + and -, scalar * and /, unary -, ==, len(), indexing, and iteration.
 
 ### `x` — variable
 
@@ -1072,20 +1072,20 @@ Clip length in Pyxel frames.
 
 ### `Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO)` — class
 
-Collision shape, physical coefficients, and motion state for a Node. The shape follows from size and radius: size of all zeros is a sphere, (0, h, 0) is a capsule of height h, and any other size is a box with rounded corners of the radius. Setting mesh turns the collider into static triangle terrain.
+Collision shape, physical coefficients, and motion state for a Node. It represents a sphere, capsule, or rounded box derived from size and radius, or static triangle terrain when mesh is set. Analytic shapes require a rigid effective world transform (translation and rotation only); terrain accepts a fixed invertible affine transform.
 
 **Parameters:**
 
-- `size` (*Vec3*) — Core dimensions of the shape. Defaults to Vec3.ZERO (a sphere).
-- `radius` (*float*) — Sphere or capsule radius, and the corner rounding of a box. Defaults to 0.0.
-- `mesh` (*Mesh | None*) — Static terrain mesh. Defaults to None.
+- `size` (*Vec3*) — Core dimensions and shape selector. Component signs are ignored; for shape classification, components with an absolute value less than 1e-9 are treated as zero. An all-zero size produces a sphere of radius max(radius, 0). A size of (0, h, 0) produces a capsule whose central axis segment has length abs(h) and whose total height is abs(h) + 2 * max(radius, 0). Any other size produces a rounded box with core dimensions abs(size) and overall dimensions abs(size) + 2 * max(radius, 0), component-wise. Defaults to Vec3.ZERO (a sphere).
+- `radius` (*float*) — Sphere or capsule radius, and the corner rounding of a box. Negative values are treated as 0. Defaults to 0.0.
+- `mesh` (*Mesh | None*) — Static terrain mesh. When set, collision physics ignores size, radius, mass, rolls, velocity, and angular_velocity for this collider. Defaults to None.
 - `trigger` (*bool*) — When True, reports contacts without any push-back. Defaults to False.
 - `rolls` (*bool*) — When True, contacts also produce delta_angular_velocity. Defaults to False.
-- `mass` (*float*) — Mass for contact resolution. 0.0 makes the body immovable. Defaults to 1.0.
+- `mass` (*float*) — Mass used for contact resolution. It must be finite and greater than or equal to 0. For a non-mesh collider, 0.0 makes this side receive no contact correction; the mass value itself does not disable velocity or angular_velocity. Mesh colliders ignore this value. Defaults to 1.0.
 - `restitution` (*float*) — Bounciness. The larger of the two contacting values is used. Defaults to 0.0.
 - `friction` (*float*) — Friction. The average of the two contacting values is used. Defaults to 0.5.
-- `velocity` (*Vec3*) — World-space displacement applied every update. Defaults to Vec3.ZERO.
-- `angular_velocity` (*Vec3*) — Axis times angle (in degrees) applied as a local spin every update. Defaults to Vec3.ZERO.
+- `velocity` (*Vec3*) — World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. Defaults to Vec3.ZERO.
+- `angular_velocity` (*Vec3*) — Axis times angle (in degrees), applied every update as a spin in the node’s local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular. Defaults to Vec3.ZERO.
 
 **Example:**
 
@@ -1098,19 +1098,19 @@ floor.collider = Collider(size=Vec3(20, 0.5, 20), mass=0.0)
 
 ### `size` — variable
 
-Core dimensions deciding the shape family.
+Core dimensions and shape selector. Component signs are ignored; for shape classification, components with an absolute value less than 1e-9 are treated as zero. An all-zero size produces a sphere of radius max(radius, 0). A size of (0, h, 0) produces a capsule whose central axis segment has length abs(h) and whose total height is abs(h) + 2 * max(radius, 0). Any other size produces a rounded box with core dimensions abs(size) and overall dimensions abs(size) + 2 * max(radius, 0), component-wise.
 
 - **Type:** `Vec3`
 
 ### `radius` — variable
 
-Sphere or capsule radius, and the corner rounding of a box.
+Sphere or capsule radius, and the corner rounding of a box. Negative values are treated as 0.
 
 - **Type:** `float`
 
 ### `mesh` — variable
 
-Static terrain mesh. A mesh collider never moves.
+Static terrain mesh. When set, collision physics ignores size, radius, mass, rolls, velocity, and angular_velocity for this collider.
 
 - **Type:** `Mesh | None`
 
@@ -1128,7 +1128,7 @@ When True, contacts also produce delta_angular_velocity.
 
 ### `mass` — variable
 
-Mass for contact resolution. 0.0 makes the body immovable.
+Mass used for contact resolution. It must be finite and greater than or equal to 0. For a non-mesh collider, 0.0 makes this side receive no contact correction; the mass value itself does not disable velocity or angular_velocity. Mesh colliders ignore this value.
 
 - **Type:** `float`
 
@@ -1146,13 +1146,13 @@ Friction. The average of the two contacting values is used.
 
 ### `velocity` — variable
 
-World-space displacement applied to the node's transform every update.
+World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response.
 
 - **Type:** `Vec3`
 
 ### `angular_velocity` — variable
 
-Axis times angle (in degrees) applied as a local spin every update.
+Axis times angle (in degrees), applied every update as a spin in the node’s local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular.
 
 - **Type:** `Vec3`
 
@@ -1166,7 +1166,15 @@ Collision payload passed to Node.on_collide(). It is engine-built and not user-c
 
 ```python
 def on_collide(self, other, contact):
-    push = Mat4.from_translation(contact.normal * contact.depth)
+    offset = contact.normal * contact.depth
+    if self.parent is not None:
+        parent_world = self.parent.world_transform
+        offset = (
+            Vec3.ZERO
+            if abs(parent_world.determinant()) < 1e-12
+            else offset.to_local_dir(parent_world)
+        )
+    push = Mat4.from_translation(offset)
     self.transform = push * self.transform
     self.collider.velocity += contact.delta_velocity
 ```
@@ -1197,13 +1205,13 @@ Rotation correction reserved for a future response; currently always the identit
 
 ### `delta_velocity` — variable
 
-Suggested additive velocity correction from the collision.
+Suggested additive velocity correction for the receiving node, in world coordinates.
 
 - **Type:** `Vec3`
 
 ### `delta_angular_velocity` — variable
 
-Suggested additive angular velocity correction. Non-zero only when the collider has rolls=True.
+Suggested additive angular velocity correction in the receiving node’s local coordinates. Non-zero only when that node’s collider has rolls=True.
 
 - **Type:** `Vec3`
 
@@ -1706,7 +1714,7 @@ Draw a screen-space string centered at the projected position. Glyphs keep their
 - `pos` (*Vec3*) — Anchor position.
 - `s` (*str*) — The string to draw.
 - `col` (*int*) — Color number.
-- `font` (*Font | None*) — BDF font to use. Defaults to None (the built-in font).
+- `font` (*Font | None*) — Font to use. Defaults to None (the built-in font).
 
 ### `update()` — function
 

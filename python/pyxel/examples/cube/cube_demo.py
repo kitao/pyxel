@@ -219,8 +219,6 @@ def _load_texture():
 
 
 def _make_box_mesh(size, color):
-    # Scale the unit cube; the Mesh wraps a single Primitive carrying the
-    # flat color through col_img.
     pos = [v * size for v in UNIT_BOX_VERTICES]
     primitive = Primitive(Primitive.MODE_TRIANGLES, pos, BOX_TRI_INDICES)
     return Mesh(
@@ -370,7 +368,6 @@ class Showcase(Node):
             self._draw_2d(name, x, y, mat, spin)
 
     def _draw_2d(self, name, x, y, mat, spin):
-        # Dispatch the selected 2D primitive
         if name == "pset":
             self.pset(Vec3(x, y, 0), 7)
         elif name == "line":
@@ -419,16 +416,12 @@ class Showcase(Node):
             self.plane(mat, pyxel.images[0], CAT_UVS, 3.0, 3.0, colkey=0)
 
 
-def _palette() -> list[int]:
-    return [pyxel.colors[i] for i in range(16)]
-
-
 class App:
     def __init__(self):
         pyxel.init(256, 192, title="Pyxel Cube Showcase")
         _load_texture()
         self.scene = Node()
-        self.shading = Shading(_palette())
+        self.shading = Shading(pyxel.colors)
         # Light travels from upper-left-front to lower-right-back: +X
         # (right), -Y (down), -Z (away from viewer).
         self.shading.direction = Vec3(0.4, -0.8, -0.4)
@@ -443,7 +436,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.KEY_ESCAPE):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         self.actor.frame += 1
         self.actor.transform = Mat4.from_euler(Vec3(0, self.actor.spin_deg() * 0.5, 0))

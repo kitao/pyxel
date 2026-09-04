@@ -39,8 +39,6 @@ pub enum Font {
 define_rc_type!(RcFont, Font);
 
 impl Font {
-    // Constructors
-
     pub fn new(filename: &str, font_size: Option<f32>) -> Result<RcFont, String> {
         let font = if filename.to_lowercase().ends_with(".bdf") {
             Self::parse_bdf(filename)?
@@ -52,6 +50,7 @@ impl Font {
 
     fn parse_bdf(filename: &str) -> Result<Font, String> {
         let parse_err = || format!("Failed to parse file '{filename}'");
+        let read_err = || format!("Failed to read file '{filename}'");
         let file = File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
 
         let mut bounding_box = BdfBoundingBox::default();
@@ -61,8 +60,8 @@ impl Font {
         let mut dwidth = 0;
         let mut bbx = BdfBoundingBox::default();
 
-        // Dispatch on BDF keyword lines
-        for line in BufReader::new(file).lines().map_while(Result::ok) {
+        for line in BufReader::new(file).lines() {
+            let line = line.map_err(|_| read_err())?;
             if line.starts_with("FONTBOUNDINGBOX") {
                 bounding_box = Self::parse_bdf_bbox(&line, &parse_err)?;
             } else if line.starts_with("ENCODING") {
@@ -103,6 +102,7 @@ impl Font {
                     return Err(parse_err());
                 }
                 let bits = u32::from_str_radix(hex, 16).map_err(|_| parse_err())?;
+                // BDF rows are MSB-first; rendering reads the leftmost pixel from bit 0.
                 rows.push(bits.reverse_bits() >> (32 - hex.len() * 4));
             }
         }
@@ -155,8 +155,6 @@ impl Font {
             size,
         })
     }
-
-    // Public methods
 
     pub fn text_width(&mut self, text: &str) -> i32 {
         let mut max_width = 0;
@@ -222,7 +220,6 @@ impl Font {
         ascent: i32,
         f: &mut impl FnMut(i32, i32),
     ) -> i32 {
-        // Dispatch by font backend
         match self {
             Font::Bdf {
                 bounding_box,
@@ -269,7 +266,6 @@ impl Font {
     fn is_invisible(c: char) -> bool {
         let cp = c as u32;
 
-        // Control characters
         if c.is_control() {
             return true;
         }
@@ -328,8 +324,6 @@ mod tests {
 
     #[test]
     fn test_parse_bdf_rejects_overlong_bitmap_row() {
-        // A 9-digit BITMAP row must fail with the parser's Err contract
-        // instead of underflowing the bit-alignment shift
         let path = std::env::temp_dir().join(format!("pyxel_font_test_{}.bdf", std::process::id()));
         let mut file = File::create(&path).unwrap();
         writeln!(
@@ -349,8 +343,6 @@ mod tests {
 
     #[test]
     fn test_parse_bdf_rejects_overwide_glyph() {
-        // A BBX width over 32 must fail with the explicit width-limit error
-        // because bitmap rows are stored as u32
         let path = std::env::temp_dir().join(format!(
             "pyxel_font_test_overwide_glyph_{}.bdf",
             std::process::id()
@@ -373,8 +365,6 @@ mod tests {
 
     #[test]
     fn test_parse_bdf_rejects_short_bbx_line() {
-        // A BBX line with fewer than 4 values must fail with the parser's
-        // Err contract instead of panicking on the missing fields
         let path = std::env::temp_dir().join(format!(
             "pyxel_font_test_short_bbx_{}.bdf",
             std::process::id()

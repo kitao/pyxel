@@ -13,6 +13,11 @@ RaycastHit = _binding_cube.RaycastHit
 Shading = _binding_cube.Shading
 Vec3 = _binding_cube.Vec3
 
+_Indices = _binding_cube._Indices
+_Normals = _binding_cube._Normals
+_Positions = _binding_cube._Positions
+_Uvs = _binding_cube._Uvs
+
 __all__ = [
     "Camera",
     "Collider",

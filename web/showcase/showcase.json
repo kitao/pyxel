@@ -285,18 +285,18 @@
             "uk": "Демонстрація API для звуку"
           },
           "details": {
-            "en": "A demo of creating, editing, and playing sound effects using Pyxel's sound APIs. Experiment with tone, volume, and effect settings interactively.",
-            "cn": "使用 Pyxel 的声音 API 创建、编辑和播放音效的演示。可以交互式地试验音色、音量和效果设置。",
-            "de": "Demo zum Erstellen, Bearbeiten und Abspielen von Soundeffekten mit den Sound-APIs von Pyxel. Experimentieren Sie interaktiv mit Klangfarbe, Lautstärke und Effekteinstellungen.",
-            "es": "Demo de creación, edición y reproducción de efectos de sonido usando las API de sonido de Pyxel. Experimenta con los ajustes de tono, volumen y efectos de forma interactiva.",
-            "fr": "Démo de création, édition et lecture d'effets sonores avec les API audio de Pyxel. Expérimentez de manière interactive les réglages de timbre, volume et effets.",
-            "it": "Demo di creazione, modifica e riproduzione di effetti sonori con le API audio di Pyxel. Sperimenta in modo interattivo le impostazioni di timbro, volume ed effetti.",
-            "ja": "Pyxel のサウンド API を使って効果音を作成・編集・再生するデモ。音色、音量、エフェクトの設定方法を実際に試しながら確認できます。",
-            "ko": "Pyxel의 사운드 API를 사용하여 효과음을 생성, 편집, 재생하는 데모. 음색, 음량, 이펙트 설정을 실제로 시험해 볼 수 있습니다.",
-            "pt": "Demo de criação, edição e reprodução de efeitos sonoros usando as APIs de som do Pyxel. Experimente de forma interativa as configurações de timbre, volume e efeitos.",
-            "ru": "Демонстрация создания, редактирования и воспроизведения звуковых эффектов с помощью API звука Pyxel. Поэкспериментируйте с настройками тембра, громкости и эффектов в интерактивном режиме.",
-            "tr": "Pyxel'in ses API'lerini kullanarak ses efektleri oluşturma, düzenleme ve çalma demosu. Tını, ses seviyesi ve efekt ayarlarını etkileşimli olarak deneyebilirsiniz.",
-            "uk": "Демонстрація створення, редагування та відтворення звукових ефектів за допомогою API звуку Pyxel. Експериментуйте з налаштуваннями тембру, гучності та ефектів в інтерактивному режимі."
+            "en": "A demo of defining and playing sounds using Pyxel's sound APIs. Select channels to play the melody, bass, or drums.",
+            "cn": "使用 Pyxel 的声音 API 定义和播放声音的演示。可以选择通道来播放旋律、贝斯或鼓声。",
+            "de": "Demo zum Definieren und Abspielen von Sounds mit den Sound-APIs von Pyxel. Wählen Sie Kanäle, um Melodie, Bass oder Schlagzeug abzuspielen.",
+            "es": "Demo de definición y reproducción de sonidos usando las API de sonido de Pyxel. Selecciona canales para reproducir la melodía, el bajo o la batería.",
+            "fr": "Démo de définition et de lecture de sons avec les API audio de Pyxel. Sélectionnez les canaux pour jouer la mélodie, la basse ou la batterie.",
+            "it": "Demo di definizione e riproduzione di suoni con le API audio di Pyxel. Seleziona i canali per riprodurre la melodia, il basso o la batteria.",
+            "ja": "Pyxel のサウンド API で音を定義し、再生するデモ。チャンネルを選んでメロディ、ベース、ドラムを再生できます。",
+            "ko": "Pyxel의 사운드 API로 소리를 정의하고 재생하는 데모. 채널을 선택하여 멜로디, 베이스 또는 드럼을 재생할 수 있습니다.",
+            "pt": "Demo de definição e reprodução de sons usando as APIs de som do Pyxel. Selecione canais para tocar a melodia, o baixo ou a bateria.",
+            "ru": "Демонстрация определения и воспроизведения звуков с помощью API звука Pyxel. Выбирайте каналы для воспроизведения мелодии, баса или ударных.",
+            "tr": "Pyxel'in ses API'leriyle ses tanımlama ve çalma demosu. Melodi, bas veya davul çalmak için kanalları seçin.",
+            "uk": "Демонстрація визначення та відтворення звуків за допомогою API звуку Pyxel. Вибирайте канали для відтворення мелодії, баса або ударних."
           }
         },
         {
@@ -615,18 +615,18 @@
             "uk": "Синтезатор з використанням функцій розширення звуку"
           },
           "details": {
-            "en": "An interactive synthesizer using Pyxel's expanded audio features. Define custom waveforms and manipulate effects like envelope and vibrato in real time.",
-            "cn": "使用 Pyxel 音频扩展功能的互动合成器。可以实时定义自定义波形、操控包络和颤音等效果。",
-            "de": "Ein interaktiver Synthesizer mit den erweiterten Audiofunktionen von Pyxel. Definieren Sie benutzerdefinierte Wellenformen und steuern Sie Effekte wie Hüllkurve und Vibrato in Echtzeit.",
-            "es": "Sintetizador interactivo usando las funciones de audio expandidas de Pyxel. Define formas de onda personalizadas y manipula efectos como envolvente y vibrato en tiempo real.",
-            "fr": "Synthétiseur interactif utilisant les fonctions audio étendues de Pyxel. Définissez des formes d'onde personnalisées et manipulez des effets comme l'enveloppe et le vibrato en temps réel.",
-            "it": "Sintetizzatore interattivo che utilizza le funzionalità audio espanse di Pyxel. Definisci forme d'onda personalizzate e controlla effetti come inviluppo e vibrato in tempo reale.",
-            "ja": "Pyxel のオーディオ拡張機能を使ったインタラクティブなシンセサイザー。カスタム波形の定義、エンベロープ、ビブラートなどのエフェクトをリアルタイムに操作できます。",
-            "ko": "Pyxel의 오디오 확장 기능을 사용한 인터랙티브 신시사이저. 커스텀 파형 정의, 엔벨로프, 비브라토 등의 이펙트를 실시간으로 조작할 수 있습니다.",
-            "pt": "Sintetizador interativo usando os recursos de áudio expandidos do Pyxel. Defina formas de onda personalizadas e manipule efeitos como envelope e vibrato em tempo real.",
-            "ru": "Интерактивный синтезатор на расширенных аудиофункциях Pyxel. Определяйте пользовательские формы волны и управляйте эффектами вроде огибающей и вибрато в реальном времени.",
-            "tr": "Pyxel'in genişletilmiş ses özelliklerini kullanan etkileşimli sentezleyici. Özel dalga formları tanımlayın ve zarf, vibrato gibi efektleri gerçek zamanlı kontrol edin.",
-            "uk": "Інтерактивний синтезатор на розширених аудіофункціях Pyxel. Визначайте власні форми хвилі та керуйте ефектами на кшталт обвідної та вібрато в реальному часі."
+            "en": "An interactive synthesizer using Pyxel's expanded audio features. Edit waveforms and gain in real time.",
+            "cn": "使用 Pyxel 音频扩展功能的互动合成器。可以实时编辑波形和增益。",
+            "de": "Ein interaktiver Synthesizer mit den erweiterten Audiofunktionen von Pyxel. Bearbeiten Sie Wellenformen und Verstärkung in Echtzeit.",
+            "es": "Sintetizador interactivo usando las funciones de audio expandidas de Pyxel. Edita formas de onda y ganancia en tiempo real.",
+            "fr": "Synthétiseur interactif utilisant les fonctions audio étendues de Pyxel. Modifiez les formes d'onde et le gain en temps réel.",
+            "it": "Sintetizzatore interattivo che utilizza le funzionalità audio espanse di Pyxel. Modifica forme d'onda e guadagno in tempo reale.",
+            "ja": "Pyxel のオーディオ拡張機能を使ったインタラクティブなシンセサイザー。波形と音量をリアルタイムに編集できます。",
+            "ko": "Pyxel의 오디오 확장 기능을 사용한 인터랙티브 신시사이저. 파형과 게인을 실시간으로 편집할 수 있습니다.",
+            "pt": "Sintetizador interativo usando os recursos de áudio expandidos do Pyxel. Edite formas de onda e ganho em tempo real.",
+            "ru": "Интерактивный синтезатор на расширенных аудиофункциях Pyxel. Редактируйте формы волны и усиление в реальном времени.",
+            "tr": "Pyxel'in genişletilmiş ses özelliklerini kullanan etkileşimli sentezleyici. Dalga formlarını ve kazancı gerçek zamanlı düzenleyin.",
+            "uk": "Інтерактивний синтезатор на розширених аудіофункціях Pyxel. Редагуйте форми хвилі та підсилення в реальному часі."
           }
         },
         {
@@ -714,18 +714,18 @@
             "uk": "Лаунчер застосунків Pyxel"
           },
           "details": {
-            "en": "A launcher for selecting and running various Pyxel sample applications from a menu. Also serves as a reference for subprocess-based app execution and list-style UI implementation.",
-            "cn": "可以从菜单选择并启动各种 Pyxel 示例应用的启动器。也可作为子进程应用执行和列表式 UI 实现的参考。",
-            "de": "Ein Launcher zum Auswählen und Starten verschiedener Pyxel-Beispielanwendungen aus einem Menü. Dient auch als Referenz für Subprozess-basierte App-Ausführung und Listen-UI-Implementierung.",
-            "es": "Launcher para seleccionar y ejecutar varias aplicaciones de ejemplo de Pyxel desde un menú. También sirve como referencia para ejecución de apps mediante subprocesos e implementación de UI tipo lista.",
-            "fr": "Lanceur permettant de sélectionner et d'exécuter diverses applications d'exemple Pyxel depuis un menu. Sert aussi de référence pour l'exécution d'applications par sous-processus et l'implémentation d'une interface utilisateur sous forme de liste.",
-            "it": "Launcher per selezionare e avviare varie applicazioni di esempio Pyxel da un menu. Serve anche come riferimento per l'esecuzione di app tramite sottoprocessi e l'implementazione di UI a lista.",
-            "ja": "Pyxel の各種サンプルアプリケーションをメニューから選んで起動できるランチャー。サブプロセスによるアプリ実行やリスト型 UI の実装例としても参考になります。",
-            "ko": "메뉴에서 다양한 Pyxel 샘플 애플리케이션을 선택하여 실행할 수 있는 런처. 서브프로세스를 통한 앱 실행과 리스트형 UI 구현의 참고가 됩니다.",
-            "pt": "Launcher para selecionar e executar vários aplicativos de exemplo do Pyxel a partir de um menu. Também serve como referência para execução de apps via subprocesso e implementação de UI em lista.",
-            "ru": "Лаунчер для выбора и запуска различных примеров Pyxel из меню. Также полезен как справка по запуску приложений через подпроцессы и реализации интерфейса со списком.",
-            "tr": "Menüden çeşitli Pyxel örnek uygulamalarını seçip çalıştırabilen başlatıcı. Alt süreçle uygulama çalıştırma ve liste tarzı arayüz uygulaması için de referans niteliğindedir.",
-            "uk": "Лаунчер для вибору та запуску різних прикладів Pyxel з меню. Також корисний як довідка із запуску застосунків через підпроцеси та реалізації інтерфейсу зі списком."
+            "en": "A launcher for selecting and running various Pyxel sample applications from a menu. Also serves as a reference for app launching and list-style UI implementation.",
+            "cn": "可以从菜单选择并启动各种 Pyxel 示例应用的启动器。也可作为应用启动和列表式 UI 实现的参考。",
+            "de": "Ein Launcher zum Auswählen und Starten verschiedener Pyxel-Beispielanwendungen aus einem Menü. Dient auch als Referenz für App-Start und Listen-UI-Implementierung.",
+            "es": "Launcher para seleccionar y ejecutar varias aplicaciones de ejemplo de Pyxel desde un menú. También sirve como referencia para inicio de apps e implementación de UI tipo lista.",
+            "fr": "Lanceur permettant de sélectionner et d'exécuter diverses applications d'exemple Pyxel depuis un menu. Sert aussi de référence pour le lancement d'applications et l'implémentation d'une interface utilisateur sous forme de liste.",
+            "it": "Launcher per selezionare e avviare varie applicazioni di esempio Pyxel da un menu. Serve anche come riferimento per l'avvio di app e l'implementazione di UI a lista.",
+            "ja": "Pyxel の各種サンプルアプリケーションをメニューから選んで起動できるランチャー。アプリの起動やリスト型 UI の実装例としても参考になります。",
+            "ko": "메뉴에서 다양한 Pyxel 샘플 애플리케이션을 선택하여 실행할 수 있는 런처. 앱 실행과 리스트형 UI 구현의 참고가 됩니다.",
+            "pt": "Launcher para selecionar e executar vários aplicativos de exemplo do Pyxel a partir de um menu. Também serve como referência para inicialização de apps e implementação de UI em lista.",
+            "ru": "Лаунчер для выбора и запуска различных примеров Pyxel из меню. Также полезен как справка по запуску приложений и реализации интерфейса со списком.",
+            "tr": "Menüden çeşitli Pyxel örnek uygulamalarını seçip çalıştırabilen başlatıcı. Uygulama başlatma ve liste tarzı arayüz uygulaması için de referans niteliğindedir.",
+            "uk": "Лаунчер для вибору та запуску різних прикладів Pyxel з меню. Також корисний як довідка із запуску застосунків та реалізації інтерфейсу зі списком."
           }
         },
         {
@@ -882,7 +882,7 @@
         {
           "file": "30 Seconds of Daylight",
           "demo": "apps/30sec-of-daylight.html",
-          "code": "https://github.com/helpcomputer/30SecondsOfDaylight",
+          "code": "https://github.com/kitao/30SecondsOfDaylight",
           "description": {
             "en": "Pyxel Jam-winning roguelike game by Adam",
             "cn": "Adam 制作的 Pyxel Jam 获奖 roguelike 游戏",

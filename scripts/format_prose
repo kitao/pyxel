@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-# Apply each language's typographic conventions to translation and documentation
-# text, so the prose stays uniform without manual review.
+# Apply language-specific typography while preserving code and link targets.
 
 import json
 import re
@@ -18,18 +17,18 @@ _CJK = r"ぁ-ゖァ-ヺー一-鿿"
 # Spans whose interior is preserved verbatim while the span as a whole still
 # takes a space against adjacent kana/kanji.
 _SHORTCUT_SPAN = r"(?:Ctrl|Alt|Shift|Cmd)\([A-Za-z]+\)"
-# Empty parens only: "word(content)" may be a prose annotation, which the
-# parenthesis rules must keep handling. The ASCII lookbehind stands in for \b,
-# which Unicode word characters (kana/kanji) would defeat.
+# Preserve API-style calls whose attached parentheses contain no Japanese or
+# Chinese prose. The ASCII lookbehind stands in for \b, which Unicode word
+# characters (kana/kanji) would defeat.
 _API_CALL_SPAN = re.compile(
-    r"(?<![0-9A-Za-z_])[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?\(\)"
+    rf"(?<![0-9A-Za-z_])[A-Za-z_][A-Za-z0-9_]*"
+    rf"(?:\.[A-Za-z_][A-Za-z0-9_]*)?\((?![^()\n]*[{_CJK}])[^()\n]*\)"
 )
 _STRUCTURAL_SPAN = re.compile(
     rf"{_SHORTCUT_SPAN}|`[^`]*`|\{{[^}}]*\}}|!?\[[^\]]*\][(（][^)）]*[)）]"
 )
-# The invisible literal is U+F8FF (private use); target prose never contains it.
+# Private-use delimiter for protected spans
 _PLACEHOLDER = ""
-_PLACEHOLDER_RE = re.compile(_PLACEHOLDER)
 
 
 def main():
@@ -50,9 +49,6 @@ def _target_files():
 
 
 def _is_target(rel):
-    if rel == "docs/coding-policy.md":
-        # Keep policy examples literal; several intentionally show anti-patterns.
-        return False
     if rel.startswith("web/") and rel.endswith(".json"):
         return True
     if rel.startswith(".github/") and rel.endswith(".yml"):
@@ -127,17 +123,29 @@ def _format_lines(path, fenced):
 
 
 def format_text(text, lang):
+    delimiter = _PLACEHOLDER
+    while delimiter in text:
+        delimiter += _PLACEHOLDER
+    placeholder_re = re.compile(rf"{delimiter}([0-9]+){delimiter}")
     spans = []
-    text = _STRUCTURAL_SPAN.sub(lambda m: spans.append(m.group()) or _PLACEHOLDER, text)
+
+    def restore(match):
+        return spans[int(match.group(1))]
+
+    def protect(match):
+        # An API call can contain an already protected code or brace span.
+        spans.append(placeholder_re.sub(restore, match.group()))
+        return f"{delimiter}{len(spans) - 1}{delimiter}"
+
+    text = _STRUCTURAL_SPAN.sub(protect, text)
     text = _normalize_api_call_spacing(text)
-    text = _API_CALL_SPAN.sub(lambda m: spans.append(m.group()) or _PLACEHOLDER, text)
+    text = _API_CALL_SPAN.sub(protect, text)
     text = _normalize_common(text)
     if lang in ("ja", "cn"):
         text = _normalize_parentheses(text, lang)
         text = _space_around_tokens(text)
         text = _remove_line_break_padding(text)
-    span_iter = iter(spans)
-    return _PLACEHOLDER_RE.sub(lambda m: next(span_iter), text)
+    return placeholder_re.sub(restore, text)
 
 
 # Language-agnostic rules
@@ -152,11 +160,12 @@ def _normalize_common(text):
 
 
 def _normalize_api_call_spacing(text):
-    return re.sub(
+    text = re.sub(
         r"(?<![0-9A-Za-z_])([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?) \(\)",
         r"\1()",
         text,
     )
+    return re.sub(r"(?<![0-9A-Za-z_])(abs|max) \(([^()\n]*)\)", r"\1(\2)", text)
 
 
 def _remove_line_break_padding(text):

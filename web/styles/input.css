@@ -21,7 +21,7 @@
     @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
   }
   .input {
-    @apply bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+    @apply bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full min-w-0 placeholder:text-gray-400 text-sm;
   }
   .chip {
     @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
@@ -74,6 +74,9 @@
   .const-chip {
     @apply text-[11px] font-mono text-pink-300 bg-pink-500/10 px-2 py-0.5 rounded whitespace-nowrap;
   }
+  .api-signature {
+    overflow-wrap: anywhere;
+  }
 
   /* User guide code blocks and link lists */
   .code-block {
@@ -110,7 +113,14 @@
       focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
   }
   .help {
-    @apply space-y-1 mt-1 pl-5 text-gray-400 text-xs list-disc;
+    @apply space-y-1 mt-1 pl-5 min-w-0 text-gray-400 text-xs list-disc;
+  }
+  .launcher-examples,
+  .launcher-examples > div {
+    @apply min-w-0;
+  }
+  .launcher-examples .link {
+    overflow-wrap: anywhere;
   }
   .checkbox {
     @apply accent-indigo-500 w-4 h-4 rounded cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-900;
@@ -171,13 +181,14 @@
   }
   .modal {
     @apply bg-gray-800 border border-gray-600 rounded-lg shadow-2xl p-4;
-    min-width: 30rem;
+    width: min(30rem, calc(100vw - 2rem));
+    min-width: 0;
   }
   .modal-title {
     @apply text-xs font-medium text-gray-200 mb-3;
   }
   .modal-input {
-    @apply w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-xs text-gray-200 placeholder-gray-500 outline-none focus:border-gray-400;
+    @apply w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-xs text-gray-200 placeholder-gray-400 outline-none focus:border-gray-400;
   }
   .modal-btn {
     @apply text-xs px-3 py-1 rounded cursor-pointer;

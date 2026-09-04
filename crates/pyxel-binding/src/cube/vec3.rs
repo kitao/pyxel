@@ -2,12 +2,10 @@ use pyo3::prelude::*;
 
 use super::mat4::Mat4;
 
-define_frozen_wrapper!(Vec3, pyxel::cube::Vec3);
+define_frozen_wrapper!(Vec3, pyxel::cube::Vec3, module = "pyxel.cube");
 
 #[pymethods]
 impl Vec3 {
-    // Constructor
-
     #[new]
     #[pyo3(signature = (x=0.0, y=0.0, z=0.0))]
     fn new(x: f32, y: f32, z: f32) -> Self {
@@ -116,15 +114,12 @@ impl Vec3 {
         }
     }
 
-    fn __iter__(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let v = slf.inner_ref();
-        let list = pyo3::types::PyList::new(py, [v.x, v.y, v.z])?;
-        Ok(list.call_method0("__iter__")?.unbind())
+    fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let v = self.inner_ref();
+        items_to_pyiter!(py, [v.x, v.y, v.z])
     }
 
-    // PyO3 dunder methods must take &self even when the body does not use
-    // it; refactoring to an associated function would not register the
-    // method on the Python class.
+    // PyO3 requires an instance receiver for this protocol method.
     #[allow(clippy::unused_self)]
     fn __len__(&self) -> usize {
         3
@@ -234,8 +229,6 @@ impl Vec3 {
         Self::wrap(self.inner_ref().to_world_dir(&mat.inner_ref()))
     }
 }
-
-// Module registration
 
 pub fn add_vec3_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Vec3>()?;

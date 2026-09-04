@@ -22,8 +22,6 @@ class ToggleButton(Widget):
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
 
-    # Helpers
-
     @property
     def button_color(self):
         if not self.is_enabled_var:

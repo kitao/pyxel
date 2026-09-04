@@ -10,7 +10,7 @@ use crate::music::Music;
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{
     DEFAULT_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
-    TILEMAP_SIZE, VERSION,
+    TILEMAP_SIZE,
 };
 use crate::sound::{Sound, SoundEffect, SoundNote, SoundTone, SoundVolume};
 use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
@@ -25,8 +25,6 @@ trait ResourceItem: Clone {
     fn clear(&mut self);
     fn deserialize(&mut self, version: u32, input: &str, entry: &str) -> Result<(), String>;
 }
-
-// Image data
 
 impl ResourceItem for Image {
     fn resource_name(item_index: u32) -> String {
@@ -64,8 +62,6 @@ impl ResourceItem for Image {
     }
 }
 
-// Tilemap data
-
 impl ResourceItem for Tilemap {
     fn resource_name(item_index: u32) -> String {
         format!("{RESOURCE_ARCHIVE_DIRNAME}tilemap{item_index}")
@@ -97,6 +93,7 @@ impl ResourceItem for Tilemap {
                     }
                     for (x, group) in digits.chunks_exact(group_width).enumerate() {
                         let tile = parse_hex_group(group, entry, y + 1, x * group_width + 1)?;
+                        // Pre-1.5 tiles use linear IDs in 32 columns; later tiles pack x/y bytes.
                         let value = if version < 10500 {
                             ((tile % 32) as ImageTileCoord, (tile / 32) as ImageTileCoord)
                         } else {
@@ -136,8 +133,6 @@ impl ResourceItem for Tilemap {
     }
 }
 
-// Sound data
-
 impl ResourceItem for Sound {
     fn resource_name(item_index: u32) -> String {
         format!("{RESOURCE_ARCHIVE_DIRNAME}sound{item_index:02}")
@@ -160,6 +155,7 @@ impl ResourceItem for Sound {
             }
             match i {
                 0 => parse_hex_values(line, 2, entry, i + 1, |value| {
+                    // Note bytes are signed, including negative rest markers.
                     self.notes.push(value as i8 as SoundNote);
                 })?,
                 1 => parse_hex_values(line, 1, entry, i + 1, |value| {
@@ -192,8 +188,6 @@ impl ResourceItem for Sound {
         Ok(())
     }
 }
-
-// Music data
 
 impl ResourceItem for Music {
     fn resource_name(item_index: u32) -> String {
@@ -247,8 +241,14 @@ impl Pyxel {
         };
         let version =
             parse_version_string(&contents).map_err(|_| format!("invalid version '{contents}'"))?;
-        let current_version =
-            parse_version_string(VERSION).expect("Pyxel version constant must be valid");
+        let current_version = parse_version_string(concat!(
+            env!("CARGO_PKG_VERSION_MAJOR"),
+            ".",
+            env!("CARGO_PKG_VERSION_MINOR"),
+            ".",
+            env!("CARGO_PKG_VERSION_PATCH")
+        ))
+        .expect("Pyxel version constant must be valid");
         if version > current_version {
             return Err(format!("unsupported version '{contents}'"));
         }

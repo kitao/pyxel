@@ -54,17 +54,14 @@ run_bg() {
     return "$status"
 }
 
-# Run example scripts
 for f in "$EXAMPLES_DIR"/*.py; do
     run_bg pyxel run "$f"
 done
 
-# Run bundled example apps
 for f in "$EXAMPLES_DIR"/apps/*.pyxapp; do
     run_bg pyxel play "$f"
 done
 
-# Open the resource editor
 run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
 
 # Exercise watch mode by injecting an error, restoring the file, and auto-exiting.

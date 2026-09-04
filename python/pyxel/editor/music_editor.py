@@ -71,7 +71,6 @@ class MusicEditor(EditorBase):
 
         self._sound_selector = SoundSelector(self)
 
-        # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("hide", self.__on_hide)
@@ -89,8 +88,6 @@ class MusicEditor(EditorBase):
         seqs_len = len(music.seqs)
         if seqs_len < pyxel.NUM_CHANNELS:
             music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
-        elif seqs_len > pyxel.NUM_CHANNELS:
-            del music.seqs[pyxel.NUM_CHANNELS :]
         return music.seqs[index]
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):

@@ -1,5 +1,6 @@
 use std::cmp::Ordering;
 
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyFloat, PyInt};
 use pyxel::Pyxel;
@@ -16,7 +17,7 @@ fn floor(x: f32) -> i32 {
     Pyxel::floor(x)
 }
 
-// Preserve Python int results for int inputs and float results otherwise.
+// Preserve Python int results for i64-convertible inputs; otherwise return floats.
 #[pyfunction]
 fn clamp(
     x: Bound<'_, PyAny>,
@@ -25,7 +26,6 @@ fn clamp(
 ) -> PyResult<Py<PyAny>> {
     let py = x.py();
 
-    // Try the integer path first to preserve Python int type.
     if let (Ok(xi), Ok(li), Ok(ui)) = (
         x.extract::<i64>(),
         lower.extract::<i64>(),
@@ -39,16 +39,20 @@ fn clamp(
     let xf = x.extract::<f64>()?;
     let lf = lower.extract::<f64>()?;
     let uf = upper.extract::<f64>()?;
+    if lf.is_nan() {
+        return Err(PyValueError::new_err("lower must not be NaN"));
+    }
+    if uf.is_nan() {
+        return Err(PyValueError::new_err("upper must not be NaN"));
+    }
     let (lo, hi) = if lf < uf { (lf, uf) } else { (uf, lf) };
     Ok(PyFloat::new(py, xf.clamp(lo, hi)).into_any().unbind())
 }
 
-// Preserve Python int results for int inputs and float results otherwise.
 #[pyfunction]
 fn sgn(x: Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
     let py = x.py();
 
-    // Try the integer path first to preserve Python int type.
     if let Ok(xi) = x.extract::<i64>() {
         let v = match xi.cmp(&0) {
             Ordering::Greater => 1,
@@ -100,8 +104,14 @@ fn rndi(a: i32, b: i32) -> i32 {
 }
 
 #[pyfunction]
-fn rndf(a: f32, b: f32) -> f32 {
-    Pyxel::random_float(a, b)
+fn rndf(a: f32, b: f32) -> PyResult<f32> {
+    if !a.is_finite() {
+        return Err(PyValueError::new_err("a must be finite"));
+    }
+    if !b.is_finite() {
+        return Err(PyValueError::new_err("b must be finite"));
+    }
+    Ok(Pyxel::random_float(a, b))
 }
 
 // Noise
@@ -116,8 +126,6 @@ fn nseed(seed: u32) {
 fn noise(x: f32, y: Option<f32>, z: Option<f32>) -> f32 {
     Pyxel::noise(x, y.unwrap_or(0.0), z.unwrap_or(0.0))
 }
-
-// Module registration
 
 pub fn add_math_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ceil, m)?)?;

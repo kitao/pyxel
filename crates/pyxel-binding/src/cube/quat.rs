@@ -3,19 +3,15 @@ use pyo3::prelude::*;
 use super::mat4::Mat4;
 use super::vec3::Vec3;
 
-define_frozen_wrapper!(Quat, pyxel::cube::Quat);
+define_frozen_wrapper!(Quat, pyxel::cube::Quat, module = "pyxel.cube");
 
 #[pymethods]
 impl Quat {
-    // Constructor
-
     #[new]
     #[pyo3(signature = (x=0.0, y=0.0, z=0.0, w=1.0))]
     fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Self::wrap(pyxel::cube::Quat::new(x, y, z, w))
     }
-
-    // Constants
 
     // Python class attributes intentionally expose uppercase constant names.
     #[classattr]
@@ -82,30 +78,27 @@ impl Quat {
         }
     }
 
-    fn __iter__(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let q = slf.inner_ref();
-        let list = pyo3::types::PyList::new(py, [q.x, q.y, q.z, q.w])?;
-        Ok(list.call_method0("__iter__")?.unbind())
+    fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let q = self.inner_ref();
+        items_to_pyiter!(py, [q.x, q.y, q.z, q.w])
     }
 
-    // PyO3 dunder methods must take &self even when the body does not use
-    // it; refactoring to an associated function would not register the
-    // method on the Python class.
+    // PyO3 requires an instance receiver for this protocol method.
     #[allow(clippy::unused_self)]
     fn __len__(&self) -> usize {
         4
     }
 
     fn __mul__<'py>(&self, py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
-        if let Ok(quat) = other.extract::<Quat>() {
+        if let Ok(quat) = other.extract::<PyClassGuard<'_, Quat>>() {
             let result = Quat::wrap(self.inner_ref().mul_quat(&quat.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
-        } else if let Ok(vec) = other.extract::<Vec3>() {
+        } else if let Ok(vec) = other.extract::<PyClassGuard<'_, Vec3>>() {
             let result = Vec3::wrap(self.inner_ref().mul_vec(&vec.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else {
             Err(pyo3::exceptions::PyTypeError::new_err(
-                "Quat * other: other must be Quat or Vec3",
+                "other must be Quat or Vec3",
             ))
         }
     }
@@ -114,7 +107,7 @@ impl Quat {
         Self::wrap(self.inner_ref().neg())
     }
 
-    // Class-method factories
+    // Factories
 
     #[staticmethod]
     fn from_axis_angle(axis: PyRef<'_, Vec3>, deg: f32) -> Self {
@@ -142,15 +135,15 @@ impl Quat {
     #[staticmethod]
     #[pyo3(signature = (forward, up=None))]
     fn from_direction(forward: PyRef<'_, Vec3>, up: Option<PyRef<'_, Vec3>>) -> Self {
-        let default_up = pyxel::cube::Vec3::up();
-        let up_rc = up
-            .as_ref()
-            .map_or_else(|| default_up.clone(), |u| u.inner.clone());
-        let up_inner = rc_ref!(up_rc);
-        Self::wrap(pyxel::cube::Quat::from_direction(
-            &forward.inner_ref(),
-            &up_inner,
-        ))
+        let up = up.map_or(
+            pyxel::cube::Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            |u| *u.inner_ref(),
+        );
+        Self::wrap(pyxel::cube::Quat::from_direction(&forward.inner_ref(), &up))
     }
 
     // Unary operations
@@ -200,14 +193,10 @@ impl Quat {
         (Vec3::wrap(axis), deg)
     }
 
-    // Interpolation
-
     fn slerp(&self, other: &Self, t: f32) -> Self {
         Self::wrap(self.inner_ref().slerp(&other.inner_ref(), t))
     }
 }
-
-// Module registration
 
 pub fn add_quat_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Quat>()?;

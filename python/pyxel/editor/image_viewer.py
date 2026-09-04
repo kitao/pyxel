@@ -77,7 +77,6 @@ class ImageViewer(Widget):
         )
         self.copy_var("viewport_y_var", self._v_scroll_bar, "value_var")
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)

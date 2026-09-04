@@ -3,16 +3,13 @@ use pyxel::cube::shading::LEVEL_COUNT;
 
 use super::vec3::Vec3;
 
-define_wrapper!(Shading, pyxel::cube::Shading);
+define_wrapper!(Shading, pyxel::cube::Shading, module = "pyxel.cube");
 
 #[pymethods]
 impl Shading {
-    // Constructor
-
     #[new]
-    fn new(colors: Vec<u32>) -> Self {
-        let palette: Vec<pyxel::Rgb24> = colors.into_iter().map(|c| c as pyxel::Rgb24).collect();
-        Self::wrap(pyxel::cube::Shading::new(&palette))
+    fn new(colors: Vec<pyxel::Rgb24>) -> Self {
+        Self::wrap(pyxel::cube::Shading::new(&colors))
     }
 
     // Attributes
@@ -59,13 +56,10 @@ impl Shading {
 
     // Methods
 
-    fn build(&self, colors: Vec<u32>) {
-        let palette: Vec<pyxel::Rgb24> = colors.into_iter().map(|c| c as pyxel::Rgb24).collect();
-        self.inner_mut().build(&palette);
+    fn build(&self, colors: Vec<pyxel::Rgb24>) {
+        self.inner_mut().build(&colors);
     }
 }
-
-// Module registration
 
 pub fn add_shading_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Shading>()?;

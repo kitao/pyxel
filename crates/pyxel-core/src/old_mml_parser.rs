@@ -557,8 +557,6 @@ mod tests {
 
     #[test]
     fn test_trailing_whitespace_ends_parse() {
-        // Branch matchers consume trailing whitespace; the parser must end
-        // cleanly instead of panicking on the exhausted stream
         assert!(parse_old_mml("c~\n").is_ok());
         assert!(parse_old_mml("v7 ").is_ok());
         assert!(parse_old_mml(" ").is_ok());

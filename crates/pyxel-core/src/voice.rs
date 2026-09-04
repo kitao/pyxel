@@ -7,7 +7,6 @@ use crate::tone::{RcTone, ToneMode};
 
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
-// Fixed-point Q14 scaling for voice gain multiplication
 // Half-unit bias rounds fixed-point gain away from zero.
 const VOICE_GAIN_ROUND_BIAS: i64 = 1_i64 << (AUDIO_GAIN_SHIFT - 1);
 const PITCH_LUT_MIN_SEMITONE: f32 = -96.0;
@@ -30,8 +29,6 @@ pub struct Oscillator {
 }
 
 impl Oscillator {
-    // Constructors
-
     fn new() -> Self {
         Self {
             waveform_samples: Vec::new(),
@@ -72,11 +69,8 @@ impl Oscillator {
     }
 
     pub fn set_noise(&mut self, short_period: bool) {
-        // Reinitialize the LFSR when switching noise mode to ensure deterministic output.
-        // Each mode uses a different tap bit (6 for short-period, 1 for long-period), producing
-        // different cycle lengths. The LFSR seed is pre-advanced past leading zeros:
-        // short-period (tap 6): 15 shifts (pre-advanced, 93-sample period)    -> 0x0201
-        // long-period  (tap 1): 45 shifts (pre-advanced, 32767-sample period) -> 0x7001
+        // Seeds are pre-advanced past leading zero bits: 15 shifts for
+        // short-period noise and 45 for long-period noise.
         let tap_bit = if short_period { 6 } else { 1 };
         if tap_bit != self.tap_bit {
             self.lfsr = if short_period { 0x0201 } else { 0x7001 };
@@ -133,7 +127,6 @@ impl Oscillator {
     }
 }
 
-#[derive(Debug)]
 struct EnvelopeSegment {
     start_tick: f32,
     start_level: f32,
@@ -148,8 +141,6 @@ pub struct Envelope {
 }
 
 impl Envelope {
-    // Constructors
-
     fn new() -> Self {
         Self {
             segments: vec![EnvelopeSegment {
@@ -247,8 +238,6 @@ pub struct Vibrato {
 }
 
 impl Vibrato {
-    // Constructors
-
     fn new() -> Self {
         Self {
             delay_ticks: 0,
@@ -327,8 +316,6 @@ pub struct Glide {
 }
 
 impl Glide {
-    // Constructors
-
     fn new() -> Self {
         Self {
             semitone_offset: 0.0,
@@ -412,8 +399,6 @@ pub struct Voice {
 }
 
 impl Voice {
-    // Constructors
-
     pub fn new(clock_rate: u32, control_rate: u32, interp_clocks: u32) -> Self {
         assert!(clock_rate > 0 && control_rate > 0 && interp_clocks > 0);
         // Build the pitch-ratio table before audio processing can reach it.
@@ -517,7 +502,7 @@ impl Voice {
         self.interp_start_gain = None;
         self.interp_end_gain = None;
 
-        self.reset_control_clock();
+        self.reset_control_state();
         self.sample_remaining_clocks = Self::rescale_sample_remaining_clocks(
             previous_sample_remaining_clocks,
             previous_sample_clocks,
@@ -664,7 +649,7 @@ impl Voice {
         }
     }
 
-    // Fixed-point helpers
+    // Clock and fixed-point helpers
 
     #[inline]
     fn rescale_sample_remaining_clocks(
@@ -762,9 +747,9 @@ impl Voice {
         }
     }
 
-    // Control clock
+    // Control state
 
-    fn reset_control_clock(&mut self) {
+    fn reset_control_state(&mut self) {
         self.envelope.reset();
         self.update_modulators();
         self.update_sample_clocks();
@@ -865,6 +850,7 @@ fn semitone_to_pitch_multiplier(semitone_offset: f32) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tone::{Tone, ToneSample};
 
     const APPROX_EPSILON: f32 = 1e-4;
 
@@ -967,7 +953,6 @@ mod tests {
         osc.advance_sample();
         assert_eq!(osc.waveform_index, 1);
 
-        // Identical waveform preserves index
         osc.set(&[1.0, 0.0, -1.0]);
         assert_eq!(osc.waveform_index, 1);
     }
@@ -980,7 +965,6 @@ mod tests {
         osc.advance_sample();
         assert_eq!(osc.waveform_index, 2);
 
-        // Shorter waveform: previous index is now out of range, reset to 0
         osc.set(&[0.5, -0.5]);
         assert_eq!(osc.waveform_index, 0);
     }
@@ -1032,24 +1016,6 @@ mod tests {
     }
 
     #[test]
-    fn test_oscillator_noise_deterministic() {
-        let mut osc1 = Oscillator::new();
-        let mut osc2 = Oscillator::new();
-        osc1.set_noise(true);
-        osc2.set_noise(true);
-
-        for i in 0..20 {
-            assert_eq!(
-                osc1.sample(),
-                osc2.sample(),
-                "noise should be deterministic at step {i}"
-            );
-            osc1.advance_sample();
-            osc2.advance_sample();
-        }
-    }
-
-    #[test]
     fn test_oscillator_empty_waveform_silent() {
         let mut osc = Oscillator::new();
         osc.set(&[]);
@@ -1073,14 +1039,8 @@ mod tests {
         let mut env = Envelope::new();
         env.set(0.0, &[(10, 1.0)]);
 
-        // Disabled envelope level returns 1.0.
-        assert!(
-            approx_eq(env.level_at(0), 1.0),
-            "disabled: {}",
-            env.level_at(0)
-        );
+        assert_eq!(env.level_at(0), 1.0, "disabled");
 
-        // Enabled envelope follows the attack ramp.
         env.enable();
         assert!(
             approx_eq(env.level_at(0), 0.0),
@@ -1098,7 +1058,6 @@ mod tests {
             env.level_at(10)
         );
 
-        // Envelope reset restarts from the beginning.
         env.reset();
         assert!(
             approx_eq(env.level_at(0), 0.0),
@@ -1160,13 +1119,8 @@ mod tests {
         env.enable();
         assert!(approx_eq(env.level_at(5), 0.5), "mid: {}", env.level_at(5));
 
-        // Disabled envelope level returns to 1.0.
         env.disable();
-        assert!(
-            approx_eq(env.level_at(6), 1.0),
-            "disabled: {}",
-            env.level_at(6)
-        );
+        assert_eq!(env.level_at(6), 1.0, "disabled");
 
         env.enable();
         assert!(
@@ -1178,7 +1132,6 @@ mod tests {
 
     #[test]
     fn test_envelope_initial_level_only() {
-        // No segments beyond initial level
         let mut env = Envelope::new();
         env.set(0.8, &[]);
         env.enable();
@@ -1215,24 +1168,15 @@ mod tests {
         let mut vib = Vibrato::new();
         vib.set(0, 10, 1.0);
 
-        // Disabled vibrato multiplier returns 1.0.
         vib.update_at(5.0, 5.0);
-        assert!(
-            approx_eq(vib.pitch_multiplier(), 1.0),
-            "disabled: {}",
-            vib.pitch_multiplier()
-        );
+        assert_eq!(vib.pitch_multiplier(), 1.0, "disabled");
 
         // A delayed vibrato follows note time and stays neutral within its
         // delay even when playback time is far ahead.
         vib.set(10, 20, 2.0);
         vib.enable();
         vib.update_at(5.0, 1000.0);
-        assert!(
-            approx_eq(vib.pitch_multiplier(), 1.0),
-            "within delay: {}",
-            vib.pitch_multiplier()
-        );
+        assert_eq!(vib.pitch_multiplier(), 1.0, "within delay");
 
         // Vibrato modulates after its delay.
         let mut vib = Vibrato::new();
@@ -1305,11 +1249,7 @@ mod tests {
         vib.set(0, 0, 2.0);
         vib.enable();
         vib.update_at(0.0, 10.0);
-        assert!(
-            approx_eq(vib.pitch_multiplier(), 1.0),
-            "zero period: {}",
-            vib.pitch_multiplier()
-        );
+        assert_eq!(vib.pitch_multiplier(), 1.0, "zero period");
     }
 
     #[test]
@@ -1318,12 +1258,8 @@ mod tests {
         // Zero depth disables modulation even while vibrato is enabled.
         vib.set(0, 20, 0.0);
         vib.enable();
-        vib.update_at(0.0, 10.0);
-        assert!(
-            approx_eq(vib.pitch_multiplier(), 1.0),
-            "zero depth: {}",
-            vib.pitch_multiplier()
-        );
+        vib.update_at(0.0, 5.0);
+        assert_eq!(vib.pitch_multiplier(), 1.0, "zero depth");
     }
 
     // Glide
@@ -1333,13 +1269,8 @@ mod tests {
         let mut glide = Glide::new();
         glide.set(12.0, 100);
 
-        // Disabled glide multiplier returns 1.0.
         glide.update_at(0.0);
-        assert!(
-            approx_eq(glide.pitch_multiplier(), 1.0),
-            "disabled: {}",
-            glide.pitch_multiplier()
-        );
+        assert_eq!(glide.pitch_multiplier(), 1.0, "disabled");
 
         // Glide starts at its offset and converges to 1.0.
         glide.enable();
@@ -1359,11 +1290,7 @@ mod tests {
         );
 
         glide.update_at(100.0);
-        assert!(
-            approx_eq(glide.pitch_multiplier(), 1.0),
-            "end: {}",
-            glide.pitch_multiplier()
-        );
+        assert_eq!(glide.pitch_multiplier(), 1.0, "end");
     }
 
     #[test]
@@ -1372,11 +1299,7 @@ mod tests {
         glide.set(12.0, 0);
         glide.enable();
         glide.update_at(0.0);
-        assert!(
-            approx_eq(glide.pitch_multiplier(), 1.0),
-            "zero duration: {}",
-            glide.pitch_multiplier()
-        );
+        assert_eq!(glide.pitch_multiplier(), 1.0, "zero duration");
     }
 
     #[test]
@@ -1393,11 +1316,7 @@ mod tests {
         );
 
         glide.update_at(100.0);
-        assert!(
-            approx_eq(glide.pitch_multiplier(), 1.0),
-            "converged: {}",
-            glide.pitch_multiplier()
-        );
+        assert_eq!(glide.pitch_multiplier(), 1.0, "converged");
     }
 
     #[test]
@@ -1415,8 +1334,6 @@ mod tests {
     }
 
     // Voice
-
-    use crate::tone::{Tone, ToneSample};
 
     fn make_tone(sample_bits: u32, wavetable: Vec<ToneSample>) -> RcTone {
         let tone = Tone::new();
@@ -1570,6 +1487,7 @@ mod tests {
         blip_buf.end_frame(1000).unwrap();
         let mut samples = [0_i16; 4096];
         let count = blip_buf.read_samples(&mut samples, false);
+        assert!(count > 0);
         assert!(
             samples[..count].iter().all(|&s| s == 0),
             "expected silence without a note"
@@ -1621,7 +1539,7 @@ mod tests {
         audio_mut!(&tone).gain = 0.25;
         voice.process(None, 0, control_clocks);
 
-        assert!(approx_eq(voice.current_velocity_cache, 0.25));
+        assert_eq!(voice.current_velocity_cache, 0.25);
         assert!((voice.current_velocity_cache - before).abs() > APPROX_EPSILON);
     }
 

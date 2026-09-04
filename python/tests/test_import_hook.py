@@ -81,3 +81,49 @@ def test_caller_relative_module_sets_main_dir(import_hook, monkeypatch, tmp_path
     hook.find_spec("pkg", None)
 
     assert hook.main_dir == str(caller.resolve())
+
+
+def test_find_spec_suppresses_reentrant_lookup(import_hook, monkeypatch):
+    hook = import_hook.ImportHook()
+    calls = []
+
+    def find_spec(name):
+        calls.append(name)
+        assert hook.find_spec(name, None) is None
+        return SimpleNamespace(origin="built-in")
+
+    monkeypatch.setattr(import_hook.importlib.util, "find_spec", find_spec)
+
+    assert hook.find_spec("recursive_pkg", None) is None
+    assert calls == ["recursive_pkg"]
+
+
+def test_cached_main_dir_is_probed_from_another_caller(
+    import_hook, monkeypatch, tmp_path
+):
+    hook = import_hook.ImportHook()
+    probes = []
+    main = tmp_path / "main"
+    other = tmp_path / "other"
+    caller = str(main / "app.py")
+    monkeypatch.setattr(import_hook.importlib.util, "find_spec", lambda name: None)
+    monkeypatch.setattr(import_hook.sys, "_getframe", lambda depth: _frame(caller))
+
+    def exists(path):
+        probes.append(path)
+        return path == str(main / "first.py")
+
+    monkeypatch.setattr(import_hook.os.path, "exists", exists)
+    hook.find_spec("first", None)
+    caller = str(other / "plugin.py")
+    probes.clear()
+
+    hook.find_spec("nested.module", None)
+
+    assert hook.main_dir == str(main)
+    assert probes == [
+        str(other / "nested" / "module.py"),
+        str(other / "nested" / "module" / "__init__.py"),
+        str(main / "nested" / "module.py"),
+        str(main / "nested" / "module" / "__init__.py"),
+    ]

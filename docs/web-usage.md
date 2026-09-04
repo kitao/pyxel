@@ -35,6 +35,8 @@ Launch URLs can be created on the [Pyxel Web Launcher](https://kitao.github.io/p
 https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>
 ```
 
+For branch names containing /, URL Builder makes the branch and file path unambiguous. It also handles characters such as # and ? in paths and filenames.
+
 ### Commands
 
 | Command | Action |
@@ -83,17 +85,17 @@ Apps consisting of multiple Python files load faster when bundled into a `.pyxap
 
 ## app2html Command
 
-The `pyxel app2html` command converts a Pyxel application file (.pyxapp) into a standalone HTML file.
+The `pyxel app2html` command converts a Pyxel application file (.pyxapp) into a single HTML file.
 
 ```sh
 pyxel app2html your_app.pyxapp
 ```
 
-All code and resource data are embedded in the HTML, so the generated file can be published simply by distributing it.
+Application code and resource data are embedded in the HTML, so only the generated file needs to be published. When the page starts, it loads the pinned Pyxel runtime from jsDelivr, so running it requires network access.
 
-The Pyxel version is pinned to the one used at conversion time, so future updates will not affect behavior.
+The generated HTML specifies the Pyxel version used at conversion time, so later Pyxel releases do not change which version it loads.
 
-The virtual gamepad is enabled by default and automatically displayed on touch devices. To disable it, remove `gamepad: "enabled"` from the generated HTML.
+The virtual gamepad is enabled by default and automatically displayed on touch devices. To disable it, remove `gamepad: "enabled",` from the generated HTML.
 
 ## HTML Custom Elements
 
@@ -110,7 +112,7 @@ Add the following script tag to your HTML. If no version is specified, the lates
 You can pin the Pyxel version by specifying a version number after `@`.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.9.9/wasm/pyxel.js"></script>
 ```
 
 Loading this script makes three HTML custom elements available, corresponding to Pyxel's `run`, `play`, and `edit` commands: `pyxel-run`, `pyxel-play`, and `pyxel-edit`.

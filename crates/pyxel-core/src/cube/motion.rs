@@ -38,7 +38,16 @@ pub enum MotionValues {
     Scales(Vec<Vec3>),
 }
 
-// Transform component a channel animates.
+impl MotionValues {
+    pub(crate) fn len(&self) -> usize {
+        match self {
+            Self::Translations(values) | Self::Scales(values) => values.len(),
+            Self::Rotations(values) => values.len(),
+            Self::CubicTranslations(values) | Self::CubicScales(values) => values.len(),
+            Self::CubicRotations(values) => values.len(),
+        }
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MotionTarget {
@@ -72,8 +81,6 @@ pub struct Motion {
 }
 
 define_rc_type!(RcMotion, Motion);
-
-// Clip sampling
 
 impl Motion {
     pub fn new(name: String, length: f32, base_transforms: Vec<Mat4>) -> RcMotion {
@@ -112,7 +119,7 @@ impl Motion {
             .enumerate()
             .filter_map(|(part_index, components)| {
                 components.map(|(pos, rot, scale)| {
-                    let transform = compose_value(&pos, &rot, &scale);
+                    let transform = Mat4::compose_value(&pos, &rot, &scale);
                     (part_index, transform)
                 })
             })
@@ -135,7 +142,7 @@ impl Motion {
 
 impl MotionChannel {
     fn is_usable(&self) -> bool {
-        self.inputs.len().min(self.value_len()) > 0
+        self.inputs.len().min(self.values.len()) > 0
             && matches!(
                 (&self.target, &self.values),
                 (
@@ -154,7 +161,7 @@ impl MotionChannel {
     // Assumes `inputs` ascend — the glTF sampler contract, upheld by
     // glb_parser (the only channel producer).
     fn key_span(&self, frame: f32) -> Option<(usize, usize, f32)> {
-        let key_count = self.inputs.len().min(self.value_len());
+        let key_count = self.inputs.len().min(self.values.len());
         if key_count == 0 {
             return None;
         }
@@ -199,17 +206,6 @@ impl MotionChannel {
             | MotionValues::CubicTranslations(_)
             | MotionValues::Scales(_)
             | MotionValues::CubicScales(_) => identity_quat(),
-        }
-    }
-
-    fn value_len(&self) -> usize {
-        match &self.values {
-            MotionValues::Translations(values) | MotionValues::Scales(values) => values.len(),
-            MotionValues::Rotations(values) => values.len(),
-            MotionValues::CubicTranslations(values) | MotionValues::CubicScales(values) => {
-                values.len()
-            }
-            MotionValues::CubicRotations(values) => values.len(),
         }
     }
 
@@ -331,23 +327,6 @@ fn cubic_quat(
     quat.normalize_value()
 }
 
-// Non-Rc transform composition for the per-frame sampling path
-
-// Mirrors Mat4::compose (T * R * S) through the value-typed operator
-// cores, computing a bit-identical transform without Rc temporaries.
-fn compose_value(pos: &Vec3, rot: &Quat, scale: &Vec3) -> Mat4 {
-    let mut t = Mat4::identity_value();
-    t.data[0][3] = pos.x;
-    t.data[1][3] = pos.y;
-    t.data[2][3] = pos.z;
-    let r = rot.matrix_value();
-    let mut s = Mat4::identity_value();
-    s.data[0][0] = scale.x;
-    s.data[1][1] = scale.y;
-    s.data[2][2] = scale.z;
-    t.mul_mat_value(&r).mul_mat_value(&s)
-}
-
 // Fallback value helpers
 
 fn zero_vec3() -> Vec3 {
@@ -441,6 +420,43 @@ mod tests {
     }
 
     #[test]
+    fn test_cubic_rotation_normalizes_midpoint() {
+        let zero = Quat {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 0.0,
+        };
+        let channel = MotionChannel {
+            part_index: 0,
+            target: MotionTarget::Rotation,
+            inputs: vec![0.0, 2.0],
+            values: MotionValues::CubicRotations(vec![
+                CubicQuatKey {
+                    in_tangent: zero,
+                    value: identity_quat(),
+                    out_tangent: zero,
+                },
+                CubicQuatKey {
+                    in_tangent: zero,
+                    value: Quat {
+                        x: 0.0,
+                        y: 1.0,
+                        z: 0.0,
+                        w: 0.0,
+                    },
+                    out_tangent: zero,
+                },
+            ]),
+            interpolation: MotionInterpolation::CubicSpline,
+        };
+        let q = channel.sample_quat(1.0);
+        assert_eq!((q.x, q.z), (0.0, 0.0));
+        assert!((q.y - std::f32::consts::FRAC_1_SQRT_2).abs() < 1e-6);
+        assert!((q.w - std::f32::consts::FRAC_1_SQRT_2).abs() < 1e-6);
+    }
+
+    #[test]
     fn test_key_span_handles_boundaries_and_non_finite_frames() {
         let mut channel = translation_channel(MotionInterpolation::Linear);
         channel.inputs = vec![0.0, 10.0, 20.0, 30.0];
@@ -474,7 +490,7 @@ mod tests {
             }],
         };
 
-        assert!(motion.sample(15.0, false).is_empty());
+        assert_eq!(motion.sample(15.0, false), [] as [(usize, Mat4); 0]);
     }
 
     #[test]
@@ -486,7 +502,7 @@ mod tests {
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
 
-        assert!((sampled_x(&motion, 15.0, false) - 0.5).abs() < 1e-6);
+        assert_eq!(sampled_x(&motion, 15.0, false), 0.5);
     }
 
     #[test]
@@ -498,7 +514,7 @@ mod tests {
             channels: vec![translation_channel(MotionInterpolation::Step)],
         };
 
-        assert!((sampled_x(&motion, 15.0, false) - 0.0).abs() < 1e-6);
+        assert_eq!(sampled_x(&motion, 15.0, false), 0.0);
     }
 
     #[test]
@@ -522,7 +538,7 @@ mod tests {
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
 
-        assert!((sampled_x(&motion, 99.0, false) - 1.0).abs() < 1e-6);
+        assert_eq!(sampled_x(&motion, 99.0, false), 1.0);
     }
 
     #[test]
@@ -534,7 +550,7 @@ mod tests {
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
 
-        assert!((sampled_x(&motion, 45.0, true) - 0.5).abs() < 1e-6);
+        assert_eq!(sampled_x(&motion, 45.0, true), 0.5);
     }
 
     #[test]
@@ -566,9 +582,7 @@ mod tests {
         let sampled = sampled_part_transform(&motion, 15.0, false);
         let scale_rc = sampled.scale_vec();
         let scale = rc_ref!(&scale_rc);
-        assert!((scale.x - 2.0).abs() < 1e-6);
-        assert!((scale.y - 3.0).abs() < 1e-6);
-        assert!((scale.z - 4.0).abs() < 1e-6);
+        assert_eq!((scale.x, scale.y, scale.z), (2.0, 3.0, 4.0));
     }
 
     #[test]

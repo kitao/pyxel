@@ -2,6 +2,7 @@ use std::ops::{Deref, DerefMut};
 use std::sync::MutexGuard;
 
 use pyo3::prelude::*;
+use pyo3::types::{PySlice, PySliceIndices};
 
 pub(crate) struct MutexFieldMut<'a, T, U> {
     owner: MutexGuard<'a, T>,
@@ -37,7 +38,7 @@ impl<T, U> DerefMut for MutexFieldMut<'_, T, U> {
     }
 }
 
-// Rc helpers
+// Shared borrowing
 
 macro_rules! rc_ref {
     ($rc:expr) => {
@@ -150,20 +151,21 @@ pub(crate) fn ctypes_array_from_address(
     element_type: &str,
     length: usize,
     address: usize,
+    owner: &Bound<'_, PyAny>,
 ) -> PyResult<Py<PyAny>> {
     let ctypes = py.import("ctypes")?;
     let array_type = ctypes
         .getattr(element_type)?
         .call_method1("__mul__", (length,))?;
-    Ok(array_type
-        .call_method1("from_address", (address,))?
-        .unbind())
+    let array = array_type.call_method1("from_address", (address,))?;
+    array.setattr("_pyxel_owner", owner)?;
+    Ok(array.unbind())
 }
 
 // Index / slice helpers
 
 macro_rules! resolve_index {
-    ($index:expr, $len:expr) => {{
+    ($index:expr, $len:expr, $message:literal) => {{
         let index: isize = $index;
         let len: usize = $len;
         let resolved = if index < 0 {
@@ -172,19 +174,75 @@ macro_rules! resolve_index {
             index
         };
         if resolved < 0 || resolved as usize >= len {
-            Err(pyo3::exceptions::PyIndexError::new_err(
-                "list index out of range",
-            ))
+            Err(pyo3::exceptions::PyIndexError::new_err($message))
         } else {
             Ok(resolved as usize)
         }
     }};
 }
 
+pub(crate) struct SliceBounds {
+    start: isize,
+    stop: isize,
+    step: isize,
+}
+
+impl SliceBounds {
+    pub(crate) fn new(slice: &Bound<'_, PySlice>) -> PyResult<Self> {
+        let mut bounds = Self {
+            start: 0,
+            stop: 0,
+            step: 0,
+        };
+        // Unpack before borrowing the sequence: __index__ can resize it.
+        let result = unsafe {
+            pyo3::ffi::PySlice_Unpack(
+                slice.as_ptr(),
+                &raw mut bounds.start,
+                &raw mut bounds.stop,
+                &raw mut bounds.step,
+            )
+        };
+        if result < 0 {
+            return Err(PyErr::fetch(slice.py()));
+        }
+        Ok(bounds)
+    }
+
+    pub(crate) fn indices(mut self, len: usize) -> PySliceIndices {
+        // AdjustIndices does not call Python code.
+        let slicelength = unsafe {
+            pyo3::ffi::PySlice_AdjustIndices(
+                len as isize,
+                &raw mut self.start,
+                &raw mut self.stop,
+                self.step,
+            )
+        };
+        PySliceIndices {
+            start: self.start,
+            stop: self.stop,
+            step: self.step,
+            slicelength: slicelength as usize,
+        }
+    }
+}
+
 pub(crate) struct SliceIndices {
     next: isize,
     step: isize,
     remaining: usize,
+}
+
+impl SliceIndices {
+    pub(crate) fn descending(mut self) -> Self {
+        // Remove from the end so earlier indices remain valid.
+        if self.step > 0 && self.remaining > 0 {
+            self.next += self.step * (self.remaining - 1) as isize;
+            self.step = -self.step;
+        }
+        self
+    }
 }
 
 impl Iterator for SliceIndices {
@@ -195,8 +253,10 @@ impl Iterator for SliceIndices {
             return None;
         }
         let index = self.next as usize;
-        self.next += self.step;
         self.remaining -= 1;
+        if self.remaining > 0 {
+            self.next += self.step;
+        }
         Some(index)
     }
 
@@ -215,7 +275,6 @@ pub(crate) fn slice_indices(start: isize, step: isize, len: usize) -> SliceIndic
     }
 }
 
-// Collect items into a PyList and return its iterator
 macro_rules! items_to_pyiter {
     ($py:expr, $items:expr) => {{
         let list = pyo3::types::PyList::new($py, $items)?;
@@ -225,14 +284,13 @@ macro_rules! items_to_pyiter {
 
 // Sequence impl blocks
 
-// Read-only sequence methods: __len__, __getitem__ (with slicing + negative index),
-// __iter__, __reversed__, __repr__, __bool__
 macro_rules! impl_python_sequence_read {
     ($wrapper_name:ident, $inner_type:ty, $len:expr, $get_type:ty, $get:expr) => {
         #[pymethods]
         impl $wrapper_name {
-            fn __len__(&self) -> usize {
-                $len(&self.inner)
+            fn __len__(&self) -> PyResult<usize> {
+                self.validate()?;
+                Ok($len(&self.inner))
             }
 
             fn __getitem__<'py>(
@@ -242,8 +300,9 @@ macro_rules! impl_python_sequence_read {
             ) -> PyResult<Py<PyAny>> {
                 use pyo3::types::PySlice;
                 if let Ok(slice) = key.cast::<PySlice>() {
-                    let len = $len(&self.inner);
-                    let indices = slice.indices(len as isize)?;
+                    let bounds = $crate::utils::SliceBounds::new(slice)?;
+                    self.validate()?;
+                    let indices = bounds.indices($len(&self.inner));
                     let items = $crate::utils::slice_indices(
                         indices.start,
                         indices.step,
@@ -254,7 +313,8 @@ macro_rules! impl_python_sequence_read {
                     Ok(list.into_any().unbind())
                 } else {
                     let idx: isize = key.extract()?;
-                    let i = resolve_index!(idx, $len(&self.inner))?;
+                    self.validate()?;
+                    let i = resolve_index!(idx, $len(&self.inner), "list index out of range")?;
                     let value = $get(&self.inner, i);
                     let obj = pyo3::IntoPyObject::into_pyobject(value, py)
                         .map_err(Into::<PyErr>::into)?;
@@ -263,16 +323,19 @@ macro_rules! impl_python_sequence_read {
             }
 
             fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+                self.validate()?;
                 let items = (0..$len(&self.inner)).map(|i| $get(&self.inner, i));
                 items_to_pyiter!(py, items)
             }
 
             fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+                self.validate()?;
                 let items = (0..$len(&self.inner)).rev().map(|i| $get(&self.inner, i));
                 items_to_pyiter!(py, items)
             }
 
             fn __repr__(&self, py: Python) -> PyResult<String> {
+                self.validate()?;
                 let len = $len(&self.inner);
                 let items = (0..len).map(|i| $get(&self.inner, i));
                 let list = pyo3::types::PyList::new(py, items)?;
@@ -283,36 +346,41 @@ macro_rules! impl_python_sequence_read {
                 ))
             }
 
-            fn __bool__(&self) -> bool {
-                $len(&self.inner) > 0
+            fn __bool__(&self) -> PyResult<bool> {
+                self.validate()?;
+                Ok($len(&self.inner) > 0)
             }
         }
     };
 }
 
-// Comparison methods for primitive types: __contains__, __eq__, __add__, __mul__
 macro_rules! impl_python_sequence_cmp {
     ($wrapper_name:ident, $inner_type:ty, $len:expr, $get_type:ty, $get:expr) => {
         #[pymethods]
         impl $wrapper_name {
-            fn __contains__(&self, value: $get_type) -> bool {
-                (0..$len(&self.inner)).any(|i| $get(&self.inner, i) == value)
+            fn __contains__(&self, value: $get_type) -> PyResult<bool> {
+                self.validate()?;
+                Ok((0..$len(&self.inner)).any(|i| $get(&self.inner, i) == value))
             }
 
             fn __eq__<'py>(&self, _py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<bool> {
                 if let Ok(other_list) = other.extract::<Vec<$get_type>>() {
+                    self.validate()?;
                     let len = $len(&self.inner);
                     if len != other_list.len() {
                         return Ok(false);
                     }
                     Ok((0..len).all(|i| $get(&self.inner, i) == other_list[i]))
                 } else if let Ok(other_self) = other.extract::<$wrapper_name>() {
+                    self.validate()?;
+                    other_self.validate()?;
                     let len = $len(&self.inner);
                     if len != $len(&other_self.inner) {
                         return Ok(false);
                     }
                     Ok((0..len).all(|i| $get(&self.inner, i) == $get(&other_self.inner, i)))
                 } else {
+                    self.validate()?;
                     Ok(false)
                 }
             }
@@ -322,14 +390,16 @@ macro_rules! impl_python_sequence_cmp {
                 py: Python<'py>,
                 other: &Bound<'py, PyAny>,
             ) -> PyResult<Py<PyAny>> {
-                let len = $len(&self.inner);
                 let other_items: Vec<$get_type> = other.extract()?;
+                self.validate()?;
+                let len = $len(&self.inner);
                 let items = (0..len).map(|i| $get(&self.inner, i)).chain(other_items);
                 let list = pyo3::types::PyList::new(py, items)?;
                 Ok(list.into_any().unbind())
             }
 
             fn __mul__(&self, py: Python<'_>, n: isize) -> PyResult<Py<PyAny>> {
+                self.validate()?;
                 let len = $len(&self.inner);
                 let items = (0..len).map(|i| $get(&self.inner, i));
                 let list = pyo3::types::PyList::new(py, items)?;
@@ -339,12 +409,7 @@ macro_rules! impl_python_sequence_cmp {
     };
 }
 
-// Mutable sequence methods: __setitem__, __delitem__, __iadd__,
-// append, extend, insert, pop, clear
-// Single-element mutations operate directly on the internal Vec via $list_mut
-// (O(1) amortized) instead of copying the whole Vec through $to_list/$from_list.
-// $to_raw / $from_raw adapt between the PyO3-facing type ($set_type / $get_type)
-// and the storage type ($raw_item), e.g. Image wrapper <-> pyxel::RcImage.
+// $to_raw / $from_raw bridge Python wrappers and stored values.
 macro_rules! impl_python_sequence_write {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
@@ -362,9 +427,10 @@ macro_rules! impl_python_sequence_write {
             ) -> PyResult<()> {
                 use pyo3::types::PySlice;
                 if let Ok(slice) = key.cast::<PySlice>() {
-                    let len = $len(&self.inner);
-                    let indices = slice.indices(len as isize)?;
+                    let bounds = $crate::utils::SliceBounds::new(slice)?;
                     let new_values: Vec<$set_type> = value.extract()?;
+                    self.validate()?;
+                    let indices = bounds.indices($len(&self.inner));
                     if indices.step == 1 {
                         let start = indices.start as usize;
                         let end = indices.stop.max(indices.start) as usize;
@@ -384,15 +450,22 @@ macro_rules! impl_python_sequence_write {
                             indices.step,
                             indices.slicelength,
                         );
+                        let mut vec = $list_mut(&self.inner);
+                        let vec = std::ops::DerefMut::deref_mut(&mut vec);
                         for (pos, val) in positions.zip(new_values) {
-                            $set(&self.inner, pos, val);
+                            vec[pos] = $to_raw(val);
                         }
                     }
                     Ok(())
                 } else {
                     let idx: isize = key.extract()?;
-                    let i = resolve_index!(idx, $len(&self.inner))?;
                     let val: $set_type = value.extract()?;
+                    self.validate()?;
+                    let i = resolve_index!(
+                        idx,
+                        $len(&self.inner),
+                        "list assignment index out of range"
+                    )?;
                     $set(&self.inner, i, val);
                     Ok(())
                 }
@@ -405,43 +478,54 @@ macro_rules! impl_python_sequence_write {
             ) -> PyResult<()> {
                 use pyo3::types::PySlice;
                 if let Ok(slice) = key.cast::<PySlice>() {
-                    let len = $len(&self.inner);
-                    let indices = slice.indices(len as isize)?;
-                    let mut idx_list: Vec<usize> = $crate::utils::slice_indices(
+                    let bounds = $crate::utils::SliceBounds::new(slice)?;
+                    self.validate()?;
+                    let indices = bounds.indices($len(&self.inner));
+                    let positions = $crate::utils::slice_indices(
                         indices.start,
                         indices.step,
                         indices.slicelength,
                     )
-                    .collect();
-                    // Remove from end to preserve earlier indices
-                    idx_list.sort_unstable_by(|a, b| b.cmp(a));
+                    .descending();
                     let mut vec = $list_mut(&self.inner);
-                    for i in idx_list {
+                    for i in positions {
                         std::ops::DerefMut::deref_mut(&mut vec).remove(i);
                     }
                     Ok(())
                 } else {
                     let idx: isize = key.extract()?;
-                    let i = resolve_index!(idx, $len(&self.inner))?;
+                    self.validate()?;
+                    let i = resolve_index!(
+                        idx,
+                        $len(&self.inner),
+                        "list assignment index out of range"
+                    )?;
                     $list_mut(&self.inner).remove(i);
                     Ok(())
                 }
             }
 
-            fn __iadd__(&self, values: Vec<$set_type>) {
+            fn __iadd__(&self, values: Vec<$set_type>) -> PyResult<()> {
+                self.validate()?;
                 $list_mut(&self.inner).extend(values.into_iter().map($to_raw));
+                Ok(())
             }
 
-            fn append(&self, value: $set_type) {
+            fn append(&self, value: $set_type) -> PyResult<()> {
+                self.validate()?;
                 $list_mut(&self.inner).push($to_raw(value));
+                Ok(())
             }
 
-            fn extend(&self, values: Vec<$set_type>) {
+            fn extend(&self, values: Vec<$set_type>) -> PyResult<()> {
+                self.validate()?;
                 $list_mut(&self.inner).extend(values.into_iter().map($to_raw));
+                Ok(())
             }
 
             #[pyo3(signature = (index, value))]
-            fn insert(&self, index: isize, value: $set_type) {
+            fn insert(&self, index: isize, value: $set_type) -> PyResult<()> {
+                self.validate()?;
                 let mut vec = $list_mut(&self.inner);
                 let len = vec.len();
                 let i = if index < 0 {
@@ -453,10 +537,12 @@ macro_rules! impl_python_sequence_write {
                     index as usize
                 };
                 std::ops::DerefMut::deref_mut(&mut vec).insert(i, $to_raw(value));
+                Ok(())
             }
 
             #[pyo3(signature = (index=None))]
             fn pop(&self, index: Option<isize>) -> PyResult<$get_type> {
+                self.validate()?;
                 let mut vec = $list_mut(&self.inner);
                 let len = vec.len();
                 if len == 0 {
@@ -465,13 +551,15 @@ macro_rules! impl_python_sequence_write {
                     ));
                 }
                 let idx = index.unwrap_or(-1);
-                let i = resolve_index!(idx, len)?;
+                let i = resolve_index!(idx, len, "pop index out of range")?;
                 let raw: $raw_item = std::ops::DerefMut::deref_mut(&mut vec).remove(i);
                 Ok($from_raw(raw))
             }
 
-            fn clear(&self) {
+            fn clear(&self) -> PyResult<()> {
+                self.validate()?;
                 $list_mut(&self.inner).clear();
+                Ok(())
             }
 
             fn from_list(&self, vec: $list_type) -> PyResult<()> {
@@ -479,6 +567,7 @@ macro_rules! impl_python_sequence_write {
                     FROM_LIST_ONCE,
                     concat!(stringify!($wrapper_name), ".from_list() is deprecated. Use slice assignment instead.")
                 );
+                self.validate()?;
                 $from_list(&self.inner, vec);
                 Ok(())
             }
@@ -488,6 +577,7 @@ macro_rules! impl_python_sequence_write {
                     TO_LIST_ONCE,
                     concat!(stringify!($wrapper_name), ".to_list() is deprecated. Use list(seq) instead.")
                 );
+                self.validate()?;
                 let vec = $to_list(&self.inner);
                 let list = pyo3::types::PyList::new(py, vec)?;
                 Ok(list.unbind().into_any().into())
@@ -498,8 +588,6 @@ macro_rules! impl_python_sequence_write {
 
 // Sequence wrappers
 
-// Wrapper for primitive-type sequences with comparison ops.
-// Primitive case: internal Vec holds $set_type directly, so raw conversions are identities.
 macro_rules! wrap_as_python_primitive_sequence {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
@@ -507,8 +595,17 @@ macro_rules! wrap_as_python_primitive_sequence {
         $set_type:ty, $set:expr,
         $list_mut:expr,
         $list_type:ty, $from_list:expr, $to_list:expr
+        $(, module = $module:literal)?
+        $(, name = $name:literal)?
+        $(, validate = $validate:expr)?
     ) => {
-        #[pyclass(sequence, unsendable, from_py_object)]
+        #[pyclass(
+            sequence,
+            unsendable,
+            from_py_object
+            $(, module = $module)?
+            $(, name = $name)?
+        )]
         #[derive(Clone)]
         pub struct $wrapper_name {
             inner: $inner_type,
@@ -517,6 +614,11 @@ macro_rules! wrap_as_python_primitive_sequence {
         impl $wrapper_name {
             pub const fn wrap(inner: $inner_type) -> Self {
                 Self { inner }
+            }
+
+            fn validate(&self) -> PyResult<()> {
+                $(($validate)(&self.inner)?;)?
+                Ok(())
             }
         }
 
@@ -540,9 +642,6 @@ macro_rules! wrap_as_python_primitive_sequence {
     };
 }
 
-// Wrapper for object/wrapper-type sequences (no Copy/PartialEq).
-// Object case: internal Vec holds $raw_item (e.g. pyxel::RcImage) while PyO3
-// sees wrapper $set_type. $to_raw / $from_raw bridge the two.
 macro_rules! wrap_as_python_object_sequence {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
@@ -560,6 +659,10 @@ macro_rules! wrap_as_python_object_sequence {
         impl $wrapper_name {
             pub const fn wrap(inner: $inner_type) -> Self {
                 Self { inner }
+            }
+
+            fn validate(&self) -> PyResult<()> {
+                Ok(())
             }
         }
 
@@ -585,8 +688,8 @@ macro_rules! wrap_as_python_object_sequence {
 // Class wrapper
 
 macro_rules! define_wrapper {
-    ($wrapper_name:ident, $inner_type:ty) => {
-        #[pyclass(unsendable, from_py_object)]
+    ($wrapper_name:ident, $inner_type:ty $(, module = $module:literal)?) => {
+        #[pyclass(unsendable, from_py_object $(, module = $module)?)]
         #[derive(Clone)]
         pub struct $wrapper_name {
             pub(crate) inner: std::rc::Rc<std::cell::RefCell<$inner_type>>,
@@ -636,12 +739,10 @@ macro_rules! define_audio_wrapper {
     };
 }
 
-// Frozen variant for immutable types (cube math primitives).
-// Skips inner_mut() and adds the `frozen` pyclass attribute, which lets PyO3
-// hand out &T directly without runtime borrow tracking.
+// Frozen types let PyO3 return &T without runtime borrow tracking.
 macro_rules! define_frozen_wrapper {
-    ($wrapper_name:ident, $inner_type:ty) => {
-        #[pyclass(unsendable, from_py_object, frozen)]
+    ($wrapper_name:ident, $inner_type:ty $(, module = $module:literal)?) => {
+        #[pyclass(unsendable, from_py_object, frozen $(, module = $module)?)]
         #[derive(Clone)]
         pub struct $wrapper_name {
             pub(crate) inner: std::rc::Rc<std::cell::RefCell<$inner_type>>,

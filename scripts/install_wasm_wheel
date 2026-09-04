@@ -1,23 +1,103 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-set -euo pipefail
-shopt -s failglob
+import re
+import shutil
+import sys
+import zipfile
+from email.parser import Parser
+from pathlib import Path
 
-cd "$(dirname "$0")"
+import tomllib
 
-DIST_DIR="../dist"
-WASM_DIR="../wasm"
-SCRIPT_NAME="pyxel.js"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+DIST_DIR = ROOT_DIR / "dist"
+WASM_DIR = ROOT_DIR / "wasm"
+PYPROJECT_PATH = ROOT_DIR / "python" / "pyproject.toml"
+EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
+WASM_WHEEL_GLOBS = (
+    "pyxel-*-emscripten_*.whl",
+    "pyxel-*-pyemscripten_*.whl",
+)
+WHEEL_PATH_PATTERN = re.compile(r'(?m)^(const PYXEL_WHEEL_PATH\s*=\s*")[^"]+(";)$')
 
-mkdir -p "$WASM_DIR"
 
-rm -f "$WASM_DIR"/*-emscripten_*.whl
-cp -f "$DIST_DIR"/*-emscripten_*.whl "$WASM_DIR"
+def _project_name_and_version(pyproject_path):
+    try:
+        project = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))["project"]
+        name = project["name"]
+        version = project["version"]
+        if not all(isinstance(value, str) for value in (name, version)):
+            raise TypeError("project name and version must be strings")
+    except (KeyError, OSError, TypeError, tomllib.TOMLDecodeError) as error:
+        raise ValueError(f"invalid project identity: {error}") from error
+    return name, version
 
-WHEEL_PATHS=("$WASM_DIR"/*-emscripten_*.whl)
-WHEEL_NAME="$(basename "${WHEEL_PATHS[0]}")"
 
-# Use a temp file instead of sed -i for cross-platform compatibility.
-trap 'rm -f "$WASM_DIR/$SCRIPT_NAME.tmp"' EXIT
-sed "s#\\(PYXEL_WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" "$WASM_DIR/$SCRIPT_NAME" > "$WASM_DIR/$SCRIPT_NAME.tmp"
-mv "$WASM_DIR/$SCRIPT_NAME.tmp" "$WASM_DIR/$SCRIPT_NAME"
+def _find_wheel(dist_dir, pyproject_path):
+    name, version = _project_name_and_version(pyproject_path)
+    distribution = name.replace("-", "_")
+    expected_name = f"{distribution}-{version}-{EXPECTED_WHEEL_TAG}.whl"
+    wheel_paths = sorted(
+        {path for pattern in WASM_WHEEL_GLOBS for path in dist_dir.glob(pattern)}
+    )
+    if [path.name for path in wheel_paths] != [expected_name]:
+        actual_names = ", ".join(path.name for path in wheel_paths) or "none"
+        raise ValueError(
+            f"expected WebAssembly wheel {expected_name}, found {actual_names}"
+        )
+    return wheel_paths[0], version
+
+
+def _validate_wheel_tag(wheel_path, version):
+    wheel_metadata_name = f"pyxel-{version}.dist-info/WHEEL"
+    with zipfile.ZipFile(wheel_path) as wheel_zip:
+        if wheel_zip.namelist().count(wheel_metadata_name) != 1:
+            raise ValueError(f"expected wheel metadata member {wheel_metadata_name}")
+        wheel_metadata = Parser().parsestr(
+            wheel_zip.read(wheel_metadata_name).decode("utf-8", errors="strict")
+        )
+    if wheel_metadata.get_all("Tag", []) != [EXPECTED_WHEEL_TAG]:
+        raise ValueError(f"WHEEL Tag fields do not match {EXPECTED_WHEEL_TAG}")
+
+
+def main() -> int:
+    try:
+        wheel_path, version = _find_wheel(DIST_DIR, PYPROJECT_PATH)
+        _validate_wheel_tag(wheel_path, version)
+    except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
+        print(f"invalid WebAssembly wheel: {error}", file=sys.stderr)
+        return 1
+
+    WASM_DIR.mkdir(parents=True, exist_ok=True)
+    script_path = WASM_DIR / "pyxel.js"
+    script = script_path.read_text(encoding="utf-8")
+    updated_script, count = WHEEL_PATH_PATTERN.subn(
+        lambda match: f"{match.group(1)}{wheel_path.name}{match.group(2)}",
+        script,
+        count=1,
+    )
+    if count != 1:
+        print(f"wheel path pattern not found in {script_path}", file=sys.stderr)
+        return 1
+
+    installed_wheel_path = WASM_DIR / wheel_path.name
+    wheel_temp_path = installed_wheel_path.with_name(f".{wheel_path.name}.tmp")
+    script_temp_path = script_path.with_suffix(".js.tmp")
+    try:
+        shutil.copy2(wheel_path, wheel_temp_path)
+        script_temp_path.write_text(updated_script, encoding="utf-8")
+        wheel_temp_path.replace(installed_wheel_path)
+        script_temp_path.replace(script_path)
+    finally:
+        wheel_temp_path.unlink(missing_ok=True)
+        script_temp_path.unlink(missing_ok=True)
+
+    for pattern in WASM_WHEEL_GLOBS:
+        for old_wheel_path in WASM_DIR.glob(pattern):
+            if old_wheel_path != installed_wheel_path:
+                old_wheel_path.unlink()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

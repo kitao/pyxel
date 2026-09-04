@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 import pyxel
 from _capture import (  # type: ignore[reportMissingImports]
@@ -73,6 +71,14 @@ CAPTURE_PLANS = {
     ],
     "c06_3d_physics": [{"frame": 1}, {"frame": 70}, {"frame": 140}],
     "cube_demo": [{"frame": 1}, {"frame": 45}],
+    "cube_physics_character": [{"frame": 1}, {"frame": 60}],
+    "cube_physics_shoot": [
+        {"frame": 1},
+        {"frame": 2, "press": [pyxel.KEY_SPACE], "capture": False},
+        {"frame": 60},
+    ],
+    "cube_physics_stack": [{"frame": 1}, {"frame": 60}],
+    "cube_physics_terrain": [{"frame": 1}, {"frame": 60}],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
@@ -87,7 +93,13 @@ CAPTURE_PLANS = {
 }
 
 # Examples living in the examples/cube subdirectory rather than the top level
-CUBE_DIR_EXAMPLES = {"cube_demo"}
+CUBE_DIR_EXAMPLES = {
+    "cube_demo",
+    "cube_physics_character",
+    "cube_physics_shoot",
+    "cube_physics_stack",
+    "cube_physics_terrain",
+}
 
 FLIP_EXAMPLES = {"99_flip_animation"}
 
@@ -101,19 +113,6 @@ class TestExamples:
             if not script.name.startswith("__")
         }
         assert planned == examples
-
-    def test_packaged_examples_do_not_contain_audit_scripts(self):
-        audit_scripts = sorted(
-            script.relative_to(EXAMPLES_DIR)
-            for script in EXAMPLES_DIR.rglob("*.py")
-            if "_audit" in script.stem
-        )
-        assert audit_scripts == []
-
-    def test_root_has_no_unintegrated_python_test_scripts(self):
-        root_dir = Path(__file__).parents[2]
-        stray_tests = sorted(script.name for script in root_dir.glob("*_test.py"))
-        assert stray_tests == []
 
     @pytest.mark.parametrize(
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())

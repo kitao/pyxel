@@ -1,26 +1,27 @@
 [package]
-name = "pyxel-core"
-version.workspace = true
 authors.workspace = true
 edition.workspace = true
 license.workspace = true
+name = "pyxel-core"
+publish = false
+version.workspace = true
 
 [lib]
 name = "pyxel"
 
 [[bench]]
-name = "cube"
 harness = false
+name = "cube"
 
 [dependencies]
 blip_buf = "0.2"
 # wasmbind routes time queries through js-sys for Emscripten/WASM builds
-chrono = { version = "0.4", features = ["wasmbind"] }
+chrono = { features = ["wasmbind"], version = "0.4" }
 directories = "6.0"
 fontdue = "0.9"
 gif = "0.14"
 glow = "0.18"
-gltf = { version = "1", features = ["import"] }
+gltf = { features = ["import"], version = "1" }
 hound = "3.5"
 image = "0.25"
 indexmap = "2.7"
@@ -29,21 +30,23 @@ noise = "0.9"
 paste = "1.0"
 rand = "0.10"
 rand_xoshiro = "0.8"
-serde = { version = "1.0", features = ["derive"] }
+serde = { features = ["derive"], version = "1.0" }
 serde-xml-rs = "0.8"
 # all-codecs enables every format the Sound.pcm() loader can accept
-symphonia = { version = "0.6", features = ["all-codecs"] }
+symphonia = { features = ["all-codecs"], version = "0.6" }
 toml = "1.0"
 # deflate is the only codec needed for .pyxapp / .pyxres
-zip = { version = "8.1", default-features = false, features = ["deflate"] }
+zip = { default-features = false, features = ["deflate"], version = "8.1" }
 
 [dev-dependencies]
 serde_json = "1.0"
+sha2 = "0.10"
 
 [build-dependencies]
 bindgen = "0.72"
 cmake = "0.1"
 flate2 = "1.0"
+sha2 = "0.10"
 tar = "0.4"
 
 [features]

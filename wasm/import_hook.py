@@ -11,7 +11,6 @@ class ImportHook:
         self.main_dir = None
 
     def find_spec(self, fullname, path, target=None):
-        # Skip already-processed, built-in, loaded, or problematic modules.
         if (
             fullname in self.imported_modules
             or fullname in sys.builtin_module_names
@@ -19,6 +18,7 @@ class ImportHook:
             or fullname in SKIP_MODULES
         ):
             return
+        # Record the name before find_spec re-enters this hook.
         self.imported_modules.add(fullname)
 
         # Skip standard library or installed packages.

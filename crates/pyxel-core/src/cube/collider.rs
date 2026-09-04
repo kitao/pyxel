@@ -3,7 +3,8 @@ use crate::cube::vec3::RcVec3;
 
 // Unified collider: rounded-box family (size + radius) or static mesh
 // terrain, plus behavior flags, physical coefficients, and per-frame
-// motion state. Detection and contact resolution live in scene.rs.
+// motion state. Mesh terrain ignores motion state in collision physics.
+// Detection and contact resolution live in scene.rs.
 
 pub struct Collider {
     pub size: RcVec3,
@@ -20,9 +21,6 @@ pub struct Collider {
 
 define_rc_type!(RcCollider, Collider);
 
-// The constructor mirrors the public collider fields and avoids a temporary
-// options struct on the Rust-Python boundary.
-#[allow(clippy::too_many_arguments)]
 impl Collider {
     pub fn new(
         size: RcVec3,
@@ -48,5 +46,13 @@ impl Collider {
             velocity,
             angular_velocity,
         })
+    }
+
+    pub(crate) fn contact_mass(&self) -> f32 {
+        if self.mesh.is_none() && self.mass.is_finite() && self.mass > 0.0 {
+            self.mass
+        } else {
+            0.0
+        }
     }
 }

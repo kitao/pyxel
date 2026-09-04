@@ -1,7 +1,7 @@
 use crate::cube::node::RcNode;
 use crate::cube::vec3::{RcVec3, Vec3};
 
-// Result payload returned by Scene.raycast / raycast_all. The binding fills
+// Result payload returned by Node.raycast / raycast_all. The binding fills
 // every field before exposing this engine-built value.
 
 pub struct RaycastHit {

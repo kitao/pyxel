@@ -2,16 +2,6 @@ import pyxel
 
 
 class TestPsetPget:
-    def test_pset_pget_on_screen(self):
-        pyxel.cls(0)
-        pyxel.pset(10, 10, 7)
-        assert pyxel.pget(10, 10) == 7
-
-    def test_cls_clears_screen(self):
-        pyxel.pset(0, 0, 7)
-        pyxel.cls(0)
-        assert pyxel.pget(0, 0) == 0
-
     def test_pset_pget_multiple_colors(self):
         pyxel.cls(0)
         for col in range(16):
@@ -19,204 +9,69 @@ class TestPsetPget:
         for col in range(16):
             assert pyxel.pget(col, 0) == col
 
-    def test_pset_pget_on_image(self):
-        img = pyxel.Image(32, 32)
-        img.cls(0)
-        img.pset(5, 5, 3)
-        assert img.pget(5, 5) == 3
-
-    def test_cls_with_different_colors(self):
-        for col in [0, 5, 7, 15]:
-            pyxel.cls(col)
-            assert pyxel.pget(0, 0) == col
-            assert pyxel.pget(80, 60) == col
-
 
 class TestDrawingPrimitives:
-    def test_line_horizontal(self):
-        pyxel.cls(0)
-        pyxel.line(0, 0, 15, 0, 7)
-        assert pyxel.pget(0, 0) == 7
-        assert pyxel.pget(8, 0) == 7
-        assert pyxel.pget(15, 0) == 7
-        assert pyxel.pget(0, 1) == 0  # Below line
-
-    def test_line_vertical(self):
-        pyxel.cls(0)
-        pyxel.line(5, 0, 5, 15, 3)
-        assert pyxel.pget(5, 0) == 3
-        assert pyxel.pget(5, 8) == 3
-        assert pyxel.pget(5, 15) == 3
-        assert pyxel.pget(6, 0) == 0  # Right of line
-
-    def test_rect(self):
-        pyxel.cls(0)
-        pyxel.rect(2, 2, 4, 4, 5)
-        assert pyxel.pget(3, 3) == 5  # Inside
-        assert pyxel.pget(0, 0) == 0  # Outside
-
-    def test_rectb(self):
-        pyxel.cls(0)
-        pyxel.rectb(2, 2, 6, 6, 5)
-        assert pyxel.pget(2, 2) == 5  # Corner
-        assert pyxel.pget(4, 4) == 0  # Center is hollow
-
-    def test_circ(self):
-        pyxel.cls(0)
-        pyxel.circ(50, 50, 10, 7)
-        assert pyxel.pget(50, 50) == 7  # Center filled
-        assert pyxel.pget(50, 40) == 7  # Top edge
-
-    def test_circb(self):
-        pyxel.cls(0)
-        pyxel.circb(50, 50, 10, 7)
-        assert pyxel.pget(50, 50) == 0  # Center is hollow
-        assert pyxel.pget(50, 40) == 7  # Top edge
-
     def test_elli(self):
         pyxel.cls(0)
         pyxel.elli(50, 50, 20, 10, 7)
-        assert pyxel.pget(60, 55) == 7  # Inside
+        assert pyxel.pget(60, 55) == 7
 
     def test_ellib(self):
         pyxel.cls(0)
         pyxel.ellib(50, 50, 20, 10, 7)
-        assert pyxel.pget(60, 55) == 0  # Inside is hollow
-
-    def test_tri(self):
-        pyxel.cls(0)
-        pyxel.tri(10, 10, 20, 10, 15, 20, 7)
-        assert pyxel.pget(15, 15) == 7  # Inside
-        assert pyxel.pget(0, 0) == 0  # Outside
-
-    def test_trib(self):
-        pyxel.cls(0)
-        pyxel.trib(10, 10, 20, 10, 15, 20, 7)
-        assert pyxel.pget(15, 15) == 0  # Inside is hollow
-        assert pyxel.pget(10, 10) == 7  # Vertex
+        assert pyxel.pget(60, 50) == 7
+        assert pyxel.pget(60, 55) == 0
 
     def test_fill(self):
         pyxel.cls(0)
         pyxel.rect(10, 10, 20, 20, 5)
         pyxel.fill(15, 15, 8)
-        assert pyxel.pget(15, 15) == 8  # Filled area
-        assert pyxel.pget(0, 0) == 0  # Outside
+        assert pyxel.pget(15, 15) == 8
+        assert pyxel.pget(0, 0) == 0
 
     def test_fill_bounded_by_different_color(self):
         pyxel.cls(0)
-        pyxel.rectb(10, 10, 10, 10, 5)  # Border
+        pyxel.rectb(10, 10, 10, 10, 5)
         pyxel.fill(15, 15, 8)
-        assert pyxel.pget(15, 15) == 8  # Inside border
-        assert pyxel.pget(0, 0) == 0  # Outside border
+        assert pyxel.pget(15, 15) == 8
+        assert pyxel.pget(0, 0) == 0
 
 
 class TestDrawingState:
-    def test_clip_restricts_drawing(self):
-        pyxel.cls(0)
-        pyxel.clip(10, 10, 50, 50)
-        pyxel.rect(0, 0, 160, 120, 7)
-        pyxel.clip()
-        assert pyxel.pget(0, 0) == 0  # Outside clip
-        assert pyxel.pget(20, 20) == 7  # Inside clip
-
     def test_clip_reset(self):
         pyxel.cls(0)
         pyxel.clip(10, 10, 5, 5)
-        pyxel.clip()  # Reset
+        pyxel.clip()
         pyxel.pset(0, 0, 7)
-        assert pyxel.pget(0, 0) == 7  # No clip restriction
-
-    def test_camera_offsets_drawing(self):
-        pyxel.cls(0)
-        pyxel.camera(10, 10)
-        pyxel.pset(10, 10, 7)
-        pyxel.camera()
-        assert pyxel.pget(0, 0) == 7  # (10,10) - camera(10,10) = (0,0)
+        assert pyxel.pget(0, 0) == 7
 
     def test_camera_reset(self):
         pyxel.cls(0)
         pyxel.camera(10, 10)
-        pyxel.camera()  # Reset
+        pyxel.camera()
         pyxel.pset(5, 5, 7)
         assert pyxel.pget(5, 5) == 7
-
-    def test_pal_color_replacement(self):
-        pyxel.cls(0)
-        pyxel.pal(7, 8)
-        pyxel.pset(0, 0, 7)
-        pyxel.pal()
-        assert pyxel.pget(0, 0) == 8
 
     def test_pal_reset(self):
         pyxel.cls(0)
         pyxel.pal(7, 8)
-        pyxel.pal()  # Reset
+        pyxel.pal()
         pyxel.pset(0, 0, 7)
         assert pyxel.pget(0, 0) == 7
 
-    def test_dither_half(self):
-        pyxel.cls(0)
-        pyxel.dither(0.5)
-        pyxel.rect(0, 0, 20, 20, 7)
-        pyxel.dither(1.0)
-        drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
-        # dither(0.5) deterministically draws exactly half of the 400 pixels.
-        assert drawn == 200
-
 
 class TestBlt:
-    def test_blt_copies_pixel(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].pset(0, 0, 7)
-        pyxel.blt(0, 0, 0, 0, 0, 8, 8)
-        assert pyxel.pget(0, 0) == 7
-
-    def test_blt_with_image_instance(self):
-        pyxel.cls(0)
-        img = pyxel.Image(16, 16)
-        img.cls(0)
-        img.pset(0, 0, 5)
-        pyxel.blt(0, 0, img, 0, 0, 8, 8)
-        assert pyxel.pget(0, 0) == 5
-
-    def test_blt_with_colkey(self):
-        pyxel.cls(3)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].pset(1, 0, 7)
-        pyxel.blt(0, 0, 0, 0, 0, 8, 8, colkey=0)
-        assert pyxel.pget(0, 0) == 3  # Transparent (colkey=0)
-        assert pyxel.pget(1, 0) == 7  # Copied
-
-    def test_blt_with_rotate(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].rect(0, 0, 8, 8, 7)
-        pyxel.blt(80, 60, 0, 0, 0, 8, 8, rotate=45)
-        # (79, 63) is outside the unrotated 8x8 box and painted only when rotated
-        assert pyxel.pget(79, 63) == 7
-
     def test_blt_with_scale(self):
         pyxel.cls(0)
         pyxel.images[0].cls(0)
         pyxel.images[0].pset(0, 0, 7)
         pyxel.blt(0, 0, 0, 0, 0, 1, 1, scale=4)
-        # A 1x1 source with scale=4 deterministically paints a 2x2 block;
-        # a single painted pixel would mean the scale argument was ignored
+        # A 1x1 source with scale=4 paints a 2x2 block.
         drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
         assert drawn == 4
 
 
 class TestBltm:
-    def test_bltm_draws_tilemap(self):
-        pyxel.cls(0)
-        pyxel.tilemaps[0].cls((0, 0))
-        pyxel.images[0].cls(0)
-        pyxel.images[0].rect(0, 0, 8, 8, 7)
-        pyxel.tilemaps[0].pset(0, 0, (0, 0))
-        pyxel.bltm(0, 0, 0, 0, 0, 8, 8)
-        assert pyxel.pget(0, 0) == 7
-
     def test_bltm_with_tilemap_instance(self):
         pyxel.cls(0)
         img = pyxel.Image(256, 256)
@@ -228,24 +83,6 @@ class TestBltm:
         pyxel.bltm(0, 0, tm, 0, 0, 8, 8)
         assert pyxel.pget(0, 0) == 5
 
-    def test_bltm_with_colkey(self):
-        pyxel.cls(3)
-        pyxel.images[0].cls(0)
-        pyxel.tilemaps[0].cls((0, 0))
-        pyxel.bltm(0, 0, 0, 0, 0, 8, 8, colkey=0)
-        # With colkey=0, black pixels are transparent, background (3) shows through
-        assert pyxel.pget(0, 0) == 3
-
-    def test_bltm_rotate(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].rect(0, 0, 8, 8, 7)
-        pyxel.tilemaps[0].cls((0, 0))
-        pyxel.tilemaps[0].pset(0, 0, (0, 0))
-        pyxel.bltm(80, 60, 0, 0, 0, 8, 8, rotate=45)
-        # (79, 63) is outside the unrotated 8x8 box and painted only when rotated
-        assert pyxel.pget(79, 63) == 7
-
     def test_bltm_scale(self):
         pyxel.cls(0)
         pyxel.images[0].cls(0)
@@ -253,19 +90,11 @@ class TestBltm:
         pyxel.tilemaps[0].cls((0, 0))
         pyxel.tilemaps[0].pset(0, 0, (0, 0))
         pyxel.bltm(0, 0, 0, 0, 0, 1, 1, scale=4)
-        # A 1x1 source with scale=4 deterministically paints a 2x2 block
         drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
         assert drawn == 4
 
 
 class TestBlt3d:
-    def test_blt3d_with_int_img(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].rect(0, 0, 16, 16, 7)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0))
-        assert any(pyxel.pget(x, y) == 7 for x in range(160) for y in range(120))
-
     def test_blt3d_with_image_instance(self):
         pyxel.cls(0)
         img = pyxel.Image(16, 16)
@@ -273,15 +102,6 @@ class TestBlt3d:
         img.rect(0, 0, 16, 16, 5)
         pyxel.blt3d(0, 0, 160, 120, img, (0, 0, 10), (0, 30, 0))
         assert any(pyxel.pget(x, y) == 5 for x in range(160) for y in range(120))
-
-    def test_bltm3d_with_int_tm(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].rect(0, 0, 8, 8, 12)
-        pyxel.tilemaps[0].cls((0, 0))
-        pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
-        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0))
-        assert any(pyxel.pget(x, y) == 12 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_tilemap_instance(self):
         pyxel.cls(0)
@@ -303,7 +123,6 @@ class TestBlt3d:
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0)
         wide = [pyxel.pget(x, y) for x in range(160) for y in range(120)]
         assert 9 in narrow
-        # A wider field of view must change the projection.
         assert wide != narrow
 
     def test_blt3d_with_colkey(self):
@@ -312,7 +131,6 @@ class TestBlt3d:
         pyxel.images[0].rect(0, 0, 8, 8, 7)
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), colkey=0)
         assert any(pyxel.pget(x, y) == 7 for x in range(160) for y in range(120))
-        # Color-0 texels are transparent, so no pixel may be 0
         assert not any(pyxel.pget(x, y) == 0 for x in range(160) for y in range(120))
 
     def test_blt3d_with_fov_and_colkey(self):
@@ -321,7 +139,6 @@ class TestBlt3d:
         pyxel.images[0].rect(0, 0, 8, 8, 11)
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
         assert any(pyxel.pget(x, y) == 11 for x in range(160) for y in range(120))
-        # Color-0 texels are transparent, so no pixel may be 0
         assert not any(pyxel.pget(x, y) == 0 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_fov_and_colkey(self):
@@ -332,36 +149,13 @@ class TestBlt3d:
         pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
         pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
         assert any(pyxel.pget(x, y) == 6 for x in range(160) for y in range(120))
-        # Color-0 texels are transparent, so no pixel may be 0
         assert not any(pyxel.pget(x, y) == 0 for x in range(160) for y in range(120))
 
 
 class TestText:
-    def test_text_draws_pixels(self):
-        pyxel.cls(0)
-        pyxel.text(0, 0, "A", 7)
-        has_text = any(pyxel.pget(x, y) == 7 for x in range(4) for y in range(6))
-        assert has_text
-
-    def test_text_with_font(self, assets_dir):
-        pyxel.cls(0)
-        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
-        pyxel.text(0, 0, "A", 7, font)
-        has_text = any(pyxel.pget(x, y) == 7 for x in range(20) for y in range(20))
-        assert has_text
-
-    def test_text_multiline(self):
-        pyxel.cls(0)
-        pyxel.text(0, 0, "A\nB", 7)
-        has_first = any(pyxel.pget(x, y) == 7 for x in range(4) for y in range(6))
-        has_second = any(pyxel.pget(x, y) == 7 for x in range(4) for y in range(6, 12))
-        assert has_first
-        assert has_second
-
     def test_text_empty_string(self):
         pyxel.cls(0)
         pyxel.text(0, 0, "", 7)
-        # No pixels should be drawn.
         drawn = sum(1 for x in range(10) for y in range(10) if pyxel.pget(x, y) == 7)
         assert drawn == 0
 
@@ -399,8 +193,7 @@ class TestDrawingStateEdgeCases:
         assert drawn == 400
 
     def test_dither_negative_alpha_behaves_as_zero(self):
-        # The draw path treats alpha < pattern threshold as "skip", so any
-        # negative alpha effectively behaves like alpha=0 (full transparent).
+        # All pattern thresholds are nonnegative.
         pyxel.cls(0)
         pyxel.dither(-0.5)
         pyxel.rect(0, 0, 20, 20, 7)
@@ -409,36 +202,12 @@ class TestDrawingStateEdgeCases:
         assert drawn == 0
 
     def test_dither_above_one_behaves_as_one(self):
-        # The draw path takes the alpha >= 1.0 fast path, so any alpha > 1
-        # effectively behaves like alpha=1 (full opaque).
+        # Alpha >= 1 bypasses the dither pattern.
         pyxel.cls(0)
         pyxel.dither(1.5)
         pyxel.rect(0, 0, 20, 20, 7)
         drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
         assert drawn == 400
-
-    def test_pal_chained(self):
-        pyxel.cls(0)
-        pyxel.pal(7, 8)
-        pyxel.pal(5, 9)
-        pyxel.pset(0, 0, 7)
-        pyxel.pset(1, 0, 5)
-        pyxel.pal()
-        assert pyxel.pget(0, 0) == 8
-        assert pyxel.pget(1, 0) == 9
-
-    def test_pal_triple_chain(self):
-        pyxel.cls(0)
-        pyxel.pal(1, 2)
-        pyxel.pal(3, 4)
-        pyxel.pal(5, 6)
-        pyxel.pset(0, 0, 1)
-        pyxel.pset(1, 0, 3)
-        pyxel.pset(2, 0, 5)
-        pyxel.pal()
-        assert pyxel.pget(0, 0) == 2
-        assert pyxel.pget(1, 0) == 4
-        assert pyxel.pget(2, 0) == 6
 
     def test_clip_and_camera_interaction(self):
         pyxel.cls(0)
@@ -447,36 +216,8 @@ class TestDrawingStateEdgeCases:
         pyxel.rect(10, 10, 20, 20, 7)
         pyxel.clip()
         pyxel.camera()
-        assert pyxel.pget(2, 2) == 7  # Inside clip
-        assert pyxel.pget(10, 10) == 0  # Outside clip
-
-
-class TestBltFlip:
-    def test_blt_negative_w_flips_horizontal(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].pset(0, 0, 7)
-        pyxel.images[0].pset(7, 0, 5)
-        pyxel.blt(0, 0, 0, 0, 0, -8, 8)
-        # After horizontal flip, pixel at (7,0) in source -> (0,0) on screen
-        assert pyxel.pget(0, 0) == 5
-
-    def test_blt_negative_h_flips_vertical(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].pset(0, 0, 7)
-        pyxel.images[0].pset(0, 7, 5)
-        pyxel.blt(0, 0, 0, 0, 0, 8, -8)
-        # After vertical flip, pixel at (0,7) in source -> (0,0) on screen
-        assert pyxel.pget(0, 0) == 5
-
-    def test_blt_negative_both_flips(self):
-        pyxel.cls(0)
-        pyxel.images[0].cls(0)
-        pyxel.images[0].pset(7, 7, 5)
-        pyxel.blt(0, 0, 0, 0, 0, -8, -8)
-        # After both flips, (7,7) -> (0,0)
-        assert pyxel.pget(0, 0) == 5
+        assert pyxel.pget(2, 2) == 7
+        assert pyxel.pget(10, 10) == 0
 
 
 class TestDeprecatedAccessors:

@@ -10,6 +10,13 @@ pub(crate) fn validate_sec(sec: Option<f32>) -> PyResult<()> {
     pyxel::Channel::validate_sec(sec).map_err(PyValueError::new_err)
 }
 
+fn validate_channel_index(ch: u32) -> PyResult<()> {
+    if ch as usize >= pyxel::channels().len() {
+        return Err(invalid_index_error!("ch", "channel"));
+    }
+    Ok(())
+}
+
 // Playback functions
 
 #[pyfunction]
@@ -33,17 +40,17 @@ fn play(
     };
     validate_sec(sec)?;
 
-    validate_index!(ch, pyxel::channels().len(), "ch", "channel");
+    validate_channel_index(ch)?;
     let should_loop = r#loop.unwrap_or(false);
     let resume = resume.unwrap_or(false);
 
-    // Dispatch supported sound input forms.
     cast_pyany! {
         snd,
         "snd must be int, list[int], Sound, list[Sound], or str",
 
         (u32, {
             validate_index!(snd, pyxel::sounds().len(), "snd", "sound");
+            validate_channel_index(ch)?;
             pyxel()
                 .play_sound(ch, snd, sec, should_loop, resume)
                 .map_err(PyValueError::new_err)?;
@@ -54,12 +61,14 @@ fn play(
             for &s in &snd {
                 validate_index!(s, num_sounds, "snd", "sound", list);
             }
+            validate_channel_index(ch)?;
             pyxel()
                 .play(ch, &snd, sec, should_loop, resume)
                 .map_err(PyValueError::new_err)?;
         }),
 
         (Sound, {
+            validate_channel_index(ch)?;
             let _lock = pyxel::AudioLock::lock();
             audio_mut!(pyxel::channels()[ch as usize])
                 .play_sound(snd.inner, sec, should_loop, resume)
@@ -67,7 +76,8 @@ fn play(
         }),
 
         (Vec<Sound>, {
-            let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
+            let sounds = snd.into_iter().map(|sound| sound.inner).collect();
+            validate_channel_index(ch)?;
             let _lock = pyxel::AudioLock::lock();
             audio_mut!(pyxel::channels()[ch as usize])
                 .play(sounds, sec, should_loop, resume)
@@ -75,6 +85,7 @@ fn play(
         }),
 
         (String, {
+            validate_channel_index(ch)?;
             pyxel()
                 .play_mml(ch, &snd, sec, should_loop, resume)
                 .map_err(PyException::new_err)?;
@@ -170,8 +181,6 @@ fn music(msc: u32) -> PyResult<Music> {
         .map(Music::wrap)
         .ok_or_else(|| invalid_index_error!("msc", "music"))
 }
-
-// Module registration
 
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;

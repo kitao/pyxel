@@ -8,7 +8,6 @@ use crate::platform::{self, GlProfile};
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_MODES};
 
-// macOS cannot run the desktop GL shaders; use the GLES header there.
 #[cfg(target_os = "macos")]
 const GL_VERSION: &str = include_str!("shaders/gles_version.glsl");
 #[cfg(not(target_os = "macos"))]
@@ -93,13 +92,10 @@ impl Graphics {
         self.screen_texture_initialized = false;
     }
 
-    // Shader setup
-
     unsafe fn create_screen_shaders(gl: &mut glow::Context, is_gles: bool) -> Vec<ScreenShader> {
         let glsl_version = if is_gles { GLES_VERSION } else { GL_VERSION };
 
         let mut screen_shaders = Vec::new();
-        // Compile one program per fragment shader
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
             let vertex_shader = gl
@@ -233,7 +229,7 @@ impl Graphics {
 }
 
 impl Pyxel {
-    // View transformation
+    // Drawing state
 
     pub fn set_clip_rect(&self, x: f32, y: f32, width: f32, height: f32) {
         rc_mut!(pyxel::screen()).set_clip_rect(x, y, width, height);
@@ -544,7 +540,6 @@ impl Pyxel {
         let screen = rc_ref!(screen_rc);
         let data = &screen.canvas.data;
 
-        // Upload or refresh the screen color-index texture.
         if graphics.screen_texture_initialized {
             gl.tex_sub_image_2d(
                 glow::TEXTURE_2D,

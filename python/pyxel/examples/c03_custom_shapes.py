@@ -182,18 +182,12 @@ class Laser(Node):
     def update_beams(self):
         laser_progress = min(1.0, self.fire_frame / LASER_DURATION)
         for enemy_index, enemy in enumerate(self.firing_enemies):
-            self.update_beam(
-                self.outer_beams[enemy_index],
-                enemy.center,
-                enemy_index,
-                laser_progress,
+            path_points = self.make_visible_laser_path(
+                enemy.center, enemy_index, laser_progress
             )
+            self.update_beam(self.outer_beams[enemy_index], path_points)
             self.update_beam(
-                self.core_beams[enemy_index],
-                enemy.center,
-                enemy_index,
-                laser_progress,
-                LASER_CORE_WIDTH,
+                self.core_beams[enemy_index], path_points, LASER_CORE_WIDTH
             )
 
     def make_launch_direction(self, enemy_center, enemy_index):
@@ -277,13 +271,8 @@ class Laser(Node):
                 self.prim(Mat4.IDENTITY, self.outer_beams[enemy_index], 11)
                 self.prim(Mat4.IDENTITY, self.core_beams[enemy_index], 7)
 
-    def update_beam(
-        self, beam, enemy_center, enemy_index, laser_progress, width=LASER_OUTER_WIDTH
-    ):
+    def update_beam(self, beam, path_points, width=LASER_OUTER_WIDTH):
         camera_pos, right, _ = self.camera_axes()
-        path_points = self.make_visible_laser_path(
-            enemy_center, enemy_index, laser_progress
-        )
         beam_positions = []
         for point_index, point in enumerate(path_points):
             prev_point = path_points[max(0, point_index - 1)]

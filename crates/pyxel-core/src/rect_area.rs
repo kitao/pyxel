@@ -9,14 +9,20 @@ pub struct RectArea {
 }
 
 impl RectArea {
-    // Constructor
-
     pub const fn new(left: i32, top: i32, width: u32, height: u32) -> Self {
         Self {
             left,
             top,
-            right: left + width as i32 - 1,
-            bottom: top + height as i32 - 1,
+            right: if width == 0 {
+                left.saturating_sub(1)
+            } else {
+                left.saturating_add_unsigned(width - 1)
+            },
+            bottom: if height == 0 {
+                top.saturating_sub(1)
+            } else {
+                top.saturating_add_unsigned(height - 1)
+            },
             width,
             height,
         }
@@ -55,16 +61,22 @@ impl RectArea {
     }
 
     pub const fn contains(&self, x: i32, y: i32) -> bool {
-        x >= self.left && x <= self.right && y >= self.top && y <= self.bottom
+        !self.is_empty() && x >= self.left && x <= self.right && y >= self.top && y <= self.bottom
     }
 
     pub fn intersection(&self, other: Self) -> Self {
+        if self.is_empty() || other.is_empty() {
+            return Self::new(0, 0, 0, 0);
+        }
         let left = self.left.max(other.left);
         let top = self.top.max(other.top);
-        let right = self.right.min(other.right);
-        let bottom = self.bottom.min(other.bottom);
-        let width = right - left + 1;
-        let height = bottom - top + 1;
+        // Intersect logical extents rather than saturated coordinate bounds.
+        let right =
+            (self.left as i64 + self.width as i64).min(other.left as i64 + other.width as i64);
+        let bottom =
+            (self.top as i64 + self.height as i64).min(other.top as i64 + other.height as i64);
+        let width = right - left as i64;
+        let height = bottom - top as i64;
 
         if width > 0 && height > 0 {
             Self::new(left, top, width as u32, height as u32)
@@ -77,8 +89,6 @@ impl RectArea {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    // Constructor
 
     #[test]
     fn test_new() {
@@ -131,7 +141,32 @@ mod tests {
         assert!(!rect.contains(6, 5));
     }
 
-    // Empty-area queries
+    #[test]
+    fn test_empty_at_min_coordinates() {
+        for (width, height) in [(0, 1), (1, 0)] {
+            let rect = RectArea::new(i32::MIN, i32::MIN, width, height);
+            assert!(rect.is_empty());
+            assert!(!rect.contains(i32::MIN, i32::MIN));
+            assert!(rect.intersection(RectArea::new(0, 0, 2, 2)).is_empty());
+        }
+    }
+
+    #[test]
+    fn test_coordinate_bounds_preserve_extent() {
+        let rect = RectArea::new(i32::MAX, i32::MAX, 2, u32::MAX);
+        assert_eq!((rect.right(), rect.bottom()), (i32::MAX, i32::MAX));
+        assert_eq!((rect.width(), rect.height()), (2, u32::MAX));
+        assert!(rect.contains(i32::MAX, i32::MAX));
+        assert_eq!(rect.intersection(rect), rect);
+
+        let rect = RectArea::new(i32::MIN, i32::MIN, u32::MAX, u32::MAX);
+        assert_eq!((rect.right(), rect.bottom()), (i32::MAX - 1, i32::MAX - 1));
+        assert!(rect.contains(0, 0));
+        assert!(!rect.contains(i32::MAX, i32::MAX));
+        assert_eq!(rect.intersection(rect), rect);
+        let small = RectArea::new(0, 0, 2, 2);
+        assert_eq!(rect.intersection(small), small);
+    }
 
     #[test]
     fn test_is_empty() {
@@ -220,10 +255,17 @@ mod tests {
 
     #[test]
     fn test_intersection_adjacent_no_overlap() {
-        // Adjacent rects with no shared pixels
         let a = RectArea::new(0, 0, 10, 10);
         // The second rect starts just past the first rect's right edge.
         let b = RectArea::new(10, 0, 10, 10);
         assert!(a.intersection(b).is_empty());
+    }
+
+    #[test]
+    fn test_intersection_distant_coordinates() {
+        let a = RectArea::new(i32::MIN, i32::MIN, 1, 1);
+        let b = RectArea::new(i32::MAX - 1, i32::MAX - 1, 1, 1);
+        assert!(a.intersection(b).is_empty());
+        assert!(b.intersection(a).is_empty());
     }
 }

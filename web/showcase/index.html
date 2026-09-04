@@ -11,7 +11,7 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
         Loading...
       </div>
     </main>
@@ -20,14 +20,12 @@
       let data = null;
       let lang = "en";
 
-      // Build the showcase shell, category sections, rows, and footer.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         app.appendChild(buildPageHeader(updateTexts));
 
-        // Showcase categories and launch/source rows
         for (const cat of data.categories) {
           const section = document.createElement("details");
           section.open = !cat.collapsed;
@@ -53,7 +51,6 @@
             const row = document.createElement("div");
             row.className = "py-3";
 
-            // Item summary row with description and launch/source buttons
             const topLine = document.createElement("div");
             topLine.className = "flex flex-wrap items-center gap-x-3 gap-y-1";
 
@@ -92,7 +89,6 @@
             topLine.appendChild(buttons);
             row.appendChild(topLine);
 
-            // Optional localized item details
             if (item.details && Object.keys(item.details).length > 0) {
               const details = document.createElement("details");
               details.className = "mt-1";
@@ -119,7 +115,6 @@
           app.appendChild(section);
         }
 
-        // Footer source and documentation links
         const footer = document.createElement("section");
         footer.className = "mt-6 mb-2";
 
@@ -133,16 +128,13 @@
         updateTexts();
       }
 
-      // Apply localized strings to static labels and generated showcase rows.
       function updateTexts() {
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Category titles, item descriptions, and optional details
         for (const cat of data.categories) {
           const header = document.querySelector(`[data-cat-id="${cat.id}"]`);
           if (header) header.querySelector(".tri").textContent = t(cat.title);
@@ -159,12 +151,10 @@
           }
         }
 
-        // Action labels for generated buttons and details toggles
         document.querySelectorAll("[data-ui-key]").forEach((el) => {
           el.textContent = t(el.dataset.uiKey);
         });
 
-        // Footer source and documentation links
         const linkText = t("footer_link");
         document.getElementById("footer-text").innerHTML = t("footer")
           .replace(

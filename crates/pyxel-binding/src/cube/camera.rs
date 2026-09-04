@@ -2,12 +2,10 @@ use pyo3::prelude::*;
 
 use super::mat4::Mat4;
 
-define_wrapper!(Camera, pyxel::cube::Camera);
+define_wrapper!(Camera, pyxel::cube::Camera, module = "pyxel.cube");
 
 #[pymethods]
 impl Camera {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::cube::Camera::new())
@@ -75,8 +73,6 @@ impl Camera {
         self.inner_mut().clear_color = v;
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let c = self.inner_ref();
         let ortho = c
@@ -88,8 +84,6 @@ impl Camera {
         )
     }
 }
-
-// Module registration
 
 pub fn add_camera_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Camera>()?;

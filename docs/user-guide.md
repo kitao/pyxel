@@ -6,7 +6,7 @@
 
 ![Pyxel](images/pyxel_logo_152x64.png)
 
-**Pyxel** (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
+**Pyxel** (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as 16 colors and 4 sound channels by default, you can easily enjoy making pixel-art-style games.
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
@@ -95,11 +95,9 @@ pyxel copy_examples
 You can run examples locally with the following commands:
 
 ```sh
-# Run example in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
-# Run app in examples/apps directory
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
@@ -187,7 +185,7 @@ Additionally, the `pyxel watch` command monitors changes in a specified director
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Stop directory monitoring by pressing `Ctrl(Cmd)+C`.
+Stop directory monitoring by pressing `Ctrl+C`.
 
 ### Special Key Controls
 
@@ -225,7 +223,7 @@ Pyxel images and tilemaps can also be created using the following methods:
 
 Pyxel sounds and music can also be created using the following method:
 
-- Create them from strings with the `Sound.set` or `Music.set` functions
+- Create them with the `Sound.set` or `Music.set` functions
 
 Refer to the API reference for the use of these functions.
 
@@ -239,9 +237,9 @@ Create a Pyxel application file (.pyxapp) with the `pyxel package` command:
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-If you need to include resources or additional modules, place them in the application directory.
+To include resources or additional modules, place them in `APP_DIR`. When collecting files from the application directory, `pyxel package` excludes files with the `.gif` or `.zip` extension, hidden files and directories, and `__pycache__` directories.
 
-Metadata can be displayed at runtime by specifying it in the following format within the startup script. Fields other than `title` and `author` are optional.
+Metadata can be displayed at runtime by specifying it in the following format within the startup script. Every field, including `title` and `author`, is optional.
 
 ```python
 # title: Pyxel Platformer
@@ -258,7 +256,7 @@ The created application file can be run using the `pyxel play` command:
 pyxel play PYXEL_APP_FILE
 ```
 
-A Pyxel application file can also be converted to an executable or an HTML file using the `pyxel app2exe` or `pyxel app2html` commands.
+A Pyxel application file can be converted to an executable with the `pyxel app2exe` command or to an HTML file with the `pyxel app2html` command. Before converting to an executable, install PyInstaller with `pip install "pyxel[app2exe]"`.
 
 ## API Reference
 
@@ -301,7 +299,7 @@ If you're confident in your skills, try using the Advanced API to create truly a
 
 ### Submitting Issues
 
-Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature or enhancement requests. Before submitting a new issue, make sure there are no similar open issues.
+Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature or enhancement requests. Before submitting a new issue, please check for similar open issues.
 
 ### Functional Testing
 
@@ -309,7 +307,7 @@ Anyone who manually tests the code and reports bugs or suggestions for enhanceme
 
 ### Submitting Pull Requests
 
-Patches and fixes are accepted in the form of pull requests (PRs). Make sure that the issue the pull request addresses is open in the Issue Tracker.
+Patches and fixes are welcome as pull requests (PRs). Before submitting, check the Issue Tracker for related open or resolved issues.
 
 Submitting a pull request implies that you agree to license your contribution under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE).
 

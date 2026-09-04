@@ -104,7 +104,6 @@ class App(Widget):
         ]
         self.__on_editor_button_change(self.editor_type_var)
 
-        # Set event listeners
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
@@ -162,10 +161,21 @@ class App(Widget):
             file_ext = Path(dropped_file).suffix
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
-                for editor in self._editors:
-                    editor.reset_history()
-                pyxel.load(dropped_file)
-                self._set_title(dropped_file)
+                colors = list(pyxel.colors)
+                pyxel.colors[:] = colors[pyxel.NUM_COLORS :]
+                try:
+                    pyxel.load(dropped_file)
+                except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
+                    print(f"Failed to load resource: {e}")
+                else:
+                    pyxel.num_user_colors = len(pyxel.colors)
+                    # Reapply the selected color's palette bound.
+                    self._editors[0].color_var = self._editors[0].color_var
+                    for editor in self._editors:
+                        editor.reset_history()
+                    self._set_title(dropped_file)
+                finally:
+                    pyxel.colors[:] = colors[: pyxel.NUM_COLORS] + list(pyxel.colors)
             else:
                 self._editor.trigger_event("drop", dropped_file)
 

@@ -1,6 +1,5 @@
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::PyList;
 use pyxel::cube::mesh::ColImage;
 
 use super::mat4::Mat4;
@@ -8,12 +7,10 @@ use super::motion::Motion;
 use super::primitive::Primitive;
 use crate::image_wrapper::Image;
 
-define_wrapper!(Mesh, pyxel::cube::Mesh);
+define_wrapper!(Mesh, pyxel::cube::Mesh, module = "pyxel.cube");
 
 #[pymethods]
 impl Mesh {
-    // Constructor
-
     #[new]
     #[pyo3(signature = (
         primitives=None,
@@ -68,20 +65,12 @@ impl Mesh {
     // Parts (parallel arrays)
 
     #[getter]
-    fn primitives(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
-        let inner = self.inner_ref();
-        let items: Vec<Py<PyAny>> = inner
+    fn primitives(&self) -> Vec<Option<Primitive>> {
+        self.inner_ref()
             .primitives
             .iter()
-            .map(|p| match p {
-                Some(p) => Ok(Primitive::wrap(p.clone())
-                    .into_pyobject(py)?
-                    .into_any()
-                    .unbind()),
-                None => Ok(py.None()),
-            })
-            .collect::<PyResult<_>>()?;
-        Ok(PyList::new(py, items)?.unbind())
+            .map(|p| p.as_ref().map(|p| Primitive::wrap(p.clone())))
+            .collect()
     }
 
     #[setter]
@@ -93,8 +82,7 @@ impl Mesh {
             mesh.primitives = previous;
             return Err(PyValueError::new_err(error));
         }
-        *mesh.bvh.borrow_mut() = None;
-        *mesh.local_aabb.borrow_mut() = None;
+        mesh.reset_collision_geometry_tracking();
         Ok(())
     }
 
@@ -198,14 +186,10 @@ impl Mesh {
         self.inner_mut().colkey = v;
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
         format!("Mesh(parts={})", m.primitives.len())
     }
-
-    // Methods
 
     fn descendants(&self, i: i32) -> Vec<i32> {
         self.inner_ref().descendants(i)
@@ -224,7 +208,9 @@ pub(crate) fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
     Err(PyTypeError::new_err("col_img must be int or Image"))
 }
 
-// Module registration
+pub(crate) fn resolve_col_img(col_img: Option<&Bound<'_, PyAny>>) -> PyResult<ColImage> {
+    col_img.map_or(Ok(ColImage::Color(7)), parse_col_img)
+}
 
 pub fn add_mesh_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mesh>()?;

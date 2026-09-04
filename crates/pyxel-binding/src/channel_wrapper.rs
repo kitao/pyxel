@@ -8,8 +8,6 @@ define_audio_wrapper!(Channel, pyxel::Channel, pyxel::RcChannel);
 
 #[pymethods]
 impl Channel {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Channel::new())
@@ -62,7 +60,6 @@ impl Channel {
         let resume = resume.unwrap_or(false);
         let _lock = pyxel::AudioLock::lock();
 
-        // Dispatch supported sound input forms.
         cast_pyany! {
             snd,
             "snd must be int, list[int], Sound, list[Sound], or str",
@@ -93,7 +90,7 @@ impl Channel {
             }),
 
             (Vec<Sound>, {
-                let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
+                let sounds = snd.into_iter().map(|sound| sound.inner).collect();
                 self.inner_mut()
                     .play(sounds, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
@@ -119,8 +116,6 @@ impl Channel {
         self.inner_mut().play_position()
     }
 }
-
-// Module registration
 
 pub fn add_channel_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Channel>()?;

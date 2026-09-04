@@ -1,6 +1,9 @@
 import colorsys
 import shutil
+import subprocess
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import pyxel
@@ -9,11 +12,12 @@ from _capture import (  # type: ignore[reportMissingImports]
     collect_editor_results,
     run_editor_subprocess,
 )
-from pyxel import editor as _editor
-from pyxel.editor.widgets import NumberPicker
-
-# Side-effect import: registers pyxel.user_pal. Local rebind silences pyright.
-_ = _editor
+from pyxel.editor.field_cursor import FieldCursor
+from pyxel.editor.image_editor import ImageEditor
+from pyxel.editor.image_viewer import ImageViewer
+from pyxel.editor.music_field import MusicField
+from pyxel.editor.tilemap_editor import TilemapEditor
+from pyxel.editor.widgets import NumberPicker, ScrollBar, Widget
 
 RESOURCE_FILE = str(
     Path(__file__).parent.parent / "pyxel" / "examples" / "assets" / "sample.pyxres"
@@ -45,6 +49,125 @@ def _hsv_pyxpal_lines(count):
 
 
 class TestEditor:
+    def test_music_view_and_save_preserve_extra_channels(self, tmp_path):
+        path = str(tmp_path / "six-channels.pyxres")
+        music = pyxel.musics[0]
+        seqs = [list(seq) for seq in music.seqs]
+        try:
+            music.seqs[:] = [[0], [1], [2], [3], [4, 5], [6, 7]]
+            pyxel.save(path)
+        finally:
+            music.seqs[:] = seqs
+
+        code = """
+import sys
+
+import pyxel
+from pyxel.editor.app import App
+
+path = sys.argv[1]
+expected = [[0], [1], [2], [3], [4, 5], [6, 7]]
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(path, "sound")
+assert [list(seq) for seq in pyxel.musics[0].seqs] == expected
+app.editor_type_var = 3
+app.draw_all()
+viewed = [list(seq) for seq in pyxel.musics[0].seqs]
+app._save_button.trigger_event("press")
+pyxel.load(path)
+assert viewed == expected, viewed
+assert [list(seq) for seq in pyxel.musics[0].seqs] == expected
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, path],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
+    def test_resource_drop_preserves_editor_palette(self, tmp_path):
+        code = """
+import sys
+from pathlib import Path
+
+import pyxel
+from pyxel.editor.app import App
+
+folder = Path(sys.argv[1])
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(str(folder / "empty.pyxres"), "image")
+system = list(pyxel.colors[:pyxel.NUM_COLORS])
+editor = app._editors[0]
+picker = editor._color_picker
+
+for count in (64, 8, None):
+    app.editor_type_var = int(count == 8)
+    path = str(folder / f"colors-{count}.pyxres")
+    pyxel.save(path)
+    colors = list(pyxel.colors)
+    expected = colors[pyxel.NUM_COLORS:]
+    if count is not None:
+        expected = [0x010101 * i for i in range(count)]
+        pyxel.colors[:] = expected
+        pyxel.save_pal(path)
+        pyxel.colors[:] = colors
+    previous = editor.color_var
+    pyxel._dropped_files = [path]
+    app.update_all()
+    assert list(pyxel.colors) == system + expected
+    assert pyxel.num_user_colors == len(expected)
+    assert editor.color_var == min(previous, len(expected) - 1)
+    cw = 4 if len(expected) > 16 else 8
+    ch = 4 if len(expected) > 32 else 8
+    last = len(expected) - 1
+    assert picker.check_value(
+        picker.x + 1 + last % (64 // cw) * cw,
+        picker.y + 1 + last // (64 // cw) * ch,
+    ) == last
+    editor.color_var = last
+    app.draw_all()
+
+pyxel._dropped_files = [str(folder / "missing.pyxres")]
+app.update_all()
+app.draw_all()
+assert list(pyxel.colors) == system + expected
+assert pyxel.num_user_colors == len(expected)
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(tmp_path)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        missing = tmp_path / "missing.pyxres"
+        assert result.stdout.splitlines()[-1] == (
+            f"Failed to load resource: Failed to open file '{missing}'"
+        )
+
+    @pytest.mark.parametrize("editor_type", [ImageEditor, TilemapEditor])
+    def test_failed_drop_reports_load_error(self, editor_type, tmp_path, capsys):
+        state = SimpleNamespace(
+            image_index_var=0, tilemap_index_var=0, focus_x_var=0, focus_y_var=0
+        )
+        path = str(tmp_path / "missing.file")
+        colors = list(pyxel.colors)
+        handler = getattr(editor_type, f"_{editor_type.__name__}__on_drop")
+        handler(state, path)
+
+        kind = "image" if editor_type is ImageEditor else "tilemap"
+        assert capsys.readouterr().out == (
+            f"Failed to load {kind}: Failed to open file '{path}'\n"
+        )
+        assert list(pyxel.colors) == colors
+
     @pytest.mark.parametrize(
         "editor,palette_count",
         _EDITOR_PALETTE_PARAMS,
@@ -83,6 +206,111 @@ class TestNumberPicker:
         picker = NumberPicker(None, 0, 0, min_value=0, max_value=3, value=99)
         assert picker.value_var == 3
         assert not picker.inc_button.is_enabled_var
+
+
+class TestScrollBar:
+    @pytest.mark.parametrize("slider_amount", [2, 8, 16, 32])
+    @pytest.mark.parametrize("value", [-1, 0, 12, 32, 99])
+    def test_initial_value_stays_within_the_viewport(self, slider_amount, value):
+        bar = ScrollBar(
+            None,
+            0,
+            0,
+            width=66,
+            scroll_amount=32,
+            slider_amount=slider_amount,
+            value=value,
+        )
+        assert bar.value_var == min(max(value, 0), 32 - slider_amount)
+
+    @pytest.mark.parametrize("slider_amount", [2, 8, 16, 32])
+    def test_assigned_value_uses_the_same_bounds_as_buttons(self, slider_amount):
+        bar = ScrollBar(
+            None, 0, 0, width=66, scroll_amount=32, slider_amount=slider_amount, value=0
+        )
+        bar.value_var = 99
+        assert bar.value_var == 32 - slider_amount
+        bar.inc_button.trigger_event("press")
+        assert bar.value_var == 32 - slider_amount
+        bar.value_var = -1
+        assert bar.value_var == 0
+        bar.dec_button.trigger_event("press")
+        assert bar.value_var == 0
+
+
+class TestImageViewer:
+    @pytest.mark.parametrize("tilemap_mode", [False, True])
+    def test_right_drag_keeps_the_viewport_inside_the_image(self, tilemap_mode):
+        parent = Widget(None, 0, 0, 256, 192)
+        parent.new_var("image_index_var", 0)
+        parent.new_var("help_message_var", "")
+        if tilemap_mode:
+            parent.new_var("tilemap_index_var", 0)
+        viewer = ImageViewer(parent)
+
+        viewer.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_RIGHT, viewer.x, viewer.y)
+        viewer.trigger_event(
+            "mouse_drag", pyxel.MOUSE_BUTTON_RIGHT, viewer.x, viewer.y, -1000, -1000
+        )
+
+        assert viewer.viewport_x_var == 24
+        assert viewer.viewport_y_var == (24 if tilemap_mode else 16)
+
+        viewer.trigger_event(
+            "mouse_drag", pyxel.MOUSE_BUTTON_RIGHT, viewer.x, viewer.y, 1000, 1000
+        )
+
+        assert viewer.viewport_x_var == 0
+        assert viewer.viewport_y_var == 0
+
+
+class TestFieldCursor:
+    @pytest.fixture
+    def cursor_fields(self):
+        fields = [[], [10, 11, 12, 13, 14, 15], [3]]
+        cursor = FieldCursor(
+            None,
+            max_field_length=32,
+            field_wrap_length=16,
+            max_field_values=[63] * len(fields),
+            get_field=fields.__getitem__,
+            add_pre_history=lambda *args, **kwargs: None,
+            add_post_history=lambda *args, **kwargs: None,
+            enable_cross_field_copy=True,
+        )
+        return cursor, fields
+
+    @pytest.mark.parametrize("with_select_key", [False, True])
+    @pytest.mark.parametrize(
+        "source,destination,x,expected_x", [(0, 1, 4, 4), (2, 1, 4, 4), (1, 2, 4, 1)]
+    )
+    def test_cross_field_move_uses_destination_length(
+        self, cursor_fields, source, destination, x, expected_x, with_select_key
+    ):
+        cursor, _ = cursor_fields
+        cursor.move_to(0, source, False)
+
+        cursor.move_to(x, destination, with_select_key)
+
+        assert (cursor.x, cursor.y) == (expected_x, destination)
+        assert not cursor.is_selecting
+
+    def test_first_music_field_click_inserts_at_clicked_position(
+        self, cursor_fields, monkeypatch
+    ):
+        cursor, fields = cursor_fields
+        parent = Widget(None, 0, 0, 256, 192)
+        parent.field_cursor = cursor
+        parent.get_field = fields.__getitem__
+        parent.new_var("is_playing_var", False)
+        parent.new_var("help_message_var", "")
+        field = MusicField(parent, 0, 0, 1)
+        monkeypatch.setattr(pyxel, "btn", lambda key: False)
+
+        field.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, 21 + 4 * 12, 2)
+        cursor.insert(63)
+
+        assert fields == [[], [10, 11, 12, 13, 63, 14, 15], [3]]
 
 
 class TestUserPal:

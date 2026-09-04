@@ -76,7 +76,6 @@ class App:
                 pyxel.rect(x - 1, y - 1, 3, 3, 5)
 
 
-# JavaScript bridge helpers
 def _get_js_var(name, default):
     return getattr(window, name, default)
 

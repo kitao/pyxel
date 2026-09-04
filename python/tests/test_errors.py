@@ -463,7 +463,6 @@ class TestInlineDataErrors:
 
 
 class TestMmlErrors:
-    # Binding raises plain Exception; pin via message to verify error specificity.
     def test_sound_mml_invalid_syntax(self):
         snd = pyxel.Sound()
         with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
@@ -529,7 +528,6 @@ class TestFileErrors:
             pyxel.Image.from_image("/nonexistent/path/image.png")
 
     def test_failed_from_image_keeps_palette(self):
-        # A failed load must not clear the shared palette even with include_colors.
         colors_before = list(pyxel.colors)
         with raises_exact(
             Exception, "Failed to open file '/nonexistent/path/image.png'"
@@ -552,12 +550,13 @@ class TestFileErrors:
 
 
 class TestPanicErrors:
-    # Pin the exact type so a future migration to ValueError shows up as a test diff.
+    @pytest.mark.parametrize("function", [pyxel.btn, pyxel.btnp, pyxel.btnr])
+    def test_button_state_analog_key_panics(self, function, panic_exception):
+        with raises_exact(panic_exception, "key must be a non-analog key"):
+            function(pyxel.GAMEPAD1_AXIS_LEFTX)
 
     def test_btnv_non_analog_key_panics(self, panic_exception):
-        with raises_exact(
-            panic_exception, "button_value is called with a non-analog key 0x61"
-        ):
+        with raises_exact(panic_exception, "key must be an analog key"):
             pyxel.btnv(pyxel.KEY_A)
 
     def test_gen_bgm_invalid_preset_panics(self, panic_exception):
@@ -565,9 +564,9 @@ class TestPanicErrors:
             pyxel.gen_bgm(99, 0, 0, 1)
 
     def test_gen_bgm_invalid_transpose_panics(self, panic_exception):
-        with raises_exact(panic_exception, "invalid transpose"):
+        with raises_exact(panic_exception, "transp must be between -5 and 5"):
             pyxel.gen_bgm(0, 99, 0, 1)
 
     def test_gen_bgm_invalid_instrumentation_panics(self, panic_exception):
-        with raises_exact(panic_exception, "invalid instrumentation"):
+        with raises_exact(panic_exception, "instr must be between 0 and 3"):
             pyxel.gen_bgm(0, 0, 99, 1)

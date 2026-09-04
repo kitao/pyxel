@@ -52,7 +52,7 @@ const buildLangSelector = (
 // Base / Cube variant switch (the Cube variant lives in a /cube/ subdirectory)
 
 const buildVariantSwitch = () => {
-  const onCube = /\/cube\/?$/.test(location.pathname);
+  const onCube = /\/cube(?:\/(?:index\.html)?)?$/.test(location.pathname);
   const sw = document.createElement("div");
   sw.className = "seg mt-1";
   const variants = [
@@ -74,10 +74,10 @@ const buildVariantSwitch = () => {
 // the variant switch as an extra leading control.
 const buildPageHeader = (updateFn, leadingControl = null) => {
   const header = document.createElement("header");
-  header.className = "flex items-start gap-4 mb-6";
+  header.className = "flex flex-wrap sm:flex-nowrap items-start gap-4 mb-6";
 
   const titleBlock = document.createElement("div");
-  titleBlock.className = "flex-1 min-w-0 order-first";
+  titleBlock.className = "w-full sm:w-auto sm:flex-1 min-w-0 shrink-0";
 
   const h1 = document.createElement("h1");
   h1.className = "font-semibold text-2xl tracking-tight";
@@ -94,9 +94,9 @@ const buildPageHeader = (updateFn, leadingControl = null) => {
     updateFn();
   });
 
+  header.appendChild(titleBlock);
   if (leadingControl) header.appendChild(leadingControl);
   header.appendChild(langSelect);
-  header.appendChild(titleBlock);
   return header;
 };
 
@@ -128,6 +128,9 @@ const btnChip = (s) => `<span class="btn-chip">${esc(s)}</span>`;
 
 const linkChip = (s) => `<span class="link-chip">${esc(s)}</span>`;
 
+const encodeUrlPath = (path) =>
+  path.split("/").map(encodeURIComponent).join("/");
+
 // Chunked Base64 and Uint8Array conversion for archive payloads
 
 // Keep spread calls below browser argument limits.
@@ -146,9 +149,13 @@ const base64ToUint8 = (b64) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
-// Resolve the ref/path boundary in a GitHub blob URL and return the ref with its
-// commit SHA. Trying the longest ref first supports branch names with slashes.
-const resolveGitHubBlobUrl = async (input, fetchImpl = fetch) => {
+// Preserve a supplied ref boundary; otherwise try candidates from longest to
+// shortest.
+const resolveGitHubBlobUrl = async (
+  input,
+  fetchImpl = fetch,
+  preferredRef = null,
+) => {
   let url;
   try {
     url = new URL(input);
@@ -171,28 +178,71 @@ const resolveGitHubBlobUrl = async (input, fetchImpl = fetch) => {
 
   const [user, repo] = parts;
   const refAndPath = parts.slice(3);
-  for (let split = refAndPath.length - 1; split >= 1; split--) {
+  const resolveSplit = async (split) => {
     const ref = refAndPath.slice(0, split).join("/");
     const path = refAndPath.slice(split).join("/");
-    const response = await fetchImpl(
-      `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
-      {
-        headers: { Accept: "application/vnd.github.sha" },
-        cache: "no-cache",
-      },
-    );
-    if (!response.ok) continue;
-
-    const sha = (await response.text()).trim();
-    if (/^[0-9a-f]{40}$/i.test(sha)) {
-      return { user, repo, ref, sha, path };
+    if (/^[0-9a-f]{40}$/i.test(ref)) {
+      return { user, repo, ref, sha: ref, path };
     }
+    try {
+      const response = await fetchImpl(
+        `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
+        {
+          headers: { Accept: "application/vnd.github.sha" },
+          cache: "no-cache",
+        },
+      );
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        if (response.status === 422) {
+          try {
+            const error = JSON.parse(await response.text());
+            if (error.message?.startsWith("No commit found for SHA:")) {
+              return null;
+            }
+          } catch {}
+        }
+        return undefined;
+      }
+
+      const sha = (await response.text()).trim();
+      return /^[0-9a-f]{40}$/i.test(sha)
+        ? { user, repo, ref, sha, path }
+        : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  if (preferredRef) {
+    const preferredSplit = preferredRef.split("/").length;
+    if (
+      preferredSplit < refAndPath.length &&
+      refAndPath.slice(0, preferredSplit).join("/") === preferredRef
+    ) {
+      const path = refAndPath.slice(preferredSplit).join("/");
+      const resolved = await resolveSplit(preferredSplit);
+      if (resolved) return resolved;
+      return {
+        user,
+        repo,
+        ref: preferredRef,
+        sha: null,
+        path,
+      };
+    }
+  }
+
+  for (let split = refAndPath.length - 1; split >= 1; split--) {
+    const resolved = await resolveSplit(split);
+    if (resolved) return resolved;
+    if (resolved === undefined) break;
   }
 
   throw new Error("Failed to resolve the GitHub ref and file path");
 };
-
-// Readiness polling for embedded Pyxel frame runtime hooks
 
 const waitForPyxelReady = (
   checkFn,
@@ -210,8 +260,6 @@ const waitForPyxelReady = (
     }
   })();
 };
-
-// Localized JSON loading, language selection, and page rendering
 
 const initPage = (jsonFile, buildFn) => {
   fetch(jsonFile)

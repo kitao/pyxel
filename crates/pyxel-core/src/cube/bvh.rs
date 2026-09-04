@@ -1,9 +1,8 @@
 use crate::cube::collision::Aabb;
 use crate::cube::vec3::Vec3;
 
-// Flat AABB tree for static mesh colliders. Build is one-shot; the
-// tree is never refit. PS1-scale meshes (~1000 triangles) use top-down
-// median split — SAH offers no measurable improvement at that size.
+// Flat AABB tree for static mesh colliders, built by top-down median split.
+// Geometry changes rebuild the tree; nodes are not refitted.
 
 pub struct Bvh {
     pub nodes: Vec<BvhNode>,
@@ -22,9 +21,6 @@ pub struct BvhNode {
     pub tri_count: u32,
 }
 
-// Threshold for stopping recursion. Each leaf holds at most one
-// triangle, giving predictable per-query cost on PS1-scale meshes
-// (~1000 triangles) without the bookkeeping cost of a larger leaf.
 const MAX_LEAF_TRIANGLES: usize = 1;
 
 // Fixed-size traversal stack for the per-frame queries, avoiding a heap
@@ -57,11 +53,7 @@ impl Bvh {
         }
     }
 
-    // Returns the index of the node it just emitted into `nodes`.
-    // `tri_indices` is the subslice of triangle indices this subtree
-    // owns; it is permuted in place so that the final flat permutation
-    // (= caller's mutable view of the original slice) yields contiguous
-    // leaf ranges.
+    // Permute triangle indices into contiguous leaf ranges and return the root index.
     fn build_recursive(
         positions: &[Vec3],
         triangles: &[[u32; 3]],
@@ -180,21 +172,26 @@ impl Bvh {
     }
 }
 
-// Conservative slab test for BVH pruning: false only when the ray
-// certainly misses the AABB within [0, max_t]. Zero direction components
-// give ±inf slopes, which the min / max folding handles; a NaN slab
-// (origin exactly on a zero-direction face) drops out of the folding via
-// f32::min / f32::max NaN semantics and keeps the branch alive.
+// Conservative slab test for BVH pruning within [0, max_t].
 fn ray_reaches_aabb(origin: Vec3, inv_dir: Vec3, aabb: &Aabb, max_t: f32) -> bool {
-    let tx1 = (aabb.min.x - origin.x) * inv_dir.x;
-    let tx2 = (aabb.max.x - origin.x) * inv_dir.x;
-    let ty1 = (aabb.min.y - origin.y) * inv_dir.y;
-    let ty2 = (aabb.max.y - origin.y) * inv_dir.y;
-    let tz1 = (aabb.min.z - origin.z) * inv_dir.z;
-    let tz2 = (aabb.max.z - origin.z) * inv_dir.z;
-    let t_enter = tx1.min(tx2).max(ty1.min(ty2)).max(tz1.min(tz2)).max(0.0);
-    let t_exit = tx1.max(tx2).min(ty1.max(ty2)).min(tz1.max(tz2)).min(max_t);
+    let (tx_enter, tx_exit) = ray_slab_interval(origin.x, inv_dir.x, aabb.min.x, aabb.max.x);
+    let (ty_enter, ty_exit) = ray_slab_interval(origin.y, inv_dir.y, aabb.min.y, aabb.max.y);
+    let (tz_enter, tz_exit) = ray_slab_interval(origin.z, inv_dir.z, aabb.min.z, aabb.max.z);
+    let t_enter = tx_enter.max(ty_enter).max(tz_enter).max(0.0);
+    let t_exit = tx_exit.min(ty_exit).min(tz_exit).min(max_t);
     t_enter <= t_exit
+}
+
+#[inline]
+fn ray_slab_interval(origin: f32, inv_dir: f32, min: f32, max: f32) -> (f32, f32) {
+    let t1 = (min - origin) * inv_dir;
+    let t2 = (max - origin) * inv_dir;
+    // A zero-direction ray on a slab face has a NaN product but stays in the slab.
+    if t1.is_nan() || t2.is_nan() {
+        (f32::NEG_INFINITY, f32::INFINITY)
+    } else {
+        (t1.min(t2), t1.max(t2))
+    }
 }
 
 fn subset_aabb(positions: &[Vec3], triangles: &[[u32; 3]], indices: &[u32]) -> Aabb {
@@ -243,7 +240,7 @@ mod tests {
     fn test_empty_mesh_build() {
         let bvh = Bvh::build(Vec::new(), Vec::new());
         assert!(bvh.nodes.is_empty());
-        assert!(bvh.triangles.is_empty());
+        assert_eq!(bvh.triangles, [] as [[u32; 3]; 0]);
     }
 
     #[test]
@@ -310,7 +307,6 @@ mod tests {
         ];
         let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
         let bvh = Bvh::build(positions, triangles);
-        // Root + two leaves
         assert_eq!(bvh.nodes.len(), 3);
         assert_ne!(bvh.nodes[0].left, -1);
         assert!(bvh.nodes[0].aabb.min.x <= 0.0);
@@ -473,7 +469,6 @@ mod tests {
 
     #[test]
     fn test_multi_triangle_build_produces_single_triangle_leaves() {
-        // 4 separated triangles → 4 leaves (MAX_LEAF_TRIANGLES = 1).
         let mut positions: Vec<Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
         for i in 0..4 {
@@ -518,9 +513,10 @@ mod tests {
                 z: 10.0,
             },
         };
-        let mut hits = 0;
-        bvh.query_aabb(&query, |_| hits += 1);
-        assert_eq!(hits, 3);
+        let mut hits = Vec::new();
+        bvh.query_aabb(&query, |tri| hits.push(tri));
+        hits.sort_unstable();
+        assert_eq!(hits, [[0, 1, 2], [3, 4, 5], [6, 7, 8]]);
     }
 
     // Two widely separated unit triangles shared by the ray-query tests
@@ -586,9 +582,9 @@ mod tests {
 
     #[test]
     fn test_query_ray_visits_both_leaves_along_x() {
-        // A +X ray skimming y=z=0 passes through both leaf AABBs.
+        // A +X ray at y=0.5, z=0 passes through both leaf AABBs.
         let bvh = two_separated_triangles();
-        let mut hits = 0;
+        let mut hits = Vec::new();
         bvh.query_ray(
             Vec3 {
                 x: -1.0,
@@ -601,9 +597,10 @@ mod tests {
                 z: 0.0,
             },
             f32::INFINITY,
-            |_| hits += 1,
+            |tri| hits.push(tri),
         );
-        assert_eq!(hits, 2);
+        hits.sort_unstable();
+        assert_eq!(hits, [[0, 1, 2], [3, 4, 5]]);
     }
 
     #[test]
@@ -633,7 +630,7 @@ mod tests {
     fn test_query_ray_negative_direction_reaches_leaf() {
         // A -X ray starting beyond the far triangle reaches both leaves.
         let bvh = two_separated_triangles();
-        let mut hits = 0;
+        let mut hits = Vec::new();
         bvh.query_ray(
             Vec3 {
                 x: 200.0,
@@ -646,9 +643,10 @@ mod tests {
                 z: 0.0,
             },
             f32::INFINITY,
-            |_| hits += 1,
+            |tri| hits.push(tri),
         );
-        assert_eq!(hits, 2);
+        hits.sort_unstable();
+        assert_eq!(hits, [[0, 1, 2], [3, 4, 5]]);
     }
 
     #[test]
@@ -698,63 +696,155 @@ mod tests {
     }
 
     #[test]
+    fn test_query_ray_includes_parallel_faces_with_signed_zero() {
+        let bvh = Bvh::build(
+            vec![
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                Vec3 {
+                    x: 1.0,
+                    y: 1.0,
+                    z: 0.0,
+                },
+                Vec3 {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 1.0,
+                },
+            ],
+            vec![[0, 1, 2]],
+        );
+        for travel_axis in 0..3 {
+            for face_axis in 0..3 {
+                if travel_axis == face_axis {
+                    continue;
+                }
+                for face in [0.0, 1.0] {
+                    for zero in [0.0, -0.0] {
+                        let mut origin = [0.5; 3];
+                        origin[travel_axis] = -1.0;
+                        origin[face_axis] = face;
+                        let origin = Vec3 {
+                            x: origin[0],
+                            y: origin[1],
+                            z: origin[2],
+                        };
+                        let mut direction = [zero; 3];
+                        direction[travel_axis] = 1.0;
+                        let direction = Vec3 {
+                            x: direction[0],
+                            y: direction[1],
+                            z: direction[2],
+                        };
+                        for (max_t, expected) in [(0.5, 0), (1.0, 1), (2.0, 1)] {
+                            let mut hits = 0;
+                            bvh.query_ray(origin, direction, max_t, |_| hits += 1);
+                            assert_eq!(
+                                hits, expected,
+                                "travel_axis={travel_axis}, face_axis={face_axis}, face={face}, zero={zero}, max_t={max_t}",
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_query_ray_parallel_to_degenerate_aabbs() {
+        for travel_axis in 0..3 {
+            for extent in [[1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0; 3]] {
+                let mut max = [0.0; 3];
+                for i in 0..3 {
+                    max[(travel_axis + i) % 3] = extent[i];
+                }
+                let min = Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                };
+                let max = Vec3 {
+                    x: max[0],
+                    y: max[1],
+                    z: max[2],
+                };
+                let bvh = Bvh::build(vec![min, max, min], vec![[0, 1, 2]]);
+                for zero in [0.0, -0.0] {
+                    let mut origin = [0.0; 3];
+                    origin[travel_axis] = -1.0;
+                    let origin = Vec3 {
+                        x: origin[0],
+                        y: origin[1],
+                        z: origin[2],
+                    };
+                    let mut direction = [zero; 3];
+                    direction[travel_axis] = 1.0;
+                    let direction = Vec3 {
+                        x: direction[0],
+                        y: direction[1],
+                        z: direction[2],
+                    };
+                    for (max_t, expected) in [(0.5, 0), (1.0, 1)] {
+                        let mut hits = 0;
+                        bvh.query_ray(origin, direction, max_t, |_| hits += 1);
+                        assert_eq!(
+                            hits, expected,
+                            "axis={travel_axis}, extent={extent:?}, zero={zero}, max_t={max_t}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_query_ray_parallel_outside_aabb_is_pruned() {
+        let bvh = two_separated_triangles();
+        for y in [-1.0, 2.0] {
+            for zero in [0.0, -0.0] {
+                let mut hits = 0;
+                bvh.query_ray(
+                    Vec3 { x: -1.0, y, z: 0.0 },
+                    Vec3 {
+                        x: 1.0,
+                        y: zero,
+                        z: zero,
+                    },
+                    200.0,
+                    |_| hits += 1,
+                );
+                assert_eq!(hits, 0, "y={y}, zero={zero}");
+            }
+        }
+    }
+
+    #[test]
     fn test_split_axis_uses_longest_extent_y() {
-        // Triangles stretched along Y so the median split picks Y. The
-        // two resulting leaves' AABBs must lie on opposite sides of the
-        // Y midpoint, confirming the split happened on the Y axis (an
-        // X-axis split would leave both leaves spanning the full Y
-        // range).
-        let positions = vec![
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            Vec3 {
-                x: 1.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            Vec3 {
-                x: 0.0,
-                y: 100.0,
-                z: 0.0,
-            },
-            Vec3 {
-                x: 1.0,
-                y: 100.0,
-                z: 0.0,
-            },
-            Vec3 {
-                x: 0.0,
-                y: 101.0,
-                z: 0.0,
-            },
-        ];
-        let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
+        // An X split groups columns; a Y split groups rows.
+        let mut positions = Vec::new();
+        let mut triangles = Vec::new();
+        for (x, y) in [(0.0, 0.0), (0.0, 100.0), (10.0, 0.0), (10.0, 100.0)] {
+            let (verts, _) = unit_triangle(Vec3 { x, y, z: 0.0 });
+            let base = positions.len() as u32;
+            positions.extend_from_slice(&verts);
+            triangles.push([base, base + 1, base + 2]);
+        }
         let bvh = Bvh::build(positions, triangles);
-        // Root AABB Y extent (~101) should dominate X / Z.
-        let root = bvh.nodes[0].aabb;
-        let ex = root.max.x - root.min.x;
-        let ey = root.max.y - root.min.y;
-        let ez = root.max.z - root.min.z;
-        assert!(ey > ex && ey > ez);
-        let leaf_aabbs: Vec<_> = bvh.nodes.iter().filter(|n| n.left == -1).collect();
-        assert_eq!(leaf_aabbs.len(), 2);
-        // Leaf 0 wraps y≈0..1, leaf 1 wraps y≈100..101 (or vice versa).
-        // Either way the leaves must not overlap in Y, which is the
-        // signature of a Y-axis split.
-        let (a, b) = (leaf_aabbs[0].aabb, leaf_aabbs[1].aabb);
-        let y_disjoint = a.max.y < b.min.y || b.max.y < a.min.y;
-        assert!(
-            y_disjoint,
-            "leaves overlap in Y; split did not occur on Y axis: a=({}..{}) b=({}..{})",
-            a.min.y, a.max.y, b.min.y, b.max.y,
+        let root = bvh.nodes[0];
+        let left = bvh.nodes[root.left as usize];
+        let right = bvh.nodes[root.right as usize];
+        assert_eq!(left.tri_count, 2);
+        assert_eq!(right.tri_count, 2);
+        assert_eq!(left.aabb.min.y, 0.0);
+        assert_eq!(left.aabb.max.y, 1.0);
+        assert_eq!(right.aabb.min.y, 100.0);
+        assert_eq!(right.aabb.max.y, 101.0);
+        assert_eq!(
+            bvh.triangles,
+            [[0, 1, 2], [6, 7, 8], [3, 4, 5], [9, 10, 11]]
         );
     }
 }

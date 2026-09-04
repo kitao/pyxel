@@ -16,7 +16,7 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
         Loading...
       </div>
     </main>
@@ -25,7 +25,6 @@
       let data = null;
       let lang = "en";
 
-      // Render the special keys table from localized key / action items.
       function shortcutTable(items) {
         let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">${esc(t("th_key"))}</th><th class="th">${esc(t("th_action"))}</th></tr></thead><tbody>`;
@@ -36,14 +35,12 @@
         return html + "</tbody></table></div>";
       }
 
-      // Build the user guide shell and section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         app.appendChild(buildPageHeader(updateTexts, buildVariantSwitch()));
 
-        // User guide section containers populated by updateTexts
         const wrap = document.createElement("div");
         wrap.className = "space-y-6";
         wrap.id = "content";
@@ -65,18 +62,15 @@
         updateTexts();
       }
 
-      // Populate every user guide section from localized JSON content.
       function updateTexts() {
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
 
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", pyxelLink);
 
-        // Overview summary, external references, and sample images
         document.getElementById("s-overview").innerHTML = `
           <div class="pb-2 mb-3 border-b border-gray-600">
             <img src="../../docs/images/pyxel_logo_152x64.png" alt="Pyxel" class="pix" style="height:64px">
@@ -110,7 +104,6 @@
             <a href="../showcase/tools/sound-editor.html" target="_blank" rel="noopener noreferrer" style="flex:256"><img src="../../docs/images/sound_music_editor.gif" alt="Sound and Music Editor" class="w-full rounded border border-gray-700" loading="lazy"></a>
           </div>`;
 
-        // Core specifications and palette links
         const specs = [
           "specs_platform",
           "specs_language",
@@ -134,7 +127,6 @@
           <img src="../../docs/images/pyxel_palette.png" alt="Palette" class="my-2 rounded border border-gray-700" loading="lazy">
           <p class="body mt-2 text-sm">${link("../../docs/pyxel.gpl", t("palette_gimp_palette_file"))}</p>`;
 
-        // Desktop, web, and VS Code installation sections
         document.getElementById("s-install").innerHTML = `
           <h2 class="section-title">${esc(t("install_title"))}</h2>
           <h3 class="sub-title">${esc(t("install_desktop_title"))}</h3>
@@ -166,7 +158,6 @@
             ),
           )}</p>`;
 
-        // Command-line usage and bundled example commands
         document.getElementById("s-usage").innerHTML = `
           <h2 class="section-title">${esc(t("usage_title"))}</h2>
           <h3 class="sub-title">${esc(t("usage_command_title"))}</h3>
@@ -188,11 +179,9 @@ usage:
           ${code("pyxel copy_examples", "sh")}
           <p class="body">${esc(t("usage_examples_run"))}</p>
           ${code(
-            `# ${t("usage_examples_run_comment1")}
-cd pyxel_examples
+            `cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
-# ${t("usage_examples_run_comment2")}
 cd apps
 pyxel play 30sec_of_daylight.pyxapp`,
             "sh",
@@ -202,7 +191,6 @@ pyxel play 30sec_of_daylight.pyxapp`,
             link("../showcase/", "Pyxel Showcase"),
           )}</p>`;
 
-        // Minimal application examples and run/watch workflow
         document.getElementById("s-creating").innerHTML = `
           <h2 class="section-title">${esc(t("creating_title"))}</h2>
           <h3 class="sub-title">${esc(t("creating_program_title"))}</h3>
@@ -266,12 +254,11 @@ pyxel.show()`,
           ${code("pyxel run PYTHON_SCRIPT_FILE", "sh")}
           <p class="body">${t("creating_run_watch").replace("{0}", chip("pyxel watch"))}</p>
           ${code("pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE", "sh")}
-          <p class="body">${t("creating_run_watch_stop").replace("{0}", chip("Ctrl(Cmd)+C"))}</p>
+          <p class="body">${t("creating_run_watch_stop").replace("{0}", chip("Ctrl+C"))}</p>
           <h3 class="sub-title">${esc(t("creating_keys_title"))}</h3>
           <p class="body mb-2">${esc(t("creating_keys_body"))}</p>
           ${shortcutTable(data.special_keys)}`;
 
-        // Resource editor and resource-loading notes
         document.getElementById("s-resources").innerHTML = `
           <h2 class="section-title">${esc(t("resources_title"))}</h2>
           <h3 class="sub-title">${esc(t("resources_editor_title"))}</h3>
@@ -293,13 +280,17 @@ pyxel.show()`,
           </ul>
           <p class="body mt-3">${esc(t("resources_other_refer"))}</p>`;
 
-        // Packaging, metadata, and conversion commands
         document.getElementById("s-dist").innerHTML = `
           <h2 class="section-title">${esc(t("dist_title"))}</h2>
           <p class="body">${esc(t("dist_body"))}</p>
           <p class="body mt-2">${t("dist_create").replace("{0}", chip("pyxel package"))}</p>
           ${code("pyxel package APP_DIR STARTUP_SCRIPT_FILE", "sh")}
-          <p class="body">${esc(t("dist_include"))}</p>
+          <p class="body">${t("dist_include")
+            .replace("{0}", chip("APP_DIR"))
+            .replace("{1}", chip("pyxel package"))
+            .replace("{2}", chip(".gif"))
+            .replace("{3}", chip(".zip"))
+            .replace("{4}", chip("__pycache__"))}</p>
           <p class="body mt-2">${t("dist_metadata")
             .replace("{0}", chip("title"))
             .replace("{1}", chip("author"))}</p>
@@ -316,9 +307,9 @@ pyxel.show()`,
           ${code("pyxel play PYXEL_APP_FILE", "sh")}
           <p class="body">${t("dist_convert")
             .replace("{0}", chip("pyxel app2exe"))
-            .replace("{1}", chip("pyxel app2html"))}</p>`;
+            .replace("{1}", chip("pyxel app2html"))
+            .replace("{2}", chip('pip install "pyxel[app2exe]"'))}</p>`;
 
-        // API reference pointers and advanced-API note
         document.getElementById("s-apiref").innerHTML = `
           <h2 class="section-title">${esc(t("apiref_title"))}</h2>
           <p class="body">${t("apiref_body").replace(
@@ -328,7 +319,6 @@ pyxel.show()`,
           <p class="body mt-2">${esc(t("apiref_advanced"))}</p>
           <p class="body mt-2">${esc(t("apiref_challenge"))}</p>`;
 
-        // Documentation, tools, and community links
         const faqUrl =
           lang === "ja"
             ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
@@ -378,7 +368,6 @@ pyxel.show()`,
           <h3 class="sub-title">${esc(t("other_title"))}</h3>
           <ul class="link-list">${others}</ul>`;
 
-        // Issue, testing, and pull-request guidance
         document.getElementById("s-contrib").innerHTML = `
           <h2 class="section-title">${esc(t("contrib_title"))}</h2>
           <h3 class="sub-title">${esc(t("contrib_issues_title"))}</h3>
@@ -401,7 +390,6 @@ pyxel.show()`,
             ),
           )}</p>`;
 
-        // License summary
         document.getElementById("s-license").innerHTML = `
           <h2 class="section-title">${esc(t("license_title"))}</h2>
           <p class="body">${t("license_body").replace(
@@ -412,7 +400,6 @@ pyxel.show()`,
             ),
           )}</p>`;
 
-        // Sponsorship link
         document.getElementById("s-sponsors").innerHTML = `
           <h2 class="section-title">${esc(t("sponsors_title"))}</h2>
           <p class="body">${t("sponsors_body").replace(

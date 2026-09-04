@@ -39,7 +39,6 @@ class PianoRoll(Widget):
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_click", self.__on_mouse_click)
@@ -123,7 +122,6 @@ class PianoRoll(Widget):
             self.field_cursor.insert(self.note_var)
 
     def __on_draw(self):
-        # Draw frame
         pyxel.rect(self.x, self.y, self.width, self.height, PIANO_ROLL_BACKGROUND_COLOR)
 
         # Draw cursor or playback position

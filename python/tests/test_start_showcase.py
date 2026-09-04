@@ -1,3 +1,4 @@
+import sys
 import threading
 from collections.abc import Iterator
 from http.server import ThreadingHTTPServer
@@ -25,9 +26,13 @@ def _load_start_showcase() -> ModuleType:
 
 
 @pytest.fixture
-def showcase_url() -> Iterator[str]:
-    module = _load_start_showcase()
-    server = ThreadingHTTPServer(("127.0.0.1", 0), module.Handler)
+def showcase_module() -> ModuleType:
+    return _load_start_showcase()
+
+
+@pytest.fixture
+def showcase_url(showcase_module: ModuleType) -> Iterator[str]:
+    server = ThreadingHTTPServer(("127.0.0.1", 0), showcase_module.Handler)
     thread = threading.Thread(target=server.serve_forever)
     thread.start()
     try:
@@ -59,10 +64,37 @@ def test_start_showcase_preserves_public_paths(showcase_url: str):
 
     status, body = _get(showcase_url + "/web/showcase/")
     assert status == 200
+    assert b"navigator.serviceWorker.register('/pyxel-sw.js'" in body
+
+    status, body = _get(showcase_url + "/web/code-maker/")
+    assert status == 200
+    assert CDN_RUNTIME_URL.encode() not in body
+    assert b'src="/wasm/pyxel.js"' in body
 
     status, body = _get(showcase_url + "/web/showcase/examples/01-hello-pyxel.html")
     assert status == 200
+    assert CDN_RUNTIME_URL.encode() not in body
+    assert b'src="/wasm/pyxel.js"' in body
+    assert body.index(b"navigator.serviceWorker") < body.index(b"</head>")
+    assert b'<pyxel-run\n      root="../../../python/pyxel/examples"' in body
+
+    status, body = _get(showcase_url + "/web/web-usage/index.html")
+    assert status == 200
     assert CDN_RUNTIME_URL.encode() in body
+
+
+def test_inject_html_uses_offsets_from_rewritten_document():
+    module = _load_start_showcase()
+    original = (
+        '<head><script src="'
+        + CDN_RUNTIME_URL
+        + '"></script></head><body><pyxel-run root="."></pyxel-run></body>'
+    )
+
+    injected = module._inject_html(original)
+
+    assert injected.index("navigator.serviceWorker") < injected.index("</head>")
+    assert '<pyxel-run root=".">' in injected
 
 
 @pytest.mark.parametrize(
@@ -76,3 +108,24 @@ def test_start_showcase_preserves_public_paths(showcase_url: str):
 def test_start_showcase_rejects_repository_internal_paths(showcase_url: str, path: str):
     status, _body = _get(showcase_url + path)
     assert status == 404
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+@pytest.mark.parametrize("index_name", ["index.html", "index.htm"])
+@pytest.mark.parametrize("public_target", [True, False])
+def test_start_showcase_checks_index_symlink_targets(
+    showcase_url, showcase_module, tmp_path, monkeypatch, index_name, public_target
+):
+    root = tmp_path.resolve()
+    public = root / "web"
+    public.mkdir()
+    target = (public if public_target else root) / "page.html"
+    target.write_text("INDEX_TARGET", encoding="utf-8")
+    (public / index_name).symlink_to(target)
+    monkeypatch.setattr(showcase_module, "ROOT_DIR", root)
+    monkeypatch.setattr(showcase_module, "PUBLIC_ROOT_DIRS", (public,))
+
+    for path in (f"/web/{index_name}", "/web/", "/web%2f", "/web"):
+        status, body = _get(showcase_url + path)
+        assert status == (200 if public_target else 404), path
+        assert (b"INDEX_TARGET" in body) == public_target, path

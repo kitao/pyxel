@@ -15,4 +15,9 @@ if sys.platform == "linux":
         except OSError:
             pass
 
+from . import cube as _cube
 from .pyxel_binding import *  # type: ignore
+
+cube = _cube
+
+del _cube

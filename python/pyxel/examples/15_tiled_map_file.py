@@ -59,7 +59,6 @@ class App:
             seed = pyxel.rndi(0, 10000)
             pyxel.gen_bgm(preset, transp, instr, seed, play=True)
 
-        # Update player
         x, y, u, v = self.player
         dx, dy = 0, 0
 
@@ -84,7 +83,6 @@ class App:
         y = pyxel.clamp(y + dy, 0, pyxel.height - 16)
         self.player = (x, y, u, v)
 
-        # Update cars
         for i, car in enumerate(self.cars):
             x, y, dx, image = car
             x += dx
@@ -100,7 +98,6 @@ class App:
         pyxel.cls(1)
         pyxel.bltm(0, 0, 0, 0, 0, pyxel.width, pyxel.height, 0)
 
-        # Draw player
         x, y, u, v = self.player
         pyxel.blt(
             x,
@@ -113,7 +110,6 @@ class App:
             0,
         )
 
-        # Draw cars
         for car in self.cars:
             x, y, _, image = car
             u, v, w, h = CAR_IMAGES[image]

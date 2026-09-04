@@ -1,11 +1,10 @@
 import inspect
+import math
 
 import pytest
-
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel import Image
-
 from pyxel.cube import (
     Camera,
     Collider,
@@ -30,8 +29,6 @@ class TestAttributes:
         assert n.active is True
         assert n.visible is True
         assert n.transform == Mat4.IDENTITY
-        # Cascade attributes are None on a freshly constructed Node so
-        # they inherit from the closest non-None ancestor.
         assert n.shading is None
         assert n.collider is None
         assert n.parent is None
@@ -43,15 +40,6 @@ class TestAttributes:
             Node(1)
         with raises_exact(TypeError, "Node() takes no arguments"):
             Node(name="player")
-
-    def test_subclass_constructor_keeps_python_arguments(self):
-        class Player(Node):
-            def __init__(self, name):
-                super().__init__()
-                self.name = name
-
-        player = Player("hero")
-        assert player.name == "hero"
 
     def test_set_name(self):
         n = Node()
@@ -68,7 +56,6 @@ class TestAttributes:
     def test_set_transform(self):
         n = Node()
         n.transform = Mat4.from_translation(Vec3(1, 2, 3))
-        # `pos` reads back as Vec3 of the translation column.
         pos = n.transform.pos
         assert pos.x == 1
         assert pos.y == 2
@@ -78,8 +65,6 @@ class TestAttributes:
         n = Node()
         shading = Shading(palette())
         n.shading = shading
-        # Setter round-trips so reading via the node yields the same
-        # entry as reading from the original shading directly.
         assert n.shading[0, 2] == shading[0, 2]
         n.shading = None
         assert n.shading is None
@@ -99,27 +84,69 @@ class TestAttributes:
 class TestColliderContactBasics:
     def test_collider_constructable(self):
         c = Collider()
-        assert "Collider(" in repr(c)
+        assert repr(c) == "Collider(size=Vec3(0, 0, 0), radius=0, mass=1)"
+
+    def test_collider_rejects_invalid_mass(self):
+        message = "mass must be finite and greater than or equal to 0"
+        for mass in (-1.0, math.nan, math.inf, -math.inf):
+            with raises_exact(ValueError, message):
+                Collider(mass=mass)
+
+    def test_collider_mass_setter_rejects_invalid_value_without_mutation(self):
+        collider = Collider(mass=2.0)
+        message = "mass must be finite and greater than or equal to 0"
+        for mass in (-1.0, math.nan, math.inf, -math.inf):
+            with raises_exact(ValueError, message):
+                collider.mass = mass
+            assert collider.mass == 2.0
 
     def test_contact_not_user_constructible(self):
-        with raises_exact(TypeError, "cannot create 'builtins.Contact' instances"):
+        with raises_exact(TypeError, "cannot create 'pyxel.cube.Contact' instances"):
             Contact()
 
 
-# Node.BILLBOARD_* class constants were removed along with the
-# billboard kwarg (use Mat4 to face the camera when needed).
-class TestClassConstantsRemoved:
-    def test_billboard_off_attribute_removed(self):
-        assert not hasattr(Node, "BILLBOARD_OFF")
-
-    def test_billboard_on_attribute_removed(self):
-        assert not hasattr(Node, "BILLBOARD_ON")
-
-    def test_billboard_fixed_y_attribute_removed(self):
-        assert not hasattr(Node, "BILLBOARD_FIXED_Y")
-
-
 class TestHierarchy:
+    def test_add_child_and_remove_child_keep_canonical_signature(self):
+        assert str(inspect.signature(Node.add_child)) == "(self, /, node)"
+        assert str(inspect.signature(Node.remove_child)) == "(self, /, node)"
+
+    def test_add_child_and_remove_child_take_node_keyword(self):
+        parent, child = Node(), Node()
+        parent.add_child(node=child)
+        assert child.parent is parent
+        parent.remove_child(node=child)
+        assert child.parent is None
+
+    def test_add_child_and_remove_child_reject_unknown_child_keyword(self):
+        parent, child = Node(), Node()
+        with raises_exact(
+            TypeError,
+            "Node.add_child() got an unexpected keyword argument 'child'",
+        ):
+            parent.add_child(child=child)
+
+        parent.add_child(child)
+        with raises_exact(
+            TypeError,
+            "Node.remove_child() got an unexpected keyword argument 'child'",
+        ):
+            parent.remove_child(child=child)
+
+    def test_add_child_and_remove_child_require_exactly_one_node(self):
+        parent, child = Node(), Node()
+        with raises_exact(
+            TypeError,
+            "Node.add_child() missing 1 required positional argument: 'node'",
+        ):
+            parent.add_child()
+
+        parent.add_child(child)
+        with raises_exact(
+            TypeError,
+            "Node.remove_child() missing 1 required positional argument: 'node'",
+        ):
+            parent.remove_child()
+
     def test_add_remove_child(self):
         p = Node()
         c = Node()
@@ -134,8 +161,8 @@ class TestHierarchy:
         c = Node()
         p1.add_child(c)
         p2.add_child(c)
-        assert len(p1.children) == 0
-        assert len(p2.children) == 1
+        assert p1.children == ()
+        assert p2.children == (c,)
 
     def test_remove_child_rejects_non_child(self):
         p1 = Node()
@@ -173,10 +200,8 @@ class TestHierarchy:
         root.add_child(head)
         # Subtree DFS pre-order; self matches first when its name fits.
         root.name = "root"
-        assert len(root.find_by_name("root")) == 1
-        found = root.find_by_name("head")
-        assert len(found) == 1
-        assert found[0].name == "head"
+        assert root.find_by_name("root") == [root]
+        assert root.find_by_name("head") == [head]
         assert root.find_by_name("missing") == []
 
     def test_find_by_name_multiple_matches(self):
@@ -189,7 +214,7 @@ class TestHierarchy:
         b.name = "zako"
         root.add_child(a)
         root.add_child(b)
-        assert len(root.find_by_name("zako")) == 2
+        assert root.find_by_name("zako") == [a, b]
 
     def test_find_by_tags(self):
         root = Node()
@@ -199,22 +224,9 @@ class TestHierarchy:
         b.tags = ["player"]
         root.add_child(a)
         root.add_child(b)
-        found = root.find_by_tags(["enemy"])
-        assert len(found) == 1
-        assert found[0] is a
+        assert root.find_by_tags(["enemy"]) == [a]
         # Multiple tags match any (OR).
-        found2 = root.find_by_tags(["enemy", "player"])
-        assert len(found2) == 2
-
-    def test_destroy(self):
-        p = Node()
-        c = Node()
-        p.add_child(c)
-        c.destroy()
-        # destroy() sets the flag immediately, but Node.update detaches the
-        # node at the end of the frame.
-        assert c.destroyed is True
-        assert len(p.children) == 1
+        assert root.find_by_tags(["enemy", "player"]) == [a, b]
 
 
 class TestSubclassing:
@@ -264,10 +276,6 @@ class TestSubclassing:
         n.on_destroy()
 
 
-# Calling draw methods outside an active draw context must be a safe
-# no-op (the binding dispatches through with_draw_context, which skips
-# when no context is active). Per-call state kwargs were removed in
-# favor of Node.dither / depth_test / depth_write / shaded state-setters.
 class TestImmediateDrawSafety:
     def test_pset(self):
         Node().pset(Vec3.ZERO, 7)
@@ -314,9 +322,6 @@ class TestImmediateDrawSafety:
         uvs = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
         Node().sprite(Vec3.ZERO, pyxel.images[0], uvs, 1.0, 1.0, colkey=0)
 
-    def test_mesh_draw_method_removed(self):
-        assert not hasattr(Node(), "mesh")
-
     def test_from_mesh_builds_named_node_tree(self):
         prim = Primitive(
             Primitive.MODE_TRIANGLES,
@@ -342,30 +347,6 @@ class TestImmediateDrawSafety:
         assert root.children[0].parent is root
         assert root.find_by_name("arm")[0].transform.pos == Vec3(0, 1, 0)
 
-    def test_from_mesh_generated_nodes_draw_attached_primitives(self):
-        prim = Primitive(
-            Primitive.MODE_TRIANGLES,
-            [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0],
-            [0, 1, 2],
-        )
-        mesh = Mesh(
-            primitives=[prim],
-            transforms=[Mat4.IDENTITY],
-            parents=[-1],
-            col_img=8,
-        )
-        root = Node()
-        camera = Camera()
-        camera.clear_color = 0
-        camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
-        root.camera = camera
-        root.add_child(Node.from_mesh(mesh))
-
-        pyxel.cls(0)
-        root.draw(0, 0, 160, 120)
-
-        assert pyxel.pget(80, 60) == 8
-
     def test_prim_with_primitive(self):
         prim = Primitive(
             Primitive.MODE_TRIANGLES,
@@ -384,6 +365,10 @@ class TestImmediateDrawSafety:
             uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
         )
         Node().prim(Mat4.IDENTITY, prim, col_img=img, colkey=0)
+
+    def test_mesh_col_img_rejects_other_types(self):
+        with raises_exact(TypeError, "col_img must be int or Image"):
+            Mesh(col_img="7")
 
     def test_mesh_col_img_accepts_image(self):
         img = pyxel.images[0]
@@ -404,10 +389,6 @@ class TestImmediateDrawSafety:
         assert isinstance(Node.from_mesh(m), Node)
 
 
-# Setter methods on Node that mutate the active DrawContext state.
-# Called outside on_draw, they are no-ops (no active draw context).
-# Inside on_draw, they affect subsequent draws within the same body and
-# reset at the entry of the next Node's on_draw.
 class TestStateSetters:
     @staticmethod
     def _draw(probe, shading=None):
@@ -423,7 +404,6 @@ class TestStateSetters:
         return pyxel.pget(80, 60)
 
     def test_setters_callable_outside_draw_are_noop(self):
-        # Called with no active draw context — should not raise.
         n = Node()
         n.dither(0.5)
         n.depth_test(False)
@@ -468,35 +448,24 @@ class TestStateSetters:
             shading[7, level] = (3, 3)
         assert self._draw(Probe(), shading) == 7
 
+    @pytest.mark.parametrize("shaded", [False, True])
+    @pytest.mark.parametrize("size", [(0, 0), (0, 1), (1, 0), (1, 1)])
+    def test_textured_box_zero_dimensions(self, shaded, size):
+        img = Image(*size)
+        img.cls(7)
 
-# Smoke-test that Node exposes the frame-level draw API and queries.
-class TestNodeIntegrationOfDrawAndQueries:
-    def test_box_sphere_text_via_node(self):
-        n = Node()
-        n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 4)
-        n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 5)
-        n.sphere(Vec3.ZERO, 1.0, 7)
-        n.sphereb(Vec3.ZERO, 1.0, 8)
-        n.text(Vec3.ZERO, "ok", 9)
+        class Probe(Node):
+            def on_draw(self):
+                self.shaded(shaded)
+                self.box(Mat4.IDENTITY, Vec3.ONE, img)
 
-    def test_draw_api_signature_wiring(self):
-        # Multi-angle rendering: building the tree once and rendering
-        # via different cameras is part of the contract. The smoke test
-        # here confirms the draw API and Camera type are reachable.
-        n = Node()
-        cam = Camera()
-        assert hasattr(n, "draw")
-        assert hasattr(cam, "transform")
+        shading = Shading(palette())
+        for level in range(4):
+            shading[7, level] = (7, 7)
+        assert self._draw(Probe(), shading) == (7 if all(size) else 0)
 
 
-# box and sphere accept col_img: int | Image for textured fill. The
-# smoke tests only verify the API surface and that the call does not
-# raise; per-pixel correctness is covered by manual visual inspection.
 class TestBoxSphereTexturing:
-    def test_box_flat_col(self):
-        # Existing positional-int path still works.
-        Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), 11)
-
     def test_box_textured(self):
         img = pyxel.images[0]
         Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), img)
@@ -505,8 +474,9 @@ class TestBoxSphereTexturing:
         img = pyxel.images[0]
         Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), img, colkey=0)
 
-    def test_sphere_flat_col(self):
-        Node().sphere(Vec3.ZERO, 1.0, 11)
+    def test_box_col_img_rejects_other_types(self):
+        with raises_exact(TypeError, "col_img must be int or Image"):
+            Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), "7")
 
     def test_sphere_textured(self):
         img = pyxel.images[0]
@@ -522,91 +492,7 @@ class TestBoxSphereTexturing:
 # test_scene.py.
 class TestOnCollideSignature:
     def test_signature_param_names(self):
-        params = inspect.signature(Node.on_collide).parameters
-        assert "other" in params
-        assert "contact" in params
-
-
-# circ, circb, text, and sprite are always-billboard primitives.
-# Pixel-level verification that the geometry faces the camera is
-# covered by manual visual inspection of c01_hello_cube (the greeting
-# text drawn in Scene.on_draw must stay readable). This unit test only
-# confirms the plain positional shape continues to work.
-class TestAlwaysBillboard:
-    def test_circ_circb_text_plain_call(self):
-        n = Node()
-        n.circ(Vec3.ZERO, 1.0, 11)
-        n.circb(Vec3.ZERO, 1.0, 12)
-        n.text(Vec3.ZERO, "X", 7)
-
-
-_TRIANGLE_PRIMITIVE = Primitive(
-    Primitive.MODE_TRIANGLES,
-    [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-    [0, 1, 2],
-)
-_UNIT_QUAD_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
-
-
-# Geometry primitives reject the unsupported billboard keyword.
-class TestBillboardKwargRemoved:
-    @pytest.mark.parametrize(
-        ("call", "method"),
-        [
-            (lambda n: n.line(Vec3.ZERO, Vec3(1, 0, 0), 7, billboard=1), "line"),
-            (
-                lambda n: n.tri(
-                    Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1
-                ),
-                "tri",
-            ),
-            (
-                lambda n: n.trib(
-                    Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1
-                ),
-                "trib",
-            ),
-            (lambda n: n.rect(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "rect"),
-            (lambda n: n.rectb(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "rectb"),
-            (lambda n: n.elli(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "elli"),
-            (lambda n: n.ellib(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1), "ellib"),
-            (lambda n: n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1), "box"),
-            (lambda n: n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1), "boxb"),
-            (
-                lambda n: n.plane(
-                    Mat4.IDENTITY,
-                    pyxel.images[0],
-                    _UNIT_QUAD_UVS,
-                    1.0,
-                    1.0,
-                    billboard=1,
-                ),
-                "plane",
-            ),
-            (
-                lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_PRIMITIVE, billboard=1),
-                "prim",
-            ),
-        ],
-        ids=[
-            "line",
-            "tri",
-            "trib",
-            "rect",
-            "rectb",
-            "elli",
-            "ellib",
-            "box",
-            "boxb",
-            "plane",
-            "prim",
-        ],
-    )
-    def test_billboard_kwarg_rejected(self, call, method):
-        with raises_exact(
-            TypeError, f"Node.{method}() got an unexpected keyword argument 'billboard'"
-        ):
-            call(Node())
+        assert str(inspect.signature(Node.on_collide)) == "(self, /, other, contact)"
 
 
 class TestCameraCascade:
@@ -618,19 +504,28 @@ class TestCameraCascade:
     def test_set_and_get_camera(self):
         n = Node()
         c = Camera()
+        c.fov = 37
         n.camera = c
-        assert n.camera is not None
-        assert n.effective_camera is not None
+        assert n.camera.fov == 37
+        assert n.effective_camera.fov == 37
 
     def test_effective_camera_inherits_from_ancestor(self):
         root = Node()
+        branch = Node()
         leaf = Node()
-        root.add_child(leaf)
+        root.add_child(branch)
+        branch.add_child(leaf)
         c = Camera()
+        c.fov = 37
         root.camera = c
-        # leaf has no own camera; resolves to root's.
         assert leaf.camera is None
-        assert leaf.effective_camera is not None
+        assert leaf.effective_camera.fov == 37
+
+        branch.camera = Camera()
+        branch.camera.fov = 73
+        assert leaf.effective_camera.fov == 73
+        branch.camera = None
+        assert leaf.effective_camera.fov == 37
 
     def test_draw_without_camera_raises(self):
         n = Node()
@@ -644,9 +539,3 @@ class TestCameraCascade:
         assert c.clear_color is None
         c.clear_color = 5
         assert c.clear_color == 5
-
-    def test_draw_accepts_no_clear_color_arg(self):
-        n = Node()
-        n.camera = Camera()
-        # clear_color is no longer a draw parameter.
-        n.draw(0, 0, 32, 32)

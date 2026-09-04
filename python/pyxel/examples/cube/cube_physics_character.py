@@ -1,7 +1,6 @@
 import pyxel
-from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
-
 from cube_physics_camera import OrbitCamera
+from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
 
 def _stage_mesh() -> Mesh:
@@ -19,7 +18,7 @@ def _stage_mesh() -> Mesh:
         0.0,
         8.0,
     ]
-    indices = [0, 1, 2, 1, 3, 2]
+    indices = [0, 2, 1, 1, 2, 3]
     primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
     return Mesh(
         primitives=[primitive],
@@ -33,7 +32,7 @@ class Stage(Node):
     def __init__(self):
         super().__init__()
         self.mesh_asset = _stage_mesh()
-        self.collider = Collider(mesh=self.mesh_asset, mass=0.0, friction=0.5)
+        self.collider = Collider(mesh=self.mesh_asset, friction=0.5)
         self.add_child(Node.from_mesh(self.mesh_asset))
 
 
@@ -85,8 +84,15 @@ class Character(Node):
         self.collider.velocity = v
 
     def on_collide(self, other, contact):
-        # World-space push-back (see cube_physics_terrain.py comment).
-        push = Mat4.from_translation(contact.normal * contact.depth)
+        offset = contact.normal * contact.depth
+        if self.parent is not None:
+            parent_world = self.parent.world_transform
+            offset = (
+                Vec3.ZERO
+                if abs(parent_world.determinant()) < 1e-12
+                else offset.to_local_dir(parent_world)
+            )
+        push = Mat4.from_translation(offset)
         self.transform = push * self.transform
         self.collider.velocity += contact.delta_velocity
 
@@ -99,7 +105,7 @@ class App:
         pyxel.init(160, 120, title="Cube Physics: Character")
         pyxel.mouse(True)
         self.scene = Node()
-        self.scene.shading = Shading([pyxel.colors[i] for i in range(16)])
+        self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         self.scene.add_child(Stage())
         self.scene.add_child(Wall(Vec3(-7, 1.0, 0), Vec3(0.4, 2.0, 14)))
@@ -114,7 +120,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.KEY_ESCAPE):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         self.orbit.update()
         self.scene.update()

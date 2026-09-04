@@ -203,9 +203,6 @@ def _transform_url(url, web_path=None):
     return url
 
 
-# JavaScript template evaluator
-
-
 class JsEval:
     def __init__(self, ui, data, web_path=None):
         self._ui = ui
@@ -752,7 +749,6 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
         raise ValueError(f"{html_path}: required function updateTexts() not found")
     body = html_text[m.end() : _find_matching(html_text, m.end(), "{", "}") - 1]
 
-    # Extract variables
     ev.extract_variables(body)
 
     # Extract innerHTML sections
@@ -829,7 +825,6 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
         evaluated = re.sub(r"<strong>(.*?)</strong>", r"**\1**", evaluated)
         lines.append(evaluated)
 
-    # Assemble the generated Markdown document
     title = localize(data["ui"].get("title", ""))
     url = f"{PYXEL_WEB}/{web_path}/"
     header = (
@@ -863,7 +858,6 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
         cleaned.append(line.strip())
     result = re.sub(r"\n{3,}", "\n\n", "\n".join(cleaned)).strip() + "\n"
 
-    # Restore code blocks
     for i, block in enumerate(saved_blocks):
         result = result.replace(BLOCK_MARKER.format(idx=i), block.strip())
 
@@ -960,7 +954,7 @@ def generate_mml_commands():
     lines = []
 
     title = localize(mml_data["ui"]["title"])
-    url = f"{PYXEL_WEB}/mml-studio/"
+    url = f"{PYXEL_WEB}/mml-studio/mml-commands.html"
     lines.append(f"# {title}")
     lines.append("")
     lines.append(
@@ -992,8 +986,6 @@ def generate_mml_commands():
     )
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
-
-# Command entry point
 
 if __name__ == "__main__":
     generated = []

@@ -1,8 +1,20 @@
 import pytest
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 class TestClamp:
+    @pytest.mark.parametrize(
+        ("lower", "upper", "message"),
+        [
+            (float("nan"), 1.0, "lower must not be NaN"),
+            (0.0, float("nan"), "upper must not be NaN"),
+        ],
+    )
+    def test_nan_bound_raises(self, lower, upper, message):
+        with raises_exact(ValueError, message):
+            pyxel.clamp(0.5, lower, upper)
+
     def test_int_returns_int(self):
         result = pyxel.clamp(5, 0, 10)
         assert result == 5
@@ -100,7 +112,6 @@ class TestTrig:
         assert pyxel.atan2(-1, 0) == pytest.approx(-90.0, abs=1e-3)
 
     def test_sin_cos_identity(self):
-        # sin^2 + cos^2 = 1 for any angle.
         for deg in [0, 30, 45, 60, 90, 120, 180, 270]:
             s = pyxel.sin(deg)
             c = pyxel.cos(deg)
@@ -127,16 +138,27 @@ class TestBasicMath:
         assert pyxel.floor(3.0) == 3
 
     def test_sqrt(self):
-        assert pyxel.sqrt(4.0) == pytest.approx(2.0)
+        assert pyxel.sqrt(4.0) == 2.0
 
     def test_sqrt_zero(self):
-        assert pyxel.sqrt(0.0) == pytest.approx(0.0)
+        assert pyxel.sqrt(0.0) == 0.0
 
     def test_sqrt_one(self):
-        assert pyxel.sqrt(1.0) == pytest.approx(1.0)
+        assert pyxel.sqrt(1.0) == 1.0
 
 
 class TestRandom:
+    @pytest.mark.parametrize(
+        ("a", "b", "message"),
+        [
+            (float("nan"), 1.0, "a must be finite"),
+            (0.0, float("inf"), "b must be finite"),
+        ],
+    )
+    def test_rndf_nonfinite_bound_raises(self, a, b, message):
+        with raises_exact(ValueError, message):
+            pyxel.rndf(a, b)
+
     def test_rndi_in_range(self):
         for _ in range(100):
             val = pyxel.rndi(0, 10)
@@ -144,7 +166,6 @@ class TestRandom:
             assert isinstance(val, int)
 
     def test_rndi_single_value(self):
-        # When min == max, always returns that value.
         for _ in range(10):
             assert pyxel.rndi(5, 5) == 5
 

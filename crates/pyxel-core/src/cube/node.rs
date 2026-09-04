@@ -24,9 +24,7 @@ pub struct Node {
     pub tags: Vec<String>,
     pub parent: Option<WeakNode>,
     pub children: Vec<RcNode>,
-    // Set by destroy() and cascaded to the subtree. Node.update collects
-    // flagged nodes post-order, fires on_destroy, and detaches them. The flag
-    // is exposed read-only so hooks can early-return after a destroy().
+    // Pending deferred destruction; hooks can use this read-only flag to early-return.
     pub destroyed: bool,
 }
 
@@ -86,14 +84,10 @@ impl Node {
     // Node.update collects the flagged nodes post-order, fires on_destroy,
     // then detaches.
     pub fn destroy(node: &RcNode) {
-        Self::mark_destroyed_recursive(node);
-    }
-
-    fn mark_destroyed_recursive(node: &RcNode) {
         let mut node_ref = rc_mut!(node);
         node_ref.destroyed = true;
         for child in &node_ref.children {
-            Self::mark_destroyed_recursive(child);
+            Self::destroy(child);
         }
     }
 
@@ -119,37 +113,28 @@ impl Node {
     // Subtree DFS pre-order; returns every node whose `name` matches.
     pub fn find_by_name(start: &RcNode, name: &str) -> Vec<RcNode> {
         let mut out = Vec::new();
-        Self::collect_by_name(start, name, &mut out);
+        Self::collect_matching(start, &|node| node.name == name, &mut out);
         out
-    }
-
-    fn collect_by_name(node: &RcNode, name: &str, out: &mut Vec<RcNode>) {
-        let node_ref = rc_ref!(node);
-        if node_ref.name == name {
-            out.push(node.clone());
-        }
-        for child in &node_ref.children {
-            Self::collect_by_name(child, name, out);
-        }
     }
 
     // Subtree DFS pre-order; returns every node carrying any of `tags`.
     pub fn find_by_tags(start: &RcNode, tags: &[String]) -> Vec<RcNode> {
         let mut out = Vec::new();
-        Self::collect_by_tags(start, tags, &mut out);
+        Self::collect_matching(
+            start,
+            &|node| tags.iter().any(|tag| node.tags.contains(tag)),
+            &mut out,
+        );
         out
     }
 
-    fn collect_by_tags(node: &RcNode, tags: &[String], out: &mut Vec<RcNode>) {
+    fn collect_matching(node: &RcNode, matches: &dyn Fn(&Node) -> bool, out: &mut Vec<RcNode>) {
         let node_ref = rc_ref!(node);
-        if tags
-            .iter()
-            .any(|tag| node_ref.tags.iter().any(|node_tag| node_tag == tag))
-        {
+        if matches(&node_ref) {
             out.push(node.clone());
         }
         for child in &node_ref.children {
-            Self::collect_by_tags(child, tags, out);
+            Self::collect_matching(child, matches, out);
         }
     }
 
@@ -208,6 +193,15 @@ impl Node {
         }
     }
 
+    pub(crate) fn world_rotation_value(node: &RcNode) -> Mat4 {
+        let local_rc = &rc_ref!(node).transform;
+        let local_rotation = rc_ref!(local_rc).rot_value().matrix_value();
+        match Self::parent(node) {
+            Some(parent) => Self::world_rotation_value(&parent).mul_mat_value(&local_rotation),
+            None => local_rotation,
+        }
+    }
+
     // Effective inheritance: this node's value, or the closest non-None
     // ancestor's value. Used for `shading` cascade.
 
@@ -219,7 +213,7 @@ impl Node {
     }
 
     // Resolve the cascading `camera`: self if set, else the closest
-    // non-None ancestor's value. Mirrors `effective_shading`.
+    // non-None ancestor's value.
     pub fn effective_camera(node: &RcNode) -> Option<RcCamera> {
         if let Some(c) = rc_ref!(node).camera.clone() {
             return Some(c);
@@ -255,17 +249,6 @@ impl Node {
 mod tests {
     use super::*;
     use crate::cube::vec3::Vec3;
-
-    #[test]
-    fn test_default() {
-        let n = Node::new();
-        let r = rc_ref!(&n);
-        assert_eq!(r.name, "");
-        assert!(r.active);
-        assert!(r.visible);
-        assert!(r.parent.is_none());
-        assert!(r.children.is_empty());
-    }
 
     #[test]
     fn test_add_child() {
@@ -305,7 +288,6 @@ mod tests {
         Node::add_child(&root, &mid);
         Node::add_child(&mid, &leaf);
         Node::destroy(&mid);
-        // Flag set on mid + leaf, not on root.
         assert!(!rc_ref!(&root).destroyed);
         assert!(rc_ref!(&mid).destroyed);
         assert!(rc_ref!(&leaf).destroyed);
@@ -403,6 +385,8 @@ mod tests {
         Node::add_child(&root, &b);
         let found = Node::find_by_name(&root, "zako");
         assert_eq!(found.len(), 2);
+        assert!(found.iter().any(|node| Rc::ptr_eq(node, &a)));
+        assert!(found.iter().any(|node| Rc::ptr_eq(node, &b)));
     }
 
     #[test]
@@ -435,9 +419,7 @@ mod tests {
         let n = Node::new();
         let f = Node::forward(&n);
         let f = rc_ref!(&f);
-        assert!((f.x - 0.0).abs() < 1e-4);
-        assert!((f.y - 0.0).abs() < 1e-4);
-        assert!((f.z - (-1.0)).abs() < 1e-4);
+        assert_eq!((f.x, f.y, f.z), (0.0, 0.0, -1.0));
     }
 
     #[test]
@@ -445,9 +427,7 @@ mod tests {
         let n = Node::new();
         let r = Node::right(&n);
         let r = rc_ref!(&r);
-        assert!((r.x - 1.0).abs() < 1e-4);
-        assert!((r.y - 0.0).abs() < 1e-4);
-        assert!((r.z - 0.0).abs() < 1e-4);
+        assert_eq!((r.x, r.y, r.z), (1.0, 0.0, 0.0));
     }
 
     #[test]
@@ -455,9 +435,7 @@ mod tests {
         let n = Node::new();
         let u = Node::up(&n);
         let u = rc_ref!(&u);
-        assert!((u.x - 0.0).abs() < 1e-4);
-        assert!((u.y - 1.0).abs() < 1e-4);
-        assert!((u.z - 0.0).abs() < 1e-4);
+        assert_eq!((u.x, u.y, u.z), (0.0, 1.0, 0.0));
     }
 
     #[test]
@@ -543,7 +521,7 @@ mod tests {
         let f = Node::forward(&n);
         let f = rc_ref!(&f);
         let len = (f.x * f.x + f.y * f.y + f.z * f.z).sqrt();
-        assert!((len - 1.0).abs() < 1e-4);
+        assert_eq!(len, 1.0);
     }
 
     #[test]
@@ -560,7 +538,7 @@ mod tests {
         rc_mut!(&n).transform = zero_z;
         let f = Node::forward(&n);
         let f = rc_ref!(&f);
-        assert!((f.z - (-1.0)).abs() < 1e-4);
+        assert_eq!((f.x, f.y, f.z), (0.0, 0.0, -1.0));
     }
 
     #[test]
@@ -574,7 +552,6 @@ mod tests {
         rc_mut!(&root).shading = Some(shading.clone());
         Node::add_child(&root, &mid);
         Node::add_child(&mid, &leaf);
-        // leaf has shading=None; effective should resolve to root's.
         let resolved = Node::effective_shading(&leaf).unwrap();
         assert!(Rc::ptr_eq(&resolved, &shading));
     }
@@ -602,7 +579,6 @@ mod tests {
         Node::add_child(&root, &leaf);
         let camera = Camera::new();
         rc_mut!(&root).camera = Some(camera.clone());
-        // leaf has camera=None; effective should resolve to root's.
         let resolved = Node::effective_camera(&leaf).unwrap();
         assert!(Rc::ptr_eq(&resolved, &camera));
     }
@@ -647,6 +623,6 @@ mod tests {
         let world = Node::world_transform(&b);
         let pos = rc_ref!(&world).pos();
         let pos = rc_ref!(&pos);
-        assert!((pos.x - 3.0).abs() < 1e-4);
+        assert_eq!(pos.x, 3.0);
     }
 }

@@ -69,11 +69,17 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
     let columns = tileset
         .columns
         .ok_or_else(|| err("No embedded tileset in file"))?;
+    if columns == 0 {
+        return Err(err("Invalid tileset columns in file"));
+    }
 
     let layer = tmx
         .layers
         .get(layer_index as usize)
         .ok_or_else(|| format!("Layer {layer_index} not found in file '{path}'"))?;
+    if layer.width == 0 || layer.height == 0 {
+        return Err(err("Invalid layer dimensions in file"));
+    }
     if layer.data.encoding != "csv" {
         return Err(err("Unsupported encoding in file"));
     }
@@ -82,8 +88,13 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
         .split(',')
         .map(|s| s.parse::<u32>().map_err(|_| err("Failed to parse file")))
         .collect::<Result<_, _>>()?;
+    let expected_tile_count = usize::try_from(u64::from(layer.width) * u64::from(layer.height))
+        .map_err(|_| err("Layer dimensions are too large in file"))?;
+    if tile_ids.len() != expected_tile_count {
+        return Err(err("Layer data size does not match dimensions in file"));
+    }
 
-    // Convert TMX global tile IDs into Pyxel image tile coordinates.
+    // Pyxel tiles store only image coordinates, so discard TMX transform flags.
     let tilemap = Tilemap::try_new(layer.width, layer.height, ImageSource::Index(0))
         .map_err(|_| err("Layer dimensions are too large in file"))?;
     let mut tilemap_ref = rc_mut!(tilemap);

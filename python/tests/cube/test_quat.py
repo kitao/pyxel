@@ -59,8 +59,6 @@ class TestHash:
         assert len(s) == 2
 
     def test_hash_equal_for_signed_zero(self):
-        # -0.0 == +0.0, so the eq/hash contract requires equal hashes
-        # (the binding normalizes -0.0 to +0.0 before hashing).
         assert Quat(0.0, 0, 0, 1) == Quat(-0.0, 0, 0, 1)
         assert hash(Quat(0.0, 0, 0, 1)) == hash(Quat(-0.0, 0, 0, 1))
 
@@ -89,13 +87,17 @@ class TestSequence:
 
 
 class TestOperators:
+    def test_mul_invalid_type(self):
+        with raises_exact(TypeError, "other must be Quat or Vec3"):
+            Quat() * 1
+
     def test_neg(self):
         q = Quat(1, 2, 3, 4)
         assert -q == Quat(-1, -2, -3, -4)
 
     def test_mul_identity(self):
         q = Quat.from_axis_angle(Vec3.UP, 45)
-        assert approx_q(q * Quat.IDENTITY, q)
+        assert q * Quat.IDENTITY == q
 
     def test_mul_vec_y90(self):
         q = Quat.from_axis_angle(Vec3.UP, 90)
@@ -143,13 +145,13 @@ class TestUnary:
 
     def test_normalize(self):
         q = Quat(2, 0, 0, 0).normalize()
-        assert isclose(q.length(), 1.0, abs_tol=1e-6)
+        assert q.length() == 1.0
 
     def test_normalize_zero(self):
         assert Quat(0, 0, 0, 0).normalize() == Quat.IDENTITY
 
     def test_length(self):
-        assert isclose(Quat(1, 2, 2, 4).length(), 5.0, abs_tol=1e-5)
+        assert Quat(1, 2, 2, 4).length() == 5.0
 
     def test_length_squared(self):
         assert Quat(1, 2, 2, 4).length_squared() == 25.0

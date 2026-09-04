@@ -81,14 +81,13 @@ def _adapt_for_tilemap(item):
     desc = desc.replace("a string s in color col", "a string s with tile")
     desc = desc.replace("the same color as", "the same tile as")
     desc = desc.replace("color col", "tile")
-    desc = desc.replace("and color col", "and tile")
 
     item.setdefault("description", {})["en"] = desc
 
     for p in item.get("params", []):
         if p["name"] == "col":
             p["name"] = "tile"
-            p["description"] = {"en": "Tile (image_x, image_y)"}
+            p["description"] = {"en": "Tile (image_tx, image_ty)"}
         elif p["name"] == "colkey":
             p["name"] = "tilekey"
             p["description"] = {"en": "Transparent tile"}
@@ -128,12 +127,17 @@ def _build_doc_map(api_data):
 
 def _fallback_item(class_name, func_name, doc_map):
     # Fall back to module-level graphics function for class drawing methods.
-    # Image reuses the source as-is; Tilemap adapts descriptions.
+    # Adapt a copy so class wording does not change module-level descriptions.
     source = doc_map.get((None, func_name))
     if not source:
         return None
     if class_name == "Image":
-        return source
+        item = copy.deepcopy(source)
+        desc = localize(item.get("description"))
+        item.setdefault("description", {})["en"] = desc.replace(
+            "the screen", "the image"
+        ).replace("full screen", "the full image")
+        return item
     if class_name == "Tilemap":
         item = copy.deepcopy(source)
         _adapt_for_tilemap(item)
@@ -237,6 +241,7 @@ def _add_docstrings(content, doc_map):
     result = []
     current_class = None
     last_decorator = None
+    overloaded_functions = set()
     i = 0
 
     while i < len(lines):
@@ -268,11 +273,9 @@ def _add_docstrings(content, doc_map):
                     i += 1
                     continue
 
-        # Track decorators for the following function.
         if stripped.startswith("@"):
             last_decorator = stripped
 
-        # Locate function definitions
         dm = re.match(r"^(\s*)def (\w+)\(", line)
         if dm:
             func_indent = dm.group(1)
@@ -280,6 +283,7 @@ def _add_docstrings(content, doc_map):
             body_indent = func_indent + "    "
             is_overload = last_decorator == "@overload"
             last_decorator = None
+            function_key = (current_class, func_name)
 
             # Collect the full function signature, including multiline signatures.
             def_lines = []
@@ -291,8 +295,19 @@ def _add_docstrings(content, doc_map):
                 j += 1
             j += 1
 
-            if not is_overload:
-                item = doc_map.get((current_class, func_name))
+            if is_overload:
+                should_add_docstring = function_key not in overloaded_functions
+                overloaded_functions.add(function_key)
+            elif function_key in overloaded_functions:
+                while j < len(lines) and not lines[j].strip():
+                    j += 1
+                i = j
+                continue
+            else:
+                should_add_docstring = True
+
+            if should_add_docstring:
+                item = doc_map.get(function_key)
                 if not item and current_class:
                     item = _fallback_item(current_class, func_name, doc_map)
                 if item:
@@ -303,9 +318,19 @@ def _add_docstrings(content, doc_map):
                         result.extend(def_lines)
                         for dl in ds:
                             result.append(dl + "\n")
+                        if (
+                            is_overload
+                            and current_class is None
+                            and j < len(lines)
+                            and lines[j].strip()
+                        ):
+                            result.append("\n")
                         i = j
                         continue
 
+            if is_overload and current_class is None:
+                while j < len(lines) and not lines[j].strip():
+                    j += 1
             result.extend(def_lines)
             i = j
             continue
@@ -317,9 +342,6 @@ def _add_docstrings(content, doc_map):
         i += 1
 
     return "".join(result)
-
-
-# Command entry point
 
 
 def generate_pyi_docstrings():

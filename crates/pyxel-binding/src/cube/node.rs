@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
@@ -41,7 +42,7 @@ struct MotionPlayer {
 // Cache child wrappers so user-defined Node subclasses retain their Python
 // identity and on_update/on_draw overrides throughout the scene tree.
 
-#[pyclass(unsendable, from_py_object, subclass)]
+#[pyclass(module = "pyxel.cube", unsendable, from_py_object, subclass)]
 pub struct Node {
     pub(crate) inner: pyxel::cube::RcNode,
     children: RefCell<Vec<Py<Node>>>,
@@ -89,16 +90,13 @@ impl Node {
         }
     }
 
-    // Detach this node from its Python-side parent wrapper. Used by
-    // Node.update's deferred-destruction pass to finalize a destroyed
-    // node's removal.
     pub(crate) fn detach_from_parent_py(&self, py: Python<'_>) {
         let parent = self.parent.borrow_mut().take();
         if let Some(parent_py) = parent {
             let pb = parent_py.bind(py).borrow();
             pb.children
                 .borrow_mut()
-                .retain(|c| !std::rc::Rc::ptr_eq(&c.bind(py).borrow().inner, &self.inner));
+                .retain(|c| !Rc::ptr_eq(&c.bind(py).borrow().inner, &self.inner));
         }
     }
 
@@ -118,13 +116,6 @@ impl Node {
         InnerNode::world_transform_value(&self.inner).mul_mat_value(&local)
     }
 
-    // Resolve the scene-wide cascade `shading`. Returns owned RcShading
-    // so callers can borrow it through `rc_ref!` without conflicting
-    // with the immutable borrow on `self.inner`.
-    fn resolve_shading(&self) -> Option<pyxel::cube::RcShading> {
-        InnerNode::effective_shading(&self.inner)
-    }
-
     fn with_state_from_ctx(
         &self,
         billboard: i32,
@@ -132,7 +123,7 @@ impl Node {
     ) {
         // Resolve the per-Node cascading shading once. The rasterizer will
         // only consult it when ctx.shaded is true.
-        let shading_rc = self.resolve_shading();
+        let shading_rc = InnerNode::effective_shading(&self.inner);
         with_draw_context(|ctx| {
             let shading_ref = if ctx.shaded {
                 shading_rc.as_ref().map(|s| rc_ref!(s))
@@ -158,68 +149,61 @@ impl Node {
 
         let world_mat = self.world_mat();
         let p = rc_ref!(&drawable.primitive);
-        let indices_opt = (!p.indices.is_empty()).then_some(p.indices.as_slice());
-        let normals_opt = (!p.normals.is_empty()).then_some(p.normals.as_slice());
-        let uvs_opt = (!p.uvs.is_empty()).then_some(p.uvs.as_slice());
-        let (col_flat, col_image) = drawable.col_img.as_flat_and_image();
+        self.draw_primitive(&world_mat, &p, &drawable.col_img, drawable.colkey)
+    }
+
+    // Emits one Primitive through draw::prim under the active draw state,
+    // mapping empty attributes to the rasterizer's None and its message to
+    // a ValueError.
+    fn draw_primitive(
+        &self,
+        world_mat: &pyxel::cube::Mat4,
+        p: &pyxel::cube::Primitive,
+        col_img: &ColImage,
+        colkey: Option<i32>,
+    ) -> PyResult<()> {
+        let indices = (!p.indices.is_empty()).then_some(p.indices.as_slice());
+        let normals = (!p.normals.is_empty()).then_some(p.normals.as_slice());
+        let uvs = (!p.uvs.is_empty()).then_some(p.uvs.as_slice());
+        let (col_flat, col_image) = col_img.as_flat_and_image();
         let mut inner_result: Option<Result<(), &str>> = None;
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             inner_result = Some(pyxel::cube::draw::prim(
                 ctx,
-                &world_mat,
+                world_mat,
                 p.mode,
                 p.cull,
                 &p.positions,
-                indices_opt,
-                normals_opt,
-                uvs_opt,
+                indices,
+                normals,
+                uvs,
                 col_flat,
                 col_image.as_ref(),
-                drawable.colkey,
+                colkey,
                 state,
             ));
         });
-
         match inner_result {
             Some(Err(msg)) => Err(PyValueError::new_err(msg)),
             Some(Ok(())) | None => Ok(()),
         }
     }
 
-    fn collect_by_name(node: &Py<Node>, py: Python<'_>, name: &str, out: &mut Vec<Py<Node>>) {
+    // Pre-order subtree walk collecting the nodes whose core state
+    // satisfies `matches`.
+    fn collect_matching(
+        node: &Py<Node>,
+        py: Python<'_>,
+        matches: &dyn Fn(&InnerNode) -> bool,
+        out: &mut Vec<Py<Node>>,
+    ) {
         let bound = node.bind(py);
         let n = bound.borrow();
-        if n.inner_ref().name == name {
+        if matches(&n.inner_ref()) {
             out.push(node.clone_ref(py));
         }
-        let children: Vec<Py<Node>> = n
-            .children
-            .borrow()
-            .iter()
-            .map(|c| c.clone_ref(py))
-            .collect();
-        drop(n);
-        for child in &children {
-            Self::collect_by_name(child, py, name, out);
-        }
-    }
-
-    fn collect_by_tags(node: &Py<Node>, py: Python<'_>, tags: &[String], out: &mut Vec<Py<Node>>) {
-        let bound = node.bind(py);
-        let n = bound.borrow();
-        let node_tags = n.inner_ref().tags.clone();
-        if tags.iter().any(|t| node_tags.iter().any(|nt| nt == t)) {
-            out.push(node.clone_ref(py));
-        }
-        let children: Vec<Py<Node>> = n
-            .children
-            .borrow()
-            .iter()
-            .map(|c| c.clone_ref(py))
-            .collect();
-        drop(n);
-        for child in &children {
-            Self::collect_by_tags(child, py, tags, out);
+        for child in n.children.borrow().iter() {
+            Self::collect_matching(child, py, matches, out);
         }
     }
 
@@ -229,12 +213,7 @@ impl Node {
                 "Node motion methods require a tree created by Node.from_mesh",
             ));
         };
-        let Some(motion_source) = motion.source_mesh() else {
-            return Err(PyValueError::new_err(
-                "motion must come from the same Mesh as the Node.from_mesh tree",
-            ));
-        };
-        if !std::rc::Rc::ptr_eq(&node_source, &motion_source) {
+        if !Rc::ptr_eq(&node_source, motion.source_mesh()) {
             return Err(PyValueError::new_err(
                 "motion must come from the same Mesh as the Node.from_mesh tree",
             ));
@@ -252,24 +231,17 @@ impl Node {
         let node = bound.borrow();
         let node_source = node.mesh_source.borrow().clone();
         let node_index = *node.mesh_part_index.borrow();
-        let children: Vec<Py<Node>> = node
-            .children
-            .borrow()
-            .iter()
-            .map(|c| c.clone_ref(py))
-            .collect();
-        drop(node);
 
         if node_source
             .as_ref()
-            .is_some_and(|node_source| std::rc::Rc::ptr_eq(node_source, source))
+            .is_some_and(|node_source| Rc::ptr_eq(node_source, source))
         {
             if let Some(index) = node_index {
                 out.push((index, root.clone_ref(py)));
             }
         }
 
-        for child in &children {
+        for child in node.children.borrow().iter() {
             Self::collect_mesh_nodes(child, py, source, out);
         }
     }
@@ -308,8 +280,6 @@ impl Node {
 
 #[pymethods]
 impl Node {
-    // Constructor
-
     #[new]
     #[classmethod]
     #[pyo3(signature = (*args, **kwargs), text_signature = "()")]
@@ -333,12 +303,6 @@ impl Node {
         mesh_inner.validate().map_err(PyValueError::new_err)?;
 
         let count = mesh_inner.primitives.len();
-        if count == 0 {
-            let node = Self::wrap(InnerNode::new());
-            *node.mesh_source.borrow_mut() = Some(mesh.inner.clone());
-            return Py::new(py, node);
-        }
-
         let mut nodes: Vec<Py<Node>> = Vec::with_capacity(count);
         for i in 0..count {
             let inner = InnerNode::new();
@@ -488,41 +452,37 @@ impl Node {
         self.parent.borrow().as_ref().map(|p| p.clone_ref(py))
     }
 
-    // Short child lists resolve faster by linear scan than by hashing;
-    // the measured crossover is around 16 children.
     const CHILD_INDEX_LINEAR_MAX: usize = 16;
 
     #[getter]
-    fn children<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, pyo3::types::PyTuple>> {
+    fn children<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyTuple>> {
         let core_children = InnerNode::children(&self.inner);
         let mut cache = self.children.borrow_mut();
         // Resolve each core child to its cached wrapper; wrappers whose
         // core node left the tree drop out when the cache is rebuilt
-        // below. Wide nodes use a pointer-keyed index so the frame
-        // walkers stay O(children) instead of O(children^2).
+        // below. Wide nodes use a pointer-keyed index so the lookup
+        // stays O(children) instead of O(children^2).
         let mut items: Vec<Py<Node>> = Vec::with_capacity(core_children.len());
         if core_children.len() <= Self::CHILD_INDEX_LINEAR_MAX {
             for c_inner in &core_children {
                 if let Some(cached) = cache
                     .iter()
-                    .find(|cached| std::rc::Rc::ptr_eq(&cached.bind(py).borrow().inner, c_inner))
+                    .find(|cached| Rc::ptr_eq(&cached.bind(py).borrow().inner, c_inner))
                 {
                     items.push(cached.clone_ref(py));
                 }
             }
         } else {
-            let by_ptr: std::collections::HashMap<*const _, &Py<Node>> = cache
+            let by_ptr: HashMap<*const _, &Py<Node>> = cache
                 .iter()
-                .map(|cached| (std::rc::Rc::as_ptr(&cached.bind(py).borrow().inner), cached))
+                .map(|cached| (Rc::as_ptr(&cached.bind(py).borrow().inner), cached))
                 .collect();
             for c_inner in &core_children {
-                if let Some(cached) = by_ptr.get(&std::rc::Rc::as_ptr(c_inner)) {
+                if let Some(cached) = by_ptr.get(&Rc::as_ptr(c_inner)) {
                     items.push(cached.clone_ref(py));
                 }
             }
         }
-        // Rebuild the cache only when the resolved set differs, so the
-        // steady state (unchanged children) allocates nothing here.
         let unchanged = items.len() == cache.len()
             && items
                 .iter()
@@ -531,7 +491,10 @@ impl Node {
         if !unchanged {
             *cache = items.iter().map(|p| p.clone_ref(py)).collect();
         }
-        pyo3::types::PyTuple::new(py, items)
+        // The tuple allocation can run Python's gc, whose __traverse__
+        // reads the cache, so release the borrow first.
+        drop(cache);
+        PyTuple::new(py, items)
     }
 
     #[getter]
@@ -564,8 +527,6 @@ impl Node {
         InnerNode::effective_shading(&self.inner).map(Shading::wrap)
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let n = self.inner_ref();
         format!(
@@ -585,7 +546,7 @@ impl Node {
     fn find_by_name(slf: PyRef<'_, Node>, py: Python<'_>, name: &str) -> PyResult<Vec<Py<Node>>> {
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
         let mut out: Vec<Py<Node>> = Vec::new();
-        Self::collect_by_name(&self_py, py, name, &mut out);
+        Self::collect_matching(&self_py, py, &|n| n.name == name, &mut out);
         Ok(out)
     }
 
@@ -596,32 +557,32 @@ impl Node {
     ) -> PyResult<Vec<Py<Node>>> {
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
         let mut out: Vec<Py<Node>> = Vec::new();
-        Self::collect_by_tags(&self_py, py, &tags, &mut out);
+        Self::collect_matching(
+            &self_py,
+            py,
+            &|n| tags.iter().any(|t| n.tags.contains(t)),
+            &mut out,
+        );
         Ok(out)
     }
 
-    fn add_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) -> PyResult<()> {
-        let child_inner = child.bind(py).borrow().inner.clone();
-        if !InnerNode::add_child(&slf.borrow().inner, &child_inner) {
+    #[pyo3(signature = (node), text_signature = "($self, /, node)")]
+    fn add_child(slf: Bound<'_, Self>, py: Python<'_>, node: Py<Node>) -> PyResult<()> {
+        let node_inner = node.bind(py).borrow().inner.clone();
+        if !InnerNode::add_child(&slf.borrow().inner, &node_inner) {
             return Err(PyValueError::new_err("add_child would create a cycle"));
         }
-        // Detach from any previous parent's wrapper cache.
-        let prev_parent: Option<Py<Node>> = child.bind(py).borrow().parent.borrow_mut().take();
-        if let Some(prev) = prev_parent {
-            let pb = prev.bind(py).borrow();
-            pb.children
-                .borrow_mut()
-                .retain(|c| !std::rc::Rc::ptr_eq(&c.bind(py).borrow().inner, &child_inner));
-        }
+        node.bind(py).borrow().detach_from_parent_py(py);
         let self_py: Py<Node> = slf.clone().unbind();
-        *child.bind(py).borrow().parent.borrow_mut() = Some(self_py);
-        slf.borrow().children.borrow_mut().push(child);
+        *node.bind(py).borrow().parent.borrow_mut() = Some(self_py);
+        slf.borrow().children.borrow_mut().push(node);
         Ok(())
     }
 
-    fn remove_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) -> PyResult<()> {
-        let child_inner = child.bind(py).borrow().inner.clone();
-        if !InnerNode::remove_child(&slf.borrow().inner, &child_inner) {
+    #[pyo3(signature = (node), text_signature = "($self, /, node)")]
+    fn remove_child(slf: Bound<'_, Self>, py: Python<'_>, node: Py<Node>) -> PyResult<()> {
+        let node_inner = node.bind(py).borrow().inner.clone();
+        if !InnerNode::remove_child(&slf.borrow().inner, &node_inner) {
             return Err(PyValueError::new_err(
                 "remove_child requires a direct child",
             ));
@@ -629,8 +590,8 @@ impl Node {
         slf.borrow()
             .children
             .borrow_mut()
-            .retain(|c| !std::rc::Rc::ptr_eq(&c.bind(py).borrow().inner, &child_inner));
-        *child.bind(py).borrow().parent.borrow_mut() = None;
+            .retain(|c| !Rc::ptr_eq(&c.bind(py).borrow().inner, &node_inner));
+        *node.bind(py).borrow().parent.borrow_mut() = None;
         Ok(())
     }
 
@@ -704,13 +665,7 @@ impl Node {
     #[allow(clippy::unused_self)]
     fn on_destroy(&self) {}
 
-    // State setters for the per-on_draw draw modifiers. Called from inside
-    // on_draw, they mutate the active draw context; subsequent primitives
-    // in the same on_draw consult these values. The values reset to
-    // defaults at the entry of every Node's on_draw (see scene.rs
-    // reset_draw_state). Outside a draw scope, these are no-ops. They take
-    // `&self` to register as Python instance methods even though the active
-    // draw context lives in a thread-local, not on the node.
+    // PyO3 requires instance receivers; these setters use the active draw context.
     #[allow(clippy::unused_self)]
     fn dither(&self, alpha: f32) {
         with_draw_context(|ctx| {
@@ -845,10 +800,7 @@ impl Node {
     ) -> PyResult<()> {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
-        let (col_flat, col_image) = match col_img {
-            Some(c) => super::mesh::parse_col_img(c)?.as_flat_and_image(),
-            None => (7, None),
-        };
+        let (col_flat, col_image) = super::mesh::resolve_col_img(col_img)?.as_flat_and_image();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::box_solid(
                 ctx,
@@ -881,10 +833,7 @@ impl Node {
     ) -> PyResult<()> {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        let (col_flat, col_image) = match col_img {
-            Some(c) => super::mesh::parse_col_img(c)?.as_flat_and_image(),
-            None => (7, None),
-        };
+        let (col_flat, col_image) = super::mesh::resolve_col_img(col_img)?.as_flat_and_image();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::sphere(
                 ctx,
@@ -959,47 +908,12 @@ impl Node {
         colkey: Option<i32>,
     ) -> PyResult<()> {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        // Borrowed for the duration of the draw; the closure below runs
-        // Rust-only code, so the proxy-backed arrays cannot change
-        // mid-draw.
+        let col_img = super::mesh::resolve_col_img(col_img)?;
+        // Borrowed for the duration of the draw; the draw runs Rust-only
+        // code, so the proxy-backed arrays cannot change mid-draw.
         let p = rc_ref!(&primitive.inner);
-
-        let (col_flat, col_image) = match col_img {
-            Some(c) => super::mesh::parse_col_img(c)?.as_flat_and_image(),
-            None => (7, None),
-        };
-
-        // Read shared draw state from the active context and capture the
-        // closure's rasterizer result for propagation. Empty attributes map
-        // to the rasterizer's None representation.
-        let indices_opt = (!p.indices.is_empty()).then_some(p.indices.as_slice());
-        let normals_opt = (!p.normals.is_empty()).then_some(p.normals.as_slice());
-        let uvs_opt = (!p.uvs.is_empty()).then_some(p.uvs.as_slice());
-        let mut inner_result: Option<Result<(), &str>> = None;
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            inner_result = Some(pyxel::cube::draw::prim(
-                ctx,
-                &world_mat,
-                p.mode,
-                p.cull,
-                &p.positions,
-                indices_opt,
-                normals_opt,
-                uvs_opt,
-                col_flat,
-                col_image.as_ref(),
-                colkey,
-                state,
-            ));
-        });
-
-        match inner_result {
-            Some(Err(msg)) => Err(PyValueError::new_err(msg)),
-            Some(Ok(())) | None => Ok(()),
-        }
+        self.draw_primitive(&world_mat, &p, &col_img, colkey)
     }
-
-    // Text
 
     #[pyo3(signature = (pos, s, col, *, font=None))]
     fn text(
@@ -1307,12 +1221,7 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
         let player = node_ref.motion_player.borrow().clone();
         drop(node_ref);
 
-        if let Some(mut player) = player {
-            let Some(source) = source else {
-                return Err(PyValueError::new_err(
-                    "Node motion methods require a tree created by Node.from_mesh",
-                ));
-            };
+        if let (Some(mut player), Some(source)) = (player, source) {
             player.frame += player.speed;
             // Keep the playhead inside the clip so f32 precision never
             // degrades during long looping playback.
@@ -1355,7 +1264,7 @@ fn traverse_draw(root: &Bound<'_, PyAny>) -> PyResult<()> {
 type PyNodeIndex = HashMap<usize, Py<Node>>;
 
 fn node_key(node: &pyxel::cube::RcNode) -> usize {
-    std::rc::Rc::as_ptr(node) as usize
+    Rc::as_ptr(node) as usize
 }
 
 fn build_py_node_index(root: &Bound<'_, PyAny>) -> PyResult<PyNodeIndex> {
@@ -1395,8 +1304,8 @@ fn wrap_raycast_hit(
     {
         let mut r = rc_mut!(&rch);
         r.node = Some(info.node);
-        r.point = pyxel::cube::Vec3::new(info.point.x, info.point.y, info.point.z);
-        r.normal = pyxel::cube::Vec3::new(info.normal.x, info.normal.y, info.normal.z);
+        *rc_mut!(&r.point) = info.point;
+        *rc_mut!(&r.normal) = info.normal;
         r.distance = info.distance;
     }
     match py_node {
@@ -1418,8 +1327,6 @@ fn wrap_node_results(
     }
     out
 }
-
-// Module registration
 
 pub fn add_node_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Node>()?;

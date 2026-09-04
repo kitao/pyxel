@@ -70,7 +70,6 @@ class ImageEditor(EditorBase):
 
         self._canvas_panel = CanvasPanel(self)
 
-        # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("drop", self.__on_drop)
@@ -115,7 +114,7 @@ class ImageEditor(EditorBase):
             pyxel.images[self.image_index_var].load(
                 self.focus_x_var * 8, self.focus_y_var * 8, filename
             )
-        except (OSError, ValueError) as e:
+        except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
             print(f"Failed to load image: {e}")
         finally:
             pyxel.colors[:] = colors
@@ -123,7 +122,6 @@ class ImageEditor(EditorBase):
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
-        # Handle color shortcut keys
         if not pyxel.btn(pyxel.KEY_ALT):
             for key in _COLOR_SHORTCUT_KEYS:
                 if pyxel.btnp(key):

@@ -1,9 +1,7 @@
 import pytest
-
 import pyxel
-
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
-from pyxel.cube import Shading, Vec3
+from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 
 
 def palette() -> list[int]:
@@ -30,11 +28,15 @@ class TestIndexing:
         s = Shading(palette())
         with raises_exact(IndexError, "Shading index out of range"):
             _ = s[100, 0]
+        with raises_exact(IndexError, "Shading index out of range"):
+            s[100, 0] = (5, 7)
 
     def test_out_of_range_level(self):
         s = Shading(palette())
         with raises_exact(IndexError, "Shading index out of range"):
             _ = s[0, 4]
+        with raises_exact(IndexError, "Shading index out of range"):
+            s[0, 4] = (5, 7)
 
     def test_negative_col_raises(self):
         # The binding key is (usize, usize); a negative int always fails
@@ -53,22 +55,54 @@ class TestDirectionMutate:
     def test_set_direction(self):
         s = Shading(palette())
         s.direction = Vec3(0.5, -0.5, 0.0)
-        assert s.direction.x == pytest.approx(0.5)
-        assert s.direction.y == pytest.approx(-0.5)
+        assert s.direction.x == 0.5
+        assert s.direction.y == -0.5
+
+
+@pytest.mark.parametrize("source,mapped", [(0, 7), (1, 0), (1, 7)])
+@pytest.mark.parametrize("shaded", [False, True])
+def test_texture_colkey_uses_source_color(source, mapped, shaded):
+    texture = pyxel.Image(1, 1)
+    texture.cls(source)
+    primitive = Primitive(
+        Primitive.MODE_TRIANGLES,
+        [-2, -2, -4, 2, -2, -4, 0, 2, -4],
+        [0, 1, 2],
+        uvs=[0, 0, 1, 0, 0.5, 1],
+        cull=Primitive.CULL_NONE,
+    )
+
+    class TexturedNode(Node):
+        def on_draw(self):
+            self.shaded(shaded)
+            self.prim(Mat4.IDENTITY, primitive, texture, colkey=0)
+
+    scene = TexturedNode()
+    scene.camera = Camera()
+    scene.camera.clear_color = 2
+    scene.shading = Shading(palette())
+    for level in range(4):
+        scene.shading[source, level] = (mapped, mapped)
+    target = pyxel.Image(64, 64)
+
+    scene.draw(0, 0, 64, 64, target)
+
+    expected = 2 if source == 0 else mapped if shaded else source
+    assert target.pget(32, 32) == expected
 
 
 class TestBuild:
     def test_build_resets_modifications(self):
-        s = Shading(palette())
-        s[0, 0] = (99, 99)
-        s.build(palette())
-        primary, secondary = s[0, 0]
-        assert (primary, secondary) != (99, 99)
-
-    def test_build_callable(self):
-        s = Shading(palette())
-        s.build(palette())
-        _ = s[0, 0]
+        pal = palette()
+        s = Shading(pal)
+        initial = [[s[col, level] for level in range(4)] for col in range(len(pal))]
+        for col in range(len(pal)):
+            for level in range(4):
+                s[col, level] = (99, 99)
+        s.build(pal)
+        assert [
+            [s[col, level] for level in range(4)] for col in range(len(pal))
+        ] == initial
 
 
 # Algorithm invariants. The pickers in compute() select per-cell
@@ -120,30 +154,22 @@ class TestRampInvariants:
             assert ls[2] <= ls[3] + 1e-6, f"{pal_name} col {col} lv2>lv3"
 
     def test_shade_levels_below_base(self, pal_name):
-        # lv 0 / lv 1 may collapse onto the base flat as a fallback,
-        # but they must never overshoot it (= read as brighter).
         pal = _pal(pal_name)
         s = Shading(pal)
         for col in range(len(pal)):
             base = _linear_luma(pal[col])
             for lv in (0, 1):
                 p, q = s[col, lv]
-                if (p, q) == (col, col):
-                    continue  # base-flat fallback is allowed
                 assert _entry_luma(pal, p, q) < base + 1e-6, (
                     f"{pal_name} col {col} lv{lv} brighter than base"
                 )
 
     def test_highlight_above_or_equal_base(self, pal_name):
-        # lv 3 may collapse onto the base flat (palette has no usable
-        # highlight) but must never read as darker than the base.
         pal = _pal(pal_name)
         s = Shading(pal)
         for col in range(len(pal)):
             base = _linear_luma(pal[col])
             p, q = s[col, 3]
-            if (p, q) == (col, col):
-                continue
             assert _entry_luma(pal, p, q) >= base - 1e-6, (
                 f"{pal_name} col {col} lv3 darker than base"
             )
