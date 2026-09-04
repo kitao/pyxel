@@ -467,17 +467,14 @@ class Image:
             scale: Scale factor
         """
     @overload
-    def clip(self) -> None: ...
-    @overload
-    def clip(self, x: float, y: float, w: float, h: float) -> None: ...
     def clip(
         self,
-        x: float | None = None,
-        y: float | None = None,
-        w: float | None = None,
-        h: float | None = None,
+        x: None = None,
+        y: None = None,
+        w: None = None,
+        h: None = None,
     ) -> None:
-        """Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen. Call without arguments to reset the drawing area to full screen.
+        """Set the drawing area of the image from (x, y) with a width of w and a height of h. Call without arguments to reset the drawing area to the full image.
 
         Args:
             x: X coordinate of the upper-left corner
@@ -486,14 +483,9 @@ class Image:
             h: Height of the clipping area
         """
     @overload
-    def camera(self) -> None: ...
+    def clip(self, x: float, y: float, w: float, h: float) -> None: ...
     @overload
-    def camera(self, x: float, y: float) -> None: ...
-    def camera(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-    ) -> None:
+    def camera(self, x: None = None, y: None = None) -> None:
         """Set the drawing offset to (x, y). All subsequent drawing operations will be shifted by (-x, -y). Call without arguments to reset the drawing offset to (0, 0).
 
         Args:
@@ -501,16 +493,17 @@ class Image:
             y: Y coordinate
         """
     @overload
-    def pal(self) -> None: ...
+    def camera(self, x: float, y: float) -> None: ...
     @overload
-    def pal(self, col1: int, col2: int) -> None: ...
-    def pal(self, col1: int | None = None, col2: int | None = None) -> None:
+    def pal(self, col1: None = None, col2: None = None) -> None:
         """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
 
         Args:
             col1: Color to replace
             col2: Replacement color
         """
+    @overload
+    def pal(self, col1: int, col2: int) -> None: ...
     def dither(self, alpha: float) -> None:
         """Apply dithering (pseudo-transparency) when drawing. Set alpha in the range 0.0-1.0.
 
@@ -518,7 +511,7 @@ class Image:
             alpha: Opacity (0.0: transparent, 1.0: opaque)
         """
     def cls(self, col: int) -> None:
-        """Clear the screen with color col.
+        """Clear the image with color col.
 
         Args:
             col: Color
@@ -711,7 +704,7 @@ class Image:
         fov: float = 60.0,
         colkey: int | None = None,
     ) -> None:
-        """Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+        """Draw the image bank img (0-2 or Image instance) with perspective projection onto the image rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
         Args:
             x: Destination X
@@ -736,7 +729,7 @@ class Image:
         fov: float = 60.0,
         colkey: int | None = None,
     ) -> None:
-        """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+        """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the image rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
         Args:
             x: Destination X
@@ -787,7 +780,7 @@ class Tilemap:
 
         Args:
             filename: TMX file name
-            layer: Layer number (0-)
+            layer: Zero-based layer number
 
         Returns:
             Tilemap instance from TMX file
@@ -810,26 +803,23 @@ class Tilemap:
             pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])
         """
     def load(self, x: int, y: int, filename: str, layer: int) -> None:
-        """Load the layer (0-) from the TMX file at (x, y).
+        """Load the specified TMX layer at (x, y). Layer numbering starts at 0.
 
         Args:
             x: X coordinate
             y: Y coordinate
             filename: TMX file name
-            layer: Layer number (0-)
+            layer: Zero-based layer number
         """
     @overload
-    def clip(self) -> None: ...
-    @overload
-    def clip(self, x: float, y: float, w: float, h: float) -> None: ...
     def clip(
         self,
-        x: float | None = None,
-        y: float | None = None,
-        w: float | None = None,
-        h: float | None = None,
+        x: None = None,
+        y: None = None,
+        w: None = None,
+        h: None = None,
     ) -> None:
-        """Set the drawing area of the tilemap from (x, y) with a width of w and a height of h. Call clip() to reset to the full tilemap. Call without arguments to reset the drawing area to the full tilemap.
+        """Set the drawing area of the tilemap from (x, y) with a width of w and a height of h. Call without arguments to reset the drawing area to the full tilemap.
 
         Args:
             x: X coordinate of the upper-left corner
@@ -838,25 +828,22 @@ class Tilemap:
             h: Height of the clipping area
         """
     @overload
-    def camera(self) -> None: ...
+    def clip(self, x: float, y: float, w: float, h: float) -> None: ...
     @overload
-    def camera(self, x: float, y: float) -> None: ...
-    def camera(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-    ) -> None:
+    def camera(self, x: None = None, y: None = None) -> None:
         """Set the drawing offset to (x, y). All subsequent drawing operations will be shifted by (-x, -y). Call without arguments to reset the drawing offset to (0, 0).
 
         Args:
             x: X coordinate
             y: Y coordinate
         """
+    @overload
+    def camera(self, x: float, y: float) -> None: ...
     def cls(self, tile: tuple[int, int]) -> None:
         """Clear the tilemap with tile.
 
         Args:
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def pget(self, x: float, y: float) -> tuple[int, int]:
         """Get the tile at (x, y). The coordinates are absolute and not affected by the camera offset. A tile is a tuple of (image_tx, image_ty).
@@ -886,7 +873,7 @@ class Tilemap:
             y1: Start Y coordinate
             x2: End X coordinate
             y2: End Y coordinate
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def rect(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
@@ -898,7 +885,7 @@ class Tilemap:
             y: Y coordinate
             w: Width
             h: Height
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def rectb(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
@@ -910,7 +897,7 @@ class Tilemap:
             y: Y coordinate
             w: Width
             h: Height
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def circ(self, x: float, y: float, r: float, tile: tuple[int, int]) -> None:
         """Draw a filled circle of radius r and tile at (x, y).
@@ -919,7 +906,7 @@ class Tilemap:
             x: Center X coordinate
             y: Center Y coordinate
             r: Radius
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def circb(self, x: float, y: float, r: float, tile: tuple[int, int]) -> None:
         """Draw the outline of a circle of radius r and tile at (x, y).
@@ -928,7 +915,7 @@ class Tilemap:
             x: Center X coordinate
             y: Center Y coordinate
             r: Radius
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def elli(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
@@ -940,7 +927,7 @@ class Tilemap:
             y: Y coordinate
             w: Width
             h: Height
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def ellib(
         self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
@@ -952,7 +939,7 @@ class Tilemap:
             y: Y coordinate
             w: Width
             h: Height
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def tri(
         self,
@@ -973,7 +960,7 @@ class Tilemap:
             y2: Vertex 2 Y
             x3: Vertex 3 X
             y3: Vertex 3 Y
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def trib(
         self,
@@ -994,7 +981,7 @@ class Tilemap:
             y2: Vertex 2 Y
             x3: Vertex 3 X
             y3: Vertex 3 Y
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def fill(self, x: float, y: float, tile: tuple[int, int]) -> None:
         """Fill the area connected with the same tile as (x, y) with tile.
@@ -1002,7 +989,7 @@ class Tilemap:
         Args:
             x: X coordinate
             y: Y coordinate
-            tile: Tile (image_x, image_y)
+            tile: Tile (image_tx, image_ty)
         """
     def collide(
         self,
@@ -1553,16 +1540,13 @@ font: Image
 """The font image (Image class instance)."""
 
 @overload
-def clip() -> None: ...
-@overload
-def clip(x: float, y: float, w: float, h: float) -> None: ...
 def clip(
-    x: float | None = None,
-    y: float | None = None,
-    w: float | None = None,
-    h: float | None = None,
+    x: None = None,
+    y: None = None,
+    w: None = None,
+    h: None = None,
 ) -> None:
-    """Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen. Call without arguments to reset the drawing area to full screen.
+    """Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call without arguments to reset the drawing area to full screen.
 
     Args:
         x: X coordinate of the upper-left corner
@@ -1572,13 +1556,9 @@ def clip(
     """
 
 @overload
-def camera() -> None: ...
+def clip(x: float, y: float, w: float, h: float) -> None: ...
 @overload
-def camera(x: float, y: float) -> None: ...
-def camera(
-    x: float | None = None,
-    y: float | None = None,
-) -> None:
+def camera(x: None = None, y: None = None) -> None:
     """Set the drawing offset to (x, y). All subsequent drawing operations will be shifted by (-x, -y). Call without arguments to reset the drawing offset to (0, 0).
 
     Args:
@@ -1587,10 +1567,9 @@ def camera(
     """
 
 @overload
-def pal() -> None: ...
+def camera(x: float, y: float) -> None: ...
 @overload
-def pal(col1: int, col2: int) -> None: ...
-def pal(col1: int | None = None, col2: int | None = None) -> None:
+def pal(col1: None = None, col2: None = None) -> None:
     """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
 
     Args:
@@ -1598,6 +1577,8 @@ def pal(col1: int | None = None, col2: int | None = None) -> None:
         col2: Replacement color
     """
 
+@overload
+def pal(col1: int, col2: int) -> None: ...
 def dither(alpha: float) -> None:
     """Apply dithering (pseudo-transparency) when drawing. Set alpha in the range 0.0-1.0.
 

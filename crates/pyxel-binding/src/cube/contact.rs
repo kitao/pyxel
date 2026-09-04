@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use super::quat::Quat;
 use super::vec3::Vec3;
 
-define_wrapper!(Contact, pyxel::cube::Contact);
+define_wrapper!(Contact, pyxel::cube::Contact, module = "pyxel.cube");
 
 // Contact is an engine-built payload passed to on_collide; it is not
 // user-constructible and its fields are read-only.
@@ -53,8 +53,6 @@ impl Contact {
         )
     }
 }
-
-// Module registration
 
 pub fn add_contact_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Contact>()?;

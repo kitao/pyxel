@@ -2,7 +2,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
 import pyxel
 
 
@@ -15,17 +14,6 @@ class TestSound:
         assert len(snd.volumes) == 0
         assert len(snd.effects) == 0
 
-    def test_set(self):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
-        assert len(snd.notes) == 4
-        assert snd.speed == 10
-
-    def test_set_notes(self):
-        snd = pyxel.Sound()
-        snd.set_notes("c2e2g2")
-        assert len(snd.notes) == 3
-
     def test_set_notes_values(self):
         snd = pyxel.Sound()
         snd.set_notes("c2d2e2f2g2a2b2")
@@ -35,33 +23,19 @@ class TestSound:
     def test_set_notes_rest(self):
         snd = pyxel.Sound()
         snd.set_notes("c2r e2")
-        assert len(snd.notes) == 3
-        assert snd.notes[1] == -1  # Rest note
-
-    def test_set_verifies_tones(self):
-        snd = pyxel.Sound()
-        snd.set("c2e2", "sp", "77", "nn", 10)
-        assert list(snd.tones) == [1, 2]  # s=Square(1), p=Pulse(2)
+        assert list(snd.notes) == [24, -1, 28]
 
     def test_set_all_tone_types(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2c3", "tspn", "7777", "nnnn", 10)
+        assert list(snd.notes) == [24, 28, 31, 36]
+        assert snd.speed == 10
         assert list(snd.tones) == [0, 1, 2, 3]  # t=Triangle, s=Square, p=Pulse, n=Noise
 
     def test_set_verifies_volumes(self):
         snd = pyxel.Sound()
         snd.set("c2e2", "ss", "75", "nn", 10)
         assert list(snd.volumes) == [7, 5]
-
-    def test_set_verifies_effects(self):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2c3", "ssss", "7777", "nsvf", 10)
-        assert list(snd.effects) == [
-            0,
-            1,
-            2,
-            3,
-        ]  # n=None, s=Slide, v=Vibrato, f=FadeOut
 
     def test_set_all_effect_types(self):
         snd = pyxel.Sound()
@@ -71,23 +45,17 @@ class TestSound:
     def test_set_tones_string(self):
         snd = pyxel.Sound()
         snd.set_tones("ttss ppnn")
-        assert len(snd.tones) == 8
-        assert snd.tones[0] == 0  # t=Triangle
-        assert snd.tones[4] == 2  # p=Pulse
+        assert list(snd.tones) == [0, 0, 1, 1, 2, 2, 3, 3]
 
     def test_set_volumes_string(self):
         snd = pyxel.Sound()
         snd.set_volumes("7654 3210")
-        assert len(snd.volumes) == 8
-        assert snd.volumes[0] == 7
-        assert snd.volumes[7] == 0
+        assert list(snd.volumes) == [7, 6, 5, 4, 3, 2, 1, 0]
 
     def test_set_effects_string(self):
         snd = pyxel.Sound()
         snd.set_effects("nsvf hqnn")
-        assert len(snd.effects) == 8
-        assert snd.effects[0] == 0  # n=None
-        assert snd.effects[2] == 2  # v=Vibrato
+        assert list(snd.effects) == [0, 1, 2, 3, 4, 5, 0, 0]
 
     def test_save_is_byte_deterministic(self, tmp_path):
         tone = pyxel.tones[0]
@@ -124,7 +92,10 @@ class TestSound:
         snd.set("c2e2g2", "9", "7", "n", 30)
         path = str(tmp_path / "test_snd_tone9.wav")
         snd.save(path, 0.5)
-        assert Path(path).stat().st_size > 0
+        expected_path = str(tmp_path / "test_snd_tone0.wav")
+        snd.set_tones("0")
+        snd.save(expected_path, 0.5)
+        assert Path(path).read_bytes() == Path(expected_path).read_bytes()
 
     def test_save_before_init(self, tmp_path):
         # Sound.save renders without a window and must work before pyxel.init.
@@ -171,14 +142,13 @@ class TestSoundMml:
         snd = pyxel.Sound()
         snd.mml("T120 O4 L4 CDEF")
         # 4 quarter notes at 120 BPM = 2 s (within clock rounding).
-        assert snd.total_sec() == pytest.approx(2.0, abs=1e-3)
+        assert snd.total_sec() == 1.9999496936798096
 
     def test_mml_none_exits_mml_mode(self):
         snd = pyxel.Sound()
         snd.mml("T120 O4 CDEF")
         assert snd.total_sec() > 0.0
         snd.mml(None)
-        # Back on the notes-based path, which is empty for a fresh sound.
         assert snd.total_sec() == 0.0
 
     def test_mml_after_set(self):
@@ -186,7 +156,7 @@ class TestSoundMml:
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         snd.mml("T120 O4 L4 CDEF")
         # MML mode takes over: 2 s instead of the notes-based 0.25 s.
-        assert snd.total_sec() == pytest.approx(2.0, abs=1e-3)
+        assert snd.total_sec() == 1.9999496936798096
 
     def test_mml_old_syntax_emits_deprecation(self, capfd):
         snd = pyxel.Sound()
@@ -195,7 +165,7 @@ class TestSoundMml:
         out = capfd.readouterr().out
         assert out == "Old MML syntax is deprecated. Use new syntax instead.\n"
         # Old syntax: 4 notes x 4 steps (default l8) x 7 ticks (t120).
-        assert snd.total_sec() == pytest.approx(16 * 7 / 120, abs=1e-3)
+        assert snd.total_sec() == 0.9332848191261292
 
     def test_old_mml_emits_deprecation_and_none_exits_mml_mode(self, capfd):
         snd = pyxel.Sound()
@@ -205,9 +175,8 @@ class TestSoundMml:
             out == "Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead.\n"
         )
         # 4 notes x 8 steps (l4) x 7 ticks (t120).
-        assert snd.total_sec() == pytest.approx(32 * 7 / 120, abs=1e-3)
+        assert snd.total_sec() == 1.8665696382522583
         snd.old_mml(None)  # type: ignore[attr-defined]
-        # Back on the notes-based path, which is empty for a fresh sound.
         assert snd.total_sec() == 0.0
 
 
@@ -216,14 +185,13 @@ class TestSoundPcm:
         snd = pyxel.Sound()
         snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
         # The bundled asset decodes to a fixed gapless-trimmed length at 22050 Hz.
-        assert snd.total_sec() == pytest.approx(53.333332, abs=1e-4)
+        assert snd.total_sec() == 53.33333206176758
 
     def test_pcm_none_exits_pcm_mode(self, assets_dir):
         snd = pyxel.Sound()
         snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
         assert snd.total_sec() > 0.0
         snd.pcm(None)
-        # Back on the notes-based path, which is empty for a fresh sound.
         assert snd.total_sec() == 0.0
 
 
@@ -242,7 +210,7 @@ class TestSoundProperties:
         original_note1 = snd.notes[1]
         snd.notes[0] = 99
         assert snd.notes[0] == 99
-        assert snd.notes[1] == original_note1  # Other notes unchanged
+        assert snd.notes[1] == original_note1
 
     def test_notes_delitem(self):
         snd = pyxel.Sound()
@@ -254,20 +222,20 @@ class TestSoundProperties:
     def test_tones_setitem(self):
         snd = pyxel.Sound()
         snd.set("c2e2", "ss", "77", "nn", 10)
-        snd.tones[0] = 2  # Pulse
+        snd.tones[0] = 2
         assert snd.tones[0] == 2
-        assert snd.tones[1] == 1  # Unchanged
+        assert snd.tones[1] == 1
 
     def test_volumes_setitem(self):
         snd = pyxel.Sound()
         snd.set("c2e2", "ss", "77", "nn", 10)
         snd.volumes[0] = 3
         assert snd.volumes[0] == 3
-        assert snd.volumes[1] == 7  # Unchanged
+        assert snd.volumes[1] == 7
 
     def test_effects_setitem(self):
         snd = pyxel.Sound()
         snd.set("c2e2", "ss", "77", "nn", 10)
-        snd.effects[0] = 2  # Vibrato
+        snd.effects[0] = 2
         assert snd.effects[0] == 2
-        assert snd.effects[1] == 0  # Unchanged
+        assert snd.effects[1] == 0

@@ -3,11 +3,11 @@ use pyo3::prelude::*;
 // Hand-rolled because engine-built motions retain their source Mesh;
 // node.rs uses it to reject applying a motion to a different Mesh.
 
-#[pyclass(unsendable, from_py_object)]
+#[pyclass(module = "pyxel.cube", unsendable, from_py_object)]
 #[derive(Clone)]
 pub struct Motion {
     pub(crate) inner: pyxel::cube::RcMotion,
-    source_mesh: Option<pyxel::cube::RcMesh>,
+    source_mesh: pyxel::cube::RcMesh,
 }
 
 impl Motion {
@@ -15,18 +15,15 @@ impl Motion {
         inner: pyxel::cube::RcMotion,
         source_mesh: pyxel::cube::RcMesh,
     ) -> Self {
-        Self {
-            inner,
-            source_mesh: Some(source_mesh),
-        }
+        Self { inner, source_mesh }
     }
 
     pub(crate) fn inner_ref(&self) -> std::cell::Ref<'_, pyxel::cube::Motion> {
         rc_ref!(self.inner)
     }
 
-    pub(crate) fn source_mesh(&self) -> Option<pyxel::cube::RcMesh> {
-        self.source_mesh.clone()
+    pub(crate) fn source_mesh(&self) -> &pyxel::cube::RcMesh {
+        &self.source_mesh
     }
 }
 
@@ -44,14 +41,11 @@ impl Motion {
         self.inner_ref().length
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
-        format!("Motion(name={:?}, length={})", self.name(), self.length())
+        let motion = self.inner_ref();
+        format!("Motion(name={:?}, length={})", motion.name, motion.length)
     }
 }
-
-// Module registration
 
 pub fn add_motion_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Motion>()?;

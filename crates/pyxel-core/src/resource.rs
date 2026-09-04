@@ -234,8 +234,6 @@ impl Pyxel {
         );
     }
 
-    // User data
-
     pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> Result<String, String> {
         let home_dir = UserDirs::new()
             .map_or_else(PathBuf::new, |user_dirs| user_dirs.home_dir().to_path_buf());
@@ -304,12 +302,22 @@ impl Pyxel {
     }
 
     fn parse_format_version(toml_text: &str) -> Result<u32, String> {
-        toml_text
-            .lines()
-            .find(|line| line.trim().starts_with("format_version"))
-            .and_then(|line| line.split_once('='))
-            .and_then(|(_, value)| value.trim().parse::<u32>().ok())
-            .ok_or_else(|| "Failed to parse resource format version".to_string())
+        for line in toml_text.lines() {
+            if line.trim_start().starts_with('[') {
+                break;
+            }
+            let Ok(table) = toml::from_str::<toml::Table>(line) else {
+                continue;
+            };
+            if let Some(version) = table
+                .get("format_version")
+                .and_then(toml::Value::as_integer)
+                .and_then(|version| u32::try_from(version).ok())
+            {
+                return Ok(version);
+            }
+        }
+        Err("Failed to parse resource format version".to_string())
     }
 
     fn datetime_string() -> String {

@@ -4,7 +4,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::RcImage;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::{f32_to_u32, simplify_string};
+use crate::utils::simplify_string;
 
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -40,8 +40,6 @@ pub struct Tilemap {
 define_rc_type!(RcTilemap, Tilemap);
 
 impl Tilemap {
-    // Constructors
-
     pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> RcTilemap {
         Self::try_new(width, height, imgsrc).expect("tilemap dimensions are too large")
     }
@@ -56,7 +54,7 @@ impl Tilemap {
         parse_tmx(filename, layer_index)
     }
 
-    // Public accessors
+    // Accessors
 
     pub const fn width(&self) -> u32 {
         self.canvas.width()
@@ -70,9 +68,8 @@ impl Tilemap {
         self.canvas.data_ptr()
     }
 
-    // Public data operations
+    // Data operations
 
-    // Parse inline tile data before drawing it into the map.
     pub fn set<S: AsRef<str>>(&mut self, x: i32, y: i32, data: &[S]) -> Result<(), String> {
         if data.is_empty() {
             return Err("Invalid tilemap data: no rows".to_string());
@@ -100,6 +97,7 @@ impl Tilemap {
             }
         }
 
+        // Each four hexadecimal digits encode tile x then tile y as bytes.
         let width = (digit_count / 4) as u32;
         let height = rows.len() as u32;
         let rc = Self::new(width, height, self.imgsrc.clone());
@@ -246,7 +244,6 @@ impl Tilemap {
 
     // Blit operations
 
-    // Dispatch plain blits, transforms, and self-blits.
     pub fn draw_tilemap(
         &mut self,
         x: f32,
@@ -262,32 +259,36 @@ impl Tilemap {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
+        // Preserve source pixels when the destination overlaps the source.
+        let borrowed;
+        let copied_canvas;
+        let src = if ptr::eq(tilemap.as_ptr(), self) {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
+        } else {
+            borrowed = rc_ref!(tilemap);
+            &borrowed.canvas
+        };
         if rotate != 0.0 || scale != 1.0 {
-            self.draw_tilemap_with_transform(
+            self.canvas.blit_with_transform(
                 x,
                 y,
-                tilemap,
+                src,
                 tilemap_x,
                 tilemap_y,
                 width,
                 height,
                 transparent,
+                None,
                 rotate,
                 scale,
+                false,
             );
-            return;
-        }
-
-        let tilemap = rc_ref!(tilemap);
-        if self.is_self_blit(&tilemap) {
-            let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
-            self.canvas
-                .blit(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
         } else {
             self.canvas.blit(
                 x,
                 y,
-                &tilemap.canvas,
+                src,
                 tilemap_x,
                 tilemap_y,
                 width,
@@ -297,8 +298,6 @@ impl Tilemap {
             );
         }
     }
-
-    // Collision detection
 
     pub fn collide(
         &self,
@@ -329,69 +328,6 @@ impl Tilemap {
 
     // Internal helpers
 
-    fn is_self_blit(&self, tilemap: &Tilemap) -> bool {
-        ptr::eq(tilemap, self)
-    }
-
-    // Copy first to avoid aliasing on self-blit.
-    fn copy_region(&self, x: f32, y: f32, width: f32, height: f32) -> Canvas<Tile> {
-        let w = f32_to_u32(width.abs());
-        let h = f32_to_u32(height.abs());
-        let mut canvas = Canvas::new(w, h);
-        canvas.blit(0.0, 0.0, &self.canvas, x, y, w as f32, h as f32, None, None);
-        canvas
-    }
-
-    // Copy self-blits before applying tilemap transforms.
-    fn draw_tilemap_with_transform(
-        &mut self,
-        x: f32,
-        y: f32,
-        tilemap: &RcTilemap,
-        tilemap_x: f32,
-        tilemap_y: f32,
-        width: f32,
-        height: f32,
-        transparent: Option<Tile>,
-        rotate: f32,
-        scale: f32,
-    ) {
-        let tilemap = rc_ref!(tilemap);
-        if self.is_self_blit(&tilemap) {
-            let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
-            self.canvas.blit_with_transform(
-                x,
-                y,
-                &canvas,
-                0.0,
-                0.0,
-                width,
-                height,
-                transparent,
-                None,
-                rotate,
-                scale,
-                false,
-            );
-        } else {
-            self.canvas.blit_with_transform(
-                x,
-                y,
-                &tilemap.canvas,
-                tilemap_x,
-                tilemap_y,
-                width,
-                height,
-                transparent,
-                None,
-                rotate,
-                scale,
-                false,
-            );
-        }
-    }
-
-    // Sweep one axis against wall tiles.
     fn collide_resolve_axis(
         &self,
         pos: f32,

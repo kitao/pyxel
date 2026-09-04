@@ -7,11 +7,61 @@
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
     <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
+    <style>
+      #layout-preview-panes {
+        height: 140px;
+      }
+
+      #s-layout .legend-label {
+        width: 11rem;
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 639px) {
+        #layout-preview-toolbar,
+        #layout-preview-controls {
+          flex-wrap: wrap;
+        }
+
+        #layout-preview-title {
+          flex-basis: 100%;
+        }
+
+        #layout-preview-controls {
+          max-width: 100%;
+          margin-left: 0;
+        }
+
+        #layout-preview-panes {
+          flex-direction: column;
+          height: 240px;
+        }
+
+        #layout-preview-divider {
+          width: 100%;
+          height: 3px;
+        }
+
+        #layout-preview-focus-gap {
+          width: 0;
+        }
+
+        #s-layout .layout-legend-row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.25rem;
+        }
+
+        #s-layout .legend-label {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
         Loading...
       </div>
     </main>
@@ -20,14 +70,12 @@
       let data = null;
       let lang = "en";
 
-      // Build the static manual shell and section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         app.appendChild(buildPageHeader(updateTexts));
 
-        // Manual section cards populated by updateTexts
         const sections = document.createElement("div");
         sections.className = "space-y-6";
 
@@ -54,21 +102,17 @@
         updateTexts();
       }
 
-      // Populate every manual section from localized JSON data.
       function updateTexts() {
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Overview text
         document.getElementById("s-overview").innerHTML = `
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${esc(t("overview_body"))}</p>`;
 
-        // Screen layout mockup and legend
         const layoutLegend = [
           { key: "layout_toolbar", descKey: "layout_toolbar_desc" },
           { key: "layout_focus_line", descKey: "layout_focus_line_desc" },
@@ -78,7 +122,7 @@
         ]
           .map(
             (item) =>
-              `<div class="flex items-baseline gap-2">
+              `<div class="layout-legend-row flex items-baseline gap-2">
                 <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
                 <span class="legend-desc">${esc(t(item.descKey))}</span>
               </div>`,
@@ -90,11 +134,10 @@
 
           <!-- Layout diagram mockup -->
           <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
-            <!-- Toolbar row -->
-            <div class="flex items-center gap-2 bg-[#111827] px-3 py-2">
-              <span class="font-semibold text-gray-200 text-sm mr-1 truncate">Pyxel Code Maker</span>
-              <span class="text-gray-500 text-xs truncate hidden sm:inline">Playground for Pyxel</span>
-              <div class="flex items-center gap-1.5 ml-auto shrink-0">
+            <div id="layout-preview-toolbar" class="flex items-center gap-2 bg-[#111827] px-3 py-2">
+              <span id="layout-preview-title" class="font-semibold text-gray-200 text-sm mr-1 truncate">Pyxel Code Maker</span>
+              <span class="text-gray-400 text-xs truncate hidden sm:inline">Playground for Pyxel</span>
+              <div id="layout-preview-controls" class="flex items-center gap-1.5 ml-auto shrink-0">
                 <span class="btn-chip">Load ▼</span>
                 <span class="btn-chip">Save ▼</span>
                 <span class="inline-flex items-center border border-gray-600 rounded-md overflow-hidden divide-x divide-gray-600">
@@ -104,31 +147,27 @@
                 <span class="btn-chip">Run</span>
               </div>
             </div>
-            <!-- Focus indicator row -->
             <div class="flex h-[2px]">
               <div class="flex-1 bg-cyan-700"></div>
-              <div class="w-3 bg-gray-700"></div>
+              <div id="layout-preview-focus-gap" class="w-3 bg-gray-700"></div>
               <div class="flex-1 bg-gray-700"></div>
             </div>
-            <!-- Editor/runtime split area -->
-            <div class="flex" style="height: 140px">
+            <div id="layout-preview-panes" class="flex">
               <div class="flex-1 bg-[#111827] flex items-center justify-center">
-                <div class="text-center text-gray-500 text-xs sm:text-sm">
+                <div class="text-center text-gray-400 text-xs sm:text-sm">
                   <div>${esc(t("layout_editing_area"))}</div>
                   <div class="text-[10px] sm:text-xs mt-0.5 text-gray-600">${esc(t("layout_editing_area_hint"))}</div>
                 </div>
               </div>
-              <div class="w-3 bg-[#232d3b] shrink-0"></div>
+              <div id="layout-preview-divider" class="w-3 bg-[#232d3b] shrink-0"></div>
               <div class="flex-1 bg-[#202224] flex items-center justify-center">
-                <span class="text-gray-500 text-xs sm:text-sm">${esc(t("layout_runtime"))}</span>
+                <span class="text-gray-400 text-xs sm:text-sm">${esc(t("layout_runtime"))}</span>
               </div>
             </div>
           </div>
 
-          <!-- Layout legend -->
           <div class="space-y-2">${layoutLegend}</div>`;
 
-        // Toolbar control descriptions
         const toolbarItems = data.toolbar_items
           .map((item) => {
             let html = `<div class="flex items-baseline gap-3">
@@ -154,22 +193,18 @@
           <p class="body mb-3">${esc(t("toolbar_body"))}</p>
           <div class="space-y-2.5">${toolbarItems}</div>`;
 
-        // Code editor pane description
         document.getElementById("s-code").innerHTML = `
           <h2 class="section-title">${esc(t("code_title"))}</h2>
           <p class="body">${esc(t("code_body")).replace("{0}", chip("main.py"))}</p>`;
 
-        // Resource editor pane description
         document.getElementById("s-resource").innerHTML = `
           <h2 class="section-title">${esc(t("resource_title"))}</h2>
           <p class="body">${esc(t("resource_body")).replace("{0}", chip("my_resource.pyxres"))}</p>`;
 
-        // Runtime screen description
         document.getElementById("s-runtime").innerHTML = `
           <h2 class="section-title">${esc(t("runtime_title"))}</h2>
           <p class="body">${esc(t("runtime_body")).replace("{0}", `<span class="key">Ctrl(Cmd)+Enter</span>`)}</p>`;
 
-        // Project archive file descriptions
         document.getElementById("s-project").innerHTML = `
           <h2 class="section-title">${esc(t("project_title"))}</h2>
           <div class="body space-y-2">
@@ -178,17 +213,14 @@
             <pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>
           </div>`;
 
-        // Drag-and-drop import description
         document.getElementById("s-drag-drop").innerHTML = `
           <h2 class="section-title">${esc(t("drag_drop_title"))}</h2>
           <p class="body">${esc(t("drag_drop_body")).replace("{0}", chip(".py")).replace("{1}", chip(".pyxres"))}</p>`;
 
-        // URL sharing description
         document.getElementById("s-sharing").innerHTML = `
           <h2 class="section-title">${esc(t("sharing_title"))}</h2>
           <p class="body">${esc(t("sharing_body"))}</p>`;
 
-        // Keyboard shortcut table
         const shortcutRows = data.shortcuts
           .map(
             (s) =>

@@ -15,10 +15,10 @@
       let value;
       let ext;
 
-      // Resolve a branch name to the current commit SHA via GitHub API,
-      // so subsequent jsDelivr fetches use an immutable @<SHA> URL.
-      // Falls back to the ref name on any failure (network, 403, 404, etc.).
-      async function resolveRef(user, repo, ref) {
+      // Resolve a ref to its commit SHA via the GitHub API so jsDelivr
+      // fetches use an immutable @<SHA> URL. A missing ref returns null;
+      // an unavailable or invalid response returns undefined.
+      async function resolveRefSha(user, repo, ref) {
         try {
           const res = await fetch(
             `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
@@ -27,12 +27,83 @@
               cache: "no-cache",
             },
           );
-          if (res.ok) return (await res.text()).trim();
+          if (res.status === 404) return null;
+          if (res.status === 422) {
+            try {
+              const error = JSON.parse(await res.text());
+              if (error.message?.startsWith("No commit found for SHA:")) {
+                return null;
+              }
+            } catch {}
+            return undefined;
+          }
+          if (!res.ok) return undefined;
+          const sha = (await res.text()).trim();
+          return /^[0-9a-f]{40}$/i.test(sha) ? sha : undefined;
         } catch {}
-        return ref;
+        return undefined;
       }
 
-      // Resolve the launch command and startup file kind from query parameters.
+      // Prefer a resolvable single-segment ref; otherwise try
+      // slash-containing refs from longest to shortest.
+      async function resolveLaunchTarget(
+        parts,
+        preferredRef = null,
+        fallbackSha = null,
+      ) {
+        const [user, repo] = parts;
+        const refAndPath = parts.slice(2);
+        const fallback = {
+          ref: refAndPath[0],
+          path: refAndPath.slice(1).join("/"),
+        };
+        if (preferredRef) {
+          const preferredLength = preferredRef.split("/").length;
+          if (
+            preferredLength < refAndPath.length &&
+            refAndPath.slice(0, preferredLength).join("/") === preferredRef
+          ) {
+            const path = refAndPath.slice(preferredLength).join("/");
+            if (/^[0-9a-f]{40}$/i.test(preferredRef)) {
+              return { ref: preferredRef, path };
+            }
+            const sha = await resolveRefSha(user, repo, preferredRef);
+            if (sha) return { ref: sha, path };
+            if (/^[0-9a-f]{40}$/i.test(fallbackSha)) {
+              return { ref: fallbackSha, path };
+            }
+            if (!preferredRef.includes("/") && sha === undefined) {
+              return { ref: preferredRef, path };
+            }
+            throw new Error("Failed to resolve the GitHub ref");
+          }
+        }
+        if (/^[0-9a-f]{40}$/i.test(refAndPath[0])) {
+          return fallback;
+        }
+        const singleSegmentRefSha = await resolveRefSha(
+          user,
+          repo,
+          refAndPath[0],
+        );
+        if (singleSegmentRefSha) {
+          return {
+            ref: singleSegmentRefSha,
+            path: refAndPath.slice(1).join("/"),
+          };
+        }
+        if (singleSegmentRefSha === undefined) return fallback;
+        for (let split = refAndPath.length - 1; split >= 2; split--) {
+          const ref = refAndPath.slice(0, split).join("/");
+          const sha = await resolveRefSha(user, repo, ref);
+          if (sha) {
+            return { ref: sha, path: refAndPath.slice(split).join("/") };
+          }
+          if (sha === undefined) return fallback;
+        }
+        return fallback;
+      }
+
       if (params.get("run")) {
         command = "run";
         value = params.get("run");
@@ -50,35 +121,45 @@
       }
 
       if (command) {
-        let root, name;
+        let target;
         if (value.includes("/")) {
-          // New path format: user/repo/branch/path/to/file.
+          // Slash-separated format: user/repo/ref/path/to/file.
           const parts = value.split("/");
           if (parts.length < 4) {
             location.replace("url-builder.html");
           } else {
-            const [user, repo, branch] = parts;
-            root = resolveRef(user, repo, branch).then(
-              (ref) => `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}`,
-            );
-            name = parts.slice(3).join("/") + ext;
+            const [user, repo] = parts;
+            target = resolveLaunchTarget(
+              parts,
+              params.get("ref"),
+              params.get("sha"),
+            ).then(({ ref, path }) => ({
+              root: `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}`,
+              name: path + ext,
+            }));
           }
         } else {
-          // Legacy dotted format: user.repo.path.to.file.
+          // Dotted compatibility format: user.repo.path.to.file.
           const parts = value.split(".");
-          root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}`;
-          name = parts.slice(2).join("/") + ext;
+          target = {
+            root: `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}`,
+            name: parts.slice(2).join("/") + ext,
+          };
         }
-        Promise.resolve(root).then((r) =>
-          launchPyxel({
-            root: r,
-            command,
-            name,
-            packages: params.get("packages"),
-            gamepad: params.get("gamepad"),
-            editor: params.get("editor"),
-          }),
-        );
+        if (target) {
+          Promise.resolve(target)
+            .then(({ root, name }) =>
+              launchPyxel({
+                root,
+                command,
+                name,
+                packages: params.get("packages"),
+                gamepad: params.get("gamepad"),
+                editor: params.get("editor"),
+              }),
+            )
+            .catch(_displayFatalErrorOverlay);
+        }
       }
     </script>
   </body>

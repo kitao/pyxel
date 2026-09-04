@@ -85,7 +85,6 @@ class PianoKeyboard(Widget):
 
         self.new_var("note_var", None)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)

@@ -1,6 +1,3 @@
-// ResourceData owns only plain resource values, so Serde derivation is intentional here.
-#![allow(clippy::unsafe_derive_deserialize)]
-
 use serde::{Deserialize, Serialize};
 
 use crate::image::{Color, Image, RcImage};
@@ -322,5 +319,26 @@ impl ResourceData {
             musics: if exclude_musics { &[] } else { &self.musics },
         };
         toml::to_string(&view).unwrap()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_grid_rejects_empty_row() {
+        assert_eq!(
+            validate_grid::<u8>("images", 0, 1, 1, &[vec![]], 1),
+            Err("Invalid resource data: images[0].data[0] must not be empty".to_string())
+        );
+    }
+
+    #[test]
+    fn test_grid_rejects_dimension_overflow_before_allocation() {
+        assert_eq!(
+            validate_grid("images", 0, 65536, 65536, &[vec![0_u8]], 1),
+            Err("Invalid resource data: images[0] dimensions are too large".to_string())
+        );
     }
 }

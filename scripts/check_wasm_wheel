@@ -2,13 +2,24 @@
 
 import sys
 import zipfile
-from pathlib import Path
+from email.parser import Parser
+from pathlib import Path, PurePosixPath
+
+import tomllib
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DIST_DIR = ROOT_DIR / "dist"
+PYPROJECT_PATH = ROOT_DIR / "python" / "pyproject.toml"
+PYXEL_SOURCE_DIR = ROOT_DIR / "python" / "pyxel"
 
-WHEEL_GLOB = "*-emscripten_*.whl"
+EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
+WASM_WHEEL_GLOBS = (
+    "pyxel-*-emscripten_*.whl",
+    "pyxel-*-pyemscripten_*.whl",
+)
 TARGET_SUFFIXES = (".so", ".wasm", ".js")
+IGNORED_SOURCE_DIRS = {"__pycache__", ".ruff_cache"}
+IGNORED_SOURCE_NAMES = {".DS_Store"}
 
 HOST_PATH_PATTERNS = (
     b"/Users/",
@@ -19,45 +30,221 @@ HOST_PATH_PATTERNS = (
 )
 
 
-def find_wheels():
-    wheels = sorted(DIST_DIR.glob(WHEEL_GLOB))
-    if not wheels:
-        print(f"no wasm wheel found in {DIST_DIR}")
-        sys.exit(1)
-    return wheels
+def _project_name_and_version(pyproject_path):
+    try:
+        project = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))["project"]
+        name = project["name"]
+        version = project["version"]
+        if not all(isinstance(value, str) for value in (name, version)):
+            raise TypeError("project name and version must be strings")
+    except (KeyError, OSError, TypeError, tomllib.TOMLDecodeError) as error:
+        raise ValueError(f"invalid project identity: {error}") from error
+    return name, version
+
+
+def expected_wheel_name(pyproject_path):
+    name, version = _project_name_and_version(pyproject_path)
+    distribution = name.replace("-", "_")
+    return f"{distribution}-{version}-{EXPECTED_WHEEL_TAG}.whl"
+
+
+def find_wheel(dist_dir, pyproject_path):
+    expected_name = expected_wheel_name(pyproject_path)
+    wheel_paths = sorted(
+        {path for pattern in WASM_WHEEL_GLOBS for path in dist_dir.glob(pattern)}
+    )
+    if [path.name for path in wheel_paths] != [expected_name]:
+        actual_names = ", ".join(path.name for path in wheel_paths) or "none"
+        raise ValueError(
+            f"expected WebAssembly wheel {expected_name}, found {actual_names}"
+        )
+    return wheel_paths[0]
 
 
 def find_violations(wheel_path):
     violations = []
     with zipfile.ZipFile(wheel_path) as wheel_zip:
         for name in wheel_zip.namelist():
+            if "/__pycache__/" in f"/{name}" or name.endswith((".pyc", ".pyo")):
+                violations.append((name, "generated Python bytecode"))
+                continue
+            if "/.ruff_cache/" in f"/{name}":
+                violations.append((name, "generated Ruff cache"))
+                continue
+            if Path(name).name == ".DS_Store":
+                violations.append((name, "platform metadata file"))
+                continue
             if not name.endswith(TARGET_SUFFIXES):
                 continue
 
             data = wheel_zip.read(name)
             for pattern in HOST_PATH_PATTERNS:
                 if pattern in data:
-                    violations.append((name, pattern))
+                    violations.append((name, f"host path {pattern!r}"))
                     break
     return violations
 
 
+def find_source_mismatches(wheel_path, source_dir):
+    mismatches = []
+    with zipfile.ZipFile(wheel_path) as wheel_zip:
+        wheel_names = set(wheel_zip.namelist())
+        expected_names = set()
+        for source_path in sorted(source_dir.rglob("*")):
+            if not source_path.is_file():
+                continue
+            relative_path = source_path.relative_to(source_dir)
+            if (
+                any(part in IGNORED_SOURCE_DIRS for part in relative_path.parts)
+                or source_path.name in IGNORED_SOURCE_NAMES
+                or source_path.suffix in TARGET_SUFFIXES
+            ):
+                continue
+
+            archive_name = f"pyxel/{relative_path.as_posix()}"
+            expected_names.add(archive_name)
+            if archive_name not in wheel_names:
+                mismatches.append((archive_name, "missing packaged source"))
+            elif wheel_zip.read(archive_name) != source_path.read_bytes():
+                mismatches.append(
+                    (
+                        archive_name,
+                        f"differs from python/pyxel/{relative_path.as_posix()}",
+                    )
+                )
+
+        for archive_name in sorted(wheel_names):
+            if not archive_name.startswith("pyxel/") or archive_name.endswith("/"):
+                continue
+            relative_path = PurePosixPath(archive_name).relative_to("pyxel")
+            if (
+                any(part in IGNORED_SOURCE_DIRS for part in relative_path.parts)
+                or relative_path.name in IGNORED_SOURCE_NAMES
+                or relative_path.suffix in TARGET_SUFFIXES
+            ):
+                continue
+            if archive_name not in expected_names:
+                mismatches.append((archive_name, "not present in python/pyxel"))
+    return mismatches
+
+
+def _project_metadata_contract(pyproject_path):
+    try:
+        project = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))["project"]
+        name = project["name"]
+        version = project["version"]
+        requires_python = project["requires-python"]
+        dependencies = project.get("dependencies", [])
+        optional_dependencies = project.get("optional-dependencies", {})
+        if not all(
+            isinstance(value, str) for value in (name, version, requires_python)
+        ):
+            raise TypeError("project identity fields must be strings")
+        if not isinstance(dependencies, list) or not all(
+            isinstance(value, str) for value in dependencies
+        ):
+            raise TypeError("project.dependencies must be a list of strings")
+        if not isinstance(optional_dependencies, dict) or not all(
+            isinstance(extra, str)
+            and isinstance(values, list)
+            and all(isinstance(value, str) for value in values)
+            for extra, values in optional_dependencies.items()
+        ):
+            raise TypeError(
+                "project.optional-dependencies must map names to string lists"
+            )
+    except (KeyError, OSError, TypeError, tomllib.TOMLDecodeError) as error:
+        raise ValueError(f"invalid project metadata contract: {error}") from error
+
+    requires_dist = list(dependencies)
+    for extra, values in optional_dependencies.items():
+        requires_dist.extend(f"{value} ; extra == '{extra}'" for value in values)
+    return {
+        "Name": [name],
+        "Version": [version],
+        "Requires-Python": [requires_python],
+        "Provides-Extra": list(optional_dependencies),
+        "Requires-Dist": requires_dist,
+    }
+
+
+def find_metadata_mismatches(wheel_path, pyproject_path):
+    expected = _project_metadata_contract(pyproject_path)
+    with zipfile.ZipFile(wheel_path) as wheel_zip:
+        metadata_names = [
+            name
+            for name in wheel_zip.namelist()
+            if name.endswith(".dist-info/METADATA")
+        ]
+        if len(metadata_names) != 1:
+            return [
+                (
+                    wheel_path.name,
+                    "expected exactly one .dist-info/METADATA member",
+                )
+            ]
+
+        metadata_name = metadata_names[0]
+        metadata = Parser().parsestr(
+            wheel_zip.read(metadata_name).decode("utf-8", errors="strict")
+        )
+
+    mismatches = []
+    for field, expected_values in expected.items():
+        if metadata.get_all(field, []) != expected_values:
+            mismatches.append(
+                (
+                    metadata_name,
+                    f"{field} fields differ from python/pyproject.toml",
+                )
+            )
+    return mismatches
+
+
+def find_wheel_tag_mismatches(wheel_path, version):
+    wheel_metadata_name = f"pyxel-{version}.dist-info/WHEEL"
+    with zipfile.ZipFile(wheel_path) as wheel_zip:
+        if wheel_zip.namelist().count(wheel_metadata_name) != 1:
+            return [
+                (
+                    wheel_path.name,
+                    f"expected wheel metadata member {wheel_metadata_name}",
+                )
+            ]
+        wheel_metadata = Parser().parsestr(
+            wheel_zip.read(wheel_metadata_name).decode("utf-8", errors="strict")
+        )
+
+    if wheel_metadata.get_all("Tag", []) != [EXPECTED_WHEEL_TAG]:
+        return [
+            (
+                wheel_metadata_name,
+                f"Tag fields do not match {EXPECTED_WHEEL_TAG}",
+            )
+        ]
+    return []
+
+
 def main() -> int:
-    wheels = find_wheels()
-    has_error = False
-
-    for wheel_path in wheels:
+    try:
+        wheel_path = find_wheel(DIST_DIR, PYPROJECT_PATH)
+        _name, version = _project_name_and_version(PYPROJECT_PATH)
         violations = find_violations(wheel_path)
-        if not violations:
-            print(f"ok: {wheel_path.name}")
-            continue
+        violations.extend(find_source_mismatches(wheel_path, PYXEL_SOURCE_DIR))
+        violations.extend(find_metadata_mismatches(wheel_path, PYPROJECT_PATH))
+        violations.extend(find_wheel_tag_mismatches(wheel_path, version))
+    except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
+        print(f"error: {error}")
+        return 1
 
-        has_error = True
-        print(f"error: host path detected in {wheel_path.name}")
-        for entry, pattern in violations:
-            print(f"  - {entry}: matched {pattern!r}")
+    if violations:
+        print(f"error: invalid contents detected in {wheel_path.name}")
+        for entry, reason in violations:
+            print(f"  - {entry}: {reason}")
+        return 1
 
-    return 1 if has_error else 0
+    print(f"ok: {wheel_path.name}")
+    return 0
 
 
 if __name__ == "__main__":

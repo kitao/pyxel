@@ -17,8 +17,8 @@ impl Music {
         new_audio_type!(Self { seqs: Vec::new() })
     }
 
-    pub fn set(&mut self, seqs: &[Vec<u32>]) {
-        self.seqs = seqs.to_vec();
+    pub fn set(&mut self, seqs: Vec<Vec<u32>>) {
+        self.seqs = seqs;
 
         let num_channels = pyxel::channels().len();
         self.seqs.resize_with(num_channels, Vec::new);

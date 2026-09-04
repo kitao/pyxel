@@ -79,7 +79,7 @@ Pyxel の `init` 関数が呼ばれると、カレントディレクトリはそ
 <details>
 <summary>インストールせずに Pyxel を試せますか？</summary>
 
-[Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) を使えば、ブラウザ上で Pyxel アプリの作成・実行ができます。ただし、複数ファイル構成には対応していないため、本格的な開発にはローカル環境をおすすめします。
+[Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) を使えば、ブラウザ上で Pyxel アプリを作成して実行できます。ただし、コードエディタで編集できるのは `main.py` だけです。複数の Python ファイルを編集する場合は、ローカル環境をおすすめします。
 
 [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) では、サンプルコードやアプリをブラウザ上で一覧・実行できます。
 

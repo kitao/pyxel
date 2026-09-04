@@ -1,5 +1,6 @@
 const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v314.0.4/full/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-3.0.0-cp311-abi3-emscripten_5_0_3_wasm32.whl";
+const PYXEL_WHEEL_PATH =
+  "pyxel-3.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl";
 const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "images/click_to_start_114x14.png";
@@ -22,6 +23,8 @@ const VIRTUAL_GAMEPAD_BACK = 9;
 const VIRTUAL_GAMEPAD_BUTTON_COUNT = 10;
 
 const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
+const _encodeUrlPath = (path) =>
+  path.split("/").map(encodeURIComponent).join("/");
 
 window.pyxelContext = {
   resolveInput: null,
@@ -153,7 +156,7 @@ document.addEventListener(
 // Public API
 
 async function launchPyxel(params) {
-  const pyxelVersion = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
+  const pyxelVersion = PYXEL_WHEEL_PATH.split("-")[1];
   const pyodideVersion = PYODIDE_URL.match(/v([\d.]+)\//)[1];
   console.log(`Launch Pyxel ${pyxelVersion} with Pyodide ${pyodideVersion}`);
   console.log(params);
@@ -203,7 +206,7 @@ async function resetPyxel() {
     const audioContext =
       window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
     if (audioContext && audioContext.state === "running") {
-      // Let pending audio callbacks finish after quit before suspending.
+      // Drain pending audio callbacks before suspending the context.
       await new Promise((resolve) => setTimeout(resolve, 50));
       await audioContext.suspend();
     }
@@ -253,7 +256,7 @@ async function resetPyxel() {
 
     await _executePyxelCommand(pyodide, window.pyxelContext.params);
 
-    // Undo the earlier suspend so the restarted app has audio.
+    // Resume the audio context for the restarted app.
     setTimeout(() => {
       if (audioContext && audioContext.state === "suspended") {
         audioContext.resume();
@@ -287,7 +290,7 @@ const _initialize = () => {
 
 const _scriptDir = (() => {
   for (const script of document.getElementsByTagName("script")) {
-    const match = script.src.match(/(^|.*\/)pyxel\.js$/);
+    const match = script.src.match(/(^|.*\/)pyxel\.js(?:[?#].*)?$/);
     if (match) return match[1];
   }
   return "";
@@ -305,12 +308,6 @@ const _setStyleSheet = () => {
   styleSheetLink.rel = "stylesheet";
   styleSheetLink.href = `${_scriptDir}pyxel.css`;
   document.head.appendChild(styleSheetLink);
-};
-
-const _registerCustomElements = () => {
-  window.customElements.define("pyxel-run", PyxelRunElement);
-  window.customElements.define("pyxel-play", PyxelPlayElement);
-  window.customElements.define("pyxel-edit", PyxelEditElement);
 };
 
 const _hookGlobalErrors = () => {
@@ -374,22 +371,28 @@ const _updateScreenElementsSize = () => {
   _setMinWidthFromRatio("img#pyxel-gamepad-cross", screenSize);
   _setMinWidthFromRatio("img#pyxel-gamepad-button", screenSize);
   _setMinWidthFromRatio("img#pyxel-gamepad-menu", screenSize);
+  _addVirtualGamepad._invalidateRects?.();
 };
 
-// Event helpers
-
-const _waitForEvent = (target, ...events) =>
-  new Promise((resolve) => {
-    const listener = (...args) => {
-      for (const ev of events) {
-        target.removeEventListener(ev, listener);
-      }
-      resolve(...args);
+const _loadImage = (image, src) => {
+  return new Promise((resolve, reject) => {
+    const cleanup = () => {
+      image.removeEventListener("load", onLoad);
+      image.removeEventListener("error", onError);
     };
-    for (const ev of events) {
-      target.addEventListener(ev, listener);
-    }
+    const onLoad = () => {
+      cleanup();
+      resolve();
+    };
+    const onError = () => {
+      cleanup();
+      reject(new Error(`Failed to load image: ${src}`));
+    };
+    image.addEventListener("load", onLoad, { once: true });
+    image.addEventListener("error", onError, { once: true });
+    image.src = src;
   });
+};
 
 // Create the screen container, drop area, SDL2 canvas, and logo.
 const _createScreenElements = async () => {
@@ -432,10 +435,10 @@ const _createScreenElements = async () => {
 
   const logoImage = document.createElement("img");
   logoImage.id = "pyxel-logo";
-  logoImage.src = `${_scriptDir}${PYXEL_LOGO_PATH}`;
+  logoImage.alt = "Pyxel";
   logoImage.tabIndex = -1;
-  await _waitForEvent(logoImage, "load");
-  // Wait briefly; appending the logo right after load has caused issues.
+  await _loadImage(logoImage, `${_scriptDir}${PYXEL_LOGO_PATH}`);
+  // Let the browser finish processing the image load before sizing.
   await new Promise((resolve) => setTimeout(resolve, 50));
   pyxelScreen.appendChild(logoImage);
   _updateScreenElementsSize();
@@ -470,9 +473,8 @@ const _fetchAsset = async (url, name) => {
 
 // Bootstrap Pyodide, install Pyxel, and prepare its working directory.
 const _loadPyodideAndPyxel = async (canvas) => {
-  // Prefetch wheel and import hook in parallel with pyodide.js download and
-  // runtime init. Consuming the wheel body populates the HTTP cache, so
-  // pyodide.loadPackage's later fetch of the same URL hits the cache.
+  // Prefetch the wheel and import hook during runtime initialization so
+  // pyodide.loadPackage can reuse the wheel response from the HTTP cache.
   const wheelUrl = `${_scriptDir}${PYXEL_WHEEL_PATH}`;
   const wheelPrefetch = _fetchAsset(wheelUrl, PYXEL_WHEEL_PATH).then(
     (response) => response.arrayBuffer(),
@@ -481,6 +483,10 @@ const _loadPyodideAndPyxel = async (canvas) => {
     `${_scriptDir}${IMPORT_HOOK_PATH}`,
     IMPORT_HOOK_PATH,
   );
+  // Attach handlers before bootstrap can fail; the original promises retain
+  // their rejection state for the normal await points below.
+  void wheelPrefetch.catch(() => {});
+  void importHookFetch.catch(() => {});
 
   await _loadScript(PYODIDE_URL);
   const pyodide = await loadPyodide();
@@ -535,6 +541,7 @@ const _hookPythonError = (pyodide) => {
 const _displayErrorOverlay = (message) => {
   console.error(message);
   const pyxelScreen = document.getElementById("pyxel-screen");
+  if (!pyxelScreen) return;
   let overlay = document.getElementById("pyxel-error-overlay");
   if (!overlay) {
     overlay = document.createElement("pre");
@@ -611,7 +618,7 @@ const _hookFileOperations = (pyodide, root) => {
       return;
     }
     path = path.slice(PYXEL_WORKING_DIRECTORY.length + 1);
-    const srcPath = `${root}/${path}`;
+    const srcPath = `${root}/${_encodeUrlPath(path)}`;
     const dstPath = `${PYXEL_WORKING_DIRECTORY}/${path}`;
     if (fs.analyzePath(dstPath).exists) {
       return;
@@ -658,9 +665,9 @@ const _hookFileOperations = (pyodide, root) => {
     return open(path, flags, mode);
   };
   const stat = fs.stat.bind(fs);
-  fs.stat = (path) => {
+  fs.stat = (path, dontFollow) => {
     copyPath(path);
-    return stat(path);
+    return stat(path, dontFollow);
   };
 
   // Expose a browser download helper used by the Python-side save path.
@@ -675,7 +682,7 @@ const _hookFileOperations = (pyodide, root) => {
     a.style.display = "none";
     document.body.appendChild(a);
     a.click();
-    // Revoke only after the click-initiated download has had time to start.
+    // Delay revocation until the click-initiated download starts.
     setTimeout(() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
@@ -695,25 +702,38 @@ const _waitForInput = async () => {
 
   const promptImage = document.createElement("img");
   promptImage.id = "pyxel-prompt";
-  promptImage.src = `${_scriptDir}${_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH}`;
-  await _waitForEvent(promptImage, "load");
+  promptImage.alt = "Start Pyxel";
+  promptImage.role = "button";
+  promptImage.tabIndex = 0;
+  const promptPath = _isTouchDevice()
+    ? TOUCH_TO_START_PATH
+    : CLICK_TO_START_PATH;
+  await _loadImage(promptImage, `${_scriptDir}${promptPath}`);
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
 
   await new Promise((resolve) => {
-    window.pyxelContext.resolveInput = () => {
+    const finish = () => {
+      document.body.removeEventListener("click", finish);
+      document.body.removeEventListener("touchstart", finish);
+      promptImage.removeEventListener("keydown", handleKeydown);
       window.pyxelContext.resolveInput = null;
       resolve();
     };
-    _waitForEvent(document.body, "click", "touchstart").then(() => {
-      if (window.pyxelContext.resolveInput) {
-        window.pyxelContext.resolveInput();
+    const handleKeydown = (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        finish();
       }
-    });
+    };
+    window.pyxelContext.resolveInput = finish;
+    document.body.addEventListener("click", finish);
+    document.body.addEventListener("touchstart", finish);
+    promptImage.addEventListener("keydown", handleKeydown);
   });
 
   promptImage.remove();
-  // Yield one task so the prompt removal is rendered before execution resumes.
+  // Yield one task so the prompt removal renders before execution resumes.
   await new Promise((resolve) => setTimeout(resolve, 1));
 };
 
@@ -798,6 +818,7 @@ const _addVirtualGamepad = (mode) => {
   const createGamepadElement = (id, path) => {
     const img = document.createElement("img");
     img.id = id;
+    img.alt = "";
     img.src = `${_scriptDir}${path}`;
     img.tabIndex = -1;
     img.onload = () => {
@@ -820,12 +841,13 @@ const _addVirtualGamepad = (mode) => {
     GAMEPAD_MENU_PATH,
   );
 
-  // Remove previous handlers if any (prevents accumulation on reset).
+  // Replace reset-scoped handlers to prevent duplicate touch events.
   if (_addVirtualGamepad._handler) {
     const prev = _addVirtualGamepad._handler;
     document.removeEventListener("touchstart", prev);
     document.removeEventListener("touchmove", prev);
     document.removeEventListener("touchend", prev);
+    document.removeEventListener("touchcancel", prev);
   }
   if (_addVirtualGamepad._invalidateRects) {
     window.removeEventListener("resize", _addVirtualGamepad._invalidateRects);
@@ -859,13 +881,14 @@ const _addVirtualGamepad = (mode) => {
       const { clientX, clientY } = touch;
       _updateGamepadStateFromTouch(clientX, clientY, cross, button, menu);
     }
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
   };
   _addVirtualGamepad._handler = touchHandler;
 
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });
   document.addEventListener("touchend", touchHandler, { passive: false });
+  document.addEventListener("touchcancel", touchHandler, { passive: false });
 };
 
 // Command execution
@@ -946,6 +969,10 @@ const _executePyxelCommand = async (pyodide, params) => {
 
 // Custom elements
 
+const _launchPyxelFromElement = (params) => {
+  launchPyxel(params).catch(_displayFatalErrorOverlay);
+};
+
 class PyxelBaseElement extends HTMLElement {
   attributeChangedCallback(name, _oldValue, newValue) {
     this[name] = newValue;
@@ -958,7 +985,7 @@ class PyxelRunElement extends PyxelBaseElement {
   }
 
   connectedCallback() {
-    launchPyxel({
+    _launchPyxelFromElement({
       command: "run",
       root: this.root,
       name: this.name,
@@ -975,7 +1002,7 @@ class PyxelPlayElement extends PyxelBaseElement {
   }
 
   connectedCallback() {
-    launchPyxel({
+    _launchPyxelFromElement({
       command: "play",
       root: this.root,
       name: this.name,
@@ -991,7 +1018,7 @@ class PyxelEditElement extends PyxelBaseElement {
   }
 
   connectedCallback() {
-    launchPyxel({
+    _launchPyxelFromElement({
       command: "edit",
       root: this.root,
       name: this.name,
@@ -999,5 +1026,11 @@ class PyxelEditElement extends PyxelBaseElement {
     });
   }
 }
+
+const _registerCustomElements = () => {
+  window.customElements.define("pyxel-run", PyxelRunElement);
+  window.customElements.define("pyxel-play", PyxelPlayElement);
+  window.customElements.define("pyxel-edit", PyxelEditElement);
+};
 
 _initialize();

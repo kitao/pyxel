@@ -24,12 +24,13 @@ pub struct AudioLock;
 
 struct AudioStreamRenderer {
     blip_buf: BlipBuf,
+    pcm_mix_starts: Vec<usize>,
 }
-
-// Audio locking
 
 impl AudioLock {
     pub fn lock() -> Self {
+        // Take the callback lock before shared audio-resource guards: the callback
+        // acquires those guards while SDL holds this lock.
         platform::lock_audio();
         Self
     }
@@ -41,8 +42,6 @@ impl Drop for AudioLock {
     }
 }
 
-// Stream rendering
-
 impl AudioStreamRenderer {
     fn new() -> Self {
         let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SAMPLES);
@@ -50,12 +49,21 @@ impl AudioStreamRenderer {
             .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
             .expect("blip_buf rates must be valid");
 
-        Self { blip_buf }
+        Self {
+            blip_buf,
+            pcm_mix_starts: vec![usize::MAX; NUM_CHANNELS as usize],
+        }
     }
 
     fn render(&mut self, out: &mut [i16]) {
         let channels = pyxel::channels();
-        Audio::render_samples(&channels, &mut self.blip_buf, out);
+        self.pcm_mix_starts.resize(channels.len(), usize::MAX);
+        Audio::render_samples_with_mix_starts(
+            &channels,
+            &mut self.blip_buf,
+            out,
+            &mut self.pcm_mix_starts,
+        );
     }
 }
 
@@ -74,7 +82,6 @@ impl Audio {
         );
     }
 
-    // Render generated samples and mix PCM playback.
     pub fn render_samples(channels: &[RcChannel], blip_buf: &mut BlipBuf, out: &mut [i16]) {
         if channels.len() <= NUM_CHANNELS as usize {
             let mut pcm_mix_starts = [usize::MAX; NUM_CHANNELS as usize];
@@ -105,8 +112,8 @@ impl Audio {
                 let mut channel = audio_mut!(ch);
                 channel.prepare_pcm();
                 needs_blip |= channel.needs_blip_processing();
-                needs_pcm |= channel.is_playing_pcm();
                 if channel.is_playing_pcm() {
+                    needs_pcm = true;
                     pcm_mix_starts[i] = 0;
                     target_samples = target_samples
                         .min(channel.pcm_samples_until_mode_change(target_samples as usize) as u32);
@@ -201,22 +208,25 @@ impl Audio {
 
     pub(crate) fn duration_samples(duration_sec: f32) -> Result<u32, String> {
         if !duration_sec.is_finite() {
-            return Err("duration_sec must be finite".to_string());
+            return Err("sec must be finite".to_string());
         }
         if duration_sec <= 0.0 {
-            return Err("duration_sec must be greater than 0".to_string());
+            return Err("sec must be greater than 0".to_string());
         }
 
         let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f32).round() as u32;
         if num_samples == 0 {
-            return Err("duration_sec is too short to produce an audio sample".to_string());
+            return Err("sec is too short to produce an audio sample".to_string());
         }
         Ok(num_samples)
     }
 
+    fn mp4_filename(wav_filename: &str) -> String {
+        format!("{}.mp4", &wav_filename[..wav_filename.len() - ".wav".len()])
+    }
+
     #[cfg(pyxel_core)]
     pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) -> Result<(), String> {
-        // Save WAV file
         let spec = WavSpec {
             channels: 1,
             sample_rate: AUDIO_SAMPLE_RATE,
@@ -234,7 +244,6 @@ impl Audio {
         writer.finalize().map_err(|_| save_err())?;
         platform::export_browser_file(&filename);
 
-        // Save MP4 file
         if !use_ffmpeg {
             return Ok(());
         }
@@ -245,7 +254,7 @@ impl Audio {
             .to_str()
             .ok_or_else(|| "Failed to create temporary file path".to_string())?;
         let wav_file = &filename;
-        let mp4_file = filename.replace(".wav", ".mp4");
+        let mp4_file = Self::mp4_filename(&filename);
 
         write(&image_path, image_data).map_err(|_| "Failed to save temporary file".to_string())?;
         let output = Command::new("ffmpeg")
@@ -300,13 +309,13 @@ impl Pyxel {
             return Ok(());
         }
 
+        let _lock = AudioLock::lock();
         let pyxel_sounds = pyxel::sounds();
         let sounds: Vec<RcSound> = sequence
             .iter()
             .map(|&index| pyxel_sounds[index as usize].clone())
             .collect();
 
-        let _lock = AudioLock::lock();
         audio_mut!(pyxel::channels()[channel_index as usize]).play(
             sounds,
             start_sec,
@@ -335,7 +344,7 @@ impl Pyxel {
     }
 
     pub fn play_mml(
-        &mut self,
+        &self,
         channel_index: u32,
         code: &str,
         start_sec: Option<f32>,
@@ -358,6 +367,7 @@ impl Pyxel {
         should_loop: bool,
     ) -> Result<(), String> {
         Channel::validate_sec(start_sec)?;
+        let _lock = AudioLock::lock();
         let music_rc = pyxel::musics()[music_index as usize].clone();
         let music = audio_ref!(music_rc);
         let channels = pyxel::channels();
@@ -388,7 +398,6 @@ impl Pyxel {
             Channel::validate_tones(sounds)?;
         }
 
-        let _lock = AudioLock::lock();
         for (i, sounds) in channel_sounds {
             audio_mut!(channels[i]).play(sounds, start_sec, should_loop, false)?;
         }
@@ -409,8 +418,6 @@ impl Pyxel {
         }
     }
 
-    // Position
-
     pub fn play_position(&self, channel_index: u32) -> Option<(u32, f32)> {
         let _lock = AudioLock::lock();
         audio_mut!(pyxel::channels()[channel_index as usize]).play_position()
@@ -420,7 +427,6 @@ impl Pyxel {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::channel::Channel;
     use crate::pcm_decoder::PcmData;
     use crate::sound::Sound;
 
@@ -470,6 +476,11 @@ mod tests {
 
     fn render(sounds: Vec<RcSound>, num_samples: usize) -> Vec<i16> {
         render_in_chunks(sounds, num_samples, num_samples)
+    }
+
+    #[test]
+    fn test_mp4_filename_replaces_uppercase_wav_extension() {
+        assert_eq!(Audio::mp4_filename("capture.WAV"), "capture.mp4");
     }
 
     #[test]
@@ -529,10 +540,14 @@ mod tests {
     #[test]
     fn test_render_supports_more_than_runtime_channels() {
         let channels: Vec<_> = (0..=NUM_CHANNELS)
-            .map(|_| {
+            .map(|index| {
                 let channel = Channel::new();
+                let sound = silent_pcm_sound(64);
+                if index == NUM_CHANNELS {
+                    audio_mut!(sound).pcm.as_mut().unwrap().samples.fill(30_000);
+                }
                 audio_mut!(channel)
-                    .play(vec![silent_pcm_sound(64)], None, false, false)
+                    .play(vec![sound], None, false, false)
                     .unwrap();
                 channel
             })
@@ -545,6 +560,6 @@ mod tests {
 
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);
 
-        assert!(samples.iter().all(|&sample| sample == 0));
+        assert!(samples.iter().any(|&sample| sample != 0));
     }
 }

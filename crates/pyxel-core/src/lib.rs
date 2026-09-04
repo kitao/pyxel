@@ -18,7 +18,6 @@
     clippy::must_use_candidate,
     clippy::similar_names,
     clippy::struct_excessive_bools,
-    clippy::struct_field_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::unreadable_literal,

@@ -1,10 +1,8 @@
 // Drawing math uses conventional x/y/z/u/v names and flat hot-path signatures;
 // bundling them into temporary structs would add noise on the render path.
 #![allow(clippy::many_single_char_names)]
-#![allow(clippy::too_many_arguments)]
 
-// High-level draw commands route geometry through `prim`, which owns the
-// shared projection, depth, shading, texture, and dither decisions.
+// World-space geometry shares the `prim` path; circles and text rasterize in screen space.
 
 use std::sync::OnceLock;
 
@@ -94,9 +92,6 @@ fn signed_screen_area(p0: (f32, f32, f32), p1: (f32, f32, f32), p2: (f32, f32, f
 // convention that they have no front side to draw.
 #[inline]
 fn should_cull(area: f32, cull: i32) -> bool {
-    // Pyxel Cube uses CCW outward winding (front face from outside).
-    // Projecting onto the Y-down screen flips the sign: front faces yield
-    // a negative signed_screen_area, back faces yield a positive one.
     (cull == CULL_BACK && area >= 0.0) || (cull == CULL_FRONT && area <= 0.0)
 }
 
@@ -267,14 +262,16 @@ fn draw_projected_triangle(
     let depth_test = ctx.depth_test;
     let depth_write = ctx.depth_write;
 
-    // Draw through the textured or flat triangle rasterizer
     if let Some(img_rc) = col_image {
         let img_ref = rc_ref!(img_rc);
+        if img_ref.width() == 0 || img_ref.height() == 0 {
+            return;
+        }
         if let Some(normal) = normal {
             let shading = state.shading.unwrap();
             let direction = rc_ref!(&shading.direction);
             let level = face_shade_level(&direction, Some(normal));
-            let sampler = make_shaded_sampler(&img_ref, shading, level);
+            let sampler = make_shaded_sampler(&img_ref, shading, level, colkey);
             let mut target_mut = rc_mut!(&ctx.target);
             let depth = ctx.depth.as_mut_slice();
             rasterize_textured_triangle(
@@ -288,14 +285,13 @@ fn draw_projected_triangle(
                 b.uv,
                 c.uv,
                 &sampler,
-                colkey,
                 clip,
                 dither_alpha,
                 depth_test,
                 depth_write,
             );
         } else {
-            let sampler = make_image_sampler(&img_ref);
+            let sampler = make_image_sampler(&img_ref, colkey);
             let mut target_mut = rc_mut!(&ctx.target);
             let depth = ctx.depth.as_mut_slice();
             rasterize_textured_triangle(
@@ -309,7 +305,6 @@ fn draw_projected_triangle(
                 b.uv,
                 c.uv,
                 &sampler,
-                colkey,
                 clip,
                 dither_alpha,
                 depth_test,
@@ -440,13 +435,15 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
     out.data[0][3] = pos.x;
     out.data[1][3] = pos.y;
     out.data[2][3] = pos.z;
-    out.data[3][3] = 1.0;
     out
 }
 
 // Image samplers used by textured prim TRIANGLES
 
-fn make_image_sampler(img: &Image) -> impl Fn(f32, f32, i32, i32) -> i32 + '_ {
+fn make_image_sampler(
+    img: &Image,
+    colkey: Option<i32>,
+) -> impl Fn(f32, f32, i32, i32) -> Option<i32> + '_ {
     let w = img.width() as f32;
     let h = img.height() as f32;
     let max_x = (img.width() as i32 - 1).max(0);
@@ -458,7 +455,8 @@ fn make_image_sampler(img: &Image) -> impl Fn(f32, f32, i32, i32) -> i32 + '_ {
         let yi = yi.clamp(0, max_y);
         // Indices are already clamped; read directly instead of re-rounding
         // and re-clipping through pixel().
-        i32::from(img.canvas.read_data(xi as usize, yi as usize))
+        let col = i32::from(img.canvas.read_data(xi as usize, yi as usize));
+        colkey.is_none_or(|key| col != key).then_some(col)
     }
 }
 
@@ -466,32 +464,22 @@ fn make_shaded_sampler<'a>(
     img: &'a Image,
     shading: &'a Shading,
     level: usize,
-) -> impl Fn(f32, f32, i32, i32) -> i32 + 'a {
-    let w = img.width() as f32;
-    let h = img.height() as f32;
-    let max_x = (img.width() as i32 - 1).max(0);
-    let max_y = (img.height() as i32 - 1).max(0);
+    colkey: Option<i32>,
+) -> impl Fn(f32, f32, i32, i32) -> Option<i32> + 'a {
+    let sample = make_image_sampler(img, colkey);
     let palette_size = shading.palette_size();
     move |u, v, x, y| {
-        let xi = (u * w) as i32;
-        let yi = (v * h) as i32;
-        let xi = xi.clamp(0, max_x);
-        let yi = yi.clamp(0, max_y);
-        // Indices are already clamped; read directly instead of re-rounding
-        // and re-clipping through pixel().
-        let base = i32::from(img.canvas.read_data(xi as usize, yi as usize));
+        let base = sample(u, v, x, y)?;
         if palette_size == 0 {
-            base
+            Some(base)
         } else {
             let base_idx = base.clamp(0, palette_size as i32 - 1) as usize;
             let (primary, secondary) = shading.get(base_idx, level);
-            i32::from(dither_pick(primary, secondary, x, y))
+            Some(i32::from(dither_pick(primary, secondary, x, y)))
         }
     }
 }
 
-// Universal primitive draw. Triangles / Lines / Points are dispatched
-// here; all higher-level commands route through this function.
 pub fn prim(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -539,10 +527,7 @@ pub fn prim(
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let lit = state.shaded && state.shading.is_some();
-    // Transform and project every vertex once into the per-draw scratch
-    // cache. Indexed tables (box / sphere / rect) reference shared
-    // vertices from several faces; the cache keeps each vertex's
-    // transform + projection single no matter how many faces consume it.
+    // Cache shared indexed vertices. Lines are projected after clipping.
     ctx.vertex_cache.clear();
     ctx.vertex_cache.reserve(vertex_count);
     for i in 0..vertex_count {
@@ -553,16 +538,20 @@ pub fn prim(
             z: positions[base + 2],
         };
         let world = mat_apply(&world_mat, &local);
-        let screen = project_offset(
-            &world,
-            &ctx.vp,
-            &ctx.clip_row,
-            ctx.vp_x,
-            ctx.vp_y,
-            ctx.vp_w,
-            ctx.vp_h,
-            &z_shift,
-        );
+        let screen = if mode == MODE_LINES {
+            None
+        } else {
+            project_offset(
+                &world,
+                &ctx.vp,
+                &ctx.clip_row,
+                ctx.vp_x,
+                ctx.vp_y,
+                ctx.vp_w,
+                ctx.vp_h,
+                &z_shift,
+            )
+        };
         ctx.vertex_cache.push((world, screen));
     }
     let resolve_vertex_index = |step: usize| -> Result<usize, &'static str> {
@@ -575,7 +564,6 @@ pub fn prim(
         }
         Ok(raw as usize)
     };
-    // Dispatch primitive topology
     match mode {
         MODE_TRIANGLES => {
             let face_count = step_count / 3;
@@ -587,6 +575,34 @@ pub fn prim(
             if col_image.is_some() && uvs.is_none() {
                 return Err("textured prim requires uvs");
             }
+            // Cofactors carry oriented face normals through reflections and
+            // singular scales: cross(Mu, Mv) = cofactor(M) cross(u, v).
+            let normal_mat = (lit && normals.is_some()).then(|| {
+                let m = &world_mat.data;
+                Mat4 {
+                    data: [
+                        [
+                            m[1][1] * m[2][2] - m[1][2] * m[2][1],
+                            m[1][2] * m[2][0] - m[1][0] * m[2][2],
+                            m[1][0] * m[2][1] - m[1][1] * m[2][0],
+                            0.0,
+                        ],
+                        [
+                            m[0][2] * m[2][1] - m[0][1] * m[2][2],
+                            m[0][0] * m[2][2] - m[0][2] * m[2][0],
+                            m[0][1] * m[2][0] - m[0][0] * m[2][1],
+                            0.0,
+                        ],
+                        [
+                            m[0][1] * m[1][2] - m[0][2] * m[1][1],
+                            m[0][2] * m[1][0] - m[0][0] * m[1][2],
+                            m[0][0] * m[1][1] - m[0][1] * m[1][0],
+                            0.0,
+                        ],
+                        [0.0, 0.0, 0.0, 1.0],
+                    ],
+                }
+            });
             for f in 0..face_count {
                 let i0 = resolve_vertex_index(f * 3)?;
                 let i1 = resolve_vertex_index(f * 3 + 1)?;
@@ -595,21 +611,16 @@ pub fn prim(
                 let (v1, p1) = ctx.vertex_cache[i1];
                 let (v2, p2) = ctx.vertex_cache[i2];
                 let face_normal = || -> Vec3 {
-                    match normals {
-                        // Stored normals are model-space (e.g. from
-                        // Primitive::compute_normals). Carry them into world
-                        // space so shading matches the world-space light
-                        // direction; auto-derived normals already use world
-                        // vertices.
-                        Some(n) => mat_apply_dir(
-                            &world_mat,
+                    match (normals, normal_mat.as_ref()) {
+                        (Some(n), Some(mat)) => mat_apply_dir(
+                            mat,
                             &Vec3 {
                                 x: n[f * 3],
                                 y: n[f * 3 + 1],
                                 z: n[f * 3 + 2],
                             },
                         ),
-                        None => tri_normal(&v0, &v1, &v2),
+                        _ => tri_normal(&v0, &v1, &v2),
                     }
                 };
                 let uv0 = uvs.map_or((0.0, 0.0), |uvs| (uvs[i0 * 2], uvs[i0 * 2 + 1]));
@@ -803,7 +814,6 @@ pub fn trib(
     col: i32,
     state: DrawState,
 ) {
-    // Outline = three lines.
     let positions = [
         p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, p2.x, p2.y, p2.z, p3.x, p3.y, p3.z, p3.x, p3.y, p3.z,
         p1.x, p1.y, p1.z,
@@ -967,8 +977,8 @@ pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, stat
 // the vertex data, so per-frame allocation is zero.
 
 // Unit rectangle: 4 vertices at ±1 on the XY plane. RECT_TRI_INDICES
-// reproduces the legacy rect / plane winding (top-left, top-right,
-// bottom-left, bottom-right). Shared between rect / rectb / plane.
+// uses the rect / plane winding (top-left, top-right, bottom-left,
+// bottom-right). Shared between rect / rectb / plane.
 const UNIT_RECT_POSITIONS: [f32; 12] = [
     -1.0, 1.0, 0.0, // top-left
     1.0, 1.0, 0.0, // top-right
@@ -1213,9 +1223,6 @@ pub fn circb(
     }
 }
 
-// sprite is a billboard quad oriented to face the camera. Corners are
-// computed in world space here; the prim call uses an identity world
-// transform because the corners are already world-positioned.
 pub fn sprite(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -1445,6 +1452,36 @@ pub fn text(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cube::camera::Camera;
+    use crate::cube::raster::{
+        camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+    };
+
+    // Draw context over a 64x64 target seen by `camera`, with the depth
+    // buffer cleared like a frame start.
+    fn draw_context_64(target: &RcImage, camera: &RcCamera, shaded: bool) -> DrawContext {
+        let view = view_matrix(&rc_ref!(camera));
+        DrawContext {
+            target: target.clone(),
+            vp: matmul(&projection_matrix(&rc_ref!(camera), 64.0, 64.0), &view),
+            clip_row: camera_clip_row(&view),
+            vp_x: 0.0,
+            vp_y: 0.0,
+            vp_w: 64.0,
+            vp_h: 64.0,
+            clip: compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64),
+            camera: camera.clone(),
+            depth: vec![f32::INFINITY; 64 * 64],
+            depth_w: 64,
+            depth_h: 64,
+            vertex_cache: Vec::new(),
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
+            depth_offset: 0.0,
+            shaded,
+        }
+    }
 
     fn sampler_test_image() -> RcImage {
         let image = Image::new(2, 2);
@@ -1461,13 +1498,13 @@ mod tests {
     fn test_image_sampler_truncates_and_clamps_uvs() {
         let image = sampler_test_image();
         let image_ref = rc_ref!(&image);
-        let sample = make_image_sampler(&image_ref);
+        let sample = make_image_sampler(&image_ref, None);
 
-        assert_eq!(sample(-0.25, 0.1, 0, 0), 1);
-        assert_eq!(sample(0.49, 0.49, 0, 0), 1);
-        assert_eq!(sample(0.5, 0.1, 0, 0), 2);
-        assert_eq!(sample(0.1, 0.5, 0, 0), 3);
-        assert_eq!(sample(1.25, 1.25, 0, 0), 4);
+        assert_eq!(sample(-0.25, 0.1, 0, 0), Some(1));
+        assert_eq!(sample(0.49, 0.49, 0, 0), Some(1));
+        assert_eq!(sample(0.5, 0.1, 0, 0), Some(2));
+        assert_eq!(sample(0.1, 0.5, 0, 0), Some(3));
+        assert_eq!(sample(1.25, 1.25, 0, 0), Some(4));
     }
 
     #[test]
@@ -1479,48 +1516,19 @@ mod tests {
         }
         let image_ref = rc_ref!(&image);
         let shading_ref = rc_ref!(&shading);
-        let sample = make_shaded_sampler(&image_ref, &shading_ref, 0);
+        let sample = make_shaded_sampler(&image_ref, &shading_ref, 0, None);
 
-        assert_eq!(sample(-0.25, 0.1, 0, 0), 11);
-        assert_eq!(sample(0.5, 0.1, 0, 0), 12);
-        assert_eq!(sample(0.1, 0.5, 0, 0), 13);
-        assert_eq!(sample(1.25, 1.25, 0, 0), 14);
+        assert_eq!(sample(-0.25, 0.1, 0, 0), Some(11));
+        assert_eq!(sample(0.5, 0.1, 0, 0), Some(12));
+        assert_eq!(sample(0.1, 0.5, 0, 0), Some(13));
+        assert_eq!(sample(1.25, 1.25, 0, 0), Some(14));
     }
 
     #[test]
     fn test_prim_topology_errors_name_the_invalid_input() {
-        use crate::cube::camera::Camera;
-        use crate::cube::raster::{
-            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
-        };
-        use crate::cube::scene::DrawContext;
-
         let target = Image::new(64, 64);
         let camera = Camera::new();
-        let view = view_matrix(&rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
-        let clip_row = camera_clip_row(&view);
-        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
-        let mut ctx = DrawContext {
-            target,
-            vp,
-            clip_row,
-            vp_x: 0.0,
-            vp_y: 0.0,
-            vp_w: 64.0,
-            vp_h: 64.0,
-            clip,
-            camera,
-            depth: vec![f32::INFINITY; 64 * 64],
-            depth_w: 64,
-            depth_h: 64,
-            vertex_cache: Vec::new(),
-            dither_alpha: 1.0,
-            depth_test: true,
-            depth_write: true,
-            depth_offset: 0.0,
-            shaded: false,
-        };
+        let mut ctx = draw_context_64(&target, &camera, false);
         let state = DrawState::unshaded();
         let identity = Mat4::identity_value();
         let cases = [
@@ -1561,31 +1569,13 @@ mod tests {
     }
 
     #[test]
-    fn test_signed_screen_area_ccw_positive() {
-        // CCW in Y-down screen: (0,0), (1,0), (0,1) → triangle pointing
-        // away from camera with +Y down has positive signed area.
-        let area = signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0));
-        assert!(area > 0.0);
-    }
-
-    #[test]
-    fn test_signed_screen_area_cw_negative() {
-        // CW winding produces negative signed area.
-        let area = signed_screen_area((0.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0));
-        assert!(area < 0.0);
-    }
-
-    #[test]
     fn test_signed_screen_area_degenerate_zero() {
-        // Collinear points produce zero signed area.
         let area = signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (2.0, 0.0, 0.0));
         assert_eq!(area, 0.0);
     }
 
     #[test]
     fn test_should_cull_back_skips_back_face() {
-        // CULL_BACK: skip when area >= 0 (back-facing or degenerate) under
-        // CCW-front + Y-down convention.
         assert!(should_cull(1.0, CULL_BACK));
         assert!(should_cull(0.0, CULL_BACK));
         assert!(!should_cull(-1.0, CULL_BACK));
@@ -1593,7 +1583,6 @@ mod tests {
 
     #[test]
     fn test_should_cull_front_skips_front_face() {
-        // CULL_FRONT: skip when area <= 0 (front-facing or degenerate).
         assert!(should_cull(-1.0, CULL_FRONT));
         assert!(should_cull(0.0, CULL_FRONT));
         assert!(!should_cull(1.0, CULL_FRONT));
@@ -1601,7 +1590,6 @@ mod tests {
 
     #[test]
     fn test_should_cull_none_draws_everything() {
-        // CULL_NONE: never skip, regardless of area sign.
         assert!(!should_cull(1.0, CULL_NONE));
         assert!(!should_cull(-1.0, CULL_NONE));
         assert!(!should_cull(0.0, CULL_NONE));
@@ -1688,8 +1676,6 @@ mod tests {
 
     #[test]
     fn test_depth_offset_negative_moves_toward_camera() {
-        use crate::cube::camera::Camera;
-        use crate::cube::raster::{camera_clip_row, matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
         let v = view_matrix(&rc_ref!(&camera));
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
@@ -1706,8 +1692,8 @@ mod tests {
         // stay put (the offset must not move the draw).
         let near = depth_offset_shift(&camera, -0.5);
         let near_p = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &near).unwrap();
-        assert!((near_p.0 - base.0).abs() < 1e-4);
-        assert!((near_p.1 - base.1).abs() < 1e-4);
+        assert_eq!(near_p.0, base.0);
+        assert_eq!(near_p.1, base.1);
         assert!(near_p.2 < base.2);
         // Positive offset = away: depth grows.
         let far = depth_offset_shift(&camera, 0.5);
@@ -1717,8 +1703,6 @@ mod tests {
 
     #[test]
     fn test_depth_offset_zero_is_identity() {
-        use crate::cube::camera::Camera;
-        use crate::cube::raster::{camera_clip_row, matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
         let v = view_matrix(&rc_ref!(&camera));
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
@@ -1737,39 +1721,10 @@ mod tests {
 
     #[test]
     fn test_line_clips_endpoint_behind_camera_instead_of_dropping() {
-        use crate::cube::camera::Camera;
-        use crate::cube::raster::{
-            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
-        };
-        use crate::cube::scene::DrawContext;
-
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let view = view_matrix(&rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
-        let clip_row = camera_clip_row(&view);
-        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
-        let mut ctx = DrawContext {
-            target: target.clone(),
-            vp,
-            clip_row,
-            vp_x: 0.0,
-            vp_y: 0.0,
-            vp_w: 64.0,
-            vp_h: 64.0,
-            clip,
-            camera,
-            depth: vec![f32::INFINITY; 64 * 64],
-            depth_w: 64,
-            depth_h: 64,
-            vertex_cache: Vec::new(),
-            dither_alpha: 1.0,
-            depth_test: true,
-            depth_write: true,
-            depth_offset: 0.0,
-            shaded: false,
-        };
+        let mut ctx = draw_context_64(&target, &camera, false);
         let state = DrawState::unshaded();
         let positions = [0.0, 0.0, -2.0, 0.5, 0.0, 1.0];
 
@@ -1794,39 +1749,10 @@ mod tests {
 
     #[test]
     fn test_triangle_clips_vertex_behind_camera_instead_of_dropping() {
-        use crate::cube::camera::Camera;
-        use crate::cube::raster::{
-            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
-        };
-        use crate::cube::scene::DrawContext;
-
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let view = view_matrix(&rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
-        let clip_row = camera_clip_row(&view);
-        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
-        let mut ctx = DrawContext {
-            target: target.clone(),
-            vp,
-            clip_row,
-            vp_x: 0.0,
-            vp_y: 0.0,
-            vp_w: 64.0,
-            vp_h: 64.0,
-            clip,
-            camera,
-            depth: vec![f32::INFINITY; 64 * 64],
-            depth_w: 64,
-            depth_h: 64,
-            vertex_cache: Vec::new(),
-            dither_alpha: 1.0,
-            depth_test: true,
-            depth_write: true,
-            depth_offset: 0.0,
-            shaded: false,
-        };
+        let mut ctx = draw_context_64(&target, &camera, false);
         let state = DrawState::unshaded();
         let positions = [-2.0, -1.0, -2.0, 2.0, -1.0, -2.0, 0.0, 2.0, 1.0];
 
@@ -1851,39 +1777,10 @@ mod tests {
 
     #[test]
     fn test_box_solid_culls_back_faces() {
-        use crate::cube::camera::Camera;
-        use crate::cube::raster::{
-            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
-        };
-        use crate::cube::scene::DrawContext;
-
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let view = view_matrix(&rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
-        let clip_row = camera_clip_row(&view);
-        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
-        let mut ctx = DrawContext {
-            target: target.clone(),
-            vp,
-            clip_row,
-            vp_x: 0.0,
-            vp_y: 0.0,
-            vp_w: 64.0,
-            vp_h: 64.0,
-            clip,
-            camera,
-            depth: vec![f32::INFINITY; 64 * 64],
-            depth_w: 64,
-            depth_h: 64,
-            vertex_cache: Vec::new(),
-            dither_alpha: 1.0,
-            depth_test: true,
-            depth_write: true,
-            depth_offset: 0.0,
-            shaded: false,
-        };
+        let mut ctx = draw_context_64(&target, &camera, false);
 
         box_solid(
             &mut ctx,
@@ -1904,42 +1801,13 @@ mod tests {
 
     #[test]
     fn test_ortho_camera_clips_geometry_behind_camera() {
-        use crate::cube::camera::Camera;
-        use crate::cube::raster::{
-            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
-        };
-        use crate::cube::scene::DrawContext;
-
         // The orthographic w row is constant 1, so behind-camera clipping
         // must come from the camera clip row rather than clip-space w.
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
         rc_mut!(&camera).ortho_size = Some(10.0);
-        let view = view_matrix(&rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
-        let clip_row = camera_clip_row(&view);
-        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
-        let mut ctx = DrawContext {
-            target: target.clone(),
-            vp,
-            clip_row,
-            vp_x: 0.0,
-            vp_y: 0.0,
-            vp_w: 64.0,
-            vp_h: 64.0,
-            clip,
-            camera,
-            depth: vec![f32::INFINITY; 64 * 64],
-            depth_w: 64,
-            depth_h: 64,
-            vertex_cache: Vec::new(),
-            dither_alpha: 1.0,
-            depth_test: true,
-            depth_write: true,
-            depth_offset: 0.0,
-            shaded: false,
-        };
+        let mut ctx = draw_context_64(&target, &camera, false);
         let state = DrawState::unshaded();
 
         // A triangle behind the camera (+Z) must not draw.
@@ -1982,32 +1850,19 @@ mod tests {
     }
 
     #[test]
-    fn test_shaded_stored_normals_track_rotation() {
-        // Stored model-space normals must match the auto-derived world-space
-        // normals after the same rotation.
-        use crate::cube::camera::Camera;
-        use crate::cube::primitive::Primitive;
-        use crate::cube::raster::{
-            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
-        };
-        use crate::cube::scene::DrawContext;
-
-        let palette: Vec<crate::image::Rgb24> = vec![
-            0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98, 0xA9C1FF, 0xEEEEEE,
-            0xD4186C, 0xD38441, 0xE9C35B, 0x70C6A9, 0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
-        ];
-        let shading_rc = Shading::new(&palette);
-        rc_mut!(&shading_rc).direction = Vec3::new(0.0, 0.0, -1.0); // light travels -Z
-
-        // A 4×4 quad in the model XY plane (two triangles). compute_normals
-        // fills per-face model-space normals.
+    fn test_shaded_stored_normals_track_transforms() {
+        let shading_rc = Shading::new(&[0; 16]);
+        rc_mut!(&shading_rc).direction = Vec3::new(0.0, 0.0, -1.0);
+        for level in 0..4 {
+            rc_mut!(&shading_rc).set(7, level, (8 + level as i32, 8 + level as i32));
+        }
         let geom = Primitive::new();
         {
             let mut g = rc_mut!(&geom);
             g.positions = vec![
-                -2.0, 2.0, 0.0, 2.0, 2.0, 0.0, -2.0, -2.0, 0.0, 2.0, -2.0, 0.0,
+                -2.0, 2.0, -2.0, 2.0, 2.0, 2.0, -2.0, -2.0, -2.0, 2.0, -2.0, 2.0,
             ];
-            g.indices = vec![0, 1, 2, 1, 3, 2];
+            g.indices = vec![0, 2, 1, 1, 2, 3];
             g.cull = CULL_NONE;
             g.compute_normals();
         }
@@ -2015,60 +1870,11 @@ mod tests {
         let positions = rc_ref!(&geom).positions.clone();
         let indices = rc_ref!(&geom).indices.clone();
 
-        // world = translate(0, 0, -3) * rotateY(180): the quad sits in front
-        // of the camera with its face normal flipped by the spin.
-        let spin = Mat4::from_axis_angle(&rc_ref!(&Vec3::new(0.0, 1.0, 0.0)), 180.0);
-        let trans = Mat4::from_translation(&rc_ref!(&Vec3::new(0.0, 0.0, -3.0)));
-        let world_rc = rc_ref!(&trans).mul_mat(&rc_ref!(&spin));
-        let world = *rc_ref!(&world_rc);
-
-        // The model normal and its world-space image must fall on different
-        // shade levels, otherwise the test could not tell the two apart.
-        let model_n = Vec3 {
-            x: model_normals[0],
-            y: model_normals[1],
-            z: model_normals[2],
-        };
-        let world_n = mat_apply_dir(&world, &model_n);
-        let dir = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: -1.0,
-        };
-        assert_ne!(
-            face_shade_level(&dir, Some(&world_n)),
-            face_shade_level(&dir, Some(&model_n)),
-            "test setup must distinguish world-space vs model-space normal"
-        );
-
-        let render = |normals: Option<&[f32]>| -> u8 {
+        let render = |world: &Mat4, normals: Option<&[f32]>| -> Vec<u8> {
             let target = Image::new(64, 64);
             rc_mut!(&target).clear(2); // sentinel so an undrawn quad is detectable
             let camera = Camera::new();
-            let view = view_matrix(&rc_ref!(&camera));
-            let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
-            let clip_row = camera_clip_row(&view);
-            let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
-            let mut ctx = DrawContext {
-                target: target.clone(),
-                vp,
-                clip_row,
-                vp_x: 0.0,
-                vp_y: 0.0,
-                vp_w: 64.0,
-                vp_h: 64.0,
-                clip,
-                camera: camera.clone(),
-                depth: vec![f32::INFINITY; 64 * 64],
-                depth_w: 64,
-                depth_h: 64,
-                vertex_cache: Vec::new(),
-                dither_alpha: 1.0,
-                depth_test: true,
-                depth_write: true,
-                depth_offset: 0.0,
-                shaded: true,
-            };
+            let mut ctx = draw_context_64(&target, &camera, true);
             let shading_ref = rc_ref!(&shading_rc);
             let state = DrawState {
                 shaded: true,
@@ -2080,7 +1886,7 @@ mod tests {
             };
             prim(
                 &mut ctx,
-                &world,
+                world,
                 MODE_TRIANGLES,
                 CULL_NONE,
                 &positions,
@@ -2093,16 +1899,64 @@ mod tests {
                 state,
             )
             .unwrap();
-            let pixel = rc_ref!(&target).pixel(32.0, 32.0);
-            pixel
+            let pixels = rc_ref!(&target).canvas.data.clone();
+            pixels
         };
-
-        let auto = render(None);
-        let stored = render(Some(&model_normals));
-        assert_ne!(auto, 2, "quad must cover the center pixel");
+        let translation = Mat4::from_translation(&Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: -8.0,
+        });
+        let cases = [
+            (Mat4::identity(), 10),
+            (
+                Mat4::from_axis_angle(
+                    &Vec3 {
+                        x: 0.0,
+                        y: 1.0,
+                        z: 0.0,
+                    },
+                    180.0,
+                ),
+                8,
+            ),
+            (
+                Mat4::from_scale(&Vec3 {
+                    x: 4.0,
+                    y: 1.0,
+                    z: 1.0,
+                }),
+                11,
+            ),
+            (
+                Mat4::from_scale(&Vec3 {
+                    x: -4.0,
+                    y: 1.0,
+                    z: 1.0,
+                }),
+                8,
+            ),
+            (
+                Mat4::from_scale(&Vec3 {
+                    x: 1.0,
+                    y: 1.0,
+                    z: 0.0,
+                }),
+                11,
+            ),
+        ];
+        for (transform, expected) in cases {
+            let world = rc_ref!(&translation).mul_mat_value(&rc_ref!(&transform));
+            let auto = render(&world, None);
+            let stored = render(&world, Some(&model_normals));
+            assert_eq!(auto[32 * 64 + 32], expected);
+            assert_eq!(stored[32 * 64 + 32], expected, "transform={:?}", world.data);
+            assert_eq!(stored, auto);
+        }
+        let opposite: Vec<f32> = model_normals.iter().map(|n| -n).collect();
         assert_eq!(
-            stored, auto,
-            "stored-normal shading must match the auto path under rotation"
+            render(&rc_ref!(&translation), Some(&opposite))[32 * 64 + 32],
+            8
         );
     }
 }

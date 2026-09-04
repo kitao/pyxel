@@ -49,7 +49,6 @@ class SoundField(Widget):
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)

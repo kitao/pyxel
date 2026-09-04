@@ -44,8 +44,6 @@ impl ToIndex for Color {
 define_rc_type!(RcImage, Image);
 
 impl Image {
-    // Constructors
-
     pub fn new(width: u32, height: u32) -> RcImage {
         Self::try_new(width, height).expect("image dimensions are too large")
     }
@@ -130,7 +128,7 @@ impl Image {
         Ok(rc)
     }
 
-    // Public accessors
+    // Accessors
 
     pub const fn width(&self) -> u32 {
         self.canvas.width()
@@ -144,7 +142,7 @@ impl Image {
         self.canvas.data_ptr()
     }
 
-    // Public data operations
+    // Data operations
 
     pub fn set<S: AsRef<str>>(&mut self, x: i32, y: i32, data: &[S]) -> Result<(), String> {
         let rc = Self::from_data(data, "image")?;
@@ -392,29 +390,25 @@ impl Image {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
-        let image = rc_ref!(image);
-
-        // When source and destination are the same image, copy to a
-        // temporary canvas first to avoid read-write aliasing.
-        let src_canvas = if ptr::eq(&raw const *image, self) {
-            Some(self.copy_region(image_x, image_y, width, height))
+        // Preserve source pixels when the destination overlaps the source.
+        let borrowed;
+        let copied_canvas;
+        let src = if ptr::eq(image.as_ptr(), self) {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
         } else {
-            None
-        };
-        let (src, sx, sy) = match &src_canvas {
-            Some(copied_canvas) => (copied_canvas, 0.0, 0.0),
-            None => (&image.canvas, image_x, image_y),
+            borrowed = rc_ref!(image);
+            &borrowed.canvas
         };
 
         let palette = palette_opt!(self);
-        // Dispatch transformed blits separately from direct copies.
         if rotate != 0.0 || scale != 1.0 {
             self.canvas.blit_with_transform(
                 x,
                 y,
                 src,
-                sx,
-                sy,
+                image_x,
+                image_y,
                 width,
                 height,
                 transparent,
@@ -424,17 +418,18 @@ impl Image {
                 false,
             );
         } else {
-            self.canvas
-                .blit(x, y, src, sx, sy, width, height, transparent, palette);
+            self.canvas.blit(
+                x,
+                y,
+                src,
+                image_x,
+                image_y,
+                width,
+                height,
+                transparent,
+                palette,
+            );
         }
-    }
-
-    fn copy_region(&self, x: f32, y: f32, width: f32, height: f32) -> Canvas<Color> {
-        let w = utils::f32_to_u32(width.abs());
-        let h = utils::f32_to_u32(height.abs());
-        let mut canvas = Canvas::new(w, h);
-        canvas.blit(0.0, 0.0, &self.canvas, x, y, w as f32, h as f32, None, None);
-        canvas
     }
 
     pub fn draw_tilemap(
@@ -452,7 +447,6 @@ impl Image {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
-        // Transform path renders the tilemap region before rotation/scale.
         if rotate != 0.0 || scale != 1.0 {
             self.draw_tilemap_with_transform(
                 x,
@@ -509,18 +503,16 @@ impl Image {
             return;
         }
 
-        // When the tilemap's image source aliases self, render through a
-        // clone of self's canvas to avoid read-write aliasing.
+        // Preserve source pixels when the tilemap image aliases the destination.
         let resolved = tilemap.imgsrc.resolve();
-        let resolved = rc_ref!(resolved);
-        let src_canvas = if ptr::eq(&raw const *resolved, self) {
-            Some(self.canvas.clone())
+        let borrowed;
+        let copied_canvas;
+        let image_canvas = if ptr::eq(resolved.as_ptr(), self) {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
         } else {
-            None
-        };
-        let image_canvas = match &src_canvas {
-            Some(cloned_canvas) => cloned_canvas,
-            None => &resolved.canvas,
+            borrowed = rc_ref!(resolved);
+            &borrowed.canvas
         };
 
         let tile_size = TILE_SIZE as i32;
@@ -641,8 +633,7 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        // The virtual source region starts at the origin; sampling adds the
-        // tilemap offset.
+        // Sampling adds the tilemap offset to the origin-based source region.
         let Some(proj) = TransformProjection::new(
             x,
             y,
@@ -675,9 +666,15 @@ impl Image {
 
         // Preserve source pixels when the tilemap image aliases the destination.
         let resolved = tilemap.imgsrc.resolve();
-        let resolved = rc_ref!(resolved);
-        let cloned_canvas = ptr::eq(&raw const *resolved, self).then(|| self.canvas.clone());
-        let image_canvas = cloned_canvas.as_ref().unwrap_or(&resolved.canvas);
+        let borrowed;
+        let copied_canvas;
+        let image_canvas = if ptr::eq(resolved.as_ptr(), self) {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
+        } else {
+            borrowed = rc_ref!(resolved);
+            &borrowed.canvas
+        };
         let image_width = image_canvas.width() as i32;
         let image_height = image_canvas.height() as i32;
         let tile_size = TILE_SIZE as i32;
@@ -757,16 +754,15 @@ impl Image {
         fov: Option<f32>,
         transparent: Option<Color>,
     ) {
-        let image = rc_ref!(image);
-        // Clone self before perspective blit to avoid read-write aliasing.
-        let src_canvas = if ptr::eq(&raw const *image, self) {
-            Some(self.canvas.clone())
+        // Preserve source pixels when the destination overlaps the source.
+        let borrowed;
+        let copied_canvas;
+        let src = if ptr::eq(image.as_ptr(), self) {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
         } else {
-            None
-        };
-        let src = match &src_canvas {
-            Some(cloned_canvas) => cloned_canvas,
-            None => &image.canvas,
+            borrowed = rc_ref!(image);
+            &borrowed.canvas
         };
         let palette = palette_opt!(self);
         self.canvas.blit_perspective(
@@ -814,18 +810,16 @@ impl Image {
         let tm_w = tilemap.canvas.width() as i32;
         let tm_h = tilemap.canvas.height() as i32;
 
-        // When the tilemap's image source aliases self, render through a
-        // clone of self's canvas to avoid read-write aliasing.
+        // Preserve source pixels when the tilemap image aliases the destination.
         let resolved = tilemap.imgsrc.resolve();
-        let resolved = rc_ref!(resolved);
-        let src_canvas = if ptr::eq(&raw const *resolved, self) {
-            Some(self.canvas.clone())
+        let borrowed;
+        let copied_canvas;
+        let image_canvas = if ptr::eq(resolved.as_ptr(), self) {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
         } else {
-            None
-        };
-        let image_canvas = match &src_canvas {
-            Some(cloned_canvas) => cloned_canvas,
-            None => &resolved.canvas,
+            borrowed = rc_ref!(resolved);
+            &borrowed.canvas
         };
         let img_w = image_canvas.width() as i32;
         let img_h = image_canvas.height() as i32;
@@ -872,8 +866,6 @@ impl Image {
         }
     }
 
-    // Text rendering
-
     pub fn draw_text(&mut self, x: f32, y: f32, string: &str, color: Color, font: Option<&RcFont>) {
         if let Some(font) = font {
             let x = utils::f32_to_i32(x) - self.canvas.camera_x;
@@ -886,12 +878,11 @@ impl Image {
         let mut x = utils::f32_to_i32(x) - self.canvas.camera_x;
         let mut y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let color = self.palette[color as usize];
-        let font_image_rc = pyxel::font_image().clone();
+        let font_image_rc = pyxel::font_image();
         let font_image = rc_ref!(font_image_rc);
         let font_data = &font_image.canvas.data;
         let font_w = font_image.canvas.width() as usize;
 
-        // Draw built-in font glyphs from the font image atlas
         let start_x = x;
         for c in string.chars() {
             if c == '\n' {
@@ -941,8 +932,6 @@ impl Image {
             x += FONT_WIDTH as i32;
         }
     }
-
-    // Internal helpers
 
     fn color_distance_sq(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
         let (r1, g1, b1) = rgb1;

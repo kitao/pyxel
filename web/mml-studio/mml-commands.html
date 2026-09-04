@@ -56,21 +56,17 @@
       let data = null;
       let lang = "en";
 
-      // Render localized headers and command rows from the command list.
       function updateTexts() {
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Table headers
         document.getElementById("th-command").textContent = t("th_command");
         document.getElementById("th-description").textContent =
           t("th_description");
 
-        // Commands
         const commandTable = document.getElementById("command-table");
         commandTable.innerHTML = "";
         const thCmd = t("th_command");
@@ -90,11 +86,11 @@
           tr.className = "rowcard";
           tr.innerHTML = `
             <td class="w-full sm:w-40 max-w-none break-words whitespace-normal td mono shrink-0">
-              <span class="sm:hidden font-medium text-gray-500 text-xs">${thCmd}</span>
+              <span class="sm:hidden font-medium text-gray-400 text-xs">${thCmd}</span>
               <div>${cmdHtml}</div>
             </td>
             <td class="td">
-              <span class="sm:hidden font-medium text-gray-500 text-xs">${thDesc}</span>
+              <span class="sm:hidden font-medium text-gray-400 text-xs">${thDesc}</span>
               <div>${descText}</div>
               ${c.example ? `<div class="example">${esc(c.example)}</div>` : ""}
             </td>

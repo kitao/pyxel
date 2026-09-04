@@ -35,7 +35,7 @@ Initialize the Pyxel application with the screen size (width, height).
 - `title` (*str*) — Window title. Defaults to "Pyxel".
 - `fps` (*int*) — Frame rate. Defaults to 30.
 - `quit_key` (*int*) — Key to quit the application. Defaults to KEY_ESCAPE.
-- `display_scale` (*int*) — Display scale factor. If omitted, automatically determined.
+- `display_scale` (*int/None*) — Display scale factor. If omitted, automatically determined.
 - `capture_scale` (*int*) — Screen capture scale factor. Defaults to 2.
 - `capture_sec` (*int*) — Maximum recording time for screen capture video. Defaults to 10.
 - `headless` (*bool*) — Run without a window. Defaults to False.
@@ -471,7 +471,7 @@ The font image (Image class instance).
 
 ### `clip(x, y, w, h)` — function
 
-Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen.
+Set the drawing area of the screen from (x, y) with a width of w and a height of h.
 
 **Parameters:**
 
@@ -667,7 +667,7 @@ Fill the area connected with the same color as (x, y) with color col.
 - `y` (*float*) — Y coordinate
 - `col` (*int*) — Fill color
 
-### `blt(x, y, img, u, v, w, h, colkey=None, rotate=0, scale=1)` — function
+### `blt(x, y, img, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
 Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
@@ -684,7 +684,7 @@ Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image insta
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
-### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0, scale=1)` — function
+### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
 Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
@@ -701,7 +701,7 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instanc
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
-### `blt3d(x, y, w, h, img, pos, rot, fov=60, colkey=None)` — function *(Advanced)*
+### `blt3d(x, y, w, h, img, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
 Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -717,7 +717,7 @@ Draw the image bank img (0-2 or Image instance) with perspective projection onto
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
 - `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
 
-### `bltm3d(x, y, w, h, tm, pos, rot, fov=60, colkey=None)` — function *(Advanced)*
+### `bltm3d(x, y, w, h, tm, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
 Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -743,7 +743,7 @@ Draw a string s in color col at (x, y).
 - `y` (*float*) — Y coordinate
 - `s` (*str*) — String to draw
 - `col` (*int*) — Color
-- `font` (*Font*) — Custom font. If omitted, the standard font is used.
+- `font` (*Font/None*) — Custom font. If omitted, the standard font is used.
 
 ### Color Constants
 
@@ -922,7 +922,7 @@ Return x clamped between lower and upper.
 - `lower` (*float*) — Minimum value
 - `upper` (*float*) — Maximum value
 
-**Returns:** `float` — Clamped value
+**Returns:** `int/float` — Clamped value
 
 ### `sgn(x)` — function
 
@@ -1172,7 +1172,7 @@ Create a Tilemap instance from a TMX file.
 **Parameters:**
 
 - `filename` (*str*) — TMX file name
-- `layer` (*int*) — Layer number (0-)
+- `layer` (*int*) — Zero-based layer number
 
 **Returns:** `Tilemap` — Tilemap instance from TMX file
 
@@ -1212,14 +1212,14 @@ pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])
 
 ### `Tilemap.load(x, y, filename, layer)` — function
 
-Load the layer (0-) from the TMX file at (x, y).
+Load the specified TMX layer at (x, y). Layer numbering starts at 0.
 
 **Parameters:**
 
 - `x` (*int*) — X coordinate
 - `y` (*int*) — Y coordinate
 - `filename` (*str*) — TMX file name
-- `layer` (*int*) — Layer number (0-)
+- `layer` (*int*) — Zero-based layer number
 
 ### `Tilemap.pget(x, y)` — function
 

@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyo3::types::PyList;
 
 mod camera;
 mod collider;
@@ -27,6 +28,26 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     contact::add_contact_class(&m)?;
     raycast_hit::add_raycast_hit_class(&m)?;
     node::add_node_class(&m)?;
+    m.setattr(
+        "__all__",
+        PyList::new(
+            parent.py(),
+            [
+                "Camera",
+                "Collider",
+                "Contact",
+                "Mat4",
+                "Mesh",
+                "Motion",
+                "Node",
+                "Primitive",
+                "Quat",
+                "RaycastHit",
+                "Shading",
+                "Vec3",
+            ],
+        )?,
+    )?;
     parent.add_submodule(&m)?;
     Ok(())
 }

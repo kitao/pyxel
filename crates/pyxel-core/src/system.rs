@@ -148,7 +148,7 @@ impl Pyxel {
         let fps = {
             let mut pyxel = pyxel::pyxel();
             pyxel.system.update_profiler.end(platform::ticks());
-            pyxel.draw_frame(None);
+            pyxel.draw_frame();
             pyxel.system.fps
         };
         *pyxel::frame_count() += 1;
@@ -212,7 +212,6 @@ impl Pyxel {
         platform::set_window_title(title);
     }
 
-    // Convert icon pattern data into scaled RGBA pixels.
     pub fn set_icon<S: AsRef<str>>(
         &self,
         data: &[S],
@@ -337,7 +336,6 @@ impl Pyxel {
 
     // Event & input processing
 
-    // Poll platform events and update input/window state.
     fn process_events(&mut self) -> Option<LifecycleAction> {
         let mut lifecycle_action = None;
         if platform::is_sigint_received() {
@@ -368,7 +366,6 @@ impl Pyxel {
             }
         }
 
-        // Return the buffer for reuse
         self.system.event_buf = events;
         lifecycle_action
     }
@@ -513,6 +510,7 @@ impl Pyxel {
         let camera_y = screen.canvas.camera_y;
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
+        let palette_is_identity = screen.palette_is_identity;
         let alpha = screen.canvas.alpha;
 
         screen.reset_clip_rect();
@@ -538,6 +536,7 @@ impl Pyxel {
         screen.canvas.camera_y = camera_y;
         screen.map_color(1, palette1);
         screen.map_color(2, palette2);
+        screen.palette_is_identity = palette_is_identity;
         screen.set_dithering(alpha);
     }
 
@@ -570,7 +569,6 @@ impl Pyxel {
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
-        let palette = screen.palette;
 
         screen.reset_clip_rect();
         screen.reset_camera();
@@ -590,16 +588,11 @@ impl Pyxel {
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
         screen.canvas.camera_y = camera_y;
-        screen.palette = palette;
     }
 
-    fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+    fn draw_frame(&mut self) {
         if !self.begin_draw_frame() {
             return;
-        }
-
-        if let Some(callback) = callback {
-            callback.draw();
         }
 
         self.finish_draw_frame();
@@ -635,5 +628,37 @@ impl Pyxel {
         self.capture_screen();
 
         self.system.draw_profiler.end(platform::ticks());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn perf_monitor_preserves_palette_mapping() {
+        let mut pyxel = Pyxel {
+            system: System::new(30, crate::key::KEY_ESCAPE, true),
+            resource: crate::resource::Resource::new(None, Some(0), 30),
+            input: crate::input::Input::new(),
+            graphics: None,
+        };
+        pyxel.set_perf_monitor(true);
+        for identity in [true, false] {
+            let palette = {
+                let screen_rc = pyxel::screen();
+                let mut screen = rc_mut!(screen_rc);
+                screen.reset_color_map();
+                if !identity {
+                    screen.map_color(1, 3);
+                }
+                screen.palette
+            };
+            pyxel.draw_perf_monitor();
+            let screen_rc = pyxel::screen();
+            let screen = rc_ref!(screen_rc);
+            assert_eq!(screen.palette, palette);
+            assert_eq!(screen.palette_is_identity, identity);
+        }
     }
 }

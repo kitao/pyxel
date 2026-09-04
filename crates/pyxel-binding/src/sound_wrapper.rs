@@ -64,14 +64,12 @@ define_audio_wrapper!(Sound, pyxel::Sound, pyxel::RcSound);
 
 #[pymethods]
 impl Sound {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Sound::new())
     }
 
-    // Sequence properties
+    // Properties
 
     #[getter]
     fn notes(&self) -> Notes {
@@ -203,14 +201,10 @@ impl Sound {
             .map_err(PyException::new_err)
     }
 
-    // Playback duration
-
     fn total_sec(&self) -> Option<f32> {
         self.inner_ref().total_seconds()
     }
 }
-
-// Module registration
 
 pub fn add_sound_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Notes>()?;

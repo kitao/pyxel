@@ -5,7 +5,7 @@ use crate::rect_area::RectArea;
 use crate::utils::{f32_to_i32, f32_to_u32};
 
 const ELLIPSE_ROUNDING_BIAS: f32 = 0.01;
-// Pyxel's historical dither uses eight thresholds repeated over a 4x4 footprint.
+// Dithering uses eight thresholds repeated over a 4x4 footprint.
 const DITHERING_MATRIX: [[f32; 4]; 4] = [
     [1.0 / 16.0, 9.0 / 16.0, 3.0 / 16.0, 11.0 / 16.0],
     [13.0 / 16.0, 5.0 / 16.0, 15.0 / 16.0, 7.0 / 16.0],
@@ -28,8 +28,6 @@ pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
 }
 
 impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
-    // Constructors
-
     pub fn new(width: u32, height: u32) -> Self {
         Self::try_new(width, height).expect("canvas dimensions are too large")
     }
@@ -86,8 +84,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.camera_y = 0;
     }
 
-    // Dithering
-
     pub fn set_dithering(&mut self, alpha: f32) {
         self.alpha = alpha;
     }
@@ -117,7 +113,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     // Drawing primitives
 
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, value: T) {
-        // Rasterize horizontal, vertical, and sloped line paths.
         let x1 = f32_to_i32(x1) - self.camera_x;
         let y1 = f32_to_i32(y1) - self.camera_y;
         let x2 = f32_to_i32(x2) - self.camera_x;
@@ -304,7 +299,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         y3: f32,
         value: T,
     ) {
-        // Sort vertices and split the triangle into scanline spans.
         let mut x1 = f32_to_i32(x1) - self.camera_x;
         let mut y1 = f32_to_i32(y1) - self.camera_y;
         let mut x2 = f32_to_i32(x2) - self.camera_x;
@@ -336,11 +330,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         } else {
             (x2 - x1) as f32 / (y2 - y1) as f32
         };
-        let slope13 = if y3 == y1 {
-            0.0
-        } else {
-            (x3 - x1) as f32 / (y3 - y1) as f32
-        };
+        let slope13 = (x3 - x1) as f32 / (y3 - y1) as f32;
         let slope23 = if y3 == y2 {
             0.0
         } else {
@@ -393,13 +383,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.draw_line(x2, y2, x3, y3, value);
     }
 
-    // Flood fill
-
     pub fn flood_fill(&mut self, x: f32, y: f32, value: T) {
-        // Grow horizontal spans and enqueue adjacent scanline segments.
         let x = f32_to_i32(x) - self.camera_x;
         let y = f32_to_i32(y) - self.camera_y;
-        if !self.clip_rect.contains(x, y) {
+        if !self.clip_rect.contains(x, y) || self.alpha <= 0.0 || self.alpha.is_nan() {
             return;
         }
 
@@ -409,8 +396,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
 
         let mut visit_stack = Vec::with_capacity(64);
+        let mut filled_spans = Vec::new();
         visit_stack.push((x, y));
-        // Scan contiguous runs from the flood frontier
         while let Some((x, y)) = visit_stack.pop() {
             if !self.clip_rect.contains(x, y) || self.read_data(x as usize, y as usize) != dst_value
             {
@@ -430,14 +417,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 right += 1;
             }
 
-            if self.alpha >= 1.0 {
-                let w = self.width() as usize;
-                self.data[w * y as usize + left as usize..=w * y as usize + right as usize]
-                    .fill(value);
-            } else {
-                for xi in left..=right {
-                    self.write_data(xi as usize, y as usize, value);
-                }
+            // Solid spans mark visited pixels even where dithering will leave holes.
+            let w = self.width() as usize;
+            self.data[w * y as usize + left as usize..=w * y as usize + right as usize].fill(value);
+            if self.alpha < 1.0 {
+                filled_spans.push((left, right, y));
             }
 
             for scan_y in [y - 1, y + 1] {
@@ -455,6 +439,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                         }
                         scan_x += 1;
                     }
+                }
+            }
+        }
+        for (left, right, y) in filled_spans {
+            for x in left..=right {
+                if !self.should_write(x, y) {
+                    let index = self.width() as usize * y as usize + x as usize;
+                    self.data[index] = dst_value;
                 }
             }
         }
@@ -481,7 +473,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let width = f32_to_i32(width);
         let height = f32_to_i32(height);
 
-        // Clip source and destination before choosing the row-copy path.
         let CopyArea {
             dst_x,
             dst_y,
@@ -583,11 +574,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 let value_x = src_x + sign_x * xi + offset_x;
                 let value_y = src_y + sign_y * yi + offset_y;
                 let value = canvas.read_data(value_x as usize, value_y as usize);
-                if transparent.is_some_and(|tkey| value == tkey) {
-                    continue;
+                if let Some(value) = Self::apply_pixel(value, transparent, palette) {
+                    self.write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
                 }
-                let value = palette.map_or(value, |palette| palette[value.to_index()]);
-                self.write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
             }
         }
     }
@@ -692,11 +681,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                     continue;
                 }
                 let value = canvas.read_data(vx as usize, vy as usize);
-                if transparent.is_some_and(|tkey| value == tkey) {
-                    continue;
+                if let Some(value) = Self::apply_pixel(value, transparent, palette) {
+                    self.write_data(xi as usize, yi as usize, value);
                 }
-                let value = palette.map_or(value, |p| p[value.to_index()]);
-                self.write_data(xi as usize, yi as usize, value);
             }
         }
     }
@@ -737,7 +724,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
-        // Project destination pixels back through the camera plane.
         // Fast path: no dithering
         if self.alpha >= 1.0 {
             let dst_w = self.width() as usize;
@@ -792,8 +778,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                         let src_yi = f32_to_i32(proj.cam_y + t * wy);
                         if src_xi >= 0 && src_xi < src_w && src_yi >= 0 && src_yi < src_h {
                             let value = canvas.read_data(src_xi as usize, src_yi as usize);
-                            if transparent.is_none_or(|tkey| value != tkey) {
-                                let value = palette.map_or(value, |p| p[value.to_index()]);
+                            if let Some(value) = Self::apply_pixel(value, transparent, palette) {
                                 self.write_data(xi as usize, yi as usize, value);
                             }
                         }
@@ -939,8 +924,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 }
 
-// Copy clipping
-
 pub(crate) struct CopyArea {
     pub(crate) dst_x: i32,
     pub(crate) dst_y: i32,
@@ -965,7 +948,6 @@ impl CopyArea {
         width: i32,
         height: i32,
     ) -> Self {
-        // Clip flipped copies against source and destination rectangles.
         let flip_x = width < 0;
         let flip_y = height < 0;
         let width = width.abs();
@@ -1011,8 +993,6 @@ impl CopyArea {
     }
 }
 
-// Transform projection
-
 pub(crate) struct TransformProjection {
     src_cx: f32,
     src_cy: f32,
@@ -1050,7 +1030,6 @@ impl TransformProjection {
             return None;
         }
 
-        // Build inverse transform bounds before scanning destination pixels.
         let x = f32_to_i32(x) - offset_x;
         let y = f32_to_i32(y) - offset_y;
         let src_x = f32_to_i32(src_x);
@@ -1110,8 +1089,6 @@ impl TransformProjection {
     }
 }
 
-// Perspective projection
-
 pub(crate) struct PerspectiveProjection {
     pub(crate) cam_x: f32,
     pub(crate) cam_y: f32,
@@ -1148,7 +1125,6 @@ impl PerspectiveProjection {
         rot: (f32, f32, f32),
         fov: Option<f32>,
     ) -> Option<Self> {
-        // Build the camera transform used by perspective blits.
         let (cam_x, cam_y, cam_z) = pos;
         if cam_z.abs() < f32::EPSILON {
             return None;
@@ -1177,10 +1153,6 @@ impl PerspectiveProjection {
         // R_z(rot_y) * diag(1,-1,1) * R_x(rot_x)
         // rot_y=0 looks down -Z with screen-right=+X, screen-down=+Y (matches 2D)
         // rot_z is applied in view space before the world transform
-        //
-        //   r00 = cos(rot_y),   r01 = sin(rot_y)*cos(rot_x),   r02 = -sin(rot_y)*sin(rot_x)
-        //   r10 = sin(rot_y),   r11 = -cos(rot_y)*cos(rot_x),  r12 = cos(rot_y)*sin(rot_x)
-        //   r20 = 0,            r21 = sin(rot_x),               r22 = cos(rot_x)
 
         Some(Self {
             cam_x,

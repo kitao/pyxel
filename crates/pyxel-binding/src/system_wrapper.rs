@@ -38,7 +38,6 @@ fn init(
         .or_else(|_| sys.getattr("argv"))?
         .extract()?;
 
-    // Change to script directory
     let locals = PyDict::new(py);
     locals.set_item("os", &os_mod)?;
     locals.set_item("inspect", py.import("inspect")?)?;
@@ -71,7 +70,6 @@ fn init(
     )
     .map_err(pyo3::exceptions::PyValueError::new_err)?;
 
-    // Register reset callback
     *pyxel::reset_callback() = Some(Box::new(move |window_state| {
         Python::attach(|py| {
             let result: PyResult<()> = (|| {
@@ -229,8 +227,6 @@ fn _pid_exists(pid: u32) -> bool {
     let system = sysinfo::System::new_all();
     system.process(sysinfo::Pid::from_u32(pid)).is_some()
 }
-
-// Module registration
 
 pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;

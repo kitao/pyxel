@@ -226,7 +226,7 @@ impl PlatformSdl2 {
             unsafe { SDL_GetMouseState(&raw mut x, &raw mut y) };
             (x, y)
         } else {
-            // X11: SDL_GetGlobalMouseState tracks the cursor even outside the
+            // SDL_GetGlobalMouseState tracks the cursor even outside the
             // window, which is useful for drag operations.
             let (mut gx, mut gy) = (0, 0);
             unsafe { SDL_GetGlobalMouseState(&raw mut gx, &raw mut gy) };
@@ -270,12 +270,7 @@ impl PlatformSdl2 {
                 let pressed = (bits >> i) & 1 == 1;
                 if pressed != self.virtual_gamepad_states[i] {
                     self.virtual_gamepad_states[i] = pressed;
-                    let event = if pressed {
-                        Event::KeyPressed { key: button }
-                    } else {
-                        Event::KeyReleased { key: button }
-                    };
-                    pyxel_events.push(event);
+                    push_key_event(pyxel_events, button, pressed);
                 }
             }
         }

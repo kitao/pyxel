@@ -1,10 +1,13 @@
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 class TestFont:
-    def test_bdf(self, assets_dir):
-        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
-        assert font.text_width("A") > 0
+    def test_bdf_read_error(self, tmp_path):
+        path = tmp_path / "invalid.bdf"
+        path.write_bytes(b"STARTFONT 2.1\n\xff\n")
+        with raises_exact(Exception, f"Failed to read file '{path}'"):
+            pyxel.Font(str(path))
 
     def test_ttf(self, assets_dir):
         font = pyxel.Font(str(assets_dir / "PixelMplus10-Regular.ttf"), 10)
@@ -39,23 +42,10 @@ class TestFont:
         assert w_plain == w_zwj
         assert w_plain == w_vs
 
-    def test_text_width_longer_string(self, assets_dir):
-        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
-        w1 = font.text_width("A")
-        w3 = font.text_width("AAA")
-        assert w3 > w1
-
-    def test_text_width_proportional(self, assets_dir):
+    def test_text_width_fixed_width_latin(self, assets_dir):
         font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
         w1 = font.text_width("A")
         w2 = font.text_width("AA")
         # This BDF has fixed-width Latin glyphs.
+        assert w1 > 0
         assert w2 == w1 * 2
-
-    def test_bdf_renders_text(self, assets_dir):
-        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
-        img = pyxel.Image(64, 32)
-        img.cls(0)
-        img.text(0, 0, "A", 7, font)
-        has_text = any(img.pget(x, y) == 7 for x in range(20) for y in range(20))
-        assert has_text

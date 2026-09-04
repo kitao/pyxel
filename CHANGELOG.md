@@ -14,6 +14,76 @@
 - Added Pyxel Cube user guide page with a Base/Cube variant switch
 - Added a Cube Examples category to the showcase
 - Improved Python API error messages for argument types and indices
+- Fixed resume playback not returning to a preceding MML sound
+- Fixed resume playback restarting sounds that had already stopped
+- Fixed the MP4 file name when saving audio to an uppercase .WAV path
+- Fixed GIF capture colors when palette values include a high byte
+- Fixed premature button repeats with large hold values
+- Fixed legacy resource loading in prerelease builds
+- Fixed OpenGL context cleanup before SDL shutdown
+- Fixed Pyxel Web Launcher URLs for slash branches and reserved path characters
+- Fixed local Pyxel Showcase previews to use local WebAssembly assets
+- Fixed local Pyxel Showcase index links exposing non-public files
+- Fixed Image and Tilemap data views becoming invalid after deletion
+- Fixed malformed TMX layers causing crashes
+- Fixed image and tilemap self-copying and source clipping
+- Fixed clipping at extreme coordinates
+- Fixed dithered flood fills hanging
+- Fixed editor image and tilemap load errors escaping their handlers
+- Fixed editor palette state when dropping resource files
+- Fixed the music editor discarding extra channels during viewing
+- Fixed sound and music editor cursor bounds when changing rows
+- Fixed Pyxel Editor scrollbar bounds
+- Fixed blit performance after displaying the performance monitor
+- Fixed app2exe deleting unrelated build and spec files
+- Fixed concurrent app2exe builds sharing temporary files
+- Fixed app2exe bundling of imported system submodules
+- Fixed app2exe missing imports from parent package initializers
+- Fixed app2exe import discovery looping through path aliases
+- Fixed app2exe handling of case-sensitive app filenames
+- Fixed concurrent cleanup races in the play and watch commands
+- Fixed watch mode exiting when a file is removed during a scan
+- Fixed cross-platform playback of nested Pyxel app startup scripts
+- Fixed Pyxel app startup markers escaping the application directory
+- Fixed failed Pyxel app packaging overwriting an existing archive
+- Fixed packaging overwriting an existing source startup marker
+- Fixed Pyxel app packaging from parent directories containing __pycache__
+- Fixed packaging accepting excluded startup scripts
+- Rejected unrepresentable startup paths when packaging Pyxel apps
+- Fixed Pyxel Code Maker archives missing the Pyxel app startup marker
+- Fixed Pyxel Code Maker not reporting starter project load failures
+- Fixed Pyxel Code Maker and Pyxel MML Studio startup timing
+- Fixed generated Python stubs for overloaded functions
+- Fixed Pyxel Web startup with prerelease wheel names
+- Fixed Pyxel Web asset paths when pyxel.js has a query or fragment
+- Fixed symbolic-link queries on Pyxel Web
+- Fixed virtual gamepad touch bounds after screen resizing
+- Fixed error reporting before the Pyxel Web screen is created
+- Fixed Music sequence self-assignment hanging
+- Fixed Music sequence access panicking after channel removal
+- Fixed trailing whitespace causing MML parser panics
+- Fixed sequence operations failing when argument conversion resizes the sequence
+- Fixed audio lock ordering during playback and BGM generation
+- Reduced audio mixing and Python sequence allocations
+- Refactored canvas palette and transparency handling
+- Refactored legacy sound effect command tracking
+- Fixed web documentation and Pyxel Code Maker layouts on mobile screens
+- Improved keyboard, screen-reader, and contrast access on web pages
+- Added an app2exe install extra for PyInstaller
+- Added source consistency validation for WebAssembly wheels
+- Preserved installed WebAssembly assets when wheel validation fails
+- Fixed premature pipeline termination in Linux wheel builds
+- Fixed virtual environment setup on Windows
+- Made generated wheel SBOMs reproducible
+- Added SHA-256 verification for downloaded SDL2 source archives
+- Marked internal Rust crates as non-publishable
+- Removed the obsolete SDL2 macOS patch
+- Updated WebAssembly wheels to PEP 783 platform tags
+- Excluded generated caches, Python bytecode, and macOS metadata from wheels
+- Improved API reference search filtering and preference persistence
+- Fixed prose formatting of code spans and API arguments
+- Fixed the logo path in the thanks-image generator
+- Updated documentation wording and translations
 
 ## 2.9.9
 
@@ -161,7 +231,6 @@
 
 ## 2.9.3
 
-- Added a JSON API to the BGM generator for Pyxel Composer integration
 - Reorganized BGM generator internals and added determinism snapshot test
 - Refactored editor widgets and cleaned up state handling
 - Simplified Rust binding error handling
@@ -180,14 +249,11 @@
 - Enabled thin LTO and inlining hints in release builds
 - Prevented zip path traversal in the play and app2exe commands
 - Fixed relative path handling in the package command
-- Fixed duplicate startup script entry in packaged Pyxel apps
 - Fixed app2exe output colliding with the Pyxel app source directory
 - Renamed get_pixel/tile/value accessor methods to pixel/tile/value
 - Added custom chord progression support to bgm_generator
 - Added Pyxel Web Launcher to the showcase
-- Added shortcut keys for editors
 - Optimized rendering, audio, and parsing performance
-- Preserved MML input case and whitespace
 - Refined documentation terminology and translations
 
 ## 2.9.0
@@ -204,7 +270,6 @@
 
 - Fixed WASM public API functions lost by const refactor
 - Renamed user guide 'Tools' section to 'Examples & Tools'
-- Pinned WASM CDN imports to @main branch
 
 ## 2.8.9
 
@@ -239,7 +304,6 @@
 ## 2.8.6
 
 - Refactored Canvas blit paths and palette handling
-- Constrained the chord note range in the BGM generator
 - Renamed web i18n variables for clarity
 - Fixed WASM key sticking by switching to a scancode correction map
 
@@ -262,7 +326,7 @@
 - Added shared CSS for WASM document pages
 - Fixed translation inconsistencies across WASM pages
 - Fixed crash in sound editor when playback reaches end of notes
-- Extracted shared language detection into pyxel-pages.js
+- Extracted shared language detection into shared.js
 - Replaced Tailwind CDN with local CLI build for web pages
 - Moved web pages from wasm/ to web/ with redirect support
 - Added web usage guide page with multilingual support
@@ -270,7 +334,6 @@
 - Added auto-generated markdown docs from web pages
 - Added auto-generated MML Commands documentation page
 - Added resource file format documentation
-- Opened showcase links in new tabs
 
 ## 2.8.3
 
@@ -299,7 +362,7 @@
 - Added project sharing via Gist, GitHub, and URL to Pyxel Code Maker
 - Changed Pyxel Web Launcher URL format from dot to slash separators
 - Added drag-and-drop for .py and .pyxres files in Pyxel Code Maker
-- Fixed deprecated warning in voxatron.pyxapp
+- Fixed deprecated warning in vortexion.pyxapp
 
 ## 2.7.12
 
@@ -366,6 +429,7 @@
 - Added manual pages for Pyxel Code Maker and Pyxel MML Studio
 - Removed the version number from the pyxel command in the README files
 - Revamped Pyxel Web documentation and the FAQ for clarity
+- Removed keyword-only separators from pyi and PyO3 bindings
 
 ## 2.7.1
 
@@ -373,7 +437,6 @@
 - Improved web tools with i18n support and other enhancements
 - Added API Reference page for Pyxel Web
 - Fixed type hints in pyi for Seq, Tilemap, Sound, and Music
-- Removed keyword-only separators from pyi and PyO3 bindings
 
 ## 2.7.0
 
@@ -491,7 +554,7 @@
 ## 2.5.9
 
 - Added the load_pal and save_pal functions
-- Enabled palette file download for new files in Pyxel Editor
+- Enabled palette file loading for new files in Pyxel Editor
 - Enabled automatic color picker size adjustment in Pyxel Editor
 - Updated Pyodide to version 0.28.3
 - Updated Emscripten to version 4.0.9

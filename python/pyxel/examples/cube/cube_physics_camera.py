@@ -4,7 +4,6 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Vec3
 
 
-# Shared orbit camera helper used by the cube_physics_* samples
 # Left-drag: yaw / pitch around the target
 # Mouse wheel: zoom in / out
 class OrbitCamera:

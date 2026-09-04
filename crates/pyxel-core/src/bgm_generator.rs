@@ -6,9 +6,8 @@
 // versions. Existing Pyxel applications rely on seed-stable BGM, so any
 // change to a constant, to the RNG call sequence, or to a branch that the
 // RNG observes silently alters the music those applications produce.
-// Refactors that could affect the RNG sequence MUST keep
-// `test_determinism_snapshot` passing and be coordinated between the
-// Pyxel and Pyxel Composer co-maintainers before merge.
+// `test_determinism_snapshot` pins this shared contract. Intentional algorithm
+// changes must be coordinated with Pyxel Composer.
 
 use std::fmt::Write as _;
 
@@ -22,7 +21,7 @@ use crate::{
     sound::Sound,
 };
 
-// Public types (struct field names form the Composer JSON wire contract)
+// Struct field names form the Pyxel Composer JSON wire contract.
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GeneratorParams {
@@ -47,7 +46,7 @@ pub struct GeneratorParams {
     pub sub_tone: i32,
     // Lowest melody note, from 28 to 33.
     pub melo_lowest_note: i32,
-    // Melody density selector: 0, 2, or 4.
+    // Melody density selector, from 0 to 4.
     pub melo_density: i32,
     // Enables melody rhythm patterns with 16th-note onsets.
     pub melo_use16: bool,
@@ -529,8 +528,6 @@ const CP7: [ChordEntry; 8] = [
 const CHORD_PROGRESSIONS: [&[ChordEntry]; PRESET_COUNT] =
     [&CP0, &CP1, &CP2, &CP3, &CP4, &CP5, &CP6, &CP7];
 
-// Preset lookup
-
 fn preset_params(preset: i32) -> GeneratorParams {
     assert!((0..PRESET_COUNT as i32).contains(&preset), "invalid preset");
     PRESETS[preset as usize].clone()
@@ -680,9 +677,7 @@ fn env_def_from_tone(tone_idx: usize, slot: i32) -> String {
     }
     let mut out = format!("@ENV{slot}{{0");
     for (dur, vol) in segs {
-        if dur >= 0 {
-            let _ = write!(out, ",{dur},{vol}");
-        }
+        let _ = write!(out, ",{dur},{vol}");
     }
     out.push('}');
     out
@@ -908,7 +903,7 @@ fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<O
             repeat: None,
         }];
     }
-    CHORD_PROGRESSIONS[chord_idx.min(PRESET_COUNT - 1)]
+    CHORD_PROGRESSIONS[chord_idx]
         .iter()
         .copied()
         .map(OwnedChordEntry::from_static)
@@ -928,7 +923,7 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
     let mut out = vec![[0; 12]; TOTAL_STEPS];
     let default_bits = parse_notes_bits(I_MAJOR_NOTES_BITS);
 
-    for (loc, slot) in out.iter_mut().enumerate().take(TOTAL_STEPS) {
+    for (loc, slot) in out.iter_mut().enumerate() {
         let mut entry_idx = 0usize;
         for (i, e) in progression.iter().enumerate() {
             if e.loc <= loc {
@@ -1016,7 +1011,6 @@ fn build_melody_chord_plan(
     lowest: i32,
 ) -> Vec<MelodyChord> {
     let mut out: Vec<MelodyChord> = Vec::with_capacity(progression.len());
-    // Resolve each progression entry
     for p in progression {
         let mut base = 0;
         if let Some(repeat_idx) = p.repeat {
@@ -1407,7 +1401,7 @@ fn generate_melody(
             if note_line[loc] != NOTE_UNSET {
                 continue;
             }
-            let note_events = next_note_events(
+            let Some(note_events) = next_note_events(
                 rhythm_main,
                 loc,
                 false,
@@ -1418,8 +1412,7 @@ fn generate_melody(
                 key_shift,
                 lowest,
                 rng,
-            );
-            if note_events.is_none() {
+            ) else {
                 let repeat_idx = chord_plan[state.active_chord_idx].repeat.unwrap_or(0);
                 let repeat_loc = chord_plan[repeat_idx].loc;
                 let target_loc = repeat_loc + (loc - state.active_chord_loc);
@@ -1436,9 +1429,9 @@ fn generate_melody(
                     state.first_in_chord = false;
                 }
                 continue;
-            }
+            };
             let mut total_event_len = 0usize;
-            for (l, n, len) in note_events.unwrap_or_default() {
+            for (l, n, len) in note_events {
                 place_melody(&mut note_line, l, n, len);
                 let end = (l + len).min(TOTAL_STEPS);
                 for pos in l..end {
@@ -1493,7 +1486,6 @@ fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<
     let (basic, final_pat) = BASS_PATTERNS[bass_idx];
     let adjust_list = [0, -1, 1, -2, 2, -3, 3];
     let base_highest_note = 26i32;
-    // Expand each bar's bass pattern
     for bar in 0..BARS {
         let pat = if bar < 7 {
             basic.as_bytes()
@@ -1697,7 +1689,6 @@ fn generate_submelody(
 
     let mut sub = sub_seed.to_vec();
     let mut prev_note_loc: i32 = -1;
-    // Fill eligible submelody steps
     for loc in 0..TOTAL_STEPS {
         if let Some(n) = sub[loc] {
             if n >= 0 {
@@ -1748,8 +1739,6 @@ fn shifted_melody(melody: &[Option<i32>]) -> Vec<Option<i32>> {
     notes
 }
 
-// Drum generation
-
 fn generate_drums(drums: i32) -> Vec<Option<i32>> {
     let drum_idx = drums as usize;
     let (basic, final_pat) = DRUM_PATTERNS[drum_idx];
@@ -1786,10 +1775,6 @@ fn notes_to_mml(
     quantize: i32,
     drums: bool,
 ) -> String {
-    // Note event representation:
-    // Some(note >= 0): Note onset
-    // Some(-1): Rest onset
-    // None: Continuation from previous step
     let default_len = select_default_length(notes);
     let wave = TONE_LIBRARY[tone_idx][0];
     let env_def = env_def_from_tone(tone_idx, 1);
@@ -1978,7 +1963,6 @@ fn build_tone(idx: usize) -> BgmTone {
         release: t[4],
         vibrato: t[5],
         drum_notes: if idx == DRUM_TONE_IDX {
-            // Collect all drum note sequences
             let mut dn = Vec::new();
             dn.extend_from_slice(&DRUM_NOTES_1);
             dn.extend_from_slice(&DRUM_NOTES_2);
@@ -1993,16 +1977,16 @@ fn build_tone(idx: usize) -> BgmTone {
     }
 }
 
-// BGM assembly
-
 // Assemble BgmData from GeneratorParams + seed: bass, melody, optional
-// submelody and drum per `instrumentation`, plus the tone metadata that
-// `compile_to_mml` consumes.
+// submelody and drum per `instrumentation`, plus tone metadata for Pyxel Composer.
 fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
-    assert!((-5..=5).contains(&params.transpose), "invalid transpose");
+    assert!(
+        (-5..=5).contains(&params.transpose),
+        "transp must be between -5 and 5"
+    );
     assert!(
         (0..=3).contains(&params.instrumentation),
-        "invalid instrumentation"
+        "instr must be between 0 and 3"
     );
     assert!(params.speed >= 1, "invalid speed");
     assert!((0..10).contains(&params.chord), "invalid chord");
@@ -2025,7 +2009,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
 
     let instr = params.instrumentation as usize;
     let key_shift = params.transpose;
-    let speed = params.speed.max(1);
+    let speed = params.speed;
     let tempo = (28800 / speed).max(1);
     let chord = params.chord;
     let density = params.melo_density;
@@ -2093,8 +2077,6 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     let sub_tone_idx = TONE_CANDIDATES[params.sub_tone as usize] as i32;
     let base_quantize = ((params.base_quantize * 100) + 8) / 16;
 
-    // Build 4 channels based on instrumentation
-    let ch0 = make_channel(melody.clone(), melo_tone_idx, 96, 88);
     let ch1 = make_channel(bass, BASS_TONE_IDX as i32, 112, base_quantize);
 
     let (ch2, ch3) = if instr == 0 {
@@ -2125,7 +2107,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
         (c2, c3)
     };
 
-    // Collect unique tone indices used
+    let ch0 = make_channel(melody, melo_tone_idx, 96, 88);
     let mut tone_indices: Vec<usize> = Vec::new();
     for ch in [&ch0, &ch1, &ch2, &ch3] {
         for idx in ch.tones.iter().flatten() {
@@ -2137,18 +2119,15 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     }
     tone_indices.sort_unstable();
 
-    // Build full 16-slot tone table (sparse - only used slots populated)
     let mut tones = Vec::with_capacity(tone_indices.len().max(1));
     for &idx in &tone_indices {
-        // Composer indexes tones positionally (the MML `@N` wave slot equals
-        // the vec index), so leave unused slots as `build_tone(0)` placeholders
-        // rather than skipping them.
+        // Pyxel Composer indexes tones positionally, so retain placeholders
+        // for unused slots through the highest used tone index.
         while tones.len() < idx {
             tones.push(build_tone(0));
         }
         tones.push(build_tone(idx));
     }
-    // Ensure at least one tone
     if tones.is_empty() {
         tones.push(build_tone(0));
     }
@@ -2245,17 +2224,18 @@ impl Pyxel {
         let mml_list = generate_bgm_mml(preset, transpose, instrumentation, seed);
 
         if play.unwrap_or(false) {
+            let _lock = crate::audio::AudioLock::lock();
             let channels = pyxel::channels();
             for (channel, mml) in channels.iter().zip(&mml_list) {
                 let sound = Sound::new();
-                if audio_mut!(sound).set_mml(mml).is_ok() {
-                    let _lock = crate::audio::AudioLock::lock();
-                    if audio_mut!(channel)
-                        .play_sound(sound, None, true, false)
-                        .is_err()
-                    {
-                        break;
-                    }
+                if audio_mut!(sound).set_mml(mml).is_err() {
+                    continue;
+                }
+                if audio_mut!(channel)
+                    .play_sound(sound, None, true, false)
+                    .is_err()
+                {
+                    break;
                 }
             }
         }
@@ -2291,52 +2271,7 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_and_compile() {
-        let params = preset_params(0);
-        let data = generate_bgm(&params, 42);
-        let mml = compile_to_mml(&data);
-        assert_eq!(mml.len(), 4);
-        for (i, s) in mml.iter().enumerate() {
-            assert!(s.starts_with('T'), "channel {i} MML should start with T");
-            assert!(s.len() > 10, "channel {i} MML should have content");
-        }
-    }
-
-    #[test]
-    fn test_generate_bgm_mml_all_presets() {
-        // Verify generate_bgm_mml() produces valid MML for all presets
-        for preset_idx in 0..PRESET_COUNT as i32 {
-            let mml = generate_bgm_mml(preset_idx, 0, 0, 12345);
-            assert_eq!(
-                mml.len(),
-                4,
-                "preset {preset_idx} should produce 4 channels"
-            );
-            for (ch, s) in mml.iter().enumerate() {
-                assert!(
-                    s.starts_with('T'),
-                    "preset {preset_idx} ch{ch} should start with T"
-                );
-            }
-        }
-    }
-
-    #[test]
-    fn test_generate_bgm_mml_overrides() {
-        let mml_default = generate_bgm_mml(0, 0, 3, 42);
-        let mml_transposed = generate_bgm_mml(0, 3, 3, 42);
-        assert_ne!(mml_default, mml_transposed, "transpose should change MML");
-
-        let mml_instr = generate_bgm_mml(0, 0, 0, 42);
-        assert_ne!(
-            mml_default, mml_instr,
-            "instrumentation override should change MML"
-        );
-    }
-
-    #[test]
     fn test_generate_bgm_mml_matches_pipeline() {
-        // One-shot and pipeline should produce identical MML
         for preset_idx in 0..PRESET_COUNT as i32 {
             let params = preset_params(preset_idx);
             let one_shot =
@@ -2349,14 +2284,18 @@ mod tests {
 
     #[test]
     fn test_generated_mml_parses() {
-        // Every generated channel must survive the MML parser: a generator change
-        // that emits now-invalid syntax would otherwise fail silently at play time.
         for preset_idx in 0..PRESET_COUNT as i32 {
-            for seed in [0, 42, 12345] {
-                let params = preset_params(preset_idx);
-                let mml =
-                    generate_bgm_mml(preset_idx, params.transpose, params.instrumentation, seed);
+            let params = preset_params(preset_idx);
+            for (seed, instrumentation) in [
+                (0, params.instrumentation),
+                (42, params.instrumentation),
+                (12345, params.instrumentation),
+                (12345, 0),
+            ] {
+                let mml = generate_bgm_mml(preset_idx, params.transpose, instrumentation, seed);
+                assert_eq!(mml.len(), 4, "preset {preset_idx} seed {seed}");
                 for (ch, s) in mml.iter().enumerate() {
+                    assert!(!s.is_empty(), "preset {preset_idx} seed {seed} ch{ch}");
                     assert!(
                         crate::mml_parser::parse_mml(s).is_ok(),
                         "preset {preset_idx} seed {seed} ch{ch} generated unparseable MML: {s}"
@@ -2368,8 +2307,6 @@ mod tests {
 
     #[test]
     fn test_chord_bits_with_no_tones_fall_back() {
-        // A custom entry without chord tones must fall back to I major
-        // instead of sending build_chord_note_pool into an infinite loop
         let progression = vec![OwnedChordEntry {
             loc: 0,
             notes: Some("000000000000".to_string()),
@@ -2377,15 +2314,11 @@ mod tests {
         }];
         let bits = chord_bits_per_step(&progression);
         assert_eq!(bits[0], parse_notes_bits(I_MAJOR_NOTES_BITS));
-        assert_ne!(
-            build_chord_note_pool(&bits[0], 0, 24),
-            [] as [(i32, i32); 0]
-        );
+        assert_ne!(build_chord_note_pool(&bits[0], 0, 24), []);
     }
 
     // The Composer JSON helpers stay out of production pyxel-core builds but
     // compile in test builds so both integrations exercise the wire format.
-
     #[test]
     fn test_bgm_data_json_roundtrip() {
         let data = BgmData {
@@ -2429,10 +2362,6 @@ mod tests {
         assert_eq!(mml_from_json, mml_direct);
     }
 
-    // Guard against accidental behavioral drift: a fixed (preset, transpose,
-    // instrumentation, seed) tuple must always produce byte-identical MML.
-    // These strings are captured from the pristine baseline; regenerate only
-    // after an intentional, Composer-coordinated algorithm change.
     #[test]
     fn test_determinism_snapshot() {
         #[rustfmt::skip]

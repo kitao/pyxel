@@ -31,10 +31,6 @@ def is_wall(x, y):
     return tile == TILE_FLOOR or tile[0] >= WALL_TILE_X
 
 
-def cleanup_entities(entities):
-    entities[:] = [e for e in entities if e.is_alive]
-
-
 def push_back(x, y, dx, dy):
     walls = WALL_TILES_WITH_FLOOR if dy > 0 else WALL_TILES
     dx, dy = pyxel.tilemaps[0].collide(x, y, 8, 8, dx, dy, walls)
@@ -186,6 +182,10 @@ class Enemy3Bullet:
     def draw(self):
         u = pyxel.frame_count // 2 % 2 * 8 + 16
         pyxel.blt(self.x, self.y, 0, u, 32, 8, 8, TRANSPARENT_COLOR)
+
+
+def cleanup_entities(entities):
+    entities[:] = [e for e in entities if e.is_alive]
 
 
 def spawn_enemy(left_x, right_x):

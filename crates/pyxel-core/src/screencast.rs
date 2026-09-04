@@ -10,6 +10,7 @@ use crate::utils::add_file_extension;
 
 const TRANSPARENT: Rgb24 = 0xffff_ffff;
 
+#[derive(Default)]
 struct Screen {
     width: u32,
     height: u32,
@@ -21,45 +22,31 @@ struct Screen {
 impl Screen {
     fn write_rgb(&self, out: &mut [Rgb24]) {
         for (i, &color) in self.image.iter().enumerate() {
-            out[i] = self.colors[color as usize];
+            out[i] = self.colors[color as usize] & 0x00ff_ffff;
         }
     }
 }
 
 pub struct Screencast {
     fps: u32,
-    max_screens: u32,
+    max_screens: usize,
     screens: Vec<Screen>,
-    capture_start_index: u32,
-    num_captured_screens: u32,
+    capture_start_index: usize,
+    num_captured_screens: usize,
 }
 
 impl Screencast {
-    // Constructors
-
     pub fn new(fps: u32, capture_sec: u32) -> Self {
-        let max_screens = fps * capture_sec;
-
-        let screens = (0..max_screens)
-            .map(|_| Screen {
-                width: 0,
-                height: 0,
-                image: Vec::new(),
-                colors: Vec::new(),
-                frame_count: 0,
-            })
-            .collect();
+        let max_screens = (fps as usize).saturating_mul(capture_sec as usize);
 
         Self {
             fps,
             max_screens,
-            screens,
+            screens: Vec::new(),
             capture_start_index: 0,
             num_captured_screens: 0,
         }
     }
-
-    // Public methods
 
     pub fn reset(&mut self) {
         self.capture_start_index = 0;
@@ -74,33 +61,32 @@ impl Screencast {
         colors: &[Rgb24],
         frame_count: u32,
     ) {
-        if self.screens.is_empty() {
+        if self.max_screens == 0 {
             return;
         }
 
-        if self.num_captured_screens == self.max_screens {
+        let screen_index = if self.num_captured_screens == self.max_screens {
+            let index = self.capture_start_index;
             self.capture_start_index = (self.capture_start_index + 1) % self.max_screens;
-            self.num_captured_screens -= 1;
-        }
+            index
+        } else {
+            let index = self.num_captured_screens;
+            self.num_captured_screens += 1;
+            index
+        };
 
-        let screen = &mut self.screens
-            [((self.capture_start_index + self.num_captured_screens) % self.max_screens) as usize];
+        if screen_index == self.screens.len() {
+            self.screens.push(Screen::default());
+        }
+        let screen = &mut self.screens[screen_index];
 
         screen.width = width;
         screen.height = height;
 
-        if screen.image.len() != image.len() {
-            screen.image.resize(image.len(), 0);
-        }
-        screen.image.copy_from_slice(image);
-        if screen.colors.len() != colors.len() {
-            screen.colors.resize(colors.len(), 0);
-        }
-        screen.colors.copy_from_slice(colors);
+        image.clone_into(&mut screen.image);
+        colors.clone_into(&mut screen.colors);
 
         screen.frame_count = frame_count;
-
-        self.num_captured_screens += 1;
     }
 
     // Returns whether a GIF file was written; no captured screens write nothing.
@@ -245,12 +231,17 @@ impl Screencast {
 
     // Helpers
 
-    fn screen_at(&self, index: u32) -> &Screen {
-        &self.screens[((self.capture_start_index + index) % self.max_screens) as usize]
+    fn screen_at(&self, index: usize) -> &Screen {
+        let end_len = self.max_screens - self.capture_start_index;
+        let screen_index = if index < end_len {
+            self.capture_start_index + index
+        } else {
+            index - end_len
+        };
+        &self.screens[screen_index]
     }
 
-    fn screen_delay(&self, index: u32) -> u16 {
-        // Last frame has no next frame to compare against
+    fn screen_delay(&self, index: usize) -> u16 {
         if index + 1 >= self.num_captured_screens {
             return (100.0 / self.fps as f32).round() as u16;
         }
@@ -311,9 +302,7 @@ impl Screencast {
         }
     }
 
-    // Returns true if color overflow occurred (> 256 entries needed). The many
-    // arguments thread caller-owned scratch buffers in to avoid per-frame allocation.
-    #[allow(clippy::too_many_arguments)]
+    // Returns true if color overflow occurred (> 256 entries needed).
     fn encode_region(
         src: &[Rgb24],
         src_width: u32,
@@ -339,7 +328,7 @@ impl Screencast {
         let rect_w = rect.width() as usize;
         let rect_h = rect.height() as usize;
 
-        // Empty diff region still needs a minimal 1x1 GIF frame.
+        // An empty diff retains one scaled source pixel to preserve frame timing.
         if rect_w == 0 || rect_h == 0 {
             let scale_usize = scale as usize;
             scaled_buf.resize(scale_usize * scale_usize, 0);
@@ -347,7 +336,6 @@ impl Screencast {
             return false;
         }
 
-        // Build the indexed-color buffer from the requested rectangle.
         let src_stride = src_width as usize;
         let rx = rect.left() as usize;
         let ry = rect.top() as usize;
@@ -370,7 +358,6 @@ impl Screencast {
             }
         }
 
-        // Scale the indexed-color buffer to the requested GIF size.
         if scale == 1 {
             std::mem::swap(index_buf, scaled_buf);
         } else {
@@ -386,7 +373,6 @@ impl Screencast {
             }
         }
 
-        // Build the per-frame GIF palette
         for &rgb in color_table.keys() {
             if rgb == TRANSPARENT {
                 palette.extend_from_slice(&[0, 0, 0]);
@@ -422,11 +408,30 @@ mod tests {
         screencast.capture(2, 2, &[0, 0, 0, 0], &[rgb], frame_count);
     }
 
-    // Ring buffer
+    #[test]
+    fn test_capacity_does_not_overflow_u32() {
+        let screencast = Screencast::new(1 << 31, 2);
+        assert_eq!(screencast.max_screens, (1usize << 31).saturating_mul(2));
+        assert!(screencast.screens.is_empty());
+    }
+
+    #[test]
+    fn test_write_rgb_ignores_high_byte() {
+        let mut screencast = Screencast::new(1, 1);
+        screencast.capture(
+            3,
+            1,
+            &[0, 1, 2],
+            &[0x0012_3456, 0xff12_3456, 0xffff_ffff],
+            0,
+        );
+        let mut rgb = [0; 3];
+        screencast.screen_at(0).write_rgb(&mut rgb);
+        assert_eq!(rgb, [0x0012_3456, 0x0012_3456, 0x00ff_ffff]);
+    }
 
     #[test]
     fn test_capture_ring_buffer_wraparound() {
-        // Capacity 2: a third capture drops the oldest screen
         let mut screencast = Screencast::new(2, 1);
         capture_solid(&mut screencast, 0x111111, 10);
         capture_solid(&mut screencast, 0x222222, 20);
@@ -453,8 +458,7 @@ mod tests {
     }
 
     #[test]
-    fn test_screen_delay_frame_count_wraparound() {
-        // The frame counter can restart (pyxel.reset); treat it as one frame
+    fn test_screen_delay_frame_count_reset() {
         let mut screencast = Screencast::new(30, 1);
         capture_solid(&mut screencast, 0x111111, 100);
         capture_solid(&mut screencast, 0x222222, 5);
@@ -489,8 +493,6 @@ mod tests {
         assert!(rect.is_empty());
         assert_eq!(diff, [TRANSPARENT; 4]);
     }
-
-    // Color overflow
 
     #[test]
     fn test_encode_region_color_overflow() {
@@ -582,6 +584,13 @@ mod tests {
         assert_eq!((first.width, first.height), (16, 16));
         assert_eq!((second.width, second.height), (16, 16));
         assert_eq!(second.transparent, None);
+        for (frame, green) in [(&first, 1), (&second, 0)] {
+            let palette = frame.palette.as_ref().unwrap();
+            for (blue, &index) in frame.buffer.iter().enumerate() {
+                let offset = index as usize * 3;
+                assert_eq!(&palette[offset..offset + 3], &[0, green, blue as u8]);
+            }
+        }
 
         std::fs::remove_file(&path).ok();
     }

@@ -15,7 +15,7 @@ use crate::voice::Voice;
 pub type ChannelGain = f32;
 pub type ChannelDetune = i32;
 
-// Fixed-point Q14 scaling for PCM gain multiplication
+// Bias negative fixed-point products so the right shift truncates toward zero.
 const PCM_MIX_TRUNC_BIAS: i64 = AUDIO_GAIN_SCALE - 1;
 
 pub struct Channel {
@@ -48,7 +48,6 @@ pub struct Channel {
 
     resume_sounds: Vec<RcSound>,
     resume_should_loop: bool,
-    owned_sounds: Vec<RcSound>,
 
     playing_pcm: bool,
     pcm_position: usize,
@@ -57,8 +56,6 @@ pub struct Channel {
 define_audio_type!(RcChannel, Channel);
 
 impl Channel {
-    // Constructors
-
     pub fn new() -> RcChannel {
         new_audio_type!(Self {
             sounds: Vec::new(),
@@ -90,7 +87,6 @@ impl Channel {
 
             resume_sounds: Vec::new(),
             resume_should_loop: false,
-            owned_sounds: Vec::new(),
 
             playing_pcm: false,
             pcm_position: 0,
@@ -136,19 +132,8 @@ impl Channel {
         let sound = Sound::new();
         audio_mut!(sound).set_mml(code)?;
         Self::validate_tones(std::slice::from_ref(&sound))?;
-        self.release_owned_sounds();
-        self.owned_sounds.push(sound.clone());
         self.play_from_clock(vec![sound], start_clock, should_loop, should_resume);
         Ok(())
-    }
-
-    fn release_owned_sounds(&mut self) {
-        for sound in &self.owned_sounds {
-            self.sounds.retain(|s| !std::sync::Arc::ptr_eq(s, sound));
-            self.resume_sounds
-                .retain(|s| !std::sync::Arc::ptr_eq(s, sound));
-        }
-        self.owned_sounds.clear();
     }
 
     pub fn validate_sec(sec: Option<f32>) -> Result<(), String> {
@@ -197,8 +182,10 @@ impl Channel {
             return;
         }
 
-        if !should_resume {
+        let resume_previous = should_resume && self.is_playing;
+        if !resume_previous {
             self.total_elapsed_clocks = 0;
+            self.resume_sounds.clear();
         } else if !self.should_resume {
             self.resume_sounds = self.sounds.clone();
             self.resume_should_loop = self.should_loop;
@@ -207,7 +194,7 @@ impl Channel {
         self.sounds = sounds;
         self.is_playing = true;
         self.should_loop = should_loop;
-        self.should_resume = should_resume;
+        self.should_resume = resume_previous;
         self.sound_index = 0;
         self.note_duration_clocks = 0;
         self.sound_elapsed_clocks = 0;
@@ -230,7 +217,7 @@ impl Channel {
         }
     }
 
-    fn wrap_loop_clock(&mut self, start_clock: u64) -> u64 {
+    fn wrap_loop_clock(&self, start_clock: u64) -> u64 {
         if !self.should_loop {
             return start_clock;
         }
@@ -275,10 +262,9 @@ impl Channel {
         self.is_playing = false;
         self.playing_pcm = false;
         self.voice.cancel_note();
-        self.release_owned_sounds();
     }
 
-    pub fn play_position(&mut self) -> Option<(u32, f32)> {
+    pub fn play_position(&self) -> Option<(u32, f32)> {
         if self.is_playing {
             let elapsed_sec = self.sound_elapsed_clocks as f32 / AUDIO_CLOCK_RATE as f32;
             Some((self.sound_index as u32, elapsed_sec))
@@ -286,8 +272,6 @@ impl Channel {
             None
         }
     }
-
-    // Core processing
 
     pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
         if self.playing_pcm {
@@ -302,9 +286,7 @@ impl Channel {
         let mut clock_count = clock_count;
         let mut clock_offset = 0;
 
-        // Advance playback across the available clocks
         while clock_count > 0 {
-            // Playback has ended
             if !self.is_playing {
                 self.voice
                     .process(blip_buf.as_deref_mut(), clock_offset, clock_count);
@@ -338,7 +320,6 @@ impl Channel {
                 }
             }
 
-            // Process clocks
             let process_clocks = u64::from(clock_count).min(self.note_duration_clocks) as u32;
             self.voice
                 .process(blip_buf.as_deref_mut(), clock_offset, process_clocks);
@@ -663,7 +644,7 @@ impl Channel {
     }
 
     pub(crate) fn mix_pcm(&mut self, out: &mut [i16]) {
-        if !self.is_playing || !self.playing_pcm {
+        if !self.is_playing_pcm() {
             return;
         }
 
@@ -683,7 +664,7 @@ impl Channel {
                 };
                 let len = pcm.samples.len();
 
-                if len == 0 || self.pcm_position >= len {
+                if self.pcm_position >= len {
                     should_advance = true;
                 } else {
                     let remaining = len - self.pcm_position;
@@ -736,7 +717,6 @@ impl Channel {
         if self.sound_index >= self.sounds.len() {
             if self.should_loop {
                 self.sound_index = 0;
-                self.pcm_position = 0;
             } else if self.should_resume {
                 let resume_sounds = std::mem::take(&mut self.resume_sounds);
                 self.play_from_clock(
@@ -882,8 +862,6 @@ mod tests {
 
     #[test]
     fn test_process_stops_at_pcm_sound_mid_chunk() {
-        // A PCM sound after a note sound must not be skipped when the note
-        // sound ends in the middle of a processing chunk
         let channel = Channel::new();
         let mut channel = audio_mut!(channel);
         channel
@@ -899,8 +877,6 @@ mod tests {
 
     #[test]
     fn test_seek_past_pcm_into_note_sound() {
-        // Seeking beyond the PCM part must seek into the following note
-        // sound instead of restarting it from the head
         let channel = Channel::new();
         let mut channel = audio_mut!(channel);
         let pcm_samples = 1000;
@@ -962,8 +938,6 @@ mod tests {
 
     #[test]
     fn test_resume_to_pcm_replays_no_stale_commands() {
-        // Resuming PCM playback after an interrupting note sound must not
-        // re-execute the finished sound's commands as a ghost note
         let channel = Channel::new();
         let mut channel = audio_mut!(channel);
         channel
@@ -981,6 +955,47 @@ mod tests {
             (NOTE_CLOCKS as u64 * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64) as usize;
         assert_eq!(channel.pcm_position, expected_position);
         assert_eq!(channel.note_duration_clocks, 0);
+    }
+
+    #[test]
+    fn test_play_mml_resume_returns_to_previous_mml() {
+        let channel = Channel::new();
+        let mut channel = audio_mut!(channel);
+        channel.play_mml("T120 L4 C", None, true, false).unwrap();
+        let previous = channel.sounds[0].clone();
+        channel.play_mml("T120 L4 C", None, false, true).unwrap();
+        channel.process(None, AUDIO_CLOCK_RATE);
+
+        assert!(channel.is_playing);
+        assert!(Arc::ptr_eq(&channel.sounds[0], &previous));
+    }
+
+    #[test]
+    fn test_stopped_mml_is_not_resumed_by_later_playback() {
+        let channel = Channel::new();
+        let mut channel = audio_mut!(channel);
+        channel.play_mml("T120 L4 C", None, true, false).unwrap();
+        channel.stop();
+        channel.play_mml("T120 L4 C", None, false, true).unwrap();
+        channel.process(None, AUDIO_CLOCK_RATE);
+
+        assert!(!channel.is_playing);
+    }
+
+    #[test]
+    fn test_stopped_sound_is_not_resumed_by_later_playback() {
+        let channel = Channel::new();
+        let mut channel = audio_mut!(channel);
+        channel
+            .play(vec![note_sound(1)], None, true, false)
+            .unwrap();
+        channel.stop();
+        channel
+            .play(vec![note_sound(1)], None, false, true)
+            .unwrap();
+        channel.process(None, NOTE_CLOCKS);
+
+        assert!(!channel.is_playing);
     }
 
     #[test]

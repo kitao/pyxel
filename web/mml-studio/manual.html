@@ -7,11 +7,33 @@
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
     <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
+    <style>
+      #s-layout .legend-label {
+        width: 11rem;
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 639px) {
+        #layout-runtime-preview {
+          flex: none;
+        }
+
+        #s-layout .layout-legend-row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.25rem;
+        }
+
+        #s-layout .legend-label {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
         Loading...
       </div>
     </main>
@@ -20,14 +42,12 @@
       let data = null;
       let lang = "en";
 
-      // Build the static manual shell and section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         app.appendChild(buildPageHeader(updateTexts));
 
-        // Manual section cards populated by updateTexts
         const sections = document.createElement("div");
         sections.className = "space-y-6";
 
@@ -51,21 +71,17 @@
         updateTexts();
       }
 
-      // Populate every manual section from localized JSON data.
       function updateTexts() {
-        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Overview text
         document.getElementById("s-overview").innerHTML = `
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${esc(t("overview_body"))}</p>`;
 
-        // Screen layout mockup and legend
         const layoutLegend = [
           { key: "layout_controls", descKey: "layout_controls_desc" },
           { key: "layout_channels", descKey: "layout_channels_desc" },
@@ -73,7 +89,7 @@
         ]
           .map(
             (item) =>
-              `<div class="flex items-baseline gap-2">
+              `<div class="layout-legend-row flex items-baseline gap-2">
                 <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
                 <span class="legend-desc">${esc(t(item.descKey))}</span>
               </div>`,
@@ -85,7 +101,6 @@
 
           <!-- Layout diagram mockup -->
           <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
-            <!-- Playback control area -->
             <div class="flex sm:flex-row flex-col items-start sm:items-center gap-3 bg-[#111827] px-3 py-3">
               <div class="flex flex-col gap-1.5 shrink-0">
                 <div class="flex gap-1.5">
@@ -96,11 +111,10 @@
                 <span class="link-chip">Pyxel MML Commands</span>
                 <span class="text-gray-400 text-xs">Sample Tune <span class="text-indigo-400">A</span> / <span class="text-indigo-400">B</span></span>
               </div>
-              <div class="flex-1 bg-[#202224] rounded border border-gray-700 h-16 w-full sm:w-auto flex items-center justify-center">
-                <span class="text-gray-500 text-xs">${esc(t("layout_runtime"))}</span>
+              <div id="layout-runtime-preview" class="flex-1 bg-[#202224] rounded border border-gray-700 h-16 w-full sm:w-auto flex items-center justify-center">
+                <span class="text-gray-400 text-xs">${esc(t("layout_runtime"))}</span>
               </div>
             </div>
-            <!-- Channel input area -->
             <div class="bg-gray-900 px-3 py-2 space-y-2">
               <div class="flex items-center gap-2">
                 <span class="text-gray-300 text-sm font-medium w-8">CH1</span>
@@ -116,7 +130,6 @@
               <div class="bg-gray-900 border border-gray-600 rounded-lg h-8 w-full"></div>
               <div class="text-center text-gray-600 text-xs py-1">CH3, CH4 ...</div>
             </div>
-            <!-- Share URL and QR area -->
             <div class="bg-gray-900 border-t border-gray-700 px-3 py-2">
               <div class="text-gray-300 text-sm font-medium mb-1">URL</div>
               <div class="bg-gray-900 border border-gray-600 rounded-lg h-7 w-full mb-2"></div>
@@ -128,10 +141,8 @@
             </div>
           </div>
 
-          <!-- Layout legend -->
           <div class="space-y-2">${layoutLegend}</div>`;
 
-        // Playback control descriptions
         const controlItems = data.control_items
           .map(
             (item) =>
@@ -146,7 +157,6 @@
           <p class="body mb-3">${esc(t("controls_body"))}</p>
           <div class="space-y-2.5">${controlItems}</div>`;
 
-        // Channel input descriptions
         const channelItems = data.channel_items
           .map(
             (item) =>
@@ -161,12 +171,10 @@
           <p class="body mb-3">${esc(t("channels_body")).replace("{0}", chip("CDE"))}</p>
           <div class="space-y-2.5">${channelItems}</div>`;
 
-        // URL sharing description
         document.getElementById("s-sharing").innerHTML = `
           <h2 class="section-title">${esc(t("sharing_title"))}</h2>
           <p class="body">${esc(t("sharing_body"))}</p>`;
 
-        // Keyboard shortcut table
         const shortcutRows = data.shortcuts
           .map(
             (s) =>
@@ -191,7 +199,6 @@
             </table>
           </div>`;
 
-        // MML command reference link
         document.getElementById("s-mml-ref").innerHTML = `
           <h2 class="section-title">${esc(t("mml_ref_title"))}</h2>
           <p class="body">${esc(t("mml_ref_body")).replace("{0}", link("mml-commands.html", t("mml_ref_link")))}</p>`;

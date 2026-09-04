@@ -2,7 +2,7 @@ from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Mesh, Primitive
 
 
-def _square_prim() -> Primitive:
+def _triangle_prim() -> Primitive:
     return Primitive(
         Primitive.MODE_TRIANGLES,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
@@ -21,8 +21,8 @@ class TestConstruction:
         assert m.colkey is None
 
     def test_full_kwargs(self):
-        p0 = _square_prim()
-        p1 = _square_prim()
+        p0 = _triangle_prim()
+        p1 = _triangle_prim()
         m = Mesh(
             primitives=[p0, p1, None],
             transforms=[Mat4(), Mat4(), Mat4()],
@@ -39,7 +39,7 @@ class TestConstruction:
         assert m.colkey == 0
 
     def test_topological_order_violation_rejected(self):
-        p = _square_prim()
+        p = _triangle_prim()
         with raises_exact(
             ValueError,
             "Mesh.parents[0] = 1 violates topological order (must be < 0)",
@@ -47,11 +47,11 @@ class TestConstruction:
             Mesh(
                 primitives=[p, p],
                 transforms=[Mat4(), Mat4()],
-                parents=[1, -1],  # parents[0] = 1 violates parents[i] < i
+                parents=[1, -1],
             )
 
     def test_parallel_array_length_mismatch_rejected(self):
-        p = _square_prim()
+        p = _triangle_prim()
         with raises_exact(
             ValueError,
             "Mesh parallel arrays length mismatch: primitives=2, transforms=1, "
@@ -59,24 +59,24 @@ class TestConstruction:
         ):
             Mesh(
                 primitives=[p, p],
-                transforms=[Mat4()],  # one short
+                transforms=[Mat4()],
                 parents=[-1, 0],
             )
 
     def test_invalid_parent_index_rejected(self):
-        p = _square_prim()
+        p = _triangle_prim()
         with raises_exact(ValueError, "Mesh.parents[0] = -2 < -1"):
             Mesh(
                 primitives=[p],
                 transforms=[Mat4()],
-                parents=[-2],  # only -1 is valid for "no parent"
+                parents=[-2],
             )
 
     def test_construct_with_none_prims(self):
         # primitives[i] = None represents a pure transform group with no
         # primitive of its own; useful as a joint / pivot for descendants.
         m = Mesh(
-            primitives=[None, _square_prim()],
+            primitives=[None, _triangle_prim()],
             transforms=[Mat4(), Mat4()],
             parents=[-1, 0],
         )
@@ -84,7 +84,7 @@ class TestConstruction:
         assert m.primitives[1] is not None
 
     def test_names_default_to_empty_strings_for_parts(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(
             primitives=[p, None],
             transforms=[Mat4(), Mat4()],
@@ -93,7 +93,7 @@ class TestConstruction:
         assert m.names == ["", ""]
 
     def test_names_length_mismatch_rejected(self):
-        p = _square_prim()
+        p = _triangle_prim()
         with raises_exact(
             ValueError,
             "Mesh parallel arrays length mismatch: primitives=2, transforms=2, "
@@ -121,23 +121,20 @@ class TestAttributes:
         assert m.colkey is None
 
     def test_motions_not_writable(self):
-        # motions is engine-built (GLB import); the attribute is read-only.
         m = Mesh()
         with raises_exact(
             AttributeError,
-            "attribute 'motions' of 'builtins.Mesh' objects is not writable",
+            "attribute 'motions' of 'pyxel.cube.Mesh' objects is not writable",
         ):
             m.motions = []
 
     def test_set_prims_revalidates(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(
             primitives=[p],
             transforms=[Mat4()],
             parents=[-1],
         )
-        # Reassigning primitives to a different length without also updating
-        # transforms / parents must raise.
         with raises_exact(
             ValueError,
             "Mesh parallel arrays length mismatch: primitives=2, transforms=1, "
@@ -147,7 +144,7 @@ class TestAttributes:
         assert len(m.primitives) == 1
 
     def test_set_transforms_revalidates_without_mutating(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
 
         with raises_exact(
@@ -160,7 +157,7 @@ class TestAttributes:
         assert len(m.transforms) == 1
 
     def test_set_parents_revalidates_without_mutating(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
 
         with raises_exact(ValueError, "Mesh.parents[0] = -2 < -1"):
@@ -169,7 +166,7 @@ class TestAttributes:
         assert m.parents == [-1]
 
     def test_set_names_revalidates(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(
             primitives=[p],
             transforms=[Mat4()],
@@ -186,7 +183,7 @@ class TestAttributes:
 
 class TestDescendants:
     def test_subtree(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(
             primitives=[p, p, p, p],
             transforms=[Mat4(), Mat4(), Mat4(), Mat4()],
@@ -198,7 +195,7 @@ class TestDescendants:
         assert m.descendants(3) == []
 
     def test_out_of_range(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
         assert m.descendants(-1) == []
         assert m.descendants(5) == []
@@ -206,12 +203,10 @@ class TestDescendants:
 
 class TestRepr:
     def test_repr_includes_part_count(self):
-        p = _square_prim()
+        p = _triangle_prim()
         m = Mesh(
             primitives=[p, p],
             transforms=[Mat4(), Mat4()],
             parents=[-1, 0],
         )
-        r = repr(m)
-        assert "Mesh(" in r
-        assert "parts=2" in r
+        assert repr(m) == "Mesh(parts=2)"

@@ -4,10 +4,7 @@ use std::process::Command;
 fn main() {
     let target = env::var("TARGET").unwrap();
     if target.contains("apple") {
-        // Older macOS toolchains keep the clang runtime outside the default
-        // linker search path.
-        //
-        // More details at https://github.com/alexcrichton/curl-rust/issues/279.
+        // The macOS clang runtime can be outside the default linker search path.
         if let Some(path) = macos_link_search_path() {
             println!("cargo::rustc-link-lib=clang_rt.osx");
             println!("cargo::rustc-link-search={path}");
@@ -23,7 +20,7 @@ fn macos_link_search_path() -> Option<String> {
 
     if !output.status.success() {
         println!(
-            "failed to run 'clang --print-search-dirs', continuing without a link search path"
+            "Failed to run 'clang --print-search-dirs', continuing without a link search path"
         );
         return None;
     }
@@ -36,6 +33,6 @@ fn macos_link_search_path() -> Option<String> {
         }
     }
 
-    println!("failed to determine link search path, continuing without it");
+    println!("Failed to determine link search path, continuing without it");
     None
 }

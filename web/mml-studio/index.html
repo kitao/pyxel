@@ -36,7 +36,6 @@
       <div
         class="flex sm:flex-row flex-col items-start sm:items-center mb-4 min-w-0"
       >
-        <!-- Controls -->
         <div class="flex flex-col mr-0 sm:mr-4 min-w-[100px]">
           <div class="flex flex-row gap-x-2 mb-2">
             <button
@@ -104,7 +103,6 @@
           </div>
         </div>
 
-        <!-- Screen -->
         <div
           class="flex flex-grow items-center bg-gray-800 shadow-sm mt-2 sm:mt-0 p-0 border border-gray-700 w-full sm:w-auto h-24"
         >
@@ -113,11 +111,11 @@
             src="pyxel-screen.html"
             class="border-0 w-full h-full"
             tabindex="-1"
+            title="Pyxel Runtime"
           ></iframe>
         </div>
       </div>
 
-      <!-- Channel 1 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch1" class="text-xl">CH1</label>
@@ -150,7 +148,6 @@
         ></textarea>
       </div>
 
-      <!-- Channel 2 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch2" class="text-xl">CH2</label>
@@ -183,7 +180,6 @@
         ></textarea>
       </div>
 
-      <!-- Channel 3 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch3" class="text-xl">CH3</label>
@@ -216,7 +212,6 @@
         ></textarea>
       </div>
 
-      <!-- Channel 4 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch4" class="text-xl">CH4</label>
@@ -251,7 +246,6 @@
 
       <div class="flex-grow mt-2">
         <span class="block text-xl">URL</span>
-        <!-- Share URL -->
         <a
           id="share-url"
           target="_blank"
@@ -260,19 +254,15 @@
           style="display: block"
         ></a>
 
-        <!-- QR Code -->
         <img id="qr-code-image" alt="QR Code" class="mt-4" />
       </div>
     </main>
 
     <script>
-      // Cache frequently used screen, share-link, and QR elements.
       const runtimeScreen = document.getElementById("runtime-screen");
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
 
-      // URL compression helpers for compact share links
-      // Base conversion helpers are provided by shared.js.
       function b64urlEncode(bytes) {
         return uint8ToBase64(bytes)
           .replace(/\+/g, "-")
@@ -299,15 +289,14 @@
         return await new Response(stream).text();
       }
 
-      // Encoder: always produces new format (deflate-raw + base64url).
+      // Encode shared MML as deflate-raw with base64url.
       async function encodeMmlToUrl(mml) {
         const compressed = await compressDeflateRaw(mml);
         return b64urlEncode(compressed);
       }
 
-      // Decoder: `+` (or its space form after URLSearchParams decoding) marks
-      // legacy lz-string. Short legacy values may consist of base64url
-      // characters only, so try the new format first and fall back on failure.
+      // A `+` (or its URLSearchParams space form) identifies lz-string data.
+      // For other values, try deflate-raw before the compatible lz-string form.
       async function decodeMmlFromUrl(value) {
         if (value.includes("+") || value.includes(" ")) {
           return LZString.decompressFromEncodedURIComponent(value);
@@ -319,7 +308,6 @@
         }
       }
 
-      // Playback button state helpers
       function setButtonStyle(button, isActive) {
         button.classList.toggle("active", isActive);
       }
@@ -395,7 +383,6 @@
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
-        // Bind data-attribute handlers declared in the static markup.
         document.querySelectorAll("[data-click]").forEach((el) => {
           el.addEventListener("click", () => handleButtonPress(el));
         });
@@ -408,7 +395,6 @@
           window.addEventListener(ev, resolvePyxelInput);
         });
 
-        // Keyboard shortcuts for play, stop, and loop
         window.addEventListener("keydown", (e) => {
           resolvePyxelInput();
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -446,25 +432,31 @@
           for (let i = 1; i <= 4; i++) {
             const textarea = document.getElementById(`ch${i}`);
             textarea.value = mmlList[i - 1] || "";
-            handleMmlInput(textarea);
           }
         }
 
         updateUrl();
 
-        // Push initial button states into the runtime after the iframe loads.
-        runtimeScreen.addEventListener("load", () => {
-          document.querySelectorAll("button[data-action]").forEach((button) => {
-            const varName = `js_${button.dataset.action}`;
-            runtimeScreen.contentWindow[varName] =
-              button.dataset.state === "true";
-          });
-        });
-
-        // Enable playback controls after the runtime context is ready.
+        // Synchronize current values before enabling playback controls.
         waitForPyxelReady(
-          () => runtimeScreen.contentWindow?.pyxelContext?.resolveInput,
           () => {
+            const context = runtimeScreen.contentWindow?.pyxelContext;
+            return context?.resolveInput || context?.initialized;
+          },
+          () => {
+            document
+              .querySelectorAll("textarea[data-input]")
+              .forEach((textarea) => {
+                runtimeScreen.contentWindow[`js_${textarea.id}_mml`] =
+                  textarea.value;
+              });
+            document
+              .querySelectorAll("button[data-action]")
+              .forEach((button) => {
+                const varName = `js_${button.dataset.action}`;
+                runtimeScreen.contentWindow[varName] =
+                  button.dataset.state === "true";
+              });
             document
               .querySelectorAll(
                 'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]',

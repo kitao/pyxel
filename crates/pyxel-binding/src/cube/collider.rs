@@ -1,14 +1,13 @@
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use super::mesh::Mesh;
 use super::vec3::Vec3;
 
-define_wrapper!(Collider, pyxel::cube::Collider);
+define_wrapper!(Collider, pyxel::cube::Collider, module = "pyxel.cube");
 
 #[pymethods]
 impl Collider {
-    // Constructor
-
     #[new]
     #[pyo3(signature = (
         size=None,
@@ -22,8 +21,6 @@ impl Collider {
         velocity=None,
         angular_velocity=None,
     ))]
-    // The constructor mirrors the Python Collider API instead of bundling
-    // arguments into a Rust-only options struct.
     fn new(
         size: Option<PyRef<'_, Vec3>>,
         radius: f32,
@@ -35,7 +32,8 @@ impl Collider {
         friction: f32,
         velocity: Option<PyRef<'_, Vec3>>,
         angular_velocity: Option<PyRef<'_, Vec3>>,
-    ) -> Self {
+    ) -> PyResult<Self> {
+        validate_mass(mass)?;
         let size_rc = size
             .as_ref()
             .map_or_else(pyxel::cube::Vec3::zero, |v| v.inner.clone());
@@ -46,7 +44,7 @@ impl Collider {
         let angular_velocity_rc = angular_velocity
             .as_ref()
             .map_or_else(pyxel::cube::Vec3::zero, |v| v.inner.clone());
-        Self::wrap(pyxel::cube::Collider::new(
+        Ok(Self::wrap(pyxel::cube::Collider::new(
             size_rc,
             radius,
             mesh_rc,
@@ -57,7 +55,7 @@ impl Collider {
             friction,
             velocity_rc,
             angular_velocity_rc,
-        ))
+        )))
     }
 
     // Attributes
@@ -121,8 +119,10 @@ impl Collider {
     }
 
     #[setter]
-    fn set_mass(&self, v: f32) {
+    fn set_mass(&self, v: f32) -> PyResult<()> {
+        validate_mass(v)?;
         self.inner_mut().mass = v;
+        Ok(())
     }
 
     #[getter]
@@ -165,8 +165,6 @@ impl Collider {
         self.inner_mut().angular_velocity = v.inner.clone();
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let c = self.inner_ref();
         let s = rc_ref!(&c.size);
@@ -177,7 +175,15 @@ impl Collider {
     }
 }
 
-// Module registration
+fn validate_mass(mass: f32) -> PyResult<()> {
+    if mass.is_finite() && mass >= 0.0 {
+        Ok(())
+    } else {
+        Err(PyValueError::new_err(
+            "mass must be finite and greater than or equal to 0",
+        ))
+    }
+}
 
 pub fn add_collider_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Collider>()?;

@@ -77,7 +77,6 @@ class App:
     def draw(self):
         pyxel.cls(0)
 
-        # Draw control instructions
         pyxel.text(
             61,
             8,

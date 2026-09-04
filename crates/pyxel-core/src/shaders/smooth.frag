@@ -2,7 +2,6 @@
    Based on xBR shaders from:
    https://github.com/libretro/common-shaders/tree/master/xbr/shaders
 
-   Pyxel-specific changes are commented in place.
 */
 
 /*
@@ -37,7 +36,6 @@
 #define vTexCoord screenTexCoord
 
 #define SourceSize vec4(TextureSize, 1.0 / TextureSize) // Original xBR source-size layout.
-#define OutSize vec4(OutputSize, 1.0 / OutputSize)
 
 #define BLEND_NONE 0
 #define BLEND_NORMAL 1
@@ -81,7 +79,6 @@ float getLeftRatio(vec2 center, vec2 origin, vec2 direction, vec2 scale) {
 #define P(x,y) getScreenColor(coord + SourceSize.zw * vec2(x, y))
 
 void main() {
-    // Resolve Pyxel screen coordinates before the xBR pass.
     vec2 screenFragCoord, screenTexCoord;
     getScreenParams(screenFragCoord, screenTexCoord);
     if (!isInScreen(screenTexCoord)) {
@@ -164,11 +161,6 @@ void main() {
 
     vec3 res = E;
 
-    // Pixel Tap Mapping: -|-|-|-|-
-    //                    -|-|B|C|-
-    //                    -|D|E|F|x
-    //                    -|G|H|I|x
-    //                    -|-|x|x|-
     if (blendResult.z != BLEND_NONE) {
         float dist_F_G = distYCbCr(F, G);
         float dist_H_C = distYCbCr(H, C);
@@ -190,11 +182,6 @@ void main() {
         res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
 
-    // Pixel Tap Mapping: -|-|-|-|-
-    //                    -|A|B|-|-
-    //                    x|D|E|F|-
-    //                    x|G|H|I|-
-    //                    -|x|x|-|-
     if (blendResult.w != BLEND_NONE) {
         float dist_H_A = distYCbCr(H, A);
         float dist_D_I = distYCbCr(D, I);
@@ -215,11 +202,6 @@ void main() {
         res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
 
-    // Pixel Tap Mapping: -|-|x|x|-
-    //                    -|A|B|C|x
-    //                    -|D|E|F|x
-    //                    -|-|H|I|-
-    //                    -|-|-|-|-
     if (blendResult.y != BLEND_NONE) {
         float dist_B_I = distYCbCr(B, I);
         float dist_F_A = distYCbCr(F, A);
@@ -241,11 +223,6 @@ void main() {
         res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
 
-    // Pixel Tap Mapping: -|x|x|-|-
-    //                    x|A|B|C|-
-    //                    x|D|E|F|-
-    //                    -|G|H|-|-
-    //                    -|-|-|-|-
     if (blendResult.x != BLEND_NONE) {
         float dist_D_C = distYCbCr(D, C);
         float dist_B_G = distYCbCr(B, G);

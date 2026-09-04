@@ -397,7 +397,7 @@
             },
             {
               "name": "display_scale",
-              "type": "int",
+              "type": "int/None",
               "description": {
                 "en": "Display scale factor. If omitted, automatically determined.",
                 "cn": "显示缩放倍率。省略时自动决定。",
@@ -436,7 +436,7 @@
               "type": "int",
               "description": {
                 "en": "Maximum recording time for screen capture video. Defaults to 10.",
-                "cn": "屏幕截图视频的最大录制时间。默认为 10。",
+                "cn": "屏幕录制视频的最大录制时间。默认为 10。",
                 "de": "Maximale Aufnahmezeit für Bildschirmvideo. Standard ist 10.",
                 "es": "Tiempo máximo de grabación de video. Por defecto es 10.",
                 "fr": "Durée maximale d'enregistrement vidéo. Par défaut : 10.",
@@ -1959,7 +1959,7 @@
             "en": "Return the analog value of the specified key (e.g., gamepad axis value).",
             "cn": "返回指定键的模拟值 (如游戏手柄轴的值)。",
             "de": "Gibt den analogen Wert der angegebenen Taste zurück (z.B. Gamepad-Achsenwert).",
-            "es": "Devuelve el valor analógico de la tecla especificada (p.ej., valor del eje del gamepad).",
+            "es": "Devuelve el valor analógico de la tecla especificada (p. ej., valor del eje del gamepad).",
             "fr": "Renvoie la valeur analogique de la touche spécifiée (ex. valeur de l'axe de la manette).",
             "it": "Restituisce il valore analogico del tasto specificato (es. valore dell'asse del gamepad).",
             "ja": "指定キーのアナログ値を返す（例: ゲームパッドの軸の値）。",
@@ -3069,18 +3069,18 @@
           "type": "function",
           "signature": "clip(x, y, w, h)",
           "description": {
-            "en": "Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen.",
-            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽 w、高 h。调用 clip() 重置为全屏。",
-            "de": "Setzt den Zeichenbereich des Bildschirms ab (x, y) mit Breite w und Höhe h. clip() setzt auf Vollbild zurück.",
-            "es": "Establece el área de dibujo de la pantalla desde (x, y) con ancho w y alto h. Llame a clip() para restablecer a pantalla completa.",
-            "fr": "Définit la zone de dessin de l'écran à partir de (x, y) avec une largeur w et une hauteur h. Appeler clip() pour réinitialiser en plein écran.",
-            "it": "Imposta l'area di disegno dello schermo da (x, y) con larghezza w e altezza h. Chiamare clip() per reimpostare a schermo intero.",
-            "ja": "画面の描画領域を (x, y) から幅 w、高さ h に設定する。clip() で全画面にリセットする。",
-            "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다. clip()으로 전체 화면으로 리셋한다.",
-            "pt": "Define a área de desenho da tela a partir de (x, y) com largura w e altura h. Chame clip() para redefinir para tela cheia.",
-            "ru": "Устанавливает область рисования экрана от (x, y) шириной w и высотой h. Вызов clip() сбрасывает на полный экран.",
-            "tr": "Ekranın çizim alanını (x, y) noktasından w genişliğinde ve h yüksekliğinde ayarlar. Tam ekrana sıfırlamak için clip() çağrılır.",
-            "uk": "Встановлює область малювання екрана від (x, y) шириною w та висотою h. Виклик clip() скидає на повний екран."
+            "en": "Set the drawing area of the screen from (x, y) with a width of w and a height of h.",
+            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽 w、高 h。",
+            "de": "Setzt den Zeichenbereich des Bildschirms ab (x, y) mit Breite w und Höhe h.",
+            "es": "Establece el área de dibujo de la pantalla desde (x, y) con ancho w y alto h.",
+            "fr": "Définit la zone de dessin de l'écran à partir de (x, y) avec une largeur w et une hauteur h.",
+            "it": "Imposta l'area di disegno dello schermo da (x, y) con larghezza w e altezza h.",
+            "ja": "画面の描画領域を (x, y) から幅 w、高さ h に設定する。",
+            "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다.",
+            "pt": "Define a área de desenho da tela a partir de (x, y) com largura w e altura h.",
+            "ru": "Устанавливает область рисования экрана от (x, y) шириной w и высотой h.",
+            "tr": "Ekranın çizim alanını (x, y) noktasından w genişliğinde ve h yüksekliğinde ayarlar.",
+            "uk": "Встановлює область малювання екрана від (x, y) шириною w та висотою h."
           },
           "params": [
             {
@@ -4745,7 +4745,7 @@
         {
           "name": "blt",
           "type": "function",
-          "signature": "blt(x, y, img, u, v, w, h, colkey=None, rotate=0, scale=1)",
+          "signature": "blt(x, y, img, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)",
           "description": {
             "en": "Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
             "cn": "将图像库 img (0-2 或 Image 实例) 的 (u, v) 处大小为 (w, h) 的区域复制到 (x, y)。w、h 为负值时翻转图像。colkey 指定透明色。rotate 和 scale 应用变换。",
@@ -4950,7 +4950,7 @@
         {
           "name": "bltm",
           "type": "function",
-          "signature": "bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0, scale=1)",
+          "signature": "bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)",
           "description": {
             "en": "Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
             "cn": "将瓦片地图 tm (0-7 或 Tilemap 实例) 的 (u, v) 处大小为 (w, h) 的区域复制到 (x, y)。每个瓦片为 8x8 像素，存储为 (image_tx, image_ty)。w、h 为负值时翻转图像。colkey 指定透明色。rotate 和 scale 应用变换。",
@@ -5155,7 +5155,7 @@
         {
           "name": "blt3d",
           "type": "function",
-          "signature": "blt3d(x, y, w, h, img, pos, rot, fov=60, colkey=None)",
+          "signature": "blt3d(x, y, w, h, img, pos, rot, fov=60.0, colkey=None)",
           "description": {
             "en": "Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
             "cn": "将图像库 img (0-2 或 Image 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 设置视野角度。colkey 指定透明色。",
@@ -5342,7 +5342,7 @@
         {
           "name": "bltm3d",
           "type": "function",
-          "signature": "bltm3d(x, y, w, h, tm, pos, rot, fov=60, colkey=None)",
+          "signature": "bltm3d(x, y, w, h, tm, pos, rot, fov=60.0, colkey=None)",
           "description": {
             "en": "Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
             "cn": "将瓦片地图 tm (0-7 或 Tilemap 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 设置视野角度。colkey 指定透明色。",
@@ -5619,7 +5619,7 @@
             },
             {
               "name": "font",
-              "type": "Font",
+              "type": "Font/None",
               "description": {
                 "en": "Custom font. If omitted, the standard font is used.",
                 "cn": "自定义字体。省略时使用标准字体。",
@@ -6164,7 +6164,7 @@
           "description": {
             "en": "Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list of numbers, a Sound instance, a list of Sounds, or an MML string.",
             "cn": "在通道 ch (0-3) 上播放声音 snd。snd 可以是声音编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串。",
-            "de": "Spielt den Sound snd auf Kanal ch (0-3) ab. snd kann eine Soundnummer (0-63), eine Nummernliste, eine Sound-Instanz, eine Liste von Sounds oder ein MML-String sein.",
+            "de": "Spielt den Sound snd auf Kanal ch (0-3) ab. snd kann eine Soundnummer (0-63), eine Nummernliste, eine Sound-Instanz, eine Liste von Sounds oder eine MML-Zeichenkette sein.",
             "es": "Reproduce el sonido snd en el canal ch (0-3). snd puede ser un número de sonido (0-63), una lista de números, una instancia de Sound, una lista de Sounds o una cadena MML.",
             "fr": "Joue le son snd sur le canal ch (0-3). snd peut être un numéro de son (0-63), une liste de numéros, une instance de Sound, une liste de Sounds ou une chaîne MML.",
             "it": "Riproduce il suono snd sul canale ch (0-3). snd può essere un numero di suono (0-63), una lista di numeri, un'istanza di Sound, una lista di Sound o una stringa MML.",
@@ -6199,10 +6199,10 @@
               "type": "int/list/Sound/str",
               "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
-                "cn": "音效编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串",
-                "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
+                "cn": "声音编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串",
+                "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-Zeichenkette",
                 "es": "Número de sonido (0-63), lista de números, instancia Sound, lista de Sounds o cadena MML",
-                "fr": "Numéro de son (0-63), liste de numéros, instance Sound, liste de Sounds ou chaîne MML",
+                "fr": "Numéro de son (0-63), liste de numéros, instance de Sound, liste de Sounds ou chaîne MML",
                 "it": "Numero suono (0-63), lista di numeri, istanza Sound, lista di Sound o stringa MML",
                 "ja": "サウンド番号 (0-63)、番号のリスト、Sound インスタンス、Sound のリスト、または MML 文字列",
                 "ko": "사운드 번호 (0-63), 번호 리스트, Sound 인스턴스, Sound 리스트 또는 MML 문자열",
@@ -6253,7 +6253,7 @@
               "type": "bool",
               "description": {
                 "en": "Resume previous sound after playback ends. Defaults to False.",
-                "cn": "播放结束后恢复之前的音效。默认为 False。",
+                "cn": "播放结束后恢复之前的声音。默认为 False。",
                 "de": "Vorherigen Sound nach Wiedergabeende fortsetzen. Standard ist False.",
                 "es": "Reanudar sonido anterior tras finalizar la reproducción. Por defecto es False.",
                 "fr": "Reprendre le son précédent après la lecture. Par défaut : False.",
@@ -6589,7 +6589,7 @@
             "description": {
               "en": "List of MML strings",
               "cn": "MML 字符串列表",
-              "de": "Liste von MML-Strings",
+              "de": "Liste von MML-Zeichenketten",
               "es": "Lista de cadenas MML",
               "fr": "Liste de chaînes MML",
               "it": "Lista di stringhe MML",
@@ -7059,7 +7059,7 @@
                 "cn": "要限制的值",
                 "de": "Zu begrenzender Wert",
                 "es": "Valor a limitar",
-                "fr": "Valeur à borner",
+                "fr": "Valeur à limiter",
                 "it": "Valore da limitare",
                 "ja": "クランプする値",
                 "ko": "클램프할 값",
@@ -7107,7 +7107,7 @@
             }
           ],
           "returns": {
-            "type": "float",
+            "type": "int/float",
             "description": {
               "en": "Clamped value",
               "cn": "限制后的值",
@@ -8723,18 +8723,18 @@
               "name": "layer",
               "type": "int",
               "description": {
-                "en": "Layer number (0-)",
-                "cn": "图层编号 (0-)",
-                "de": "Ebenennummer (0-)",
-                "es": "Número de capa (0-)",
-                "fr": "Numéro de calque (0-)",
-                "it": "Numero livello (0-)",
-                "ja": "レイヤー番号 (0-)",
-                "ko": "레이어 번호 (0-)",
-                "pt": "Número da camada (0-)",
-                "ru": "Номер слоя (0-)",
-                "tr": "Katman numarası (0-)",
-                "uk": "Номер шару (0-)"
+                "en": "Zero-based layer number",
+                "cn": "从 0 开始的图层编号",
+                "de": "Ebenennummer, beginnend bei 0",
+                "es": "Número de capa, comenzando por 0",
+                "fr": "Numéro de calque, à partir de 0",
+                "it": "Numero del livello, a partire da 0",
+                "ja": "0 始まりのレイヤー番号",
+                "ko": "0부터 시작하는 레이어 번호",
+                "pt": "Número da camada, começando em 0",
+                "ru": "Номер слоя, начиная с 0",
+                "tr": "0'dan başlayan katman numarası",
+                "uk": "Номер шару, починаючи з 0"
               }
             }
           ],
@@ -8907,18 +8907,18 @@
           "type": "function",
           "signature": "Tilemap.load(x, y, filename, layer)",
           "description": {
-            "en": "Load the layer (0-) from the TMX file at (x, y).",
-            "cn": "在 (x, y) 处从 TMX 文件加载 layer (0-)。",
-            "de": "Lädt den Layer (0-) aus der TMX-Datei an (x, y).",
-            "es": "Carga la capa layer (0-) del archivo TMX en (x, y).",
-            "fr": "Charge le calque layer (0-) du fichier TMX en (x, y).",
-            "it": "Carica il livello layer (0-) dal file TMX in (x, y).",
-            "ja": "(x, y) に TMX ファイルの layer (0-) を読み込む。",
-            "ko": "(x, y)에 TMX 파일의 layer (0-)를 로드한다.",
-            "pt": "Carrega a camada layer (0-) do arquivo TMX em (x, y).",
-            "ru": "Загружает слой layer (0-) из файла TMX в (x, y).",
-            "tr": "(x, y) konumunda TMX dosyasından layer (0-) katmanını yükler.",
-            "uk": "Завантажує шар layer (0-) з файлу TMX у (x, y)."
+            "en": "Load the specified TMX layer at (x, y). Layer numbering starts at 0.",
+            "cn": "在 (x, y) 处加载指定的 TMX 图层。图层编号从 0 开始。",
+            "de": "Lädt die angegebene TMX-Ebene bei (x, y). Die Ebenennummerierung beginnt bei 0.",
+            "es": "Carga la capa TMX especificada en (x, y). La numeración de las capas comienza en 0.",
+            "fr": "Charge le calque TMX indiqué en (x, y). La numérotation des calques commence à 0.",
+            "it": "Carica il livello TMX specificato in (x, y). La numerazione dei livelli parte da 0.",
+            "ja": "指定した TMX レイヤーを (x, y) に読み込む。レイヤー番号は 0 から始まる。",
+            "ko": "지정한 TMX 레이어를 (x, y)에 로드합니다. 레이어 번호는 0부터 시작합니다.",
+            "pt": "Carrega a camada TMX especificada em (x, y). A numeração das camadas começa em 0.",
+            "ru": "Загружает указанный слой TMX в точку (x, y). Нумерация слоёв начинается с 0.",
+            "tr": "Belirtilen TMX katmanını (x, y) konumuna yükler. Katman numaraları 0'dan başlar.",
+            "uk": "Завантажує вказаний шар TMX у точку (x, y). Нумерація шарів починається з 0."
           },
           "params": [
             {
@@ -8979,18 +8979,18 @@
               "name": "layer",
               "type": "int",
               "description": {
-                "en": "Layer number (0-)",
-                "cn": "图层编号 (0-)",
-                "de": "Ebenennummer (0-)",
-                "es": "Número de capa (0-)",
-                "fr": "Numéro de calque (0-)",
-                "it": "Numero livello (0-)",
-                "ja": "レイヤー番号 (0-)",
-                "ko": "레이어 번호 (0-)",
-                "pt": "Número da camada (0-)",
-                "ru": "Номер слоя (0-)",
-                "tr": "Katman numarası (0-)",
-                "uk": "Номер шару (0-)"
+                "en": "Zero-based layer number",
+                "cn": "从 0 开始的图层编号",
+                "de": "Ebenennummer, beginnend bei 0",
+                "es": "Número de capa, comenzando por 0",
+                "fr": "Numéro de calque, à partir de 0",
+                "it": "Numero del livello, a partire da 0",
+                "ja": "0 始まりのレイヤー番号",
+                "ko": "0부터 시작하는 레이어 번호",
+                "pt": "Número da camada, começando em 0",
+                "ru": "Номер слоя, начиная с 0",
+                "tr": "0'dan başlayan katman numarası",
+                "uk": "Номер шару, починаючи з 0"
               }
             }
           ],
@@ -9179,7 +9179,7 @@
           "signature": "Tilemap.collide(x, y, w, h, dx, dy, walls)",
           "description": {
             "en": "Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle at (x, y) with pixel size (w, h), and return the adjusted (dx, dy). walls is a list of tile coordinates that act as obstacles.",
-            "cn": "将像素移动量 (dx, dy) 应用于位于 (x, y) 的像素矩形（大小为 (w, h)）后解决碰撞，返回调整后的 (dx, dy)。walls 是作为障碍物的瓦片坐标列表。",
+            "cn": "将像素移动量 (dx, dy) 应用于位于 (x, y)、大小为 (w, h) 的像素矩形后解决碰撞，返回调整后的 (dx, dy)。walls 是作为障碍物的瓦片坐标列表。",
             "de": "Löst Kollisionen auf, nachdem die Pixelbewegung (dx, dy) auf das Pixelrechteck bei (x, y) mit Pixelgröße (w, h) angewendet wurde, und gibt das angepasste (dx, dy) zurück. walls ist eine Liste von Kachelkoordinaten, die als Hindernisse dienen.",
             "es": "Resuelve colisiones tras aplicar el movimiento en píxeles (dx, dy) al rectángulo en píxeles en (x, y) con tamaño (w, h), y devuelve el (dx, dy) ajustado. walls es una lista de coordenadas de tiles que actúan como obstáculos.",
             "fr": "Résout les collisions après application du mouvement en pixels (dx, dy) au rectangle en pixels à (x, y) de taille (w, h), et renvoie le (dx, dy) ajusté. walls est une liste de coordonnées de tuiles faisant office d'obstacles.",
@@ -9403,7 +9403,7 @@
             "cn": "创建新的 Sound 实例。",
             "de": "Erstellt eine neue Sound-Instanz.",
             "es": "Crea una nueva instancia de Sound.",
-            "fr": "Crée une nouvelle instance Sound.",
+            "fr": "Crée une nouvelle instance de Sound.",
             "it": "Crea una nuova istanza Sound.",
             "ja": "新しい Sound インスタンスを作成する。",
             "ko": "새로운 Sound 인스턴스를 생성한다.",
@@ -9419,7 +9419,7 @@
               "cn": "新 Sound 实例",
               "de": "Neue Sound-Instanz",
               "es": "Nueva instancia Sound",
-              "fr": "Nouvelle instance Sound",
+              "fr": "Nouvelle instance de Sound",
               "it": "Nuova istanza Sound",
               "ja": "新しい Sound インスタンス",
               "ko": "새 Sound 인스턴스",
@@ -9702,7 +9702,7 @@
           "description": {
             "en": "Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.",
             "cn": "使用 TSPN (或 0-9 表示自定义音色编号) 的字符串设置音色。不区分大小写，空白被忽略。",
-            "de": "Setzt die Töne mit einem String aus TSPN (oder 0-9 für benutzerdefinierte Tonnummern). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
+            "de": "Setzt die Töne mit einer Zeichenkette aus TSPN (oder 0-9 für benutzerdefinierte Tonnummern). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
             "es": "Establece los tonos con una cadena de TSPN (o 0-9 para números de tono personalizados). No distingue mayúsculas de minúsculas, los espacios se ignoran.",
             "fr": "Définit les timbres avec une chaîne de TSPN (ou 0-9 pour des numéros de timbre personnalisés). Insensible à la casse, les espaces sont ignorés.",
             "it": "Imposta i toni con una stringa di TSPN (o 0-9 per numeri di tono personalizzati). Non sensibile alle maiuscole, gli spazi sono ignorati.",
@@ -9746,7 +9746,7 @@
           "description": {
             "en": "Set the volumes with a string of 01234567. Whitespace is ignored.",
             "cn": "使用 01234567 的字符串设置音量。空白被忽略。",
-            "de": "Setzt die Lautstärken mit einem String aus 01234567. Leerzeichen werden ignoriert.",
+            "de": "Setzt die Lautstärken mit einer Zeichenkette aus 01234567. Leerzeichen werden ignoriert.",
             "es": "Establece los volúmenes con una cadena de 01234567. Los espacios se ignoran.",
             "fr": "Définit les volumes avec une chaîne de 01234567. Les espaces sont ignorés.",
             "it": "Imposta i volumi con una stringa di 01234567. Gli spazi sono ignorati.",
@@ -9790,7 +9790,7 @@
           "description": {
             "en": "Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.",
             "cn": "使用 NSVFHQ 的字符串设置效果。不区分大小写，空白被忽略。",
-            "de": "Setzt die Effekte mit einem String aus NSVFHQ. Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
+            "de": "Setzt die Effekte mit einer Zeichenkette aus NSVFHQ. Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
             "es": "Establece los efectos con una cadena de NSVFHQ. No distingue mayúsculas de minúsculas, los espacios se ignoran.",
             "fr": "Définit les effets avec une chaîne de NSVFHQ. Insensible à la casse, les espaces sont ignorés.",
             "it": "Imposta gli effetti con una stringa di NSVFHQ. Non sensibile alle maiuscole, gli spazi sono ignorati.",
@@ -9834,7 +9834,7 @@
           "description": {
             "en": "Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page.",
             "cn": "使用给定的 MML 字符串切换到 MML 模式。MML 模式下，音符和速度等普通参数将被忽略。有关可用的 MML 命令，请参阅 Pyxel MML 命令页面。",
-            "de": "Wechselt mit dem angegebenen MML-String in den MML-Modus. Im MML-Modus werden normale Parameter wie Noten und Geschwindigkeit ignoriert. Verfügbare MML-Befehle finden Sie auf der Seite Pyxel MML-Befehle.",
+            "de": "Wechselt mit der angegebenen MML-Zeichenkette in den MML-Modus. Im MML-Modus werden normale Parameter wie Noten und Geschwindigkeit ignoriert. Verfügbare MML-Befehle finden Sie auf der Seite Pyxel MML-Befehle.",
             "es": "Cambia al modo MML con la cadena MML dada. En modo MML, los parámetros normales como notas y velocidad se ignoran. Para los comandos MML disponibles, consulte la página Comandos MML de Pyxel.",
             "fr": "Passe en mode MML avec la chaîne MML donnée. En mode MML, les paramètres normaux tels que les notes et la vitesse sont ignorés. Pour les commandes MML disponibles, consultez la page Commandes MML de Pyxel.",
             "it": "Passa alla modalità MML con la stringa MML data. In modalità MML, i parametri normali come note e velocità vengono ignorati. Per i comandi MML disponibili, consultare la pagina Comandi MML di Pyxel.",
@@ -9852,7 +9852,7 @@
               "description": {
                 "en": "MML string",
                 "cn": "MML 字符串",
-                "de": "MML-String",
+                "de": "MML-Zeichenkette",
                 "es": "Cadena MML",
                 "fr": "Chaîne MML",
                 "it": "Stringa MML",
@@ -9891,7 +9891,6 @@
             "tr": "MML modundan çıkar ve normal moda döner.",
             "uk": "Виходить з режиму MML і повертається до звичайного режиму."
           },
-          "params": [],
           "returns": {
             "type": "None"
           },
@@ -9959,7 +9958,6 @@
             "tr": "PCM modundan çıkar ve normal moda döner.",
             "uk": "Виходить з режиму PCM і повертається до звичайного режиму."
           },
-          "params": [],
           "returns": {
             "type": "None"
           },
@@ -10182,7 +10180,7 @@
               "type": "list[int]",
               "description": {
                 "en": "Sound lists for each channel. Empty list = unused.",
-                "cn": "各通道的音效列表。空列表=未使用。",
+                "cn": "各通道的声音列表。空列表=未使用。",
                 "de": "Soundlisten pro Kanal. Leere Liste = nicht verwendet.",
                 "es": "Listas de sonidos por canal. Lista vacía = no usado.",
                 "fr": "Listes de sons par canal. Liste vide = non utilisé.",
@@ -10367,7 +10365,7 @@
             "cn": "音高失谐值 (音分；100 音分 = 1 个半音)。默认为 0。",
             "de": "Tonhöhen-Detune in Cent (100 Cent = 1 Halbton). Standard ist 0.",
             "es": "Desfase de tono en cents (100 cents = 1 semitono). Por defecto es 0.",
-            "fr": "Detune de hauteur en cents (100 cents = 1 demi-ton). Par défaut : 0.",
+            "fr": "Désaccordage de hauteur en cents (100 cents = 1 demi-ton). Par défaut : 0.",
             "it": "Detune del tono in cent (100 cent = 1 semitono). Il valore predefinito è 0.",
             "ja": "ピッチのデチューン値（セント単位、100 セント = 半音 1 つ）。デフォルトは 0。",
             "ko": "피치 디튠 값 (cent 단위, 100 cent = 1 반음). 기본값은 0.",
@@ -10386,9 +10384,9 @@
           "description": {
             "en": "Play the sound snd on this channel. snd can be a sound number, a list, a Sound instance, a list of Sounds, or an MML string.",
             "cn": "在此通道上播放声音 snd。snd 可以是声音编号、列表、Sound 实例、Sound 列表或 MML 字符串。",
-            "de": "Spielt den Sound snd auf diesem Kanal ab. snd kann eine Soundnummer, eine Liste, eine Sound-Instanz, eine Liste von Sounds oder ein MML-String sein.",
+            "de": "Spielt den Sound snd auf diesem Kanal ab. snd kann eine Soundnummer, eine Liste, eine Sound-Instanz, eine Liste von Sounds oder eine MML-Zeichenkette sein.",
             "es": "Reproduce el sonido snd en este canal. snd puede ser un número de sonido, una lista, una instancia de Sound, una lista de Sounds o una cadena MML.",
-            "fr": "Joue le son snd sur ce canal. snd peut être un numéro de son, une liste, une instance Sound, une liste de Sounds ou une chaîne MML.",
+            "fr": "Joue le son snd sur ce canal. snd peut être un numéro de son, une liste, une instance de Sound, une liste de Sounds ou une chaîne MML.",
             "it": "Riproduce il suono snd su questo canale. snd può essere un numero di suono, una lista, un'istanza Sound, una lista di Sound o una stringa MML.",
             "ja": "このチャンネルでサウンド snd を再生する。snd にはサウンド番号、リスト、Sound インスタンス、Sound のリスト、または MML 文字列を指定できる。",
             "ko": "이 채널에서 사운드 snd를 재생한다. snd에는 사운드 번호, 리스트, Sound 인스턴스, Sound 리스트 또는 MML 문자열을 지정할 수 있다.",
@@ -10403,10 +10401,10 @@
               "type": "int/list/Sound/str",
               "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
-                "cn": "音效编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串",
-                "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
+                "cn": "声音编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串",
+                "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-Zeichenkette",
                 "es": "Número de sonido (0-63), lista de números, instancia Sound, lista de Sounds o cadena MML",
-                "fr": "Numéro de son (0-63), liste de numéros, instance Sound, liste de Sounds ou chaîne MML",
+                "fr": "Numéro de son (0-63), liste de numéros, instance de Sound, liste de Sounds ou chaîne MML",
                 "it": "Numero suono (0-63), lista di numeri, istanza Sound, lista di Sound o stringa MML",
                 "ja": "サウンド番号 (0-63)、番号のリスト、Sound インスタンス、Sound のリスト、または MML 文字列",
                 "ko": "사운드 번호 (0-63), 번호 리스트, Sound 인스턴스, Sound 리스트 또는 MML 문자열",
@@ -10457,7 +10455,7 @@
               "type": "bool",
               "description": {
                 "en": "Resume previous sound after playback ends. Defaults to False.",
-                "cn": "播放结束后恢复之前的音效。默认为 False。",
+                "cn": "播放结束后恢复之前的声音。默认为 False。",
                 "de": "Vorherigen Sound nach Wiedergabeende fortsetzen. Standard ist False.",
                 "es": "Reanudar sonido anterior tras finalizar. Por defecto es False.",
                 "fr": "Reprendre le son précédent après la lecture. Par défaut : False.",
@@ -10508,7 +10506,7 @@
             "cn": "以 (sound_index, sec) 元组形式获取播放位置。播放停止时返回 None。",
             "de": "Gibt die Wiedergabeposition als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt wurde.",
             "es": "Obtiene la posición de reproducción como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
-            "fr": "Récupère la position de lecture sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
+            "fr": "Obtient la position de lecture sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
             "it": "Restituisce la posizione di riproduzione come tupla (sound_index, sec). Restituisce None quando la riproduzione è terminata.",
             "ja": "再生位置を (sound_index, sec) のタプルとして取得する。再生停止時は None を返す。",
             "ko": "재생 위치를 (sound_index, sec) 튜플로 가져온다. 재생이 정지하면 None을 반환한다.",
@@ -10619,10 +10617,10 @@
           "signature": "Tone.sample_bits",
           "description": {
             "en": "Sample bits for the wavetable (1-16). Defaults to 4.",
-            "cn": "波形表的采样位数 (1-16)。默认为 4。",
+            "cn": "波表的样本位数 (1-16)。默认为 4。",
             "de": "Samplebits für die Wavetable (1-16). Standard ist 4.",
-            "es": "Bits de muestra para la wavetable (1-16). Por defecto es 4.",
-            "fr": "Bits d'échantillonnage pour la wavetable (1-16). Par défaut : 4.",
+            "es": "Bits de muestra para la tabla de ondas (1-16). Por defecto es 4.",
+            "fr": "Bits d'échantillonnage pour la table d'ondes (1-16). Par défaut : 4.",
             "it": "Bit di campionamento per la wavetable (1-16). Il valore predefinito è 4.",
             "ja": "ウェーブテーブルのサンプルビット数 (1-16)。デフォルトは 4。",
             "ko": "웨이브테이블의 샘플 비트 수 (1-16). 기본값은 4.",

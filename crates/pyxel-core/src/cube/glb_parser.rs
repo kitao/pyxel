@@ -20,13 +20,12 @@ type ImageCacheKey = (usize, TextureTintKey, Option<(i32, u32)>);
 
 pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
     if !fps.is_finite() || fps <= 0.0 {
-        return Err("GLB animation fps must be greater than 0".to_string());
+        return Err("fps must be greater than 0".to_string());
     }
 
     let bytes = fs::read(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
     validate_glb_header(&bytes)?;
-    let skip_animations = warn_glb_pre_import_features(&bytes)?;
-    let import_bytes = sanitize_glb_for_import(&bytes)?;
+    let (import_bytes, skip_animations) = sanitize_glb_for_import(&bytes)?;
 
     let (document, buffers, images) = gltf::import_slice(import_bytes.as_ref())
         .map_err(|e| format!("Failed to read GLB '{filename}': {e}"))?;
@@ -193,11 +192,7 @@ fn resolve_mask_colkey(
         if !needs_colkey {
             return None;
         }
-        if let Some(index) = used_colors.iter().position(|used| !*used) {
-            return Some(index as i32);
-        }
-        warn_glb("GLB alpha mask requires an unused colkey color; alpha mask is ignored");
-        return None;
+        return select_fallback_mask_colkey(used_colors);
     };
 
     if !needs_colkey {
@@ -425,21 +420,6 @@ fn validate_glb_header(bytes: &[u8]) -> Result<(), String> {
     Ok(())
 }
 
-fn warn_glb_pre_import_features(bytes: &[u8]) -> Result<bool, String> {
-    let Some(json_bytes) = glb_json_chunk(bytes)? else {
-        return Ok(false);
-    };
-    let has_animation_pointer = json_bytes
-        .windows(br#""KHR_animation_pointer""#.len())
-        .any(|window| window == br#""KHR_animation_pointer""#);
-    if has_animation_pointer {
-        warn_glb(
-            "GLB animation pointer/material animation is not supported; animations are ignored",
-        );
-    }
-    Ok(has_animation_pointer)
-}
-
 fn glb_json_chunk(bytes: &[u8]) -> Result<Option<&[u8]>, String> {
     if bytes.len() < 20 {
         return Ok(None);
@@ -458,15 +438,43 @@ fn glb_json_chunk(bytes: &[u8]) -> Result<Option<&[u8]>, String> {
     Ok(Some(&bytes[20..json_end]))
 }
 
-fn sanitize_glb_for_import(bytes: &[u8]) -> Result<Cow<'_, [u8]>, String> {
+fn sanitize_glb_for_import(bytes: &[u8]) -> Result<(Cow<'_, [u8]>, bool), String> {
     let Some(json_bytes) = glb_json_chunk(bytes)? else {
-        return Ok(Cow::Borrowed(bytes));
+        return Ok((Cow::Borrowed(bytes), false));
     };
-    if !json_bytes
-        .windows(br#""KHR_animation_pointer""#.len())
-        .any(|window| window == br#""KHR_animation_pointer""#)
-    {
-        return Ok(Cow::Borrowed(bytes));
+    let mut json: gltf::json::Value = gltf::json::deserialize::from_slice(json_bytes)
+        .map_err(|e| format!("Failed to read GLB JSON: {e}"))?;
+    let extension = "KHR_animation_pointer";
+    let declared = ["extensionsUsed", "extensionsRequired"].iter().any(|key| {
+        json[*key]
+            .as_array()
+            .is_some_and(|names| names.iter().any(|name| name.as_str() == Some(extension)))
+    });
+    let targeted = json["animations"].as_array().is_some_and(|animations| {
+        animations.iter().any(|animation| {
+            animation["channels"].as_array().is_some_and(|channels| {
+                channels
+                    .iter()
+                    .any(|channel| channel["target"]["extensions"].get(extension).is_some())
+            })
+        })
+    });
+    if !declared && !targeted {
+        return Ok((Cow::Borrowed(bytes), false));
+    }
+    warn_glb("GLB animation pointer/material animation is not supported; animations are ignored");
+    let object = json.as_object_mut().unwrap();
+    object.remove("animations");
+    for key in ["extensionsUsed", "extensionsRequired"] {
+        if let Some(names) = object
+            .get_mut(key)
+            .and_then(gltf::json::Value::as_array_mut)
+        {
+            names.retain(|name| name.as_str() != Some(extension));
+            if names.is_empty() {
+                object.remove(key);
+            }
+        }
     }
 
     // GLB container layout: 12-byte header (magic, version, total length),
@@ -475,13 +483,8 @@ fn sanitize_glb_for_import(bytes: &[u8]) -> Result<Cow<'_, [u8]>, String> {
     let json_len = u32::from_le_bytes([bytes[12], bytes[13], bytes[14], bytes[15]]) as usize;
     let json_start = 20;
     let json_end = json_start + json_len;
-    let json = std::str::from_utf8(json_bytes)
-        .map_err(|_| "GLB JSON chunk must be UTF-8".to_string())?
-        .trim_end_matches([' ', '\0']);
-    let json = remove_top_level_json_property(json, "animations")?;
-    let json = remove_top_level_json_property(&json, "extensionsUsed")?;
-    let json = remove_top_level_json_property(&json, "extensionsRequired")?;
-    let mut new_json = json.into_bytes();
+    let mut new_json = gltf::json::serialize::to_vec(&json)
+        .map_err(|e| format!("Failed to write GLB JSON: {e}"))?;
     let pad = (4 - new_json.len() % 4) % 4;
     new_json.extend(std::iter::repeat_n(b' ', pad));
 
@@ -493,161 +496,10 @@ fn sanitize_glb_for_import(bytes: &[u8]) -> Result<Cow<'_, [u8]>, String> {
     out.extend_from_slice(b"JSON");
     out.extend_from_slice(&new_json);
     out.extend_from_slice(&bytes[json_end..]);
-    Ok(Cow::Owned(out))
-}
-
-fn remove_top_level_json_property(json: &str, key: &str) -> Result<String, String> {
-    let Some((start, end)) = top_level_json_property_span(json, key)? else {
-        return Ok(json.to_string());
-    };
-    let mut out = String::with_capacity(json.len() - (end - start));
-    out.push_str(&json[..start]);
-    out.push_str(&json[end..]);
-    Ok(out)
-}
-
-fn top_level_json_property_span(json: &str, key: &str) -> Result<Option<(usize, usize)>, String> {
-    let bytes = json.as_bytes();
-    let key_literal = format!("\"{key}\"");
-    let key_bytes = key_literal.as_bytes();
-    let mut depth = 0i32;
-    let mut in_string = false;
-    let mut escape = false;
-    let mut i = 0;
-
-    // Scan top-level JSON tokens while respecting strings and nesting
-    while i < bytes.len() {
-        let b = bytes[i];
-        if in_string {
-            if escape {
-                escape = false;
-            } else if b == b'\\' {
-                escape = true;
-            } else if b == b'"' {
-                in_string = false;
-            }
-            i += 1;
-            continue;
-        }
-
-        match b {
-            b'"' => {
-                if depth == 1 && bytes[i..].starts_with(key_bytes) {
-                    let mut colon = skip_json_ws(bytes, i + key_bytes.len());
-                    if bytes.get(colon) != Some(&b':') {
-                        i += 1;
-                        continue;
-                    }
-                    colon += 1;
-                    let value_start = skip_json_ws(bytes, colon);
-                    let value_end = skip_json_value(bytes, value_start)?;
-                    let mut end = skip_json_ws(bytes, value_end);
-                    let mut start = i;
-                    let prev = previous_json_non_ws(bytes, start);
-                    if let Some(prev) = prev.filter(|&prev| bytes[prev] == b',') {
-                        start = prev;
-                    } else {
-                        let next = skip_json_ws(bytes, end);
-                        if bytes.get(next) == Some(&b',') {
-                            end = next + 1;
-                        }
-                    }
-                    return Ok(Some((start, end)));
-                }
-                in_string = true;
-            }
-            b'{' | b'[' => depth += 1,
-            b'}' | b']' => depth -= 1,
-            _ => {}
-        }
-        i += 1;
-    }
-    Ok(None)
-}
-
-fn skip_json_ws(bytes: &[u8], mut i: usize) -> usize {
-    while matches!(bytes.get(i), Some(b' ' | b'\n' | b'\r' | b'\t')) {
-        i += 1;
-    }
-    i
-}
-
-fn previous_json_non_ws(bytes: &[u8], i: usize) -> Option<usize> {
-    let mut i = i.checked_sub(1)?;
-    while matches!(bytes[i], b' ' | b'\n' | b'\r' | b'\t') {
-        i = i.checked_sub(1)?;
-    }
-    Some(i)
-}
-
-fn skip_json_value(bytes: &[u8], start: usize) -> Result<usize, String> {
-    let Some(&first) = bytes.get(start) else {
-        return Err("GLB JSON property is missing a value".to_string());
-    };
-    if first == b'"' {
-        return skip_json_string(bytes, start);
-    }
-    if first != b'{' && first != b'[' {
-        let mut i = start;
-        while i < bytes.len() && !matches!(bytes[i], b',' | b'}' | b']') {
-            i += 1;
-        }
-        return Ok(i);
-    }
-
-    let mut depth = 0i32;
-    let mut in_string = false;
-    let mut escape = false;
-    for (i, &b) in bytes.iter().enumerate().skip(start) {
-        if in_string {
-            if escape {
-                escape = false;
-            } else if b == b'\\' {
-                escape = true;
-            } else if b == b'"' {
-                in_string = false;
-            }
-            continue;
-        }
-        match b {
-            b'"' => in_string = true,
-            b'{' | b'[' => depth += 1,
-            b'}' | b']' => {
-                depth -= 1;
-                if depth == 0 {
-                    return Ok(i + 1);
-                }
-            }
-            _ => {}
-        }
-    }
-    Err("GLB JSON property value is truncated".to_string())
-}
-
-fn skip_json_string(bytes: &[u8], start: usize) -> Result<usize, String> {
-    let mut escape = false;
-    for (i, &b) in bytes.iter().enumerate().skip(start + 1) {
-        if escape {
-            escape = false;
-        } else if b == b'\\' {
-            escape = true;
-        } else if b == b'"' {
-            return Ok(i + 1);
-        }
-    }
-    Err("GLB JSON string value is truncated".to_string())
+    Ok((Cow::Owned(out), true))
 }
 
 fn validate_document(document: &gltf::Document, image_count: usize) -> Result<(), String> {
-    if document
-        .extensions_used()
-        .chain(document.extensions_required())
-        .any(|extension| extension == "KHR_animation_pointer")
-    {
-        warn_glb(
-            "GLB animation pointer/material animation is not supported; animations are ignored",
-        );
-    }
     if document.skins().next().is_some() {
         warn_glb("GLB skins are not supported; skinning is ignored");
     }
@@ -690,9 +542,6 @@ fn validate_mesh_features(document: &gltf::Document) {
     for node in document.nodes() {
         if let gltf::scene::Transform::Matrix { .. } = node.transform() {
             warn_glb("GLB matrix node transforms are not supported; transform is decomposed");
-        }
-        if node.skin().is_some() {
-            warn_glb("GLB skins are not supported; skinning is ignored");
         }
         if node.weights().is_some() {
             warn_glb("GLB node morph target weights are not supported; base mesh is used");
@@ -854,9 +703,6 @@ fn import_primitive(
         .ok_or_else(|| "GLB primitive is missing POSITION".to_string())?
         .flat_map(std::iter::IntoIterator::into_iter)
         .collect::<Vec<f32>>();
-    if positions.len() % 3 != 0 {
-        return Err("GLB primitive POSITION length is not divisible by 3".to_string());
-    }
     let vertex_count = positions.len() / 3;
     if vertex_count == 0 {
         return Err("GLB primitive POSITION count is zero".to_string());
@@ -870,7 +716,7 @@ fn import_primitive(
         None if has_texture => return Err("GLB primitive is missing TEXCOORD_0".to_string()),
         None => Vec::new(),
     };
-    if has_texture && (uvs.len() % 2 != 0 || uvs.len() / 2 != vertex_count) {
+    if has_texture && uvs.len() / 2 != vertex_count {
         return Err("GLB TEXCOORD_0 and POSITION count mismatch".to_string());
     }
     let vertex_normals = match reader.read_normals() {
@@ -878,7 +724,7 @@ fn import_primitive(
             let normals = normals
                 .flat_map(std::iter::IntoIterator::into_iter)
                 .collect::<Vec<f32>>();
-            if normals.len() % 3 != 0 || normals.len() / 3 != vertex_count {
+            if normals.len() / 3 != vertex_count {
                 return Err("GLB NORMAL and POSITION count mismatch".to_string());
             }
             if normals.iter().any(|normal| !normal.is_finite()) {
@@ -977,7 +823,6 @@ fn import_animations(
         .map(|transform| *rc_ref!(transform))
         .collect::<Vec<_>>();
 
-    // Import each animation and its target-property channels
     for animation in document.animations() {
         let motion = Motion::new(
             animation.name().unwrap_or("").to_string(),
@@ -994,13 +839,26 @@ fn import_animations(
                 };
                 let reader = channel
                     .reader(|buffer| buffers.get(buffer.index()).map(|data| data.0.as_slice()));
-                let inputs = reader
+                let mut inputs = reader
                     .read_inputs()
                     .ok_or_else(|| "GLB animation channel is missing input times".to_string())?
-                    .map(|seconds| seconds * fps)
                     .collect::<Vec<f32>>();
                 if inputs.is_empty() {
                     return Err("GLB animation channel has empty input keys".to_string());
+                }
+                if inputs.iter().any(|time| !time.is_finite() || *time < 0.0)
+                    || inputs.windows(2).any(|pair| pair[0] >= pair[1])
+                {
+                    return Err(
+                        "GLB animation input times must be finite, nonnegative, and strictly increasing"
+                            .to_string(),
+                    );
+                }
+                for time in &mut inputs {
+                    *time *= fps;
+                    if !time.is_finite() {
+                        return Err("GLB animation frame times must be finite".to_string());
+                    }
                 }
                 if let Some(&last) = inputs.last() {
                     m.length = m.length.max(last);
@@ -1010,8 +868,6 @@ fn import_animations(
                 let part_index = *node_parts.get(&node_index).ok_or_else(|| {
                     format!("GLB animation targets node {node_index} outside imported scene")
                 })?;
-                // Property dispatch: read each channel's outputs as the value
-                // kind its glTF target property declares.
                 let (target, values) = match channel.target().property() {
                     gltf::animation::Property::Translation => {
                         let values = match reader.read_outputs() {
@@ -1085,7 +941,7 @@ fn import_animations(
                         return Err("GLB morph target animation is not supported".to_string());
                     }
                 };
-                let value_count = value_len(&values);
+                let value_count = values.len();
                 if value_count != inputs.len() {
                     return Err(format!(
                         "GLB animation input/output counts mismatch: inputs={}, outputs={}",
@@ -1105,15 +961,6 @@ fn import_animations(
         rc_mut!(mesh).motions.push(motion);
     }
     Ok(())
-}
-
-fn value_len(values: &MotionValues) -> usize {
-    match values {
-        MotionValues::Translations(values) | MotionValues::Scales(values) => values.len(),
-        MotionValues::Rotations(values) => values.len(),
-        MotionValues::CubicTranslations(values) | MotionValues::CubicScales(values) => values.len(),
-        MotionValues::CubicRotations(values) => values.len(),
-    }
 }
 
 fn cubic_vec3_keys(values: &[Vec3], fps: f32) -> Result<Vec<CubicVec3Key>, String> {

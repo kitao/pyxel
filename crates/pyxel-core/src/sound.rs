@@ -430,9 +430,7 @@ impl Sound {
 
         let mut last_tone: Option<SoundTone> = None;
         let mut last_volume: Option<SoundVolume> = None;
-        let mut last_fadeout: Option<SoundEffect> = None;
-        let mut last_vibrato: Option<SoundEffect> = None;
-        let mut last_slide: Option<SoundEffect> = None;
+        let mut last_effect: Option<SoundEffect> = None;
 
         for (i, &note) in self.notes.iter().enumerate() {
             if note < 0 {
@@ -456,8 +454,8 @@ impl Sound {
                 });
             }
 
-            if last_fadeout != Some(effect) {
-                last_fadeout = Some(effect);
+            if last_effect != Some(effect) {
+                last_effect = Some(effect);
                 let slot = match effect {
                     EFFECT_FADEOUT => 1,
                     EFFECT_HALF_FADEOUT => 2,
@@ -465,17 +463,9 @@ impl Sound {
                     _ => 0,
                 };
                 commands.push(MmlCommand::Envelope { slot });
-            }
-
-            if last_vibrato != Some(effect) {
-                last_vibrato = Some(effect);
                 commands.push(MmlCommand::Vibrato {
                     slot: u32::from(effect == EFFECT_VIBRATO),
                 });
-            }
-
-            if last_slide != Some(effect) {
-                last_slide = Some(effect);
                 commands.push(MmlCommand::Glide {
                     slot: u32::from(effect == EFFECT_SLIDE),
                 });

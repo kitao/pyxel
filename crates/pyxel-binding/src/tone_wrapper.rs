@@ -31,8 +31,6 @@ define_audio_wrapper!(Tone, pyxel::Tone, pyxel::RcTone);
 
 #[pymethods]
 impl Tone {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Tone::new())
@@ -111,8 +109,6 @@ impl Tone {
         Wavetable::wrap(self.inner.clone())
     }
 }
-
-// Module registration
 
 pub fn add_tone_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Wavetable>()?;

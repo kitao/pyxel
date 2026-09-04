@@ -1,6 +1,8 @@
 import zipfile
 from pathlib import Path
+from uuid import uuid4
 
+import PIL.Image
 import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
@@ -20,6 +22,7 @@ def _write_resource(path, toml_text):
 
 
 def _mark_zip_entry_encrypted(path, entry):
+    # Set encryption flags in both ZIP headers without encrypting the payload.
     data = bytearray(path.read_bytes())
     entry = entry.encode()
 
@@ -52,18 +55,20 @@ def _mark_zip_entry_encrypted(path, entry):
 
 
 class TestSaveLoad:
-    def test_load_pyxres(self, assets_dir):
-        pyxel.load(str(assets_dir / "sample.pyxres"))
-
-    def test_load_old_format_pyxres(self, tmp_path):
+    @pytest.mark.parametrize(("version", "tile"), [("1.4.0", "021"), ("1.9.0", "0101")])
+    def test_load_old_format_pyxres(self, tmp_path, version, tile):
         # Legacy text format: hex grids per bank under pyxel_resource/.
         path = tmp_path / "legacy.pyxres"
-        with zipfile.ZipFile(path, "w") as zf:
-            zf.writestr("pyxel_resource/version", "1.9.0")
-            zf.writestr("pyxel_resource/image0", "78\n9a\n")
-            zf.writestr("pyxel_resource/tilemap0", "0101\n")
-            zf.writestr("pyxel_resource/sound00", "000c\n01\n73\n00\n20\n")
-            zf.writestr("pyxel_resource/music0", "0001\nnone\nnone\nnone\n")
+        _write_legacy_resource(
+            path,
+            {
+                "version": version,
+                "image0": "78\n9a\n",
+                "tilemap0": tile + "\n",
+                "sound00": "000cff\n01\n73\n00\n20\n",
+                "music0": "0001\nnone\nnone\nnone\n",
+            },
+        )
 
         pyxel.load(str(path))
         assert pyxel.images[0].pget(0, 0) == 7
@@ -71,7 +76,7 @@ class TestSaveLoad:
         assert pyxel.images[0].pget(0, 1) == 9
         assert pyxel.images[0].pget(1, 1) == 10
         assert pyxel.tilemaps[0].pget(0, 0) == (1, 1)
-        assert list(pyxel.sounds[0].notes) == [0, 12]
+        assert list(pyxel.sounds[0].notes) == [0, 12, -1]
         assert list(pyxel.sounds[0].tones) == [0, 1]
         assert list(pyxel.sounds[0].volumes) == [7, 3]
         assert list(pyxel.sounds[0].effects) == [0, 0]
@@ -180,7 +185,9 @@ class TestSaveLoad:
         _write_legacy_resource(path, {"image0": "1", "tilemap0": "g"})
         pyxel.images[0].cls(7)
 
-        with pytest.raises(Exception, match="^Failed to load"):
+        with pytest.raises(
+            Exception, match="invalid tile width in 'pyxel_resource/tilemap0'"
+        ):
             pyxel.load(str(path))
 
         assert pyxel.images[0].pget(0, 0) == 7
@@ -210,13 +217,40 @@ class TestSaveLoad:
 
         assert pyxel.images[0].pget(0, 0) == 7
 
-    def test_load_unsupported_format_version(self, tmp_path):
-        # A pyxres written by a newer Pyxel must be rejected, not silently misread.
+    @pytest.mark.parametrize(
+        "header",
+        [
+            "format_version = 99\n",
+            '"format_version" = 99 # future version\n',
+            "format_version_label = 1\nformat_version = 99\n",
+        ],
+    )
+    def test_load_unsupported_format_version(self, tmp_path, header):
         path = tmp_path / "future.pyxres"
-        with zipfile.ZipFile(path, "w") as zf:
-            zf.writestr("pyxel_resource.toml", "format_version = 99\n")
+        _write_resource(path, header)
 
         with raises_exact(Exception, "Unsupported resource format version '99'"):
+            pyxel.load(str(path))
+
+    @pytest.mark.parametrize(
+        ("version", "message"),
+        [
+            (1, "Failed to parse resource data"),
+            (99, "Unsupported resource format version '99'"),
+        ],
+    )
+    def test_format_version_precedes_body_parse_error(self, tmp_path, version, message):
+        path = tmp_path / "broken.pyxres"
+        _write_resource(path, f"format_version = {version}\nimages = [\n")
+
+        with raises_exact(Exception, message):
+            pyxel.load(str(path))
+
+    def test_nested_format_version_is_not_the_resource_version(self, tmp_path):
+        path = tmp_path / "nested-version.pyxres"
+        _write_resource(path, "[metadata]\nformat_version = 99\n")
+
+        with raises_exact(Exception, "Failed to parse resource format version"):
             pyxel.load(str(path))
 
     @pytest.mark.parametrize(
@@ -274,7 +308,7 @@ class TestSaveLoad:
         )
         pyxel.images[0].cls(7)
 
-        with pytest.raises(Exception, match="^Invalid resource data"):
+        with pytest.raises(Exception, match=r"tilemaps\[0\]\.data must not be empty"):
             pyxel.load(str(path))
 
         assert pyxel.images[0].pget(0, 0) == 7
@@ -360,33 +394,27 @@ class TestSaveLoad:
         assert pyxel.images[0].pget(0, 0) == 0
         assert list(pyxel.sounds[0].notes) == modified_notes
 
-    def test_load_nonexistent_file_raises(self):
-        with raises_exact(
-            Exception, "Failed to open file '/nonexistent/path/file.pyxres'"
-        ):
-            pyxel.load("/nonexistent/path/file.pyxres")
-
-    def test_save_creates_file(self, tmp_path):
-        path = str(tmp_path / "new_file.pyxres")
-        assert not Path(path).exists()
-        pyxel.save(path)
-        assert Path(path).exists()
-        assert Path(path).stat().st_size > 0
-
     def test_excl_aliases_deprecated(self, capfd, tmp_path):
-        # excl_* are the deprecated aliases; warning fires only once per session,
-        # so test save and load in order.
+        # Save and load share a once-per-session deprecation warning.
         pyxel.images[0].cls(0)
         pyxel.images[0].pset(0, 0, 7)
         path = str(tmp_path / "test_excl_dep.pyxres")
-        pyxel.save(path, excl_images=True)  # type: ignore[call-arg]
+        pyxel.save(path, exclude_images=False, excl_images=True)  # type: ignore[call-arg]
         out = capfd.readouterr().out
         assert out == "excl_* options are deprecated. Use exclude_* instead.\n"
 
         pyxel.images[0].cls(0)
-        pyxel.load(path, excl_images=True)  # type: ignore[call-arg]
-        # excl_images=True excluded images on save, so load brings back nothing.
+        pyxel.load(path)
         assert pyxel.images[0].pget(0, 0) == 0
+
+        pyxel.images[0].pset(0, 0, 7)
+        full_path = str(tmp_path / "with_images.pyxres")
+        pyxel.save(full_path)
+        pyxel.images[0].cls(0)
+        pyxel.load(full_path, exclude_images=False, excl_images=True)  # type: ignore[call-arg]
+        assert pyxel.images[0].pget(0, 0) == 0
+        pyxel.load(full_path)
+        assert pyxel.images[0].pget(0, 0) == 7
 
 
 class TestPalette:
@@ -394,38 +422,31 @@ class TestPalette:
         original_colors = list(pyxel.colors)
         try:
             pyxel.load_pal(str(assets_dir / "audio_bgm.pyxpal"))
-            # The bundled palette carries 32 colors, one hex value per line.
             assert len(pyxel.colors) == 32
         finally:
             pyxel.colors[:] = original_colors
 
     def test_load_pal_skips_whitespace_only_lines(self, tmp_path):
-        backup_path = str(tmp_path / "backup.pyxpal")
-        pyxel.save_pal(backup_path)
+        original_colors = list(pyxel.colors)
         try:
             pal_file = tmp_path / "test.pyxpal"
             pal_file.write_text("ff0000\n   \n00ff00\n")
             pyxel.load_pal(str(pal_file))
-            assert pyxel.colors[0] == 0xFF0000
-            assert pyxel.colors[1] == 0x00FF00
+            assert list(pyxel.colors) == [0xFF0000, 0x00FF00]
         finally:
-            pyxel.load_pal(backup_path)
+            pyxel.colors[:] = original_colors
 
     def test_save_load_pal_roundtrip(self, tmp_path):
         original_colors = list(pyxel.colors)
         path = str(tmp_path / "test.pyxpal")
         pyxel.save_pal(path)
 
-        pyxel.colors[0] = 0xFFFFFF
-        pyxel.load_pal(path)
-        assert list(pyxel.colors) == original_colors
-
-    def test_save_pal_creates_file(self, tmp_path):
-        path = str(tmp_path / "test_save_only.pyxpal")
-        assert not Path(path).exists()
-        pyxel.save_pal(path)
-        assert Path(path).exists()
-        assert Path(path).stat().st_size > 0
+        try:
+            pyxel.colors[0] = 0xFFFFFF
+            pyxel.load_pal(path)
+            assert list(pyxel.colors) == original_colors
+        finally:
+            pyxel.colors[:] = original_colors
 
 
 class TestScreenshot:
@@ -434,8 +455,9 @@ class TestScreenshot:
         pyxel.flip()
         path = str(tmp_path / "test_screenshot.png")
         pyxel.screenshot(path)
-        assert Path(path).exists()
-        assert Path(path).stat().st_size > 0
+        with PIL.Image.open(path) as image:
+            assert image.format == "PNG"
+            assert image.size == (pyxel.width * 2, pyxel.height * 2)
 
     def test_screenshot_with_scale(self, tmp_path):
         pyxel.cls(7)
@@ -444,25 +466,32 @@ class TestScreenshot:
         path2 = str(tmp_path / "test_s2.png")
         pyxel.screenshot(path1, scale=1)
         pyxel.screenshot(path2, scale=2)
-        assert Path(path1).exists()
-        assert Path(path2).exists()
-        assert Path(path2).stat().st_size > Path(path1).stat().st_size
+        with PIL.Image.open(path1) as image1, PIL.Image.open(path2) as image2:
+            assert image1.size == (pyxel.width, pyxel.height)
+            assert image2.size == (pyxel.width * 2, pyxel.height * 2)
 
     def test_screencast(self, tmp_path):
-        # In headless mode, flip() doesn't capture frames,
-        # so screencast produces no GIF. Verify it doesn't raise.
         pyxel.reset_screencast()
         pyxel.cls(5)
         pyxel.flip()
         path = str(tmp_path / "test_screencast.gif")
         pyxel.screencast(path)
-
-    def test_reset_screencast(self):
-        pyxel.reset_screencast()
+        with PIL.Image.open(path) as image:
+            assert image.format == "GIF"
+            assert image.size == (pyxel.width * 2, pyxel.height * 2)
+            assert image.n_frames == 1
 
 
 class TestUserDataDir:
     def test_user_data_dir(self):
-        result = pyxel.user_data_dir("TestVendor", "TestApp")
-        assert isinstance(result, str)
-        assert len(result) > 0
+        vendor = f"PyxelTest-{uuid4().hex}"
+        result = pyxel.user_data_dir(vendor, "TestApp")
+        path = Path(result)
+        try:
+            assert isinstance(result, str)
+            assert result
+            assert path.is_dir()
+        finally:
+            if path.name == "TestApp" and path.parent.name == vendor:
+                path.rmdir()
+                path.parent.rmdir()

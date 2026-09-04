@@ -11,7 +11,6 @@ use glow::Context;
 
 use super::super::facade::GlProfile;
 use super::poll_events::{open_gamepad, GamepadSlot};
-// This SDL bridge intentionally uses the generated C names directly.
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
@@ -77,6 +76,7 @@ fn window_title_c_string(title: &str) -> CString {
     CString::new(title).expect("window title NUL bytes are replaced")
 }
 
+#[cfg(any(not(target_os = "emscripten"), test))]
 fn release_window_resources<DropGlowContext, DeleteSdlContext, DestroyWindow>(
     gl_context: &mut *mut Context,
     sdl_gl_context: &mut SDL_GLContext,
@@ -714,7 +714,6 @@ mod tests {
         assert_eq!(actions.borrow().len(), 3);
     }
 
-    // Native SDL builds run this; Pyxel Web reuses audio across resets.
     #[cfg(not(target_os = "emscripten"))]
     #[test]
     fn test_native_audio_start_does_not_reuse_saved_device() {
@@ -754,8 +753,6 @@ mod tests {
         let mut last = 0.0;
         let mut next = 33.0;
 
-        // Within half a frame of the scheduled time counts as due, so a
-        // display refreshing at the target fps never skips on clock jitter.
         let delta = advance_frame_schedule(17.0, 33.0, &mut last, &mut next);
 
         assert_eq!(delta, Some(33.0));
@@ -775,7 +772,7 @@ mod tests {
             Some(33.0)
         );
         assert_eq!(last, 33.0);
-        assert!(next > 100.0);
+        assert_eq!(next, 132.0);
         assert_eq!(
             advance_frame_schedule(next, 33.0, &mut last, &mut next),
             Some(99.0)

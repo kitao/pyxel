@@ -86,7 +86,6 @@ class TilemapEditor(EditorBase):
 
         self._canvas_panel = CanvasPanel(self)
 
-        # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("drop", self.__on_drop)
@@ -133,7 +132,7 @@ class TilemapEditor(EditorBase):
             pyxel.tilemaps[self.tilemap_index_var].load(
                 self.focus_x_var * 8, self.focus_y_var * 8, filename, 0
             )
-        except (OSError, ValueError) as e:
+        except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
             print(f"Failed to load tilemap: {e}")
 
     def __on_update(self):

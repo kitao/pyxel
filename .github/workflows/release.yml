@@ -48,10 +48,10 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: Pyxel ${{ env.PYXEL_VERSION }}
-          tag_name: ${{ github.ref }}
           files: dist/*
+          name: Pyxel ${{ env.PYXEL_VERSION }}
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
+          tag_name: ${{ github.ref }}
 
       - name: Install Python
         uses: actions/setup-python@v6
@@ -63,5 +63,5 @@ jobs:
           pip install twine
           twine upload dist/*
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}

@@ -2,6 +2,8 @@
 
 import re
 import sys
+import zipfile
+from email.parser import Parser
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +15,7 @@ PYTHON_VERSION_REPLACEMENTS = (
     ("python/pyproject.toml", r'(?m)^(version = ")[^"]+(".*)$'),
     (
         "wasm/pyxel.js",
-        r'(?m)^(const PYXEL_WHEEL_PATH = "pyxel-)[^-\"]+(-cp[^\"]+";)$',
+        r'(?m)^(const PYXEL_WHEEL_PATH\s*=\s*"pyxel-)[^-\"]+(-cp[^\"]+";)$',
     ),
 )
 CARGO_VERSION_REPLACEMENTS = (("crates/Cargo.toml", r'(?m)^(version = ")[^"]+(".*)$'),)
@@ -27,10 +29,13 @@ VERSION_PATTERNS = (
     ("crates/Cargo.toml", r'(?m)^version = "([^"]+)"', True),
     (
         "wasm/pyxel.js",
-        r'(?m)^const PYXEL_WHEEL_PATH = "pyxel-([^-\"]+)-cp[^\"]+";$',
+        r'(?m)^const PYXEL_WHEEL_PATH\s*=\s*"pyxel-([^-\"]+)-cp[^\"]+";$',
         False,
     ),
 )
+WASM_WHEEL_PATH_PATTERN = r'(?m)^const PYXEL_WHEEL_PATH\s*=\s*"([^"]+)";$'
+WASM_VERSION_PATTERN = r'(?m)^const PYXEL_WHEEL_PATH\s*=\s*"pyxel-([^-\"]+)-cp[^\"]+";$'
+EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
 PRE_RELEASE_MAP = {"a": "alpha", "b": "beta", "rc": "rc"}
 
 
@@ -72,6 +77,33 @@ def _read_version(root_dir: Path, relative_path: str, pattern: str) -> str:
     return match.group(1)
 
 
+def _wheel_tag_errors(wheel_path: Path, version: str) -> list[str]:
+    wheel_metadata_name = f"pyxel-{version}.dist-info/WHEEL"
+    try:
+        with zipfile.ZipFile(wheel_path) as wheel_zip:
+            if wheel_zip.namelist().count(wheel_metadata_name) != 1:
+                return [
+                    (
+                        f"wasm/{wheel_path.name}: expected wheel metadata member "
+                        f"{wheel_metadata_name}"
+                    )
+                ]
+            wheel_metadata = Parser().parsestr(
+                wheel_zip.read(wheel_metadata_name).decode("utf-8", errors="strict")
+            )
+    except (OSError, UnicodeDecodeError, zipfile.BadZipFile) as error:
+        return [f"wasm/{wheel_path.name}: invalid wheel: {error}"]
+
+    if wheel_metadata.get_all("Tag", []) != [EXPECTED_WHEEL_TAG]:
+        return [
+            (
+                f"wasm/{wheel_path.name}: WHEEL Tag fields do not match "
+                f"{EXPECTED_WHEEL_TAG}"
+            )
+        ]
+    return []
+
+
 def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[str]:
     if tag is None:
         expected = _read_version(
@@ -95,6 +127,36 @@ def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[st
             errors.append(
                 f"{relative_path}: expected {surface_expected}, found {actual}"
             )
+
+    wheel_name = _read_version(
+        root_dir,
+        "wasm/pyxel.js",
+        WASM_WHEEL_PATH_PATTERN,
+    )
+    wasm_version = _read_version(
+        root_dir,
+        "wasm/pyxel.js",
+        WASM_VERSION_PATTERN,
+    )
+    expected_wheel_name = f"pyxel-{wasm_version}-{EXPECTED_WHEEL_TAG}.whl"
+    if wheel_name != expected_wheel_name:
+        errors.append(
+            f"wasm/pyxel.js: expected wheel {expected_wheel_name}, found {wheel_name}"
+        )
+
+    wheel_path = root_dir / "wasm" / wheel_name
+    if not wheel_path.is_file():
+        errors.append(f"wasm/pyxel.js: referenced wheel not found: wasm/{wheel_name}")
+    else:
+        errors.extend(_wheel_tag_errors(wheel_path, wasm_version))
+
+    wheel_paths = sorted((root_dir / "wasm").glob("pyxel-*.whl"))
+    if len(wheel_paths) != 1:
+        wheel_names = ", ".join(path.name for path in wheel_paths)
+        errors.append(
+            "wasm: expected exactly one Pyxel wheel, "
+            f"found {len(wheel_paths)}: {wheel_names or 'none'}"
+        )
     return errors
 
 

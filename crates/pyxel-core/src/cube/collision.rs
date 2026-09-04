@@ -14,7 +14,6 @@ const CONTACT_EPSILON: f32 = 1e-6;
 // pre-filtering. Computed per-frame from each collider's current world
 // transform; the result is a value type so callers can stash it in a
 // Vec without paying for an Rc per record.
-
 #[derive(Clone, Copy, Debug)]
 pub struct Aabb {
     pub min: Vec3,
@@ -175,20 +174,10 @@ impl Aabb {
             && self.min.z <= other.max.z
             && self.max.z >= other.min.z
     }
-
-    pub fn contains_point(&self, p: Vec3) -> bool {
-        p.x >= self.min.x
-            && p.x <= self.max.x
-            && p.y >= self.min.y
-            && p.y <= self.max.y
-            && p.z >= self.min.z
-            && p.z <= self.max.z
-    }
 }
 
 // World-space contact record produced by the narrow phase. The normal
 // points from `b` toward `a`, matching the user-facing convention.
-
 #[derive(Clone, Copy, Debug)]
 pub struct ContactGeom {
     pub point: Vec3,
@@ -196,12 +185,9 @@ pub struct ContactGeom {
     pub depth: f32,
 }
 
-// Shape classification
-
-// size == 0 produces a sphere; size = (0, h, 0) produces a local-Y
-// capsule; anything else produces a rounded box. The radius rounds every
-// family and becomes the sphere radius when the core is a point.
-
+// Components with abs(value) < 1e-9 count as zero. A zero core produces
+// a sphere; (0, h, 0) produces a local-Y capsule; anything else produces
+// a rounded box. The radius rounds every family.
 #[derive(Clone, Copy, Debug)]
 pub enum ColliderShape {
     Sphere { r: f32 },
@@ -233,8 +219,6 @@ pub fn classify_shape(size: Vec3, radius: f32) -> ColliderShape {
         }
     }
 }
-
-// Collider AABB resolution
 
 // Resolve a Collider's world-space AABB. The collider may carry a
 // rounded-box family shape or a static mesh; sphere falls out of the
@@ -284,118 +268,6 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
     };
     Some(ContactGeom {
         point,
-        normal,
-        depth,
-    })
-}
-
-// Sphere vs axis-aligned box. The box is passed as an AABB in world
-// space; this is the world-space approximation cube uses for the
-// rounded-box family (size > 0).
-pub fn sphere_vs_aabb(
-    sphere_center: Vec3,
-    sphere_radius: f32,
-    box_aabb: &Aabb,
-) -> Option<ContactGeom> {
-    let cx = sphere_center.x.clamp(box_aabb.min.x, box_aabb.max.x);
-    let cy = sphere_center.y.clamp(box_aabb.min.y, box_aabb.max.y);
-    let cz = sphere_center.z.clamp(box_aabb.min.z, box_aabb.max.z);
-    let dx = sphere_center.x - cx;
-    let dy = sphere_center.y - cy;
-    let dz = sphere_center.z - cz;
-    let dist_sq = dx * dx + dy * dy + dz * dz;
-    if dist_sq >= sphere_radius * sphere_radius {
-        return None;
-    }
-    let dist = dist_sq.sqrt();
-    let (normal, depth) = if dist > 1e-12 {
-        // Sphere center outside the box: normal points from the closest
-        // surface point toward the sphere center; depth is how far the
-        // sphere overhangs the surface along that normal.
-        let n = Vec3 {
-            x: dx / dist,
-            y: dy / dist,
-            z: dz / dist,
-        };
-        (n, sphere_radius - dist)
-    } else {
-        // Sphere center inside the box: pick the axis of smallest
-        // penetration so the push-back leaves the box quickly. depth
-        // must cover both the center-to-surface distance (min_pen) and
-        // the sphere radius — otherwise an embedded sphere only emerges
-        // partially per frame.
-        let pen_x_min = sphere_center.x - box_aabb.min.x;
-        let pen_x_max = box_aabb.max.x - sphere_center.x;
-        let pen_y_min = sphere_center.y - box_aabb.min.y;
-        let pen_y_max = box_aabb.max.y - sphere_center.y;
-        let pen_z_min = sphere_center.z - box_aabb.min.z;
-        let pen_z_max = box_aabb.max.z - sphere_center.z;
-        let candidates = [
-            (
-                pen_x_min,
-                Vec3 {
-                    x: -1.0,
-                    y: 0.0,
-                    z: 0.0,
-                },
-            ),
-            (
-                pen_x_max,
-                Vec3 {
-                    x: 1.0,
-                    y: 0.0,
-                    z: 0.0,
-                },
-            ),
-            (
-                pen_y_min,
-                Vec3 {
-                    x: 0.0,
-                    y: -1.0,
-                    z: 0.0,
-                },
-            ),
-            (
-                pen_y_max,
-                Vec3 {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.0,
-                },
-            ),
-            (
-                pen_z_min,
-                Vec3 {
-                    x: 0.0,
-                    y: 0.0,
-                    z: -1.0,
-                },
-            ),
-            (
-                pen_z_max,
-                Vec3 {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                },
-            ),
-        ];
-        let mut min_pen = candidates[0].0;
-        let mut min_normal = candidates[0].1;
-        for (pen, n) in &candidates[1..] {
-            if *pen < min_pen {
-                min_pen = *pen;
-                min_normal = *n;
-            }
-        }
-        (min_normal, sphere_radius + min_pen)
-    };
-    Some(ContactGeom {
-        point: Vec3 {
-            x: cx,
-            y: cy,
-            z: cz,
-        },
         normal,
         depth,
     })
@@ -462,7 +334,7 @@ pub fn sphere_vs_rounded_obb(
     }
     // Center inside the core box: push along the local axis with the
     // smallest margin; depth covers the interior margin plus the full
-    // combined radius (mirrors the sphere_vs_aabb interior fallback).
+    // combined radius.
     let margins = [
         (
             half.x - p.x,
@@ -551,8 +423,7 @@ pub fn capsule_vs_sphere(
         z: 0.0,
     });
     let on_axis = closest_point_on_segment(c_sphere, top, bot);
-    // sphere_vs_sphere(a=sphere, b=capsule-point) yields a normal from
-    // b toward a, i.e. capsule → sphere, which is what we document.
+    // Reverse the sphere/capsule argument order to get the capsule-to-sphere normal.
     sphere_vs_sphere(c_sphere, r_sphere, on_axis, cap_r.max(0.0))
 }
 
@@ -631,9 +502,8 @@ pub fn capsule_vs_rounded_obb(
 // to the projection radius on every axis. Near-parallel edge pairs
 // produce near-zero cross products and are skipped. Normal points from
 // b toward a; the contact point sits on b's swept surface along the
-// normal, pulled back by half the overlap — matching aabb_vs_aabb's
-// overlap-midpoint convention on the normal axis (the tangential
-// placement uses b's center, a practical proxy for rotated boxes).
+// normal, pulled back by half the overlap. The tangential placement
+// uses b's center, a practical proxy for rotated boxes.
 pub fn rounded_obb_vs_rounded_obb(
     world_a: &Mat4,
     half_a: Vec3,
@@ -772,9 +642,6 @@ pub fn rounded_obb_vs_rounded_obb(
     if !min_overlap.is_finite() || min_overlap <= 0.0 {
         return None;
     }
-    // Contact point: b's swept-surface support point along the normal,
-    // pulled back by half the overlap (midpoint of the interpenetration
-    // band, mirroring aabb_vs_aabb).
     let support_b: f32 = (0..3)
         .map(|i| (dot(&bx[i], &min_axis) * hb[i]).abs())
         .sum::<f32>()
@@ -788,64 +655,6 @@ pub fn rounded_obb_vs_rounded_obb(
         point,
         normal: min_axis,
         depth: min_overlap,
-    })
-}
-
-// AABB vs AABB. Returns the contact along the axis of smallest overlap,
-// with the normal pointing from b toward a.
-pub fn aabb_vs_aabb(a: &Aabb, b: &Aabb) -> Option<ContactGeom> {
-    if !a.overlaps(b) {
-        return None;
-    }
-    let dx = a.max.x.min(b.max.x) - a.min.x.max(b.min.x);
-    let dy = a.max.y.min(b.max.y) - a.min.y.max(b.min.y);
-    let dz = a.max.z.min(b.max.z) - a.min.z.max(b.min.z);
-    let cx_a = (a.min.x + a.max.x) * 0.5;
-    let cy_a = (a.min.y + a.max.y) * 0.5;
-    let cz_a = (a.min.z + a.max.z) * 0.5;
-    let cx_b = (b.min.x + b.max.x) * 0.5;
-    let cy_b = (b.min.y + b.max.y) * 0.5;
-    let cz_b = (b.min.z + b.max.z) * 0.5;
-    let (depth, normal) = if dx <= dy && dx <= dz {
-        let n = if cx_a < cx_b { -1.0 } else { 1.0 };
-        (
-            dx,
-            Vec3 {
-                x: n,
-                y: 0.0,
-                z: 0.0,
-            },
-        )
-    } else if dy <= dz {
-        let n = if cy_a < cy_b { -1.0 } else { 1.0 };
-        (
-            dy,
-            Vec3 {
-                x: 0.0,
-                y: n,
-                z: 0.0,
-            },
-        )
-    } else {
-        let n = if cz_a < cz_b { -1.0 } else { 1.0 };
-        (
-            dz,
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: n,
-            },
-        )
-    };
-    let point = Vec3 {
-        x: (a.min.x.max(b.min.x) + a.max.x.min(b.max.x)) * 0.5,
-        y: (a.min.y.max(b.min.y) + a.max.y.min(b.max.y)) * 0.5,
-        z: (a.min.z.max(b.min.z) + a.max.z.min(b.max.z)) * 0.5,
-    };
-    Some(ContactGeom {
-        point,
-        normal,
-        depth,
     })
 }
 
@@ -960,7 +769,7 @@ pub fn ray_vs_aabb(
             return None;
         }
     }
-    if tmin < 0.0 || tmin > max_distance {
+    if tmin > max_distance {
         return None;
     }
     let point = Vec3 {
@@ -1095,10 +904,7 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
             z: dz / dist,
         }
     } else {
-        // Sphere center is on the triangle; fall back to the face
-        // normal. The orientation is arbitrary here — terrain shells
-        // never let a thin sphere center land exactly on the surface
-        // in practice.
+        // A center on the triangle uses its winding normal.
         let e1 = Vec3 {
             x: v1.x - v0.x,
             y: v1.y - v0.y,
@@ -1126,12 +932,8 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
     })
 }
 
-// Capsule vs triangle: global closest pair between the capsule segment
-// and the triangle, then a sphere test of the capsule radius at that
-// segment point (Ericson § 5.1.10 decomposition: closest point on the
-// triangle to each segment endpoint, plus segment-vs-each-edge pairs).
-// Normal points from the triangle toward the capsule, matching
-// sphere_vs_triangle.
+// Capsule vs triangle. A crossing axis needs enough face-normal pushout
+// to clear both ends; otherwise the closest pair gives a sphere contact.
 pub fn capsule_vs_triangle(
     cap_world: &Mat4,
     half_h: f32,
@@ -1140,6 +942,10 @@ pub fn capsule_vs_triangle(
     v1: Vec3,
     v2: Vec3,
 ) -> Option<ContactGeom> {
+    let cap_r = cap_r.max(0.0);
+    if cap_r == 0.0 {
+        return None;
+    }
     let top = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: half_h,
@@ -1150,33 +956,78 @@ pub fn capsule_vs_triangle(
         y: -half_h,
         z: 0.0,
     });
-    let d2 = |p: &Vec3, q: &Vec3| (p.x - q.x).powi(2) + (p.y - q.y).powi(2) + (p.z - q.z).powi(2);
-    // Candidate pairs: (segment endpoint → triangle interior/edges) and
-    // (segment ↔ each triangle edge).
-    let mut best_on_seg = top;
-    let mut best_dist2 = f32::INFINITY;
-    for p in [top, bot] {
-        let q = closest_point_on_triangle(p, v0, v1, v2);
-        let d = d2(&p, &q);
-        if d < best_dist2 {
-            best_dist2 = d;
-            best_on_seg = p;
+    let (on_seg, on_tri) = closest_points_segment_triangle(top, bot, v0, v1, v2);
+    if on_seg == on_tri {
+        let (ax, ay, az) = (v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
+        let (bx, by, bz) = (v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
+        let (nx, ny, nz) = (ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
+        let len = (nx * nx + ny * ny + nz * nz).sqrt();
+        if len > 1e-9 {
+            let mut normal = Vec3 {
+                x: nx / len,
+                y: ny / len,
+                z: nz / len,
+            };
+            let distance = |p: Vec3| {
+                (p.x - v0.x) * normal.x + (p.y - v0.y) * normal.y + (p.z - v0.z) * normal.z
+            };
+            let top_distance = distance(top);
+            let bot_distance = distance(bot);
+            let forward = cap_r - top_distance.min(bot_distance);
+            let backward = cap_r + top_distance.max(bot_distance);
+            let depth = if backward < forward {
+                normal.x = -normal.x;
+                normal.y = -normal.y;
+                normal.z = -normal.z;
+                backward
+            } else {
+                forward
+            };
+            return Some(ContactGeom {
+                point: on_tri,
+                normal,
+                depth,
+            });
         }
     }
-    for (e0, e1) in [(v0, v1), (v1, v2), (v2, v0)] {
-        let (s, q) = closest_points_segment_segment(top, bot, e0, e1);
-        let d = d2(&s, &q);
-        if d < best_dist2 {
-            best_dist2 = d;
-            best_on_seg = s;
-        }
-    }
-    // sphere_vs_triangle re-derives the exact closest triangle point and
-    // handles the depth/normal conventions (incl. the interior case).
-    sphere_vs_triangle(best_on_seg, cap_r.max(0.0), v0, v1, v2)
+    sphere_vs_triangle(on_seg, cap_r, v0, v1, v2)
 }
 
 // Closest-point helpers
+
+pub(crate) fn closest_points_segment_triangle(
+    a0: Vec3,
+    a1: Vec3,
+    v0: Vec3,
+    v1: Vec3,
+    v2: Vec3,
+) -> (Vec3, Vec3) {
+    let direction = Vec3 {
+        x: a1.x - a0.x,
+        y: a1.y - a0.y,
+        z: a1.z - a0.z,
+    };
+    if let Some((_, point, _)) = ray_vs_triangle(a0, direction, v0, v1, v2, 1.0) {
+        return (point, point);
+    }
+    let mut best = (a0, closest_point_on_triangle(a0, v0, v1, v2));
+    let mut best_dist_sq = point_dist2(best.0, best.1);
+    let on_tri = closest_point_on_triangle(a1, v0, v1, v2);
+    let dist_sq = point_dist2(a1, on_tri);
+    if dist_sq < best_dist_sq {
+        best = (a1, on_tri);
+        best_dist_sq = dist_sq;
+    }
+    for (edge0, edge1) in [(v0, v1), (v1, v2), (v2, v0)] {
+        let candidate = closest_points_segment_segment(a0, a1, edge0, edge1);
+        let dist_sq = point_dist2(candidate.0, candidate.1);
+        if dist_sq < best_dist_sq {
+            best = candidate;
+            best_dist_sq = dist_sq;
+        }
+    }
+    best
+}
 
 // Closest point on triangle to p (Ericson, Real-Time Collision
 // Detection §5.1.5). Returns the barycentric point on the triangle
@@ -1542,37 +1393,6 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
 
 // Box-triangle SAT core
 
-// AABB vs triangle: thin wrapper over the box-local SAT core. Shifts
-// the triangle into the AABB-centered frame, runs the sharp-box (r=0)
-// test, and shifts the contact point back to world.
-pub fn aabb_vs_triangle(aabb: &Aabb, v0: Vec3, v1: Vec3, v2: Vec3) -> Option<ContactGeom> {
-    let center = Vec3 {
-        x: (aabb.min.x + aabb.max.x) * 0.5,
-        y: (aabb.min.y + aabb.max.y) * 0.5,
-        z: (aabb.min.z + aabb.max.z) * 0.5,
-    };
-    let extents = Vec3 {
-        x: (aabb.max.x - aabb.min.x) * 0.5,
-        y: (aabb.max.y - aabb.min.y) * 0.5,
-        z: (aabb.max.z - aabb.min.z) * 0.5,
-    };
-    let shift = |v: Vec3| Vec3 {
-        x: v.x - center.x,
-        y: v.y - center.y,
-        z: v.z - center.z,
-    };
-    let geom = local_box_vs_triangle(extents, 0.0, shift(v0), shift(v1), shift(v2))?;
-    Some(ContactGeom {
-        point: Vec3 {
-            x: geom.point.x + center.x,
-            y: geom.point.y + center.y,
-            z: geom.point.z + center.z,
-        },
-        normal: geom.normal,
-        depth: geom.depth,
-    })
-}
-
 // Box-local triangle test via the Separating-Axis Theorem with 13 axes:
 //   - 3 box face normals (X, Y, Z)
 //   - 1 triangle face normal
@@ -1668,8 +1488,7 @@ pub fn local_box_vs_triangle(
         return None;
     }
     sat_overlap(&face_normal, &p0, &p1, &p2, &half, r)?;
-    // Orient the normal toward the box center so arbitrary mesh winding
-    // cannot change the result.
+    // Orient toward the box center; an exact plane tie retains the winding normal.
     let centroid_dot = ((p0.x + p1.x + p2.x) * face_normal.x
         + (p0.y + p1.y + p2.y) * face_normal.y
         + (p0.z + p1.z + p2.z) * face_normal.z)
@@ -1707,9 +1526,7 @@ pub fn local_box_vs_triangle(
     })
 }
 
-// SAT projection helper. Returns Some(overlap) if the projections of
-// the (swept) box and triangle along `axis` overlap; None if they are
-// separating (which means the SAT verdict is "no collision"). `swell`
+// SAT projection helper. Returns None for a separating axis. `swell`
 // is the world-unit sweep radius; SAT axes arrive unnormalized, so it
 // is scaled by the axis length to stay in the axis' projection units.
 fn sat_overlap(
@@ -1719,7 +1536,7 @@ fn sat_overlap(
     p2: &Vec3,
     extents: &Vec3,
     swell: f32,
-) -> Option<f32> {
+) -> Option<()> {
     let pr0 = p0.x * axis.x + p0.y * axis.y + p0.z * axis.z;
     let pr1 = p1.x * axis.x + p1.y * axis.y + p1.z * axis.z;
     let pr2 = p2.x * axis.x + p2.y * axis.y + p2.z * axis.z;
@@ -1735,10 +1552,8 @@ fn sat_overlap(
     if tri_max < -r || tri_min > r {
         return None;
     }
-    Some((tri_max.min(r) - tri_min.max(-r)).max(0.0))
+    Some(())
 }
-
-// Numeric guards
 
 fn vec_is_finite(v: Vec3) -> bool {
     v.x.is_finite() && v.y.is_finite() && v.z.is_finite()
@@ -1785,8 +1600,8 @@ mod tests {
             },
             0.5,
         );
-        assert!(approx_eq(aabb.min.x, 0.5));
-        assert!(approx_eq(aabb.max.x, 1.5));
+        assert_eq!(aabb.min.x, 0.5);
+        assert_eq!(aabb.max.x, 1.5);
     }
 
     #[test]
@@ -1857,65 +1672,6 @@ mod tests {
             1.0,
         );
         assert!(r.is_none());
-    }
-
-    #[test]
-    fn test_sphere_vs_aabb_hit_from_side() {
-        let aabb = Aabb {
-            min: Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            max: Vec3 {
-                x: 2.0,
-                y: 2.0,
-                z: 2.0,
-            },
-        };
-        let r = sphere_vs_aabb(
-            Vec3 {
-                x: -0.5,
-                y: 1.0,
-                z: 1.0,
-            },
-            1.0,
-            &aabb,
-        )
-        .unwrap();
-        assert!(approx_eq(r.depth, 0.5));
-        assert!(approx_eq(r.normal.x, -1.0));
-    }
-
-    #[test]
-    fn test_aabb_vs_aabb_hit() {
-        let a = Aabb {
-            min: Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            max: Vec3 {
-                x: 2.0,
-                y: 2.0,
-                z: 2.0,
-            },
-        };
-        let b = Aabb {
-            min: Vec3 {
-                x: 1.5,
-                y: 0.5,
-                z: 0.5,
-            },
-            max: Vec3 {
-                x: 3.5,
-                y: 1.5,
-                z: 1.5,
-            },
-        };
-        let r = aabb_vs_aabb(&a, &b).unwrap();
-        assert!(approx_eq(r.depth, 0.5));
-        assert!(approx_eq(r.normal.x, -1.0));
     }
 
     #[test]
@@ -2077,134 +1833,6 @@ mod tests {
     }
 
     #[test]
-    fn test_aabb_vs_triangle_hit_through_face() {
-        // Triangle in z=0 plane; AABB straddles z=0.
-        let v0 = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v1 = Vec3 {
-            x: 2.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v2 = Vec3 {
-            x: 0.0,
-            y: 2.0,
-            z: 0.0,
-        };
-        let aabb = Aabb {
-            min: Vec3 {
-                x: 0.5,
-                y: 0.5,
-                z: -0.5,
-            },
-            max: Vec3 {
-                x: 1.0,
-                y: 1.0,
-                z: 0.5,
-            },
-        };
-        let r = aabb_vs_triangle(&aabb, v0, v1, v2).unwrap();
-        assert!(r.depth > 0.0);
-    }
-
-    #[test]
-    fn test_aabb_vs_triangle_miss_far_away() {
-        let v0 = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v1 = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v2 = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let aabb = Aabb {
-            min: Vec3 {
-                x: 10.0,
-                y: 10.0,
-                z: 10.0,
-            },
-            max: Vec3 {
-                x: 11.0,
-                y: 11.0,
-                z: 11.0,
-            },
-        };
-        let r = aabb_vs_triangle(&aabb, v0, v1, v2);
-        assert!(r.is_none());
-    }
-
-    #[test]
-    fn test_sphere_vs_aabb_interior_fallback_depth_covers_radius_plus_pen() {
-        // An interior sphere needs radius + minimum penetration depth to
-        // clear the box in one push-back.
-        let aabb = Aabb {
-            min: Vec3 {
-                x: -1.0,
-                y: -2.0,
-                z: -3.0,
-            },
-            max: Vec3 {
-                x: 1.0,
-                y: 2.0,
-                z: 3.0,
-            },
-        };
-        let center = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let r = sphere_vs_aabb(center, 0.5, &aabb).unwrap();
-        // Minimum penetration is along ±X (X half-extent = 1.0 is the
-        // smallest), so min_pen = 1.0 and depth should be 1.5.
-        assert!(
-            (r.depth - 1.5).abs() < 1e-4,
-            "interior depth {} != 1.5",
-            r.depth
-        );
-        assert!(r.normal.x.abs() > 0.999, "normal not on ±X axis");
-        assert!(r.normal.y.abs() < 1e-4);
-        assert!(r.normal.z.abs() < 1e-4);
-    }
-
-    #[test]
-    fn test_sphere_vs_aabb_interior_picks_smallest_axis() {
-        // Off-centre interior: min_pen along +Y direction (y half =
-        // 1.0, center at y = 0.6 → +Y face at 0.4 distance is smallest).
-        let aabb = Aabb {
-            min: Vec3 {
-                x: -2.0,
-                y: -1.0,
-                z: -2.0,
-            },
-            max: Vec3 {
-                x: 2.0,
-                y: 1.0,
-                z: 2.0,
-            },
-        };
-        let center = Vec3 {
-            x: 0.0,
-            y: 0.6,
-            z: 0.0,
-        };
-        let r = sphere_vs_aabb(center, 0.5, &aabb).unwrap();
-        // Push toward +Y so depth = radius + (1.0 - 0.6) = 0.9.
-        assert!(r.normal.y > 0.99, "normal should point +Y");
-        assert!((r.depth - 0.9).abs() < 1e-4);
-    }
-
-    #[test]
     fn test_sphere_vs_sphere_touching_returns_none() {
         // Distance == r_sum is the touching limit (not penetrating).
         let r = sphere_vs_sphere(
@@ -2241,70 +1869,8 @@ mod tests {
             1.0,
         )
         .unwrap();
-        // Fallback normal points along +Y when centers coincide.
-        assert!((r.normal.y - 1.0).abs() < 1e-4);
-        assert!((r.depth - 2.0).abs() < 1e-4);
-    }
-
-    #[test]
-    fn test_aabb_vs_aabb_picks_smallest_axis() {
-        // Overlap is 2 on X, 0.5 on Y, 1 on Z → Y wins.
-        let a = Aabb {
-            min: Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            max: Vec3 {
-                x: 2.0,
-                y: 1.0,
-                z: 2.0,
-            },
-        };
-        let b = Aabb {
-            min: Vec3 {
-                x: 0.0,
-                y: 0.5,
-                z: 1.0,
-            },
-            max: Vec3 {
-                x: 2.0,
-                y: 1.5,
-                z: 3.0,
-            },
-        };
-        let r = aabb_vs_aabb(&a, &b).unwrap();
-        assert!(r.normal.y.abs() > 0.99);
-        assert!((r.depth - 0.5).abs() < 1e-4);
-    }
-
-    #[test]
-    fn test_aabb_vs_aabb_no_overlap() {
-        let a = Aabb {
-            min: Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            max: Vec3 {
-                x: 1.0,
-                y: 1.0,
-                z: 1.0,
-            },
-        };
-        let b = Aabb {
-            min: Vec3 {
-                x: 5.0,
-                y: 5.0,
-                z: 5.0,
-            },
-            max: Vec3 {
-                x: 6.0,
-                y: 6.0,
-                z: 6.0,
-            },
-        };
-        assert!(aabb_vs_aabb(&a, &b).is_none());
+        assert_eq!((r.normal.x, r.normal.y, r.normal.z), (0.0, 1.0, 0.0));
+        assert_eq!(r.depth, 2.0);
     }
 
     #[test]
@@ -2441,7 +2007,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ray_vs_aabb_face_normal_each_axis() {
+    fn test_ray_vs_aabb_negative_x_and_positive_y_normals() {
         let aabb = Aabb {
             min: Vec3 {
                 x: -1.0,
@@ -2454,7 +2020,6 @@ mod tests {
                 z: 1.0,
             },
         };
-        // From -X: normal = (-1, 0, 0)
         let (_, _, n) = ray_vs_aabb(
             Vec3 {
                 x: -5.0,
@@ -2470,8 +2035,7 @@ mod tests {
             f32::INFINITY,
         )
         .unwrap();
-        assert!((n.x - (-1.0)).abs() < 1e-4);
-        // From +Y: normal = (0, 1, 0)
+        assert_eq!((n.x, n.y, n.z), (-1.0, 0.0, 0.0));
         let (_, _, n) = ray_vs_aabb(
             Vec3 {
                 x: 0.0,
@@ -2487,7 +2051,7 @@ mod tests {
             f32::INFINITY,
         )
         .unwrap();
-        assert!((n.y - 1.0).abs() < 1e-4);
+        assert_eq!((n.x, n.y, n.z), (0.0, 1.0, 0.0));
     }
 
     #[test]
@@ -2570,7 +2134,7 @@ mod tests {
 
     #[test]
     fn test_sphere_vs_triangle_edge_hit() {
-        // Sphere center sits over the AB edge at (0.5, -0.4, 0). The
+        // Sphere center sits over the AB edge at (0.5, -0.2, 0). The
         // closest point on the triangle is on the edge, not a vertex
         // and not the face interior.
         let (v0, v1, v2) = (
@@ -2762,7 +2326,7 @@ mod tests {
             },
             0.5,
         );
-        assert!(matches!(s, ColliderShape::Sphere { r } if approx_eq(r, 0.5)));
+        assert!(matches!(s, ColliderShape::Sphere { r } if r == 0.5));
     }
 
     #[test]
@@ -2776,9 +2340,30 @@ mod tests {
             },
             0.3,
         );
-        assert!(
-            matches!(s, ColliderShape::Capsule { half_h, r } if approx_eq(half_h, 0.6) && approx_eq(r, 0.3))
+        assert!(matches!(s, ColliderShape::Capsule { half_h, r } if half_h == 0.6 && r == 0.3));
+    }
+
+    #[test]
+    fn test_classify_shape_uses_strict_zero_tolerance() {
+        let below = classify_shape(
+            Vec3 {
+                x: 0.5e-9,
+                y: 0.0,
+                z: 0.0,
+            },
+            0.5,
         );
+        assert!(matches!(below, ColliderShape::Sphere { .. }));
+
+        let boundary = classify_shape(
+            Vec3 {
+                x: 1e-9,
+                y: 0.0,
+                z: 0.0,
+            },
+            0.5,
+        );
+        assert!(matches!(boundary, ColliderShape::RoundedBox { .. }));
     }
 
     #[test]
@@ -2794,7 +2379,7 @@ mod tests {
         assert!(matches!(
             s,
             ColliderShape::RoundedBox { half, r }
-                if approx_eq(half.x, 1.0) && approx_eq(half.y, 0.5) && approx_eq(half.z, 0.25) && approx_eq(r, 0.1)
+                if (half.x, half.y, half.z, r) == (1.0, 0.5, 0.25, 0.1)
         ));
         // radius = 0 stays in the box family (sharp box).
         let s0 = classify_shape(
@@ -2805,7 +2390,7 @@ mod tests {
             },
             0.0,
         );
-        assert!(matches!(s0, ColliderShape::RoundedBox { r, .. } if approx_eq(r, 0.0)));
+        assert!(matches!(s0, ColliderShape::RoundedBox { r, .. } if r == 0.0));
         // A planar size (one zero component among x/z) is still a box.
         let plate = classify_shape(
             Vec3 {
@@ -2918,9 +2503,7 @@ mod tests {
     }
 
     #[test]
-    fn test_sphere_vs_rounded_obb_axis_aligned_matches_aabb_path() {
-        // Identity transform, half=(1,1,1), box_r=0: must agree with the
-        // sphere_vs_aabb result for the same configuration.
+    fn test_sphere_vs_rounded_obb_axis_aligned() {
         let m = Mat4::identity_value();
         let geom = sphere_vs_rounded_obb(
             Vec3 {
@@ -2948,8 +2531,7 @@ mod tests {
     fn test_sphere_vs_rounded_obb_rotated_45_no_corner_inflation() {
         // Unit-half cube rotated 45° about Y. Its true reach along the world
         // diagonal u=(1,0,1)/√2 is 1.0 (one local axis aligns with u, the
-        // other horizontal axis is perpendicular). The world-AABB
-        // approximation reached 2.0 along u and reported phantom contacts.
+        // other horizontal axis is perpendicular).
         let rot_rc = Mat4::from_euler(&Vec3 {
             x: 0.0,
             y: 45.0,
@@ -3023,8 +2605,7 @@ mod tests {
     #[test]
     fn test_sphere_vs_rounded_obb_center_inside_uses_min_axis() {
         // Sphere center inside the core box: push out along the smallest
-        // separation axis, depth covers radius + interior penetration
-        // (mirrors test_sphere_vs_aabb_interior_*).
+        // separation axis, depth covers radius + interior penetration.
         let m = Mat4::identity_value();
         let geom = sphere_vs_rounded_obb(
             Vec3 {
@@ -3088,9 +2669,6 @@ mod tests {
 
     #[test]
     fn test_capsule_vs_sphere_side_hit() {
-        // Vertical capsule (half_h=1, r=0.3) at origin; sphere r=0.5 at
-        // (0.7, 0.5, 0): closest segment point (0, 0.5, 0), gap 0.7,
-        // depth = 0.8 - 0.7 = 0.1; normal from capsule toward sphere = +X.
         let m = Mat4::identity_value();
         let geom = capsule_vs_sphere(
             &m,
@@ -3365,9 +2943,8 @@ mod tests {
     }
 
     #[test]
-    fn test_obb_vs_obb_axis_aligned_matches_aabb_numbers() {
-        // Identity rotations reproduce test_aabb_vs_aabb_hit: unit-half
-        // boxes with centers 1.8 apart on X → overlap 0.2 on X.
+    fn test_obb_vs_obb_axis_aligned() {
+        // Unit-half boxes with centers 1.8 apart on X overlap 0.2 on X.
         let m_a = Mat4::identity_value();
         let m_b_rc = Mat4::from_translation(&Vec3 {
             x: 1.8,
@@ -3443,60 +3020,6 @@ mod tests {
     }
 
     #[test]
-    fn test_local_box_vs_triangle_matches_existing_aabb_path() {
-        // Reproduce test_aabb_vs_triangle_hit_through_face numbers through
-        // the new core (r = 0, verts pre-shifted into box-local frame).
-        let v0 = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v1 = Vec3 {
-            x: 2.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v2 = Vec3 {
-            x: 0.0,
-            y: 2.0,
-            z: 0.0,
-        };
-        let aabb = Aabb {
-            min: Vec3 {
-                x: 0.5,
-                y: 0.5,
-                z: -0.5,
-            },
-            max: Vec3 {
-                x: 1.0,
-                y: 1.0,
-                z: 0.5,
-            },
-        };
-        let old = aabb_vs_triangle(&aabb, v0, v1, v2).unwrap();
-        let center = Vec3 {
-            x: 0.75,
-            y: 0.75,
-            z: 0.0,
-        };
-        let extents = Vec3 {
-            x: 0.25,
-            y: 0.25,
-            z: 0.5,
-        };
-        let shift = |v: Vec3| Vec3 {
-            x: v.x - center.x,
-            y: v.y - center.y,
-            z: v.z - center.z,
-        };
-        let new = local_box_vs_triangle(extents, 0.0, shift(v0), shift(v1), shift(v2)).unwrap();
-        assert!(approx_eq(new.depth, old.depth));
-        assert!(approx_eq(new.normal.x, old.normal.x));
-        assert!(approx_eq(new.normal.y, old.normal.y));
-        assert!(approx_eq(new.normal.z, old.normal.z));
-    }
-
-    #[test]
     fn test_local_box_vs_triangle_radius_extends_reach() {
         // Triangle plane at x = 1.2 beside a unit-half box: sharp box (r=0)
         // misses; r=0.3 reaches → depth = (1 + 0.3) - 1.2 = 0.1.
@@ -3554,6 +3077,44 @@ mod tests {
         let geom = capsule_vs_triangle(&cap, 0.5, 0.3, v0, v1, v2).unwrap();
         assert!(approx_eq(geom.depth, 0.05));
         assert!(approx_eq(geom.normal.y, 1.0));
+    }
+
+    #[test]
+    fn test_capsule_crossing_triangle_face_clears_plane() {
+        let v0 = vec3(-10.0, 0.0, -10.0);
+        let v1 = vec3(10.0, 0.0, -10.0);
+        let v2 = vec3(0.0, 0.0, 10.0);
+        for (b, c, tie_sign) in [(v1, v2, -1.0), (v2, v1, 1.0)] {
+            for (y, angle, expected_depth) in [
+                (0.0, 0.0, 1.1),
+                (0.25, 0.0, 0.85),
+                (-0.25, 0.0, 0.85),
+                (0.25, 45.0, std::f32::consts::FRAC_1_SQRT_2 - 0.15),
+            ] {
+                let rotation = Mat4::from_axis_angle_value(&vec3(0.0, 0.0, 1.0), angle);
+                let cap = translation(vec3(0.0, y, 0.0)).mul_mat_value(&rotation);
+                let geom = capsule_vs_triangle(&cap, 1.0, 0.1, v0, b, c)
+                    .expect("capsule axis crosses triangle face");
+                let sign = if y == 0.0 { tie_sign } else { y.signum() };
+                assert_vec3_close(geom.normal, vec3(0.0, sign, 0.0));
+                assert!(
+                    approx_eq(geom.depth, expected_depth),
+                    "depth={}",
+                    geom.depth
+                );
+                assert!(approx_eq(geom.point.y, 0.0));
+                let push = translation(vec3(
+                    geom.normal.x * geom.depth,
+                    geom.normal.y * geom.depth,
+                    geom.normal.z * geom.depth,
+                ));
+                let resolved = push.mul_mat_value(&cap);
+                let remaining = capsule_vs_triangle(&resolved, 1.0, 0.1, v0, b, c)
+                    .map_or(0.0, |contact| contact.depth);
+                assert!(remaining < CONTACT_EPSILON, "remaining depth={remaining}");
+                assert!(capsule_vs_triangle(&cap, 1.0, 0.0, v0, b, c).is_none());
+            }
+        }
     }
 
     #[test]

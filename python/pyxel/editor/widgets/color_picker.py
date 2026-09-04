@@ -13,10 +13,6 @@ class ColorPicker(Widget):
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)
         self._with_shadow = with_shadow
-        self._color_width = 4 if pyxel.num_user_colors > 16 else 8
-        self._color_height = 4 if pyxel.num_user_colors > 32 else 8
-        self._num_cols = 64 // self._color_width
-        self._num_rows = 16 // self._color_height
 
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
@@ -27,6 +23,22 @@ class ColorPicker(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     # Helpers
+
+    @property
+    def _color_width(self):
+        return 4 if pyxel.num_user_colors > 16 else 8
+
+    @property
+    def _color_height(self):
+        return 4 if pyxel.num_user_colors > 32 else 8
+
+    @property
+    def _num_cols(self):
+        return 64 // self._color_width
+
+    @property
+    def _num_rows(self):
+        return 16 // self._color_height
 
     def check_value(self, x, y):
         x -= self.x + 1

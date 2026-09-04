@@ -8,8 +8,6 @@ define_wrapper!(Tilemap, pyxel::Tilemap);
 
 #[pymethods]
 impl Tilemap {
-    // Constructors
-
     #[new]
     fn new(width: u32, height: u32, img: Bound<'_, PyAny>) -> PyResult<Self> {
         let imgsrc = cast_pyany! {
@@ -68,11 +66,14 @@ impl Tilemap {
 
     // Data operations
 
-    fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
-        let mut inner = self.inner_mut();
-        let length = inner.width() as usize * inner.height() as usize * 2;
-        let address = inner.data_ptr() as usize;
-        ctypes_array_from_address(py, "c_uint16", length, address)
+    fn data_ptr(slf: PyRef<'_, Self>, py: Python) -> PyResult<Py<PyAny>> {
+        let (length, address) = {
+            let mut inner = slf.inner_mut();
+            let length = inner.width() as usize * inner.height() as usize * 2;
+            (length, inner.data_ptr() as usize)
+        };
+        let owner = slf.into_pyobject(py)?.into_any();
+        ctypes_array_from_address(py, "c_uint16", length, address, &owner)
     }
 
     fn set(&self, x: i32, y: i32, data: Vec<String>) -> PyResult<()> {
@@ -179,8 +180,6 @@ impl Tilemap {
         self.inner_ref().collide(x, y, w, h, dx, dy, &walls)
     }
 
-    // Blit operations
-
     #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None, rotate=None, scale=None))]
     fn blt(
         &self,
@@ -200,9 +199,10 @@ impl Tilemap {
             "tm must be int or Tilemap",
 
             (u32, {
-                let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
+                let tilemaps = pyxel::tilemaps();
+                let tilemap = tilemaps.get(tm as usize)
                     .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
-                self.inner_mut().draw_tilemap(x, y, &tilemap, u, v, w, h, tilekey, rotate, scale);
+                self.inner_mut().draw_tilemap(x, y, tilemap, u, v, w, h, tilekey, rotate, scale);
             }),
 
             (Tilemap, {
@@ -261,9 +261,20 @@ impl Tilemap {
     }
 }
 
-// Module registration
-
 pub fn add_tilemap_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Tilemap>()?;
+    Ok(())
+}
+
+pub(crate) fn validate_tilemap_imgsrc(tilemap: &pyxel::RcTilemap) -> PyResult<()> {
+    let index = match &rc_ref!(tilemap).imgsrc {
+        pyxel::ImageSource::Index(index) => Some(*index),
+        pyxel::ImageSource::Image(_) => None,
+    };
+    if index.is_some_and(|index| index as usize >= pyxel::images().len()) {
+        return Err(PyValueError::new_err(
+            "imgsrc references an invalid image index",
+        ));
+    }
     Ok(())
 }

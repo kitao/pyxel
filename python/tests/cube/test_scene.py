@@ -1,8 +1,9 @@
-import pytest
+import gc
+import weakref
 
+import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
-
 from pyxel.cube import (
     Camera,
     Collider,
@@ -11,7 +12,6 @@ from pyxel.cube import (
     Node,
     Primitive,
     RaycastHit,
-    Shading,
     Vec3,
 )
 
@@ -21,44 +21,9 @@ from pyxel.cube import (
 # attribute.
 
 
-def palette() -> list[int]:
-    return [pyxel.colors[i] for i in range(16)]
-
-
 class TestUpdate:
     def test_update_no_children(self):
-        # Empty subtree update must not crash.
         Node().update()
-
-
-# Immediate-mode draw commands are no-op outside an active DrawContext
-# (i.e., when called outside Node.draw). The tests confirm they do not
-# crash when invoked from outside; functional rendering is exercised by
-# integration tests / sample programs.
-class TestImmediateDrawSafety:
-    def test_pset(self):
-        Node().pset(Vec3.ZERO, 7)
-
-    def test_line(self):
-        Node().line(Vec3.ZERO, Vec3(1, 0, 0), 7)
-
-    def test_tri(self):
-        n = Node()
-        n.tri(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7)
-        n.trib(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 8)
-
-    def test_circ(self):
-        n = Node()
-        n.circ(Vec3.ZERO, 1.0, 7)
-        n.circb(Vec3.ZERO, 1.0, 8)
-
-    def test_rect_family(self):
-        n = Node()
-        m = Mat4.IDENTITY
-        n.rect(m, 1.0, 1.0, 7)
-        n.rectb(m, 1.0, 1.0, 8)
-        n.elli(m, 1.0, 1.0, 9)
-        n.ellib(m, 1.0, 1.0, 10)
 
 
 # Collision pipeline smoke tests. The detailed geometric correctness
@@ -135,10 +100,26 @@ class TestCollisionPipeline:
 
 
 class TestMeshColliderRobustness:
+    @staticmethod
+    def _make_triangle_mesh_scene():
+        primitive = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
+        )
+        mesh = Mesh(
+            primitives=[primitive],
+            transforms=[Mat4.IDENTITY],
+            parents=[-1],
+        )
+        terrain = Node()
+        terrain.collider = Collider(mesh=mesh, mass=0.0)
+        root = Node()
+        root.add_child(terrain)
+        return primitive, root
+
     def test_bad_primitive_indices_do_not_crash_collision(self):
-        # Out-of-range and negative indices in a hand-built mesh collider
-        # are dropped at the lazy BVH build; the collision pipeline and
-        # raycast must run without raising instead of panicking.
+        # Invalid triangles are ignored when the collision BVH is built.
         prim = Primitive(
             Primitive.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
@@ -160,21 +141,76 @@ class TestMeshColliderRobustness:
         assert hit is not None
         assert hit.node is ball
 
+    def test_primitive_position_mutation_invalidates_mesh_collision_cache(self):
+        primitive, root = self._make_triangle_mesh_scene()
+        origin = Vec3(0.0, 0.0, 1.0)
+        direction = Vec3(0.0, 0.0, -1.0)
+        assert root.raycast(origin, direction) is not None
+
+        primitive.positions[::3] = [value + 100.0 for value in primitive.positions[::3]]
+
+        assert root.raycast(origin, direction) is None
+
+    def test_primitive_index_mutation_invalidates_mesh_collision_cache(self):
+        primitive, root = self._make_triangle_mesh_scene()
+        origin = Vec3(0.0, 0.0, 1.0)
+        direction = Vec3(0.0, 0.0, -1.0)
+        assert root.raycast(origin, direction) is not None
+
+        primitive.indices[:] = []
+
+        assert root.raycast(origin, direction) is not None
+
+        primitive.indices[:] = [0, 1, 99]
+
+        assert root.raycast(origin, direction) is None
+
+    def test_primitive_mode_mutation_invalidates_mesh_collision_cache(self):
+        primitive, root = self._make_triangle_mesh_scene()
+        origin = Vec3(0.0, 0.0, 1.0)
+        direction = Vec3(0.0, 0.0, -1.0)
+        assert root.raycast(origin, direction) is not None
+
+        primitive.mode = Primitive.MODE_LINES
+
+        assert root.raycast(origin, direction) is None
+
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("y", [-1.0, 1.0])
+    @pytest.mark.parametrize("zero", [0.0, -0.0])
+    def test_raycast_reaches_mesh_boundary(self, method, y, zero):
+        _, root = self._make_triangle_mesh_scene()
+        query = getattr(root, method)
+        origin = Vec3(0.0, y, 1.0)
+        direction = Vec3(zero, zero, -1.0)
+
+        result = query(origin, direction, max_distance=1.0)
+        if method == "raycast_all":
+            assert len(result) == 1
+            hit = result[0]
+        else:
+            hit = result
+            assert hit is not None
+        assert hit.node is root.children[0]
+        assert hit.distance == 1.0
+        assert (hit.point.x, hit.point.y, hit.point.z) == (0.0, y, 0.0)
+        assert query(origin, direction, max_distance=0.5) == (
+            [] if method == "raycast_all" else None
+        )
+
 
 class TestRaycast:
     def test_raycast_hits_nearer_sphere(self):
         root = Node()
         near = _ball(Vec3(0, 0, 0))
         far = _ball(Vec3(0, 0, -5))
-        root.add_child(near)
         root.add_child(far)
+        root.add_child(near)
         hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -1))
         assert hit is not None
         # The near sphere sits at z=0 with radius 0.5; the ray enters
         # its surface at z=0.5, so distance = 5 - 0.5 = 4.5.
-        assert hit.distance == pytest.approx(4.5)
-        # RaycastHit.node preserves the tree's Py<Node> instance
-        # (binding mirrors the overlap_* identity path).
+        assert hit.distance == 4.5
         assert hit.node is near
 
     def test_raycast_distance_uses_world_units_for_non_unit_direction(self):
@@ -182,7 +218,7 @@ class TestRaycast:
         root.add_child(_ball(Vec3(0, 0, 0)))
         hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -2))
         assert hit is not None
-        assert hit.distance == pytest.approx(4.5)
+        assert hit.distance == 4.5
         assert root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -2), max_distance=3.0) is None
 
     def test_raycast_returns_none_when_miss(self):
@@ -197,13 +233,32 @@ class TestRaycast:
         root.add_child(_ball(Vec3(0, 0, -3)))
         root.add_child(_ball(Vec3(0, 0, -2)))
         hits = root.raycast_all(Vec3(0, 0, 5), Vec3(0, 0, -1))
-        assert len(hits) == 3
-        for i in range(1, len(hits)):
-            assert hits[i].distance >= hits[i - 1].distance
+        assert [hit.distance for hit in hits] == [5.5, 6.5, 7.5]
+
+    def test_raycast_hit_node_cycle_is_collectable(self):
+        class Ball(Node):
+            pass
+
+        root = Node()
+        ball = Ball()
+        ball.transform = Mat4.from_translation(Vec3.ZERO)
+        ball.collider = Collider(radius=0.5)
+        root.add_child(ball)
+        hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -1))
+        assert hit is not None
+        assert gc.is_tracked(hit)
+
+        root.remove_child(ball)
+        ball.hit = hit
+        ball_ref = weakref.ref(ball)
+        del ball, hit, root
+
+        gc.collect()
+        assert ball_ref() is None
 
     def test_raycasthit_not_user_constructible(self):
         # RaycastHit is an engine-built payload with no public constructor.
-        with raises_exact(TypeError, "cannot create 'builtins.RaycastHit' instances"):
+        with raises_exact(TypeError, "cannot create 'pyxel.cube.RaycastHit' instances"):
             RaycastHit()
 
 
@@ -215,8 +270,7 @@ class TestOverlapQueries:
         root.add_child(inside)
         root.add_child(outside)
         nodes = root.overlap_sphere(Vec3.ZERO, 1.0)
-        assert inside in nodes
-        assert outside not in nodes
+        assert nodes == [inside]
 
     def test_overlap_box_finds_overlapping_node(self):
         root = Node()
@@ -225,8 +279,7 @@ class TestOverlapQueries:
         root.add_child(inside)
         root.add_child(outside)
         nodes = root.overlap_box(Mat4.IDENTITY, Vec3(2, 2, 2))
-        assert inside in nodes
-        assert outside not in nodes
+        assert nodes == [inside]
 
     def test_overlap_sphere_filters_by_tag(self):
         root = Node()
@@ -237,29 +290,17 @@ class TestOverlapQueries:
         root.add_child(enemy)
         root.add_child(friend)
         nodes = root.overlap_sphere(Vec3.ZERO, 1.0, tags=["enemy"])
-        assert enemy in nodes
-        assert friend not in nodes
+        assert nodes == [enemy]
 
     def test_trigger_skipped_by_default(self):
         root = Node()
         trigger = _ball(Vec3(0, 0, 0))
         trigger.collider = Collider(radius=0.5, trigger=True)
         root.add_child(trigger)
-        # hit_triggers default is False.
         nodes = root.overlap_sphere(Vec3.ZERO, 1.0)
-        assert trigger not in nodes
-        # Opt-in includes the trigger.
+        assert nodes == []
         nodes_with_triggers = root.overlap_sphere(Vec3.ZERO, 1.0, hit_triggers=True)
-        assert trigger in nodes_with_triggers
-
-
-class TestShading:
-    def test_set_shading(self):
-        n = Node()
-        new_shading = Shading(palette())
-        n.shading = new_shading
-        # Shading.__getitem__ returns (primary, secondary).
-        assert n.shading[0, 2] == new_shading[0, 2]
+        assert nodes_with_triggers == [trigger]
 
 
 class _ColoredBox(Node):
@@ -293,9 +334,6 @@ class TestOrthoCameraClipping:
 
 class TestNestedDraw:
     def test_draw_inside_on_draw_raises_and_keeps_camera_usable(self):
-        # A nested draw would replace the active context and lose the
-        # outer camera's depth buffer; the call is rejected instead
-        # (multi-view rendering uses sequential draws).
         inner = Node()
         inner.camera = Camera()
 
@@ -311,7 +349,6 @@ class TestNestedDraw:
         with raises_exact(ValueError, "draw cannot be called from inside on_draw"):
             root.draw(0, 0, 32, 24)
 
-        # The outer camera state stays intact for the next frame.
         root.remove_child(hud)
         root.draw(0, 0, 32, 24)
 

@@ -8,7 +8,7 @@ use super::vec3::Vec3;
 // Hand-rolled so engine-built hits can retain the scene tree's Py<Node>
 // instance; fallback wrapping is reserved for hits without that identity.
 
-#[pyclass(unsendable, from_py_object)]
+#[pyclass(module = "pyxel.cube", unsendable, from_py_object)]
 pub struct RaycastHit {
     pub(crate) inner: pyxel::cube::RcRaycastHit,
     py_node: RefCell<Option<Py<Node>>>,
@@ -87,9 +87,20 @@ impl RaycastHit {
             p.x, p.y, p.z, n.x, n.y, n.z, h.distance,
         )
     }
-}
 
-// Module registration
+    // Python GC integration
+
+    fn __traverse__(&self, visit: pyo3::PyVisit<'_>) -> Result<(), pyo3::PyTraverseError> {
+        if let Some(node) = self.py_node.borrow().as_ref() {
+            visit.call(node)?;
+        }
+        Ok(())
+    }
+
+    fn __clear__(&self) {
+        *self.py_node.borrow_mut() = None;
+    }
+}
 
 pub fn add_raycast_hit_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RaycastHit>()?;

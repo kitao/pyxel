@@ -18,7 +18,6 @@ class OctaveBar(Widget):
         self.copy_var("octave_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)

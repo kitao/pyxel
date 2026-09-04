@@ -57,8 +57,6 @@ wrap_ptr_vec_as_python_object_sequence!(Tones, Tone, pyxel::RcTone, pyxel::tones
 wrap_ptr_vec_as_python_object_sequence!(Sounds, Sound, pyxel::RcSound, pyxel::sounds);
 wrap_ptr_vec_as_python_object_sequence!(Musics, Music, pyxel::RcMusic, pyxel::musics);
 
-// Module attribute dispatch
-
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
     let value = match name {
@@ -71,9 +69,9 @@ fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
         "mouse_x" => value_to_py_any!(py, *pyxel::mouse_x()),
         "mouse_y" => value_to_py_any!(py, *pyxel::mouse_y()),
         "mouse_wheel" => value_to_py_any!(py, *pyxel::mouse_wheel()),
-        "input_keys" => value_to_py_any!(py, pyxel::input_keys().clone()),
-        "input_text" => value_to_py_any!(py, pyxel::input_text().clone()),
-        "dropped_files" => value_to_py_any!(py, pyxel::dropped_files().clone()),
+        "input_keys" => value_to_py_any!(py, &*pyxel::input_keys()),
+        "input_text" => value_to_py_any!(py, &*pyxel::input_text()),
+        "dropped_files" => value_to_py_any!(py, &*pyxel::dropped_files()),
 
         // Graphics
         "colors" => instance_to_py_any!(py, Colors::wrap(0)),
@@ -89,7 +87,6 @@ fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
         "sounds" => instance_to_py_any!(py, Sounds::wrap(0)),
         "musics" => instance_to_py_any!(py, Musics::wrap(0)),
 
-        // Others
         _ => {
             return Err(PyAttributeError::new_err(format!(
                 "module 'pyxel' has no attribute '{name}'"
@@ -98,8 +95,6 @@ fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
     };
     Ok(value)
 }
-
-// Module registration
 
 pub fn add_module_variables(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Colors>()?;

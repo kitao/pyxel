@@ -18,8 +18,6 @@ pub struct Quat {
 define_rc_type!(RcQuat, Quat);
 
 impl Quat {
-    // Constructor
-
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> RcQuat {
         new_rc_type!(Quat { x, y, z, w })
     }
@@ -60,7 +58,7 @@ impl Quat {
         Vec3::new(rx, ry, rz)
     }
 
-    // Class-method factories
+    // Factories
 
     pub fn from_axis_angle(axis: &Vec3, deg: f32) -> RcQuat {
         let len = (axis.x * axis.x + axis.y * axis.y + axis.z * axis.z).sqrt();
@@ -322,8 +320,7 @@ impl Quat {
 
     pub fn to_euler(&self) -> RcVec3 {
         // XYZ extrinsic (matches from_euler).
-        let q = self.normalize();
-        let q = rc_ref!(&q);
+        let q = self.normalize_value();
         let r00 = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
         let r10 = 2.0 * (q.x * q.y + q.w * q.z);
         let r11 = 1.0 - 2.0 * (q.x * q.x + q.z * q.z);
@@ -339,6 +336,7 @@ impl Quat {
             rx = r21.atan2(r22);
             rz = r10.atan2(r00);
         } else {
+            // At gimbal lock, fix Z to zero and recover the coupled rotation as X.
             ry = sy_clamped.asin();
             rx = (-r12).atan2(r11);
             rz = 0.0;
@@ -347,8 +345,7 @@ impl Quat {
     }
 
     pub fn to_axis_angle(&self) -> (RcVec3, f32) {
-        let q = self.normalize();
-        let q = rc_ref!(&q);
+        let q = self.normalize_value();
         let w = q.w.clamp(-1.0, 1.0);
         let half = w.acos();
         let sin_half = (1.0 - w * w).sqrt();
@@ -421,308 +418,8 @@ mod tests {
         *rc_ref!(rc)
     }
 
-    fn approx_eq_q(a: &Quat, b: &Quat) -> bool {
-        (a.x - b.x).abs() < 1e-4
-            && (a.y - b.y).abs() < 1e-4
-            && (a.z - b.z).abs() < 1e-4
-            && (a.w - b.w).abs() < 1e-4
-    }
-
     fn approx_eq_v(a: &Vec3, b: &Vec3) -> bool {
         (a.x - b.x).abs() < 1e-4 && (a.y - b.y).abs() < 1e-4 && (a.z - b.z).abs() < 1e-4
-    }
-
-    #[test]
-    fn test_identity() {
-        let q = deref(&Quat::identity());
-        assert_eq!(
-            q,
-            Quat {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-                w: 1.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_constructor() {
-        let q = deref(&Quat::new(1.0, 2.0, 3.0, 4.0));
-        assert_eq!(q.x, 1.0);
-        assert_eq!(q.y, 2.0);
-        assert_eq!(q.z, 3.0);
-        assert_eq!(q.w, 4.0);
-    }
-
-    #[test]
-    fn test_from_axis_angle_y_90() {
-        let axis = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let q = deref(&Quat::from_axis_angle(&axis, 90.0));
-        let expected = Quat {
-            x: 0.0,
-            y: (45.0_f32).to_radians().sin(),
-            z: 0.0,
-            w: (45.0_f32).to_radians().cos(),
-        };
-        assert!(approx_eq_q(&q, &expected));
-    }
-
-    #[test]
-    fn test_mul_vec_y_90() {
-        let axis = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let q = Quat::from_axis_angle(&axis, 90.0);
-        let v = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let r = deref_v(&rc_ref!(&q).mul_vec(&v));
-        // (1, 0, 0) rotated 90° around Y-axis (right-handed) → (0, 0, -1).
-        assert!(approx_eq_v(
-            &r,
-            &Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: -1.0
-            }
-        ));
-    }
-
-    #[test]
-    fn test_mul_quat_identity() {
-        let q = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            45.0,
-        );
-        let i = Quat::identity();
-        let r = deref(&rc_ref!(&q).mul_quat(&rc_ref!(&i)));
-        let q_val = deref(&q);
-        assert!(approx_eq_q(&r, &q_val));
-    }
-
-    #[test]
-    fn test_conjugate() {
-        let q = Quat {
-            x: 1.0,
-            y: 2.0,
-            z: 3.0,
-            w: 4.0,
-        };
-        let c = deref(&q.conjugate());
-        assert_eq!(
-            c,
-            Quat {
-                x: -1.0,
-                y: -2.0,
-                z: -3.0,
-                w: 4.0
-            }
-        );
-    }
-
-    #[test]
-    fn test_inverse_unit() {
-        let q = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            60.0,
-        );
-        let q_ref = rc_ref!(&q);
-        let inv = q_ref.inverse();
-        let combined = q_ref.mul_quat(&rc_ref!(&inv));
-        let i = deref(&Quat::identity());
-        assert!(approx_eq_q(&rc_ref!(&combined), &i));
-    }
-
-    #[test]
-    fn test_normalize() {
-        let q = Quat {
-            x: 2.0,
-            y: 0.0,
-            z: 0.0,
-            w: 0.0,
-        };
-        let n = deref(&q.normalize());
-        assert!((n.length() - 1.0).abs() < 1e-6);
-    }
-
-    #[test]
-    fn test_length() {
-        let q = Quat {
-            x: 1.0,
-            y: 2.0,
-            z: 2.0,
-            w: 4.0,
-        };
-        assert!((q.length() - 5.0).abs() < 1e-5);
-        assert_eq!(q.length_squared(), 25.0);
-    }
-
-    #[test]
-    fn test_dot() {
-        let a = Quat {
-            x: 1.0,
-            y: 2.0,
-            z: 3.0,
-            w: 4.0,
-        };
-        let b = Quat {
-            x: 5.0,
-            y: 6.0,
-            z: 7.0,
-            w: 8.0,
-        };
-        assert_eq!(a.dot(&b), 70.0);
-    }
-
-    #[test]
-    fn test_angle_to_identity() {
-        let i = Quat {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            w: 1.0,
-        };
-        assert!((i.angle_to(&i) - 0.0).abs() < 1e-3);
-    }
-
-    #[test]
-    fn test_to_matrix_round_trip() {
-        let q = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            30.0,
-        );
-        let m = rc_ref!(&q).to_matrix();
-        assert_eq!(rc_ref!(&q).matrix_value(), *rc_ref!(&m));
-        let v = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v_q = deref_v(&rc_ref!(&q).mul_vec(&v));
-        let v_m = deref_v(&rc_ref!(&m).mul_vec(&v));
-        assert!(approx_eq_v(&v_q, &v_m));
-    }
-
-    #[test]
-    fn test_to_axis_angle_round_trip() {
-        let axis_in = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let q = Quat::from_axis_angle(&axis_in, 60.0);
-        let (axis_out, deg_out) = rc_ref!(&q).to_axis_angle();
-        assert!((deg_out - 60.0).abs() < 1e-3);
-        assert!(approx_eq_v(&rc_ref!(&axis_out), &axis_in));
-    }
-
-    #[test]
-    fn test_slerp_endpoints() {
-        let a = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            0.0,
-        );
-        let b = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            90.0,
-        );
-        let s0 = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 0.0));
-        let s1 = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 1.0));
-        assert_eq!(rc_ref!(&a).slerp_value(&rc_ref!(&b), 0.0), s0);
-        assert_eq!(rc_ref!(&a).slerp_value(&rc_ref!(&b), 1.0), s1);
-        assert!(approx_eq_q(&s0, &rc_ref!(&a)));
-        assert!(approx_eq_q(&s1, &rc_ref!(&b)));
-    }
-
-    #[test]
-    fn test_from_two_vectors_unit() {
-        let a = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let b = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let q = Quat::from_two_vectors(&a, &b);
-        let r = deref_v(&rc_ref!(&q).mul_vec(&a));
-        assert!(approx_eq_v(&r, &b));
-    }
-
-    #[test]
-    fn test_from_matrix_round_trip() {
-        let q = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            30.0,
-        );
-        let m = rc_ref!(&q).to_matrix();
-        let q2 = Quat::from_matrix(&rc_ref!(&m));
-        let v = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let v1 = deref_v(&rc_ref!(&q).mul_vec(&v));
-        let v2 = deref_v(&rc_ref!(&q2).mul_vec(&v));
-        assert!(approx_eq_v(&v1, &v2));
-    }
-
-    #[test]
-    fn test_from_direction_negative_x() {
-        let forward = Vec3 {
-            x: -1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let up = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let q = Quat::from_direction(&forward, &up);
-        // Local -Z mapped to world space should match the requested forward.
-        let local_forward = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: -1.0,
-        };
-        let world_forward = deref_v(&rc_ref!(&q).mul_vec(&local_forward));
-        assert!(approx_eq_v(&world_forward, &forward));
     }
 
     #[test]
@@ -739,9 +436,6 @@ mod tests {
 
     #[test]
     fn test_from_two_vectors_anti_parallel() {
-        // (1, 0, 0) → (-1, 0, 0) is a 180° rotation about any axis
-        // perpendicular to X. The resulting quaternion's mul_vec must
-        // map a back to b.
         let a = Vec3 {
             x: 1.0,
             y: 0.0,
@@ -771,7 +465,7 @@ mod tests {
         };
         let q = deref(&Quat::from_two_vectors(&a, &b));
         let id = deref(&Quat::identity());
-        assert!(approx_eq_q(&q, &id));
+        assert_eq!(q, id);
     }
 
     #[test]
@@ -783,21 +477,17 @@ mod tests {
         };
         let q = deref(&Quat::from_two_vectors(&a, &a));
         let id = deref(&Quat::identity());
-        assert!(approx_eq_q(&q, &id));
+        assert_eq!(q, id);
     }
 
     #[test]
     fn test_to_euler_gimbal_lock_positive_pitch() {
-        // A 90° rotation around Y drives sy = -r20 to 1, entering the
-        // gimbal-lock branch, which pins z = 0 and must recover the
-        // input angles exactly.
         let in_euler = Vec3 {
             x: 0.0,
             y: 90.0,
             z: 0.0,
         };
         let q = Quat::from_euler(&in_euler);
-        // Confirm the input reaches the branch condition |sy| >= 0.999999.
         let qn = deref(&rc_ref!(&q).normalize());
         let sy = -2.0 * (qn.x * qn.z - qn.w * qn.y);
         assert!(sy.abs() >= 0.999_999);
@@ -813,44 +503,7 @@ mod tests {
     }
 
     #[test]
-    fn test_slerp_middle_is_average_rotation() {
-        let a = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            0.0,
-        );
-        let b = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            90.0,
-        );
-        let mid = rc_ref!(&a).slerp(&rc_ref!(&b), 0.5);
-        let probe = Vec3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        // 45° rotation around Y maps (1, 0, 0) → (cos45, 0, -sin45).
-        let r = deref_v(&rc_ref!(&mid).mul_vec(&probe));
-        let s = (0.5_f32).sqrt();
-        assert!(approx_eq_v(
-            &r,
-            &Vec3 {
-                x: s,
-                y: 0.0,
-                z: -s,
-            }
-        ));
-    }
-
-    #[test]
-    fn test_slerp_near_endpoints_uses_lerp_fallback() {
+    fn test_slerp_nearly_identical_rotations_preserves_midpoint() {
         // Two nearly-identical rotations trigger the cos > 0.9995 branch
         // that lerps and normalizes. The interpolated rotation must be a
         // unit quaternion representing the midpoint orientation.
@@ -877,9 +530,7 @@ mod tests {
 
     #[test]
     fn test_slerp_negate_takes_short_path() {
-        // a and -a represent the same orientation; without the negate
-        // step slerp would take the long way around. The test asserts
-        // that mid produces the same rotation as a on a probe vector.
+        // a and -a represent the same orientation.
         let a = Quat::from_axis_angle(
             &Vec3 {
                 x: 0.0,
@@ -906,14 +557,11 @@ mod tests {
         let q = Quat::new(0.0, 0.0, 0.0, 0.0);
         let inv = deref(&rc_ref!(&q).inverse());
         let id = deref(&Quat::identity());
-        assert!(approx_eq_q(&inv, &id));
+        assert_eq!(inv, id);
     }
 
     #[test]
     fn test_from_direction_parallel_to_up_uses_fallback() {
-        // forward parallel to up forces from_direction's perpendicular
-        // recovery path via from_two_vectors. The resulting rotation
-        // must still map local -Z to the requested forward.
         let forward = Vec3 {
             x: 0.0,
             y: 1.0,

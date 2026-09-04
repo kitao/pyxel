@@ -3,18 +3,14 @@ use pyo3::prelude::*;
 use super::quat::Quat;
 use super::vec3::Vec3;
 
-define_frozen_wrapper!(Mat4, pyxel::cube::Mat4);
+define_frozen_wrapper!(Mat4, pyxel::cube::Mat4, module = "pyxel.cube");
 
 #[pymethods]
 impl Mat4 {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::cube::Mat4::identity())
     }
-
-    // Constants
 
     // Python class attributes intentionally expose uppercase constant names.
     #[classattr]
@@ -93,20 +89,20 @@ impl Mat4 {
     }
 
     fn __mul__<'py>(&self, py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
-        if let Ok(mat) = other.extract::<Mat4>() {
+        if let Ok(mat) = other.extract::<PyClassGuard<'_, Mat4>>() {
             let result = Mat4::wrap(self.inner_ref().mul_mat(&mat.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
-        } else if let Ok(vec) = other.extract::<Vec3>() {
+        } else if let Ok(vec) = other.extract::<PyClassGuard<'_, Vec3>>() {
             let result = Vec3::wrap(self.inner_ref().mul_vec(&vec.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else {
             Err(pyo3::exceptions::PyTypeError::new_err(
-                "Mat4 * other: other must be Mat4 or Vec3",
+                "other must be Mat4 or Vec3",
             ))
         }
     }
 
-    // Class-method factories
+    // Factories
 
     #[staticmethod]
     fn from_translation(pos: PyRef<'_, Vec3>) -> Self {
@@ -145,15 +141,18 @@ impl Mat4 {
     #[staticmethod]
     #[pyo3(signature = (eye, target, up=None))]
     fn look_at(eye: PyRef<'_, Vec3>, target: PyRef<'_, Vec3>, up: Option<PyRef<'_, Vec3>>) -> Self {
-        let default_up = pyxel::cube::Vec3::up();
-        let up_rc = up
-            .as_ref()
-            .map_or_else(|| default_up.clone(), |u| u.inner.clone());
-        let up_inner = rc_ref!(up_rc);
+        let up = up.map_or(
+            pyxel::cube::Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            |u| *u.inner_ref(),
+        );
         Self::wrap(pyxel::cube::Mat4::look_at(
             &eye.inner_ref(),
             &target.inner_ref(),
-            &up_inner,
+            &up,
         ))
     }
 
@@ -215,8 +214,6 @@ impl Mat4 {
         Self::wrap(self.inner_ref().to_world_dir(&mat.inner_ref()))
     }
 }
-
-// Module registration
 
 pub fn add_mat4_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mat4>()?;

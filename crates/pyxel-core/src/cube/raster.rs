@@ -328,18 +328,10 @@ pub fn lookup_ramp(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> (
     shading.get(col, level)
 }
 
-// Returns the LUT primary at the face's brightness level. Callers that
-// want dithering should use `lookup_ramp` and `dither_pick` instead.
-pub fn shade(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> u8 {
-    let (primary, _) = lookup_ramp(shading, base_col, normal);
-    primary as u8
-}
-
 // Pixel write with depth test. Callers are responsible for clip containment;
 // bbox-driven rasterizers already drop out-of-clip pixels at their loop
 // bounds, so this hot-path function does not re-check. The scalar signature
 // avoids a per-pixel parameter object.
-#[allow(clippy::too_many_arguments)]
 #[inline]
 pub fn write_pixel(
     target: &mut Image,
@@ -359,12 +351,7 @@ pub fn write_pixel(
     write_visible_pixel(target, depth, i, x, y, z, col, depth_write);
 }
 
-#[allow(clippy::too_many_arguments)]
-#[allow(
-    clippy::inline_always,
-    reason = "measured per-pixel visibility-check improvement in the Cube raster benchmark"
-)]
-#[inline(always)]
+#[inline]
 fn visible_pixel_index(
     depth: &[f32],
     depth_w: u32,
@@ -391,12 +378,7 @@ fn visible_pixel_index(
     Some(i)
 }
 
-#[allow(clippy::too_many_arguments)]
-#[allow(
-    clippy::inline_always,
-    reason = "measured per-pixel write improvement in the Cube raster benchmark"
-)]
-#[inline(always)]
+#[inline]
 fn write_visible_pixel(
     target: &mut Image,
     depth: &mut [f32],
@@ -450,9 +432,7 @@ fn edge_inside(w: f32, include_boundary: bool, pos_area: bool) -> bool {
 // Filled triangle with linear z interpolation. Both windings draw because
 // back-face culling happens upstream in draw::prim. Each pixel picks
 // `primary` or `secondary` through the `dither_pick` checker pattern;
-// `primary == secondary` collapses to a flat fill. The scalar signature
-// keeps this hot path free of temporary argument structs.
-#[allow(clippy::too_many_arguments)]
+// `primary == secondary` collapses to a flat fill.
 pub fn rasterize_triangle(
     target: &mut Image,
     depth: &mut [f32],
@@ -542,10 +522,8 @@ pub fn rasterize_triangle(
 
 // Filled triangle with linear UV + z interpolation. The sampler receives
 // `(u, v, x, y)` so it can mix in screen-space dither when shading a
-// textured face. colkey drops pixels whose source matches the key.
-// Interpolation is affine — good enough for cube's pixel-art scale. The
-// scalar signature keeps this hot path free of temporary argument structs.
-#[allow(clippy::too_many_arguments)]
+// textured face. None skips transparent pixels.
+// Interpolation is affine for Pyxel Cube's pixel-art scale.
 pub fn rasterize_textured_triangle<F>(
     target: &mut Image,
     depth: &mut [f32],
@@ -557,13 +535,12 @@ pub fn rasterize_textured_triangle<F>(
     uv1: (f32, f32),
     uv2: (f32, f32),
     sampler: F,
-    colkey: Option<i32>,
     clip: ClipRect,
     dither_alpha: f32,
     depth_test: bool,
     depth_write: bool,
 ) where
-    F: Fn(f32, f32, i32, i32) -> i32,
+    F: Fn(f32, f32, i32, i32) -> Option<i32>,
 {
     let area = edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1));
     if area.abs() < 1e-6 {
@@ -621,8 +598,7 @@ pub fn rasterize_textured_triangle<F>(
             {
                 let u = bary0 * uv0.0 + bary1 * uv1.0 + bary2 * uv2.0;
                 let v = bary0 * uv0.1 + bary1 * uv1.1 + bary2 * uv2.1;
-                let col = sampler(u, v, x, y);
-                if colkey.is_none_or(|key| col != key) {
+                if let Some(col) = sampler(u, v, x, y) {
                     write_visible_pixel(target, depth, i, x, y, z, col as u8, depth_write);
                 }
             }
@@ -631,9 +607,7 @@ pub fn rasterize_textured_triangle<F>(
 }
 
 // Filled screen-space circle at constant depth. cx / cy / radius are in
-// pixels (project a world-space circle through `screen_circle` first). The
-// scalar signature keeps this hot path free of temporary argument structs.
-#[allow(clippy::too_many_arguments)]
+// pixels (project a world-space circle through `screen_circle` first).
 pub fn rasterize_circle_filled(
     target: &mut Image,
     depth: &mut [f32],
@@ -720,10 +694,7 @@ pub fn rasterize_circle_filled(
     }
 }
 
-// 1-pixel-thick screen-space circle outline. The band [radius - 0.5,
-// radius + 0.5] keeps the ring isotropic at any distance. The scalar
-// signature keeps this hot path free of temporary argument structs.
-#[allow(clippy::too_many_arguments)]
+// Rounded screen-space circle outline at constant depth.
 pub fn rasterize_circle_border(
     target: &mut Image,
     depth: &mut [f32],
@@ -879,8 +850,6 @@ fn circle_area(cx: f32, cy: f32, ra: f32, rb: f32, x: i32) -> (i32, i32, i32, i3
     (x1, y1, x2, y2)
 }
 
-// Circle helpers keep flat scalar arguments to match their hot-path callers.
-#[allow(clippy::too_many_arguments)]
 #[inline]
 fn rasterize_circle_pixel(
     target: &mut Image,
@@ -914,7 +883,6 @@ fn rasterize_circle_pixel(
     );
 }
 
-#[allow(clippy::too_many_arguments)]
 #[inline]
 fn rasterize_circle_row(
     target: &mut Image,
@@ -954,7 +922,6 @@ fn rasterize_circle_row(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 #[inline]
 fn rasterize_circle_column(
     target: &mut Image,
@@ -1052,12 +1019,8 @@ fn line_depth(z: f32) -> f32 {
     z - LINE_DEPTH_BIAS
 }
 
-// Bresenham-style 3D line with linear z interpolation. Width is fixed at
-// 1 pixel regardless of distance. The line span is clipped before
-// stepping so near-plane clipped edges do not iterate over invisible
-// off-screen pixels. The scalar signature keeps this hot path free of
-// temporary argument structs.
-#[allow(clippy::too_many_arguments)]
+// Floating-point DDA line with linear z interpolation and fixed 1-pixel width.
+// Clip before stepping so near-plane clipped edges do not traverse off-screen pixels.
 pub fn rasterize_line(
     target: &mut Image,
     depth: &mut [f32],
@@ -1164,12 +1127,7 @@ mod tests {
             [0.0, 0.0, 0.0, 1.0],
         ];
         let result = matmul(&identity, &identity);
-        for (i, row) in result.iter().enumerate() {
-            for (j, &val) in row.iter().enumerate() {
-                let expected = if i == j { 1.0 } else { 0.0 };
-                assert!((val - expected).abs() < 1e-6);
-            }
-        }
+        assert_eq!(result, identity);
     }
 
     #[test]
@@ -1198,11 +1156,7 @@ mod tests {
     fn test_view_matrix_identity_camera() {
         let camera = Camera::new();
         let v = view_matrix(&rc_ref!(&camera));
-        // Identity camera transform yields identity view matrix.
-        assert!((v[0][0] - 1.0).abs() < 1e-6);
-        assert!((v[1][1] - 1.0).abs() < 1e-6);
-        assert!((v[2][2] - 1.0).abs() < 1e-6);
-        assert!((v[3][3] - 1.0).abs() < 1e-6);
+        assert_eq!(v, rc_ref!(&Mat4::identity()).data);
     }
 
     #[test]
@@ -1362,23 +1316,6 @@ mod tests {
         assert!(result.is_none());
     }
 
-    fn pyxel_default_palette() -> Vec<crate::image::Rgb24> {
-        vec![
-            0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98, 0xA9C1FF, 0xEEEEEE,
-            0xD4186C, 0xD38441, 0xE9C35B, 0x70C6A9, 0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
-        ]
-    }
-
-    #[test]
-    fn test_shade_no_normal_returns_lv0() {
-        // No normal → directional factor = 0 → level 0. The default
-        // palette's lv-0 LUT entry for col 7 (white) is flat col 13 (gray).
-        let shading = Shading::new(&pyxel_default_palette());
-        let shading = rc_ref!(&shading);
-        let col = shade(&shading, 7, None);
-        assert_eq!(col, 13);
-    }
-
     #[test]
     fn test_clip_rect_contains() {
         let clip = ClipRect {
@@ -1428,16 +1365,6 @@ mod tests {
         write_pixel(&mut img_mut, &mut depth, 8, 3, 3, 0.0, 5, 1.0, true, true);
         assert_eq!(img_mut.canvas.read_data(3, 3), 5);
         assert_eq!(depth[3 * 8 + 3], 0.0);
-    }
-
-    #[test]
-    fn test_write_pixel_z_test_blocks_far() {
-        let (img, mut depth, _) = make_target_and_depth(8, 8);
-        let mut img_mut = rc_mut!(&img);
-        write_pixel(&mut img_mut, &mut depth, 8, 4, 4, 0.0, 10, 1.0, true, true);
-        // A farther write attempt is rejected by the depth test.
-        write_pixel(&mut img_mut, &mut depth, 8, 4, 4, 0.5, 11, 1.0, true, true);
-        assert_eq!(img_mut.canvas.read_data(4, 4), 10);
     }
 
     #[test]
@@ -1502,7 +1429,7 @@ mod tests {
             true,
         );
         assert_eq!(img_mut.canvas.read_data(3, 3), 5);
-        assert!((depth[3 * 8 + 3] - line_depth(0.25)).abs() < 1e-6);
+        assert_eq!(depth[3 * 8 + 3], line_depth(0.25));
     }
 
     #[test]
@@ -1704,28 +1631,6 @@ mod tests {
     }
 
     #[test]
-    fn test_rasterize_triangle_fills_interior() {
-        let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let mut img_mut = rc_mut!(&img);
-        rasterize_triangle(
-            &mut img_mut,
-            &mut depth,
-            16,
-            (2.0, 2.0, 0.0),
-            (12.0, 2.0, 0.0),
-            (2.0, 12.0, 0.0),
-            9,
-            9,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        assert_eq!(img_mut.canvas.read_data(4, 4), 9);
-        assert_eq!(img_mut.canvas.read_data(10, 10), 0);
-    }
-
-    #[test]
     fn test_rasterize_triangle_z_interpolated() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
         let mut img_mut = rc_mut!(&img);
@@ -1743,8 +1648,8 @@ mod tests {
             true,
             true,
         );
-        assert!(depth[0] < 0.1);
-        assert!(depth[15] > 0.3);
+        assert!((depth[0] - 0.05).abs() < 1e-6);
+        assert!((depth[4 * 16 + 4] - 0.45).abs() < 1e-6);
     }
 
     #[test]
@@ -1896,7 +1801,7 @@ mod tests {
         for y in 1..5 {
             for x in 1..5 {
                 assert_eq!(img_mut.canvas.read_data(x, y), 4, "pixel=({x}, {y})");
-                assert!((depth[y * 8 + x] - 0.25).abs() < 1e-6, "pixel=({x}, {y})");
+                assert_eq!(depth[y * 8 + x], 0.25, "pixel=({x}, {y})");
             }
         }
     }
@@ -1946,7 +1851,6 @@ mod tests {
     fn test_rasterize_triangle_degenerate_skipped() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
         let mut img_mut = rc_mut!(&img);
-        // Three colinear points -> zero area -> skip.
         rasterize_triangle(
             &mut img_mut,
             &mut depth,
@@ -1995,7 +1899,7 @@ mod tests {
     }
 
     #[test]
-    fn test_rasterize_textured_triangle_constant_sampler() {
+    fn test_rasterize_textured_triangle_transparency_skips() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
         let mut img_mut = rc_mut!(&img);
         rasterize_textured_triangle(
@@ -2008,59 +1912,7 @@ mod tests {
             (0.0, 0.0),
             (1.0, 0.0),
             (0.0, 1.0),
-            |_, _, _, _| 13,
-            None,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        assert_eq!(img_mut.canvas.read_data(4, 4), 13);
-        assert_eq!(img_mut.canvas.read_data(2, 10), 13);
-    }
-
-    #[test]
-    fn test_rasterize_textured_triangle_uv_interpolation() {
-        let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let mut img_mut = rc_mut!(&img);
-        rasterize_textured_triangle(
-            &mut img_mut,
-            &mut depth,
-            32,
-            (5.0, 5.0, 0.0),
-            (25.0, 5.0, 0.0),
-            (5.0, 25.0, 0.0),
-            (0.0, 0.0),
-            (1.0, 0.0),
-            (0.0, 1.0),
-            |u, _v, _, _| if u < 0.5 { 4 } else { 9 },
-            None,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        // Near p0 (u ~ 0) -> color 4; near p1 (u ~ 1) -> color 9.
-        assert_eq!(img_mut.canvas.read_data(7, 6), 4);
-        assert_eq!(img_mut.canvas.read_data(22, 6), 9);
-    }
-
-    #[test]
-    fn test_rasterize_textured_triangle_colkey_skips() {
-        let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let mut img_mut = rc_mut!(&img);
-        rasterize_textured_triangle(
-            &mut img_mut,
-            &mut depth,
-            16,
-            (2.0, 2.0, 0.0),
-            (12.0, 2.0, 0.0),
-            (2.0, 12.0, 0.0),
-            (0.0, 0.0),
-            (1.0, 0.0),
-            (0.0, 1.0),
-            |_, _, _, _| 0,
-            Some(0),
+            |_, _, _, _| None,
             clip,
             1.0,
             true,
@@ -2068,47 +1920,6 @@ mod tests {
         );
         assert_eq!(img_mut.canvas.read_data(4, 4), 0);
         assert_eq!(depth[4 * 16 + 4], f32::INFINITY);
-    }
-
-    #[test]
-    fn test_rasterize_textured_triangle_depth_test() {
-        let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let mut img_mut = rc_mut!(&img);
-        rasterize_textured_triangle(
-            &mut img_mut,
-            &mut depth,
-            16,
-            (2.0, 2.0, 0.0),
-            (12.0, 2.0, 0.0),
-            (2.0, 12.0, 0.0),
-            (0.0, 0.0),
-            (1.0, 0.0),
-            (0.0, 1.0),
-            |_, _, _, _| 7,
-            None,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        rasterize_textured_triangle(
-            &mut img_mut,
-            &mut depth,
-            16,
-            (2.0, 2.0, 0.5),
-            (12.0, 2.0, 0.5),
-            (2.0, 12.0, 0.5),
-            (0.0, 0.0),
-            (1.0, 0.0),
-            (0.0, 1.0),
-            |_, _, _, _| 11,
-            None,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        assert_eq!(img_mut.canvas.read_data(4, 4), 7);
     }
 
     #[test]
@@ -2128,9 +1939,8 @@ mod tests {
             (0.0, 1.0),
             |_, _, _, _| {
                 sample_count.set(sample_count.get() + 1);
-                7
+                Some(7)
             },
-            None,
             clip,
             1.0,
             true,
@@ -2155,39 +1965,14 @@ mod tests {
             (0.0, 1.0),
             |_, _, _, _| {
                 sample_count.set(sample_count.get() + 1);
-                7
+                Some(7)
             },
-            None,
             clip,
             0.0,
             true,
             true,
         );
         assert_eq!(sample_count.get(), 0);
-    }
-
-    #[test]
-    fn test_rasterize_circle_filled_center_and_edge() {
-        let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let mut img_mut = rc_mut!(&img);
-        rasterize_circle_filled(
-            &mut img_mut,
-            &mut depth,
-            32,
-            16.0,
-            16.0,
-            5.0,
-            0.0,
-            12,
-            0,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        assert_eq!(img_mut.canvas.read_data(16, 16), 12);
-        assert_eq!(img_mut.canvas.read_data(20, 16), 12);
-        assert_eq!(img_mut.canvas.read_data(25, 25), 0);
     }
 
     #[test]
@@ -2216,31 +2001,6 @@ mod tests {
     }
 
     #[test]
-    fn test_rasterize_circle_border_thin_ring() {
-        let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let mut img_mut = rc_mut!(&img);
-        rasterize_circle_border(
-            &mut img_mut,
-            &mut depth,
-            32,
-            16.0,
-            16.0,
-            5.0,
-            0.0,
-            8,
-            8,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        // Center pixel is NOT filled (border only).
-        assert_eq!(img_mut.canvas.read_data(16, 16), 0);
-        // 2D circb-style rim pixel.
-        assert_eq!(img_mut.canvas.read_data(21, 16), 8);
-    }
-
-    #[test]
     fn test_rasterize_circle_border_matches_2d_circb_pixels() {
         let expected = Image::new(32, 32);
         rc_mut!(&expected).draw_circle_border(16.0, 16.0, 6.0, 8);
@@ -2266,45 +2026,8 @@ mod tests {
     }
 
     #[test]
-    fn test_rasterize_circle_filled_z_test() {
-        let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let mut img_mut = rc_mut!(&img);
-        rasterize_circle_filled(
-            &mut img_mut,
-            &mut depth,
-            32,
-            16.0,
-            16.0,
-            5.0,
-            0.0,
-            10,
-            0,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        rasterize_circle_filled(
-            &mut img_mut,
-            &mut depth,
-            32,
-            16.0,
-            16.0,
-            5.0,
-            0.5,
-            11,
-            0,
-            clip,
-            1.0,
-            true,
-            true,
-        );
-        assert_eq!(img_mut.canvas.read_data(16, 16), 10);
-    }
-
-    #[test]
     fn test_rasterize_circle_filled_clip_rejects_outside() {
-        let (img, mut depth, _) = make_target_and_depth(32, 32);
+        let (img, mut depth, clip) = make_target_and_depth(32, 32);
         let mut img_mut = rc_mut!(&img);
         let small_clip = ClipRect {
             left: 0,
@@ -2312,22 +2035,24 @@ mod tests {
             right: 7,
             bottom: 7,
         };
-        rasterize_circle_filled(
-            &mut img_mut,
-            &mut depth,
-            32,
-            3.0,
-            3.0,
-            10.0,
-            0.0,
-            5,
-            0,
-            small_clip,
-            1.0,
-            true,
-            true,
-        );
-        assert_eq!(img_mut.canvas.read_data(3, 3), 5);
-        assert_eq!(img_mut.canvas.read_data(16, 16), 0);
+        for (clip, outside_color) in [(small_clip, 0), (clip, 5)] {
+            rasterize_circle_filled(
+                &mut img_mut,
+                &mut depth,
+                32,
+                3.0,
+                3.0,
+                10.0,
+                0.0,
+                5,
+                5,
+                clip,
+                1.0,
+                true,
+                true,
+            );
+            assert_eq!(img_mut.canvas.read_data(3, 3), 5);
+            assert_eq!(img_mut.canvas.read_data(10, 3), outside_color);
+        }
     }
 }

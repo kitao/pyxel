@@ -102,7 +102,6 @@ class SoundEditor(EditorBase):
         self._left_octave_bar = OctaveBar(self, 12, 25)
         self._right_octave_bar = OctaveBar(self, 224, 25)
 
-        # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("hide", self.__on_hide)

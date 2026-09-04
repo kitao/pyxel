@@ -74,7 +74,7 @@ class TestDecomposed:
 
     def test_scale_after_from_scale(self):
         m = Mat4.from_scale(Vec3(2, 3, 4))
-        assert approx_v(m.scale, Vec3(2, 3, 4))
+        assert m.scale == Vec3(2, 3, 4)
 
     def test_rot_zero_after_translation(self):
         m = Mat4.from_translation(Vec3(1, 2, 3))
@@ -86,23 +86,23 @@ class TestDecomposed:
         rot = Quat.from_euler(rot_euler)
         scale = Vec3(2, 2, 2)
         m = Mat4.compose(pos, rot, scale)
-        assert approx_v(m.pos, pos)
+        assert m.pos == pos
         assert approx_v(m.scale, scale)
         assert approx_v(m.rot.to_euler(), rot_euler)
 
 
 class TestOperators:
+    def test_mul_invalid_type(self):
+        with raises_exact(TypeError, "other must be Mat4 or Vec3"):
+            Mat4() * 1
+
     def test_mul_identity(self):
         m = Mat4.from_translation(Vec3(1, 2, 3))
-        assert approx_m(m * Mat4.IDENTITY, m)
+        assert m * Mat4.IDENTITY == m
 
     def test_mul_vec_translation(self):
         m = Mat4.from_translation(Vec3(10, 20, 30))
         assert m * Vec3(1, 2, 3) == Vec3(11, 22, 33)
-
-    def test_mul_vec_rotation_y90(self):
-        m = Mat4.IDENTITY.rotate_y(90)
-        assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
 
     def test_eq(self):
         assert Mat4.IDENTITY == Mat4.IDENTITY
@@ -110,10 +110,6 @@ class TestOperators:
 
 
 class TestFactories:
-    def test_from_translation(self):
-        m = Mat4.from_translation(Vec3(1, 2, 3))
-        assert m.pos == Vec3(1, 2, 3)
-
     def test_from_euler_y90(self):
         m = Mat4.from_euler(Vec3(0, 90, 0))
         assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
@@ -122,26 +118,15 @@ class TestFactories:
         m = Mat4.from_axis_angle(Vec3.UP, 90)
         assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
 
-    def test_from_scale(self):
-        m = Mat4.from_scale(Vec3(2, 3, 4))
-        assert approx_v(m.scale, Vec3(2, 3, 4))
-
     def test_from_quat_round_trip(self):
         q = Quat.from_axis_angle(Vec3.UP, 90)
         m = Mat4.from_quat(q)
         assert approx_v(m * Vec3(1, 0, 0), q * Vec3(1, 0, 0))
 
-    def test_compose(self):
-        pos = Vec3(1, 2, 3)
-        rot = Quat.IDENTITY
-        scale = Vec3(2, 2, 2)
-        m = Mat4.compose(pos, rot, scale)
-        assert m.pos == pos
-
     def test_look_at_translation(self):
         eye = Vec3(0, 0, 5)
         m = Mat4.look_at(eye, Vec3(0, 0, 0))
-        assert approx_v(m.pos, eye)
+        assert m.pos == eye
 
 
 class TestMutate:
@@ -167,7 +152,7 @@ class TestMutate:
 
     def test_scale_by(self):
         m = Mat4().scale_by(Vec3(2, 3, 4))
-        assert approx_v(m.scale, Vec3(2, 3, 4))
+        assert m.scale == Vec3(2, 3, 4)
 
 
 class TestMatrixOps:
@@ -185,10 +170,10 @@ class TestMatrixOps:
                 assert t[i, j] == m[j, i]
 
     def test_determinant_identity(self):
-        assert isclose(Mat4.IDENTITY.determinant(), 1.0, abs_tol=1e-6)
+        assert Mat4.IDENTITY.determinant() == 1.0
 
     def test_determinant_scale(self):
-        assert isclose(Mat4.from_scale(Vec3(2, 3, 4)).determinant(), 24.0, abs_tol=1e-4)
+        assert Mat4.from_scale(Vec3(2, 3, 4)).determinant() == 24.0
 
 
 class TestCoordinateConversions:
@@ -201,4 +186,4 @@ class TestCoordinateConversions:
         outer = Mat4.from_translation(Vec3(10, 0, 0))
         inner = Mat4.from_translation(Vec3(15, 0, 0))
         local = inner.to_local(outer)
-        assert approx_v(local.pos, Vec3(5, 0, 0))
+        assert local.pos == Vec3(5, 0, 0)

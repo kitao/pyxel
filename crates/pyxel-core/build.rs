@@ -1,21 +1,57 @@
+#[cfg(not(test))]
 use std::env::var;
+#[cfg(not(test))]
 use std::fs::File;
+use std::io::Read;
+#[cfg(not(test))]
 use std::path::Path;
+#[cfg(not(test))]
 use std::process::Command;
+#[cfg(not(test))]
 use std::str;
 
+use sha2::{Digest, Sha256};
+#[cfg(not(test))]
 use tar::Archive;
 
-const SDL2_VERSION: &str = "2.32.10"; // Emscripten 5.0.3 uses SDL 2.32.10
+pub(crate) const SDL2_VERSION: &str = "2.32.10"; // Emscripten 5.0.3 uses SDL 2.32.10
+pub(crate) const SDL2_SHA256: &str =
+    "5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165";
 
-struct SDL2BindingsBuilder {
+pub(crate) fn verify_sha256<R: Read>(mut reader: R, expected: &str) -> Result<(), String> {
+    let mut hasher = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+
+    loop {
+        let bytes_read = reader
+            .read(&mut buffer)
+            .map_err(|err| format!("Failed to read archive: {err}"))?;
+        if bytes_read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..bytes_read]);
+    }
+
+    let actual = format!("{:x}", hasher.finalize());
+    if actual == expected {
+        Ok(())
+    } else {
+        Err(format!(
+            "SHA-256 mismatch: expected {expected}, actual {actual}"
+        ))
+    }
+}
+
+#[cfg(not(test))]
+struct Sdl2BindingsBuilder {
     target: String,
     target_os: String,
     sdl2_dir: String,
     out_dir: String,
 }
 
-impl SDL2BindingsBuilder {
+#[cfg(not(test))]
+impl Sdl2BindingsBuilder {
     fn new() -> Self {
         let target = var("TARGET").unwrap();
         let target_os = target
@@ -54,16 +90,19 @@ impl SDL2BindingsBuilder {
         let sdl2_archive_url = format!("https://www.libsdl.org/release/SDL2-{SDL2_VERSION}.tar.gz");
         let sdl2_archive_path = format!("{}/SDL2-{}.tar.gz", self.out_dir, SDL2_VERSION);
 
-        // Download SDL2
         let status = Command::new("curl")
-            .arg("-Lo")
+            .arg("-fLo")
             .arg(&sdl2_archive_path)
             .arg(&sdl2_archive_url)
             .status()
             .expect("Failed to execute curl command");
         assert!(status.success(), "Failed to download SDL2 source code");
 
-        // Extract SDL2
+        // Verify SDL2 before extracting any downloaded content.
+        let sdl2_archive = File::open(&sdl2_archive_path).expect("Failed to open SDL2 archive");
+        verify_sha256(sdl2_archive, SDL2_SHA256)
+            .unwrap_or_else(|err| panic!("Failed to verify SDL2 archive: {err}"));
+
         let tar_gz = File::open(&sdl2_archive_path).unwrap();
         let tar = flate2::read::GzDecoder::new(tar_gz);
         let mut archive = Archive::new(tar);
@@ -72,33 +111,6 @@ impl SDL2BindingsBuilder {
                 std::fs::remove_dir_all(&self.sdl2_dir).expect("Failed to remove SDL2 directory");
             }
             panic!("Failed to extract SDL2 source code: {err}");
-        }
-
-        // Patch SDL2 for macOS Sonoma
-        if self.target_os == "darwin" {
-            let patch_target_path = format!(
-                "{}/SDL2-{}/src/video/cocoa/SDL_cocoaevents.m",
-                self.out_dir, SDL2_VERSION
-            );
-            let function_name = "applicationSupportsSecureRestorableState";
-            let function_exists = Command::new("sh")
-                .arg("-c")
-                .arg(format!("grep -q '{function_name}' {patch_target_path}"))
-                .status()
-                .expect("Failed to execute grep command");
-
-            if !function_exists.success() {
-                let patch_code =
-                    format!("- (BOOL){function_name}:(NSApplication *)app {{ return YES; }}\n",);
-                let status = Command::new("sh")
-                    .arg("-c")
-                    .arg(format!(
-                        "sed -i '' '/(void)handleURLEvent/i\\\n{patch_code}' {patch_target_path}"
-                    ))
-                    .status()
-                    .expect("Failed to execute sed command");
-                assert!(status.success(), "Failed to patch SDL2");
-            }
         }
     }
 
@@ -126,7 +138,7 @@ impl SDL2BindingsBuilder {
     }
 
     fn link_sdl2(&self) {
-        // Static SDL2 and platform dependencies
+        // Static SDL2 needs platform dependencies supplied transitively by dynamic SDL2.
         if is_sdl2_static() {
             println!("cargo::rustc-link-lib=static=SDL2main");
             if self.target_os.contains("windows") {
@@ -136,7 +148,6 @@ impl SDL2BindingsBuilder {
             }
 
             if self.target_os.contains("windows") {
-                // Static SDL2 needs platform libraries that dynamic SDL2 brings in transitively.
                 println!("cargo::rustc-link-lib=shell32");
                 println!("cargo::rustc-link-lib=user32");
                 println!("cargo::rustc-link-lib=gdi32");
@@ -150,7 +161,6 @@ impl SDL2BindingsBuilder {
                 println!("cargo::rustc-link-lib=dxguid");
                 println!("cargo::rustc-link-lib=setupapi");
             } else if self.target_os == "darwin" {
-                // Static SDL2 needs platform frameworks that dynamic SDL2 brings in transitively.
                 println!("cargo::rustc-link-lib=framework=Cocoa");
                 println!("cargo::rustc-link-lib=framework=IOKit");
                 println!("cargo::rustc-link-lib=framework=Carbon");
@@ -219,7 +229,6 @@ impl SDL2BindingsBuilder {
         }
     }
 
-    // Collect include paths for static, Emscripten, or system SDL2.
     fn include_flags(&self) -> Vec<String> {
         let mut include_flags = Vec::new();
 
@@ -254,18 +263,21 @@ impl SDL2BindingsBuilder {
     }
 }
 
+#[cfg(not(test))]
 fn has_sdl2_feature() -> bool {
     var("CARGO_FEATURE_SDL2_DYNAMIC").is_ok() || var("CARGO_FEATURE_SDL2_STATIC").is_ok()
 }
 
+#[cfg(not(test))]
 fn is_sdl2_static() -> bool {
     var("CARGO_FEATURE_SDL2_STATIC").is_ok()
 }
 
+#[cfg(not(test))]
 fn main() {
     println!("cargo::rustc-check-cfg=cfg(pyxel_core)");
     println!("cargo::rustc-cfg=pyxel_core");
     if has_sdl2_feature() {
-        SDL2BindingsBuilder::new().build();
+        Sdl2BindingsBuilder::new().build();
     }
 }

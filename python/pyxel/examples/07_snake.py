@@ -180,14 +180,11 @@ class App:
 
         pyxel.cls(3)
 
-        # Draw snake
         for i, (x, y) in enumerate(self.snake):
             pyxel.pset(x, y, 7 if i == 0 else 11)
 
-        # Draw apple
         pyxel.pset(*self.apple, 8)
 
-        # Draw score
         pyxel.rect(0, 0, SCREEN_W, SCORE_H, 5)
         pyxel.text(1, 1, f"{self.score:04}", 6)
 

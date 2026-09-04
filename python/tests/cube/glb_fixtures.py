@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import json
+import math
 import struct
 import zlib
 from pathlib import Path
@@ -40,12 +41,21 @@ def _png(
             b"IHDR",
             # Fields: width, height, bit depth 8, color type (0 = gray,
             # 2 = RGB, 4 = gray+alpha, 6 = RGBA), then compression /
-            # filter / interlace methods, each 0 (the only PNG methods).
+            # filter methods 0 and interlace 0 (non-interlaced).
             struct.pack(">IIBBBBB", width, height, 8, color_type, 0, 0, 0),
         )
         + chunk(b"IDAT", zlib.compress(bytes(raw)))
         + chunk(b"IEND", b"")
     )
+
+
+def _pack_chunks(chunks: list[bytes]) -> tuple[bytes, list[int]]:
+    data = bytearray()
+    offsets = []
+    for chunk in chunks:
+        offsets.append(len(data))
+        data.extend(_pad4(chunk, b"\x00"))
+    return bytes(data), offsets
 
 
 def _write_glb(path: Path, gltf: dict, bin_blob: bytes) -> Path:
@@ -121,7 +131,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
     body_positions, body_normals, body_uvs, body_indices = cuboid(1.2, 1.2, 0.8)
     face_positions, face_normals, face_uvs, face_indices = cuboid(0.55, 0.45, 0.1)
     times = struct.pack("<fff", 0.0, 0.5, 1.0)
-    # Encode smooth or linear animation samples
+    # glTF cubic samples contain an incoming tangent, value, and outgoing tangent.
     if smooth_motion:
         translation_interpolation = "CUBICSPLINE"
         translation_accessor_count = 9
@@ -133,7 +143,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
             0.0,
             0.0,
             0.0,
-            0.5,
+            1.0,
             0.0,
             0.0,
             0.5,
@@ -219,18 +229,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
         red_png,
         yellow_png,
     ]
-    chunks: list[bytes] = []
-    offsets: list[int] = []
-    cursor = 0
-    for data in data_chunks:
-        offsets.append(cursor)
-        chunks.append(data)
-        cursor += len(data)
-        pad = (4 - cursor % 4) % 4
-        if pad:
-            chunks.append(b"\x00" * pad)
-            cursor += pad
-    bin_blob = b"".join(chunks)
+    bin_blob, offsets = _pack_chunks(data_chunks)
 
     gltf = {
         "asset": {"version": "2.0", "generator": "Blockbench"},
@@ -387,6 +386,9 @@ def write_single_texture_motion_glb(
     matrix_transform: bool = False,
     normal_texture: bool = False,
     material_animation: bool = False,
+    animation_pointer_metadata: str | None = None,
+    required_extension: str | None = None,
+    animation_times: tuple[float, float] = (0.0, 1.0),
     base_color_factor: list[float] | None = None,
     tangent_attribute: bool = False,
     alpha_mode: str | None = None,
@@ -410,7 +412,8 @@ def write_single_texture_motion_glb(
     uvs = struct.pack("<ffffffff", 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
     indices = struct.pack("<HHHHHH", 0, 1, 2, 0, 2, 3)
     tangents = struct.pack("<" + "f" * 16, *([0.0, 0.0, 1.0, 1.0] * 4))
-    times = struct.pack("<ff", 0.0, 1.0)
+    times = struct.pack("<ff", *animation_times)
+    finite_times = [time for time in animation_times if math.isfinite(time)]
     translations = struct.pack("<ffffff", 0.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     morph_positions = struct.pack("<ffffffffffff", *([0.0] * 12))
     if texture_pixels is None:
@@ -431,21 +434,10 @@ def write_single_texture_motion_glb(
     else:
         pixels = list(texture_pixels)
     png = _png(texture_size[0], texture_size[1], png_color_type, pixels)
-    chunks: list[bytes] = []
-    offsets: list[int] = []
-    cursor = 0
     data_chunks = [positions, uvs, indices, times, translations, morph_positions, png]
     if tangent_attribute:
         data_chunks.append(tangents)
-    for data in data_chunks:
-        offsets.append(cursor)
-        chunks.append(data)
-        cursor += len(data)
-        pad = (4 - cursor % 4) % 4
-        if pad:
-            chunks.append(b"\x00" * pad)
-            cursor += pad
-    bin_blob = b"".join(chunks)
+    bin_blob, offsets = _pack_chunks(data_chunks)
     primitive = {
         "attributes": {"POSITION": 0, "TEXCOORD_0": 1},
         "indices": 2,
@@ -461,22 +453,23 @@ def write_single_texture_motion_glb(
     if skin:
         node["skin"] = 0
     if matrix_transform:
+        # Column-major: translation (1, 2, 3), Y rotation 90, scale (2, 3, 4).
         node["matrix"] = [
+            0.0,
+            0.0,
+            -2.0,
+            0.0,
+            0.0,
+            3.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0,
+            0.0,
+            0.0,
             1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
+            2.0,
+            3.0,
             1.0,
         ]
 
@@ -540,8 +533,8 @@ def write_single_texture_motion_glb(
                 "componentType": 5126,
                 "count": 2,
                 "type": "SCALAR",
-                "min": [0.0],
-                "max": [1.0],
+                "min": [min(finite_times, default=0.0)],
+                "max": [max(finite_times, default=0.0)],
             },
             {"bufferView": 4, "componentType": 5126, "count": 2, "type": "VEC3"},
             {"bufferView": 5, "componentType": 5126, "count": 4, "type": "VEC3"},
@@ -579,6 +572,15 @@ def write_single_texture_motion_glb(
         ]
     if material_animation:
         gltf["extensionsUsed"] = ["KHR_animation_pointer"]
+    if animation_pointer_metadata == "generator":
+        gltf["asset"]["generator"] = "KHR_animation_pointer"
+    elif animation_pointer_metadata == "node_name":
+        gltf["nodes"][0]["name"] = "KHR_animation_pointer"
+    elif animation_pointer_metadata == "extras":
+        gltf["extras"] = {"description": "KHR_animation_pointer"}
+    if required_extension:
+        gltf.setdefault("extensionsUsed", []).append(required_extension)
+        gltf["extensionsRequired"] = [required_extension]
 
     return _write_glb(path, gltf, bin_blob)
 
@@ -724,18 +726,7 @@ def write_authored_normals_glb(path: Path) -> Path:
         0.0,
         -1.0,
     )
-    chunks: list[bytes] = []
-    offsets: list[int] = []
-    cursor = 0
-    for data in (positions, normals):
-        offsets.append(cursor)
-        chunks.append(data)
-        cursor += len(data)
-        pad = (4 - cursor % 4) % 4
-        if pad:
-            chunks.append(b"\x00" * pad)
-            cursor += pad
-    bin_blob = b"".join(chunks)
+    bin_blob, offsets = _pack_chunks([positions, normals])
     gltf = {
         "asset": {"version": "2.0"},
         "scene": 0,
@@ -817,18 +808,7 @@ def write_two_material_two_texture_glb(
     if textured:
         data_chunks.extend([uvs, uvs, red_png, green_png])
 
-    chunks: list[bytes] = []
-    offsets: list[int] = []
-    cursor = 0
-    for data in data_chunks:
-        offsets.append(cursor)
-        chunks.append(data)
-        cursor += len(data)
-        pad = (4 - cursor % 4) % 4
-        if pad:
-            chunks.append(b"\x00" * pad)
-            cursor += pad
-    bin_blob = b"".join(chunks)
+    bin_blob, offsets = _pack_chunks(data_chunks)
 
     left_attributes = {"POSITION": 0}
     right_attributes = {"POSITION": 2}

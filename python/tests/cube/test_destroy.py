@@ -1,8 +1,10 @@
+from typing import ClassVar
+
 from pyxel.cube import Node
 
 
 class _DestroyTracker(Node):
-    fire_log: list[str] = []  # class-level so siblings can write to a shared log
+    fire_log: ClassVar[list[str]] = []  # shared so siblings write one log
 
     def __init__(self, label: str):
         super().__init__()
@@ -52,3 +54,15 @@ def test_destroy_on_subtree_does_not_destroy_root():
     root_node.update()
     assert root_node.destroyed is False
     assert len(root_node.children) == 0
+
+
+def test_destroying_update_root_fires_once():
+    _DestroyTracker.fire_log = []
+    root = _DestroyTracker("root")
+
+    root.destroy()
+    root.update()
+    root.update()
+
+    assert _DestroyTracker.fire_log == ["root"]
+    assert root.destroyed is False

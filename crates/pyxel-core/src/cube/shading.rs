@@ -369,38 +369,21 @@ fn rgb_to_hsv(r: f32, g: f32, b: f32) -> (f32, f32, f32) {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    fn pyxel_default() -> Vec<Rgb24> {
-        vec![
-            0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98, 0xA9C1FF, 0xEEEEEE,
-            0xD4186C, 0xD38441, 0xE9C35B, 0x70C6A9, 0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
-        ]
-    }
+    use crate::settings::DEFAULT_COLORS;
 
     #[test]
     fn test_default_dimensions() {
-        let r = Shading::new(&pyxel_default());
+        let r = Shading::new(&DEFAULT_COLORS);
         let r = rc_ref!(&r);
         assert_eq!(r.palette_size(), 16);
-        for row in &r.data {
-            assert_eq!(row.len(), LEVEL_COUNT);
-        }
-    }
-
-    #[test]
-    fn test_get_set() {
-        let r = Shading::new(&pyxel_default());
-        let mut r_mut = rc_mut!(&r);
-        r_mut.set(0, 0, (5, 7));
-        assert_eq!(r_mut.get(0, 0), (5, 7));
     }
 
     #[test]
     fn test_build_resets_table() {
-        let r = Shading::new(&pyxel_default());
+        let r = Shading::new(&DEFAULT_COLORS);
         let mut r_mut = rc_mut!(&r);
         r_mut.set(0, 0, (99, 99));
-        r_mut.build(&pyxel_default());
+        r_mut.build(&DEFAULT_COLORS);
         // Rebuild recomputes the deterministic default-palette entry:
         // black has no darker shade, so lv 0 stays flat black.
         assert_eq!(r_mut.get(0, 0), (0, 0));
@@ -411,16 +394,6 @@ mod tests {
         let r = Shading::new(&[]);
         let r = rc_ref!(&r);
         assert_eq!(r.palette_size(), 0);
-    }
-
-    #[test]
-    fn test_direction_default_is_down() {
-        let r = Shading::new(&pyxel_default());
-        let r = rc_ref!(&r);
-        let dir = *rc_ref!(&r.direction);
-        assert_eq!(dir.x, 0.0);
-        assert_eq!(dir.y, -1.0);
-        assert_eq!(dir.z, 0.0);
     }
 
     fn srgb_to_linear(c: f32) -> f32 {
@@ -449,9 +422,7 @@ mod tests {
 
     #[test]
     fn test_pyxel_default_ramp_is_monotone() {
-        // Default palette must produce a strictly non-decreasing luma
-        // ramp lv 0 ≤ lv 1 ≤ lv 2 ≤ lv 3 for every column.
-        let pal = pyxel_default();
+        let pal = DEFAULT_COLORS;
         let r = Shading::new(&pal);
         let r = rc_ref!(&r);
         for col in 0..pal.len() {
@@ -461,7 +432,7 @@ mod tests {
             });
             for lv in 1..4 {
                 assert!(
-                    lumas[lv] >= lumas[lv - 1] - 1e-6,
+                    lumas[lv] >= lumas[lv - 1],
                     "col {col} ramp not monotone: {lumas:?}",
                 );
             }

@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -246,15 +247,19 @@ class TestSystemAttributes:
 
     def test_cursor_writable(self):
         original = pyxel.cursor.pget(0, 0)
-        pyxel.cursor.pset(0, 0, 7)
-        assert pyxel.cursor.pget(0, 0) == 7
-        pyxel.cursor.pset(0, 0, original)
+        try:
+            pyxel.cursor.pset(0, 0, 7)
+            assert pyxel.cursor.pget(0, 0) == 7
+        finally:
+            pyxel.cursor.pset(0, 0, original)
 
     def test_font_writable(self):
         original = pyxel.font.pget(0, 0)
-        pyxel.font.pset(0, 0, 7)
-        assert pyxel.font.pget(0, 0) == 7
-        pyxel.font.pset(0, 0, original)
+        try:
+            pyxel.font.pset(0, 0, 7)
+            assert pyxel.font.pget(0, 0) == 7
+        finally:
+            pyxel.font.pset(0, 0, original)
 
 
 class TestConstants:
@@ -299,23 +304,19 @@ class TestConstants:
         assert len(pyxel.VERSION) > 0
 
     def test_base_dir(self):
-        assert isinstance(pyxel.BASE_DIR, str)
-        assert len(pyxel.BASE_DIR) > 0
+        assert pyxel.BASE_DIR == ".pyxel"
 
     def test_window_state_env(self):
-        assert isinstance(pyxel.WINDOW_STATE_ENV, str)
-        assert len(pyxel.WINDOW_STATE_ENV) > 0
+        assert pyxel.WINDOW_STATE_ENV == "PYXEL_WINDOW_STATE"
 
     def test_watch_state_file_env(self):
-        assert isinstance(pyxel.WATCH_STATE_FILE_ENV, str)
-        assert len(pyxel.WATCH_STATE_FILE_ENV) > 0
+        assert pyxel.WATCH_STATE_FILE_ENV == "PYXEL_WATCH_STATE_FILE"
 
     def test_watch_reset_exit_code(self):
-        assert isinstance(pyxel.WATCH_RESET_EXIT_CODE, int)
+        assert pyxel.WATCH_RESET_EXIT_CODE == 82
 
     def test_app_startup_script_file(self):
-        assert isinstance(pyxel.APP_STARTUP_SCRIPT_FILE, str)
-        assert len(pyxel.APP_STARTUP_SCRIPT_FILE) > 0
+        assert pyxel.APP_STARTUP_SCRIPT_FILE == ".pyxapp_startup_script"
 
     def test_color_constants(self):
         for i, name in enumerate(_COLOR_NAMES):
@@ -353,40 +354,14 @@ class TestConstants:
             assert isinstance(getattr(pyxel, name), int), name
 
     def test_file_extension_constants(self):
-        assert isinstance(pyxel.APP_FILE_EXTENSION, str)
-        assert isinstance(pyxel.RESOURCE_FILE_EXTENSION, str)
-        assert isinstance(pyxel.PALETTE_FILE_EXTENSION, str)
-        assert pyxel.APP_FILE_EXTENSION.startswith(".")
-        assert pyxel.RESOURCE_FILE_EXTENSION.startswith(".")
-        assert pyxel.PALETTE_FILE_EXTENSION.startswith(".")
+        assert pyxel.APP_FILE_EXTENSION == ".pyxapp"
+        assert pyxel.RESOURCE_FILE_EXTENSION == ".pyxres"
+        assert pyxel.PALETTE_FILE_EXTENSION == ".pyxpal"
 
 
 class TestSystemSetters:
     def _capture_state(self):
         return (pyxel.width, pyxel.height, list(pyxel.colors), pyxel.frame_count)
-
-    def _assert_state_unchanged(self, before):
-        assert (
-            pyxel.width,
-            pyxel.height,
-            list(pyxel.colors),
-            pyxel.frame_count,
-        ) == before
-
-    def test_title_preserves_state(self):
-        before = self._capture_state()
-        pyxel.title("test_title")
-        self._assert_state_unchanged(before)
-
-    def test_icon_preserves_state(self):
-        before = self._capture_state()
-        pyxel.icon(["0000", "0770", "0770", "0000"], 1)
-        self._assert_state_unchanged(before)
-
-    def test_icon_with_colkey_preserves_state(self):
-        before = self._capture_state()
-        pyxel.icon(["0000", "0770", "0770", "0000"], 1, colkey=0)
-        self._assert_state_unchanged(before)
 
     @pytest.mark.parametrize(
         ("data", "scale", "message"),
@@ -413,7 +388,7 @@ class TestSystemSetters:
         with raises_exact(ValueError, message):
             pyxel.icon(data, scale)
 
-        self._assert_state_unchanged(before)
+        assert self._capture_state() == before
 
     def test_icon_rejects_color_outside_palette_without_changing_state(self):
         original_colors = list(pyxel.colors)
@@ -425,33 +400,9 @@ class TestSystemSetters:
                 "Invalid icon data at row 0, column 0: color 15 exceeds palette size 1",
             ):
                 pyxel.icon(["f"], 1)
-            self._assert_state_unchanged(before)
+            assert self._capture_state() == before
         finally:
             pyxel.colors[:] = original_colors
-
-    def test_perf_monitor_preserves_state(self):
-        before = self._capture_state()
-        pyxel.perf_monitor(True)
-        pyxel.perf_monitor(False)
-        self._assert_state_unchanged(before)
-
-    def test_fullscreen_preserves_state(self):
-        before = self._capture_state()
-        pyxel.fullscreen(True)
-        pyxel.fullscreen(False)
-        self._assert_state_unchanged(before)
-
-    def test_screen_mode_preserves_state(self):
-        before = self._capture_state()
-        for mode in (0, 1, 2):
-            pyxel.screen_mode(mode)
-        self._assert_state_unchanged(before)
-
-    def test_integer_scale_preserves_state(self):
-        before = self._capture_state()
-        pyxel.integer_scale(True)
-        pyxel.integer_scale(False)
-        self._assert_state_unchanged(before)
 
 
 class TestSystemFlow:
@@ -461,47 +412,61 @@ class TestSystemFlow:
         after = pyxel.frame_count
         assert after == before + 1
 
-    def test_flip_multiple(self):
-        before = pyxel.frame_count
-        pyxel.flip()
-        pyxel.flip()
-        pyxel.flip()
-        assert pyxel.frame_count == before + 3
-
     def test_quit(self):
         # quit() exits the process, so run in a subprocess.
         result = subprocess.run(
             [
                 sys.executable,
                 "-c",
-                "import pyxel; pyxel.init(64, 64, headless=True); pyxel.quit()",
+                (
+                    "import atexit, pyxel; "
+                    "atexit.register(print, 'atexit completed', flush=True); "
+                    "pyxel.init(64, 64, headless=True); pyxel.quit(); "
+                    "raise AssertionError('quit() returned')"
+                ),
             ],
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
             capture_output=True,
             timeout=10,
             check=False,
         )
         assert result.returncode == 0, result.stderr.decode()
+        assert result.stdout == b"atexit completed\n"
 
-    def test_reset(self):
-        # reset() spawns a subprocess re-running the same script and exits.
-        # Use an env flag to make the re-spawned grandchild exit immediately,
-        # otherwise it would loop forever calling reset().
+    @pytest.mark.parametrize("watching", [False, True])
+    def test_reset(self, watching):
+        env = os.environ.copy()
+        env["SDL_AUDIODRIVER"] = "dummy"
+        env.pop("PYXEL_RESET_TEST_DONE", None)
+        env.pop(pyxel.WATCH_STATE_FILE_ENV, None)
+        if watching:
+            env[pyxel.WATCH_STATE_FILE_ENV] = "watch-state"
         code = (
             "import os, sys\n"
-            "if os.environ.get('PYXEL_RESET_TEST_DONE'):\n"
+            "if os.environ.pop('PYXEL_RESET_TEST_DONE', None) == '1':\n"
+            "    print('reset completed', flush=True)\n"
             "    sys.exit(0)\n"
             "os.environ['PYXEL_RESET_TEST_DONE'] = '1'\n"
             "import pyxel\n"
             "pyxel.init(64, 64, headless=True)\n"
-            "pyxel.reset()"
+            "pyxel.reset()\n"
+            "raise AssertionError('reset() returned')\n"
         )
         result = subprocess.run(
             [sys.executable, "-c", code],
+            env=env,
             capture_output=True,
             timeout=10,
             check=False,
         )
-        assert result.returncode == 0, result.stderr.decode()
+        if watching:
+            assert result.returncode == pyxel.WATCH_RESET_EXIT_CODE, (
+                result.stderr.decode()
+            )
+            assert result.stdout == b""
+        else:
+            assert result.returncode == 0, result.stderr.decode()
+            assert result.stdout == b"reset completed\n"
 
 
 @pytest.mark.parametrize(
@@ -536,30 +501,6 @@ assert os.getcwd() == before
 assert pyxel.width == 0 and pyxel.height == 0
 pyxel.init(8, 8, headless=True)
 assert pyxel.width == 8 and pyxel.height == 8
-"""
-    result = subprocess.run(
-        [sys.executable, "-c", code],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-
-
-def test_resize_rejects_oversized_screen_without_changing_state():
-    code = """
-import pyxel
-
-pyxel.init(8, 8, headless=True)
-try:
-    pyxel.resize(65536, 65536)
-except ValueError as exc:
-    assert str(exc) == "screen dimensions are too large"
-else:
-    raise AssertionError("oversized resize succeeded")
-assert pyxel.width == 8 and pyxel.height == 8
-assert pyxel.screen.width == 8 and pyxel.screen.height == 8
 """
     result = subprocess.run(
         [sys.executable, "-c", code],

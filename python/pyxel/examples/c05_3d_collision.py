@@ -176,7 +176,15 @@ class Player(Node):
             self.reached_goal = True
             return
 
-        push = Mat4.from_translation(contact.normal * contact.depth)
+        offset = contact.normal * contact.depth
+        if self.parent is not None:
+            parent_world = self.parent.world_transform
+            offset = (
+                Vec3.ZERO
+                if abs(parent_world.determinant()) < 1e-12
+                else offset.to_local_dir(parent_world)
+            )
+        push = Mat4.from_translation(offset)
         self.transform = push * self.transform
 
         if contact.normal.y > 0.45:

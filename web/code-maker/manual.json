@@ -121,18 +121,18 @@
       "uk": "Макет екрана"
     },
     "layout_body": {
-      "en": "The screen consists of the toolbar at the top, the editing area on the left, and the runtime screen on the right.",
-      "cn": "屏幕由顶部的工具栏、左侧的编辑区域和右侧的运行画面组成。",
-      "de": "Der Bildschirm besteht aus der Symbolleiste oben, dem Bearbeitungsbereich links und dem Ausführungsbildschirm rechts.",
-      "es": "La pantalla consta de la barra de herramientas en la parte superior, el área de edición a la izquierda y la pantalla de ejecución a la derecha.",
-      "fr": "L'écran se compose de la barre d'outils en haut, de la zone d'édition à gauche et de l'écran d'exécution à droite.",
-      "it": "Lo schermo è composto dalla barra degli strumenti in alto, dall'area di modifica a sinistra e dallo schermo di esecuzione a destra.",
-      "ja": "画面は上部のツールバー、左側の編集エリア、右側の実行画面で構成されています。",
-      "ko": "화면은 상단의 툴바, 왼쪽의 편집 영역, 오른쪽의 실행 화면으로 구성됩니다.",
-      "pt": "A tela consiste na barra de ferramentas no topo, na área de edição à esquerda e na tela de execução à direita.",
-      "ru": "Экран состоит из панели инструментов вверху, области редактирования слева и экрана выполнения справа.",
-      "tr": "Ekran, üstteki araç çubuğu, soldaki düzenleme alanı ve sağdaki çalışma ekranından oluşur.",
-      "uk": "Екран складається з панелі інструментів зверху, області редагування зліва та екрана виконання справа."
+      "en": "The toolbar is at the top. On wide screens, the editing area is on the left and the runtime screen on the right. On narrow screens, the editing area is above the runtime screen.",
+      "cn": "工具栏位于顶部。在较宽的屏幕上，编辑区域位于左侧，运行画面位于右侧；在较窄的屏幕上，编辑区域位于运行画面上方。",
+      "de": "Die Symbolleiste befindet sich oben. Auf breiten Bildschirmen liegt der Bearbeitungsbereich links und der Ausführungsbildschirm rechts. Auf schmalen Bildschirmen liegt der Bearbeitungsbereich über dem Ausführungsbildschirm.",
+      "es": "La barra de herramientas está en la parte superior. En pantallas anchas, el área de edición está a la izquierda y la pantalla de ejecución a la derecha. En pantallas estrechas, el área de edición está encima de la pantalla de ejecución.",
+      "fr": "La barre d'outils se trouve en haut. Sur les écrans larges, la zone d'édition est à gauche et l'écran d'exécution à droite. Sur les écrans étroits, la zone d'édition est au-dessus de l'écran d'exécution.",
+      "it": "La barra degli strumenti si trova in alto. Sugli schermi larghi, l'area di modifica è a sinistra e lo schermo di esecuzione a destra. Sugli schermi stretti, l'area di modifica si trova sopra lo schermo di esecuzione.",
+      "ja": "ツールバーは画面上部にあります。幅の広い画面では編集エリアが左、実行画面が右に並び、幅の狭い画面では編集エリアが上、実行画面が下に並びます。",
+      "ko": "툴바는 화면 상단에 있습니다. 넓은 화면에서는 편집 영역이 왼쪽, 실행 화면이 오른쪽에 배치됩니다. 좁은 화면에서는 편집 영역이 실행 화면 위에 배치됩니다.",
+      "pt": "A barra de ferramentas fica na parte superior. Em telas largas, a área de edição fica à esquerda e a tela de execução à direita. Em telas estreitas, a área de edição fica acima da tela de execução.",
+      "ru": "Панель инструментов находится вверху. На широких экранах область редактирования расположена слева, а экран выполнения справа. На узких экранах область редактирования находится над экраном выполнения.",
+      "tr": "Araç çubuğu üsttedir. Geniş ekranlarda düzenleme alanı solda, çalışma ekranı sağda yer alır. Dar ekranlarda düzenleme alanı, çalışma ekranının üstünde yer alır.",
+      "uk": "Панель інструментів розташована вгорі. На широких екранах область редагування розміщена ліворуч, а екран виконання праворуч. На вузьких екранах область редагування розташована над екраном виконання."
     },
     "layout_toolbar": {
       "en": "Toolbar",
@@ -247,18 +247,18 @@
       "uk": "Роздільник"
     },
     "layout_splitter_desc": {
-      "en": "The boundary between the editing area and runtime screen. Drag to adjust the proportions.",
-      "cn": "编辑区域和运行画面之间的边界。拖动以调整比例。",
-      "de": "Die Grenze zwischen Bearbeitungsbereich und Ausführungsbildschirm. Ziehen, um die Proportionen anzupassen.",
-      "es": "El límite entre el área de edición y la pantalla de ejecución. Arrastre para ajustar las proporciones.",
-      "fr": "La frontière entre la zone d'édition et l'écran d'exécution. Faites glisser pour ajuster les proportions.",
-      "it": "Il confine tra l'area di modifica e lo schermo di esecuzione. Trascinare per regolare le proporzioni.",
-      "ja": "編集エリアと実行画面の境界です。ドラッグして比率を調整できます。",
-      "ko": "편집 영역과 실행 화면 사이의 경계입니다. 드래그하여 비율을 조정합니다.",
-      "pt": "O limite entre a área de edição e a tela de execução. Arraste para ajustar as proporções.",
-      "ru": "Граница между областью редактирования и экраном выполнения. Перетаскивайте для настройки пропорций.",
-      "tr": "Düzenleme alanı ile çalışma ekranı arasındaki sınır. Oranları ayarlamak için sürükleyin.",
-      "uk": "Межа між областю редагування та екраном виконання. Перетягніть для налаштування пропорцій."
+      "en": "Separates the editing area and runtime screen. Drag it on wide screens to adjust the pane widths; narrow screens use equal-height panes.",
+      "cn": "分隔编辑区域和运行画面。在较宽的屏幕上，可以拖动它来调整面板宽度；在较窄的屏幕上，两个面板高度相同。",
+      "de": "Trennt den Bearbeitungsbereich vom Ausführungsbildschirm. Auf breiten Bildschirmen lässt sich die Bereichsbreite durch Ziehen anpassen; auf schmalen Bildschirmen sind beide Bereiche gleich hoch.",
+      "es": "Separa el área de edición de la pantalla de ejecución. En pantallas anchas, arrástrelo para ajustar el ancho de los paneles; en pantallas estrechas, los paneles tienen la misma altura.",
+      "fr": "Sépare la zone d'édition de l'écran d'exécution. Sur les écrans larges, faites-le glisser pour ajuster la largeur des panneaux ; sur les écrans étroits, les panneaux ont la même hauteur.",
+      "it": "Separa l'area di modifica dallo schermo di esecuzione. Sugli schermi larghi, trascinarlo per regolare la larghezza dei pannelli; sugli schermi stretti, i pannelli hanno la stessa altezza.",
+      "ja": "編集エリアと実行画面の境界です。幅の広い画面ではドラッグして各ペインの幅を調整できます。幅の狭い画面では両ペインが同じ高さになります。",
+      "ko": "편집 영역과 실행 화면을 구분합니다. 넓은 화면에서는 드래그하여 각 패널의 너비를 조정할 수 있습니다. 좁은 화면에서는 두 패널의 높이가 같습니다.",
+      "pt": "Separa a área de edição da tela de execução. Em telas largas, arraste para ajustar a largura dos painéis; em telas estreitas, os painéis têm a mesma altura.",
+      "ru": "Разделяет область редактирования и экран выполнения. На широких экранах его можно перетаскивать для изменения ширины панелей; на узких экранах панели имеют одинаковую высоту.",
+      "tr": "Düzenleme alanını çalışma ekranından ayırır. Geniş ekranlarda panel genişliklerini ayarlamak için sürükleyin; dar ekranlarda paneller eşit yüksekliktedir.",
+      "uk": "Розділяє область редагування та екран виконання. На широких екранах його можна перетягувати, щоб змінити ширину панелей; на вузьких екранах панелі мають однакову висоту."
     },
     "layout_runtime": {
       "en": "Runtime Screen",
@@ -387,18 +387,18 @@
       "uk": "Екран виконання"
     },
     "runtime_body": {
-      "en": "The right side of the screen displays the running application. Click the Run button or press {0} to execute your code. If an error occurs, the error message is displayed as an overlay on the runtime screen.",
-      "cn": "屏幕右侧显示运行中的应用程序。点击 Run 按钮或按 {0} 执行代码。如果发生错误，错误消息将以叠加层的形式显示在运行画面上。",
-      "de": "Die rechte Seite des Bildschirms zeigt die laufende Anwendung. Klicken Sie auf Run oder drücken Sie {0}, um den Code auszuführen. Bei einem Fehler wird die Fehlermeldung als Overlay auf dem Ausführungsbildschirm angezeigt.",
-      "es": "El lado derecho de la pantalla muestra la aplicación en ejecución. Haga clic en Run o presione {0} para ejecutar el código. Si ocurre un error, el mensaje se muestra como una superposición en la pantalla de ejecución.",
-      "fr": "Le côté droit de l'écran affiche l'application en cours d'exécution. Cliquez sur Run ou appuyez sur {0} pour exécuter le code. En cas d'erreur, le message s'affiche en superposition sur l'écran d'exécution.",
-      "it": "Il lato destro dello schermo mostra l'applicazione in esecuzione. Fare clic su Run o premere {0} per eseguire il codice. In caso di errore, il messaggio viene visualizzato come overlay sullo schermo di esecuzione.",
-      "ja": "画面の右側にアプリケーションの実行結果が表示されます。Run ボタンのクリックまたは {0} キーでコードを実行します。エラーが発生した場合、実行画面にエラーメッセージがオーバーレイ表示されます。",
-      "ko": "화면 오른쪽에 실행 중인 애플리케이션이 표시됩니다. Run 버튼을 클릭하거나 {0}를 눌러 코드를 실행합니다. 오류가 발생하면 실행 화면에 오류 메시지가 오버레이로 표시됩니다.",
-      "pt": "O lado direito da tela exibe a aplicação em execução. Clique em Run ou pressione {0} para executar o código. Se ocorrer um erro, a mensagem é exibida como uma sobreposição na tela de execução.",
-      "ru": "В правой части экрана отображается запущенное приложение. Нажмите Run или {0} для выполнения кода. При возникновении ошибки сообщение отображается поверх экрана выполнения.",
-      "tr": "Ekranın sağ tarafında çalışan uygulama görüntülenir. Kodu çalıştırmak için Run düğmesine tıklayın veya {0} tuşuna basın. Bir hata oluşursa, hata mesajı çalışma ekranında katman olarak görüntülenir.",
-      "uk": "Права частина екрана відображає запущений застосунок. Натисніть Run або {0} для виконання коду. При виникненні помилки повідомлення відображається поверх екрана виконання."
+      "en": "Click the Run button or press {0} to execute your code. If an error occurs, the error message is displayed as an overlay on the runtime screen.",
+      "cn": "点击 Run 按钮或按 {0} 执行代码。如果发生错误，错误消息将以叠加层的形式显示在运行画面上。",
+      "de": "Klicken Sie auf Run oder drücken Sie {0}, um den Code auszuführen. Bei einem Fehler wird die Fehlermeldung als Overlay auf dem Ausführungsbildschirm angezeigt.",
+      "es": "Haga clic en Run o presione {0} para ejecutar el código. Si ocurre un error, el mensaje se muestra como una superposición en la pantalla de ejecución.",
+      "fr": "Cliquez sur Run ou appuyez sur {0} pour exécuter le code. En cas d'erreur, le message s'affiche en superposition sur l'écran d'exécution.",
+      "it": "Fare clic su Run o premere {0} per eseguire il codice. In caso di errore, il messaggio viene visualizzato come overlay sullo schermo di esecuzione.",
+      "ja": "Run ボタンのクリックまたは {0} キーでコードを実行します。エラーが発生した場合、実行画面にエラーメッセージがオーバーレイ表示されます。",
+      "ko": "Run 버튼을 클릭하거나 {0}를 눌러 코드를 실행합니다. 오류가 발생하면 실행 화면에 오류 메시지가 오버레이로 표시됩니다.",
+      "pt": "Clique em Run ou pressione {0} para executar o código. Se ocorrer um erro, a mensagem é exibida como uma sobreposição na tela de execução.",
+      "ru": "Нажмите Run или {0} для выполнения кода. При возникновении ошибки сообщение отображается поверх экрана выполнения.",
+      "tr": "Kodu çalıştırmak için Run düğmesine tıklayın veya {0} tuşuna basın. Bir hata oluşursa, hata mesajı çalışma ekranında katman olarak görüntülenir.",
+      "uk": "Натисніть Run або {0} для виконання коду. При виникненні помилки повідомлення відображається поверх екрана виконання."
     },
     "shortcuts_title": {
       "en": "Keyboard Shortcuts",
@@ -699,18 +699,18 @@
     {
       "label": "Code / Res",
       "desc": {
-        "en": "Toggle the left pane between the code editor and resource editor.",
-        "cn": "在代码编辑器和资源编辑器之间切换左侧面板。",
-        "de": "Den linken Bereich zwischen Code-Editor und Ressourcen-Editor umschalten.",
-        "es": "Alternar el panel izquierdo entre el editor de código y el editor de recursos.",
-        "fr": "Basculer le panneau gauche entre l'éditeur de code et l'éditeur de ressources.",
-        "it": "Commutare il pannello sinistro tra l'editor di codice e l'editor di risorse.",
-        "ja": "左ペインのコードエディタとリソースエディタを切り替えます。",
-        "ko": "왼쪽 패널의 코드 에디터와 리소스 에디터를 전환합니다.",
-        "pt": "Alternar o painel esquerdo entre o editor de código e o editor de recursos.",
-        "ru": "Переключить левую панель между редактором кода и редактором ресурсов.",
-        "tr": "Sol paneli kod düzenleyici ve kaynak düzenleyici arasında değiştirin.",
-        "uk": "Перемкнути ліву панель між редактором коду та редактором ресурсів."
+        "en": "Switch the editing area between the code editor and resource editor.",
+        "cn": "在编辑区域中切换代码编辑器和资源编辑器。",
+        "de": "Im Bearbeitungsbereich zwischen Code-Editor und Ressourcen-Editor umschalten.",
+        "es": "Alternar el área de edición entre el editor de código y el editor de recursos.",
+        "fr": "Basculer la zone d'édition entre l'éditeur de code et l'éditeur de ressources.",
+        "it": "Passare dall'editor di codice all'editor di risorse nell'area di modifica.",
+        "ja": "編集エリアのコードエディタとリソースエディタを切り替えます。",
+        "ko": "편집 영역에서 코드 에디터와 리소스 에디터를 전환합니다.",
+        "pt": "Alternar a área de edição entre o editor de código e o editor de recursos.",
+        "ru": "Переключить область редактирования между редактором кода и редактором ресурсов.",
+        "tr": "Düzenleme alanını kod düzenleyici ve kaynak düzenleyici arasında değiştirin.",
+        "uk": "Перемкнути область редагування між редактором коду та редактором ресурсів."
       }
     },
     {
@@ -803,18 +803,18 @@
     {
       "key": "Ctrl(Cmd)+.",
       "action": {
-        "en": "Toggle left/right focus",
-        "cn": "切换左/右焦点",
-        "de": "Linken/rechten Fokus umschalten",
-        "es": "Alternar enfoque izquierda/derecha",
-        "fr": "Basculer le focus gauche/droite",
-        "it": "Commuta focus sinistra/destra",
-        "ja": "左右のフォーカスを切り替える",
-        "ko": "좌/우 포커스 전환",
-        "pt": "Alternar foco esquerda/direita",
-        "ru": "Переключить фокус лево/право",
-        "tr": "Sol/sağ odağı değiştir",
-        "uk": "Перемкнути фокус ліво/право"
+        "en": "Switch focus between the editing area and runtime screen",
+        "cn": "在编辑区域和运行画面之间切换焦点",
+        "de": "Fokus zwischen Bearbeitungsbereich und Ausführungsbildschirm wechseln",
+        "es": "Alternar el enfoque entre el área de edición y la pantalla de ejecución",
+        "fr": "Basculer le focus entre la zone d'édition et l'écran d'exécution",
+        "it": "Sposta il focus tra l'area di modifica e lo schermo di esecuzione",
+        "ja": "編集エリアと実行画面のフォーカスを切り替える",
+        "ko": "편집 영역과 실행 화면 간 포커스 전환",
+        "pt": "Alternar o foco entre a área de edição e a tela de execução",
+        "ru": "Переключить фокус между областью редактирования и экраном выполнения",
+        "tr": "Odağı düzenleme alanı ile çalışma ekranı arasında değiştir",
+        "uk": "Перемкнути фокус між областю редагування та екраном виконання"
       }
     }
   ]

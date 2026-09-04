@@ -103,7 +103,6 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -279,7 +278,6 @@ class CanvasPanel(Widget):
             self._add_post_history()
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        # Apply the active tool across the drag
         if key == pyxel.MOUSE_BUTTON_LEFT:
             x1 = self._press_x
             y1 = self._press_y
@@ -376,7 +374,6 @@ class CanvasPanel(Widget):
         # Copy/cut/paste bank (Ctrl+Shift or Cmd+Shift)
         has_cmd_or_ctrl = pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
         if pyxel.btn(pyxel.KEY_SHIFT) and has_cmd_or_ctrl:
-            # Ctrl+Shift+C/Ctrl+Shift+X: Copy bank
             if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
                 self._bank_buffer = {}
                 if self._is_tilemap_mode:
@@ -388,7 +385,6 @@ class CanvasPanel(Widget):
                         self.image_index_var
                     ].get_slice(0, 0, 256, 256)
 
-            # Ctrl+Shift+X: Cut bank
             if pyxel.btnp(pyxel.KEY_X):
                 self._add_pre_history(bank_copy=True)
                 if self._is_tilemap_mode:
@@ -397,7 +393,6 @@ class CanvasPanel(Widget):
                     pyxel.images[self.image_index_var].rect(0, 0, 256, 256, 0)
                 self._add_post_history(bank_copy=True)
 
-            # Ctrl+Shift+V: Paste bank
             if pyxel.btnp(pyxel.KEY_V) and self._bank_buffer is not None:
                 self._add_pre_history(bank_copy=True)
                 if self._is_tilemap_mode:
@@ -417,17 +412,14 @@ class CanvasPanel(Widget):
             and not pyxel.btn(pyxel.KEY_SHIFT)
             and has_cmd_or_ctrl
         ):
-            # Ctrl+A: Select all
             if pyxel.btnp(pyxel.KEY_A):
                 self._select_x1 = self._select_y1 = 0
                 self._select_x2 = self._select_y2 = 15
 
-            # Ctrl+C: Copy
             if pyxel.btnp(pyxel.KEY_C):
                 x, y, w, h = self._selection_rect()
                 self._canvas_buffer = self.canvas_var.get_slice(x, y, w, h)
 
-            # Ctrl+X: Cut
             if pyxel.btnp(pyxel.KEY_X):
                 x, y, w, h = self._selection_rect()
                 self._canvas_buffer = self.canvas_var.get_slice(x, y, w, h)
@@ -435,7 +427,6 @@ class CanvasPanel(Widget):
                 self.canvas_var.rect(x, y, w, h, (0, 0) if self._is_tilemap_mode else 0)
                 self._add_post_history()
 
-            # Ctrl+V: Paste
             if self._canvas_buffer is not None and pyxel.btnp(pyxel.KEY_V):
                 self._add_pre_history()
                 width = len(self._canvas_buffer[0])

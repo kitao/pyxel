@@ -16,6 +16,8 @@ PUBLIC_ROOT_DIRS = (
     ROOT_DIR / "python" / "pyxel" / "examples",
 )
 PORT = 8000
+CDN_RUNTIME_URL = "https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"
+LOCAL_RUNTIME_URL = "/wasm/pyxel.js"
 
 SW_PATH = "/pyxel-sw.js"
 SW_JS = r"""// Pyxel Showcase service worker
@@ -84,14 +86,22 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         full_path = Path(self.translate_path(path)).resolve()
-        if not any(
-            full_path == root_dir or full_path.is_relative_to(root_dir)
-            for root_dir in PUBLIC_ROOT_DIRS
-        ):
+        if not _is_public_path(full_path):
             self.send_error(404, "File not found")
             return None
 
-        if path.endswith(".html"):
+        if full_path.is_dir():
+            for index_name in ("index.html", "index.htm"):
+                index_path = full_path / index_name
+                if index_path.is_file():
+                    if not _is_public_path(index_path.resolve()):
+                        self.send_error(404, "File not found")
+                        return None
+                    if path.endswith("/") and index_name == "index.html":
+                        full_path = index_path
+                    break
+
+        if full_path.suffix == ".html":
             if not full_path.is_file():
                 return super().send_head()
             try:
@@ -111,11 +121,25 @@ class Handler(SimpleHTTPRequestHandler):
         return super().send_head()
 
 
+def _is_public_path(path: Path) -> bool:
+    return any(
+        path == root_dir or path.is_relative_to(root_dir)
+        for root_dir in PUBLIC_ROOT_DIRS
+    )
+
+
 def _inject_html(text: str) -> str:
     lower = text.lower()
+    head_idx = lower.rfind("</head>")
+    if head_idx != -1:
+        text = (
+            text[:head_idx].replace(CDN_RUNTIME_URL, LOCAL_RUNTIME_URL)
+            + text[head_idx:]
+        )
+        lower = text.lower()
+        head_idx = lower.rfind("</head>")
     if "serviceworker" in lower or "service-worker" in lower:
         return text
-    head_idx = lower.rfind("</head>")
     if head_idx != -1:
         return text[:head_idx] + INJECT_SNIPPET + text[head_idx:]
     body_idx = lower.rfind("</body>")

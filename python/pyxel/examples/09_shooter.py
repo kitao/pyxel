@@ -38,20 +38,6 @@ bullets = []
 blasts = []
 
 
-def update_entities(entities):
-    for entity in entities:
-        entity.update()
-
-
-def draw_entities(entities):
-    for entity in entities:
-        entity.draw()
-
-
-def cleanup_entities(entities):
-    entities[:] = [e for e in entities if e.is_alive]
-
-
 class Background:
     def __init__(self):
         self.stars = [
@@ -168,6 +154,20 @@ class Blast:
     def draw(self):
         pyxel.circ(self.x, self.y, self.radius, BLAST_COLOR_IN)
         pyxel.circb(self.x, self.y, self.radius, BLAST_COLOR_OUT)
+
+
+def update_entities(entities):
+    for entity in entities:
+        entity.update()
+
+
+def draw_entities(entities):
+    for entity in entities:
+        entity.draw()
+
+
+def cleanup_entities(entities):
+    entities[:] = [e for e in entities if e.is_alive]
 
 
 class App:

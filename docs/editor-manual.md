@@ -53,9 +53,9 @@ The menu bar at the top of the screen contains four editor switching buttons, Un
 
 The created resource file can be loaded and used in a Pyxel application with the `pyxel.load()` function.
 
-### Switching Resource Files
+### Loading Resources
 
-While the editor is running, you can drag and drop another .pyxres file onto the window to load its contents. This operation overwrites all current edits, so be careful if you have unsaved changes.
+While the editor is running, you can drag and drop another .pyxres file onto the window to load its contents. This operation overwrites all current edits, so be careful if you have unsaved changes. The save destination does not change.
 
 ## Image Editor
 
@@ -125,7 +125,7 @@ The following shortcut keys are available while using the selection tool.
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/image_palette.png](https://kitao.github.io/pyxel/web/editor-manual/images/image_palette.png)
 
-Select a drawing color from the 16-color palette.
+Select a drawing color from the palette, which initially has 16 colors.
 
 | Shortcut | Action |
 | --- | --- |

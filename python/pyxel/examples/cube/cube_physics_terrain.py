@@ -1,7 +1,6 @@
 import pyxel
-from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
-
 from cube_physics_camera import OrbitCamera
+from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
 
 def _slope_mesh() -> Mesh:
@@ -34,7 +33,7 @@ class Floor(Node):
     def __init__(self):
         super().__init__()
         self.mesh_asset = _slope_mesh()
-        self.collider = Collider(mesh=self.mesh_asset, mass=0.0, friction=0.6)
+        self.collider = Collider(mesh=self.mesh_asset, friction=0.6)
         self.add_child(Node.from_mesh(self.mesh_asset))
 
 
@@ -50,11 +49,15 @@ class Ball(Node):
         self.collider.velocity += Vec3(0, -0.02, 0)
 
     def on_collide(self, other, contact):
-        # World-space push-back: Mat4.translate is local-frame (spec
-        # § 5.6), so a rotating ball would bend the push vector through
-        # its own basis and drift sideways across the slope. Compose a
-        # world translation by left-multiplying with from_translation.
-        push = Mat4.from_translation(contact.normal * contact.depth)
+        offset = contact.normal * contact.depth
+        if self.parent is not None:
+            parent_world = self.parent.world_transform
+            offset = (
+                Vec3.ZERO
+                if abs(parent_world.determinant()) < 1e-12
+                else offset.to_local_dir(parent_world)
+            )
+        push = Mat4.from_translation(offset)
         spin = Mat4.from_quat(contact.delta_rotation)
         self.transform = push * self.transform * spin
         self.collider.velocity += contact.delta_velocity
@@ -69,7 +72,7 @@ class App:
         pyxel.init(160, 120, title="Cube Physics: Terrain")
         pyxel.mouse(True)
         self.scene = Node()
-        self.scene.shading = Shading([pyxel.colors[i] for i in range(16)])
+        self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         self.scene.add_child(Floor())
         self.scene.add_child(Ball())
@@ -79,7 +82,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.KEY_ESCAPE):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         self.orbit.update()
         self.scene.update()

@@ -11,9 +11,9 @@ class TestChannel:
     def test_gain_read_write(self):
         ch = pyxel.Channel()
         ch.gain = 0.5
-        assert ch.gain == pytest.approx(0.5, abs=1e-5)
+        assert ch.gain == 0.5
         ch.gain = 1.0
-        assert ch.gain == pytest.approx(1.0, abs=1e-5)
+        assert ch.gain == 1.0
 
     def test_detune_read_write(self):
         ch = pyxel.Channel()
@@ -22,77 +22,57 @@ class TestChannel:
         ch.detune = 0
         assert ch.detune == 0
 
-    def test_play_with_int(self):
+    @pytest.mark.parametrize("form", ["index", "indices", "sound", "sounds", "mml"])
+    def test_play_sound_forms(self, form):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        sounds = {
+            "index": 0,
+            "indices": [0, 0],
+            "sound": snd,
+            "sounds": [snd, snd],
+            "mml": "T120 O4 L4 CDEF",
+        }
         ch = pyxel.Channel()
-        ch.play(0)
-        # play_pos may be None immediately after play (audio thread timing).
-        pos = ch.play_pos()
-        assert pos is None or isinstance(pos, tuple)
+        ch.play(sounds[form])
+        assert ch.play_pos() == (0, 0.0)
         ch.stop()
+        assert ch.play_pos() is None
 
-    def test_play_with_seq_int(self):
-        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
-        ch = pyxel.Channel()
-        ch.play([0, 0])  # type: ignore[arg-type]
-        ch.stop()
-
-    def test_play_with_sound_instance(self):
+    def test_play_loop_wraps_seek(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
-        ch.play(snd)
-        ch.stop()
+        ch.play(snd, sec=0.5, loop=True)
+        assert ch.play_pos() == (0, 2.626031346153468e-05)
 
-    def test_play_with_seq_sound(self):
-        snd1 = pyxel.Sound()
-        snd1.set("c2e2g2", "sss", "777", "nnn", 10)
-        snd2 = pyxel.Sound()
-        snd2.set("a2b2", "ss", "77", "nn", 10)
-        ch = pyxel.Channel()
-        ch.play([snd1, snd2])  # type: ignore[arg-type]
-        ch.stop()
-
-    def test_play_with_mml_string(self):
-        ch = pyxel.Channel()
-        ch.play("T120 O4 L4 CDEF")
-        ch.stop()
-
-    def test_play_with_loop(self):
+    def test_play_resumes_after_seeking_past_interruption(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
         ch.play(snd, loop=True)
-        ch.stop()
-
-    def test_play_with_resume(self):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2", "sss", "777", "nnn", 10)
-        ch = pyxel.Channel()
-        ch.play(snd, resume=True)
-        ch.stop()
+        ch.play("T120 L4 C", sec=1, resume=True)
+        assert ch.play_pos() == (0, 5.196189522393979e-05)
 
     def test_play_with_sec(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
-        ch.play(snd, sec=0.5)
-        ch.stop()
+        ch.play(snd, sec=0.125)
+        assert ch.play_pos() == (0, 0.1250002086162567)
 
     def test_play_with_tick_deprecated(self, capfd):
         snd = pyxel.Sound()
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
-        ch.play(snd, tick=60)  # type: ignore[call-arg]
+        ch.play(snd, sec=0, tick=15)  # type: ignore[call-arg]
         out = capfd.readouterr().out
         assert (
             out
             == "tick option of Channel.play is deprecated. Use sec option instead.\n"
         )
-        ch.stop()
-
-    def test_stop_when_not_playing(self):
-        ch = pyxel.Channel()
+        assert ch.play_pos() == (0, 0.1250002086162567)
         ch.stop()
 
     def test_play_pos_when_not_playing(self):
@@ -101,27 +81,15 @@ class TestChannel:
         result = ch.play_pos()
         assert result is None
 
-    def test_play_pos_returns_tuple_when_playing(self):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2c3e3g3c4e4", "ssssssss", "77777777", "nnnnnnnn", 10)
-        ch = pyxel.Channel()
-        ch.play(snd)
-        # play_pos may be None immediately after play (audio thread timing).
-        result = ch.play_pos()
-        if result is not None:
-            assert isinstance(result, tuple), f"Expected tuple, got {type(result)}"
-            assert len(result) == 2, f"Expected 2 elements, got {len(result)}"
-        ch.stop()
-
     def test_append_to_global_channels(self):
         original_len = len(pyxel.channels)
         ch = pyxel.Channel()
-        ch.gain = 0.7
+        ch.gain = 0.5
         ch.detune = 5
         pyxel.channels.append(ch)
         try:
             assert len(pyxel.channels) == original_len + 1
-            assert pyxel.channels[-1].gain == pytest.approx(0.7, abs=1e-5)
+            assert pyxel.channels[-1].gain == 0.5
             assert pyxel.channels[-1].detune == 5
         finally:
             pyxel.channels.pop()

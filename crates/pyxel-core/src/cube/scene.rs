@@ -1,11 +1,11 @@
 use std::cell::{Cell, RefCell};
 
 use crate::cube::camera::RcCamera;
-use crate::cube::collider::RcCollider;
+use crate::cube::collider::{Collider, RcCollider};
 use crate::cube::collision::{
     capsule_vs_capsule, capsule_vs_rounded_obb, capsule_vs_sphere, capsule_vs_triangle,
-    classify_shape, closest_point_on_triangle, closest_points_segment_aabb,
-    closest_points_segment_segment, collider_aabb, local_box_vs_triangle, ray_vs_aabb,
+    classify_shape, closest_points_segment_aabb, closest_points_segment_segment,
+    closest_points_segment_triangle, collider_aabb, local_box_vs_triangle, ray_vs_aabb,
     ray_vs_sphere, ray_vs_triangle, rounded_obb_vs_rounded_obb, sphere_vs_rounded_obb,
     sphere_vs_sphere, sphere_vs_triangle, Aabb, ColliderShape, ContactGeom,
 };
@@ -50,7 +50,7 @@ pub struct DrawContext {
 }
 
 thread_local! {
-    // Current draw context, set by Scene::draw for the duration of the
+    // Current draw context, set by Node::draw for the duration of the
     // tree traversal. Single-threaded by design (cube runs on Pyxel's
     // main thread); thread_local is the minimal carrier for the
     // Rust-Python boundary.
@@ -87,7 +87,7 @@ pub fn reset_draw_state() {
 }
 
 // Run `f` with mutable access to the current draw context, returning
-// None when no context is active (i.e., outside Scene::draw).
+// None when no context is active (i.e., outside Node::draw).
 pub fn with_draw_context<R>(f: impl FnOnce(&mut DrawContext) -> R) -> Option<R> {
     CURRENT_DRAW_CONTEXT.with(|cell| {
         let mut ctx = cell.take()?;
@@ -118,6 +118,7 @@ struct ColliderEntry {
     world: Mat4,
     aabb: Aabb,
     collider: RcCollider,
+    velocity: Vec3,
     immovable: bool,
     trigger: bool,
 }
@@ -132,7 +133,6 @@ pub struct Scene;
 // Spatial-query kernels keep shapes, transforms, velocities, and tolerances
 // explicit so hot-path calls stay stateless and avoid parameter objects.
 
-#[allow(clippy::too_many_arguments)]
 impl Scene {
     // Collect destroyed nodes leaf-first for the binding layer's on_destroy
     // notification and detachment at the end of Node.update.
@@ -152,51 +152,70 @@ impl Scene {
         }
     }
 
-    // Pop a destroyed node out of its parent. Safe to call repeatedly
-    // (no-op if already detached).
+    // Detach a destroyed node and consume its pending notification.
     pub fn detach_destroyed(node: &RcNode) {
         Node::detach(node);
+        rc_mut!(node).destroyed = false;
     }
 
     // Motion integration: walks the active subtree and applies each
-    // collider's velocity / angular_velocity to its node transform.
+    // analytic collider's velocity / angular_velocity to its node transform.
     pub fn integrate_motion(scene_root: &RcNode) {
-        if Node::parent(scene_root)
+        let parent = Node::parent(scene_root);
+        if parent
             .as_ref()
             .is_some_and(|parent| !Node::effective_active(parent))
         {
             return;
         }
-        Self::integrate_motion_recursive(scene_root);
+        let parent_world = parent.as_ref().map(Node::world_transform_value);
+        Self::integrate_motion_recursive(scene_root, parent_world.as_ref());
     }
 
-    fn integrate_motion_recursive(node: &RcNode) {
+    fn integrate_motion_recursive(node: &RcNode, parent_world: Option<&Mat4>) {
         if !rc_ref!(node).active {
             return;
         }
         let coll_opt = rc_ref!(node).collider.clone();
         if let Some(coll_rc) = coll_opt {
             let coll = rc_ref!(&coll_rc);
-            let vel = *rc_ref!(&coll.velocity);
-            let avel = *rc_ref!(&coll.angular_velocity);
-            let alen_sq = avel.x * avel.x + avel.y * avel.y + avel.z * avel.z;
-            if vel.x != 0.0 || vel.y != 0.0 || vel.z != 0.0 || alen_sq > 1e-12 {
+            let world_velocity = Self::effective_linear_velocity(parent_world, &coll);
+            let angular_velocity = if coll.mesh.is_none() {
+                *rc_ref!(&coll.angular_velocity)
+            } else {
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                }
+            };
+            let angular_len_sq = angular_velocity.x * angular_velocity.x
+                + angular_velocity.y * angular_velocity.y
+                + angular_velocity.z * angular_velocity.z;
+            if world_velocity.x != 0.0
+                || world_velocity.y != 0.0
+                || world_velocity.z != 0.0
+                || angular_len_sq > 1e-12
+            {
                 let transform_rc = rc_ref!(node).transform.clone();
                 let mut transform = *rc_ref!(&transform_rc);
-                // Apply the world-space translation as the reduced form of
-                // T * transform, including a non-canonical homogeneous row.
+                let local_displacement = parent_world.map_or(world_velocity, |parent| {
+                    parent.inverse_value().mul_dir_value(&world_velocity)
+                });
+                // Apply the parent-local displacement without assuming the
+                // transform's homogeneous row is canonical.
                 let homogeneous = transform.data[3];
                 for (col, &component) in homogeneous.iter().enumerate() {
-                    transform.data[0][col] += vel.x * component;
-                    transform.data[1][col] += vel.y * component;
-                    transform.data[2][col] += vel.z * component;
+                    transform.data[0][col] += local_displacement.x * component;
+                    transform.data[1][col] += local_displacement.y * component;
+                    transform.data[2][col] += local_displacement.z * component;
                 }
-                if alen_sq > 1e-12 {
-                    let len = alen_sq.sqrt();
+                if angular_len_sq > 1e-12 {
+                    let len = angular_len_sq.sqrt();
                     let axis = Vec3 {
-                        x: avel.x / len,
-                        y: avel.y / len,
-                        z: avel.z / len,
+                        x: angular_velocity.x / len,
+                        y: angular_velocity.y / len,
+                        z: angular_velocity.z / len,
                     };
                     // Spin is a local-frame rotation, so it multiplies on
                     // the right without moving the translation column.
@@ -206,9 +225,28 @@ impl Scene {
                 rc_mut!(node).transform = Mat4::from_rows(transform.data);
             }
         }
+        let transform_rc = rc_ref!(node).transform.clone();
+        let local = *rc_ref!(&transform_rc);
+        let world = parent_world.map_or(local, |parent| parent.mul_mat_value(&local));
         let node_ref = rc_ref!(node);
         for child in &node_ref.children {
-            Self::integrate_motion_recursive(child);
+            Self::integrate_motion_recursive(child, Some(&world));
+        }
+    }
+
+    fn effective_linear_velocity(parent_world: Option<&Mat4>, coll: &Collider) -> Vec3 {
+        let parent_is_invertible = parent_world.is_none_or(|parent| {
+            let determinant = parent.determinant();
+            determinant.is_finite() && determinant.abs() >= 1e-12
+        });
+        if coll.mesh.is_some() || !parent_is_invertible {
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            }
+        } else {
+            *rc_ref!(&coll.velocity)
         }
     }
 
@@ -218,8 +256,7 @@ impl Scene {
     pub fn detect_contacts(scene_root: &RcNode) -> Vec<ContactPair> {
         Self::with_collider_entries(scene_root, true, |entries| {
             let n = entries.len();
-            let mut pairs: Vec<ContactPair> = Vec::with_capacity(n);
-            // O(N^2) broad phase; PS1-scale (~100 dynamics) is in budget.
+            let mut pairs: Vec<ContactPair> = Vec::new();
             for i in 0..n {
                 for j in (i + 1)..n {
                     let entry_a = &entries[i];
@@ -237,17 +274,24 @@ impl Scene {
                     let contact = Self::narrow_phase(
                         &entry_a.world,
                         &entry_a.collider,
+                        entry_a.velocity,
                         &entry_b.world,
                         &entry_b.collider,
+                        entry_b.velocity,
                     );
                     if let Some(geom) = contact {
                         let pair = Self::build_contact_pair(
                             &entry_a.node,
                             &entry_a.collider,
+                            entry_a.velocity,
                             &entry_b.node,
                             &entry_b.collider,
+                            entry_b.velocity,
                             geom,
                         );
+                        if pairs.is_empty() {
+                            pairs.reserve(n);
+                        }
                         pairs.push(pair);
                     }
                 }
@@ -264,17 +308,22 @@ impl Scene {
         COLLIDER_ENTRY_SCRATCH.with(|scratch| {
             let mut entries = scratch.borrow_mut();
             entries.clear();
-            Self::for_each_collider_entry(scene_root, swept, &mut |node, world, aabb, collider| {
-                let collider_ref = rc_ref!(collider);
-                entries.push(ColliderEntry {
-                    node: node.clone(),
-                    world: *world,
-                    aabb: *aabb,
-                    collider: collider.clone(),
-                    immovable: collider_ref.mesh.is_some() || collider_ref.mass == 0.0,
-                    trigger: collider_ref.trigger,
-                });
-            });
+            Self::for_each_collider_entry(
+                scene_root,
+                swept,
+                &mut |node, world, aabb, collider, velocity| {
+                    let collider_ref = rc_ref!(collider);
+                    entries.push(ColliderEntry {
+                        node: node.clone(),
+                        world: *world,
+                        aabb: *aabb,
+                        collider: collider.clone(),
+                        velocity,
+                        immovable: collider_ref.contact_mass() == 0.0,
+                        trigger: collider_ref.trigger,
+                    });
+                },
+            );
             let result = f(&entries);
             entries.clear();
             result
@@ -289,7 +338,7 @@ impl Scene {
     fn for_each_collider_entry(
         node: &RcNode,
         swept: bool,
-        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb, &RcCollider),
+        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb, &RcCollider, Vec3),
     ) {
         let parent = Node::parent(node);
         if parent
@@ -306,7 +355,7 @@ impl Scene {
         node: &RcNode,
         parent_world: Option<&Mat4>,
         swept: bool,
-        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb, &RcCollider),
+        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb, &RcCollider, Vec3),
     ) {
         let node_ref = rc_ref!(node);
         if !node_ref.active {
@@ -316,12 +365,12 @@ impl Scene {
         let world = parent_world.map_or(local, |parent| parent.mul_mat_value(&local));
         if let Some(coll_rc) = &node_ref.collider {
             let coll = rc_ref!(coll_rc);
+            let velocity = Self::effective_linear_velocity(parent_world, &coll);
             let mut aabb = collider_aabb(&coll, &world);
-            if swept && coll.mesh.is_none() {
-                let velocity = *rc_ref!(&coll.velocity);
+            if swept {
                 aabb = Self::swept_aabb(aabb, velocity);
             }
-            f(node, &world, &aabb, coll_rc);
+            f(node, &world, &aabb, coll_rc, velocity);
         }
         for child in &node_ref.children {
             Self::for_each_collider_entry_recursive(child, Some(&world), swept, f);
@@ -358,79 +407,22 @@ impl Scene {
     fn narrow_phase(
         world_a: &Mat4,
         coll_a: &RcCollider,
+        vel_a: Vec3,
         world_b: &Mat4,
         coll_b: &RcCollider,
+        vel_b: Vec3,
     ) -> Option<ContactGeom> {
         use ColliderShape as S;
-        let (size_a, r_a, has_mesh_a, mesh_a) = {
+        let (size_a, r_a, mesh_a) = {
             let a = rc_ref!(coll_a);
             let size = *rc_ref!(&a.size);
-            (size, a.radius.max(0.0), a.mesh.is_some(), a.mesh.clone())
+            (size, a.radius.max(0.0), a.mesh.clone())
         };
-        let (size_b, r_b, has_mesh_b, mesh_b) = {
+        let (size_b, r_b, mesh_b) = {
             let b = rc_ref!(coll_b);
             let size = *rc_ref!(&b.size);
-            (size, b.radius.max(0.0), b.mesh.is_some(), b.mesh.clone())
+            (size, b.radius.max(0.0), b.mesh.clone())
         };
-        // Mesh-vs-mesh is unsupported: both sides are static terrain
-        // with no resolution payload.
-        if has_mesh_a && has_mesh_b {
-            return None;
-        }
-        if has_mesh_a {
-            let mesh_rc = mesh_a.unwrap();
-            // Helper returns the normal pointing from mesh toward the
-            // dynamic body. The contact-pair builder's convention is
-            // "from b toward a"; since the mesh sits on the a-side
-            // here, flip the normal.
-            let geom = narrow_phase_mesh_vs_dynamic(world_a, &mesh_rc, world_b, size_b, r_b)
-                .or_else(|| {
-                    Self::swept_sphere_vs_mesh(
-                        world_a, &mesh_rc, world_b, size_b, r_b, coll_b, coll_a,
-                    )
-                })
-                .or_else(|| {
-                    Self::swept_capsule_vs_mesh(
-                        world_a, &mesh_rc, world_b, size_b, r_b, coll_b, coll_a,
-                    )
-                })
-                .or_else(|| {
-                    Self::swept_rounded_obb_vs_mesh(
-                        world_a, &mesh_rc, world_b, size_b, r_b, coll_b, coll_a,
-                    )
-                })?;
-            return Some(ContactGeom {
-                point: geom.point,
-                normal: Vec3 {
-                    x: -geom.normal.x,
-                    y: -geom.normal.y,
-                    z: -geom.normal.z,
-                },
-                depth: geom.depth,
-            });
-        }
-        if has_mesh_b {
-            let mesh_rc = mesh_b.unwrap();
-            return narrow_phase_mesh_vs_dynamic(world_b, &mesh_rc, world_a, size_a, r_a).or_else(
-                || {
-                    Self::swept_sphere_vs_mesh(
-                        world_b, &mesh_rc, world_a, size_a, r_a, coll_a, coll_b,
-                    )
-                    .or_else(|| {
-                        Self::swept_capsule_vs_mesh(
-                            world_b, &mesh_rc, world_a, size_a, r_a, coll_a, coll_b,
-                        )
-                    })
-                    .or_else(|| {
-                        Self::swept_rounded_obb_vs_mesh(
-                            world_b, &mesh_rc, world_a, size_a, r_a, coll_a, coll_b,
-                        )
-                    })
-                },
-            );
-        }
-        let c_a = world_a.pos_value();
-        let c_b = world_b.pos_value();
         // Normalize swapped solvers back to the b → a normal contract.
         let flip = |g: ContactGeom| ContactGeom {
             point: g.point,
@@ -441,46 +433,65 @@ impl Scene {
             },
             depth: g.depth,
         };
+        // Mesh-vs-mesh is unsupported: both sides are static terrain
+        // with no resolution payload.
+        match (mesh_a, mesh_b) {
+            (Some(_), Some(_)) => return None,
+            (Some(mesh), None) => {
+                return Self::narrow_phase_mesh_vs_shape(
+                    world_a, &mesh, world_b, size_b, r_b, vel_b,
+                )
+                .map(flip);
+            }
+            (None, Some(mesh)) => {
+                return Self::narrow_phase_mesh_vs_shape(
+                    world_b, &mesh, world_a, size_a, r_a, vel_a,
+                );
+            }
+            (None, None) => {}
+        }
+        let c_a = world_a.pos_value();
+        let c_b = world_b.pos_value();
         // Dispatch exact solvers by shape pair
         match (classify_shape(size_a, r_a), classify_shape(size_b, r_b)) {
             (S::Sphere { r: ra }, S::Sphere { r: rb }) => sphere_vs_sphere(c_a, ra, c_b, rb)
-                .or_else(|| Self::swept_sphere_vs_sphere(c_a, ra, coll_a, c_b, rb, coll_b)),
+                .or_else(|| Self::swept_sphere_vs_sphere(c_a, ra, vel_a, c_b, rb, vel_b)),
             (S::Sphere { r: ra }, S::RoundedBox { half, r }) => {
                 // Normal box → sphere = b → a: no flip.
                 sphere_vs_rounded_obb(c_a, ra, world_b, half, r).or_else(|| {
-                    Self::swept_sphere_vs_rounded_obb(c_a, ra, coll_a, world_b, half, r, coll_b)
+                    Self::swept_sphere_vs_rounded_obb(c_a, ra, vel_a, world_b, half, r, vel_b)
                 })
             }
             (S::RoundedBox { half, r }, S::Sphere { r: rb }) => {
                 sphere_vs_rounded_obb(c_b, rb, world_a, half, r)
                     .or_else(|| {
-                        Self::swept_sphere_vs_rounded_obb(c_b, rb, coll_b, world_a, half, r, coll_a)
+                        Self::swept_sphere_vs_rounded_obb(c_b, rb, vel_b, world_a, half, r, vel_a)
                     })
                     .map(flip)
             }
             (S::Sphere { r: ra }, S::Capsule { half_h, r }) => {
                 // Normal capsule → sphere = b → a: no flip.
                 capsule_vs_sphere(world_b, half_h, r, c_a, ra).or_else(|| {
-                    Self::swept_sphere_vs_capsule(c_a, ra, coll_a, world_b, half_h, r, coll_b)
+                    Self::swept_sphere_vs_capsule(c_a, ra, vel_a, world_b, half_h, r, vel_b)
                 })
             }
             (S::Capsule { half_h, r }, S::Sphere { r: rb }) => {
                 capsule_vs_sphere(world_a, half_h, r, c_b, rb)
                     .or_else(|| {
-                        Self::swept_sphere_vs_capsule(c_b, rb, coll_b, world_a, half_h, r, coll_a)
+                        Self::swept_sphere_vs_capsule(c_b, rb, vel_b, world_a, half_h, r, vel_a)
                     })
                     .map(flip)
             }
             (S::Capsule { half_h: ha, r: ra }, S::Capsule { half_h: hb, r: rb }) => {
                 capsule_vs_capsule(world_a, ha, ra, world_b, hb, rb).or_else(|| {
-                    Self::swept_capsule_vs_capsule(world_a, ha, ra, coll_a, world_b, hb, rb, coll_b)
+                    Self::swept_capsule_vs_capsule(world_a, ha, ra, vel_a, world_b, hb, rb, vel_b)
                 })
             }
             (S::Capsule { half_h, r }, S::RoundedBox { half, r: br }) => {
                 // Normal box → capsule = b → a: no flip.
                 capsule_vs_rounded_obb(world_a, half_h, r, world_b, half, br).or_else(|| {
                     Self::swept_capsule_vs_rounded_obb(
-                        world_a, half_h, r, coll_a, world_b, half, br, coll_b,
+                        world_a, half_h, r, vel_a, world_b, half, br, vel_b,
                     )
                 })
             }
@@ -488,7 +499,7 @@ impl Scene {
                 capsule_vs_rounded_obb(world_b, half_h, r, world_a, half, br)
                     .or_else(|| {
                         Self::swept_capsule_vs_rounded_obb(
-                            world_b, half_h, r, coll_b, world_a, half, br, coll_a,
+                            world_b, half_h, r, vel_b, world_a, half, br, vel_a,
                         )
                     })
                     .map(flip)
@@ -496,7 +507,7 @@ impl Scene {
             (S::RoundedBox { half: ha, r: ra }, S::RoundedBox { half: hb, r: rb }) => {
                 rounded_obb_vs_rounded_obb(world_a, ha, ra, world_b, hb, rb).or_else(|| {
                     Self::swept_rounded_obb_vs_rounded_obb(
-                        world_a, ha, ra, coll_a, world_b, hb, rb, coll_b,
+                        world_a, ha, ra, vel_a, world_b, hb, rb, vel_b,
                     )
                 })
             }
@@ -508,15 +519,11 @@ impl Scene {
     fn swept_sphere_vs_sphere(
         c_a: Vec3,
         r_a: f32,
-        coll_a: &RcCollider,
+        vel_a: Vec3,
         c_b: Vec3,
         r_b: f32,
-        coll_b: &RcCollider,
+        vel_b: Vec3,
     ) -> Option<ContactGeom> {
-        let vel_a_rc = rc_ref!(coll_a).velocity.clone();
-        let vel_b_rc = rc_ref!(coll_b).velocity.clone();
-        let vel_a = *rc_ref!(&vel_a_rc);
-        let vel_b = *rc_ref!(&vel_b_rc);
         let d0 = Vec3 {
             x: c_a.x - vel_a.x - (c_b.x - vel_b.x),
             y: c_a.y - vel_a.y - (c_b.y - vel_b.y),
@@ -582,16 +589,12 @@ impl Scene {
     fn swept_sphere_vs_rounded_obb(
         c_sphere: Vec3,
         r_sphere: f32,
-        sphere_coll: &RcCollider,
+        sphere_vel: Vec3,
         box_world: &Mat4,
         half: Vec3,
         box_r: f32,
-        box_coll: &RcCollider,
+        box_vel: Vec3,
     ) -> Option<ContactGeom> {
-        let sphere_vel_rc = rc_ref!(sphere_coll).velocity.clone();
-        let box_vel_rc = rc_ref!(box_coll).velocity.clone();
-        let sphere_vel = *rc_ref!(&sphere_vel_rc);
-        let box_vel = *rc_ref!(&box_vel_rc);
         let rel_vel = Vec3 {
             x: sphere_vel.x - box_vel.x,
             y: sphere_vel.y - box_vel.y,
@@ -647,16 +650,12 @@ impl Scene {
     fn swept_sphere_vs_capsule(
         c_sphere: Vec3,
         r_sphere: f32,
-        sphere_coll: &RcCollider,
+        sphere_vel: Vec3,
         cap_world: &Mat4,
         half_h: f32,
         cap_r: f32,
-        cap_coll: &RcCollider,
+        cap_vel: Vec3,
     ) -> Option<ContactGeom> {
-        let sphere_vel_rc = rc_ref!(sphere_coll).velocity.clone();
-        let cap_vel_rc = rc_ref!(cap_coll).velocity.clone();
-        let sphere_vel = *rc_ref!(&sphere_vel_rc);
-        let cap_vel = *rc_ref!(&cap_vel_rc);
         let rel_vel = Vec3 {
             x: sphere_vel.x - cap_vel.x,
             y: sphere_vel.y - cap_vel.y,
@@ -702,11 +701,11 @@ impl Scene {
         world_a: &Mat4,
         half_h_a: f32,
         r_a: f32,
-        coll_a: &RcCollider,
+        vel_a: Vec3,
         world_b: &Mat4,
         half_h_b: f32,
         r_b: f32,
-        coll_b: &RcCollider,
+        vel_b: Vec3,
     ) -> Option<ContactGeom> {
         let top_a = world_a.mul_vec_value(&Vec3 {
             x: 0.0,
@@ -728,10 +727,6 @@ impl Scene {
             y: -half_h_b,
             z: 0.0,
         });
-        let vel_a_rc = rc_ref!(coll_a).velocity.clone();
-        let vel_b_rc = rc_ref!(coll_b).velocity.clone();
-        let vel_a = *rc_ref!(&vel_a_rc);
-        let vel_b = *rc_ref!(&vel_b_rc);
         let rel_vel = Vec3 {
             x: vel_a.x - vel_b.x,
             y: vel_a.y - vel_b.y,
@@ -763,11 +758,11 @@ impl Scene {
         cap_world: &Mat4,
         half_h: f32,
         cap_r: f32,
-        cap_coll: &RcCollider,
+        cap_vel: Vec3,
         box_world: &Mat4,
         half: Vec3,
         box_r: f32,
-        box_coll: &RcCollider,
+        box_vel: Vec3,
     ) -> Option<ContactGeom> {
         let top = cap_world.mul_vec_value(&Vec3 {
             x: 0.0,
@@ -779,10 +774,6 @@ impl Scene {
             y: -half_h,
             z: 0.0,
         });
-        let cap_vel_rc = rc_ref!(cap_coll).velocity.clone();
-        let box_vel_rc = rc_ref!(box_coll).velocity.clone();
-        let cap_vel = *rc_ref!(&cap_vel_rc);
-        let box_vel = *rc_ref!(&box_vel_rc);
         let rel_vel = Vec3 {
             x: cap_vel.x - box_vel.x,
             y: cap_vel.y - box_vel.y,
@@ -818,16 +809,12 @@ impl Scene {
         world_a: &Mat4,
         half_a: Vec3,
         r_a: f32,
-        coll_a: &RcCollider,
+        vel_a: Vec3,
         world_b: &Mat4,
         half_b: Vec3,
         r_b: f32,
-        coll_b: &RcCollider,
+        vel_b: Vec3,
     ) -> Option<ContactGeom> {
-        let vel_a_rc = rc_ref!(coll_a).velocity.clone();
-        let vel_b_rc = rc_ref!(coll_b).velocity.clone();
-        let vel_a = *rc_ref!(&vel_a_rc);
-        let vel_b = *rc_ref!(&vel_b_rc);
         let rel_vel = Vec3 {
             x: vel_a.x - vel_b.x,
             y: vel_a.y - vel_b.y,
@@ -836,27 +823,62 @@ impl Scene {
         swept_obb_vs_obb(world_a, half_a, r_a, rel_vel, world_b, half_b, r_b)
     }
 
+    // Solves a dynamic shape against static mesh terrain: the overlap test
+    // first, then the swept fallback of the shape's family. The normal
+    // points from the mesh toward the shape.
+    fn narrow_phase_mesh_vs_shape(
+        world_mesh: &Mat4,
+        mesh: &RcMesh,
+        world_shape: &Mat4,
+        size_shape: Vec3,
+        r_shape: f32,
+        shape_vel: Vec3,
+    ) -> Option<ContactGeom> {
+        narrow_phase_mesh_vs_dynamic(world_mesh, mesh, world_shape, size_shape, r_shape)
+            .or_else(|| {
+                Self::swept_sphere_vs_mesh(
+                    world_mesh,
+                    mesh,
+                    world_shape,
+                    size_shape,
+                    r_shape,
+                    shape_vel,
+                )
+            })
+            .or_else(|| {
+                Self::swept_capsule_vs_mesh(
+                    world_mesh,
+                    mesh,
+                    world_shape,
+                    size_shape,
+                    r_shape,
+                    shape_vel,
+                )
+            })
+            .or_else(|| {
+                Self::swept_rounded_obb_vs_mesh(
+                    world_mesh,
+                    mesh,
+                    world_shape,
+                    size_shape,
+                    r_shape,
+                    shape_vel,
+                )
+            })
+    }
+
     fn swept_sphere_vs_mesh(
         world_mesh: &Mat4,
         mesh: &RcMesh,
         world_sphere: &Mat4,
         size_sphere: Vec3,
         r_sphere: f32,
-        sphere_coll: &RcCollider,
-        mesh_coll: &RcCollider,
+        sphere_vel: Vec3,
     ) -> Option<ContactGeom> {
         let ColliderShape::Sphere { r } = classify_shape(size_sphere, r_sphere) else {
             return None;
         };
-        let sphere_vel_rc = rc_ref!(sphere_coll).velocity.clone();
-        let mesh_vel_rc = rc_ref!(mesh_coll).velocity.clone();
-        let sphere_vel = *rc_ref!(&sphere_vel_rc);
-        let mesh_vel = *rc_ref!(&mesh_vel_rc);
-        let rel_vel = Vec3 {
-            x: sphere_vel.x - mesh_vel.x,
-            y: sphere_vel.y - mesh_vel.y,
-            z: sphere_vel.z - mesh_vel.z,
-        };
+        let rel_vel = sphere_vel;
         let rel_len_sq = rel_vel.x * rel_vel.x + rel_vel.y * rel_vel.y + rel_vel.z * rel_vel.z;
         if rel_len_sq < 1e-12 {
             return None;
@@ -909,21 +931,12 @@ impl Scene {
         world_capsule: &Mat4,
         size_capsule: Vec3,
         r_capsule: f32,
-        capsule_coll: &RcCollider,
-        mesh_coll: &RcCollider,
+        capsule_vel: Vec3,
     ) -> Option<ContactGeom> {
         let ColliderShape::Capsule { half_h, r } = classify_shape(size_capsule, r_capsule) else {
             return None;
         };
-        let capsule_vel_rc = rc_ref!(capsule_coll).velocity.clone();
-        let mesh_vel_rc = rc_ref!(mesh_coll).velocity.clone();
-        let capsule_vel = *rc_ref!(&capsule_vel_rc);
-        let mesh_vel = *rc_ref!(&mesh_vel_rc);
-        let rel_vel = Vec3 {
-            x: capsule_vel.x - mesh_vel.x,
-            y: capsule_vel.y - mesh_vel.y,
-            z: capsule_vel.z - mesh_vel.z,
-        };
+        let rel_vel = capsule_vel;
         let rel_len_sq = rel_vel.x * rel_vel.x + rel_vel.y * rel_vel.y + rel_vel.z * rel_vel.z;
         if rel_len_sq < 1e-12 {
             return None;
@@ -991,21 +1004,12 @@ impl Scene {
         world_box: &Mat4,
         size_box: Vec3,
         r_box: f32,
-        box_coll: &RcCollider,
-        mesh_coll: &RcCollider,
+        box_vel: Vec3,
     ) -> Option<ContactGeom> {
         let ColliderShape::RoundedBox { half, r } = classify_shape(size_box, r_box) else {
             return None;
         };
-        let box_vel_rc = rc_ref!(box_coll).velocity.clone();
-        let mesh_vel_rc = rc_ref!(mesh_coll).velocity.clone();
-        let box_vel = *rc_ref!(&box_vel_rc);
-        let mesh_vel = *rc_ref!(&mesh_vel_rc);
-        let rel_vel = Vec3 {
-            x: box_vel.x - mesh_vel.x,
-            y: box_vel.y - mesh_vel.y,
-            z: box_vel.z - mesh_vel.z,
-        };
+        let rel_vel = box_vel;
         let rel_len_sq = rel_vel.x * rel_vel.x + rel_vel.y * rel_vel.y + rel_vel.z * rel_vel.z;
         if rel_len_sq < 1e-12 {
             return None;
@@ -1039,24 +1043,22 @@ impl Scene {
     fn build_contact_pair(
         node_a: &RcNode,
         coll_a: &RcCollider,
+        vel_a: Vec3,
         node_b: &RcNode,
         coll_b: &RcCollider,
+        vel_b: Vec3,
         geom: ContactGeom,
     ) -> ContactPair {
         let a = rc_ref!(coll_a);
         let b = rc_ref!(coll_b);
-        // Mesh colliders are immovable terrain; ignore their configured mass.
-        let mass_a = if a.mesh.is_some() { 0.0 } else { a.mass };
-        let mass_b = if b.mesh.is_some() { 0.0 } else { b.mass };
+        let mass_a = a.contact_mass();
+        let mass_b = b.contact_mass();
         let trigger_a = a.trigger;
         let trigger_b = b.trigger;
         let rolls_a = a.rolls;
         let rolls_b = b.rolls;
         let resti = a.restitution.max(b.restitution);
         let frict = (a.friction + b.friction) * 0.5;
-        let vel_a = *rc_ref!(&a.velocity);
-        let vel_b = *rc_ref!(&b.velocity);
-
         let (share_a, share_b) = if mass_a == 0.0 && mass_b == 0.0 {
             (0.0, 0.0)
         } else if mass_a == 0.0 {
@@ -1065,7 +1067,15 @@ impl Scene {
             (1.0, 0.0)
         } else {
             let total = mass_a + mass_b;
-            (mass_b / total, mass_a / total)
+            if total.is_finite() {
+                (mass_b / total, mass_a / total)
+            } else {
+                let scale = mass_a.max(mass_b);
+                let scaled_a = mass_a / scale;
+                let scaled_b = mass_b / scale;
+                let scaled_total = scaled_a + scaled_b;
+                (scaled_b / scaled_total, scaled_a / scaled_total)
+            }
         };
 
         let zero = Vec3 {
@@ -1084,6 +1094,8 @@ impl Scene {
         } else {
             Self::compute_deltas(geom, share_b, vel_b, vel_a, resti, frict, rolls_b, false)
         };
+        let dav_a = Self::world_to_node_local_direction(node_a, dav_a);
+        let dav_b = Self::world_to_node_local_direction(node_b, dav_b);
 
         let contact_a = Contact::from_values(geom.point, geom.normal, depth_a, dv_a, dav_a);
         let contact_b = Contact::from_values(
@@ -1162,6 +1174,21 @@ impl Scene {
         (depth, dv, dav)
     }
 
+    fn world_to_node_local_direction(node: &RcNode, direction: Vec3) -> Vec3 {
+        let rotation = Node::world_rotation_value(node);
+        Vec3 {
+            x: rotation.data[0][0] * direction.x
+                + rotation.data[1][0] * direction.y
+                + rotation.data[2][0] * direction.z,
+            y: rotation.data[0][1] * direction.x
+                + rotation.data[1][1] * direction.y
+                + rotation.data[2][1] * direction.z,
+            z: rotation.data[0][2] * direction.x
+                + rotation.data[1][2] * direction.y
+                + rotation.data[2][2] * direction.z,
+        }
+    }
+
     // Spatial queries
 
     pub fn raycast(
@@ -1174,7 +1201,7 @@ impl Scene {
     ) -> Option<RaycastHitInfo> {
         let direction = Self::normalize_ray_direction(direction)?;
         let mut best: Option<RaycastHitInfo> = None;
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, collider| {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, collider, _| {
             let Some(hit) = Self::ray_test_one(
                 node,
                 collider,
@@ -1207,7 +1234,7 @@ impl Scene {
             return Vec::new();
         };
         let mut hits: Vec<RaycastHitInfo> = Vec::new();
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, collider| {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, collider, _| {
             if let Some(hit) = Self::ray_test_one(
                 node,
                 collider,
@@ -1308,7 +1335,7 @@ impl Scene {
         let probe = Aabb::from_sphere(center, radius);
         let mut out: Vec<RcNode> = Vec::new();
         // Test broad-phase candidates against the sphere
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, coll_rc| {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, coll_rc, _| {
             let coll = rc_ref!(coll_rc);
             if !hit_triggers && coll.trigger {
                 return;
@@ -1359,7 +1386,7 @@ impl Scene {
         };
         let mut out: Vec<RcNode> = Vec::new();
         // Test broad-phase candidates against the box
-        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, coll_rc| {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb, coll_rc, _| {
             let coll = rc_ref!(coll_rc);
             if !hit_triggers && coll.trigger {
                 return;
@@ -1726,11 +1753,7 @@ fn set_nearer_hit(best: &mut Option<(f32, Vec3, Vec3)>, hit: (f32, Vec3, Vec3)) 
 
 // Mesh narrow-phase helpers
 
-// Mesh-vs-dynamic narrow phase. `world_mesh` is the mesh collider's
-// world transform; `mesh` is the static terrain. `world_dyn` is the
-// dynamic body's world transform; `size_dyn` / `r_dyn` describe its
-// rounded-box family. Returns ContactGeom with normal pointing FROM
-// the mesh TOWARD the dynamic body.
+// Mesh-vs-dynamic contact in world space, with the normal pointing toward the dynamic body.
 fn narrow_phase_mesh_vs_dynamic(
     world_mesh: &Mat4,
     mesh: &RcMesh,
@@ -2179,32 +2202,6 @@ fn refine_swept_segment_vs_triangle(
             depth: 0.0,
         },
     ))
-}
-
-fn closest_points_segment_triangle(
-    a0: Vec3,
-    a1: Vec3,
-    v0: Vec3,
-    v1: Vec3,
-    v2: Vec3,
-) -> (Vec3, Vec3) {
-    let mut best = (a0, closest_point_on_triangle(a0, v0, v1, v2));
-    let mut best_dist_sq = vec_len_sq(vec_sub(best.0, best.1));
-    let on_tri = closest_point_on_triangle(a1, v0, v1, v2);
-    let dist_sq = vec_len_sq(vec_sub(a1, on_tri));
-    if dist_sq < best_dist_sq {
-        best = (a1, on_tri);
-        best_dist_sq = dist_sq;
-    }
-    for (edge0, edge1) in [(v0, v1), (v1, v2), (v2, v0)] {
-        let candidate = closest_points_segment_segment(a0, a1, edge0, edge1);
-        let dist_sq = vec_len_sq(vec_sub(candidate.0, candidate.1));
-        if dist_sq < best_dist_sq {
-            best = candidate;
-            best_dist_sq = dist_sq;
-        }
-    }
-    best
 }
 
 fn swept_obb_vs_obb(
@@ -2913,56 +2910,77 @@ mod tests {
 
     #[test]
     fn test_with_draw_context_outside_scope_returns_none() {
-        // No context set: with_draw_context returns None.
         let result = with_draw_context(|_| 42);
         assert!(result.is_none());
     }
 
     #[test]
     fn test_reset_draw_state_outside_scope_is_noop() {
-        // No context set: reset_draw_state must not panic, and
-        // with_draw_context still returns None.
         reset_draw_state();
         assert!(with_draw_context(|_| ()).is_none());
     }
 
     #[test]
+    fn test_closest_points_segment_triangle_crossing_face() {
+        let zero = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v0 = Vec3 {
+            x: -10.0,
+            y: 0.0,
+            z: -10.0,
+        };
+        let v1 = Vec3 {
+            x: 10.0,
+            y: 0.0,
+            z: -10.0,
+        };
+        let v2 = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 10.0,
+        };
+        let top = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let bottom = Vec3 {
+            x: 0.0,
+            y: -1.0,
+            z: 0.0,
+        };
+        for (a, b) in [(top, bottom), (bottom, top), (zero, zero)] {
+            assert_eq!(
+                closest_points_segment_triangle(a, b, v0, v1, v2),
+                (zero, zero)
+            );
+        }
+        let (toi, contact) = swept_segment_vs_triangle(
+            top,
+            bottom,
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            0.1,
+            v0,
+            v1,
+            v2,
+        )
+        .expect("an already crossing segment contacts at the start of its sweep");
+        assert_eq!(toi, 0.0);
+        assert_eq!(contact.point, zero);
+        assert_eq!(contact.depth, 0.0);
+    }
+
+    #[test]
     fn test_sphere_above_mesh_floor_generates_contact() {
         use crate::cube::collider::Collider;
-        use crate::cube::mesh::Mesh;
-        use crate::cube::primitive::Primitive;
-
-        let floor_mesh = Mesh::new();
-        {
-            let mut m = rc_mut!(&floor_mesh);
-            let geom = Primitive::new();
-            {
-                let mut g = rc_mut!(&geom);
-                g.positions = vec![
-                    -5.0, 0.0, -5.0, 5.0, 0.0, -5.0, -5.0, 0.0, 5.0, 5.0, 0.0, 5.0,
-                ];
-                g.indices = vec![0, 1, 2, 1, 3, 2];
-            }
-            m.primitives = vec![Some(geom)];
-            m.transforms = vec![Mat4::identity()];
-            m.parents = vec![-1];
-        }
-
-        let root = Node::new();
-        let floor_node = Node::new();
-        rc_mut!(&floor_node).collider = Some(Collider::new(
-            Vec3::zero(),
-            0.0,
-            Some(floor_mesh),
-            false,
-            false,
-            0.0,
-            0.0,
-            0.5,
-            Vec3::zero(),
-            Vec3::zero(),
-        ));
-        Node::add_child(&root, &floor_node);
+        let root = mesh_floor_root();
 
         let ball_node = Node::new();
         rc_mut!(&ball_node).transform = Mat4::from_translation(&Vec3 {
@@ -3001,6 +3019,17 @@ mod tests {
         // leaf first (post-order = children before parent)
         assert!(std::rc::Rc::ptr_eq(&collected[0], &leaf));
         assert!(std::rc::Rc::ptr_eq(&collected[1], &mid));
+    }
+
+    #[test]
+    fn test_detach_destroyed_consumes_root_notification() {
+        let scene = Node::new();
+        Node::destroy(&scene);
+
+        Scene::detach_destroyed(&scene);
+
+        assert!(!rc_ref!(&scene).destroyed);
+        assert!(Scene::collect_destroyed_post_order(&scene).is_empty());
     }
 
     fn sphere_collider(radius: f32, mass: f32) -> crate::cube::RcCollider {
@@ -3109,6 +3138,23 @@ mod tests {
 
         assert!(first_capacity >= 2);
         assert_eq!(Scene::collider_entry_scratch_capacity(), first_capacity);
+    }
+
+    #[test]
+    fn test_detect_contacts_does_not_allocate_result_without_contacts() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&b).collider = Some(sphere_collider(0.5, 1.0));
+        place_at(&b, 10.0, 0.0, 0.0);
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+
+        let pairs = Scene::detect_contacts(&root);
+
+        assert!(pairs.is_empty());
+        assert_eq!(pairs.capacity(), 0);
     }
 
     #[test]
@@ -3394,6 +3440,25 @@ mod tests {
     }
 
     #[test]
+    fn test_mesh_velocity_does_not_cancel_dynamic_sweep() {
+        let root = mesh_floor_root();
+        let floor = rc_ref!(&root).children[0].clone();
+        let floor_collider = rc_ref!(&floor).collider.clone().unwrap();
+        rc_mut!(&floor_collider).velocity = Vec3::new(0.0, -3.0, 0.0);
+        let moving = Node::new();
+        let moving_collider = sphere_collider(0.25, 1.0);
+        rc_mut!(&moving_collider).velocity = Vec3::new(0.0, -3.0, 0.0);
+        rc_mut!(&moving).collider = Some(moving_collider);
+        place_at(&moving, 0.0, 1.5, 0.0);
+        Node::add_child(&root, &moving);
+
+        Scene::integrate_motion(&root);
+        let pairs = Scene::detect_contacts(&root);
+
+        assert_eq!(pairs.len(), 1);
+    }
+
+    #[test]
     fn test_detect_contacts_swept_sphere_against_mesh_edge() {
         let root = mesh_floor_root();
         let moving = Node::new();
@@ -3490,7 +3555,6 @@ mod tests {
 
     #[test]
     fn test_contact_depth_split_evenly_for_equal_mass() {
-        // Equal masses split the penetration depth evenly between contacts.
         let root = Node::new();
         let a = Node::new();
         let b = Node::new();
@@ -3505,8 +3569,93 @@ mod tests {
         // Penetration = (0.5 + 0.5) - 0.5 = 0.5, halved for equal mass.
         let depth_a = rc_ref!(&pairs[0].contact_a).depth;
         let depth_b = rc_ref!(&pairs[0].contact_b).depth;
-        assert!((depth_a - 0.25).abs() < 1e-4, "depth_a = {depth_a}");
-        assert!((depth_b - 0.25).abs() < 1e-4, "depth_b = {depth_b}");
+        assert_eq!(depth_a, 0.25);
+        assert_eq!(depth_b, 0.25);
+    }
+
+    #[test]
+    fn test_contact_depth_uses_direct_finite_mass_ratio() {
+        for (mass_a, mass_b) in [(0.85, 2.2), (2.2, 0.85)] {
+            let root = Node::new();
+            let a = Node::new();
+            let b = Node::new();
+            rc_mut!(&a).collider = Some(sphere_collider(0.5, mass_a));
+            rc_mut!(&b).collider = Some(sphere_collider(0.5, mass_b));
+            place_at(&a, 0.0, 0.0, 0.0);
+            place_at(&b, 0.5, 0.0, 0.0);
+            Node::add_child(&root, &a);
+            Node::add_child(&root, &b);
+
+            let pairs = Scene::detect_contacts(&root);
+
+            assert_eq!(pairs.len(), 1);
+            let total = mass_a + mass_b;
+            assert_eq!(rc_ref!(&pairs[0].contact_a).depth, 0.5 * (mass_b / total));
+            assert_eq!(rc_ref!(&pairs[0].contact_b).depth, 0.5 * (mass_a / total));
+        }
+    }
+
+    #[test]
+    fn test_contact_mass_ratio_does_not_overflow() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).collider = Some(sphere_collider(0.5, f32::MAX));
+        rc_mut!(&b).collider = Some(sphere_collider(0.5, f32::MAX));
+        place_at(&a, 0.0, 0.0, 0.0);
+        place_at(&b, 0.5, 0.0, 0.0);
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+
+        let pairs = Scene::detect_contacts(&root);
+
+        assert_eq!(pairs.len(), 1);
+        let depth_a = rc_ref!(&pairs[0].contact_a).depth;
+        let depth_b = rc_ref!(&pairs[0].contact_b).depth;
+        assert_eq!(depth_a, 0.25);
+        assert_eq!(depth_b, 0.25);
+    }
+
+    #[test]
+    fn test_invalid_internal_mass_is_immovable() {
+        for invalid_mass in [-1.0, f32::NAN, f32::INFINITY, f32::NEG_INFINITY] {
+            let root = Node::new();
+            let invalid = Node::new();
+            let movable = Node::new();
+            rc_mut!(&invalid).collider = Some(sphere_collider(0.5, invalid_mass));
+            rc_mut!(&movable).collider = Some(sphere_collider(0.5, 1.0));
+            place_at(&invalid, 0.0, 0.0, 0.0);
+            place_at(&movable, 0.5, 0.0, 0.0);
+            Node::add_child(&root, &invalid);
+            Node::add_child(&root, &movable);
+
+            let pairs = Scene::detect_contacts(&root);
+
+            assert_eq!(pairs.len(), 1, "invalid_mass = {invalid_mass}");
+            let depth_invalid = rc_ref!(&pairs[0].contact_a).depth;
+            let depth_movable = rc_ref!(&pairs[0].contact_b).depth;
+            assert_eq!(depth_invalid, 0.0, "invalid_mass = {invalid_mass}");
+            assert_eq!(depth_movable, 0.5, "invalid_mass = {invalid_mass}");
+        }
+    }
+
+    #[test]
+    fn test_invalid_internal_mass_is_static_for_pair_filtering() {
+        for invalid_mass in [-1.0, f32::NAN, f32::INFINITY, f32::NEG_INFINITY] {
+            let root = Node::new();
+            let invalid = Node::new();
+            let static_node = Node::new();
+            rc_mut!(&invalid).collider = Some(sphere_collider(0.5, invalid_mass));
+            rc_mut!(&static_node).collider = Some(sphere_collider(0.5, 0.0));
+            place_at(&invalid, 0.0, 0.0, 0.0);
+            place_at(&static_node, 0.5, 0.0, 0.0);
+            Node::add_child(&root, &invalid);
+            Node::add_child(&root, &static_node);
+
+            let pairs = Scene::detect_contacts(&root);
+
+            assert!(pairs.is_empty(), "invalid_mass = {invalid_mass}");
+        }
     }
 
     #[test]
@@ -3527,14 +3676,8 @@ mod tests {
         // node_a = movable (added first), node_b = wall.
         let depth_movable = rc_ref!(&pairs[0].contact_a).depth;
         let depth_wall = rc_ref!(&pairs[0].contact_b).depth;
-        assert!(
-            (depth_movable - 0.5).abs() < 1e-4,
-            "movable absorbs full = {depth_movable}"
-        );
-        assert!(
-            depth_wall.abs() < 1e-4,
-            "immovable takes none = {depth_wall}"
-        );
+        assert_eq!(depth_movable, 0.5);
+        assert_eq!(depth_wall, 0.0);
     }
 
     #[test]
@@ -3588,7 +3731,7 @@ mod tests {
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
         let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!((delta_velocity.x + 2.0).abs() < 1e-6);
+        assert_eq!(delta_velocity.x, -2.0);
         assert_eq!(delta_velocity.y, 0.0);
         assert_eq!(delta_velocity.z, 0.0);
     }
@@ -3615,8 +3758,8 @@ mod tests {
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
         let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!((delta_velocity.x + 1.0).abs() < 1e-6);
-        assert!((delta_velocity.y + 1.0).abs() < 1e-6);
+        assert_eq!(delta_velocity.x, -1.0);
+        assert_eq!(delta_velocity.y, -1.0);
         assert_eq!(delta_velocity.z, 0.0);
     }
 
@@ -3642,7 +3785,40 @@ mod tests {
         let delta_angular_velocity = rc_ref!(&contact.delta_angular_velocity);
         assert_eq!(delta_angular_velocity.x, 0.0);
         assert_eq!(delta_angular_velocity.y, 0.0);
-        assert!((delta_angular_velocity.z - 1.0).abs() < 1e-6);
+        assert_eq!(delta_angular_velocity.z, 1.0);
+    }
+
+    #[test]
+    fn test_rolling_delta_uses_receiving_node_local_axes() {
+        let root = Node::new();
+        let movable = Node::new();
+        let wall = Node::new();
+        let movable_collider = sphere_collider(0.5, 1.0);
+        rc_mut!(&movable_collider).velocity = Vec3::new(1.0, 1.0, 0.0);
+        rc_mut!(&movable_collider).rolls = true;
+        rc_mut!(&movable).collider = Some(movable_collider);
+        let rotation = Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            90.0,
+        );
+        rc_mut!(&movable).transform = rotation;
+        rc_mut!(&wall).collider = Some(sphere_collider(0.5, 0.0));
+        place_at(&wall, 0.5, 0.0, 0.0);
+        Node::add_child(&root, &movable);
+        Node::add_child(&root, &wall);
+
+        let pairs = Scene::detect_contacts(&root);
+
+        assert_eq!(pairs.len(), 1);
+        let contact = rc_ref!(&pairs[0].contact_a);
+        let delta = rc_ref!(&contact.delta_angular_velocity);
+        assert!((delta.x + 1.0).abs() < 1e-6, "delta.x = {}", delta.x);
+        assert!(delta.y.abs() < 1e-6, "delta.y = {}", delta.y);
+        assert!(delta.z.abs() < 1e-6, "delta.z = {}", delta.z);
     }
 
     #[test]
@@ -3773,6 +3949,25 @@ mod tests {
         let pairs = Scene::detect_contacts(&root);
 
         assert!(pairs.is_empty());
+    }
+
+    #[test]
+    fn test_mesh_velocity_does_not_drive_contact_response() {
+        let root = mesh_floor_root();
+        let floor = rc_ref!(&root).children[0].clone();
+        let floor_collider = rc_ref!(&floor).collider.clone().unwrap();
+        rc_mut!(&floor_collider).velocity = Vec3::new(0.0, 1.0, 0.0);
+        let ball = Node::new();
+        rc_mut!(&ball).collider = Some(sphere_collider(0.5, 1.0));
+        place_at(&ball, 0.0, 0.4, 0.0);
+        Node::add_child(&root, &ball);
+
+        let pairs = Scene::detect_contacts(&root);
+
+        assert_eq!(pairs.len(), 1);
+        let contact = rc_ref!(&pairs[0].contact_b);
+        let delta = rc_ref!(&contact.delta_velocity);
+        assert_eq!((delta.x, delta.y, delta.z), (0.0, 0.0, 0.0));
     }
 
     // Two-triangle floor fixture for mesh raycast tests
@@ -3947,8 +4142,8 @@ mod tests {
         rc_mut!(&far).collider = Some(sphere_collider(0.5, 1.0));
         place_at(&near, 0.0, 0.0, 0.0);
         place_at(&far, 0.0, 0.0, -5.0);
-        Node::add_child(&root, &near);
         Node::add_child(&root, &far);
+        Node::add_child(&root, &near);
         let hit = Scene::raycast(
             &root,
             Vec3 {
@@ -4265,6 +4460,9 @@ mod tests {
             None,
         );
         assert_eq!(hits.len(), 3);
+        assert!(std::rc::Rc::ptr_eq(&hits[0].node, &b));
+        assert!(std::rc::Rc::ptr_eq(&hits[1].node, &c));
+        assert!(std::rc::Rc::ptr_eq(&hits[2].node, &a));
         for i in 1..hits.len() {
             assert!(hits[i].distance >= hits[i - 1].distance);
         }
@@ -4479,6 +4677,35 @@ mod tests {
     }
 
     #[test]
+    fn test_integrate_motion_ignores_mesh_motion_state() {
+        let (root, terrain) = sparse_triangle_mesh_root();
+        let translation = Mat4::from_translation(&Vec3 {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        });
+        let rotation = Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            30.0,
+        );
+        let initial = rc_ref!(&translation).mul_mat_value(&rc_ref!(&rotation));
+        rc_mut!(&terrain).transform = Mat4::from_rows(initial.data);
+        let collider = rc_ref!(&terrain).collider.clone().unwrap();
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 2.0, 3.0);
+        rc_mut!(&collider).angular_velocity = Vec3::new(0.0, 45.0, 0.0);
+
+        Scene::integrate_motion(&root);
+
+        let actual_rc = rc_ref!(&terrain).transform.clone();
+        let actual = rc_ref!(&actual_rc);
+        assert_eq!(actual.data, initial.data);
+    }
+
+    #[test]
     fn test_integrate_motion_preserves_world_translation_and_local_rotation() {
         let node = Node::new();
         rc_mut!(&node).transform = Mat4::from_translation(&Vec3 {
@@ -4514,5 +4741,161 @@ mod tests {
                 assert!((actual.data[row][col] - expected.data[row][col]).abs() < 1e-6);
             }
         }
+    }
+
+    #[test]
+    fn test_integrate_motion_uses_world_velocity_under_rotated_parent() {
+        let root = Node::new();
+        let parent = Node::new();
+        let child = Node::new();
+        rc_mut!(&parent).transform = Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
+            90.0,
+        );
+        let collider = sphere_collider(0.5, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 0.0, 0.0);
+        rc_mut!(&child).collider = Some(collider);
+        Node::add_child(&root, &parent);
+        Node::add_child(&parent, &child);
+
+        Scene::integrate_motion(&root);
+
+        let world = Node::world_transform_value(&child);
+        let pos = world.pos_value();
+        assert!((pos.x - 1.0).abs() < 1e-6, "pos.x = {}", pos.x);
+        assert!(pos.y.abs() < 1e-6, "pos.y = {}", pos.y);
+        assert!(pos.z.abs() < 1e-6, "pos.z = {}", pos.z);
+    }
+
+    #[test]
+    fn test_integrate_motion_uses_world_velocity_under_scaled_parent() {
+        let root = Node::new();
+        let parent = Node::new();
+        let child = Node::new();
+        rc_mut!(&parent).transform = Mat4::from_scale(&Vec3 {
+            x: 2.0,
+            y: 3.0,
+            z: 4.0,
+        });
+        let collider = sphere_collider(0.5, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 1.0, 1.0);
+        rc_mut!(&child).collider = Some(collider);
+        Node::add_child(&root, &parent);
+        Node::add_child(&parent, &child);
+
+        Scene::integrate_motion(&root);
+
+        let pos = Node::world_transform_value(&child).pos_value();
+        assert!((pos.x - 1.0).abs() < 1e-6, "pos.x = {}", pos.x);
+        assert!((pos.y - 1.0).abs() < 1e-6, "pos.y = {}", pos.y);
+        assert!((pos.z - 1.0).abs() < 1e-6, "pos.z = {}", pos.z);
+    }
+
+    #[test]
+    fn test_integrate_motion_on_subtree_uses_external_parent_transform() {
+        let parent = Node::new();
+        let child = Node::new();
+        rc_mut!(&parent).transform = Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
+            90.0,
+        );
+        let collider = sphere_collider(0.5, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 0.0, 0.0);
+        rc_mut!(&child).collider = Some(collider);
+        Node::add_child(&parent, &child);
+
+        Scene::integrate_motion(&child);
+
+        let pos = Node::world_transform_value(&child).pos_value();
+        assert!((pos.x - 1.0).abs() < 1e-6, "pos.x = {}", pos.x);
+        assert!(pos.y.abs() < 1e-6, "pos.y = {}", pos.y);
+        assert!(pos.z.abs() < 1e-6, "pos.z = {}", pos.z);
+    }
+
+    #[test]
+    fn test_integrate_motion_keeps_local_spin_under_singular_parent() {
+        let root = Node::new();
+        let parent = Node::new();
+        let child = Node::new();
+        rc_mut!(&parent).transform = Mat4::from_scale(&Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 1.0,
+        });
+        let collider = sphere_collider(0.5, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 0.0, 0.0);
+        rc_mut!(&collider).angular_velocity = Vec3::new(0.0, 90.0, 0.0);
+        rc_mut!(&child).collider = Some(collider);
+        Node::add_child(&root, &parent);
+        Node::add_child(&parent, &child);
+
+        Scene::integrate_motion(&root);
+
+        let local_rc = rc_ref!(&child).transform.clone();
+        let local = rc_ref!(&local_rc);
+        assert_eq!(
+            local.pos_value(),
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            }
+        );
+        assert!(local.data.iter().flatten().all(|value| value.is_finite()));
+        assert!(local.data[0][0].abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_integrate_motion_moves_massless_analytic_collider() {
+        let node = Node::new();
+        let collider = sphere_collider(0.5, 0.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 2.0, 3.0);
+        rc_mut!(&node).collider = Some(collider);
+
+        Scene::integrate_motion(&node);
+
+        let pos = Node::world_transform_value(&node).pos_value();
+        assert_eq!(
+            pos,
+            Vec3 {
+                x: 1.0,
+                y: 2.0,
+                z: 3.0,
+            }
+        );
+    }
+
+    #[test]
+    fn test_singular_parent_velocity_does_not_create_swept_contact() {
+        let root = Node::new();
+        let parent = Node::new();
+        let child = Node::new();
+        rc_mut!(&parent).transform = Mat4::from_scale(&Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 1.0,
+        });
+        let collider = sphere_collider(0.25, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(3.0, 0.0, 0.0);
+        rc_mut!(&child).collider = Some(collider);
+        let wall = Node::new();
+        rc_mut!(&wall).collider = Some(sphere_collider(0.25, 0.0));
+        place_at(&wall, -1.5, 0.0, 0.0);
+        Node::add_child(&root, &parent);
+        Node::add_child(&parent, &child);
+        Node::add_child(&root, &wall);
+
+        Scene::integrate_motion(&root);
+        let pairs = Scene::detect_contacts(&root);
+
+        assert!(pairs.is_empty());
     }
 }

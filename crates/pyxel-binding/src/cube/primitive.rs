@@ -3,11 +3,15 @@ use pyo3::prelude::*;
 use super::vec3::Vec3;
 
 fn positions_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
-    std::cell::RefMut::map(rc_mut!(inner), |primitive| &mut primitive.positions)
+    let mut primitive = rc_mut!(inner);
+    primitive.mark_collision_geometry_changed();
+    std::cell::RefMut::map(primitive, |primitive| &mut primitive.positions)
 }
 
 fn indices_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<i32>> {
-    std::cell::RefMut::map(rc_mut!(inner), |primitive| &mut primitive.indices)
+    let mut primitive = rc_mut!(inner);
+    primitive.mark_collision_geometry_changed();
+    std::cell::RefMut::map(primitive, |primitive| &mut primitive.indices)
 }
 
 fn normals_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
@@ -18,10 +22,15 @@ fn uvs_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> 
     std::cell::RefMut::map(rc_mut!(inner), |primitive| &mut primitive.uvs)
 }
 
-// Live sequence proxies keep an RcPrimitive clone so element operations mutate
-// its Vec fields in place, matching the Sound.notes binding convention.
+// Live sequence proxies retain their Primitive and mutate its Vec fields in place.
 macro_rules! wrap_primitive_as_python_list {
-    ($wrapper_name:ident, $value_type:ty, $field_name:ident, $field_mut:ident) => {
+    (
+        $wrapper_name:ident,
+        $python_name:literal,
+        $value_type:ty,
+        $field_name:ident,
+        $field_mut:ident
+    ) => {
         wrap_as_python_primitive_sequence!(
             $wrapper_name,
             pyxel::cube::RcPrimitive,
@@ -29,26 +38,23 @@ macro_rules! wrap_primitive_as_python_list {
             $value_type,
             (|inner: &pyxel::cube::RcPrimitive, index| rc_ref!(inner).$field_name[index]),
             $value_type,
-            (|inner: &pyxel::cube::RcPrimitive, index, value| rc_mut!(inner).$field_name[index] =
-                value),
+            (|inner: &pyxel::cube::RcPrimitive, index, value| $field_mut(inner)[index] = value),
             $field_mut,
             Vec<$value_type>,
-            (|inner: &pyxel::cube::RcPrimitive, list| rc_mut!(inner).$field_name = list),
-            (|inner: &pyxel::cube::RcPrimitive| rc_ref!(inner)
-                .$field_name
-                .iter()
-                .copied()
-                .collect::<Vec<$value_type>>())
+            (|inner: &pyxel::cube::RcPrimitive, list| *$field_mut(inner) = list),
+            (|inner: &pyxel::cube::RcPrimitive| rc_ref!(inner).$field_name.clone()),
+            module = "pyxel.cube",
+            name = $python_name
         );
     };
 }
 
-wrap_primitive_as_python_list!(Positions, f32, positions, positions_mut);
-wrap_primitive_as_python_list!(Indices, i32, indices, indices_mut);
-wrap_primitive_as_python_list!(Normals, f32, normals, normals_mut);
-wrap_primitive_as_python_list!(Uvs, f32, uvs, uvs_mut);
+wrap_primitive_as_python_list!(Positions, "_Positions", f32, positions, positions_mut);
+wrap_primitive_as_python_list!(Indices, "_Indices", i32, indices, indices_mut);
+wrap_primitive_as_python_list!(Normals, "_Normals", f32, normals, normals_mut);
+wrap_primitive_as_python_list!(Uvs, "_Uvs", f32, uvs, uvs_mut);
 
-define_wrapper!(Primitive, pyxel::cube::Primitive);
+define_wrapper!(Primitive, pyxel::cube::Primitive, module = "pyxel.cube");
 
 #[pymethods]
 impl Primitive {
@@ -69,8 +75,6 @@ impl Primitive {
     const CULL_BACK: i32 = pyxel::cube::primitive::CULL_BACK;
     #[classattr]
     const CULL_FRONT: i32 = pyxel::cube::primitive::CULL_FRONT;
-
-    // Constructor
 
     #[new]
     #[pyo3(signature = (
@@ -113,12 +117,15 @@ impl Primitive {
     #[staticmethod]
     #[pyo3(signature = (size=None))]
     fn r#box(size: Option<PyRef<'_, Vec3>>) -> Self {
-        let default_size = pyxel::cube::Vec3::one();
-        let size_rc = size
-            .as_ref()
-            .map_or_else(|| default_size.clone(), |v| v.inner.clone());
-        let result = Self::wrap(pyxel::cube::Primitive::r#box(&rc_ref!(size_rc)));
-        result
+        let size = size.map_or(
+            pyxel::cube::Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+            |v| *v.inner_ref(),
+        );
+        Self::wrap(pyxel::cube::Primitive::r#box(&size))
     }
 
     #[staticmethod]
@@ -158,7 +165,11 @@ impl Primitive {
 
     #[setter]
     fn set_mode(&self, v: i32) {
-        self.inner_mut().mode = v;
+        let mut primitive = self.inner_mut();
+        if primitive.mode != v {
+            primitive.mode = v;
+            primitive.mark_collision_geometry_changed();
+        }
     }
 
     // Back-face cull
@@ -173,8 +184,6 @@ impl Primitive {
         self.inner_mut().cull = v;
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let p = self.inner_ref();
         format!(
@@ -185,14 +194,10 @@ impl Primitive {
         )
     }
 
-    // Methods
-
     fn compute_normals(&self) {
         self.inner_mut().compute_normals();
     }
 }
-
-// Module registration
 
 pub fn add_primitive_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Positions>()?;

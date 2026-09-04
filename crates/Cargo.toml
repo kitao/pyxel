@@ -3,10 +3,10 @@ members = ["pyxel-binding", "pyxel-core"]
 resolver = "2"
 
 [workspace.package]
-version = "3.0.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 license = "MIT"
+version = "3.0.0"
 
 [profile.release]
 codegen-units = 1
