@@ -79,18 +79,18 @@
       "uk": "Як розробляти та публікувати застосунки з {0} для Web"
     },
     "intro_body": {
-      "en": "Pyxel for Web is a version of Pyxel that runs in web browsers using WebAssembly technology. No installation of Python or Pyxel is required, and it is accessible from PCs, smartphones, and tablets.",
-      "cn": "Web 版 Pyxel 是通过 WebAssembly 技术使 Pyxel 能够在 Web 浏览器中运行的版本。无需安装 Python 或 Pyxel，可直接从 PC、智能手机和平板电脑访问。",
-      "de": "Pyxel für Web ist eine Version von Pyxel, die mithilfe von WebAssembly-Technologie in Webbrowsern läuft. Es ist keine Installation von Python oder Pyxel erforderlich, und es ist von PCs, Smartphones und Tablets zugänglich.",
-      "es": "Pyxel para Web es una versión de Pyxel que se ejecuta en navegadores web mediante tecnología WebAssembly. No requiere la instalación de Python ni de Pyxel, y es accesible desde PCs, smartphones y tablets.",
-      "fr": "Pyxel pour le Web est une version de Pyxel qui fonctionne dans les navigateurs web grâce à la technologie WebAssembly. Aucune installation de Python ou de Pyxel n'est nécessaire, et il est accessible depuis les PC, smartphones et tablettes.",
-      "it": "Pyxel per il Web è una versione di Pyxel che funziona nei browser web grazie alla tecnologia WebAssembly. Non è necessaria l'installazione di Python o Pyxel ed è accessibile da PC, smartphone e tablet.",
-      "ja": "Web 版 Pyxel は、WebAssembly 技術により Pyxel を Web ブラウザ上でも動作可能にしたバージョンです。Python や Pyxel のインストールは不要で、PC・スマートフォン・タブレットからそのまま利用できます。",
-      "ko": "Web 버전 Pyxel은 WebAssembly 기술을 사용하여 웹 브라우저에서 실행되는 Pyxel 버전입니다. Python이나 Pyxel의 설치가 필요 없으며, PC, 스마트폰, 태블릿에서 바로 이용할 수 있습니다.",
-      "pt": "O Pyxel para Web é uma versão do Pyxel que roda em navegadores web usando a tecnologia WebAssembly. Não é necessário instalar Python ou Pyxel, e ele é acessível a partir de PCs, smartphones e tablets.",
-      "ru": "Pyxel для Web — это версия Pyxel, работающая в веб-браузерах с помощью технологии WebAssembly. Установка Python или Pyxel не требуется, доступ возможен с ПК, смартфонов и планшетов.",
-      "tr": "Web için Pyxel, WebAssembly teknolojisi kullanılarak web tarayıcılarında çalışan bir Pyxel sürümüdür. Python veya Pyxel kurulumu gerektirmez ve PC, akıllı telefon ve tabletlerden erişilebilir.",
-      "uk": "Pyxel для Web — це версія Pyxel, яка працює у веб-браузерах за допомогою технології WebAssembly. Встановлення Python або Pyxel не потрібне, доступ можливий з ПК, смартфонів та планшетів."
+      "en": "Pyxel for Web runs in your browser on PCs, smartphones, and tablets, without installing Python or Pyxel.",
+      "cn": "Web 版 Pyxel 可在 PC、智能手机和平板电脑的浏览器中运行，无需安装 Python 或 Pyxel。",
+      "de": "Pyxel für Web läuft im Browser auf PCs, Smartphones und Tablets, ohne dass Sie Python oder Pyxel installieren müssen.",
+      "es": "Pyxel para Web funciona en el navegador de PC, smartphones y tablets, sin instalar Python ni Pyxel.",
+      "fr": "Pyxel pour le Web fonctionne dans le navigateur sur PC, smartphone et tablette, sans installer Python ni Pyxel.",
+      "it": "Pyxel per il Web funziona nel browser su PC, smartphone e tablet, senza installare Python o Pyxel.",
+      "ja": "Web 版 Pyxel はブラウザで動作します。Python や Pyxel をインストールせずに、PC・スマートフォン・タブレットで利用できます。",
+      "ko": "Web 버전 Pyxel은 Python이나 Pyxel을 설치하지 않고 PC, 스마트폰, 태블릿의 브라우저에서 실행할 수 있습니다.",
+      "pt": "O Pyxel para Web roda no navegador em PCs, smartphones e tablets, sem instalar Python ou Pyxel.",
+      "ru": "Pyxel для Web работает в браузере на ПК, смартфонах и планшетах без установки Python или Pyxel.",
+      "tr": "Web için Pyxel, Python veya Pyxel kurulumu olmadan PC, akıllı telefon ve tabletlerde tarayıcı üzerinden çalışır.",
+      "uk": "Pyxel для Web працює у браузері на ПК, смартфонах і планшетах без встановлення Python або Pyxel."
     },
     "publishing_title": {
       "en": "Ways to Use Pyxel for Web",
@@ -191,18 +191,18 @@
       "uk": "Pyxel Code Maker"
     },
     "code_maker_body": {
-      "en": "{0} is an online development environment that lets you develop and run Pyxel apps in the browser without installing Python or Pyxel. Just open it in your browser with no setup required, making it a great way to try Pyxel.",
-      "cn": "{0} 是一个无需安装 Python 或 Pyxel，即可在浏览器中开发和运行 Pyxel 应用的在线开发环境。无需任何准备，只需在浏览器中打开即可使用，非常适合初次体验 Pyxel。",
-      "de": "{0} ist eine Online-Entwicklungsumgebung, mit der Sie Pyxel-Apps im Browser entwickeln und ausführen können, ohne Python oder Pyxel zu installieren. Öffnen Sie sie einfach in Ihrem Browser ohne weitere Einrichtung – ideal, um Pyxel auszuprobieren.",
-      "es": "{0} es un entorno de desarrollo en línea que permite desarrollar y ejecutar aplicaciones Pyxel en el navegador sin instalar Python ni Pyxel. Solo hay que abrirlo en el navegador sin ninguna configuración, lo que lo convierte en una excelente forma de probar Pyxel.",
-      "fr": "{0} est un environnement de développement en ligne qui permet de développer et d'exécuter des applications Pyxel dans le navigateur sans installer Python ni Pyxel. Il suffit de l'ouvrir dans votre navigateur sans aucune configuration, ce qui en fait un excellent moyen d'essayer Pyxel.",
-      "it": "{0} è un ambiente di sviluppo online che consente di sviluppare ed eseguire app Pyxel nel browser senza installare Python o Pyxel. Basta aprirlo nel browser senza alcuna configurazione, rendendolo un ottimo modo per provare Pyxel.",
-      "ja": "{0} は、Python や Pyxel のインストールなしでブラウザだけで Pyxel アプリを開発・実行できるオンライン開発環境です。事前準備なくブラウザで開くだけで Pyxel を使えるので、Pyxel を手軽に試してみたい場合におすすめです。",
-      "ko": "{0}은 Python이나 Pyxel을 설치하지 않고도 브라우저에서 Pyxel 앱을 개발하고 실행할 수 있는 온라인 개발 환경입니다. 별도의 설정 없이 브라우저에서 바로 열 수 있어 Pyxel을 간편하게 체험할 수 있습니다.",
-      "pt": "{0} é um ambiente de desenvolvimento online que permite desenvolver e executar aplicativos Pyxel no navegador sem instalar Python ou Pyxel. Basta abri-lo no navegador sem nenhuma configuração, sendo uma ótima forma de experimentar o Pyxel.",
-      "ru": "{0} — это онлайн-среда разработки, позволяющая разрабатывать и запускать приложения Pyxel в браузере без установки Python или Pyxel. Просто откройте её в браузере без какой-либо настройки — отличный способ попробовать Pyxel.",
-      "tr": "{0}, Python veya Pyxel yüklemeden Pyxel uygulamalarını tarayıcıda geliştirip çalıştırmanızı sağlayan çevrimiçi bir geliştirme ortamıdır. Herhangi bir kurulum gerektirmeden tarayıcınızda açmanız yeterlidir; Pyxel'i denemek için harika bir yoldur.",
-      "uk": "{0} — це онлайн-середовище розробки, яке дозволяє розробляти та запускати застосунки Pyxel у браузері без встановлення Python або Pyxel. Просто відкрийте його у браузері без жодних налаштувань — чудовий спосіб спробувати Pyxel."
+      "en": "Use {0} to edit code and resources and run Pyxel apps in your browser. No installation is needed.",
+      "cn": "使用 {0} 可在浏览器中编辑代码和资源，并运行 Pyxel 应用，无需安装。",
+      "de": "Mit {0} bearbeiten Sie Code und Ressourcen und führen Pyxel-Apps im Browser aus. Eine Installation ist nicht nötig.",
+      "es": "Use {0} para editar código y recursos y ejecutar aplicaciones Pyxel en el navegador. No requiere instalación.",
+      "fr": "Utilisez {0} pour modifier le code et les ressources et exécuter des applications Pyxel dans le navigateur. Aucune installation n’est nécessaire.",
+      "it": "Usa {0} per modificare codice e risorse ed eseguire app Pyxel nel browser. Non richiede installazione.",
+      "ja": "{0} では、ブラウザでコードやリソースを編集し、Pyxel アプリを実行できます。インストールは不要です。",
+      "ko": "{0}로 브라우저에서 코드와 리소스를 편집하고 Pyxel 앱을 실행할 수 있습니다. 설치는 필요 없습니다.",
+      "pt": "Use {0} para editar código e recursos e executar aplicativos Pyxel no navegador. Não é preciso instalar nada.",
+      "ru": "Используйте {0}, чтобы редактировать код и ресурсы и запускать приложения Pyxel в браузере. Установка не требуется.",
+      "tr": "Tarayıcıda kod ve kaynakları düzenlemek, Pyxel uygulamalarını çalıştırmak için {0} kullanın. Kurulum gerekmez.",
+      "uk": "Використовуйте {0}, щоб редагувати код і ресурси та запускати застосунки Pyxel у браузері. Встановлення не потрібне."
     },
     "code_maker_manual": {
       "en": "For detailed usage, see the {0}.",
@@ -653,18 +653,18 @@
       "uk": "Власні HTML-елементи"
     },
     "custom_elements_body": {
-      "en": "By adding HTML custom elements provided by Pyxel to an HTML file, you can run Pyxel apps on any HTML page.",
-      "cn": "通过在 HTML 文件中添加 Pyxel 提供的 HTML 自定义元素，可以在任意 HTML 页面上运行 Pyxel 应用。",
-      "de": "Durch Hinzufügen von HTML Custom Elements, die von Pyxel bereitgestellt werden, zu einer HTML-Datei können Sie Pyxel-Apps auf jeder HTML-Seite ausführen.",
-      "es": "Al añadir elementos HTML personalizados proporcionados por Pyxel a un archivo HTML, se pueden ejecutar aplicaciones Pyxel en cualquier página HTML.",
-      "fr": "En ajoutant des éléments HTML personnalisés fournis par Pyxel à un fichier HTML, vous pouvez exécuter des applications Pyxel sur n'importe quelle page HTML.",
-      "it": "Aggiungendo elementi HTML personalizzati forniti da Pyxel a un file HTML, è possibile eseguire app Pyxel su qualsiasi pagina HTML.",
-      "ja": "HTML ファイルに Pyxel が提供する HTML カスタム要素を追加することで、任意の HTML ページ上で Pyxel アプリを実行できます。",
-      "ko": "HTML 파일에 Pyxel이 제공하는 HTML 커스텀 요소를 추가하면, 모든 HTML 페이지에서 Pyxel 앱을 실행할 수 있습니다.",
-      "pt": "Ao adicionar elementos HTML personalizados fornecidos pelo Pyxel a um arquivo HTML, você pode executar aplicativos Pyxel em qualquer página HTML.",
-      "ru": "Добавив пользовательские HTML-элементы, предоставляемые Pyxel, в HTML-файл, вы можете запускать приложения Pyxel на любой HTML-странице.",
-      "tr": "Pyxel tarafından sağlanan HTML özel öğelerini bir HTML dosyasına ekleyerek, herhangi bir HTML sayfasında Pyxel uygulamalarını çalıştırabilirsiniz.",
-      "uk": "Додавши власні HTML-елементи, надані Pyxel, до HTML-файлу, ви можете запускати застосунки Pyxel на будь-якій HTML-сторінці."
+      "en": "Use HTML custom elements to embed Pyxel apps in your own HTML pages.",
+      "cn": "使用 HTML 自定义元素将 Pyxel 应用嵌入自己的 HTML 页面。",
+      "de": "Betten Sie Pyxel-Apps mit HTML Custom Elements in Ihre eigenen HTML-Seiten ein.",
+      "es": "Use elementos HTML personalizados para integrar aplicaciones Pyxel en sus propias páginas HTML.",
+      "fr": "Utilisez des éléments HTML personnalisés pour intégrer des applications Pyxel dans vos propres pages HTML.",
+      "it": "Usa gli elementi HTML personalizzati per incorporare app Pyxel nelle tue pagine HTML.",
+      "ja": "HTML カスタム要素を使うと、自分の HTML ページに Pyxel アプリを埋め込めます。",
+      "ko": "HTML 커스텀 요소를 사용하면 자신의 HTML 페이지에 Pyxel 앱을 삽입할 수 있습니다.",
+      "pt": "Use elementos HTML personalizados para incorporar aplicativos Pyxel às suas próprias páginas HTML.",
+      "ru": "Используйте пользовательские HTML-элементы, чтобы встраивать приложения Pyxel в свои HTML-страницы.",
+      "tr": "Pyxel uygulamalarını kendi HTML sayfalarınıza gömmek için HTML özel öğelerini kullanın.",
+      "uk": "Використовуйте користувацькі HTML-елементи, щоб вбудовувати застосунки Pyxel у власні HTML-сторінки."
     },
     "custom_elements_overview": {
       "en": "Loading this script makes three HTML custom elements available, corresponding to Pyxel's {0}, {1}, and {2} commands: {3}, {4}, and {5}.",

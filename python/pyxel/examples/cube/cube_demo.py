@@ -4,9 +4,9 @@ import os
 import pyxel
 from pyxel.cube import Camera, Mat4, Mesh, Node, Primitive, Quat, Shading, Vec3
 
-# Unit icosahedron table (12 vertices on |v|=1, 20 outward triangles).
-# Mirrors `ICOSA_BASE_POSITIONS` / `ICOSA_BASE_TRI_INDICES` in
-# pyxel-core/src/cube/primitive.rs.
+# Geometry tables and subdivision mirror crates/pyxel-core/src/cube/primitive.rs
+# so mesh assets match the built-in shapes.
+# Unit icosahedron: 12 vertices on |v|=1, 20 outward triangles.
 ICOSA_O = 0.5257311
 ICOSA_T = 0.8506508
 UNIT_ICOSA_VERTICES = [
@@ -110,9 +110,7 @@ ICOSA_TRI_INDICES = [
     1,
 ]
 
-# Box vertices: 8 corners of a unit cube centered at origin (the Mesh
-# variant scales by `size`). Mirrors `UNIT_BOX_POSITIONS` /
-# `BOX_SOLID_TRI_INDICES` in pyxel-core/src/cube/primitive.rs.
+# Eight corners of a unit cube centered at the origin
 UNIT_BOX_VERTICES = [
     -0.5,
     -0.5,
@@ -230,9 +228,7 @@ def _make_box_mesh(size, color):
 
 
 def _make_sphere_mesh(radius, color):
-    # Level-1 subdivided icosahedron (42 vertices / 80 triangles).
-    # Mirrors `unit_icosa_lv1_*` in pyxel-core/src/cube/primitive.rs so
-    # the mesh-asset path matches the immediate-mode `node.sphere()` look.
+    # One subdivision yields 42 vertices and 80 triangles.
     edges = [
         (0, 1),
         (0, 5),
@@ -300,8 +296,7 @@ def _make_sphere_mesh(radius, color):
 
 
 def _make_textured_box(size):
-    # Per-face quads (4 verts each, no shared verts) so per-face UVs map
-    # onto a single 16x16 texel region of the source image.
+    # Duplicate face vertices so each face maps the same 16x16 texture region.
     h = size * 0.5
     face_defs = [
         [(-h, -h, -h), (h, -h, -h), (-h, h, -h), (h, h, -h)],
@@ -320,8 +315,7 @@ def _make_textured_box(size):
         for v in face:
             pos_list.extend(v)
         uv_list.extend([0.0, 0.0, u_max, 0.0, 0.0, u_max, u_max, u_max])
-        # Wind each face CCW so the surface normal points outward (matches
-        # the colored-box mesh and gives correct Lambert shading).
+        # Wind faces counterclockwise for outward normals and correct lighting.
         idx_list.extend([base, base + 2, base + 1, base + 1, base + 2, base + 3])
     primitive = Primitive(Primitive.MODE_TRIANGLES, pos_list, idx_list, uvs=uv_list)
     return Mesh(
@@ -422,8 +416,7 @@ class App:
         _load_texture()
         self.scene = Node()
         self.shading = Shading(pyxel.colors)
-        # Light travels from upper-left-front to lower-right-back: +X
-        # (right), -Y (down), -Z (away from viewer).
+        # Light travels from upper-left-front toward lower-right-back.
         self.shading.direction = Vec3(0.4, -0.8, -0.4)
         self.scene.shading = self.shading
         self.actor = Showcase()

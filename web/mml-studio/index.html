@@ -289,7 +289,6 @@
         return await new Response(stream).text();
       }
 
-      // Encode shared MML as deflate-raw with base64url.
       async function encodeMmlToUrl(mml) {
         const compressed = await compressDeflateRaw(mml);
         return b64urlEncode(compressed);
@@ -336,22 +335,21 @@
         }
       }
 
-      // Defer the URL/QR refresh so typing does not regenerate the QR code
-      // and rewrite the history entry on every keystroke.
-      let urlUpdateTimer = null;
+      // Avoid rebuilding the share URL and QR code on every keystroke.
+      let shareUrlUpdateTimer = null;
 
-      function scheduleUrlUpdate() {
-        clearTimeout(urlUpdateTimer);
-        urlUpdateTimer = setTimeout(updateUrl, 300);
+      function scheduleShareUrlUpdate() {
+        clearTimeout(shareUrlUpdateTimer);
+        shareUrlUpdateTimer = setTimeout(updateShareUrl, 300);
       }
 
       function handleMmlInput(textarea) {
         runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
-        scheduleUrlUpdate();
+        scheduleShareUrlUpdate();
       }
 
-      async function updateUrl() {
-        clearTimeout(urlUpdateTimer);
+      async function updateShareUrl() {
+        clearTimeout(shareUrlUpdateTimer);
         let mmlStr = "";
         for (let i = 1; i <= 4; i++) {
           const textarea = document.getElementById(`ch${i}`);
@@ -435,7 +433,7 @@
           }
         }
 
-        updateUrl();
+        updateShareUrl();
 
         // Synchronize current values before enabling playback controls.
         waitForPyxelReady(

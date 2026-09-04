@@ -651,11 +651,13 @@ mod tests {
 
     #[test]
     fn test_browser_save_script_escapes_filename_as_javascript_string() {
-        let script = browser_save_script("quote'and\n\"slash\\\0.pyxres");
+        let script = browser_save_script(
+            "quote'and\n\"slash\\\0\r\t\u{08}\u{0c}\u{1f}\u{2028}\u{2029}.pyxres",
+        );
 
         assert_eq!(
             script.to_str().unwrap(),
-            r#"_savePyxelFile("quote'and\n\"slash\\\u0000.pyxres");"#
+            r#"_savePyxelFile("quote'and\n\"slash\\\u0000\r\t\b\f\u001f\u2028\u2029.pyxres");"#
         );
     }
 
@@ -749,11 +751,11 @@ mod tests {
     }
 
     #[test]
-    fn test_advance_frame_schedule_runs_within_half_frame_tolerance() {
+    fn test_advance_frame_schedule_runs_at_half_frame_tolerance() {
         let mut last = 0.0;
         let mut next = 33.0;
 
-        let delta = advance_frame_schedule(17.0, 33.0, &mut last, &mut next);
+        let delta = advance_frame_schedule(16.5, 33.0, &mut last, &mut next);
 
         assert_eq!(delta, Some(33.0));
         assert_eq!(last, 33.0);

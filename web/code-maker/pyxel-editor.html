@@ -8,9 +8,13 @@
   <body>
     <pyxel-run
       script="
-        import js, base64, pyxel.cli
+        import base64
+
+        import js
+        import pyxel.cli
+
         with open('my_resource.pyxres', 'wb') as f:
-          f.write(base64.b64decode(js.parent._project.resource))
+            f.write(base64.b64decode(js.parent._project.resource))
         pyxel.cli.edit_pyxel_resource('my_resource.pyxres')
       "
     ></pyxel-run>

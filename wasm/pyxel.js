@@ -53,7 +53,6 @@ if (
   /safari/i.test(navigator.userAgent) &&
   !/chrome/i.test(navigator.userAgent)
 ) {
-  // Normalize Safari's numpad arrow events before SDL2 handles them.
   const fixArrowEvent = (e) => {
     if (e.isTrusted && e.location === 3 && e.key.startsWith("Arrow")) {
       e.stopImmediatePropagation();
@@ -184,7 +183,6 @@ async function launchPyxel(params) {
   }
 }
 
-// Reset runtime state and relaunch the current Pyxel command.
 async function resetPyxel() {
   if (!window.pyxelContext.initialized) {
     return;
@@ -256,7 +254,6 @@ async function resetPyxel() {
 
     await _executePyxelCommand(pyodide, window.pyxelContext.params);
 
-    // Resume the audio context for the restarted app.
     setTimeout(() => {
       if (audioContext && audioContext.state === "suspended") {
         audioContext.resume();
@@ -327,7 +324,6 @@ const _allowGamepadConnection = () => {
 };
 
 const _suppressTouchZoomGestures = () => {
-  // Ensure viewport disables pinch/double-tap zoom.
   let meta = document.querySelector('meta[name="viewport"]');
   if (!meta) {
     meta = document.createElement("meta");
@@ -337,7 +333,6 @@ const _suppressTouchZoomGestures = () => {
   meta.content =
     "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 
-  // Suppress pinch-to-zoom by preventing multi-touch gestures.
   const pinchHandler = (e) => {
     if (e.touches && e.touches.length > 1) {
       e.preventDefault();
@@ -394,7 +389,6 @@ const _loadImage = (image, src) => {
   });
 };
 
-// Create the screen container, drop area, SDL2 canvas, and logo.
 const _createScreenElements = async () => {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   if (!pyxelScreen) {
@@ -471,7 +465,6 @@ const _fetchAsset = async (url, name) => {
   return response;
 };
 
-// Bootstrap Pyodide, install Pyxel, and prepare its working directory.
 const _loadPyodideAndPyxel = async (canvas) => {
   // Prefetch the wheel and import hook during runtime initialization so
   // pyodide.loadPackage can reuse the wheel response from the HTTP cache.
@@ -537,7 +530,6 @@ const _hookPythonError = (pyodide) => {
   });
 };
 
-// Render Python exceptions over the canvas without replacing the page.
 const _displayErrorOverlay = (message) => {
   console.error(message);
   const pyxelScreen = document.getElementById("pyxel-screen");
@@ -606,7 +598,6 @@ const _hookFileOperations = (pyodide, root) => {
     }
   };
 
-  // Copy a requested host-side path into Pyodide on first read access.
   const copyPath = (path) => {
     if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
       return;
@@ -624,7 +615,7 @@ const _hookFileOperations = (pyodide, root) => {
       return;
     }
 
-    // Download the missing host-side path synchronously for Pyodide.
+    // Python file operations need the bytes before the synchronous call returns.
     console.log(`Attempting to fetch '${path}'`);
     const request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
@@ -641,7 +632,6 @@ const _hookFileOperations = (pyodide, root) => {
       c.charCodeAt(0),
     );
 
-    // Write fetched content as a directory marker or binary file.
     const contentType = request.getResponseHeader("Content-Type") || "";
     if (contentType.includes("text/html") && !path.includes(".")) {
       console.log(`Created directory '${dstPath}'`);
@@ -653,7 +643,6 @@ const _hookFileOperations = (pyodide, root) => {
     }
   };
 
-  // Hook read-only open/stat calls so files are mirrored lazily.
   // 557056 = O_RDONLY | O_LARGEFILE | O_CLOEXEC, the flag word Emscripten's
   // SDL2 passes for read-only opens.
   const O_RDONLY_STAT = 557056;
@@ -670,7 +659,7 @@ const _hookFileOperations = (pyodide, root) => {
     return stat(path, dontFollow);
   };
 
-  // Expose a browser download helper used by the Python-side save path.
+  // Called by the Python save path to start a browser download.
   window._savePyxelFile = (filename) => {
     const a = document.createElement("a");
     a.download = filename.split(/[\\/]/).pop();
@@ -739,7 +728,6 @@ const _waitForInput = async () => {
 
 // Virtual gamepad
 
-// Map touch positions onto virtual button states.
 const _updateGamepadStateFromTouch = (
   clientX,
   clientY,
@@ -853,7 +841,6 @@ const _addVirtualGamepad = (mode) => {
     window.removeEventListener("resize", _addVirtualGamepad._invalidateRects);
   }
 
-  // Cache bounding rects and invalidate them on resize.
   let cachedRects = null;
   const invalidateRects = () => {
     cachedRects = null;
@@ -909,7 +896,6 @@ const _copyFileFromBase64 = (pyodide, name, base64) => {
   pyodide.FS.writeFile(filename, binary, { encoding: "binary" });
 };
 
-// Translate custom-element parameters into the corresponding Python command.
 const _executePyxelCommand = async (pyodide, params) => {
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);

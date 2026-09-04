@@ -228,7 +228,6 @@ impl Pyxel {
         include_sounds: bool,
         include_musics: bool,
     ) -> Result<(), String> {
-        // Read and validate archive version
         let version_name = format!("{RESOURCE_ARCHIVE_DIRNAME}version");
         let contents = {
             let mut file = archive
@@ -253,7 +252,7 @@ impl Pyxel {
             return Err(format!("unsupported version '{contents}'"));
         }
 
-        // Deserialize selected resource banks
+        // Validate all selected banks before changing live resources.
         macro_rules! stage {
             ($read: ident, $type: ty, $accessor: expr, $count: expr, $limit: expr) => {
                 if $accessor {

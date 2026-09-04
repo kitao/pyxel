@@ -21,7 +21,7 @@ class ImportHook:
         # Record the name before find_spec re-enters this hook.
         self.imported_modules.add(fullname)
 
-        # Skip standard library or installed packages.
+        # Only application imports need host-side file downloads.
         spec = importlib.util.find_spec(fullname)
         if spec:
             origin = spec.origin

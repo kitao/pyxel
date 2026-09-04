@@ -64,7 +64,7 @@ class App:
             ]
         ):
             os.environ[APP_LAUNCHER_ENV] = self.apps[self.cursor_index]["filepath"]
-            # Prevent the launched app from inheriting the window state.
+            # Reset window state when switching between the launcher and an app.
             os.environ.pop(pyxel.WINDOW_STATE_ENV, None)
             pyxel.reset()
 
@@ -144,7 +144,6 @@ def switch_app():
     if app:
         pyxel.cli.play_pyxel_app(app)
     else:
-        # Prevent the launcher app from inheriting the window state.
         os.environ.pop(pyxel.WINDOW_STATE_ENV, None)
         App()
 

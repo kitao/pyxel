@@ -1272,7 +1272,7 @@ def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
 
     Args:
         update: Function to update game logic each frame
-        draw: Function to draw the screen each frame
+        draw: Function to draw the screen
     """
 
 def show() -> None:

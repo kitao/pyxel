@@ -2,7 +2,7 @@
 
 # Pyxel Cube API Reference
 
-*This document was auto-generated from the [Pyxel Cube API Reference](https://kitao.github.io/pyxel/web/api-reference/cube/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.github.io/pyxel/web/api-reference/cube/).*
 
 ## Vec3
 
@@ -641,7 +641,7 @@ Return the inverse rotation.
 
 ### `normalize()` — function
 
-Return a unit quaternion pointing in the same direction.
+Return a unit quaternion representing the same rotation.
 
 **Returns:** `Quat`
 

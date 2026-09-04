@@ -145,7 +145,7 @@ class TestUnary:
 
     def test_normalize(self):
         q = Quat(2, 0, 0, 0).normalize()
-        assert q.length() == 1.0
+        assert q == Quat(1, 0, 0, 0)
 
     def test_normalize_zero(self):
         assert Quat(0, 0, 0, 0).normalize() == Quat.IDENTITY

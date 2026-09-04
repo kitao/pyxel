@@ -170,22 +170,43 @@ for seed in range(16):
 
 
 class TestDeprecatedAccessors:
-    def test_channel_function_returns_channel_instance(self, capfd):
+    def test_channel_function_aliases_bank_entry(self, capfd):
         result = pyxel.channel(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Channel)
+        original = pyxel.channels[0].gain
+        try:
+            pyxel.channels[0].gain = 0.125
+            result.gain = 0.375
+            assert pyxel.channels[0].gain == 0.375
+        finally:
+            pyxel.channels[0].gain = original
         out = capfd.readouterr().out
         assert (
             out == "pyxel.channel(ch) is deprecated. Use pyxel.channels[ch] instead.\n"
         )
 
-    def test_sound_function_returns_sound_instance(self, capfd):
+    def test_sound_function_aliases_bank_entry(self, capfd):
         result = pyxel.sound(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Sound)
+        original = pyxel.sounds[0].speed
+        try:
+            pyxel.sounds[0].speed = 30
+            result.speed = 17
+            assert pyxel.sounds[0].speed == 17
+        finally:
+            pyxel.sounds[0].speed = original
         out = capfd.readouterr().out
         assert out == "pyxel.sound(snd) is deprecated. Use pyxel.sounds[snd] instead.\n"
 
-    def test_music_function_returns_music_instance(self, capfd):
+    def test_music_function_aliases_bank_entry(self, capfd):
         result = pyxel.music(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Music)
+        original = [list(seq) for seq in pyxel.musics[0].seqs]
+        try:
+            pyxel.musics[0].seqs.clear()
+            result.seqs[:] = [[3, 4]]
+            assert [list(seq) for seq in pyxel.musics[0].seqs] == [[3, 4]]
+        finally:
+            pyxel.musics[0].seqs[:] = original
         out = capfd.readouterr().out
         assert out == "pyxel.music(msc) is deprecated. Use pyxel.musics[msc] instead.\n"

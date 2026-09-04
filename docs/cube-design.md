@@ -445,55 +445,29 @@ out of scope.
 
 ## 8. Performance Notes
 
-- A typical pixel-art game has tens to a few hundred drawables per
-  frame. At that scale, immediate-mode drawing has comparable cost to
-  Pyxel 2D's existing per-call overhead.
-- Multi-angle rendering calls `draw` again with a different camera; each
-  call re-runs the subtree's `on_draw` traversal and rasterizes afresh.
-- `Mesh` is loaded once; `Node` trees built from it carry per-instance
-  poses without copying mesh data.
-- `Vec3` / `Mat4` / `Quat` are immutable and their constants are shared
-  singletons; arithmetic returns fresh instances, and the implementation
-  keeps allocation cheap for hot-path math.
-- The collision pipeline targets ~100 dynamic bodies plus a thousand or
-  so static mesh triangles at 60 fps on Raspberry Pi 4 / 5. Heavier
-  scenes are out of scope.
+- Immediate-mode drawing targets tens to a few hundred drawables per frame.
+  Each additional camera repeats the traversal and rasterization.
+- The collision pipeline targets about 100 dynamic bodies and 1,000 static
+  mesh triangles at 60 fps on Raspberry Pi 4 / 5. This is a design target,
+  not a benchmark result; heavier scenes are out of scope.
 
 ---
 
 ## 9. Naming Policy
 
-Pyxel Cube's public surface mixes conventions from several 3D engines.
-The mix is intentional, not accidental, and follows the rules below.
+Public names use Python `snake_case` and established 3D vocabulary:
 
-1. **Math primitives** (`Vec3`, `Mat4`, `Quat`): the industry-common
-   minimal set, with Python `snake_case` spelling. Method names align
-   with Godot / pyrr / pygame (`length_squared`, `distance_squared_to`,
-   `normalize`) rather than Unity's `magnitude` / `sqrMagnitude`.
-2. **Form**: Python `snake_case` everywhere; no `is_` prefix on
-   booleans (`active`, `visible`, `trigger`, `rolls`); no camelCase.
-3. **Physics** (`Collider`, `Contact`): `mass = 0` disables contact
-   correction for that collider, while `restitution` / `friction` are the
-   coefficient names — combined with Unity-style attribute names
-   (`velocity`, `angular_velocity`) for the motion state.
-4. **Scene graph** (`Node`): Unity-style direction accessors
-   (`forward` / `right` / `up`) on Node, Godot-style multi-membership
-   tags (`tags: list[str]`), and Unity-style lookup names
-   (`find_by_name`, `find_by_tags`).
-5. **Spatial queries** (`Node.raycast` / `Node.overlap_*`): Unity
-   Physics conventions, with shared parameter names (`origin`,
-   `direction`, `max_distance`, `hit_triggers`, `tags`) across all
-   four primitives.
-6. **Opt-in flags**: Pyxel Cube's behavior flags (`trigger`, `rolls`)
-   default `False`, so the "do the simplest thing" case takes no
-   arguments.
-7. **Per-frame units**: `velocity` / `angular_velocity` are per-frame,
-   not time-based. Applications that need time-based physics can integrate
-   a dedicated engine such as Bullet or Rapier.
-
-The mix is documented here, not inside the .pyi, so that readers
-coming from a specific engine know which conventions they will
-recognize and which they will need to translate.
+- Math uses `Vec3`, `Mat4`, `Quat`, `length_squared`, and
+  `distance_squared_to`; factories name their input (`from_euler`,
+  `from_axis_angle`).
+- Boolean attributes omit `is_`: `active`, `visible`, `trigger`, `rolls`.
+- Node directions are `forward`, `right`, and `up`; lookup methods are
+  `find_by_name` and `find_by_tags`.
+- Spatial queries share `origin`, `direction`, `max_distance`,
+  `hit_triggers`, and `tags` where applicable.
+- Drawing uses short verbs and consistent arguments: `prim` draws a
+  `Primitive`, `mode` selects its topology, and `col_img` accepts a color
+  or an `Image`.
 
 ---
 
@@ -527,173 +501,60 @@ recognize and which they will need to translate.
 
 ---
 
-## 11. Decisions Explicitly Ruled Out
+## 11. Excluded Features
 
-These were considered and rejected during design; revisit only with new
-evidence.
+The decisions above explain the main API boundaries. These additional
+features remain excluded unless a concrete use case justifies their cost.
 
-### 11.1 Math Classes
+### 11.1 Math
 
-- **`Vec2` / `Vec4` / `Mat3`** — not exposed publicly. Cube draws use
-  `Vec3` for points and `Mat4` for full transforms.
-- **Component-wise `Vec3 * Vec3`** — ambiguous in 3D math vocabulary.
-  Use `Mat4.from_scale(other) * v` for per-axis scaling.
-- **Swizzle properties** (`v.xy`, `v.yzx`, etc.) — numpy / pyrr-style
-  swizzle is left to user code.
-- **Mutable `Vec3` / `Mat4` / `Quat`** — cube standardizes on immutable.
-- **`Mat4.perspective` / `Mat4.orthographic` / `Mat4.frustum`** —
-  projection lives in `Camera`, not in `Mat4`.
-- **`Mat4.is_identity()` / `Quat.is_normalized()`** — `mat ==
-  Mat4.IDENTITY` and explicit length checks cover these.
-- **`Vec3.direction_to(other)`** — Godot-only; `(b - a).normalize()`
-  is short enough not to warrant a dedicated method.
-- **`Vec3.bounce(normal)` / `Vec3.slide(normal)`** — Godot-only.
-- **`Vec3.refract(normal, eta)`** — optical refraction; not needed for
-  the cube software renderer's lighting model.
-- **`Mat4.orthonormal()`** — drift correction for accumulated
-  rotations. In typical Pyxel Cube usage, numerical drift is negligible.
-- **Scalar overloads of `Mat4.translate` / `Mat4.scale_by`** —
-  `Vec3`-only signatures match three.js / Godot / pyrr / Unity.
-- **`Quat.__add__` / `Quat.__sub__` / `Quat.__truediv__`** —
-  quaternion linear combinations have limited use; `slerp` covers
-  what's needed.
-- **`Quat.lerp` / `Mat4.lerp`** — `slerp` is the standard quaternion
-  interpolation; matrix interpolation composes from
-  `pos.lerp`, `rot.slerp`, and `scale.lerp` at the call site.
-- **`Quat.from_x_rotation` / `from_y_rotation` / `from_z_rotation`** —
-  subsumed by `Quat.from_axis_angle` and `Quat.from_euler`.
+- `Vec2`, `Vec4`, and `Mat3`: draws use `Vec3` for points and `Mat4` for
+  transforms.
+- Swizzles such as `v.xy`: ordinary component access is sufficient.
+- `is_identity` and `is_normalized`: equality and length checks suffice.
+- `direction_to`: use `(b - a).normalize()`.
+- `bounce`, `slide`, and `refract`: no current need in the collision or
+  lighting model.
+- `orthonormal`: accumulated rotation drift has not justified a dedicated
+  correction method.
+- Scalar overloads of `translate` and `scale_by`: the `Vec3` form keeps
+  signatures consistent.
+- Quaternion addition, subtraction, and division: rotation composition and
+  `slerp` cover current needs. Axis-specific factories are covered by
+  `from_axis_angle` and `from_euler`.
 
-### 11.2 Naming
+### 11.2 Drawing
 
-- **`Vec` / `Mat` / `Quaternion`** — too generic or too long.
-- **`Vector3` / `Matrix4`** — standard but verbose; `Vec3` / `Mat4`
-  chosen for brevity.
-- **`length_sq` / `distance_sq_to`** — short forms dropped in favor of
-  `length_squared` / `distance_squared_to`, matching pygame / Godot.
-- **`max_len` argument name** — `max_length` instead.
-- **`from_rotation` factory name** — `from_euler` makes the Euler-angle
-  intent explicit and pairs with `Quat.from_euler`.
-- **Past-tense method names (`normalized`, `inverted`)** — Python
-  idiom uses present tense (`normalize`, `inverse`).
-- **`rotate_axis` / `rotate_arbitrary`** — `Mat4.rotate(axis, deg)` is
-  short and unambiguous.
-- **`is_trigger` / `lock_rotation` (with `is_` prefix)** — Pyxel Cube
-  bools use no `is_` prefix, paralleling `active` / `visible`. The
-  flags are `trigger` and `rolls`.
+- Specialized types such as `SpriteNode` and `TextNode`: use Node draw
+  commands for each shape.
+- Matrix stacks: commands accept their placement directly.
+- Image bank numbers or `Tilemap` textures on `sprite` and `plane`: these
+  commands take `Image` objects for UV-based sampling.
+- Source rectangles or eight scalar UV arguments: a four-corner `uvs`
+  tuple also expresses flips, rotations, and trapezoidal mappings.
+- A 3D `fill` command: no defined 3D region to flood-fill.
+- Per-call or cascading render modifiers: the per-`on_draw` setters in § 4
+  keep signatures small and prevent state from leaking between nodes.
+- GPU handles, shader programs, or flat-array interchange on `Mat4`: this
+  is a software renderer.
+- Public typed-buffer classes: Primitive's list-like views provide element
+  and slice operations without another public type.
 
-### 11.3 Camera and Lighting
+### 11.3 Scene and Assets
 
-- **`Camera.screen_to_ray(...)` / `Camera.world_to_screen(...)`** —
-  the viewport is not held on `Camera` (it is a per-`draw` argument),
-  so screen-to-world helpers need the viewport passed in explicitly.
-  Deferred until a concrete user need emerges. Until such helpers are
-  added, call sites can compose the existing projection and
-  inverse-transform operations.
-- **`Light` as a separate class** — lighting parameters (`ambient`,
-  `direction`, `intensity`) in a `Light` class with a `Node.light`
-  cascade and a separate LUT attribute. Collapsed into the single
-  `Shading` class holding the color LUT and the scene-wide
-  `direction`; `ambient` / `intensity` add little to the toon-style
-  flat shading on top of the per-cell brightness control the LUT
-  already exposes.
+- Chaining tree operations: `add_child` and `remove_child` return `None`.
+- Module-level functions: the `pyxel.cube` namespace exposes classes.
+- Recursive Mesh objects or a separate MeshPart type: parallel part arrays
+  keep assets compact and traversal linear.
+- Public per-part image attributes: hand-built mixed-image models combine
+  multiple Mesh instances in a Node tree. GLB imports keep material slots
+  internally.
 
-### 11.4 Drawing
+### 11.4 Collision
 
-- **Retained-mode scene graph with registered per-Node draw
-  primitives** — replaced by per-`on_draw` immediate-mode draw commands.
-- **A multi-shape aggregate registered into a node** — rejected;
-  `Primitive` is reserved for the vertex-data asset.
-- **Specialized Node subclasses** (`SpriteNode`, `LineNode`,
-  `MeshNode`, `TextNode`, etc.) — one Node class is enough; per-shape
-  behavior is in the `Node` draw commands.
-- **`Shader` class** — replaced by `Shading` (LUT + direction).
-- **`scene.push_matrix` / `scene.pop_matrix`** — draw commands accept
-  their own `mat` directly.
-- **`int` for the `img` parameter of `sprite` / `plane`** — `Image`
-  only.
-- **`Tilemap` on `sprite` / `plane`** — tile-grid storage does not
-  match a UV-based texture sampler.
-- **`(u, v, sw, sh)` source-rectangle form on textured commands** —
-  replaced by a 4-vertex `uvs` tuple, which also expresses flips,
-  rotations, and trapezoidal mappings.
-- **Scalar `(u1, v1, u2, v2, u3, v3, u4, v4)` for UVs** — too many
-  positional arguments.
-- **`fill` draw op on `Node`** — no clean 3D meaning.
-- **Standalone `pal` operation / `Node.pal` draw state** — replaced by
-  setting `Shading` rows uniformly (§ 4).
-- **Per-call keyword-argument modifiers** (`shaded=`, `dither_alpha=`,
-  `depth_test=`, … on every draw command) **and cascading draw-state
-  properties** — replaced by per-`on_draw` state-setter methods
-  (`shaded` / `dither` / `depth_test` / `depth_write` / `depth_offset`)
-  that reset to defaults at each node's `on_draw` entry.
-- **A standalone `alpha` modifier name** — the pseudo-alpha control is
-  the `dither(alpha)` setter, named to flag that the implementation is
-  Bayer dithering rather than true alpha blending.
-- **`draw_text` / `draw_image` / `make_*` prefixes** — Pyxel Cube uses
-  bare verbs.
-- **GPU-oriented features** (flat 16-element `to_list` / `from_list`
-  on Mat4, OpenGL handles, shader programs) — Pyxel Cube is
-  software-rendered.
-- **`col_tex` argument name for asset draws** — `tex` lacks language
-  fit without a `Texture` class.
-- **`col_image` argument name** — `col_img` is internally consistent.
-- **`prim` as the topology attribute name on `Primitive`** — `mode`
-  pairs with the `MODE_*` constant prefixes and avoids overloading the
-  `Node.prim` command name.
-- **`Primitive.MODE_LINES` / `DRAW_LINES` constant prefixes** —
-  `MODE_LINES` matches the OpenGL `GL_LINES` style.
-- **`FloatBuffer` / `IntBuffer` typed-buffer classes** — `Primitive`
-  attributes use private list-like live views with Python sequence
-  operations; no public buffer classes are exposed.
-
-### 11.5 Scene Structure and Lookup
-
-- **A distinct `Scene` class** — the scene root is a plain `Node`; the
-  frame loop (`update` / `draw`) and the spatial queries are `Node`
-  methods, so no separate `Scene` type is exposed.
-- **`add_child` returning the child or self for chaining** — tree ops
-  return `None`.
-- **Module-level functions in `pyxel.cube`** — the namespace stays
-  classes-only.
-- **`MeshPart` / `MeshNode` as a separate class for parts** — rejected
-  in favor of parallel arrays on `Mesh`.
-- **Recursive `Mesh` tree** — rejected.
-- **`Mesh` holding `image` as an asset attribute** — split into
-  `Primitive` (shape) + `Mesh.col_img` (texture).
-- **A public per-part image attribute on `Mesh`** — hand-built
-  mixed-image models split into multiple `Mesh` instances combined via
-  a `Node` hierarchy; GLB imports keep their material slots internally.
-
-### 11.6 Collision and Physics
-
-- **`Collider` / `Rigidbody` split (Unity-style)** — Pyxel Cube
-  collapses shape + body + flags + motion state into a single
-  `Collider` class. The split doubles the number of objects users have
-  to wire up for every interactive Node, with no clear benefit at PS1
-  scale.
-- **Layer / mask bitfield filtering** — replaced by `tags` (list of
-  strings) and post-hit filtering. Bitfield layers add a fixed-budget
-  numeric namespace that does not pay off in cube-scale games; tags
-  scale naturally and remain readable.
-- **`ignore: Node | list[Node]` parameter on spatial queries** —
-  `tags`-based filtering plus a one-line post-filter cover the use
-  cases without adding a parameter every caller has to thread through.
-- **Engine-driven `transform` write-back** — the engine overwriting the
-  user's `transform` after collision conflicts with override patterns
-  (one-way platforms, user-driven teleport on contact). The engine
-  writes the resolution into `Contact` and the user applies it in
-  `on_collide` (§ 6.3).
-- **User-constructible / mutable `Contact`, `RaycastHit`, and
-  `Motion`** — these payloads are not exposed for user construction or
-  mutation because the engine creates them; they have no public constructors
-  and expose read-only properties.
-- **Iterative constraint solver / sequential impulse loop** —
-  out of scope. The collision model uses a single resolution pass per frame;
-  constraint chains and stable stacks are not targeted.
-- **`Collider` body-type enum** (`STATIC` / `KINEMATIC` / `DYNAMIC`)
-  — Pyxel Cube uses `mass = 0` for a kinematic collider that receives no
-  contact correction, instead of a separate enum. Mesh colliders are the
-  static terrain type.
-- **`Rigidbody.useGravity`-style flag** — Pyxel Cube has no
-  scene-level gravity; users add it to `collider.velocity` in
-  `on_update` themselves (§ 2.4).
+- Layer/mask bitfields: tags provide readable filtering without a fixed
+  numeric namespace. Post-filtering handles individual exclusions (§ 3).
+- Body-type enums: zero-mass analytic colliders are kinematic; mesh
+  colliders are static terrain (§ 2.4).
+- Iterative constraint solving: the single-pass model does not target
+  stable stacks or constraint chains (§ 7).

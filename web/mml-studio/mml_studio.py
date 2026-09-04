@@ -2,7 +2,6 @@ import pyxel
 from js import window  # type: ignore
 
 
-# Runtime visualization app
 class App:
     def __init__(self):
         pyxel.init(100, 20, title="Pyxel MML Studio", quit_key=pyxel.KEY_NONE)
@@ -80,5 +79,4 @@ def _get_js_var(name, default):
     return getattr(window, name, default)
 
 
-# Browser entry point
 App()

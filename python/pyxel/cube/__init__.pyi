@@ -266,7 +266,7 @@ class Mesh:
     colkey: int | None  # transparent color when col_img is Image
 
     @property
-    def motions(self) -> list[Motion]: ...  # animation clips imported with the mesh
+    def motions(self) -> list[Motion]: ...
     def __init__(
         self,
         primitives: list[Primitive | None] | None = None,
@@ -372,14 +372,11 @@ class Node:
     def right(self) -> Vec3: ...
     @property
     def up(self) -> Vec3: ...
+    # Resolved values, including inheritance.
     @property
-    def effective_camera(
-        self,
-    ) -> Camera | None: ...  # cascade-resolved; read in on_draw
+    def effective_camera(self) -> Camera | None: ...
     @property
-    def effective_shading(
-        self,
-    ) -> Shading | None: ...  # cascade-resolved; read in on_draw
+    def effective_shading(self) -> Shading | None: ...
 
     # Constructor
     def __init__(self) -> None: ...

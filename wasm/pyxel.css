@@ -43,7 +43,7 @@
   font-size: large;
 }
 
-/* Full-screen Pyxel canvas and startup affordances */
+/* Full-screen canvas and startup images */
 div#pyxel-screen {
   position: absolute;
   left: 0;

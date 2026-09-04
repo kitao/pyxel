@@ -2,9 +2,9 @@
 
 # How to Use Pyxel for Web
 
-*This document was auto-generated from the [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.github.io/pyxel/web/web-usage/).*
 
-Pyxel for Web is a version of Pyxel that runs in web browsers using WebAssembly technology. No installation of Python or Pyxel is required, and it is accessible from PCs, smartphones, and tablets.
+Pyxel for Web runs in your browser on PCs, smartphones, and tablets, without installing Python or Pyxel.
 
 ## Ways to Use Pyxel for Web
 
@@ -19,7 +19,7 @@ There are four ways to use Pyxel for Web.
 
 ## Pyxel Code Maker
 
-[Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) is an online development environment that lets you develop and run Pyxel apps in the browser without installing Python or Pyxel. Just open it in your browser with no setup required, making it a great way to try Pyxel.
+Use [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) to edit code and resources and run Pyxel apps in your browser. No installation is needed.
 
 For detailed usage, see the [Pyxel Code Maker Manual](https://kitao.github.io/pyxel/web/code-maker/manual.html).
 
@@ -99,7 +99,7 @@ The virtual gamepad is enabled by default and automatically displayed on touch d
 
 ## HTML Custom Elements
 
-By adding HTML custom elements provided by Pyxel to an HTML file, you can run Pyxel apps on any HTML page.
+Use HTML custom elements to embed Pyxel apps in your own HTML pages.
 
 ### Setup
 

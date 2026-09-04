@@ -1,13 +1,10 @@
 // Shared between Pyxel (https://github.com/kitao/pyxel) and
 // Pyxel Composer (https://pyxel-composer.pages.dev/).
 //
-// Determinism contract: for any given (preset, transpose, instrumentation,
-// seed) tuple, `generate_bgm_mml` must return byte-identical MML across
-// versions. Existing Pyxel applications rely on seed-stable BGM, so any
-// change to a constant, to the RNG call sequence, or to a branch that the
-// RNG observes silently alters the music those applications produce.
-// `test_determinism_snapshot` pins this shared contract. Intentional algorithm
-// changes must be coordinated with Pyxel Composer.
+// The same (preset, transpose, instrumentation, seed) must produce identical
+// MML across versions. Constants, RNG calls, and branches affect existing music;
+// coordinate algorithm changes with Pyxel Composer. test_determinism_snapshot
+// pins this contract.
 
 use std::fmt::Write as _;
 
@@ -55,8 +52,8 @@ pub struct GeneratorParams {
     pub custom_progression: Option<Vec<CustomChordEntry>>,
 }
 
-// Custom chord progression entry sent from Pyxel Composer for custom slots (chord >= PRESET_COUNT).
-// Either `notes` (a 12-digit bits string) or `repeat` (a prior entry index) must be provided.
+// Composer custom chords supply either notes (12 per-semitone weights)
+// or repeat (a prior entry index).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CustomChordEntry {
     // Step location in the 128-step song grid.
@@ -69,7 +66,7 @@ pub struct CustomChordEntry {
     pub repeat: Option<usize>,
 }
 
-// Instrument definition (maps to MML @, @ENV, @VIB; @GLI reserved for future)
+// Instrument parameters for MML @, @ENV, and @VIB.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BgmTone {
     // MML waveform id: 0=triangle, 1=square, 2=pulse, 3=noise.
@@ -742,7 +739,6 @@ fn env_def_from_drum_key(key: i32, slot: i32) -> String {
 // Compress repeated token runs while avoiding octave-shift shorthand ambiguity.
 fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) -> Vec<String> {
     if group <= 1 {
-        // Compress single-element runs
         let mut out = Vec::new();
         let mut i = 0usize;
         while i < items.len() {
@@ -767,7 +763,6 @@ fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) ->
         return out;
     }
 
-    // Compress multi-element chunk runs
     let mut out = Vec::new();
     let mut i = 0usize;
     while i < items.len() {
@@ -864,7 +859,6 @@ impl OwnedChordEntry {
 // `chord` selector: `0..PRESET_COUNT` = preset, `>=PRESET_COUNT` = custom slot.
 fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<OwnedChordEntry> {
     let chord_idx = chord as usize;
-    // Validate and normalize a custom progression
     if chord_idx >= PRESET_COUNT {
         if let Some(entries) = custom.filter(|e| !e.is_empty()) {
             let mut out: Vec<OwnedChordEntry> = entries
@@ -1066,7 +1060,6 @@ fn pick_rhythm_events(
     use_16th: bool,
     is_sub: bool,
 ) -> Vec<(usize, i32)> {
-    // Retry until the requested rhythmic constraint is met
     loop {
         let mut results = Vec::new();
         let mut used16 = false;
@@ -1231,7 +1224,6 @@ fn next_note_events(
         let mut results = Vec::new();
         for i in 0..cnt {
             while next_idx == cur_idx {
-                // On retry, always use main-path semantics (is_sub = false) even when the current path is sub.
                 next_idx = pick_target_note_idx(&chord.notes, state.prev_note, no_root, false, rng);
             }
             let dir = if next_idx > cur_idx { 1isize } else { -1isize };
@@ -1764,9 +1756,6 @@ fn current_bar_mut(bar_tokens: &mut [Vec<String>]) -> &mut Vec<String> {
         .expect("bar_tokens is initialized with one entry and only pushed to")
 }
 
-// Compile a single channel's per-step note sequence into an MML string. Emits the header
-// (T/L/Q/V/@/@ENV/@VIB), iterates per-bar collecting note tokens, then runs `compress_repeats`
-// in three passes (group=4, 2, 1) to fold repeated patterns into MML repeat brackets.
 fn notes_to_mml(
     notes: &[Option<i32>],
     tempo: i32,
@@ -2080,7 +2069,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     let ch1 = make_channel(bass, BASS_TONE_IDX as i32, 112, base_quantize);
 
     let (ch2, ch3) = if instr == 0 {
-        // No submelody, no drum: ch2 is shifted melody with melody tone settings
+        // A quiet, delayed melody provides the reverb part.
         let shifted = shifted_melody(&melody);
         (
             make_channel(shifted, melo_tone_idx, 32, 88),
@@ -2092,15 +2081,12 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
         if instr == 1 || instr == 3 {
             let drum = generate_drums(params.drums);
             if instr == 1 {
-                // Drum only: ch2 is drum track, ch3 silent
                 c2 = make_channel(drum, DRUM_TONE_IDX as i32, 80, 94);
             } else {
-                // Submelody + drum
                 c3 = make_channel(drum, DRUM_TONE_IDX as i32, 80, 94);
             }
         }
         if instr == 2 || instr == 3 {
-            // Submelody to c2
             let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
             c2 = make_channel(sub, sub_tone_idx, 64, 94);
         }
@@ -2180,14 +2166,12 @@ pub fn preset_params_json(preset: i32) -> String {
     preset_params(preset).to_json()
 }
 
-// Generates BgmData from Composer-supplied GeneratorParams JSON, returning BgmData JSON.
 #[cfg(any(not(pyxel_core), test))]
 pub fn generate_bgm_json(params_json: &str, seed: u64) -> String {
     let params = GeneratorParams::from_json(params_json);
     generate_bgm(&params, seed).to_json()
 }
 
-// Compiles Composer-supplied BgmData JSON into MML strings (one per channel).
 #[cfg(any(not(pyxel_core), test))]
 pub fn compile_to_mml_json(bgm_json: &str) -> String {
     let data = BgmData::from_json(bgm_json);

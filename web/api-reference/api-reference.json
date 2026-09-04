@@ -517,18 +517,18 @@
               "name": "draw",
               "type": "callable",
               "description": {
-                "en": "Function to draw the screen each frame",
-                "cn": "每帧绘制画面的函数",
-                "de": "Funktion zum Zeichnen des Bildschirms pro Frame",
-                "es": "Función para dibujar la pantalla cada fotograma",
-                "fr": "Fonction de dessin de l'écran par image",
-                "it": "Funzione per disegnare lo schermo per frame",
-                "ja": "毎フレームの画面描画を行う関数",
-                "ko": "매 프레임 화면을 그리는 함수",
-                "pt": "Função para desenhar a tela a cada quadro",
-                "ru": "Функция отрисовки экрана каждый кадр",
-                "tr": "Her karede ekranı çizen fonksiyon",
-                "uk": "Функція малювання екрана кожен кадр"
+                "en": "Function to draw the screen",
+                "cn": "绘制画面的函数",
+                "de": "Funktion zum Zeichnen des Bildschirms",
+                "es": "Función para dibujar la pantalla",
+                "fr": "Fonction qui dessine l’écran",
+                "it": "Funzione che disegna lo schermo",
+                "ja": "画面を描画する関数",
+                "ko": "화면을 그리는 함수",
+                "pt": "Função para desenhar a tela",
+                "ru": "Функция отрисовки экрана",
+                "tr": "Ekranı çizen fonksiyon",
+                "uk": "Функція малювання екрана"
               }
             }
           ],

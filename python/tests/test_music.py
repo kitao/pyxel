@@ -70,6 +70,8 @@ class TestMusic:
         result = msc.snds_list  # type: ignore[attr-defined]
         assert len(result) == len(msc.seqs)
         assert list(result[0]) == [0, 1]
+        result[0].append(2)
+        assert list(msc.seqs[0]) == [0, 1, 2]
         out = capfd.readouterr().out
         assert out == "Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead.\n"
 

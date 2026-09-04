@@ -128,7 +128,6 @@ mod tests {
 
     #[test]
     fn test_tick_count_wraparound() {
-        // Tick counter wrapped past u32::MAX: true delta = 10
         let mut p = Profiler::new(1);
         p.start(u32::MAX - 5);
         p.end(4);

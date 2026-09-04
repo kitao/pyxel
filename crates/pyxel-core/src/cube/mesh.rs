@@ -10,12 +10,6 @@ use crate::cube::primitive::{RcPrimitive, MODE_TRIANGLES};
 use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
 
-// Asset container for a hierarchical 3D model. primitives / transforms /
-// parents are parallel arrays; col_img holds the default flat color or
-// shared texture, and imported GLB parts may override it through material
-// slots. parents[i] < i is required (topological order); validate()
-// enforces this.
-
 #[derive(Clone)]
 pub enum ColImage {
     Color(i32),
@@ -37,6 +31,8 @@ pub struct Material {
     pub colkey: Option<i32>,
 }
 
+// Part arrays are parallel; validate() enforces parents[i] < i for topological traversal.
+// Per-part material slots override the shared col_img.
 pub struct Mesh {
     pub primitives: Vec<Option<RcPrimitive>>,
     pub transforms: Vec<RcMat4>,
@@ -50,10 +46,8 @@ pub struct Mesh {
     // Lazy collision BVH. Built on first mesh-collider query and invalidated
     // when geometry or transforms change.
     pub bvh: RefCell<Option<Bvh>>,
-    // Lazy mesh-local AABB (union of every part's positions composed
-    // with the identity outer transform). Cached under the same
-    // invalidation rules as `bvh`; Aabb::from_mesh lifts its 8 corners by
-    // the collider's world transform instead of re-transforming every vertex.
+    // Shares BVH invalidation; Aabb::from_mesh transforms its eight corners
+    // instead of every vertex.
     pub local_aabb: RefCell<Option<Aabb>>,
     collision_geometry_dirty: Arc<AtomicBool>,
 }
@@ -82,10 +76,7 @@ impl Mesh {
         crate::cube::glb_parser::parse_glb(filename, colkey, fps)
     }
 
-    // Build the collision BVH if absent and call `f` with a borrowed
-    // reference. The BVH is stored in mesh-local space (parts composed
-    // with the identity outer transform); callers transform the query
-    // AABB into this frame before traversing.
+    // Queries must use mesh-local space, including the composed part transforms.
     pub fn with_collision_bvh<R>(&self, f: impl FnOnce(&Bvh) -> R) -> R {
         self.refresh_collision_geometry();
         if self.bvh.borrow().is_none() {
@@ -96,10 +87,7 @@ impl Mesh {
         f(guard.as_ref().unwrap())
     }
 
-    // Return the mesh-local AABB, computing it on first use. The box
-    // spans every part's positions (any primitive mode) composed with
-    // the identity outer transform; a mesh without positions yields a
-    // degenerate box at the local origin.
+    // Include every primitive mode; an empty mesh yields a point at the local origin.
     pub fn local_aabb(&self) -> Aabb {
         self.refresh_collision_geometry();
         if let Some(aabb) = *self.local_aabb.borrow() {
@@ -273,10 +261,7 @@ impl Mesh {
         }
     }
 
-    // Compose per-part world transforms by walking parents forward in
-    // topological order (parents[i] < i, enforced by validate). `root`
-    // is the outer transform applied to every root part. The returned
-    // vector has the same length as the parallel arrays.
+    // Topological order lets children reuse their already-composed parent transforms.
     pub fn compose_world_transforms(&self, root: &Mat4) -> Vec<Mat4> {
         let n = self.primitives.len();
         let mut world: Vec<Mat4> = Vec::with_capacity(n);
@@ -501,8 +486,7 @@ mod tests {
 
     #[test]
     fn test_compose_world_transforms_with_rotation() {
-        // Parent rotates 90° around Y, child translates +X by 1.
-        // Child's world position should land at -Z=1 in world.
+        // The parent's Y rotation maps the child's +X translation to world -Z.
         let m = Mesh::new();
         {
             let mut m = rc_mut!(&m);
@@ -563,9 +547,6 @@ mod tests {
 
     #[test]
     fn test_compose_world_transforms_chain() {
-        // Three-deep chain: root -> 0 -> 1 -> 2, each adds (1, 0, 0)
-        // translation. The final part 2 should end at (3, 0, 0) when
-        // the outer root is identity.
         let m = Mesh::new();
         {
             let mut m = rc_mut!(&m);
@@ -780,9 +761,6 @@ mod tests {
 
     #[test]
     fn test_with_collision_bvh_skips_out_of_range_indices() {
-        // Out-of-range and negative indices in a hand-built primitive are
-        // dropped at BVH build instead of panicking; only the valid
-        // triangle produces a leaf.
         let m = Mesh::new();
         {
             let mut m = rc_mut!(&m);
@@ -804,7 +782,6 @@ mod tests {
 
     #[test]
     fn test_compose_world_transforms_branching() {
-        // Tree: 0 (root) -> 1, 0 -> 2. parts 1 and 2 are siblings.
         let m = Mesh::new();
         {
             let mut m = rc_mut!(&m);
@@ -833,7 +810,6 @@ mod tests {
         let pos2_rc = world[2].pos();
         let pos1 = rc_ref!(&pos1_rc);
         let pos2 = rc_ref!(&pos2_rc);
-        // Siblings inherit identity from root, so each is translated by its own local.
         assert_eq!((pos1.x, pos1.y), (1.0, 0.0));
         assert_eq!((pos2.x, pos2.y), (0.0, 1.0));
     }

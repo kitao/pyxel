@@ -1,5 +1,4 @@
-// Raster math uses conventional x/y/z/u/v names in tight loops; expanding them
-// would obscure coordinate formulas on the per-pixel path.
+// Raster formulas use conventional x/y/z/u/v component names.
 #![allow(clippy::many_single_char_names)]
 
 use crate::cube::camera::Camera;
@@ -9,13 +8,11 @@ use crate::cube::vec3::Vec3;
 use crate::image::Image;
 use crate::utils::{f32_to_i32, f32_to_u32};
 
-// 4x4 matrix in row-major form (m[i][j] is row i, column j). Used as the
-// combined view-projection matrix applied to every world-space point.
+// Row-major matrix: m[i][j] is row i, column j.
 pub type Mat4x4 = [[f32; 4]; 4];
 
 type ScreenPoint = (f32, f32, f32);
 
-// Pixel-aligned destination rectangle that bounds rasterizer output.
 #[derive(Clone, Copy, Debug)]
 pub struct ClipRect {
     pub left: i32,
@@ -58,7 +55,6 @@ pub fn view_matrix(camera: &Camera) -> Mat4x4 {
     rc_ref!(&camera.transform).inverse_value().data
 }
 
-// Perspective unless `ortho_size` is set, then orthographic.
 pub fn projection_matrix(camera: &Camera, vp_w: f32, vp_h: f32) -> Mat4x4 {
     let aspect = if vp_h == 0.0 { 1.0 } else { vp_w / vp_h };
     let near = camera.near;
@@ -100,31 +96,23 @@ pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
     r
 }
 
-// Camera-plane clip row: dotting it with a world position (w = 1) gives
-// the point's view-space distance in front of the camera. Equals the
-// view-projection matrix's w row under the perspective projection; the
-// orthographic w row is constant 1, so near clipping derives from this
-// row instead.
+// Dot with a world position (w = 1) to get distance in front of the camera.
+// Orthographic clipping needs this because its projection w is constant.
 pub fn camera_clip_row(view: &Mat4x4) -> [f32; 4] {
     [-view[2][0], -view[2][1], -view[2][2], -view[2][3]]
 }
 
-// Apply a Mat4 transform to a Vec3 with implicit w=1. Alloc-free (no
-// RcVec3) for the per-vertex hot path.
+// Return a value to avoid RcVec3 allocation per vertex.
 pub fn mat_apply(mat: &Mat4, v: &Vec3) -> Vec3 {
     mat.mul_vec_value(v)
 }
 
-// Transform model-space directions without translation or hot-path allocation.
 pub fn mat_apply_dir(mat: &Mat4, v: &Vec3) -> Vec3 {
     mat.mul_dir_value(v)
 }
 
-// Project a world position to screen space; None when at or behind the
-// camera plane (clip_row dot <= 0; see camera_clip_row). Off-screen and
-// far-plane-overshoot points still project so partially off-screen
-// primitives keep contributing through the viewport clip and z-test,
-// avoiding fp-roundoff flicker at z = 1.
+// Reject points at or behind the camera. Keep off-screen and far-plane
+// overshoot vertices so partially visible primitives can still rasterize.
 pub fn world_to_screen(
     pos: &Vec3,
     m: &Mat4x4,
@@ -171,8 +159,7 @@ pub fn tri_normal(p0: &Vec3, p1: &Vec3, p2: &Vec3) -> Vec3 {
     }
 }
 
-// Camera right and up axes as world-space directions; used by billboard
-// sprites and screen_circle's edge sample.
+// Camera right and up axes in world space.
 pub fn camera_right_up(camera: &Camera) -> (Vec3, Vec3) {
     let m = rc_ref!(&camera.transform).data;
     (
@@ -189,8 +176,7 @@ pub fn camera_right_up(camera: &Camera) -> (Vec3, Vec3) {
     )
 }
 
-// Number of segments approximating an ellipse perimeter. 24 was chosen
-// for visible smoothness at SD pixel scales.
+// Enough segments for smooth ellipses at SD resolution.
 pub const ELLIPSE_SEGMENTS: usize = 24;
 
 // Billboard sprite corners: a quad facing the camera, rotated by
@@ -265,10 +251,7 @@ pub fn screen_circle(
     Some((center.0, center.1, screen_r, center.2))
 }
 
-// 4x4 Bayer ordered-dither thresholds for the alpha (= per-pixel
-// transparency) gate inside `write_pixel`. The shading LUT itself uses
-// only flat or 50:50 checker, which `dither_pick` handles directly via
-// the 2x2 parity (no Bayer matrix needed for that case).
+// Alpha uses Bayer thresholds; shading uses the checker in dither_pick.
 pub const BAYER4: [[u8; 4]; 4] = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
 const CIRCLE_ROUNDING_BIAS: f32 = 0.01;
 const LINE_DEPTH_BIAS: f32 = 1.0e-5;
@@ -287,9 +270,7 @@ pub fn dither_pick(primary: i32, secondary: i32, x: i32, y: i32) -> u8 {
     }
 }
 
-// Per-face brightness level (0..LEVEL_COUNT-1) from the shading's light
-// direction and the face normal. Pure Lambert: brightness scales with
-// max(0, dot(face_normal, -light_dir)).
+// Lambert brightness: max(0, dot(normal, -light_direction)).
 pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
     let dot_factor = match normal {
         Some(n) => {
@@ -312,10 +293,7 @@ pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
     level_f.clamp(0.0, max_level).round() as usize
 }
 
-// Resolve `(base_col, normal)` to a `(primary, secondary)` pair at the
-// face's brightness level. Hot-path callers should reuse this once per
-// face and dither at each pixel via `dither_pick`. Returns a degenerate
-// `(base_col, base_col)` pair when the LUT is empty.
+// Resolve the shade once per face, then reuse the pair with dither_pick.
 pub fn lookup_ramp(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> (i32, i32) {
     let palette_size = shading.palette_size();
     if palette_size == 0 {
@@ -328,10 +306,7 @@ pub fn lookup_ramp(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> (
     shading.get(col, level)
 }
 
-// Pixel write with depth test. Callers are responsible for clip containment;
-// bbox-driven rasterizers already drop out-of-clip pixels at their loop
-// bounds, so this hot-path function does not re-check. The scalar signature
-// avoids a per-pixel parameter object.
+// Callers enforce clip bounds to avoid a second check per pixel.
 #[inline]
 pub fn write_pixel(
     target: &mut Image,
@@ -361,9 +336,6 @@ fn visible_pixel_index(
     dither_alpha: f32,
     depth_test: bool,
 ) -> Option<usize> {
-    // Bayer-pattern alpha gate. dither_alpha == 1.0 always passes;
-    // 0.0 always rejects; intermediate values produce a regular
-    // 4x4 stipple pattern.
     if dither_alpha < 1.0 {
         let bayer = BAYER4[(y.rem_euclid(4)) as usize][(x.rem_euclid(4)) as usize];
         let threshold = (bayer as f32 + 0.5) / 16.0;
@@ -397,8 +369,7 @@ fn write_visible_pixel(
 
 // Rasterizers
 
-// Signed area of triangle abc (positive when CCW with +Y down). Acts as
-// a barycentric divisor.
+// Signed doubled area, used as the barycentric divisor.
 #[inline]
 fn edge_function(a: (f32, f32), b: (f32, f32), c: (f32, f32)) -> f32 {
     (b.0 - a.0) * (c.1 - a.1) - (b.1 - a.1) * (c.0 - a.0)
@@ -429,10 +400,7 @@ fn edge_inside(w: f32, include_boundary: bool, pos_area: bool) -> bool {
     }
 }
 
-// Filled triangle with linear z interpolation. Both windings draw because
-// back-face culling happens upstream in draw::prim. Each pixel picks
-// `primary` or `secondary` through the `dither_pick` checker pattern;
-// `primary == secondary` collapses to a flat fill.
+// Interpolate z linearly. Both windings draw; draw::prim handles culling.
 pub fn rasterize_triangle(
     target: &mut Image,
     depth: &mut [f32],
@@ -520,10 +488,8 @@ pub fn rasterize_triangle(
     }
 }
 
-// Filled triangle with linear UV + z interpolation. The sampler receives
-// `(u, v, x, y)` so it can mix in screen-space dither when shading a
-// textured face. None skips transparent pixels.
-// Interpolation is affine for Pyxel Cube's pixel-art scale.
+// UV and z interpolation is affine for the pixel-art scale. The sampler
+// receives screen coordinates for dithering; None skips transparent pixels.
 pub fn rasterize_textured_triangle<F>(
     target: &mut Image,
     depth: &mut [f32],
@@ -628,7 +594,6 @@ pub fn rasterize_circle_filled(
     let radius = f32_to_u32(radius);
     let r = radius as f32;
 
-    // Rasterize symmetric columns
     for xi in 0..=radius as i32 {
         let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
         rasterize_circle_column(
@@ -715,7 +680,6 @@ pub fn rasterize_circle_border(
     let radius = f32_to_u32(radius);
     let r = radius as f32;
 
-    // Rasterize symmetric rim pixels
     for xi in 0..=radius as i32 {
         let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
         rasterize_circle_pixel(
@@ -1163,7 +1127,6 @@ mod tests {
     fn test_projection_matrix_perspective_aspect() {
         let camera = Camera::new();
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
-        // Perspective: p[0][0] = f / aspect, p[1][1] = f.
         let f = 1.0 / (rc_ref!(&camera).fov.to_radians() * 0.5).tan();
         let aspect = 256.0 / 192.0;
         assert!((p[0][0] - f / aspect).abs() < 1e-4);
@@ -1177,7 +1140,6 @@ mod tests {
         let camera = Camera::new();
         rc_mut!(&camera).ortho_size = Some(10.0);
         let p = projection_matrix(&rc_ref!(&camera), 200.0, 100.0);
-        // Orthographic: p[0][0] = 1 / (size/2 * aspect), p[1][1] = 1 / (size/2).
         let half_h = 5.0_f32;
         let half_w = half_h * 2.0;
         assert!((p[0][0] - 1.0 / half_w).abs() < 1e-6);
@@ -1211,7 +1173,6 @@ mod tests {
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
-        // Default camera looks down -Z; pick a point in front.
         let result = world_to_screen(&vec3(0.0, 0.0, -2.0), &vp, &clip, 0.0, 0.0, 256.0, 192.0);
         let (sx, sy, _z) = result.expect("point in front of camera should project");
         assert!((sx - 128.0).abs() < 1e-3);
@@ -1225,7 +1186,6 @@ mod tests {
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
-        // A point behind the camera (+Z by default) returns None.
         let result = world_to_screen(&vec3(0.0, 0.0, 5.0), &vp, &clip, 0.0, 0.0, 256.0, 192.0);
         assert!(result.is_none());
     }
@@ -1260,7 +1220,6 @@ mod tests {
     fn test_camera_right_up_default() {
         let camera = Camera::new();
         let (right, up) = camera_right_up(&rc_ref!(&camera));
-        // Identity camera: right = +X, up = +Y.
         assert!((right.x - 1.0).abs() < 1e-6);
         assert_eq!(right.y, 0.0);
         assert_eq!(right.z, 0.0);

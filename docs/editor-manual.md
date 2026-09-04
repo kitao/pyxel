@@ -2,7 +2,7 @@
 
 # Pyxel Editor Manual
 
-*This document was auto-generated from the [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.github.io/pyxel/web/editor-manual/).*
 
 ## Overview
 
@@ -55,7 +55,7 @@ The created resource file can be loaded and used in a Pyxel application with the
 
 ### Loading Resources
 
-While the editor is running, you can drag and drop another .pyxres file onto the window to load its contents. This operation overwrites all current edits, so be careful if you have unsaved changes. The save destination does not change.
+Drop another .pyxres file onto the window to replace all current edits, including unsaved changes. The save destination stays the same.
 
 ## Image Editor
 
@@ -219,7 +219,7 @@ Select a tool for drawing.
 
 ### Placing Multiple Tiles
 
-When you draw with multiple tile images selected by dragging in the tile image view, the selected tiles are placed as a repeating pattern. For example, if you select two tiles vertically and draw with the pen, the two tiles are placed alternately in a repeating pattern. The same applies when selecting multiple tiles both horizontally and vertically. The drawing start position corresponds to the top-left of the selection.
+Drag to select multiple tiles in the tile image view, then draw to repeat that pattern. The drawing start position corresponds to the top-left of the selection.
 
 ### Loading TMX Files
 
@@ -347,7 +347,7 @@ You can input notes using the PC keyboard. The upper row (QWE row + number row) 
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/sound_property.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_property.png)
 
-Set the tone (TON), volume (VOL), and effect (EFX) for each note. Press the ↓ key or click the TON row during piano roll editing to move to the property area. Cursor movement, range selection, copy & paste, and other operations are shared with the piano roll. Press a key on each row to input the corresponding value. For example, pressing P on the TON row sets Pulse. To change the tone partway through, set the value for all notes from the desired position onward. The same applies to VOL and EFX.
+Set each note's tone (TON), volume (VOL), and effect (EFX). From the piano roll, press ↓ or click TON to enter this area. Navigation, selection, and copy/paste work as in the piano roll. For example, P on the TON row sets Pulse. To change a value partway through, set it for every note from that position onward.
 
 #### Tone
 

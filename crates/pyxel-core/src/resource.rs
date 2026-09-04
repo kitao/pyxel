@@ -50,7 +50,7 @@ impl Pyxel {
         let mut archive =
             ZipArchive::new(file).map_err(|_| format!("Failed to parse file '{filename}'"))?;
 
-        // Old resource file
+        // Legacy archive format
         if archive.index_for_name("pyxel_resource/version").is_some() {
             println!("An old Pyxel resource file '{filename}' is loaded. Please re-save it with the latest Pyxel.");
             let palette = Self::read_palette(filename)?;
@@ -68,7 +68,7 @@ impl Pyxel {
             return Ok(());
         }
 
-        // New resource file
+        // TOML archive format
         let mut file = archive
             .by_name(RESOURCE_ARCHIVE_NAME)
             .map_err(|_| format!("Failed to read file '{filename}'"))?;

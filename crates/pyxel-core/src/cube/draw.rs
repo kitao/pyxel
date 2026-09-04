@@ -1,5 +1,4 @@
-// Drawing math uses conventional x/y/z/u/v names and flat hot-path signatures;
-// bundling them into temporary structs would add noise on the render path.
+// Drawing formulas use conventional x/y/z/u/v component names.
 #![allow(clippy::many_single_char_names)]
 
 // World-space geometry shares the `prim` path; circles and text rasterize in screen space.
@@ -95,8 +94,6 @@ fn should_cull(area: f32, cull: i32) -> bool {
     (cull == CULL_BACK && area >= 0.0) || (cull == CULL_FRONT && area <= 0.0)
 }
 
-// Apply billboard rewriting and per-call modifiers to ctx, returning the
-// possibly-rewritten world matrix.
 fn prepare_draw(ctx: &mut DrawContext, world_mat: &Mat4, state: &DrawState) -> Mat4 {
     ctx.dither_alpha = state.dither_alpha.clamp(0.0, 1.0);
     ctx.depth_test = state.depth_test;
@@ -104,10 +101,8 @@ fn prepare_draw(ctx: &mut DrawContext, world_mat: &Mat4, state: &DrawState) -> M
     apply_billboard(world_mat, ctx, state.billboard)
 }
 
-// World-space shift for a depth offset: `offset` units along the camera's
-// view direction (the look direction is the -Z column of the
-// camera-to-world transform). Positive pushes away from the camera,
-// negative toward it. Returns a zero vector when no offset is set.
+// The camera's viewing direction is its camera-to-world transform's -Z column.
+// Positive offsets push depth away from the camera.
 fn depth_offset_shift(camera: &RcCamera, offset: f32) -> Vec3 {
     if offset == 0.0 {
         return Vec3 {
@@ -125,11 +120,8 @@ fn depth_offset_shift(camera: &RcCamera, offset: f32) -> Vec3 {
     }
 }
 
-// Project `pos` to screen, then replace only its depth with the depth of
-// `pos + shift`. Screen x/y stay at the original projection, so a depth
-// offset never moves or resizes the draw; it only shifts the depth used
-// for the test / write. A zero `shift` is the no-offset fast path (single
-// projection).
+// Only depth changes; the original screen position and size are preserved.
+// A zero shift avoids the second projection.
 fn project_offset(
     pos: &Vec3,
     vp: &[[f32; 4]; 4],
@@ -860,8 +852,6 @@ pub fn rectb(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
     );
 }
 
-// elli / ellib triangulate / outline the unit ellipse, then fold the
-// caller's (w, h) into the world matrix as XY scale.
 pub fn elli(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, state: DrawState) {
     let scaled = scale_axes(world_mat, w * 0.5, h * 0.5, 1.0);
     let _ = prim(
@@ -914,8 +904,6 @@ fn primitive_uvs(g: &Primitive) -> Option<&[f32]> {
     }
 }
 
-// Box / boxb: cube faces / edges as 3D solid primitives. Folds `size`
-// into the world matrix as per-axis scale of the cached unit cube.
 pub fn box_solid(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -971,14 +959,10 @@ pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, stat
     );
 }
 
-// Cached vertex / index tables for primitive draw shapes. Each shape's
-// positions are stored in unit form (radius 1 / half-extent 1); per-call
-// `size` / `r` / `w` / `h` is folded into the world matrix rather than
-// the vertex data, so per-frame allocation is zero.
+// Scale the world matrix to reuse cached unit geometry without allocating
+// vertex arrays for each draw.
 
-// Unit rectangle: 4 vertices at ±1 on the XY plane. RECT_TRI_INDICES
-// uses the rect / plane winding (top-left, top-right, bottom-left,
-// bottom-right). Shared between rect / rectb / plane.
+// Unit rectangle winding matches the plane primitive.
 const UNIT_RECT_POSITIONS: [f32; 12] = [
     -1.0, 1.0, 0.0, // top-left
     1.0, 1.0, 0.0, // top-right
@@ -988,10 +972,7 @@ const UNIT_RECT_POSITIONS: [f32; 12] = [
 const RECT_TRI_INDICES: [i32; 6] = [0, 1, 2, 1, 3, 2];
 const RECT_EDGE_INDICES: [i32; 8] = [0, 1, 1, 3, 3, 2, 2, 0];
 
-// Unit ellipse / circle on the XY plane: center vertex 0 + ELLIPSE_SEGMENTS
-// perimeter vertices at radius 1. Per-call (w, h) becomes (hw, hh) and is
-// folded into the world matrix as XY scale, so a 2-by-1 ellipse is a
-// single mat scale rather than a per-vertex multiply.
+// Vertex 0 is the center; vertices 1..=ELLIPSE_SEGMENTS form the perimeter.
 const ELLIPSE_TRI_INDICES: [i32; 72] = [
     0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 9, 0, 9, 10, 0, 10, 11, 0,
     11, 12, 0, 12, 13, 0, 13, 14, 0, 14, 15, 0, 15, 16, 0, 16, 17, 0, 17, 18, 0, 18, 19, 0, 19, 20,
@@ -1002,8 +983,6 @@ const ELLIPSE_EDGE_INDICES: [i32; 48] = [
     15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 1,
 ];
 
-// Lazily-built unit ellipse positions: index 0 is the center, indices
-// 1..=ELLIPSE_SEGMENTS are perimeter points at (cos θ, sin θ, 0).
 fn unit_ellipse_positions() -> &'static [f32; 75] {
     static POSITIONS: OnceLock<[f32; 75]> = OnceLock::new();
     POSITIONS.get_or_init(|| {
@@ -1018,9 +997,7 @@ fn unit_ellipse_positions() -> &'static [f32; 75] {
     })
 }
 
-// Compose `world_mat` with a per-axis scale on the linear (3x3) part,
-// leaving the translation column intact. Used by primitive draw helpers
-// that fold size / radius into the matrix instead of the vertex data.
+// Scale the linear part while preserving translation.
 fn scale_axes(world_mat: &Mat4, sx: f32, sy: f32, sz: f32) -> Mat4 {
     let mut out = *world_mat;
     for row in 0..3 {
@@ -1031,8 +1008,7 @@ fn scale_axes(world_mat: &Mat4, sx: f32, sy: f32, sz: f32) -> Mat4 {
     out
 }
 
-// Compose `world_mat` with a translation by `local` (interpreted in
-// world_mat's local coordinates), leaving the linear part intact.
+// Translate in local coordinates while preserving the linear part.
 fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
     let translated = mat_apply(world_mat, local);
     let mut out = *world_mat;
@@ -1042,9 +1018,7 @@ fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
     out
 }
 
-// sphere / sphereb: level-1 subdivided icosahedron (42 vertices / 80
-// triangles / 120 edges) centered at `local`, scaled by `r`. Folds the
-// radius into the world matrix as uniform scale.
+// A level-1 subdivided icosahedron has 42 vertices, 80 triangles, and 120 edges.
 pub fn sphere(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -1259,10 +1233,8 @@ pub fn sprite(
     ];
     let indices = [0_i32, 1, 2, 1, 3, 2];
     let identity = Mat4::identity_value();
-    // sprite uses an identity world_mat (corners are already world-space)
-    // and disables billboard rewriting (the corners themselves are the
-    // billboard). It also forces `shaded = false`: a camera-facing
-    // billboard has no meaningful lit normal, so sprites render unshaded.
+    // Corners already form a world-space billboard.
+    // Camera-facing sprites have no meaningful lit normal and render unshaded.
     let mut sprite_state = state;
     sprite_state.billboard = BILLBOARD_OFF;
     sprite_state.shaded = false;
@@ -1313,14 +1285,6 @@ pub fn plane(
     );
 }
 
-// Text rendering uses Vec3-positioned, screen-space glyphs.
-// `pos` is projected to screen, then each visible glyph pixel
-// is plotted through `write_pixel` at the glyph's screen offset.
-// Always camera-facing; ancestor rotation / scale do not affect
-// glyph layout.
-
-// Measure the glyph cluster origin-anchored at (0, 0). `text` uses the result
-// to center the cluster before walking pixels without allocating a geometry Vec.
 fn measure_text(font: Option<&mut Font>, text: &str) -> (i32, i32) {
     let (text_w, line_height) = if let Some(font) = font {
         let mut max_w = 0;
@@ -1379,6 +1343,8 @@ fn for_each_builtin_text_pixel(text: &str, mut emit: impl FnMut(i32, i32)) {
     }
 }
 
+// Screen-sized glyphs center on the projected anchor and share its depth.
+// Ancestor rotation and scale do not affect the camera-facing glyph layout.
 pub fn text(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -1413,9 +1379,6 @@ pub fn text(
     if text_w == 0 || text_h == 0 {
         return;
     }
-    // Center pivot: shift glyph cluster so its bounding box centers on
-    // the projected screen point. Glyphs render in 2D pixels; depth uses
-    // the projected z so depth_test / depth_write still apply.
     let cx = sx - text_w / 2;
     let cy = sy - text_h / 2;
     let mut target_mut = rc_mut!(&ctx.target);
@@ -1457,8 +1420,6 @@ mod tests {
         camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
     };
 
-    // Draw context over a 64x64 target seen by `camera`, with the depth
-    // buffer cleared like a frame start.
     fn draw_context_64(target: &RcImage, camera: &RcCamera, shaded: bool) -> DrawContext {
         let view = view_matrix(&rc_ref!(camera));
         DrawContext {
@@ -1688,14 +1649,11 @@ mod tests {
             z: -3.0,
         };
         let base = world_to_screen(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0).unwrap();
-        // Negative offset = toward the camera: depth shrinks, screen x/y
-        // stay put (the offset must not move the draw).
         let near = depth_offset_shift(&camera, -0.5);
         let near_p = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &near).unwrap();
         assert_eq!(near_p.0, base.0);
         assert_eq!(near_p.1, base.1);
         assert!(near_p.2 < base.2);
-        // Positive offset = away: depth grows.
         let far = depth_offset_shift(&camera, 0.5);
         let far_p = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &far).unwrap();
         assert!(far_p.2 > base.2);
@@ -1810,7 +1768,6 @@ mod tests {
         let mut ctx = draw_context_64(&target, &camera, false);
         let state = DrawState::unshaded();
 
-        // A triangle behind the camera (+Z) must not draw.
         let behind = [-2.0, -2.0, 2.0, 2.0, -2.0, 2.0, 0.0, 2.0, 2.0];
         prim(
             &mut ctx,
@@ -1829,7 +1786,6 @@ mod tests {
         .unwrap();
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 2);
 
-        // The same triangle in front (-Z) draws as usual.
         let front = [-2.0, -2.0, -2.0, 2.0, -2.0, -2.0, 0.0, 2.0, -2.0];
         prim(
             &mut ctx,

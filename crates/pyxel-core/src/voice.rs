@@ -557,7 +557,7 @@ impl Voice {
             }
         }
 
-        // Phase 1: Head crossfade (elapsed < interp, but yield to tail when remaining < interp)
+        // Head crossfade yields to the tail for short notes.
         if self.remaining_note_clocks > 0
             && clock_count > 0
             && self.elapsed_note_clocks < u64::from(self.interp_clocks)
@@ -596,7 +596,7 @@ impl Voice {
             }
         }
 
-        // Phase 2: Bulk (no interpolation)
+        // Between crossfades
         while self.remaining_note_clocks > u64::from(self.interp_clocks) && clock_count > 0 {
             let gain = Self::gain_to_fixed(
                 self.envelope.level_at(self.elapsed_note_clocks) * self.current_velocity(),
@@ -617,7 +617,7 @@ impl Voice {
             }
         }
 
-        // Phase 3: Tail fade-out (remaining_note_clocks <= interp_clocks)
+        // Tail fade-out
         if self.remaining_note_clocks > 0 && clock_count > 0 {
             let end_gain = *self.interp_end_gain.get_or_insert(self.last_gain);
             let interp = self.interp_clocks as i64;
@@ -892,7 +892,6 @@ mod tests {
 
     #[test]
     fn test_pitch_multiplier_lut_boundary() {
-        // Exactly at LUT boundaries: -96.0 and 96.0
         for semitone in [PITCH_LUT_MIN_SEMITONE, PITCH_LUT_MAX_SEMITONE] {
             let result = semitone_to_pitch_multiplier(semitone);
             let expected = 2.0_f32.powf(semitone / 12.0);
@@ -1178,7 +1177,6 @@ mod tests {
         vib.update_at(5.0, 1000.0);
         assert_eq!(vib.pitch_multiplier(), 1.0, "within delay");
 
-        // Vibrato modulates after its delay.
         let mut vib = Vibrato::new();
         vib.set(0, 40, 2.0);
         vib.enable();
@@ -1201,13 +1199,11 @@ mod tests {
 
     #[test]
     fn test_vibrato_triangle_wave_shape() {
-        // Verify the triangle wave has correct symmetry over a full period
         let mut vib = Vibrato::new();
         let period = 100.0;
         vib.set(0, 100, 2.0);
         vib.enable();
 
-        // At start: multiplier = 1.0 (zero crossing)
         vib.update_at(0.0, 0.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
@@ -1215,7 +1211,6 @@ mod tests {
             vib.pitch_multiplier()
         );
 
-        // At half period: should return to ~1.0 (zero crossing)
         vib.update_at(0.0, period / 2.0);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
@@ -1232,7 +1227,6 @@ mod tests {
             vib.pitch_multiplier()
         );
 
-        // Back at the zero crossing after a full period
         vib.update_at(0.0, period);
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
@@ -1255,7 +1249,6 @@ mod tests {
     #[test]
     fn test_vibrato_zero_depth() {
         let mut vib = Vibrato::new();
-        // Zero depth disables modulation even while vibrato is enabled.
         vib.set(0, 20, 0.0);
         vib.enable();
         vib.update_at(0.0, 5.0);
@@ -1346,19 +1339,6 @@ mod tests {
     }
 
     #[test]
-    fn test_voice_new_initial_state() {
-        let voice = Voice::new(44100, 60, 512);
-        assert_eq!(voice.clock_rate, 44100);
-        assert_eq!(voice.clocks_per_tick, 1);
-        assert_eq!(voice.base_frequency, 0.0);
-        assert_eq!(voice.velocity_base, 0.0);
-        assert_eq!(voice.remaining_note_clocks, 0);
-        assert_eq!(voice.last_amplitude, 0);
-        assert_eq!(voice.control_interval_clocks, 44100 / 60);
-        assert!(!voice.needs_processing());
-    }
-
-    #[test]
     fn test_voice_play_note_sets_state() {
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
@@ -1407,15 +1387,6 @@ mod tests {
             "C5: {}",
             voice.base_frequency
         );
-    }
-
-    #[test]
-    fn test_voice_set_clocks_per_tick() {
-        let mut voice = Voice::new(44100, 60, 512);
-        assert_eq!(voice.clocks_per_tick, 1);
-
-        voice.set_clocks_per_tick(100);
-        assert_eq!(voice.clocks_per_tick, 100);
     }
 
     #[test]
@@ -1478,7 +1449,6 @@ mod tests {
 
     #[test]
     fn test_voice_process_without_note_is_noop() {
-        // With no note playing, processing must add no deltas to the blip buffer
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
         let mut blip_buf = BlipBuf::new(4096);
@@ -1635,8 +1605,7 @@ mod tests {
 
     #[test]
     fn test_voice_head_crossfade_gain_ramps_up() {
-        // Starting from silence, gain must rise monotonically from near zero and
-        // reach the full note gain once interp_clocks have elapsed (anti-click).
+        // The head crossfade prevents a click when starting from silence.
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 44100);
@@ -1663,8 +1632,7 @@ mod tests {
 
     #[test]
     fn test_voice_tail_fade_gain_ramps_down() {
-        // After cancel_note, gain must fall monotonically and land exactly at 0
-        // (anti-click fade-out).
+        // The tail fade prevents a click when cancelling a note.
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 44100);

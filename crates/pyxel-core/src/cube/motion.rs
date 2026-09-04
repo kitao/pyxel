@@ -2,8 +2,6 @@ use crate::cube::mat4::Mat4;
 use crate::cube::quat::Quat;
 use crate::cube::vec3::Vec3;
 
-// Keyframe interpolation mode (the glTF sampler modes cube supports).
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MotionInterpolation {
     CubicSpline,
@@ -25,9 +23,7 @@ pub struct CubicQuatKey {
     pub out_tangent: Quat,
 }
 
-// Keyframe payload of a channel. The variant must match the channel's
-// target; sampling skips mismatched channels.
-
+// Sampling skips values whose variant does not match the channel target.
 #[derive(Clone, Debug, PartialEq)]
 pub enum MotionValues {
     CubicTranslations(Vec<CubicVec3Key>),
@@ -56,10 +52,7 @@ pub enum MotionTarget {
     Scale,
 }
 
-// Keyframe track animating one transform component of one mesh part.
-// `inputs` holds the key times in Pyxel frames (glTF seconds × fps at
-// import).
-
+// Key times in inputs are Pyxel frames, converted from glTF seconds at import.
 #[derive(Clone, Debug, PartialEq)]
 pub struct MotionChannel {
     pub part_index: usize,
@@ -69,9 +62,7 @@ pub struct MotionChannel {
     pub interpolation: MotionInterpolation,
 }
 
-// Animation clip imported from a GLB: per-part base transforms plus the
-// keyframe channels that override them while the clip plays.
-
+// Channels override the per-part base transforms while the clip plays.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Motion {
     pub name: String,

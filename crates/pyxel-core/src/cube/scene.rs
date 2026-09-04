@@ -2908,6 +2908,19 @@ fn point_in_triangle(point: Vec3, tri_a: Vec3, tri_b: Vec3, tri_c: Vec3) -> bool
 mod tests {
     use super::*;
 
+    fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
+        Vec3 { x, y, z }
+    }
+
+    fn assert_vec3_close(actual: Vec3, expected: Vec3) {
+        assert!(
+            (actual.x - expected.x).abs() < 1e-4
+                && (actual.y - expected.y).abs() < 1e-4
+                && (actual.z - expected.z).abs() < 1e-4,
+            "actual={actual:?} expected={expected:?}"
+        );
+    }
+
     #[test]
     fn test_with_draw_context_outside_scope_returns_none() {
         let result = with_draw_context(|_| 42);
@@ -3176,14 +3189,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.x < -0.99, "normal.x = {}", normal.x);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.x < 0.0,
-            "delta_velocity.x = {}",
-            delta_velocity.x
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(-1.0, 0.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-3.0, 0.0, 0.0));
     }
 
     #[test]
@@ -3205,14 +3212,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.x < -0.99, "normal.x = {}", normal.x);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.x < 0.0,
-            "delta_velocity.x = {}",
-            delta_velocity.x
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(-1.0, 0.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-3.0, 0.0, 0.0));
     }
 
     #[test]
@@ -3234,14 +3235,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.x < -0.99, "normal.x = {}", normal.x);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.x < 0.0,
-            "delta_velocity.x = {}",
-            delta_velocity.x
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(-1.0, 0.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-3.0, 0.0, 0.0));
     }
 
     #[test]
@@ -3263,14 +3258,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.y > 0.99, "normal.y = {}", normal.y);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.y > 0.0,
-            "delta_velocity.y = {}",
-            delta_velocity.y
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 1.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 3.0, 0.0));
     }
 
     #[test]
@@ -3292,14 +3281,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.x < -0.99, "normal.x = {}", normal.x);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.x < 0.0,
-            "delta_velocity.x = {}",
-            delta_velocity.x
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(-1.0, 0.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-3.0, 0.0, 0.0));
     }
 
     #[test]
@@ -3321,14 +3304,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.z < -0.99, "normal.z = {}", normal.z);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.z < 0.0,
-            "delta_velocity.z = {}",
-            delta_velocity.z
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 0.0, -1.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 0.0, -3.0));
     }
 
     #[test]
@@ -3350,14 +3327,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.z < -0.99, "normal.z = {}", normal.z);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.z < 0.0,
-            "delta_velocity.z = {}",
-            delta_velocity.z
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 0.0, -1.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 0.0, -3.0));
     }
 
     #[test]
@@ -3379,14 +3350,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.x < -0.99, "normal.x = {}", normal.x);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.x < 0.0,
-            "delta_velocity.x = {}",
-            delta_velocity.x
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(-1.0, 0.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-3.0, 0.0, 0.0));
     }
 
     #[test]
@@ -3404,14 +3369,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.y > 0.99, "normal.y = {}", normal.y);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.y > 0.0,
-            "delta_velocity.y = {}",
-            delta_velocity.y
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 1.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 3.0, 0.0));
     }
 
     #[test]
@@ -3429,14 +3388,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.y > 0.99, "normal.y = {}", normal.y);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.y > 0.0,
-            "delta_velocity.y = {}",
-            delta_velocity.y
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 1.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 3.0, 0.0));
     }
 
     #[test]
@@ -3493,14 +3446,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.y > 0.99, "normal.y = {}", normal.y);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.y > 0.0,
-            "delta_velocity.y = {}",
-            delta_velocity.y
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 1.0, 0.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 3.0, 0.0));
     }
 
     #[test]
@@ -3518,14 +3465,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.z < -0.99, "normal.z = {}", normal.z);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.z < 0.0,
-            "delta_velocity.z = {}",
-            delta_velocity.z
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 0.0, -1.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 0.0, -3.0));
     }
 
     #[test]
@@ -3543,14 +3484,8 @@ mod tests {
 
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
-        let normal = rc_ref!(&contact.normal);
-        assert!(normal.z < -0.99, "normal.z = {}", normal.z);
-        let delta_velocity = rc_ref!(&contact.delta_velocity);
-        assert!(
-            delta_velocity.z < 0.0,
-            "delta_velocity.z = {}",
-            delta_velocity.z
-        );
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 0.0, -1.0));
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 0.0, -3.0));
     }
 
     #[test]

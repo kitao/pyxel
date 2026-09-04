@@ -97,7 +97,6 @@ impl Graphics {
 
         let mut screen_shaders = Vec::new();
         for &screen_frag in &SCREEN_FRAGS {
-            // Vertex shader
             let vertex_shader = gl
                 .create_shader(glow::VERTEX_SHADER)
                 .expect("Failed to create OpenGL vertex shader");
@@ -109,7 +108,6 @@ impl Graphics {
                 gl.get_shader_info_log(vertex_shader)
             );
 
-            // Fragment shader
             let fragment_shader = gl
                 .create_shader(glow::FRAGMENT_SHADER)
                 .expect("Failed to create OpenGL fragment shader");
@@ -124,7 +122,6 @@ impl Graphics {
                 gl.get_shader_info_log(fragment_shader)
             );
 
-            // Shader program
             let program = gl
                 .create_program()
                 .expect("Failed to create OpenGL shader program");
@@ -141,11 +138,9 @@ impl Graphics {
             gl.detach_shader(program, fragment_shader);
             gl.delete_shader(fragment_shader);
 
-            // Uniform locations
             let uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS] =
                 std::array::from_fn(|i| gl.get_uniform_location(program, UNIFORM_NAMES[i]));
 
-            // Vertex array
             let vertex_array = gl
                 .create_vertex_array()
                 .expect("Failed to create OpenGL vertex array");

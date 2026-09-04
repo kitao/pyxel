@@ -3,9 +3,6 @@ use std::sync::{Arc, OnceLock, Weak};
 
 use crate::cube::vec3::Vec3;
 
-// Shared mutable vertex attributes and topology for Node draws and Mesh parts.
-// Empty normals / uvs / indices mean "absent".
-
 pub const MODE_POINTS: i32 = 0;
 pub const MODE_LINES: i32 = 1;
 pub const MODE_TRIANGLES: i32 = 2;
@@ -14,6 +11,7 @@ pub const CULL_NONE: i32 = 0;
 pub const CULL_BACK: i32 = 1;
 pub const CULL_FRONT: i32 = 2;
 
+// Empty normals, uvs, and indices mean absent attributes or sequential topology.
 pub struct Primitive {
     pub positions: Vec<f32>,
     pub normals: Vec<f32>,
@@ -558,7 +556,6 @@ mod tests {
 
     #[test]
     fn test_compute_normals_empty_indices_is_sequential() {
-        // Empty indices => vertices consumed 0, 1, 2, ...; 1 triangle, +Z.
         let p = Primitive::new();
         {
             let mut p = rc_mut!(&p);
@@ -586,9 +583,7 @@ mod tests {
 
     #[test]
     fn test_compute_normals_two_triangles_have_distinct_face_normals() {
-        // Triangle 0 in z=0 plane (normal +Z), triangle 1 in x=1 plane
-        // (normal +X). Per-face layout means the two normals occupy
-        // disjoint output slots.
+        // The XY and YZ faces produce +Z and +X normals in separate slots.
         let p = Primitive::new();
         {
             let mut p = rc_mut!(&p);
@@ -628,7 +623,6 @@ mod tests {
             p.compute_normals();
         }
         let p = rc_ref!(&p);
-        // Non-triangle mode has no face normal concept; output is empty.
         assert_eq!(p.normals.len(), 0);
     }
 
@@ -638,15 +632,11 @@ mod tests {
         {
             let mut p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
-            p.indices = vec![0, 1, 99]; // 99 is out of range
+            p.indices = vec![0, 1, 99];
             p.compute_normals();
         }
         let p = rc_ref!(&p);
         let n = &p.normals;
-        // 1 face slot allocated, but the out-of-range index leaves it zero.
-        assert_eq!(n.len(), 3);
-        for v in n {
-            assert_eq!(*v, 0.0);
-        }
+        assert_eq!(n, &[0.0, 0.0, 0.0]);
     }
 }

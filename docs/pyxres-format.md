@@ -87,7 +87,7 @@ All fields are required.
 | `imgsrc` | u32 | Source image bank index (0-based) |
 | `data` | array of arrays of u16 | 2D tile data in interleaved format (see below) |
 
-Each tile in the tilemap is a coordinate pair `(tile_x, tile_y)` (`u16`, `u16`) pointing to the position of the 8×8 tile in the source image bank. In the TOML data, these pairs are **interleaved** within each row: `[tx0, ty0, tx1, ty1, ...]`, so each row has `width × 2` elements.
+Each tile is an `(image_tx, image_ty)` pair of `u16` coordinates in the source image bank's 8×8 tile grid. TOML rows interleave the pairs as `[tx0, ty0, tx1, ty1, ...]`, with `width × 2` elements per uncompressed row.
 
 For example, a tilemap row of 3 tiles referencing image positions (10, 6), (11, 6), and (12, 6) is stored as `[10, 6, 11, 6, 12, 6]`.
 
@@ -122,7 +122,7 @@ The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the so
 
 **MML-defined sounds:** Sounds defined with `Sound.mml()` cannot be saved to `.pyxres`; only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are persisted. To preserve MML-based sounds, keep the MML strings in your source code and call `sound.mml()` at runtime.
 
-## Musics
+## Music
 
 By default, **8 music tracks** with **4 channels**. Each track arranges sounds for sequential playback.
 
@@ -157,23 +157,6 @@ An optional text file with one RGB color per line in 6-digit hexadecimal format.
 | Maximum colors | 256 |
 | Format | One `RRGGBB` hex value per line |
 
-If no `.pyxpal` file is present, the current palette is unchanged. The built-in default palette is:
-
-| Index | Color | Hex |
-| --- | --- | --- |
-| 0 | Black | `000000` |
-| 1 | Navy | `2b335f` |
-| 2 | Purple | `7e2072` |
-| 3 | Green | `19959c` |
-| 4 | Brown | `8b4852` |
-| 5 | Dark Blue | `395c98` |
-| 6 | Light Blue | `a9c1ff` |
-| 7 | White | `eeeeee` |
-| 8 | Red | `d4186c` |
-| 9 | Orange | `d38441` |
-| 10 | Yellow | `e9c35b` |
-| 11 | Lime | `70c6a9` |
-| 12 | Cyan | `7696de` |
-| 13 | Gray | `a3a3a3` |
-| 14 | Pink | `ff9798` |
-| 15 | Peach | `edc7b0` |
+If no `.pyxpal` file is present, the current palette is unchanged. See the
+[user guide](user-guide.md#color-palette) for the default palette and its
+downloadable color values.

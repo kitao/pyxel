@@ -1,11 +1,7 @@
 use crate::cube::quat::{Quat, RcQuat};
 use crate::cube::vec3::{RcVec3, Vec3};
 
-// Collision payload passed to on_collide(other, contact). Carries the
-// contact geometry (point / normal / depth) and engine-resolved motion
-// deltas the user applies to push the body back into a non-penetrating
-// state.
-
+// on_collide receives the geometry and motion deltas for resolving penetration.
 pub struct Contact {
     pub point: RcVec3,
     pub normal: RcVec3,

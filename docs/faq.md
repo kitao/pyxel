@@ -29,16 +29,16 @@ The official [book](https://gihyo.jp/book/2025/978-4-297-14657-3) is available i
 <details>
 <summary>What is the difference between the <code>update</code> and <code>draw</code> functions?</summary>
 
-The `update` function is called every frame, but the `draw` function may be skipped if the processing time exceeds the allowable limit. Pyxel uses this design to reduce the impact of rendering load and OS interrupts, enabling smooth animation.
+`update` updates the state each frame; `draw` draws the screen. Pyxel may skip `draw` when processing falls behind, so put movement and collision logic in `update`.
 
 </details>
 
 <details>
 <summary>How do I use Pyxel MML?</summary>
 
-MML (Music Macro Language) is a language for defining sounds by describing notes, tempo, and other parameters as a string.
+MML (Music Macro Language) specifies notes and tempo as a string.
 
-Pass an MML string to the Sound class's `mml` function, and that Sound will play back following the MML. Calling `mml()` with no arguments clears the MML setting.
+Set it with a Sound's `mml` method; call `mml()` without arguments to clear it.
 
 ```python
 pyxel.sounds[0].mml("CDEFGAB>C")
@@ -61,16 +61,14 @@ You can also create and share MML in your browser using [Pyxel MML Studio](https
 <details>
 <summary>Why does file loading fail when the environment changes?</summary>
 
-Make sure that the current directory is set as intended when loading files.
-
-When Pyxel's `init` function is called, the current directory is changed to the same location as the script file. After that, files can be specified using relative paths. However, loading may fail if you try to open a file before calling `init` or if the current directory is changed after calling `init`.
+Relative paths start from the current working directory. `pyxel.init()` changes it to the script's directory. Check this base path if you load files before `init` or change the working directory afterward.
 
 </details>
 
 <details>
 <summary>How can I save application-specific data like high scores or game progress?</summary>
 
-Pass the developer name (`vendor_name`) and application name (`app_name`) to the `user_data_dir(vendor_name, app_name)` function. It will create a directory suitable for data storage on the current platform and return its path. Use this directory to save and load your application's files.
+Pass the developer and app names to `pyxel.user_data_dir(vendor_name, app_name)`. It creates a storage directory for the current platform and returns its path. Save your data in this directory.
 
 </details>
 

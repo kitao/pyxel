@@ -221,15 +221,29 @@ class TestDrawingStateEdgeCases:
 
 
 class TestDeprecatedAccessors:
-    def test_image_function_returns_image_instance(self, capfd):
+    def test_image_function_aliases_bank_entry(self, capfd):
         result = pyxel.image(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Image)
+        original = pyxel.images[0].pget(0, 0)
+        try:
+            pyxel.images[0].pset(0, 0, 0)
+            result.pset(0, 0, 7)
+            assert pyxel.images[0].pget(0, 0) == 7
+        finally:
+            pyxel.images[0].pset(0, 0, original)
         out = capfd.readouterr().out
         assert out == "pyxel.image(img) is deprecated. Use pyxel.images[img] instead.\n"
 
-    def test_tilemap_function_returns_tilemap_instance(self, capfd):
+    def test_tilemap_function_aliases_bank_entry(self, capfd):
         result = pyxel.tilemap(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Tilemap)
+        original = pyxel.tilemaps[0].pget(0, 0)
+        try:
+            pyxel.tilemaps[0].pset(0, 0, (0, 0))
+            result.pset(0, 0, (3, 4))
+            assert pyxel.tilemaps[0].pget(0, 0) == (3, 4)
+        finally:
+            pyxel.tilemaps[0].pset(0, 0, original)
         out = capfd.readouterr().out
         assert (
             out == "pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead.\n"

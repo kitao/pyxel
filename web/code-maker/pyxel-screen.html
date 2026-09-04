@@ -8,19 +8,24 @@
   <body>
     <pyxel-run
       script="
-        import js, base64, pyxel.cli, os
+        import base64
+        import os
+
+        import js
+        import pyxel.cli
+
         project_files = js.parent._project.files.to_py()
         for path, b64_content in project_files.items():
-          if '..' in path:
-            continue
-          if '/' in path:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-          with open(path, 'wb') as f:
-            f.write(base64.b64decode(b64_content))
+            if '..' in path:
+                continue
+            if '/' in path:
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'wb') as f:
+                f.write(base64.b64decode(b64_content))
         with open('main.py', 'w', encoding='utf-8') as f:
-          f.write(js.parent._project.code)
+            f.write(js.parent._project.code)
         with open('my_resource.pyxres', 'wb') as f:
-          f.write(base64.b64decode(js.parent._project.resource))
+            f.write(base64.b64decode(js.parent._project.resource))
         pyxel.cli.run_python_script('main.py')
       "
     ></pyxel-run>

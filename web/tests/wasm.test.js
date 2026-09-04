@@ -130,8 +130,8 @@ for (const order of [
       },
       decodeMmlFromUrl: () => decoded,
       resolvePyxelInput() {},
-      scheduleUrlUpdate() {},
-      updateUrl() {},
+      scheduleShareUrlUpdate() {},
+      updateShareUrl() {},
       setTimeout: (callback) => polls.push(callback),
     };
     context.handleMmlInput = loadNamedFunction(
