@@ -45,6 +45,7 @@ class Button(Widget):
 
     def __on_is_pressed_set(self, value):
         if value:
+            # Allow for the countdown decrement later in this frame.
             self._pressing_time = BUTTON_PRESSING_TIME + 1
             self.trigger_event("press")
         else:

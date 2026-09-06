@@ -49,7 +49,7 @@ impl Channel {
         let sec = if let Some(tick) = tick {
             deprecation_warning!(
                 PLAY_TICK_ONCE,
-                "tick option of Channel.play is deprecated. Use sec option instead."
+                "tick option of Channel.play is deprecated. Use sec in seconds (tick / 120) instead."
             );
             Some(tick as f32 / 120.0)
         } else {

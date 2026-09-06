@@ -5,16 +5,6 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parents[2]
 
 
-def iter_json_objects(value):
-    if isinstance(value, dict):
-        yield value
-        for child in value.values():
-            yield from iter_json_objects(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from iter_json_objects(child)
-
-
 def test_localized_text_entries_are_complete_and_keep_placeholders():
     source_paths = (
         "web/api-reference/api-reference.json",
@@ -47,3 +37,13 @@ def test_localized_text_entries_are_complete_and_keep_placeholders():
                 tuple(sorted(re.findall(r"\{\d+\}", text))) for text in value.values()
             }
             assert len(placeholder_sets) == 1, (path, value)
+
+
+def iter_json_objects(value):
+    if isinstance(value, dict):
+        yield value
+        for child in value.values():
+            yield from iter_json_objects(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from iter_json_objects(child)

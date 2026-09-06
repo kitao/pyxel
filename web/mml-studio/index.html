@@ -65,6 +65,7 @@
               class="toggle active"
               data-action="loop"
               data-state="true"
+              aria-pressed="true"
               data-click="handleButtonPress"
               title="Ctrl(Cmd)+L: Toggle Loop"
               disabled
@@ -125,6 +126,8 @@
               class="toggle"
               data-action="solo1"
               data-state="false"
+              aria-label="Solo channel 1"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -134,6 +137,8 @@
               class="toggle"
               data-action="mute1"
               data-state="false"
+              aria-label="Mute channel 1"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -157,6 +162,8 @@
               class="toggle"
               data-action="solo2"
               data-state="false"
+              aria-label="Solo channel 2"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -166,6 +173,8 @@
               class="toggle"
               data-action="mute2"
               data-state="false"
+              aria-label="Mute channel 2"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -189,6 +198,8 @@
               class="toggle"
               data-action="solo3"
               data-state="false"
+              aria-label="Solo channel 3"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -198,6 +209,8 @@
               class="toggle"
               data-action="mute3"
               data-state="false"
+              aria-label="Mute channel 3"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -221,6 +234,8 @@
               class="toggle"
               data-action="solo4"
               data-state="false"
+              aria-label="Solo channel 4"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -230,6 +245,8 @@
               class="toggle"
               data-action="mute4"
               data-state="false"
+              aria-label="Mute channel 4"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -263,30 +280,74 @@
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
 
-      function b64urlEncode(bytes) {
-        return uint8ToBase64(bytes)
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
+      function handleButtonPress(button) {
+        const action = button.dataset.action;
+        const varName = `js_${action}`;
+        let isActive;
+
+        if (action === "play" || action === "stop") {
+          isActive = true;
+          setButtonStyle(button, true);
+          setTimeout(() => {
+            setButtonStyle(button, false);
+            runtimeScreen.contentWindow[varName] = false;
+          }, 150);
+        } else {
+          button.dataset.state = button.dataset.state !== "true";
+          isActive = button.dataset.state === "true";
+          setButtonStyle(button, isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        }
+
+        runtimeScreen.contentWindow[varName] = isActive;
+        if (action === "play") {
+          runtimeScreen.contentWindow.resetPyxel();
+        }
       }
 
-      function b64urlDecode(s) {
-        return base64ToUint8(s.replace(/-/g, "+").replace(/_/g, "/"));
+      function handleMmlInput(textarea) {
+        runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
+        scheduleShareUrlUpdate();
       }
 
-      async function compressDeflateRaw(text) {
-        const stream = new Blob([text])
-          .stream()
-          .pipeThrough(new CompressionStream("deflate-raw"));
-        const buf = await new Response(stream).arrayBuffer();
-        return new Uint8Array(buf);
+      async function updateShareUrl() {
+        const generation = ++shareUrlGeneration;
+        clearTimeout(shareUrlUpdateTimer);
+        let mmlStr = "";
+        for (let i = 1; i <= 4; i++) {
+          const textarea = document.getElementById(`ch${i}`);
+          const ch = textarea.value
+            .trim()
+            .replace(/ +/g, " ")
+            .replace(/\n+/g, "\n");
+          mmlStr += (i > 1 ? ";" : "") + ch;
+        }
+
+        let url = location.origin + location.pathname;
+        if (!/^[\s;]*$/.test(mmlStr)) {
+          url += "?mml=" + (await encodeMmlToUrl(mmlStr));
+        }
+
+        if (generation !== shareUrlGeneration) return;
+
+        shareUrl.textContent = shareUrl.href = url;
+        window.history.replaceState(null, "", url);
+
+        const qrSize = Math.max(128, Math.min(url.length, 400));
+        qrCodeImage.src =
+          `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
+          encodeURIComponent(url);
+        qrCodeImage.width = qrSize;
+        qrCodeImage.height = qrSize;
       }
 
-      async function decompressDeflateRaw(bytes) {
-        const stream = new Blob([bytes])
-          .stream()
-          .pipeThrough(new DecompressionStream("deflate-raw"));
-        return await new Response(stream).text();
+      function resolvePyxelInput() {
+        runtimeScreen.contentWindow?.pyxelContext?.resolveInput?.();
+      }
+
+      function scheduleShareUrlUpdate() {
+        clearTimeout(shareUrlUpdateTimer);
+        shareUrlUpdateTimer = setTimeout(updateShareUrl, 300);
       }
 
       async function encodeMmlToUrl(mml) {
@@ -307,78 +368,39 @@
         }
       }
 
+      async function compressDeflateRaw(text) {
+        const stream = new Blob([text])
+          .stream()
+          .pipeThrough(new CompressionStream("deflate-raw"));
+        const buf = await new Response(stream).arrayBuffer();
+        return new Uint8Array(buf);
+      }
+
+      async function decompressDeflateRaw(bytes) {
+        const stream = new Blob([bytes])
+          .stream()
+          .pipeThrough(new DecompressionStream("deflate-raw"));
+        return await new Response(stream).text();
+      }
+
+      function b64urlEncode(bytes) {
+        return uint8ToBase64(bytes)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+      }
+
+      function b64urlDecode(s) {
+        return base64ToUint8(s.replace(/-/g, "+").replace(/_/g, "/"));
+      }
+
       function setButtonStyle(button, isActive) {
         button.classList.toggle("active", isActive);
       }
 
-      function handleButtonPress(button) {
-        const action = button.dataset.action;
-        const varName = `js_${action}`;
-        let isActive;
-
-        if (action === "play" || action === "stop") {
-          isActive = true;
-          setButtonStyle(button, true);
-          setTimeout(() => {
-            setButtonStyle(button, false);
-            runtimeScreen.contentWindow[varName] = false;
-          }, 150);
-        } else {
-          button.dataset.state = button.dataset.state !== "true";
-          isActive = button.dataset.state === "true";
-          setButtonStyle(button, isActive);
-        }
-
-        runtimeScreen.contentWindow[varName] = isActive;
-        if (action === "play") {
-          runtimeScreen.contentWindow.resetPyxel();
-        }
-      }
-
       // Avoid rebuilding the share URL and QR code on every keystroke.
       let shareUrlUpdateTimer = null;
-
-      function scheduleShareUrlUpdate() {
-        clearTimeout(shareUrlUpdateTimer);
-        shareUrlUpdateTimer = setTimeout(updateShareUrl, 300);
-      }
-
-      function handleMmlInput(textarea) {
-        runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
-        scheduleShareUrlUpdate();
-      }
-
-      async function updateShareUrl() {
-        clearTimeout(shareUrlUpdateTimer);
-        let mmlStr = "";
-        for (let i = 1; i <= 4; i++) {
-          const textarea = document.getElementById(`ch${i}`);
-          const ch = textarea.value
-            .trim()
-            .replace(/ +/g, " ")
-            .replace(/\n+/g, "\n");
-          mmlStr += (i > 1 ? ";" : "") + ch;
-        }
-
-        let url = location.origin + location.pathname;
-        if (!/^[\s;]*$/.test(mmlStr)) {
-          url += "?mml=" + (await encodeMmlToUrl(mmlStr));
-        }
-
-        shareUrl.textContent = shareUrl.href = url;
-        window.history.replaceState(null, "", url);
-
-        const qrSize = Math.max(128, Math.min(url.length, 400));
-        qrCodeImage.src =
-          `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
-          encodeURIComponent(url);
-        qrCodeImage.width = qrSize;
-        qrCodeImage.height = qrSize;
-      }
-
-      function resolvePyxelInput() {
-        runtimeScreen.contentWindow?.pyxelContext?.resolveInput?.();
-      }
+      let shareUrlGeneration = 0;
 
       window.addEventListener("DOMContentLoaded", async () => {
         document.querySelectorAll("[data-click]").forEach((el) => {

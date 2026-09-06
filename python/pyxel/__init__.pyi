@@ -1,8 +1,5 @@
 from collections.abc import Callable
-from typing import (
-    Any,
-    overload,
-)
+from typing import Any, overload
 
 # Constants
 VERSION: str
@@ -398,10 +395,12 @@ class Font:
         """
 
 class Image:
-    width: int
-    """The width of the image."""
-    height: int
-    """The height of the image."""
+    @property
+    def width(self) -> int:
+        """The width of the image."""
+    @property
+    def height(self) -> int:
+        """The height of the image."""
 
     def __init__(self, width: int, height: int) -> None:
         """Create a new Image instance with the specified size.
@@ -756,10 +755,12 @@ class Image:
         """
 
 class Tilemap:
-    width: int
-    """The width of the tilemap."""
-    height: int
-    """The height of the tilemap."""
+    @property
+    def width(self) -> int:
+        """The width of the tilemap."""
+    @property
+    def height(self) -> int:
+        """The height of the tilemap."""
     imgsrc: int | Image
     """The image bank (0-2) or Image instance referenced by the tilemap."""
 
@@ -1084,8 +1085,9 @@ class Tone:
     """Tone mode (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise)."""
     sample_bits: int
     """Sample bits for the wavetable (1-16). Defaults to 4."""
-    wavetable: list[int]
-    """Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1)."""
+    @property
+    def wavetable(self) -> list[int]:
+        """Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1)."""
     gain: float
     """Tone gain. Defaults to 1.0."""
 
@@ -1097,14 +1099,18 @@ class Tone:
         """
 
 class Sound:
-    notes: list[int]
-    """List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1."""
-    tones: list[int]
-    """List of tones (0: Triangle, 1: Square, 2: Pulse, 3: Noise)."""
-    volumes: list[int]
-    """List of volumes (0-7)."""
-    effects: list[int]
-    """List of effects (0: None, 1: Slide, 2: Vibrato, 3: FadeOut, 4: Half-FadeOut, 5: Quarter-FadeOut)."""
+    @property
+    def notes(self) -> list[int]:
+        """List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1."""
+    @property
+    def tones(self) -> list[int]:
+        """List of tones (0: Triangle, 1: Square, 2: Pulse, 3: Noise)."""
+    @property
+    def volumes(self) -> list[int]:
+        """List of volumes (0-7)."""
+    @property
+    def effects(self) -> list[int]:
+        """List of effects (0: None, 1: Slide, 2: Vibrato, 3: FadeOut, 4: Half-FadeOut, 5: Quarter-FadeOut)."""
     speed: int
     """Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, one note equals 1 second."""
 
@@ -1201,8 +1207,9 @@ class Sound:
         """
 
 class Music:
-    seqs: list[list[int]]
-    """A two-dimensional list of sounds (0-63) across multiple channels."""
+    @property
+    def seqs(self) -> list[list[int]]:
+        """A two-dimensional list of sounds (0-63) across multiple channels."""
 
     def __init__(self) -> None:
         """Create a new Music instance.
@@ -1357,7 +1364,7 @@ def load(
         exclude_musics: Exclude music tracks. Defaults to False.
 
     Note:
-        If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.
+        If a palette file (.pyxpal) with the same name exists in the same directory as the resource file, the palette display colors will also be updated.
     """
 
 def save(

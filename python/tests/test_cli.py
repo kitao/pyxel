@@ -1,29 +1,20 @@
 import base64
+import multiprocessing
 import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import pyxel
 import pyxel.cli
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
-
-
-def _make_app(root: Path) -> Path:
-    app_dir = root / "my_app"
-    app_dir.mkdir()
-    (app_dir / "main.py").write_text(
-        "# title: My App\n# author: Me\nimport pyxel\n", encoding="utf-8"
-    )
-    (app_dir / "assets").mkdir()
-    (app_dir / "assets" / "data.txt").write_text("hello", encoding="utf-8")
-    return app_dir
-
 
 # Public CLI command tests
 
@@ -81,6 +72,59 @@ class TestRunCommand:
 
 
 class TestWatchCommand:
+    def test_file_changes_restart_after_a_syntax_error(
+        self, tmp_path, monkeypatch, capfd
+    ):
+        app_dir = tmp_path / "app"
+        app_dir.mkdir()
+        script = app_dir / "main.py"
+        result_file = tmp_path / "result.txt"
+        source = (
+            "from pathlib import Path\n"
+            f"Path({str(result_file)!r}).write_text('started')\n"
+        )
+        script.write_text(source + "import time\ntime.sleep(30)\n", encoding="utf-8")
+        monkeypatch.setenv(pyxel.WATCH_STATE_FILE_ENV, "")
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+        children_before = set(multiprocessing.active_children())
+        deadline = time.monotonic() + 10
+        stage = 0
+        errors = ""
+
+        def advance(_interval):
+            nonlocal stage, errors
+            time.sleep(0.05)
+            errors += capfd.readouterr().err
+            assert time.monotonic() < deadline, (stage, errors)
+            value = result_file.read_text() if result_file.exists() else ""
+            if stage == 0 and value == "started":
+                script.write_text("syntax error!!!\n", encoding="utf-8")
+                os.utime(script, (1_000_000_000, 1_000_000_000))
+                stage = 1
+            elif stage == 1 and "SyntaxError" in errors:
+                script.write_text(
+                    source.replace("'started'", "'recovered'"), encoding="utf-8"
+                )
+                os.utime(script, (1_000_000_002, 1_000_000_002))
+                stage = 2
+            elif stage == 2 and value == "recovered":
+                raise KeyboardInterrupt
+
+        # Keep real file watching and child processes; shorten only the polling wait.
+        monkeypatch.setattr(
+            pyxel.cli, "time", SimpleNamespace(time=time.time, sleep=advance)
+        )
+        try:
+            pyxel.cli.watch_and_run_python_script(str(app_dir), str(script))
+        finally:
+            for child in set(multiprocessing.active_children()) - children_before:
+                child.terminate()
+                child.join(timeout=5)
+
+        assert stage == 2
+        assert result_file.read_text() == "recovered"
+        assert "stopped watching" in capfd.readouterr().out
+
     def test_missing_dir_exits_with_error(self, capsys, tmp_path):
         missing_dir = tmp_path / "nodir"
         script = tmp_path / "script.py"
@@ -119,6 +163,31 @@ class TestWatchCommand:
 
 
 class TestPyxelAppMetadata:
+    @pytest.mark.parametrize(
+        "metadata",
+        [{}, {"title": "My App"}, {"author": "Me"}, {"desc": "Example"}],
+    )
+    def test_missing_metadata_does_not_block_packaging_or_playback(
+        self, tmp_path, monkeypatch, capsys, metadata
+    ):
+        app_dir = _make_app(tmp_path)
+        headers = "".join(f"# {key}: {value}\n" for key, value in metadata.items())
+        (app_dir / "main.py").write_text(
+            headers + 'print("app ran")\n', encoding="utf-8"
+        )
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+        monkeypatch.setattr(sys, "path", sys.path.copy())
+
+        pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
+        app_file = str(tmp_path / "my_app.pyxapp")
+        assert pyxel.cli.get_pyxel_app_metadata(app_file) == metadata
+        capsys.readouterr()
+
+        pyxel.cli.play_pyxel_app(app_file)
+
+        assert "app ran" in capsys.readouterr().out.splitlines()
+
     def test_get_metadata_returns_expected_fields(self, tmp_path, monkeypatch):
         _make_app(tmp_path)
         monkeypatch.chdir(tmp_path)
@@ -220,6 +289,20 @@ class TestPackage:
         assert f"my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}" in names
         assert "my_app/main.py" in names
         assert "my_app/assets/data.txt" in names
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+    def test_pyxapp_includes_linked_directory_contents(self, tmp_path, monkeypatch):
+        app_dir = _make_app(tmp_path)
+        shared = tmp_path / "shared"
+        shared.mkdir()
+        (shared / "data.txt").write_bytes(b"shared asset")
+        (app_dir / "linked").symlink_to(shared, target_is_directory=True)
+        monkeypatch.chdir(tmp_path)
+
+        pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
+
+        with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
+            assert zf.read("my_app/linked/data.txt") == b"shared asset"
 
     def test_pyxapp_excludes_dotfiles_and_hidden_assets(self, tmp_path, monkeypatch):
         app_dir = _make_app(tmp_path)
@@ -675,7 +758,7 @@ class TestApp2exe:
             f"'app2exe' command only accepts {pyxel.APP_FILE_EXTENSION} files\n"
         )
 
-    def test_extraction_failure_exits_with_exact_error(
+    def test_missing_startup_marker_exits_with_exact_error(
         self, capsys, tmp_path, monkeypatch
     ):
         app_file = tmp_path / "broken.pyxapp"
@@ -692,7 +775,7 @@ class TestApp2exe:
         assert exc.value.code == 1
         assert (
             capsys.readouterr().out
-            == "Failed to extract startup script from Pyxel app\n"
+            == f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'\n"
         )
         assert list((tmp_path / pyxel.BASE_DIR).glob("app2exe-*")) == []
 
@@ -835,6 +918,43 @@ class TestErrorHelpers:
 
 
 class TestWatchHelpers:
+    @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+    def test_directory_links_preserve_aliases_without_following_cycles(self, tmp_path):
+        app_dir = tmp_path / "app"
+        app_dir.mkdir()
+        shared = tmp_path / "shared"
+        shared.mkdir()
+        (shared / "data.txt").write_text("data", encoding="utf-8")
+        (shared / "back").symlink_to(app_dir, target_is_directory=True)
+        for name in ("first", "second"):
+            (app_dir / name).symlink_to(shared, target_is_directory=True)
+
+        expected = [str(app_dir / name / "data.txt") for name in ("first", "second")]
+        assert pyxel.cli._files_in_dir(app_dir) == expected
+        assert sorted(pyxel.cli._timestamps_in_dir(app_dir)) == expected
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+    def test_timestamps_in_dir_detects_linked_file_changes(self, tmp_path):
+        app_dir = tmp_path / "app"
+        app_dir.mkdir()
+        shared = tmp_path / "shared"
+        shared.mkdir()
+        (app_dir / "linked").symlink_to(shared, target_is_directory=True)
+        target = shared / "data.txt"
+        target.write_text("before", encoding="utf-8")
+        os.utime(target, (1_000_000_000, 1_000_000_000))
+        before = pyxel.cli._timestamps_in_dir(app_dir)
+
+        target.write_text("after", encoding="utf-8")
+        os.utime(target, (1_000_000_002, 1_000_000_002))
+        after = pyxel.cli._timestamps_in_dir(app_dir)
+
+        linked_file = str(app_dir / "linked" / "data.txt")
+        assert before == {linked_file: 1_000_000_000}
+        assert after == {linked_file: 1_000_000_002}
+        target.unlink()
+        assert pyxel.cli._timestamps_in_dir(app_dir) == {}
+
     def test_create_app_dir_tolerates_concurrent_stale_cleanup(
         self, tmp_path, monkeypatch
     ):
@@ -1039,3 +1159,14 @@ class TestExtractPyxelAppSafety:
         assert Path(startup_script).name == "main.py"
         assert Path(startup_script).resolve().parent.name == "app"
         assert Path(startup_script).read_text(encoding="utf-8") == "VALUE = 42\n"
+
+
+def _make_app(root: Path) -> Path:
+    app_dir = root / "my_app"
+    app_dir.mkdir()
+    (app_dir / "main.py").write_text(
+        "# title: My App\n# author: Me\nimport pyxel\n", encoding="utf-8"
+    )
+    (app_dir / "assets").mkdir()
+    (app_dir / "assets" / "data.txt").write_text("hello", encoding="utf-8")
+    return app_dir

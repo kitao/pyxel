@@ -510,7 +510,7 @@ fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, S
             dot_ticks /= 2;
             note_ticks += dot_ticks;
         } else {
-            parse_error!(stream, "Cannot apply dot to odd note length");
+            parse_error!(stream, "Cannot apply dot to this note length");
         }
     }
     Ok(note_ticks)
@@ -1287,7 +1287,7 @@ mod tests {
     #[test]
     fn test_err_dot_on_odd_tick_length() {
         // L192 = 1 tick, cannot apply dot to odd value
-        assert_parse_error("C192.", "MML:5: Cannot apply dot to odd note length");
+        assert_parse_error("C192.", "MML:5: Cannot apply dot to this note length");
     }
 
     // total_duration_sec

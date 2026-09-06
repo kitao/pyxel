@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Multimedia :: Sound/Audio",
 ]
 description = "A retro game engine for Python"
-keywords = ["game", "gamedev", "retro", "pixel-art", "game-engine"]
+keywords = ["game", "game-engine", "gamedev", "pixel-art", "retro"]
 license = "MIT"
 license-files = ["pyxel/LICENSE"]
 name = "pyxel"

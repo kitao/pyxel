@@ -241,7 +241,7 @@ impl Pyxel {
         for (index, &color) in image_data.iter().enumerate() {
             if color as usize >= colors.len() {
                 return Err(format!(
-                    "Invalid icon data at row {}, column {}: color {color} exceeds palette size {}",
+                    "Invalid icon data at row {}, column {}: color {color} is out of range for palette size {}",
                     index / width as usize,
                     index % width as usize,
                     colors.len()

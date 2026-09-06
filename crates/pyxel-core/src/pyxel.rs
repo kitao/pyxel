@@ -317,7 +317,7 @@ fn validate_platform_screen_dimensions(w: u32, h: u32) -> Result<(), String> {
 
 fn validate_screen_area(w: u32, h: u32) -> Result<(), String> {
     if w.checked_mul(h).is_none() {
-        return Err("screen dimensions are too large".to_string());
+        return Err("width and height are too large".to_string());
     }
     Ok(())
 }

@@ -1,9 +1,3 @@
-macro_rules! repeat_extend {
-    ($container:expr, $value:expr, $count:expr) => {
-        $container.extend(std::iter::repeat($value).take($count as usize));
-    };
-}
-
 macro_rules! define_rc_type {
     ($alias:ident, $inner:ty) => {
         pub type $alias = std::rc::Rc<std::cell::RefCell<$inner>>;
@@ -196,19 +190,6 @@ mod tests {
         assert_eq!(add_file_extension("", ".png"), ".png");
         assert_eq!(add_file_extension("test.pn", ".png"), "test.pn.png");
         assert_eq!(add_file_extension(".png", ".png"), ".png");
-    }
-
-    // Macro behavior tests
-
-    #[test]
-    fn test_repeat_extend() {
-        let mut v = vec![1, 2];
-        repeat_extend!(v, 0, 3);
-        assert_eq!(v, vec![1, 2, 0, 0, 0]);
-
-        let mut v: Vec<i32> = Vec::new();
-        repeat_extend!(v, 42, 0);
-        assert_eq!(v, [] as [i32; 0]);
     }
 
     // Vector shape helper tests

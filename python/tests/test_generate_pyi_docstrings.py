@@ -7,15 +7,6 @@ import pytest
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "generate_pyi_docstrings"
 
 
-def _load_generate_pyi_docstrings():
-    loader = SourceFileLoader("generate_pyi_docstrings_test", str(MODULE_PATH))
-    spec = importlib.util.spec_from_loader(loader.name, loader)
-    assert spec is not None
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
-
-
 def test_add_docstrings_normalizes_overload_groups():
     generator = _load_generate_pyi_docstrings()
     content = """\
@@ -74,3 +65,12 @@ def test_class_fallback_adapts_destination_without_mutating_module(class_name):
                 {"name": "tile", "description": {"en": "Tile (image_tx, image_ty)"}}
             ],
         }
+
+
+def _load_generate_pyi_docstrings():
+    loader = SourceFileLoader("generate_pyi_docstrings_test", str(MODULE_PATH))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    assert spec is not None
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module

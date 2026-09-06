@@ -11,10 +11,20 @@ class TestMusic:
         msc = pyxel.Music()
         assert len(msc.seqs) == 0
 
-    def test_set_preserves_data_and_pads_channels(self):
+    @pytest.mark.parametrize(
+        ("seqs", "expected"),
+        [
+            ([[0, 1], [2, 3]], [[0, 1], [2, 3], [], []]),
+            (
+                [[0], [1], [2], [3], [4, 5], [6, 7]],
+                [[0], [1], [2], [3], [4, 5], [6, 7]],
+            ),
+        ],
+    )
+    def test_set_preserves_data_and_pads_channels(self, seqs, expected):
         msc = pyxel.Music()
-        msc.set([0, 1], [2, 3])
-        assert [list(seq) for seq in msc.seqs] == [[0, 1], [2, 3], [], []]
+        msc.set(*seqs)
+        assert [list(seq) for seq in msc.seqs] == expected
 
     def test_set_single_channel(self):
         msc = pyxel.Music()
@@ -45,7 +55,7 @@ class TestMusic:
             first_path = tmp_path / "first.wav"
             second_path = tmp_path / "second.wav"
 
-            # Each channel lasts 0.1 seconds, so this renders exactly two loops.
+            # Include a loop restart in both renders.
             msc.save(str(first_path), 0.2)
             msc.save(str(second_path), 0.2)
             actual = first_path.read_bytes()
@@ -190,7 +200,7 @@ class TestMusicSeqs:
         msc = pyxel.Music()
         msc.set([0])
         original_channels = len(msc.seqs)
-        msc.seqs.append([5, 6])  # type: ignore[arg-type]
+        msc.seqs.append([5, 6])
         assert len(msc.seqs) == original_channels + 1
         assert list(msc.seqs[-1]) == [5, 6]
 
@@ -198,7 +208,7 @@ class TestMusicSeqs:
         msc = pyxel.Music()
         msc.set([0, 1], [2, 3])
         seq = msc.seqs[0]
-        msc.seqs[0] = [10, 11, 12]  # type: ignore[call-overload]
+        msc.seqs[0] = [10, 11, 12]
         assert list(seq) == [10, 11, 12]
         assert list(msc.seqs[0]) == list(seq)
         assert list(msc.seqs[1]) == [2, 3]
@@ -234,7 +244,7 @@ assert list(music.seqs[1]) == [3, 4]
         msc = pyxel.Music()
         msc.set([0], [1])
         original_len = len(msc.seqs)
-        msc.seqs.insert(1, [5, 6])  # type: ignore[arg-type]
+        msc.seqs.insert(1, [5, 6])
         assert len(msc.seqs) == original_len + 1
         assert list(msc.seqs[1]) == [5, 6]
 
@@ -242,7 +252,7 @@ assert list(music.seqs[1]) == [3, 4]
         msc = pyxel.Music()
         msc.set([0], [1], [2])
 
-        msc.seqs[2:0] = [[7]]  # type: ignore[assignment]
+        msc.seqs[2:0] = [[7]]
 
         assert [list(seq) for seq in msc.seqs] == [[0], [1], [7], [2], []]
 
@@ -264,7 +274,7 @@ assert list(music.seqs[1]) == [3, 4]
         msc = pyxel.Music()
         msc.set([0])
         original_len = len(msc.seqs)
-        msc.seqs.extend([[1, 2], [3, 4]])  # type: ignore[arg-type]
+        msc.seqs.extend([[1, 2], [3, 4]])
         assert len(msc.seqs) == original_len + 2
         assert list(msc.seqs[-2]) == [1, 2]
         assert list(msc.seqs[-1]) == [3, 4]
@@ -298,7 +308,7 @@ assert list(music.seqs[1]) == [3, 4]
         original_len = len(msc.seqs)
         # seqs property is read-only, so use a local variable for +=.
         seqs = msc.seqs
-        seqs += [[5, 6], [7, 8]]  # type: ignore[operator]
+        seqs += [[5, 6], [7, 8]]
         assert len(msc.seqs) == original_len + 2
         assert list(msc.seqs[-2]) == [5, 6]
         assert list(msc.seqs[-1]) == [7, 8]
@@ -308,7 +318,7 @@ assert list(music.seqs[1]) == [3, 4]
         msc.seqs.from_list([[10, 20], [30, 40]])  # type: ignore[attr-defined]
         assert [list(seq) for seq in msc.seqs] == [[10, 20], [30, 40], [], []]
         out = capfd.readouterr().out
-        assert out == "Seqs.from_list() is deprecated. Use slice assignment instead.\n"
+        assert out == "Seqs.from_list() is deprecated. Use Music.set(*seqs) instead.\n"
 
     def test_seqs_to_list_deprecated(self, capfd):
         msc = pyxel.Music()
@@ -317,4 +327,7 @@ assert list(music.seqs[1]) == [3, 4]
         assert isinstance(result, list)
         assert result == [[5, 6], [], [], []]
         out = capfd.readouterr().out
-        assert out == "Seqs.to_list() is deprecated. Use list(seq) instead.\n"
+        assert (
+            out
+            == "Seqs.to_list() is deprecated. Use [list(seq) for seq in seqs] instead.\n"
+        )

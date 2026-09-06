@@ -18,30 +18,6 @@ pub(crate) const SDL2_VERSION: &str = "2.32.10"; // Emscripten 5.0.3 uses SDL 2.
 pub(crate) const SDL2_SHA256: &str =
     "5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165";
 
-pub(crate) fn verify_sha256<R: Read>(mut reader: R, expected: &str) -> Result<(), String> {
-    let mut hasher = Sha256::new();
-    let mut buffer = [0_u8; 64 * 1024];
-
-    loop {
-        let bytes_read = reader
-            .read(&mut buffer)
-            .map_err(|err| format!("Failed to read archive: {err}"))?;
-        if bytes_read == 0 {
-            break;
-        }
-        hasher.update(&buffer[..bytes_read]);
-    }
-
-    let actual = format!("{:x}", hasher.finalize());
-    if actual == expected {
-        Ok(())
-    } else {
-        Err(format!(
-            "SHA-256 mismatch: expected {expected}, actual {actual}"
-        ))
-    }
-}
-
 #[cfg(not(test))]
 struct Sdl2BindingsBuilder {
     target: String,
@@ -260,6 +236,34 @@ impl Sdl2BindingsBuilder {
         }
 
         include_flags
+    }
+}
+
+pub(crate) fn verify_sha256<R: Read>(mut reader: R, expected: &str) -> Result<(), String> {
+    let mut hasher = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+
+    loop {
+        let bytes_read = reader
+            .read(&mut buffer)
+            .map_err(|err| format!("Failed to read archive: {err}"))?;
+        if bytes_read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..bytes_read]);
+    }
+
+    let actual: String = hasher
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    if actual == expected {
+        Ok(())
+    } else {
+        Err(format!(
+            "SHA-256 mismatch: expected {expected}, actual {actual}"
+        ))
     }
 }
 

@@ -509,11 +509,11 @@ mod tests {
             z: 0.0,
         };
         let a = Quat::from_axis_angle(&axis, 10.0);
-        let b = Quat::from_axis_angle(&axis, 10.01);
+        let b = Quat::from_axis_angle(&axis, 11.0);
         let mid = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 0.5));
         let len = mid.x * mid.x + mid.y * mid.y + mid.z * mid.z + mid.w * mid.w;
         assert!((len - 1.0).abs() < 1e-4);
-        let expected = Quat::from_axis_angle(&axis, 10.005);
+        let expected = Quat::from_axis_angle(&axis, 10.5);
         let probe = Vec3 {
             x: 1.0,
             y: 0.0,

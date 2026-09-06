@@ -200,7 +200,7 @@ class TestTilemapBlt:
         dst = pyxel.Tilemap(16, 16, 0)
         dst.cls((0, 0))
         dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
-        # A 1x1 source with scale=4 deterministically paints a 2x2 block.
+        # At the origin, clipping leaves four painted tiles.
         drawn = sum(1 for x in range(8) for y in range(8) if dst.pget(x, y) == (5, 5))
         assert drawn == 4
 
@@ -425,7 +425,7 @@ class TestTilemapCollide:
 
 
 class TestTilemapDeprecatedProperties:
-    def test_image_property_aliases_imgsrc(self, capfd):
+    def test_image_getter_returns_image_deprecated(self, capfd):
         tm = pyxel.Tilemap(8, 8, 0)
         result = tm.image  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Image)
@@ -442,7 +442,7 @@ class TestTilemapDeprecatedProperties:
         out = capfd.readouterr().out
         assert out == "Tilemap.image is deprecated. Use Tilemap.imgsrc instead.\n"
 
-    def test_refimg_property_aliases_imgsrc(self, capfd):
+    def test_refimg_getter_returns_index_or_none_deprecated(self, capfd):
         tm = pyxel.Tilemap(8, 8, 0)
         result = tm.refimg  # type: ignore[attr-defined]
         assert result == 0

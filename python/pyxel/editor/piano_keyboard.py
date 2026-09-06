@@ -44,13 +44,13 @@ _BLACK_KEY_RANGES = [
     (20, 22, 1),
 ]
 _WHITE_KEY_RANGES = [
-    (0, 2, 11),
-    (2, 6, 9),
-    (6, 10, 7),
-    (10, 13, 5),
-    (13, 16, 4),
-    (16, 20, 2),
-    (20, 24, 0),
+    (0, 3, 11),
+    (3, 7, 9),
+    (7, 11, 7),
+    (11, 14, 5),
+    (14, 17, 4),
+    (17, 21, 2),
+    (21, 24, 0),
 ]
 
 # Classification of white keys for the playback highlight shape
@@ -169,6 +169,7 @@ class PianoKeyboard(Widget):
         else:
             return
 
+        pyxel.clip(self.x, self.y, self.width, self.height)
         key = note % 12
         x = self.x
         y = self.y + (59 - note) * 2
@@ -186,3 +187,5 @@ class PianoKeyboard(Widget):
             pyxel.rect(x + 7, y, 5, 3, PIANO_KEYBOARD_PLAY_COLOR)
         else:
             pyxel.rect(x, y + 1, 6, 1, PIANO_KEYBOARD_PLAY_COLOR)
+
+        pyxel.clip()

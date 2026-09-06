@@ -4,6 +4,27 @@ BORDER_OFFSETS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 BG_COLOR = 5
 
 
+class App:
+    def __init__(self):
+        pyxel.init(223, 92, title="Offscreen Rendering")
+        pyxel.load("assets/offscreen.pyxres")
+
+        self.blt_figure = make_blt_figure()
+        self.bltm_figure = make_bltm_figure()
+
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        if pyxel.btnp(pyxel.KEY_Q):
+            pyxel.quit()
+
+    def draw(self):
+        figure = (
+            self.blt_figure if (pyxel.frame_count // 120) % 2 == 0 else self.bltm_figure
+        )
+        pyxel.blt(0, 0, figure, 0, 0, figure.width, figure.height)
+
+
 def pset_with_border(image, x, y, col, bcol):
     for x_offset, y_offset in BORDER_OFFSETS:
         image.pset(x + x_offset, y + y_offset, bcol)
@@ -114,27 +135,6 @@ def make_bltm_figure():
     figure.blt(x, y, image2, 0, 0, image2.width, image2.height)
 
     return figure
-
-
-class App:
-    def __init__(self):
-        pyxel.init(223, 92, title="Offscreen Rendering")
-        pyxel.load("assets/offscreen.pyxres")
-
-        self.blt_figure = make_blt_figure()
-        self.bltm_figure = make_bltm_figure()
-
-        pyxel.run(self.update, self.draw)
-
-    def update(self):
-        if pyxel.btnp(pyxel.KEY_Q):
-            pyxel.quit()
-
-    def draw(self):
-        figure = (
-            self.blt_figure if (pyxel.frame_count // 120) % 2 == 0 else self.bltm_figure
-        )
-        pyxel.blt(0, 0, figure, 0, 0, figure.width, figure.height)
 
 
 App()

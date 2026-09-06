@@ -1,6 +1,5 @@
 use std::cmp::Ordering;
 
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyFloat, PyInt};
 use pyxel::Pyxel;
@@ -39,12 +38,6 @@ fn clamp(
     let xf = x.extract::<f64>()?;
     let lf = lower.extract::<f64>()?;
     let uf = upper.extract::<f64>()?;
-    if lf.is_nan() {
-        return Err(PyValueError::new_err("lower must not be NaN"));
-    }
-    if uf.is_nan() {
-        return Err(PyValueError::new_err("upper must not be NaN"));
-    }
     let (lo, hi) = if lf < uf { (lf, uf) } else { (uf, lf) };
     Ok(PyFloat::new(py, xf.clamp(lo, hi)).into_any().unbind())
 }
@@ -104,14 +97,8 @@ fn rndi(a: i32, b: i32) -> i32 {
 }
 
 #[pyfunction]
-fn rndf(a: f32, b: f32) -> PyResult<f32> {
-    if !a.is_finite() {
-        return Err(PyValueError::new_err("a must be finite"));
-    }
-    if !b.is_finite() {
-        return Err(PyValueError::new_err("b must be finite"));
-    }
-    Ok(Pyxel::random_float(a, b))
+fn rndf(a: f32, b: f32) -> f32 {
+    Pyxel::random_float(a, b)
 }
 
 // Noise

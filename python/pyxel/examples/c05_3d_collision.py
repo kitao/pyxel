@@ -8,33 +8,6 @@ TURN_SPEED = 4.0
 PLAYER_START = Vec3(0.0, 1.2, 5.0)
 
 
-def pressed(*keys):
-    return any(pyxel.btn(key) for key in keys)
-
-
-def pressedp(*keys):
-    return any(pyxel.btnp(key) for key in keys)
-
-
-def make_quad_mesh(corners, color):
-    positions = []
-    for v in corners:
-        positions += [v.x, v.y, v.z]
-    primitive = Primitive(
-        Primitive.MODE_TRIANGLES,
-        positions,
-        [0, 1, 2, 1, 3, 2],
-        cull=Primitive.CULL_BACK,
-    )
-    primitive.compute_normals()
-    return Mesh(
-        primitives=[primitive],
-        transforms=[Mat4.IDENTITY],
-        parents=[-1],
-        col_img=color,
-    )
-
-
 class QuadSurface(Node):
     def __init__(self, corners, color, outline=1):
         super().__init__()
@@ -301,6 +274,33 @@ class App:
             pyxel.text(8, 8, "GOAL! Press R", 10)
         else:
             pyxel.text(8, 8, "Up/W: Move  Left/Right: Turn  Space: Jump", 7)
+
+
+def pressed(*keys):
+    return any(pyxel.btn(key) for key in keys)
+
+
+def pressedp(*keys):
+    return any(pyxel.btnp(key) for key in keys)
+
+
+def make_quad_mesh(corners, color):
+    positions = []
+    for v in corners:
+        positions += [v.x, v.y, v.z]
+    primitive = Primitive(
+        Primitive.MODE_TRIANGLES,
+        positions,
+        [0, 1, 2, 1, 3, 2],
+        cull=Primitive.CULL_BACK,
+    )
+    primitive.compute_normals()
+    return Mesh(
+        primitives=[primitive],
+        transforms=[Mat4.IDENTITY],
+        parents=[-1],
+        col_img=color,
+    )
 
 
 App()

@@ -747,18 +747,18 @@
             "uk": "Відтворення аудіо"
           },
           "details": {
-            "en": "Loads and plays OGG PCM audio files. Learn audio playback features including channel gain settings and BGM switching.",
-            "cn": "加载和播放 OGG 格式 PCM 音频文件的示例。学习通道增益设置和 BGM 切换等音频播放功能的使用方法。",
-            "de": "Lädt und spielt OGG-PCM-Audiodateien ab. Lernen Sie Audiowiedergabefunktionen wie Kanalverstärkung und BGM-Umschaltung.",
-            "es": "Carga y reproduce archivos de audio OGG PCM. Aprende funciones de reproducción de audio como ajuste de ganancia de canal y cambio de BGM.",
-            "fr": "Charge et lit des fichiers audio OGG PCM. Apprenez les fonctions de lecture audio comme le réglage du gain par canal et le changement de BGM.",
-            "it": "Carica e riproduce file audio OGG PCM. Impara le funzionalità di riproduzione audio come l'impostazione del guadagno per canale e il cambio di BGM.",
-            "ja": "OGG 形式の PCM オーディオファイルを読み込んで再生するサンプル。チャンネルゲインの設定や BGM の切り替えなど、オーディオ再生機能の使い方を学べます。",
-            "ko": "OGG 형식의 PCM 오디오 파일을 로드하고 재생하는 샘플. 채널 게인 설정과 BGM 전환 등 오디오 재생 기능의 사용법을 배울 수 있습니다.",
-            "pt": "Carrega e reproduz arquivos de áudio OGG PCM. Aprenda recursos de reprodução de áudio como configuração de ganho de canal e troca de BGM.",
-            "ru": "Загружает и воспроизводит аудиофайлы OGG PCM. Изучите функции воспроизведения: настройка усиления каналов и переключение BGM.",
-            "tr": "OGG PCM ses dosyalarını yükleyip çalan örnek. Kanal kazanç ayarları ve BGM değiştirme gibi ses çalma özelliklerini öğrenin.",
-            "uk": "Завантажує та відтворює аудіофайли OGG PCM. Вивчіть функції відтворення: налаштування підсилення каналів та перемикання BGM."
+            "en": "Loads and plays OGG audio files. Learn audio playback features including channel gain settings and BGM switching.",
+            "cn": "加载和播放 OGG 格式音频文件的示例。学习通道增益设置和 BGM 切换等音频播放功能的使用方法。",
+            "de": "Lädt und spielt OGG-Audiodateien ab. Lernen Sie Audiowiedergabefunktionen wie Kanalverstärkung und BGM-Umschaltung.",
+            "es": "Carga y reproduce archivos de audio OGG. Aprende funciones de reproducción de audio como ajuste de ganancia de canal y cambio de BGM.",
+            "fr": "Charge et lit des fichiers audio OGG. Apprenez les fonctions de lecture audio comme le réglage du gain par canal et le changement de BGM.",
+            "it": "Carica e riproduce file audio OGG. Impara le funzionalità di riproduzione audio come l'impostazione del guadagno per canale e il cambio di BGM.",
+            "ja": "OGG 形式のオーディオファイルを読み込んで再生するサンプル。チャンネルゲインの設定や BGM の切り替えなど、オーディオ再生機能の使い方を学べます。",
+            "ko": "OGG 형식의 오디오 파일을 로드하고 재생하는 샘플. 채널 게인 설정과 BGM 전환 등 오디오 재생 기능의 사용법을 배울 수 있습니다.",
+            "pt": "Carrega e reproduz arquivos de áudio OGG. Aprenda recursos de reprodução de áudio como configuração de ganho de canal e troca de BGM.",
+            "ru": "Загружает и воспроизводит аудиофайлы OGG. Изучите функции воспроизведения: настройка усиления каналов и переключение BGM.",
+            "tr": "OGG ses dosyalarını yükleyip çalan örnek. Kanal kazanç ayarları ve BGM değiştirme gibi ses çalma özelliklerini öğrenin.",
+            "uk": "Завантажує та відтворює аудіофайли OGG. Вивчіть функції відтворення: налаштування підсилення каналів та перемикання BGM."
           }
         },
         {
@@ -885,7 +885,7 @@
           "code": "https://github.com/kitao/30SecondsOfDaylight",
           "description": {
             "en": "Pyxel Jam-winning roguelike game by Adam",
-            "cn": "Adam 制作的 Pyxel Jam 获奖 roguelike 游戏",
+            "cn": "Adam 制作的 Pyxel Jam 冠军 roguelike 游戏",
             "de": "Pyxel Jam-Gewinner-Roguelike-Spiel von Adam",
             "es": "Roguelike ganador del Pyxel Jam por Adam",
             "fr": "Roguelike gagnant du Pyxel Jam par Adam",
@@ -899,7 +899,7 @@
           },
           "details": {
             "en": "Winner of the 1st Pyxel Jam game competition, created by Adam (@helpcomputer). A roguelike dungeon explorer where you navigate procedurally generated maps within a time limit.",
-            "cn": "Adam (@helpcomputer) 制作的第 1 届 Pyxel Jam 游戏竞赛获奖作品。在限定时间内探索随机生成地图的 roguelike 地牢游戏。",
+            "cn": "Adam (@helpcomputer) 制作的第 1 届 Pyxel Jam 游戏竞赛冠军作品。在限定时间内探索随机生成地图的 roguelike 地牢游戏。",
             "de": "Gewinner des 1. Pyxel-Jam-Spielwettbewerbs, erstellt von Adam (@helpcomputer). Ein Roguelike-Dungeon-Spiel, bei dem man prozedural generierte Karten innerhalb eines Zeitlimits erkundet.",
             "es": "Ganador de la 1ª competición Pyxel Jam, creado por Adam (@helpcomputer). Un roguelike de exploración de mazmorras con mapas generados proceduralmente dentro de un límite de tiempo.",
             "fr": "Gagnant de la 1ère compétition Pyxel Jam, créé par Adam (@helpcomputer). Un roguelike d'exploration de donjons avec des cartes générées de manière procédurale et un temps limité.",
@@ -1566,7 +1566,7 @@
           "details": {
             "en": "A physics demo where a rolling capsule tumbles down a ramp into a stack of barrels, using colliders with mass, restitution, and friction.",
             "cn": "滚动的胶囊沿坡道冲入木桶堆的物理演示，使用带有质量、弹性和摩擦的碰撞体。",
-            "de": "Eine Physik-Demo, in der eine rollende Kapsel über eine Rampe in einen Stapel Fässer kracht, mit Collidern, die Masse, Sprungkraft und Reibung nutzen.",
+            "de": "Eine Physik-Demo, in der eine rollende Kapsel über eine Rampe in einen Stapel Fässer kracht, mit Collidern, die Masse, Rückprallkoeffizient und Reibung nutzen.",
             "es": "Una demo de física en la que una cápsula rodante baja por una rampa y choca contra una pila de barriles, usando colliders con masa, rebote y fricción.",
             "fr": "Une démo de physique où une capsule roulante dévale une rampe et percute une pile de tonneaux, avec des colliders dotés de masse, rebond et friction.",
             "it": "Una demo di fisica in cui una capsula rotolante scende da una rampa e travolge una pila di barili, usando collider con massa, rimbalzo e attrito.",

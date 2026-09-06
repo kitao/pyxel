@@ -2,8 +2,8 @@
 *.egg-info/
 *.py[cod]
 __pycache__/
-dist/
 dist-*/
+dist/
 
 # Copied into the package at build time
 python/pyxel/LICENSE

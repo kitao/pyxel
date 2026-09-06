@@ -817,7 +817,7 @@ prim = Primitive(Primitive.MODE_TRIANGLES, [0, 1, 0, -1, -1, 0, 1, -1, 0], [])
 node.prim(Mat4.IDENTITY, prim, 11)
 ```
 
-**Note:** The list attributes are live proxies: edit elements or assign slices (positions[:] = ...); whole-attribute assignment is not supported.
+**Note:** Edit list attributes through their elements or slices (positions[:] = ...); whole-attribute assignment is not supported.
 
 ### `Primitive.plane(width=1.0, height=1.0)` — class
 
@@ -946,7 +946,7 @@ Compute flat per-face normals from positions and indices and store them in norma
 
 ## Mesh
 
-### `Mesh(primitives=None, transforms=None, parents=None, names=None, col_img=7, colkey=None)` — class
+### `Mesh(primitives=[], transforms=[], parents=[], names=None, col_img=7, colkey=None)` — class
 
 A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.
 
@@ -1362,13 +1362,13 @@ The transform's up direction (+Y axis) as a unit vector.
 
 ### `effective_camera` — variable *(Advanced)*
 
-The camera after cascade resolution: this node's camera, or the closest ancestor's.
+This node's camera, or the camera of the closest ancestor that has one.
 
 - **Type:** `Camera | None`
 
 ### `effective_shading` — variable *(Advanced)*
 
-The shading table after cascade resolution: this node's shading, or the closest ancestor's.
+This node's shading table, or the table of the closest ancestor that has one.
 
 - **Type:** `Shading | None`
 
@@ -1431,7 +1431,7 @@ Start per-update playback of a Motion on this Node.from_mesh() subtree.
 
 ### `stop_motion()` — function
 
-Stop the active Motion playback cursor on this node.
+Stop Motion playback on this node.
 
 ### `find_by_name(name)` — function
 
@@ -1755,7 +1755,7 @@ Cast a ray against the colliders in this subtree and return the closest hit.
 **Example:**
 
 ```python
-hit = scene.raycast(self.transform.pos, Vec3.DOWN, max_distance=2.0)
+hit = scene.raycast(self.world_transform.pos, Vec3.DOWN, max_distance=2.0)
 ```
 
 ### `raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function

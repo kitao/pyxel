@@ -6,73 +6,18 @@ _SYSTEM = "system"
 _LOCAL = "local"
 
 
-# Module path resolution
-def _to_module_filename(module_path: str) -> str | None:
-    filename = Path(f"{module_path}.py")
-    if filename.is_file():
-        return str(filename)
-    module_dir = Path(module_path)
-    init_file = module_dir / "__init__.py"
-    if module_dir.is_dir() and init_file.is_file():
-        return str(init_file)
-    return None
+def list_imported_modules(filename: str) -> dict[str, list[str]]:
+    imports: dict[str, set[str]] = {_SYSTEM: set(), _LOCAL: set()}
+    checked_files: set[str] = set()
+    _list_imported_modules(imports, filename, checked_files)
 
-
-def _resolve_module_path(dir_path: str, level: int, name: str) -> str:
-    path = Path(dir_path)
-    for _ in range(level - 1):
-        path = path / ".."
-    for part in name.split("."):
-        path = path / part
-    return str(path)
-
-
-def _is_importable_module(name: str) -> bool:
-    search_path = None
-    parts = name.split(".")
-    for index in range(len(parts)):
-        fullname = ".".join(parts[: index + 1])
-        spec = PathFinder.find_spec(fullname, search_path)
-        if spec is None:
-            return False
-        if index < len(parts) - 1 and spec.submodule_search_locations is None:
-            return False
-        search_path = spec.submodule_search_locations
-    return True
+    return {
+        _SYSTEM: sorted(imports[_SYSTEM]),
+        _LOCAL: sorted(imports[_LOCAL]),
+    }
 
 
 # Recursive import discovery
-def _track_module(
-    imports: dict[str, set[str]],
-    checked_files: set[str],
-    dir_path: str,
-    level: int,
-    name: str,
-    *,
-    allow_system: bool = True,
-) -> bool:
-    module_path = _resolve_module_path(dir_path, level, name)
-    module_filename = _to_module_filename(module_path)
-
-    if module_filename:
-        parts = name.split(".")
-        module_files = []
-        for index in range(1, len(parts)):
-            parent_path = _resolve_module_path(dir_path, level, ".".join(parts[:index]))
-            init_file = Path(parent_path) / "__init__.py"
-            if init_file.is_file():
-                module_files.append(str(init_file))
-        module_files.append(module_filename)
-        for filename in module_files:
-            imports[_LOCAL].add(str(Path(filename).absolute()))
-            _list_imported_modules(imports, filename, checked_files)
-        return True
-    elif allow_system and level == 0:
-        # Only top-level imports can resolve as system modules.
-        imports[_SYSTEM].add(name)
-    return False
-
-
 def _list_imported_modules(
     imports: dict[str, set[str]], filename: str, checked_files: set[str]
 ) -> None:
@@ -129,12 +74,67 @@ def _list_imported_modules(
                     )
 
 
-def list_imported_modules(filename: str) -> dict[str, list[str]]:
-    imports: dict[str, set[str]] = {_SYSTEM: set(), _LOCAL: set()}
-    checked_files: set[str] = set()
-    _list_imported_modules(imports, filename, checked_files)
+def _track_module(
+    imports: dict[str, set[str]],
+    checked_files: set[str],
+    dir_path: str,
+    level: int,
+    name: str,
+    *,
+    allow_system: bool = True,
+) -> bool:
+    module_path = _resolve_module_path(dir_path, level, name)
+    module_filename = _to_module_filename(module_path)
 
-    return {
-        _SYSTEM: sorted(imports[_SYSTEM]),
-        _LOCAL: sorted(imports[_LOCAL]),
-    }
+    if module_filename:
+        parts = name.split(".")
+        module_files = []
+        for index in range(1, len(parts)):
+            parent_path = _resolve_module_path(dir_path, level, ".".join(parts[:index]))
+            init_file = Path(parent_path) / "__init__.py"
+            if init_file.is_file():
+                module_files.append(str(init_file))
+        module_files.append(module_filename)
+        for filename in module_files:
+            imports[_LOCAL].add(str(Path(filename).absolute()))
+            _list_imported_modules(imports, filename, checked_files)
+        return True
+    elif allow_system and level == 0:
+        # Only top-level imports can resolve as system modules.
+        imports[_SYSTEM].add(name)
+    return False
+
+
+# Module path resolution
+def _to_module_filename(module_path: str) -> str | None:
+    filename = Path(f"{module_path}.py")
+    if filename.is_file():
+        return str(filename)
+    module_dir = Path(module_path)
+    init_file = module_dir / "__init__.py"
+    if module_dir.is_dir() and init_file.is_file():
+        return str(init_file)
+    return None
+
+
+def _resolve_module_path(dir_path: str, level: int, name: str) -> str:
+    path = Path(dir_path)
+    for _ in range(level - 1):
+        path = path / ".."
+    for part in name.split("."):
+        path = path / part
+    return str(path)
+
+
+def _is_importable_module(name: str) -> bool:
+    search_path = None
+    parts = name.split(".")
+    for index in range(len(parts)):
+        fullname = ".".join(parts[: index + 1])
+        spec = PathFinder.find_spec(fullname, search_path)
+        if spec is None:
+            return False
+        if index < len(parts) - 1 and spec.submodule_search_locations is None:
+            return False
+        search_path = spec.submodule_search_locations
+    return True

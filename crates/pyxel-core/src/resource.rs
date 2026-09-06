@@ -50,25 +50,6 @@ impl Pyxel {
         let mut archive =
             ZipArchive::new(file).map_err(|_| format!("Failed to parse file '{filename}'"))?;
 
-        // Legacy archive format
-        if archive.index_for_name("pyxel_resource/version").is_some() {
-            println!("An old Pyxel resource file '{filename}' is loaded. Please re-save it with the latest Pyxel.");
-            let palette = Self::read_palette(filename)?;
-            self.load_old_resource(
-                &mut archive,
-                !exclude_images.unwrap_or(false),
-                !exclude_tilemaps.unwrap_or(false),
-                !exclude_sounds.unwrap_or(false),
-                !exclude_musics.unwrap_or(false),
-            )
-            .map_err(|detail| {
-                format!("Failed to load legacy resource file '{filename}': {detail}")
-            })?;
-            Self::apply_palette(palette);
-            return Ok(());
-        }
-
-        // TOML archive format
         let mut file = archive
             .by_name(RESOURCE_ARCHIVE_NAME)
             .map_err(|_| format!("Failed to read file '{filename}'"))?;
@@ -104,12 +85,14 @@ impl Pyxel {
         exclude_sounds: Option<bool>,
         exclude_musics: Option<bool>,
     ) -> Result<(), String> {
-        let toml_text = ResourceData::from_runtime(self).to_toml(
+        let toml_text = ResourceData::from_runtime(
+            self,
             exclude_images.unwrap_or(false),
             exclude_tilemaps.unwrap_or(false),
             exclude_sounds.unwrap_or(false),
             exclude_musics.unwrap_or(false),
-        );
+        )
+        .to_toml();
 
         let path = Path::new(&filename);
         let file = File::create(path).map_err(|_| format!("Failed to create file '{filename}'"))?;

@@ -22,97 +22,6 @@ DEPRECATED_SEQUENCE_CASES = [
 ]
 
 
-def make_deprecated_sequence_case(case):
-    if case == "music-seq":
-        music = pyxel.Music()
-        music.set([1, 2])
-        return music.seqs[0], [3, 4]
-
-    if case.startswith("sound-"):
-        sound = pyxel.Sound()
-        sound.set("c2e2", "sp", "76", "nf", 10)
-        attribute = case.removeprefix("sound-")
-        replacements = {
-            "notes": [12, 24],
-            "tones": [0, 2],
-            "volumes": [3, 7],
-            "effects": [0, 2],
-        }
-        return getattr(sound, attribute), replacements[attribute]
-
-    if case == "tone-wavetable":
-        tone = pyxel.Tone()
-        tone.wavetable[:] = [1, 2]
-        return tone.wavetable, [3, 12]
-
-    if case == "colors":
-        return pyxel.colors, [0x123456, 0xABCDEF]
-
-    if case == "images":
-        return pyxel.images, [pyxel.Image(3, 5)]
-
-    if case == "tilemaps":
-        return pyxel.tilemaps, [pyxel.Tilemap(4, 6, 0)]
-
-    if case == "channels":
-        channel = pyxel.Channel()
-        channel.gain = 0.25
-        channel.detune = 7
-        return pyxel.channels, [channel]
-
-    if case == "tones":
-        tone = pyxel.Tone()
-        tone.mode = 2
-        tone.gain = 0.5
-        return pyxel.tones, [tone]
-
-    if case == "sounds":
-        sound = pyxel.Sound()
-        sound.set("c2e2", "sp", "76", "nf", 9)
-        return pyxel.sounds, [sound]
-
-    if case == "musics":
-        music = pyxel.Music()
-        music.set([3, 4])
-        return pyxel.musics, [music]
-
-    raise AssertionError(f"unknown deprecated sequence case: {case}")
-
-
-def sequence_snapshot(case, sequence):
-    if case == "images":
-        return [(item.width, item.height) for item in sequence]
-
-    if case == "tilemaps":
-        return [(item.width, item.height, item.imgsrc) for item in sequence]
-
-    if case == "channels":
-        return [(item.gain, item.detune) for item in sequence]
-
-    if case == "tones":
-        return [
-            (item.mode, item.sample_bits, list(item.wavetable), item.gain)
-            for item in sequence
-        ]
-
-    if case == "sounds":
-        return [
-            (
-                list(item.notes),
-                list(item.tones),
-                list(item.volumes),
-                list(item.effects),
-                item.speed,
-            )
-            for item in sequence
-        ]
-
-    if case == "musics":
-        return [[list(seq) for seq in item.seqs] for item in sequence]
-
-    return list(sequence)
-
-
 class TestSeqLen:
     def test_colors_len(self):
         assert len(pyxel.colors) == pyxel.NUM_COLORS
@@ -601,3 +510,94 @@ class TestDeprecatedSequenceMethods:
             capfd.readouterr().out
             == f"{wrapper_name}.to_list() is deprecated. Use list(seq) instead.\n"
         )
+
+
+def make_deprecated_sequence_case(case):
+    if case == "music-seq":
+        music = pyxel.Music()
+        music.set([1, 2])
+        return music.seqs[0], [3, 4]
+
+    if case.startswith("sound-"):
+        sound = pyxel.Sound()
+        sound.set("c2e2", "sp", "76", "nf", 10)
+        attribute = case.removeprefix("sound-")
+        replacements = {
+            "notes": [12, 24],
+            "tones": [0, 2],
+            "volumes": [3, 7],
+            "effects": [0, 2],
+        }
+        return getattr(sound, attribute), replacements[attribute]
+
+    if case == "tone-wavetable":
+        tone = pyxel.Tone()
+        tone.wavetable[:] = [1, 2]
+        return tone.wavetable, [3, 12]
+
+    if case == "colors":
+        return pyxel.colors, [0x123456, 0xABCDEF]
+
+    if case == "images":
+        return pyxel.images, [pyxel.Image(3, 5)]
+
+    if case == "tilemaps":
+        return pyxel.tilemaps, [pyxel.Tilemap(4, 6, 0)]
+
+    if case == "channels":
+        channel = pyxel.Channel()
+        channel.gain = 0.25
+        channel.detune = 7
+        return pyxel.channels, [channel]
+
+    if case == "tones":
+        tone = pyxel.Tone()
+        tone.mode = 2
+        tone.gain = 0.5
+        return pyxel.tones, [tone]
+
+    if case == "sounds":
+        sound = pyxel.Sound()
+        sound.set("c2e2", "sp", "76", "nf", 9)
+        return pyxel.sounds, [sound]
+
+    if case == "musics":
+        music = pyxel.Music()
+        music.set([3, 4])
+        return pyxel.musics, [music]
+
+    raise AssertionError(f"unknown deprecated sequence case: {case}")
+
+
+def sequence_snapshot(case, sequence):
+    if case == "images":
+        return [(item.width, item.height) for item in sequence]
+
+    if case == "tilemaps":
+        return [(item.width, item.height, item.imgsrc) for item in sequence]
+
+    if case == "channels":
+        return [(item.gain, item.detune) for item in sequence]
+
+    if case == "tones":
+        return [
+            (item.mode, item.sample_bits, list(item.wavetable), item.gain)
+            for item in sequence
+        ]
+
+    if case == "sounds":
+        return [
+            (
+                list(item.notes),
+                list(item.tones),
+                list(item.volumes),
+                list(item.effects),
+                item.speed,
+            )
+            for item in sequence
+        ]
+
+    if case == "musics":
+        return [[list(seq) for seq in item.seqs] for item in sequence]
+
+    return list(sequence)

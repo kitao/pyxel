@@ -471,18 +471,18 @@
       "uk": "Перетягування"
     },
     "drag_drop_body": {
-      "en": "Drop a {0} file onto the page to replace the code, or a {1} file to replace the resources.",
-      "cn": "将 {0} 文件拖放到页面上可替换代码，将 {1} 文件拖放到页面上可替换资源。",
-      "de": "Ziehen Sie eine {0}-Datei auf die Seite, um den Code zu ersetzen, oder eine {1}-Datei, um die Ressourcen zu ersetzen.",
-      "es": "Suelte un archivo {0} en la página para reemplazar el código, o un archivo {1} para reemplazar los recursos.",
-      "fr": "Déposez un fichier {0} sur la page pour remplacer le code, ou un fichier {1} pour remplacer les ressources.",
-      "it": "Trascina un file {0} sulla pagina per sostituire il codice, oppure un file {1} per sostituire le risorse.",
-      "ja": "ページに {0} ファイルをドロップするとコードが、{1} ファイルをドロップするとリソースが置き換わります。",
-      "ko": "페이지에 {0} 파일을 드롭하면 코드가, {1} 파일을 드롭하면 리소스가 교체됩니다.",
-      "pt": "Solte um arquivo {0} na página para substituir o código, ou um arquivo {1} para substituir os recursos.",
-      "ru": "Перетащите файл {0} на страницу, чтобы заменить код, или файл {1}, чтобы заменить ресурсы.",
-      "tr": "Kodu değiştirmek için sayfaya bir {0} dosyası, kaynakları değiştirmek için bir {1} dosyası bırakın.",
-      "uk": "Перетягніть файл {0} на сторінку, щоб замінити код, або файл {1}, щоб замінити ресурси."
+      "en": "Drop files anywhere on the page. A {0} file replaces the code; a {1} file replaces the resources.",
+      "cn": "可将文件拖放到页面任意位置。{0} 文件替换代码，{1} 文件替换资源。",
+      "de": "Dateien können überall auf der Seite abgelegt werden. Eine {0}-Datei ersetzt den Code, eine {1}-Datei die Ressourcen.",
+      "es": "Suelte archivos en cualquier parte de la página. Un archivo {0} reemplaza el código; un archivo {1} reemplaza los recursos.",
+      "fr": "Déposez les fichiers n’importe où sur la page. Un fichier {0} remplace le code ; un fichier {1} remplace les ressources.",
+      "it": "Trascina i file in qualsiasi punto della pagina. Un file {0} sostituisce il codice; un file {1} sostituisce le risorse.",
+      "ja": "画面のどこにでもファイルをドロップできます。{0} ファイルはコードを、{1} ファイルはリソースを置き換えます。",
+      "ko": "페이지 어디에나 파일을 드롭할 수 있습니다. {0} 파일은 코드를, {1} 파일은 리소스를 교체합니다.",
+      "pt": "Solte arquivos em qualquer lugar da página. Um arquivo {0} substitui o código; um arquivo {1} substitui os recursos.",
+      "ru": "Перетащите файлы в любое место страницы. Файл {0} заменяет код, а файл {1} — ресурсы.",
+      "tr": "Dosyaları sayfanın herhangi bir yerine bırakabilirsiniz. {0} dosyası kodu, {1} dosyası kaynakları değiştirir.",
+      "uk": "Перетягніть файли в будь-яке місце сторінки. Файл {0} замінює код, а файл {1} — ресурси."
     },
     "project_title": {
       "en": "Project Files",

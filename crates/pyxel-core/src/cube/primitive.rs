@@ -477,8 +477,7 @@ fn add_sphere_uv_vertex(
     new_idx
 }
 
-// File-private raw Vec3 math. Avoids RcVec3 allocation in geometry
-// helpers and on the hot path inside compute_normals.
+// Value math avoids RcVec3 allocation while computing geometry normals.
 
 fn read_vec3(buf: &[f32], i: usize) -> Vec3 {
     let base = i * 3;

@@ -20,6 +20,16 @@ CLASS_CATEGORIES = {
 }
 
 
+def generate_pyi_docstrings():
+    api_data = json.loads(API_REF_JSON.read_text(encoding="utf-8"))
+    doc_map = _build_doc_map(api_data)
+    content = PYI_PATH.read_text(encoding="utf-8")
+    content = _strip_docstrings(content)
+    content = _add_docstrings(content, doc_map)
+    PYI_PATH.write_text(content, encoding="utf-8")
+    print(f"Generated {PYI_PATH.relative_to(ROOT_DIR)}")
+
+
 # Shared helpers
 
 
@@ -339,16 +349,6 @@ def _add_docstrings(content, doc_map):
         i += 1
 
     return "".join(result)
-
-
-def generate_pyi_docstrings():
-    api_data = json.loads(API_REF_JSON.read_text(encoding="utf-8"))
-    doc_map = _build_doc_map(api_data)
-    content = PYI_PATH.read_text(encoding="utf-8")
-    content = _strip_docstrings(content)
-    content = _add_docstrings(content, doc_map)
-    PYI_PATH.write_text(content, encoding="utf-8")
-    print(f"Generated {PYI_PATH.relative_to(ROOT_DIR)}")
 
 
 if __name__ == "__main__":

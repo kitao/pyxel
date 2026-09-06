@@ -15,35 +15,6 @@
       let value;
       let ext;
 
-      // Resolve a ref to its commit SHA via the GitHub API so jsDelivr
-      // fetches use an immutable @<SHA> URL. A missing ref returns null;
-      // an unavailable or invalid response returns undefined.
-      async function resolveRefSha(user, repo, ref) {
-        try {
-          const res = await fetch(
-            `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
-            {
-              headers: { Accept: "application/vnd.github.sha" },
-              cache: "no-cache",
-            },
-          );
-          if (res.status === 404) return null;
-          if (res.status === 422) {
-            try {
-              const error = JSON.parse(await res.text());
-              if (error.message?.startsWith("No commit found for SHA:")) {
-                return null;
-              }
-            } catch {}
-            return undefined;
-          }
-          if (!res.ok) return undefined;
-          const sha = (await res.text()).trim();
-          return /^[0-9a-f]{40}$/i.test(sha) ? sha : undefined;
-        } catch {}
-        return undefined;
-      }
-
       // Prefer a resolvable single-segment ref; otherwise try
       // slash-containing refs from longest to shortest.
       async function resolveLaunchTarget(
@@ -102,6 +73,35 @@
           if (sha === undefined) return fallback;
         }
         return fallback;
+      }
+
+      // Resolve a ref to its commit SHA via the GitHub API so jsDelivr
+      // fetches use an immutable @<SHA> URL. A missing ref returns null;
+      // an unavailable or invalid response returns undefined.
+      async function resolveRefSha(user, repo, ref) {
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
+            {
+              headers: { Accept: "application/vnd.github.sha" },
+              cache: "no-cache",
+            },
+          );
+          if (res.status === 404) return null;
+          if (res.status === 422) {
+            try {
+              const error = JSON.parse(await res.text());
+              if (error.message?.startsWith("No commit found for SHA:")) {
+                return null;
+              }
+            } catch {}
+            return undefined;
+          }
+          if (!res.ok) return undefined;
+          const sha = (await res.text()).trim();
+          return /^[0-9a-f]{40}$/i.test(sha) ? sha : undefined;
+        } catch {}
+        return undefined;
       }
 
       if (params.get("run")) {

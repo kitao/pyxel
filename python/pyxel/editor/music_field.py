@@ -93,6 +93,8 @@ class MusicField(Widget):
                 else MUSIC_FIELD_CURSOR_EDIT_COLOR
             )
 
+        pyxel.clip(self.x + 20, self.y + 1, 191, 19)
+
         # Draw cursor highlight
         if cursor_y == self._ch:
             data_len = len(self.data)
@@ -115,3 +117,5 @@ class MusicField(Widget):
                 else MUSIC_FIELD_SOUND_NORMAL_COLOR
             )
             pyxel.text(x, y, f"{snd:0>2}", col)
+
+        pyxel.clip()

@@ -755,8 +755,7 @@ impl Voice {
         self.update_sample_clocks();
     }
 
-    // Evaluate the modulators at the last crossed note-relative tick boundary
-    // so the curve values never depend on the oscillator sample grid
+    // Glide and delayed vibrato use the last crossed note tick.
     fn update_modulators(&mut self) {
         let note_ticks = (self.elapsed_note_clocks / u64::from(self.clocks_per_tick)) as f64;
         self.vibrato.update_at(note_ticks, self.playback_ticks);
@@ -1277,7 +1276,7 @@ mod tests {
         glide.update_at(50.0);
         let expected = 2.0_f32.powf(6.0 / 12.0);
         assert!(
-            (glide.pitch_multiplier() - expected).abs() < 0.01,
+            approx_eq(glide.pitch_multiplier(), expected),
             "midpoint: expected ~{expected}, got {}",
             glide.pitch_multiplier()
         );
@@ -1605,7 +1604,6 @@ mod tests {
 
     #[test]
     fn test_voice_head_crossfade_gain_ramps_up() {
-        // The head crossfade prevents a click when starting from silence.
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 44100);
@@ -1632,7 +1630,6 @@ mod tests {
 
     #[test]
     fn test_voice_tail_fade_gain_ramps_down() {
-        // The tail fade prevents a click when cancelling a note.
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 44100);

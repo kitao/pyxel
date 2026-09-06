@@ -4,23 +4,6 @@ from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Quat, Vec3
 
 
-def approx_v(a, b, tol=1e-4):
-    return (
-        isclose(a.x, b.x, abs_tol=tol)
-        and isclose(a.y, b.y, abs_tol=tol)
-        and isclose(a.z, b.z, abs_tol=tol)
-    )
-
-
-def approx_q(a, b, tol=1e-4):
-    return (
-        isclose(a.x, b.x, abs_tol=tol)
-        and isclose(a.y, b.y, abs_tol=tol)
-        and isclose(a.z, b.z, abs_tol=tol)
-        and isclose(a.w, b.w, abs_tol=tol)
-    )
-
-
 class TestConstructor:
     def test_default_is_identity(self):
         q = Quat()
@@ -164,11 +147,11 @@ class TestBinary:
         assert a.dot(b) == 70.0
 
     def test_angle_to_identity(self):
-        assert isclose(Quat.IDENTITY.angle_to(Quat.IDENTITY), 0.0, abs_tol=1e-3)
+        assert Quat.IDENTITY.angle_to(Quat.IDENTITY) == 0.0
 
 
 class TestConversions:
-    def test_to_matrix_round_trip(self):
+    def test_to_matrix_matches_rotation(self):
         q = Quat.from_axis_angle(Vec3.UP, 30)
         m = q.to_matrix()
         assert approx_v(m * Vec3(1, 0, 0), q * Vec3(1, 0, 0))
@@ -199,3 +182,20 @@ class TestInterpolation:
         # 45 deg rotation of (1, 0, 0) → (cos45, 0, -sin45)
         s = sqrt(0.5)
         assert approx_v(mid * Vec3(1, 0, 0), Vec3(s, 0, -s))
+
+
+def approx_v(a, b, tol=1e-4):
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
+    )
+
+
+def approx_q(a, b, tol=1e-4):
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
+        and isclose(a.w, b.w, abs_tol=tol)
+    )

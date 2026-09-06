@@ -95,14 +95,19 @@ impl Screencast {
             return Ok(false);
         }
 
+        let screen = self.screen_at(0);
+        let width = screen.width;
+        let height = screen.height;
+        if width.saturating_mul(scale) > u16::MAX as u32
+            || height.saturating_mul(scale) > u16::MAX as u32
+        {
+            return Err("GIF width and height must not exceed 65535 pixels".to_string());
+        }
+
         let filename = add_file_extension(filename, ".gif");
         let save_err = || format!("Failed to save file '{filename}'");
         let mut file =
             File::create(&filename).map_err(|_| format!("Failed to create file '{filename}'"))?;
-
-        let screen = self.screen_at(0);
-        let width = screen.width;
-        let height = screen.height;
         let pixel_count = (width * height) as usize;
 
         let mut encoder = Encoder::new(
@@ -534,6 +539,49 @@ mod tests {
     }
 
     // GIF save
+
+    #[test]
+    fn test_save_accepts_maximum_gif_dimension() {
+        let mut screencast = Screencast::new(30, 1);
+        screencast.capture(65535, 1, &vec![0; 65535], &[0], 0);
+        let path = std::env::temp_dir().join(format!(
+            "pyxel_screencast_test_max_dimension_{}.gif",
+            std::process::id()
+        ));
+
+        assert!(screencast.save(path.to_str().unwrap(), 1).unwrap());
+
+        let mut decoder = gif::DecodeOptions::new()
+            .read_info(File::open(&path).unwrap())
+            .unwrap();
+        let frame = decoder.read_next_frame().unwrap().unwrap();
+        assert_eq!((frame.width, frame.height), (65535, 1));
+        assert_eq!(frame.buffer.len(), 65535);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn test_save_rejects_oversized_dimensions_before_writing() {
+        let path = std::env::temp_dir().join(format!(
+            "pyxel_screencast_test_dimensions_{}.gif",
+            std::process::id()
+        ));
+        for (width, height, scale) in [(32768, 1, 2), (1, 32768, 2)] {
+            let mut screencast = Screencast::new(30, 1);
+            screencast.capture(width, height, &vec![0; (width * height) as usize], &[0], 0);
+            std::fs::write(&path, b"existing file").unwrap();
+
+            let result = screencast.save(path.to_str().unwrap(), scale);
+
+            assert_eq!(
+                result,
+                Err("GIF width and height must not exceed 65535 pixels".to_string())
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), b"existing file");
+            assert_eq!(screencast.num_captured_screens, 1);
+        }
+        std::fs::remove_file(path).unwrap();
+    }
 
     #[test]
     fn test_save_without_captured_screens_writes_no_file() {

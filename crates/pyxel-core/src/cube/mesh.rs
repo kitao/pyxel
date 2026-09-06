@@ -242,7 +242,7 @@ impl Mesh {
             if let Some(material_index) = material_index {
                 if *material_index >= self.materials.len() {
                     return Err(format!(
-                        "Mesh.material_indices[{i}] = {material_index} exceeds material count {}",
+                        "Mesh.material_indices[{i}] = {material_index} is out of range for material count {}",
                         self.materials.len(),
                     ));
                 }
@@ -383,7 +383,7 @@ mod tests {
         }
         assert_eq!(
             rc_ref!(&m).validate().unwrap_err(),
-            "Mesh.material_indices[0] = 0 exceeds material count 0"
+            "Mesh.material_indices[0] = 0 is out of range for material count 0"
         );
     }
 

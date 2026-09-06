@@ -253,6 +253,7 @@ class Widget:
         self._bind_var_property(name, member_name)
 
     def copy_var(self, name, src_widget, src_name=None):
+        # Share the variable and its listeners so both widgets stay in sync.
         member_name = self._widget_var_name(name)
         src_member_name = self._widget_var_name(src_name or name)
         setattr(self, member_name, getattr(src_widget, src_member_name))

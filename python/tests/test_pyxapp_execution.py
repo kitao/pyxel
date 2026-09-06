@@ -9,28 +9,6 @@ import pyxel
 import pyxel.cli
 
 
-def _python_environment(**values: str) -> dict[str, str]:
-    env = os.environ.copy()
-    package_root = str(Path(pyxel.__file__).resolve().parent.parent)
-    env["PYTHONPATH"] = os.pathsep.join(
-        value for value in (package_root, env.get("PYTHONPATH")) if value
-    )
-    env.update(values)
-    return env
-
-
-def _package_app(tmp_path: Path, monkeypatch, source: str) -> Path:
-    app_dir = tmp_path / "project"
-    script_dir = app_dir / "src"
-    script_dir.mkdir(parents=True)
-    (script_dir / "helper.py").write_text("VALUE = 42\n", encoding="utf-8")
-    (script_dir / "data.txt").write_text("resource data\n", encoding="utf-8")
-    (script_dir / "main.py").write_text(source, encoding="utf-8")
-    monkeypatch.chdir(tmp_path)
-    pyxel.cli.package_pyxel_app("project", "project/src/main.py")
-    return tmp_path / "project.pyxapp"
-
-
 def test_play_uses_packaged_application_context(tmp_path, monkeypatch):
     result_file = tmp_path / "result.json"
     app_file = _package_app(
@@ -151,3 +129,25 @@ def test_reset_restarts_relative_pyxapp_command(tmp_path, monkeypatch):
         "helper": 42,
         "resource": "resource data\n",
     }
+
+
+def _python_environment(**values: str) -> dict[str, str]:
+    env = os.environ.copy()
+    package_root = str(Path(pyxel.__file__).resolve().parent.parent)
+    env["PYTHONPATH"] = os.pathsep.join(
+        value for value in (package_root, env.get("PYTHONPATH")) if value
+    )
+    env.update(values)
+    return env
+
+
+def _package_app(tmp_path: Path, monkeypatch, source: str) -> Path:
+    app_dir = tmp_path / "project"
+    script_dir = app_dir / "src"
+    script_dir.mkdir(parents=True)
+    (script_dir / "helper.py").write_text("VALUE = 42\n", encoding="utf-8")
+    (script_dir / "data.txt").write_text("resource data\n", encoding="utf-8")
+    (script_dir / "main.py").write_text(source, encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    pyxel.cli.package_pyxel_app("project", "project/src/main.py")
+    return tmp_path / "project.pyxapp"

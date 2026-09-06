@@ -1,9 +1,11 @@
-import subprocess
-import sys
-
 import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
+
+
+class TestRemovedApis:
+    def test_old_mml_is_absent(self):
+        assert not hasattr(pyxel.Sound, "old_mml")
 
 
 class TestTypeErrors:
@@ -228,11 +230,11 @@ class TestValueErrors:
     @pytest.mark.parametrize(
         ("factory", "args", "message"),
         [
-            (pyxel.Image, (65536, 65536), "image dimensions are too large"),
+            (pyxel.Image, (65536, 65536), "width and height are too large"),
             (
                 pyxel.Tilemap,
                 (65536, 65536, 0),
-                "tilemap dimensions are too large",
+                "width and height are too large",
             ),
         ],
         ids=["image", "tilemap"],
@@ -323,47 +325,6 @@ class TestValueErrors:
     def test_resource_index_constraint_message(self, operation, message):
         with raises_exact(ValueError, message):
             operation()
-
-    def test_legacy_resource_index_messages_in_isolated_process(self):
-        code = """
-import pyxel
-
-
-def assert_value_error(operation, expected):
-    try:
-        operation()
-    except ValueError as exc:
-        assert str(exc) == expected
-    else:
-        raise AssertionError(f"ValueError not raised: {expected}")
-
-
-checks = [
-    (lambda: pyxel.channel(999), "ch must be a valid channel index"),
-    (lambda: pyxel.sound(999), "snd must be a valid sound index"),
-    (lambda: pyxel.music(999), "msc must be a valid music index"),
-    (lambda: pyxel.image(999), "img must be a valid image index"),
-    (lambda: pyxel.tilemap(999), "tm must be a valid tilemap index"),
-]
-for operation, expected in checks:
-    assert_value_error(operation, expected)
-
-tilemap = pyxel.Tilemap(8, 8, 0)
-tilemap.refimg = 999
-assert_value_error(
-    lambda: tilemap.image,
-    "imgsrc references an invalid image index",
-)
-"""
-
-        result = subprocess.run(
-            [sys.executable, "-c", code],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-
-        assert result.returncode == 0, result.stdout + result.stderr
 
     @pytest.mark.parametrize(
         "dimensions",
@@ -463,6 +424,10 @@ class TestInlineDataErrors:
 
 
 class TestMmlErrors:
+    def test_old_mml_syntax_is_not_auto_detected(self):
+        with raises_exact(Exception, "MML:0: Unexpected character 'X'"):
+            pyxel.Sound().mml("X1 C")
+
     def test_sound_mml_invalid_syntax(self):
         snd = pyxel.Sound()
         with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
@@ -471,27 +436,6 @@ class TestMmlErrors:
     def test_play_mml_invalid_syntax(self):
         with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
             pyxel.play(0, "Z")
-
-    def test_sound_mml_old_syntax_uses_legacy_error_contract(self):
-        code = """
-import pyxel
-
-snd = pyxel.Sound()
-try:
-    snd.mml("x8c")
-except Exception as exc:
-    assert str(exc) == "Invalid envelope value '8' in MML"
-else:
-    raise AssertionError("invalid legacy MML succeeded")
-"""
-        result = subprocess.run(
-            [sys.executable, "-c", code],
-            capture_output=True,
-            text=True,
-            timeout=10,
-            check=False,
-        )
-        assert result.returncode == 0, result.stderr
 
     def test_sound_set_notes_invalid(self):
         snd = pyxel.Sound()
@@ -560,7 +504,7 @@ class TestPanicErrors:
             pyxel.btnv(pyxel.KEY_A)
 
     def test_gen_bgm_invalid_preset_panics(self, panic_exception):
-        with raises_exact(panic_exception, "invalid preset"):
+        with raises_exact(panic_exception, "preset must be between 0 and 7"):
             pyxel.gen_bgm(99, 0, 0, 1)
 
     def test_gen_bgm_invalid_transpose_panics(self, panic_exception):

@@ -2,6 +2,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import pyxel
 
 
@@ -75,7 +76,7 @@ class TestSound:
             first_path = str(tmp_path / "first.wav")
             second_path = str(tmp_path / "second.wav")
 
-            # The sound lasts 0.1 seconds, so this renders exactly two loops.
+            # Include a loop restart in both renders.
             snd.save(first_path, 0.2)
             snd.save(second_path, 0.2)
             actual = Path(first_path).read_bytes()
@@ -144,11 +145,12 @@ class TestSoundMml:
         # 4 quarter notes at 120 BPM = 2 s (within clock rounding).
         assert snd.total_sec() == 1.9999496936798096
 
-    def test_mml_none_exits_mml_mode(self):
+    @pytest.mark.parametrize("args", [(), (None,)])
+    def test_mml_clear_exits_mml_mode(self, args):
         snd = pyxel.Sound()
         snd.mml("T120 O4 CDEF")
         assert snd.total_sec() > 0.0
-        snd.mml(None)
+        snd.mml(*args)
         assert snd.total_sec() == 0.0
 
     def test_mml_after_set(self):
@@ -158,27 +160,6 @@ class TestSoundMml:
         # MML mode takes over: 2 s instead of the notes-based 0.25 s.
         assert snd.total_sec() == 1.9999496936798096
 
-    def test_mml_old_syntax_emits_deprecation(self, capfd):
-        snd = pyxel.Sound()
-        # 'x' character triggers old MML syntax detection.
-        snd.mml("T120 X1 O4 CDEF")
-        out = capfd.readouterr().out
-        assert out == "Old MML syntax is deprecated. Use new syntax instead.\n"
-        # Old syntax: 4 notes x 4 steps (default l8) x 7 ticks (t120).
-        assert snd.total_sec() == 0.9332848191261292
-
-    def test_old_mml_emits_deprecation_and_none_exits_mml_mode(self, capfd):
-        snd = pyxel.Sound()
-        snd.old_mml("T120 O4 L4 CDEF")  # type: ignore[attr-defined]
-        out = capfd.readouterr().out
-        assert (
-            out == "Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead.\n"
-        )
-        # 4 notes x 8 steps (l4) x 7 ticks (t120).
-        assert snd.total_sec() == 1.8665696382522583
-        snd.old_mml(None)  # type: ignore[attr-defined]
-        assert snd.total_sec() == 0.0
-
 
 class TestSoundPcm:
     def test_pcm(self, assets_dir):
@@ -187,11 +168,12 @@ class TestSoundPcm:
         # The bundled asset decodes to a fixed gapless-trimmed length at 22050 Hz.
         assert snd.total_sec() == 53.33333206176758
 
-    def test_pcm_none_exits_pcm_mode(self, assets_dir):
+    @pytest.mark.parametrize("args", [(), (None,)])
+    def test_pcm_clear_exits_pcm_mode(self, assets_dir, args):
         snd = pyxel.Sound()
         snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
         assert snd.total_sec() > 0.0
-        snd.pcm(None)
+        snd.pcm(*args)
         assert snd.total_sec() == 0.0
 
 

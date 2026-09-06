@@ -2,26 +2,6 @@ use pyo3::prelude::*;
 
 use super::vec3::Vec3;
 
-fn positions_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
-    let mut primitive = rc_mut!(inner);
-    primitive.mark_collision_geometry_changed();
-    std::cell::RefMut::map(primitive, |primitive| &mut primitive.positions)
-}
-
-fn indices_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<i32>> {
-    let mut primitive = rc_mut!(inner);
-    primitive.mark_collision_geometry_changed();
-    std::cell::RefMut::map(primitive, |primitive| &mut primitive.indices)
-}
-
-fn normals_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
-    std::cell::RefMut::map(rc_mut!(inner), |primitive| &mut primitive.normals)
-}
-
-fn uvs_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
-    std::cell::RefMut::map(rc_mut!(inner), |primitive| &mut primitive.uvs)
-}
-
 // Live sequence proxies retain their Primitive and mutate its Vec fields in place.
 macro_rules! wrap_primitive_as_python_list {
     (
@@ -197,6 +177,26 @@ impl Primitive {
     fn compute_normals(&self) {
         self.inner_mut().compute_normals();
     }
+}
+
+fn positions_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
+    let mut primitive = rc_mut!(inner);
+    primitive.mark_collision_geometry_changed();
+    std::cell::RefMut::map(primitive, |primitive| &mut primitive.positions)
+}
+
+fn indices_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<i32>> {
+    let mut primitive = rc_mut!(inner);
+    primitive.mark_collision_geometry_changed();
+    std::cell::RefMut::map(primitive, |primitive| &mut primitive.indices)
+}
+
+fn normals_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
+    std::cell::RefMut::map(rc_mut!(inner), |primitive| &mut primitive.normals)
+}
+
+fn uvs_mut(inner: &pyxel::cube::RcPrimitive) -> std::cell::RefMut<'_, Vec<f32>> {
+    std::cell::RefMut::map(rc_mut!(inner), |primitive| &mut primitive.uvs)
 }
 
 pub fn add_primitive_class(m: &Bound<'_, PyModule>) -> PyResult<()> {

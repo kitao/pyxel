@@ -2,14 +2,6 @@ from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Mesh, Primitive
 
 
-def _triangle_prim() -> Primitive:
-    return Primitive(
-        Primitive.MODE_TRIANGLES,
-        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-        [0, 1, 2],
-    )
-
-
 class TestConstruction:
     def test_default_empty(self):
         m = Mesh()
@@ -143,7 +135,7 @@ class TestAttributes:
             m.primitives = [p, p]
         assert len(m.primitives) == 1
 
-    def test_set_transforms_revalidates_without_mutating(self):
+    def test_set_transforms_revalidates(self):
         p = _triangle_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
 
@@ -210,3 +202,11 @@ class TestRepr:
             parents=[-1, 0],
         )
         assert repr(m) == "Mesh(parts=2)"
+
+
+def _triangle_prim() -> Primitive:
+    return Primitive(
+        Primitive.MODE_TRIANGLES,
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+        [0, 1, 2],
+    )

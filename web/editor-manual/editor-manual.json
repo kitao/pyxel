@@ -877,18 +877,18 @@
       "uk": "Перемикання звуку для редагування (0–63)."
     },
     "sound_piano_body": {
-      "en": "Click to input note pitch. Red squares represent notes, blue squares represent rests. During piano roll editing, a blue cursor is displayed; during property area editing, a different cursor shape appears. Notes are played from left to right, and rests are automatically inserted in empty positions. Clicking an already-filled position overwrites it. Dragging inputs notes continuously with linear interpolation.",
-      "cn": "通过点击输入音高。红色方块表示音符，蓝色方块表示休止符。编辑钢琴卷帘时显示蓝色光标，编辑属性区域时显示其他形式的光标。音符从左到右依次播放，有空位时自动插入休止符。点击已有音符的位置会覆盖。拖动可通过线性插值连续输入音符。",
-      "de": "Tonhöhe per Klick eingeben. Rote Quadrate zeigen Töne, blaue Quadrate Pausen. Beim Bearbeiten im Pianoroll wird ein blauer Cursor angezeigt, im Eigenschaftsbereich ein anderer Cursor. Töne werden von links nach rechts abgespielt; Lücken werden automatisch mit Pausen gefüllt. Klick auf eine belegte Position überschreibt den Ton. Durch Ziehen werden Töne linear interpoliert eingegeben.",
-      "es": "Introduzca la altura de las notas haciendo clic. Los cuadrados rojos indican notas y los azules indican silencios. Durante la edición del piano roll se muestra un cursor azul; durante la edición del área de propiedades se muestra un cursor diferente. Las notas se reproducen de izquierda a derecha, y los espacios vacíos se rellenan automáticamente con silencios. Al hacer clic en una posición existente, se sobrescribe. Arrastre para introducir notas continuas con interpolación lineal.",
-      "fr": "Saisissez les notes en cliquant. Les carrés rouges représentent les notes, les carrés bleus les silences. En mode piano roll, un curseur bleu s'affiche ; en mode propriétés, le curseur change de forme. Les notes sont lues de gauche à droite ; les espaces vides deviennent automatiquement des silences. Cliquer sur une position existante écrase la note. Le glisser permet de saisir des notes par interpolation linéaire.",
-      "it": "Inserisce le altezze delle note cliccando. Il quadrato rosso indica una nota, il quadrato blu una pausa. Durante la modifica del piano roll appare un cursore blu; durante la modifica dell'area proprietà il cursore cambia forma. Le note vengono riprodotte da sinistra a destra; gli spazi vuoti vengono automaticamente riempiti con pause. Cliccando su una posizione già occupata, la nota viene sovrascritta. Trascinando si inseriscono note in modo continuo con interpolazione lineare.",
-      "ja": "音の高さをクリックで入力します。赤い四角が音、青い四角が休符を示します。ピアノロール編集中は青いカーソルが表示され、プロパティエリア編集中は別の形のカーソルに変わります。音は左から順に再生され、空きがある場合は自動的に休符が挿入されます。既に入力されている位置をクリックすると上書きされます。ドラッグすると線形補間で連続的に音を入力できます。",
-      "ko": "음 높이를 클릭으로 입력합니다. 빨간 사각형이 음, 파란 사각형이 쉼표를 나타냅니다. 피아노 롤 편집 중에는 파란 커서가 표시되고, 프로퍼티 영역 편집 중에는 다른 형태의 커서로 바뀝니다. 음은 왼쪽부터 순서대로 재생되며, 빈 곳에는 자동으로 쉼표가 삽입됩니다. 이미 입력된 위치를 클릭하면 덮어쓰기됩니다. 드래그하면 선형 보간으로 연속적으로 음을 입력할 수 있습니다.",
-      "pt": "Insira a altura das notas clicando. Quadrados vermelhos indicam notas, azuis indicam pausas. Durante a edição no piano roll, um cursor azul é exibido; durante a edição na área de propriedades, o cursor muda de forma. As notas são reproduzidas da esquerda para a direita, e pausas são inseridas automaticamente nos espaços vazios. Clicar em uma posição já preenchida sobrescreve a nota. Arraste para inserir notas continuamente com interpolação linear.",
-      "ru": "Высота ноты вводится щелчком. Красный квадрат — нота, синий — пауза. При редактировании пианоролла отображается синий курсор, при редактировании свойств — курсор другой формы. Ноты воспроизводятся слева направо; пустые позиции автоматически заполняются паузами. Щелчок по существующей ноте перезаписывает её. Перетаскивание вводит ноты с линейной интерполяцией.",
-      "tr": "Nota yüksekliği tıklanarak girilir. Kırmızı kare nota, mavi kare sus işaretini gösterir. Piyano rulosu düzenlemesinde mavi imleç, özellik alanı düzenlemesinde farklı bir imleç görünür. Notalar soldan sağa çalınır; boş konumlara otomatik olarak sus işareti eklenir. Var olan bir nota tıklanırsa üzerine yazılır. Sürükleme ile doğrusal enterpolasyonla sürekli nota girilebilir.",
-      "uk": "Висота ноти вводиться клацанням. Червоний квадрат — нота, синій — пауза. При редагуванні піаноролу відображається синій курсор, при редагуванні властивостей — курсор іншої форми. Ноти відтворюються зліва направо; порожні позиції автоматично заповнюються паузами. Клацання по наявній ноті перезаписує її. Перетягування вводить ноти з лінійною інтерполяцією."
+      "en": "Click to input note pitch. Red squares represent notes, blue squares represent rests. During piano roll editing, a blue cursor is displayed; during property area editing, a different cursor shape appears. Notes are played from left to right, and rests are automatically inserted in empty positions. Clicking an already-filled position overwrites it. Drag to enter notes continuously along the pointer's path.",
+      "cn": "通过点击输入音高。红色方块表示音符，蓝色方块表示休止符。编辑钢琴卷帘时显示蓝色光标，编辑属性区域时显示其他形式的光标。音符从左到右依次播放，有空位时自动插入休止符。点击已有音符的位置会覆盖。拖动可沿鼠标移动路径连续输入音符。",
+      "de": "Tonhöhe per Klick eingeben. Rote Quadrate zeigen Töne, blaue Quadrate Pausen. Beim Bearbeiten im Pianoroll wird ein blauer Cursor angezeigt, im Eigenschaftsbereich ein anderer Cursor. Töne werden von links nach rechts abgespielt; Lücken werden automatisch mit Pausen gefüllt. Klick auf eine belegte Position überschreibt den Ton. Beim Ziehen werden entlang der Mausbewegung fortlaufend Töne eingegeben.",
+      "es": "Introduzca la altura de las notas haciendo clic. Los cuadrados rojos indican notas y los azules indican silencios. Durante la edición del piano roll se muestra un cursor azul; durante la edición del área de propiedades se muestra un cursor diferente. Las notas se reproducen de izquierda a derecha, y los espacios vacíos se rellenan automáticamente con silencios. Al hacer clic en una posición existente, se sobrescribe. Arrastre para introducir notas continuamente siguiendo el recorrido del cursor.",
+      "fr": "Saisissez les notes en cliquant. Les carrés rouges représentent les notes, les carrés bleus les silences. En mode piano roll, un curseur bleu s'affiche ; en mode propriétés, le curseur change de forme. Les notes sont lues de gauche à droite ; les espaces vides deviennent automatiquement des silences. Cliquer sur une position existante écrase la note. Faites glisser la souris pour saisir des notes en continu le long de son trajet.",
+      "it": "Inserisce le altezze delle note cliccando. Il quadrato rosso indica una nota, il quadrato blu una pausa. Durante la modifica del piano roll appare un cursore blu; durante la modifica dell'area proprietà il cursore cambia forma. Le note vengono riprodotte da sinistra a destra; gli spazi vuoti vengono automaticamente riempiti con pause. Cliccando su una posizione già occupata, la nota viene sovrascritta. Trascinando si inseriscono note in modo continuo lungo il percorso del puntatore.",
+      "ja": "音の高さをクリックで入力します。赤い四角が音、青い四角が休符を示します。ピアノロール編集中は青いカーソルが表示され、プロパティエリア編集中は別の形のカーソルに変わります。音は左から順に再生され、空きがある場合は自動的に休符が挿入されます。既に入力されている位置をクリックすると上書きされます。ドラッグした経路に沿って音を連続入力できます。",
+      "ko": "음 높이를 클릭으로 입력합니다. 빨간 사각형이 음, 파란 사각형이 쉼표를 나타냅니다. 피아노 롤 편집 중에는 파란 커서가 표시되고, 프로퍼티 영역 편집 중에는 다른 형태의 커서로 바뀝니다. 음은 왼쪽부터 순서대로 재생되며, 빈 곳에는 자동으로 쉼표가 삽입됩니다. 이미 입력된 위치를 클릭하면 덮어쓰기됩니다. 드래그한 경로를 따라 음을 연속으로 입력할 수 있습니다.",
+      "pt": "Insira a altura das notas clicando. Quadrados vermelhos indicam notas, azuis indicam pausas. Durante a edição no piano roll, um cursor azul é exibido; durante a edição na área de propriedades, o cursor muda de forma. As notas são reproduzidas da esquerda para a direita, e pausas são inseridas automaticamente nos espaços vazios. Clicar em uma posição já preenchida sobrescreve a nota. Arraste para inserir notas continuamente ao longo do movimento do cursor.",
+      "ru": "Высота ноты вводится щелчком. Красный квадрат — нота, синий — пауза. При редактировании пианоролла отображается синий курсор, при редактировании свойств — курсор другой формы. Ноты воспроизводятся слева направо; пустые позиции автоматически заполняются паузами. Щелчок по существующей ноте перезаписывает её. Перетаскивайте указатель, чтобы непрерывно вводить ноты вдоль его пути.",
+      "tr": "Nota yüksekliği tıklanarak girilir. Kırmızı kare nota, mavi kare sus işaretini gösterir. Piyano rulosu düzenlemesinde mavi imleç, özellik alanı düzenlemesinde farklı bir imleç görünür. Notalar soldan sağa çalınır; boş konumlara otomatik olarak sus işareti eklenir. Var olan bir nota tıklanırsa üzerine yazılır. Sürüklerken imlecin izlediği yol boyunca art arda notalar girilir.",
+      "uk": "Висота ноти вводиться клацанням. Червоний квадрат — нота, синій — пауза. При редагуванні піаноролу відображається синій курсор, при редагуванні властивостей — курсор іншої форми. Ноти відтворюються зліва направо; порожні позиції автоматично заповнюються паузами. Клацання по наявній ноті перезаписує її. Перетягуйте вказівник, щоб безперервно вводити ноти вздовж його шляху."
     },
     "sound_octave_body": {
       "en": "Displays the starting octave (0–3) for keyboard input. The keyboard covers two octaves from the selected octave.",
@@ -2719,10 +2719,10 @@
         "de": "Gleitet stufenlos vom vorherigen Ton zum aktuellen",
         "es": "Slide. Conecta suavemente el tono desde la nota anterior",
         "fr": "Liaison progressive de la hauteur depuis la note précédente",
-        "it": "Collega le note con una transizione graduale dell'intonazione",
+        "it": "Passa gradualmente dall'intonazione della nota precedente a quella attuale",
         "ja": "直前の音から滑らかに音程をつなげる",
         "ko": "직전 음에서 부드럽게 음정을 연결",
-        "pt": "Conecta suavemente a altura à nota anterior",
+        "pt": "Faz uma transição suave da altura da nota anterior para a atual",
         "ru": "Slide. Плавное скольжение высоты от предыдущей ноты",
         "tr": "Slide. Önceki notadan yumuşak perde geçişi",
         "uk": "Slide. Плавне ковзання висоти від попередньої ноти"
@@ -3655,35 +3655,35 @@
     {
       "key": "Ctrl(Cmd)+U",
       "action": {
-        "en": "Raise the pitch of the selection by 1",
-        "cn": "将选择范围的音高升 1",
-        "de": "Tonhöhe der Auswahl um 1 erhöhen",
-        "es": "Subir el tono de la selección en 1",
-        "fr": "Augmenter la hauteur de la sélection de 1",
-        "it": "Alza di 1 l'intonazione della selezione",
-        "ja": "選択範囲の音程を 1 上げる",
-        "ko": "선택 범위의 음정을 1 올림",
-        "pt": "Subir a altura da seleção em 1",
-        "ru": "Повысить высоту нот в выделении на 1",
-        "tr": "Seçili aralıktaki nota perdesini 1 yükseltir",
-        "uk": "Підвищити висоту нот у виділенні на 1"
+        "en": "Raise the pitch of the selection by a semitone",
+        "cn": "将选择范围的音高升高半音",
+        "de": "Tonhöhe der Auswahl um einen Halbton erhöhen",
+        "es": "Subir el tono de la selección un semitono",
+        "fr": "Augmenter la hauteur de la sélection d'un demi-ton",
+        "it": "Alza di un semitono l'intonazione della selezione",
+        "ja": "選択範囲の音程を半音上げる",
+        "ko": "선택 범위의 음정을 반음 올림",
+        "pt": "Subir a altura da seleção em um semitom",
+        "ru": "Повысить высоту нот в выделении на полутон",
+        "tr": "Seçili aralıktaki nota perdesini yarım ton yükseltir",
+        "uk": "Підвищити висоту нот у виділенні на півтон"
       }
     },
     {
       "key": "Ctrl(Cmd)+D",
       "action": {
-        "en": "Lower the pitch of the selection by 1",
-        "cn": "将选择范围的音高降 1",
-        "de": "Tonhöhe der Auswahl um 1 verringern",
-        "es": "Bajar el tono de la selección en 1",
-        "fr": "Diminuer la hauteur de la sélection de 1",
-        "it": "Abbassa di 1 l'intonazione della selezione",
-        "ja": "選択範囲の音程を 1 下げる",
-        "ko": "선택 범위의 음정을 1 내림",
-        "pt": "Descer a altura da seleção em 1",
-        "ru": "Понизить высоту нот в выделении на 1",
-        "tr": "Seçili aralıktaki nota perdesini 1 alçaltır",
-        "uk": "Знизити висоту нот у виділенні на 1"
+        "en": "Lower the pitch of the selection by a semitone",
+        "cn": "将选择范围的音高降低半音",
+        "de": "Tonhöhe der Auswahl um einen Halbton verringern",
+        "es": "Bajar el tono de la selección un semitono",
+        "fr": "Diminuer la hauteur de la sélection d'un demi-ton",
+        "it": "Abbassa di un semitono l'intonazione della selezione",
+        "ja": "選択範囲の音程を半音下げる",
+        "ko": "선택 범위의 음정을 반음 내림",
+        "pt": "Descer a altura da seleção em um semitom",
+        "ru": "Понизить высоту нот в выделении на полутон",
+        "tr": "Seçili aralıktaki nota perdesini yarım ton alçaltır",
+        "uk": "Знизити висоту нот у виділенні на півтон"
       }
     }
   ],

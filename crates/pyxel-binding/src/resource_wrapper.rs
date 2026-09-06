@@ -3,18 +3,6 @@ use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
 
-fn resolve_exclude(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
-    if deprecated.is_some() {
-        deprecation_warning!(
-            EXCL_OPTION_ONCE,
-            "excl_* options are deprecated. Use exclude_* instead."
-        );
-        deprecated
-    } else {
-        preferred
-    }
-}
-
 // Resource load and save
 
 #[pyfunction]
@@ -105,6 +93,18 @@ fn user_data_dir(vendor_name: &str, app_name: &str) -> PyResult<String> {
     pyxel()
         .user_data_dir(vendor_name, app_name)
         .map_err(PyException::new_err)
+}
+
+fn resolve_exclude(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
+    if deprecated.is_some() {
+        deprecation_warning!(
+            EXCL_OPTION_ONCE,
+            "excl_* options are deprecated. Use exclude_* instead."
+        );
+        deprecated
+    } else {
+        preferred
+    }
 }
 
 pub fn add_resource_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

@@ -25,19 +25,6 @@
       let data = null;
       let lang = "en";
 
-      function table(headers, rows) {
-        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr>`;
-        for (const th of headers) html += `<th class="th">${esc(th)}</th>`;
-        html += `</tr></thead><tbody>`;
-        for (const row of rows) {
-          html += "<tr>";
-          for (const cell of row)
-            html += `<td class="td text-gray-300">${cell}</td>`;
-          html += "</tr>";
-        }
-        return html + "</tbody></table></div>";
-      }
-
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
@@ -169,7 +156,6 @@
           <p class="body">${t("app2html_body").replace("{0}", chip("pyxel app2html"))}</p>
           ${code("pyxel app2html your_app.pyxapp", "sh")}
           <p class="body">${esc(t("app2html_body2"))}</p>
-          <p class="body mt-2">${esc(t("app2html_body3"))}</p>
           <p class="body mt-2">${t("app2html_gamepad").replace("{0}", chip('gamepad: "enabled",'))}</p>`;
 
         document.getElementById("s-custom-elements").innerHTML = `
@@ -262,6 +248,19 @@ pyxel.show()
 
         setDocLang(lang);
         hljs.highlightAll();
+      }
+
+      function table(headers, rows) {
+        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr>`;
+        for (const th of headers) html += `<th class="th">${esc(th)}</th>`;
+        html += `</tr></thead><tbody>`;
+        for (const row of rows) {
+          html += "<tr>";
+          for (const cell of row)
+            html += `<td class="td text-gray-300">${cell}</td>`;
+          html += "</tr>";
+        }
+        return html + "</tbody></table></div>";
       }
 
       initPage("web-usage.json", buildPage);

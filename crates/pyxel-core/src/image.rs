@@ -45,12 +45,12 @@ define_rc_type!(RcImage, Image);
 
 impl Image {
     pub fn new(width: u32, height: u32) -> RcImage {
-        Self::try_new(width, height).expect("image dimensions are too large")
+        Self::try_new(width, height).expect("width and height are too large")
     }
 
     pub fn try_new(width: u32, height: u32) -> Result<RcImage, String> {
         let canvas = Canvas::try_new(width, height)
-            .ok_or_else(|| "image dimensions are too large".to_string())?;
+            .ok_or_else(|| "width and height are too large".to_string())?;
         Ok(new_rc_type!(Self {
             canvas,
             palette: array::from_fn(|i| i as Color),
@@ -415,7 +415,6 @@ impl Image {
                 palette,
                 rotate,
                 scale,
-                false,
             );
         } else {
             self.canvas.blit(

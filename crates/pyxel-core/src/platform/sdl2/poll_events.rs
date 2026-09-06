@@ -121,8 +121,15 @@ impl PlatformSdl2 {
                     if unsafe { sdl_event.key.repeat } == 0 {
                         let pressed = unsafe { sdl_event.type_ } as SDL_EventType == SDL_KEYDOWN;
                         push_key_event(pyxel_events, key, pressed);
-                        if let Some(unified_key) = key_to_virtual_key(key) {
-                            push_key_event(pyxel_events, unified_key, pressed);
+                        if let Some((unified_key, mask)) = key_to_virtual_key(key) {
+                            // Use this event's state so queued transitions stay in order.
+                            let modifiers = unsafe { sdl_event.key.keysym.mod_ } as SDL_Keymod;
+                            let was_pressed = self.key_modifiers & mask != 0;
+                            let is_pressed = modifiers & mask != 0;
+                            if is_pressed != was_pressed {
+                                push_key_event(pyxel_events, unified_key, is_pressed);
+                            }
+                            self.key_modifiers = modifiers;
                         }
                     }
                 }
@@ -331,12 +338,12 @@ fn push_key_event(events: &mut Vec<Event>, key: Key, pressed: bool) {
     });
 }
 
-fn key_to_virtual_key(key: Key) -> Option<Key> {
+fn key_to_virtual_key(key: Key) -> Option<(Key, SDL_Keymod)> {
     match key {
-        KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
-        KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
-        KEY_LALT | KEY_RALT => Some(KEY_ALT),
-        KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
+        KEY_LSHIFT | KEY_RSHIFT => Some((KEY_SHIFT, KMOD_SHIFT)),
+        KEY_LCTRL | KEY_RCTRL => Some((KEY_CTRL, KMOD_CTRL)),
+        KEY_LALT | KEY_RALT => Some((KEY_ALT, KMOD_ALT)),
+        KEY_LGUI | KEY_RGUI => Some((KEY_GUI, KMOD_GUI)),
         _ => None,
     }
 }
@@ -371,5 +378,72 @@ fn controller_button_to_key(button: i32) -> Key {
         SDL_CONTROLLER_BUTTON_DPAD_LEFT => GAMEPAD1_BUTTON_DPAD_LEFT,
         SDL_CONTROLLER_BUTTON_DPAD_RIGHT => GAMEPAD1_BUTTON_DPAD_RIGHT,
         _ => KEY_UNKNOWN,
+    }
+}
+
+#[cfg(all(test, not(target_os = "emscripten")))]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_combined_modifiers_follow_either_side() {
+        // Push real SDL events without opening a window or using the OS keyboard.
+        assert_eq!(unsafe { SDL_InitSubSystem(SDL_INIT_EVENTS) }, 0);
+        for (left, right, unified, left_mask, right_mask) in [
+            (KEY_LSHIFT, KEY_RSHIFT, KEY_SHIFT, KMOD_LSHIFT, KMOD_RSHIFT),
+            (KEY_LCTRL, KEY_RCTRL, KEY_CTRL, KMOD_LCTRL, KMOD_RCTRL),
+            (KEY_LALT, KEY_RALT, KEY_ALT, KMOD_LALT, KMOD_RALT),
+            (KEY_LGUI, KEY_RGUI, KEY_GUI, KMOD_LGUI, KMOD_RGUI),
+        ] {
+            for (first, second, first_mask, second_mask) in [
+                (left, right, left_mask, right_mask),
+                (right, left, right_mask, left_mask),
+            ] {
+                for batched in [false, true] {
+                    let mut platform = PlatformSdl2::new();
+                    platform.is_wayland = true;
+                    let mut events = Vec::new();
+                    for (key, pressed, modifiers, repeat) in [
+                        (first, true, first_mask, 0),
+                        (first, true, first_mask, 1),
+                        (second, true, first_mask | second_mask, 0),
+                        (first, false, second_mask, 0),
+                        (second, false, 0, 0),
+                    ] {
+                        let mut event: SDL_Event = unsafe { zeroed() };
+                        event.key.type_ = if pressed { SDL_KEYDOWN } else { SDL_KEYUP };
+                        event.key.keysym.sym = key as SDL_Keycode;
+                        event.key.keysym.mod_ = modifiers as u16;
+                        event.key.repeat = repeat;
+                        assert_eq!(unsafe { SDL_PushEvent(&raw mut event) }, 1);
+                        if !batched {
+                            platform.poll_events(&mut events);
+                        }
+                    }
+                    platform.poll_events(&mut events);
+                    let actual: Vec<_> = events
+                        .iter()
+                        .filter_map(|event| match event {
+                            Event::KeyPressed { key } => Some((*key, true)),
+                            Event::KeyReleased { key } => Some((*key, false)),
+                            _ => None,
+                        })
+                        .collect();
+                    assert_eq!(
+                        actual,
+                        [
+                            (first, true),
+                            (unified, true),
+                            (second, true),
+                            (first, false),
+                            (second, false),
+                            (unified, false),
+                        ],
+                        "first={first}, second={second}, batched={batched}"
+                    );
+                }
+            }
+        }
+        unsafe { SDL_QuitSubSystem(SDL_INIT_EVENTS) };
     }
 }

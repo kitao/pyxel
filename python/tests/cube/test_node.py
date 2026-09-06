@@ -18,10 +18,6 @@ from pyxel.cube import (
 )
 
 
-def palette() -> list[int]:
-    return [pyxel.colors[i] for i in range(16)]
-
-
 class TestAttributes:
     def test_default_state(self):
         n = Node()
@@ -78,9 +74,6 @@ class TestAttributes:
         assert n.collider is None
 
 
-# Collider is user-constructible; Contact is an engine-built payload with
-# read-only fields. Its geometry is verified by the Rust unit tests and the
-# on_collide integration test in test_scene.py.
 class TestColliderContactBasics:
     def test_collider_constructable(self):
         c = Collider()
@@ -198,7 +191,6 @@ class TestHierarchy:
         head = Node()
         head.name = "head"
         root.add_child(head)
-        # Subtree DFS pre-order; self matches first when its name fits.
         root.name = "root"
         assert root.find_by_name("root") == [root]
         assert root.find_by_name("head") == [head]
@@ -252,8 +244,6 @@ class TestSubclassing:
         assert n.name == "hero"
 
     def test_node_subclass_chained_init_args(self):
-        # Extra positional arguments must survive recursive subclass
-        # construction through a deeper hierarchy.
         class Level(Node):
             def __init__(self, depth):
                 super().__init__()
@@ -266,10 +256,7 @@ class TestSubclassing:
         assert s.children[0].name == "level-2"
         assert len(s.find_by_name("level-0")) == 1
 
-    def test_lifecycle_hooks_default_noop(self):
-        # Default implementations are no-op and callable directly or from the
-        # frame pipeline. on_collide is covered with an engine-built Contact in
-        # test_scene.py.
+    def test_default_lifecycle_hooks_are_callable(self):
         n = Node()
         n.on_update()
         n.on_draw()
@@ -487,9 +474,6 @@ class TestBoxSphereTexturing:
         Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
 
 
-# The signature must expose the public argument names so engine calls and user
-# overrides agree. Contact is engine-built, so real firing is covered in
-# test_scene.py.
 class TestOnCollideSignature:
     def test_signature_param_names(self):
         assert str(inspect.signature(Node.on_collide)) == "(self, /, other, contact)"
@@ -539,3 +523,7 @@ class TestCameraCascade:
         assert c.clear_color is None
         c.clear_color = 5
         assert c.clear_color == 5
+
+
+def palette() -> list[int]:
+    return [pyxel.colors[i] for i in range(16)]

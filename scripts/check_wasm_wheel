@@ -30,6 +30,28 @@ HOST_PATH_PATTERNS = (
 )
 
 
+def main() -> int:
+    try:
+        wheel_path = find_wheel(DIST_DIR, PYPROJECT_PATH)
+        _name, version = _project_name_and_version(PYPROJECT_PATH)
+        violations = find_violations(wheel_path)
+        violations.extend(find_source_mismatches(wheel_path, PYXEL_SOURCE_DIR))
+        violations.extend(find_metadata_mismatches(wheel_path, PYPROJECT_PATH))
+        violations.extend(find_wheel_tag_mismatches(wheel_path, version))
+    except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
+        print(f"error: {error}")
+        return 1
+
+    if violations:
+        print(f"error: invalid contents detected in {wheel_path.name}")
+        for entry, reason in violations:
+            print(f"  - {entry}: {reason}")
+        return 1
+
+    print(f"ok: {wheel_path.name}")
+    return 0
+
+
 def _project_name_and_version(pyproject_path):
     try:
         project = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))["project"]
@@ -223,28 +245,6 @@ def find_wheel_tag_mismatches(wheel_path, version):
             )
         ]
     return []
-
-
-def main() -> int:
-    try:
-        wheel_path = find_wheel(DIST_DIR, PYPROJECT_PATH)
-        _name, version = _project_name_and_version(PYPROJECT_PATH)
-        violations = find_violations(wheel_path)
-        violations.extend(find_source_mismatches(wheel_path, PYXEL_SOURCE_DIR))
-        violations.extend(find_metadata_mismatches(wheel_path, PYPROJECT_PATH))
-        violations.extend(find_wheel_tag_mismatches(wheel_path, version))
-    except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
-        print(f"error: {error}")
-        return 1
-
-    if violations:
-        print(f"error: invalid contents detected in {wheel_path.name}")
-        for entry, reason in violations:
-            print(f"  - {entry}: {reason}")
-        return 1
-
-    print(f"ok: {wheel_path.name}")
-    return 0
 
 
 if __name__ == "__main__":

@@ -2,24 +2,8 @@
 
 const PYXEL_LANG_KEY = "pyxel-lang";
 
-const detectLang = (languages) => {
-  const stored = localStorage.getItem(PYXEL_LANG_KEY);
-  if (stored && languages.some((l) => l.code === stored)) return stored;
-  const nav = (navigator.language ?? "").toLowerCase();
-  if (nav.startsWith("zh")) return "cn";
-  for (const l of languages) {
-    if (nav.startsWith(l.code)) return l.code;
-  }
-  return "en";
-};
-
 const setDocLang = (lang) => {
   document.documentElement.lang = lang === "cn" ? "zh" : lang;
-};
-
-const saveLang = (lang) => {
-  localStorage.setItem(PYXEL_LANG_KEY, lang);
-  setDocLang(lang);
 };
 
 const buildLangSelector = (
@@ -268,4 +252,20 @@ const initPage = (jsonFile, buildFn) => {
       buildFn();
     })
     .catch((e) => console.error("Failed to load data:", e));
+};
+
+const detectLang = (languages) => {
+  const stored = localStorage.getItem(PYXEL_LANG_KEY);
+  if (stored && languages.some((l) => l.code === stored)) return stored;
+  const nav = (navigator.language ?? "").toLowerCase();
+  if (nav.startsWith("zh")) return "cn";
+  for (const l of languages) {
+    if (nav.startsWith(l.code)) return l.code;
+  }
+  return "en";
+};
+
+const saveLang = (lang) => {
+  localStorage.setItem(PYXEL_LANG_KEY, lang);
+  setDocLang(lang);
 };

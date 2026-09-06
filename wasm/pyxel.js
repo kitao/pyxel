@@ -1,4 +1,4 @@
-const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v314.0.4/full/pyodide.js";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v314.0.6/full/pyodide.js";
 const PYXEL_WHEEL_PATH =
   "pyxel-3.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl";
 const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
@@ -21,6 +21,62 @@ const VIRTUAL_GAMEPAD_Y = 7;
 const VIRTUAL_GAMEPAD_START = 8;
 const VIRTUAL_GAMEPAD_BACK = 9;
 const VIRTUAL_GAMEPAD_BUTTON_COUNT = 10;
+
+// Custom elements
+
+class PyxelBaseElement extends HTMLElement {
+  attributeChangedCallback(name, _oldValue, newValue) {
+    this[name] = newValue;
+  }
+}
+
+class PyxelRunElement extends PyxelBaseElement {
+  static get observedAttributes() {
+    return ["root", "name", "script", "packages", "gamepad"];
+  }
+
+  connectedCallback() {
+    _launchPyxelFromElement({
+      command: "run",
+      root: this.root,
+      name: this.name,
+      script: this.script,
+      packages: this.packages,
+      gamepad: this.gamepad,
+    });
+  }
+}
+
+class PyxelPlayElement extends PyxelBaseElement {
+  static get observedAttributes() {
+    return ["root", "name", "packages", "gamepad"];
+  }
+
+  connectedCallback() {
+    _launchPyxelFromElement({
+      command: "play",
+      root: this.root,
+      name: this.name,
+      packages: this.packages,
+      gamepad: this.gamepad,
+    });
+  }
+}
+
+class PyxelEditElement extends PyxelBaseElement {
+  static get observedAttributes() {
+    return ["root", "name", "editor"];
+  }
+
+  connectedCallback() {
+    _launchPyxelFromElement({
+      command: "edit",
+      root: this.root,
+      name: this.name,
+      editor: this.editor,
+    });
+  }
+}
 
 const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
 const _encodeUrlPath = (path) =>
@@ -953,65 +1009,9 @@ const _executePyxelCommand = async (pyodide, params) => {
   }
 };
 
-// Custom elements
-
 const _launchPyxelFromElement = (params) => {
   launchPyxel(params).catch(_displayFatalErrorOverlay);
 };
-
-class PyxelBaseElement extends HTMLElement {
-  attributeChangedCallback(name, _oldValue, newValue) {
-    this[name] = newValue;
-  }
-}
-
-class PyxelRunElement extends PyxelBaseElement {
-  static get observedAttributes() {
-    return ["root", "name", "script", "packages", "gamepad"];
-  }
-
-  connectedCallback() {
-    _launchPyxelFromElement({
-      command: "run",
-      root: this.root,
-      name: this.name,
-      script: this.script,
-      packages: this.packages,
-      gamepad: this.gamepad,
-    });
-  }
-}
-
-class PyxelPlayElement extends PyxelBaseElement {
-  static get observedAttributes() {
-    return ["root", "name", "packages", "gamepad"];
-  }
-
-  connectedCallback() {
-    _launchPyxelFromElement({
-      command: "play",
-      root: this.root,
-      name: this.name,
-      packages: this.packages,
-      gamepad: this.gamepad,
-    });
-  }
-}
-
-class PyxelEditElement extends PyxelBaseElement {
-  static get observedAttributes() {
-    return ["root", "name", "editor"];
-  }
-
-  connectedCallback() {
-    _launchPyxelFromElement({
-      command: "edit",
-      root: this.root,
-      name: this.name,
-      editor: this.editor,
-    });
-  }
-}
 
 const _registerCustomElements = () => {
   window.customElements.define("pyxel-run", PyxelRunElement);

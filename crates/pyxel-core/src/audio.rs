@@ -20,6 +20,7 @@ use crate::{platform, utils};
 
 pub struct Audio;
 
+#[must_use = "dropping the guard releases the audio lock"]
 pub struct AudioLock;
 
 struct AudioStreamRenderer {

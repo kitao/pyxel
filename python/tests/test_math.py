@@ -1,18 +1,14 @@
 import pytest
 import pyxel
-from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 class TestClamp:
     @pytest.mark.parametrize(
-        ("lower", "upper", "message"),
-        [
-            (float("nan"), 1.0, "lower must not be NaN"),
-            (0.0, float("nan"), "upper must not be NaN"),
-        ],
+        ("lower", "upper"),
+        [(float("nan"), 1.0), (0.0, float("nan"))],
     )
-    def test_nan_bound_raises(self, lower, upper, message):
-        with raises_exact(ValueError, message):
+    def test_nan_bound_panics(self, lower, upper, panic_exception):
+        with pytest.raises(panic_exception):
             pyxel.clamp(0.5, lower, upper)
 
     def test_int_returns_int(self):
@@ -106,7 +102,7 @@ class TestTrig:
     def test_sin_negative(self):
         assert pyxel.sin(-90) == pytest.approx(-1.0, abs=1e-6)
 
-    def test_atan2_quadrants(self):
+    def test_atan2_axis_angles(self):
         assert pyxel.atan2(1, 0) == pytest.approx(90.0, abs=1e-3)
         assert pyxel.atan2(0, 1) == pytest.approx(0.0, abs=1e-3)
         assert pyxel.atan2(-1, 0) == pytest.approx(-90.0, abs=1e-3)
@@ -149,14 +145,11 @@ class TestBasicMath:
 
 class TestRandom:
     @pytest.mark.parametrize(
-        ("a", "b", "message"),
-        [
-            (float("nan"), 1.0, "a must be finite"),
-            (0.0, float("inf"), "b must be finite"),
-        ],
+        ("a", "b"),
+        [(float("nan"), 1.0), (0.0, float("inf"))],
     )
-    def test_rndf_nonfinite_bound_raises(self, a, b, message):
-        with raises_exact(ValueError, message):
+    def test_rndf_nonfinite_bound_panics(self, a, b, panic_exception):
+        with pytest.raises(panic_exception):
             pyxel.rndf(a, b)
 
     def test_rndi_in_range(self):

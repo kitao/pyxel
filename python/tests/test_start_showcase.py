@@ -16,15 +16,6 @@ START_SHOWCASE_PATH = ROOT_DIR / "scripts" / "start_showcase"
 CDN_RUNTIME_URL = "https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"
 
 
-def _load_start_showcase() -> ModuleType:
-    loader = SourceFileLoader("start_showcase", str(START_SHOWCASE_PATH))
-    spec = spec_from_loader(loader.name, loader)
-    assert spec is not None
-    module = module_from_spec(spec)
-    loader.exec_module(module)
-    return module
-
-
 @pytest.fixture
 def showcase_module() -> ModuleType:
     return _load_start_showcase()
@@ -44,16 +35,10 @@ def showcase_url(showcase_module: ModuleType) -> Iterator[str]:
         thread.join()
 
 
-def _get(url: str) -> tuple[int, bytes]:
-    try:
-        with urlopen(url) as response:
-            return response.status, response.read()
-    except HTTPError as error:
-        return error.code, error.read()
-
-
 def test_start_showcase_preserves_public_paths(showcase_url: str):
     expected_paths = [
+        "/docs/images/pyxel_thanks.png",
+        "/docs/pyxel.gpl",
         "/wasm/pyxel.js",
         "/python/pyxel/examples/01_hello_pyxel.py",
         "/pyxel-sw.js",
@@ -129,3 +114,20 @@ def test_start_showcase_checks_index_symlink_targets(
         status, body = _get(showcase_url + path)
         assert status == (200 if public_target else 404), path
         assert (b"INDEX_TARGET" in body) == public_target, path
+
+
+def _load_start_showcase() -> ModuleType:
+    loader = SourceFileLoader("start_showcase", str(START_SHOWCASE_PATH))
+    spec = spec_from_loader(loader.name, loader)
+    assert spec is not None
+    module = module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def _get(url: str) -> tuple[int, bytes]:
+    try:
+        with urlopen(url) as response:
+            return response.status, response.read()
+    except HTTPError as error:
+        return error.code, error.read()

@@ -46,162 +46,6 @@ API_REFERENCE_DOCS = (
 )
 
 
-# Shared helpers
-
-
-def generated_header(*source_paths):
-    sources = " and ".join(str(p.relative_to(ROOT_DIR)) for p in source_paths)
-    return f"<!-- This file is generated from {sources}. -->\n\n"
-
-
-def localize(obj):
-    if not obj:
-        return ""
-    if isinstance(obj, str):
-        return obj
-    return obj.get("en", "")
-
-
-def _find_matching(text, start, open_ch, close_ch):
-    depth = 1
-    i = start
-    while i < len(text) and depth > 0:
-        ch = text[i]
-        if ch == "\\" and i + 1 < len(text):
-            i += 2
-            continue
-        if ch in ('"', "'", "`"):
-            q = ch
-            i += 1
-            while i < len(text) and text[i] != q:
-                if text[i] == "\\":
-                    i += 1
-                i += 1
-            i += 1
-            continue
-        if ch == open_ch:
-            depth += 1
-        elif ch == close_ch:
-            depth -= 1
-        i += 1
-    return i
-
-
-# Parse one JavaScript argument while preserving nested strings, regexes, arrays, and groups.
-def _parse_arg(text):
-    text = text.lstrip()
-    if not text:
-        return "", ""
-    if text[0] in ('"', "'"):
-        q = text[0]
-        i = 1
-        while i < len(text):
-            if text[i] == "\\" and i + 1 < len(text):
-                i += 2
-                continue
-            if text[i] == q:
-                return text[: i + 1], text[i + 1 :].lstrip()
-            i += 1
-    elif text[0] == "`":
-        i = 1
-        while i < len(text):
-            if text[i] == "\\" and i + 1 < len(text):
-                i += 2
-                continue
-            if text[i] == "$" and i + 1 < len(text) and text[i + 1] == "{":
-                i = _find_matching(text, i + 2, "{", "}")
-                continue
-            if text[i] == "`":
-                return text[: i + 1], text[i + 1 :].lstrip()
-            i += 1
-    elif text[0] == "/":
-        i = 1
-        while i < len(text) and text[i] != "/":
-            if text[i] == "\\":
-                i += 1
-            i += 1
-        i += 1
-        while i < len(text) and text[i].isalpha():
-            i += 1
-        return text[:i], text[i:].lstrip()
-    elif text[0] == "[":
-        end = _find_matching(text, 1, "[", "]")
-        return text[:end], text[end:].lstrip()
-    else:
-        depth = 0
-        i = 0
-        while i < len(text):
-            ch = text[i]
-            if ch in ('"', "'", "`"):
-                q = ch
-                i += 1
-                while i < len(text) and text[i] != q:
-                    if text[i] == "\\":
-                        i += 1
-                    i += 1
-                i += 1
-                continue
-            if ch in ("(", "[", "{"):
-                depth += 1
-            elif ch in (")", "]", "}"):
-                if depth == 0:
-                    break
-                depth -= 1
-            elif ch == "," and depth == 0:
-                break
-            i += 1
-        return text[:i].rstrip(), text[i:].lstrip()
-    return text, ""
-
-
-def _skip_comma(text):
-    text = text.lstrip()
-    return text[1:].lstrip() if text.startswith(",") else text
-
-
-def _split_plus(expr):
-    parts = []
-    current = []
-    depth = 0
-    in_str = None
-    for ch in expr:
-        if in_str:
-            current.append(ch)
-            if ch != "\\" and ch == in_str:
-                in_str = None
-            continue
-        if ch in ('"', "'", "`"):
-            in_str = ch
-            current.append(ch)
-            continue
-        if ch in ("(", "[", "{"):
-            depth += 1
-        elif ch in (")", "]", "}"):
-            depth -= 1
-        if ch == "+" and depth == 0:
-            parts.append("".join(current))
-            current = []
-            continue
-        current.append(ch)
-    if current:
-        parts.append("".join(current))
-    return parts if len(parts) > 1 else [expr]
-
-
-def _transform_url(url, web_path=None):
-    if url.startswith(("http://", "https://")):
-        return url
-    if url.startswith("../../docs/images/"):
-        return url.replace("../../docs/images/", "images/")
-    if url.startswith("../../docs/"):
-        return url.replace("../../docs/", "")
-    if url.startswith("../"):
-        return f"{PYXEL_WEB}/{url[3:]}"
-    if web_path:
-        return f"{PYXEL_WEB}/{web_path}/{url}"
-    return url
-
-
 class JsEval:
     def __init__(self, ui, data, web_path=None):
         self._ui = ui
@@ -247,17 +91,21 @@ class JsEval:
             en_expr, _ = _parse_arg(rest)
             return self.eval(en_expr)
 
+        # Split top-level concatenation before recognizing a string literal.
+        parts = _split_plus(expr)
+        if len(parts) > 1:
+            return "".join(self.eval(p.strip()) for p in parts)
+
         # String literals
         if len(expr) >= 2:
             if (expr[0] == '"' and expr[-1] == '"') or (
                 expr[0] == "'" and expr[-1] == "'"
             ):
                 s = expr[1:-1]
-                return (
-                    s.replace("\\n", "\n")
-                    .replace("\\/", "/")
-                    .replace('\\"', '"')
-                    .replace("\\'", "'")
+                return re.sub(
+                    r"\\([n\\/'\"])",
+                    lambda match: "\n" if match[1] == "n" else match[1],
+                    s,
                 )
             if expr[0] == "`" and expr[-1] == "`":
                 return self.eval_template(expr[1:-1])
@@ -413,7 +261,7 @@ class JsEval:
             for i, key in enumerate(kl.get("lower", [])):
                 rows.append(f"| {notes[i]} | {key} |")
             rows.append(
-                f"\n| {localize(kl.get('rest_label', {}))} | {kl.get('rest_key', '')} |"
+                f"\n**{localize(kl.get('rest_label', {}))}:** {kl.get('rest_key', '')}"
             )
             return "\n".join(rows) + "\n"
 
@@ -437,11 +285,6 @@ class JsEval:
         # [].map(([u,n]) => `...`).join("") / [].map(k => `...`).join("")
         if ".map(" in expr and ".join(" in expr:
             return self._map_join(expr)
-
-        # String concatenation
-        parts = _split_plus(expr)
-        if len(parts) > 1:
-            return "".join(self.eval(p.strip()) for p in parts)
 
         return expr
 
@@ -485,7 +328,7 @@ class JsEval:
         return text
 
     def _parse_array(self, arr_str):
-        arr_str = arr_str.strip().strip("[]")
+        arr_str = arr_str.strip()[1:-1]
         items = []
         while arr_str.strip():
             item, arr_str = _parse_arg(arr_str.strip())
@@ -620,12 +463,12 @@ class JsEval:
         # Handle destructured map callbacks such as ([u, n]) => `...`.
         m = re.search(
             r"\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)"
-            r'\s*\.join\(["\'].*?["\']\)',
+            r'\s*\.join\((["\'].*?["\'])\)',
             expr,
             re.DOTALL,
         )
         if m:
-            pairs_inner = arr_str.strip().strip("[]")
+            pairs_inner = arr_str[1:-1]
             items = []
             while pairs_inner.strip():
                 pairs_inner = pairs_inner.strip()
@@ -641,11 +484,11 @@ class JsEval:
                     pairs_inner = _skip_comma(pairs_inner)
                 else:
                     break
-            return "".join(items)
+            return self.eval(m.group(4)).join(items)
         # Handle single-argument map callbacks such as k => `...` or (k) => `...`.
         m = re.search(
             r"\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)"
-            r'\s*\.join\(["\'].*?["\']\)',
+            r'\s*\.join\((["\'].*?["\'])\)',
             expr,
             re.DOTALL,
         )
@@ -657,7 +500,7 @@ class JsEval:
                 self._vars[m.group(1)] = key
                 items.append(self.eval_template(m.group(2)))
                 self._vars = saved
-            return "".join(items)
+            return self.eval(m.group(3)).join(items)
         return expr
 
     # Extract JavaScript variables and simple template loops from updateTexts().
@@ -711,20 +554,6 @@ class JsEval:
                     result.append(self.eval_template(tmpl))
                     self._vars = saved
             self._vars[target_var] = "".join(result)
-
-
-# Markdown conversion helpers
-
-
-def _strip_html(text):
-    text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
-    text = re.sub(
-        r"</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead"
-        r"|tbody|table|pre|code|h[1-6])[^>]*>",
-        "",
-        text,
-    )
-    return html.unescape(text).strip()
 
 
 # Document generators
@@ -960,6 +789,181 @@ def generate_mml_commands():
         generated_header(MML_COMMANDS_JSON) + "\n".join(lines), encoding="utf-8"
     )
     print(f"Generated {path.relative_to(ROOT_DIR)}")
+
+
+# Shared helpers
+
+
+def generated_header(*source_paths):
+    sources = " and ".join(str(p.relative_to(ROOT_DIR)) for p in source_paths)
+    return f"<!-- This file is generated from {sources}. -->\n\n"
+
+
+def localize(obj):
+    if not obj:
+        return ""
+    if isinstance(obj, str):
+        return obj
+    return obj.get("en", "")
+
+
+def _find_matching(text, start, open_ch, close_ch):
+    depth = 1
+    i = start
+    while i < len(text) and depth > 0:
+        ch = text[i]
+        if ch == "\\" and i + 1 < len(text):
+            i += 2
+            continue
+        if ch in ('"', "'", "`"):
+            q = ch
+            i += 1
+            while i < len(text) and text[i] != q:
+                if text[i] == "\\":
+                    i += 1
+                i += 1
+            i += 1
+            continue
+        if ch == open_ch:
+            depth += 1
+        elif ch == close_ch:
+            depth -= 1
+        i += 1
+    return i
+
+
+# Parse one JavaScript argument while preserving nested strings, regexes, arrays, and groups.
+def _parse_arg(text):
+    text = text.lstrip()
+    if not text:
+        return "", ""
+    if text[0] in ('"', "'"):
+        q = text[0]
+        i = 1
+        while i < len(text):
+            if text[i] == "\\" and i + 1 < len(text):
+                i += 2
+                continue
+            if text[i] == q:
+                return text[: i + 1], text[i + 1 :].lstrip()
+            i += 1
+    elif text[0] == "`":
+        i = 1
+        while i < len(text):
+            if text[i] == "\\" and i + 1 < len(text):
+                i += 2
+                continue
+            if text[i] == "$" and i + 1 < len(text) and text[i + 1] == "{":
+                i = _find_matching(text, i + 2, "{", "}")
+                continue
+            if text[i] == "`":
+                return text[: i + 1], text[i + 1 :].lstrip()
+            i += 1
+    elif text[0] == "/":
+        i = 1
+        while i < len(text) and text[i] != "/":
+            if text[i] == "\\":
+                i += 1
+            i += 1
+        i += 1
+        while i < len(text) and text[i].isalpha():
+            i += 1
+        return text[:i], text[i:].lstrip()
+    elif text[0] == "[":
+        end = _find_matching(text, 1, "[", "]")
+        return text[:end], text[end:].lstrip()
+    else:
+        depth = 0
+        i = 0
+        while i < len(text):
+            ch = text[i]
+            if ch in ('"', "'", "`"):
+                q = ch
+                i += 1
+                while i < len(text) and text[i] != q:
+                    if text[i] == "\\":
+                        i += 1
+                    i += 1
+                i += 1
+                continue
+            if ch in ("(", "[", "{"):
+                depth += 1
+            elif ch in (")", "]", "}"):
+                if depth == 0:
+                    break
+                depth -= 1
+            elif ch == "," and depth == 0:
+                break
+            i += 1
+        return text[:i].rstrip(), text[i:].lstrip()
+    return text, ""
+
+
+def _skip_comma(text):
+    text = text.lstrip()
+    return text[1:].lstrip() if text.startswith(",") else text
+
+
+def _split_plus(expr):
+    parts = []
+    current = []
+    depth = 0
+    in_str = None
+    escaped = False
+    for ch in expr:
+        if in_str:
+            current.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == in_str:
+                in_str = None
+            continue
+        if ch in ('"', "'", "`"):
+            in_str = ch
+            current.append(ch)
+            continue
+        if ch in ("(", "[", "{"):
+            depth += 1
+        elif ch in (")", "]", "}"):
+            depth -= 1
+        if ch == "+" and depth == 0:
+            parts.append("".join(current))
+            current = []
+            continue
+        current.append(ch)
+    if current:
+        parts.append("".join(current))
+    return parts if len(parts) > 1 else [expr]
+
+
+def _transform_url(url, web_path=None):
+    if url.startswith(("http://", "https://")):
+        return url
+    if url.startswith("../../docs/images/"):
+        return url.replace("../../docs/images/", "images/")
+    if url.startswith("../../docs/"):
+        return url.replace("../../docs/", "")
+    if url.startswith("../"):
+        return f"{PYXEL_WEB}/{url[3:]}"
+    if web_path:
+        return f"{PYXEL_WEB}/{web_path}/{url}"
+    return url
+
+
+# Markdown conversion helpers
+
+
+def _strip_html(text):
+    text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
+    text = re.sub(
+        r"</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead"
+        r"|tbody|table|pre|code|h[1-6])[^>]*>",
+        "",
+        text,
+    )
+    return html.unescape(text).strip()
 
 
 if __name__ == "__main__":

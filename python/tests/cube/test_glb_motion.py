@@ -36,60 +36,6 @@ from .glb_fixtures import (
 EXAMPLES_DIR = Path(__file__).parents[2] / "pyxel" / "examples"
 
 
-# Geometry helpers
-
-
-def _vec3(values, index):
-    base = index * 3
-    return tuple(values[base : base + 3])
-
-
-def _sub(a, b):
-    return tuple(a[i] - b[i] for i in range(3))
-
-
-def _cross(a, b):
-    return (
-        a[1] * b[2] - a[2] * b[1],
-        a[2] * b[0] - a[0] * b[2],
-        a[0] * b[1] - a[1] * b[0],
-    )
-
-
-def _dot(a, b):
-    return sum(a[i] * b[i] for i in range(3))
-
-
-def _center(a, b, c):
-    return tuple((a[i] + b[i] + c[i]) / 3.0 for i in range(3))
-
-
-def _render_mesh_colors(mesh):
-    pyxel.cls(0)
-    scene = Node()
-    scene.camera = Camera()
-    scene.camera.clear_color = 0
-    scene.camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
-    scene.add_child(Node.from_mesh(mesh))
-    scene.draw(0, 0, pyxel.width, pyxel.height)
-    return {pyxel.pget(x, y) for y in range(pyxel.height) for x in range(pyxel.width)}
-
-
-def _assert_base_quad(mesh):
-    primitives = [primitive for primitive in mesh.primitives if primitive is not None]
-    assert len(primitives) == 1
-    primitive = primitives[0]
-    assert len(primitive.positions) == 12
-    assert [_vec3(primitive.positions, i) for i in range(4)] == [
-        (-0.5, -0.5, 0.0),
-        (0.5, -0.5, 0.0),
-        (0.5, 0.5, 0.0),
-        (-0.5, 0.5, 0.0),
-    ]
-    assert list(primitive.indices) == [0, 1, 2, 0, 2, 3]
-    assert list(primitive.normals) == [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
-
-
 # Tests
 
 
@@ -536,7 +482,7 @@ def test_from_glb_rejects_animation_frame_overflow(tmp_path):
 
 
 def test_from_glb_rejects_nonpositive_fps():
-    with raises_exact(ValueError, "fps must be greater than 0"):
+    with raises_exact(ValueError, "fps must be finite and greater than 0"):
         Mesh.from_glb("missing.glb", fps=0)
 
 
@@ -751,3 +697,57 @@ def test_motion_api_signatures():
     assert str(inspect.signature(Node.play_motion)) == (
         "(self, /, motion, *, loop=True, speed=1.0, start_frame=0.0)"
     )
+
+
+def _sub(a, b):
+    return tuple(a[i] - b[i] for i in range(3))
+
+
+def _cross(a, b):
+    return (
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+
+
+def _dot(a, b):
+    return sum(a[i] * b[i] for i in range(3))
+
+
+def _center(a, b, c):
+    return tuple((a[i] + b[i] + c[i]) / 3.0 for i in range(3))
+
+
+def _render_mesh_colors(mesh):
+    pyxel.cls(0)
+    scene = Node()
+    scene.camera = Camera()
+    scene.camera.clear_color = 0
+    scene.camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
+    scene.add_child(Node.from_mesh(mesh))
+    scene.draw(0, 0, pyxel.width, pyxel.height)
+    return {pyxel.pget(x, y) for y in range(pyxel.height) for x in range(pyxel.width)}
+
+
+def _assert_base_quad(mesh):
+    primitives = [primitive for primitive in mesh.primitives if primitive is not None]
+    assert len(primitives) == 1
+    primitive = primitives[0]
+    assert len(primitive.positions) == 12
+    assert [_vec3(primitive.positions, i) for i in range(4)] == [
+        (-0.5, -0.5, 0.0),
+        (0.5, -0.5, 0.0),
+        (0.5, 0.5, 0.0),
+        (-0.5, 0.5, 0.0),
+    ]
+    assert list(primitive.indices) == [0, 1, 2, 0, 2, 3]
+    assert list(primitive.normals) == [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+
+
+# Geometry helpers
+
+
+def _vec3(values, index):
+    base = index * 3
+    return tuple(values[base : base + 3])

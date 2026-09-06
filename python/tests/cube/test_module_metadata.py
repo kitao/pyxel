@@ -26,22 +26,6 @@ PUBLIC_CUBE_CLASSES = (
 )
 
 
-def _run_fresh_interpreter(source):
-    env = {**os.environ}
-    env["PYTHONPATH"] = os.pathsep.join(
-        filter(None, (str(ROOT_DIR / "python"), env.get("PYTHONPATH")))
-    )
-    result = subprocess.run(
-        [sys.executable, "-c", source],
-        cwd=ROOT_DIR,
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, result.stdout + result.stderr
-
-
 def test_fresh_from_pyxel_import_cube_resolves_the_package():
     _run_fresh_interpreter(
         "import importlib, sys\n"
@@ -83,3 +67,19 @@ def test_cube_exports_the_public_classes():
 def test_cube_instance_pickle_error_uses_the_public_type_name():
     with raises_exact(TypeError, "cannot pickle 'pyxel.cube.Vec3' object"):
         pickle.dumps(cube.Vec3.ZERO)
+
+
+def _run_fresh_interpreter(source):
+    env = {**os.environ}
+    env["PYTHONPATH"] = os.pathsep.join(
+        filter(None, (str(ROOT_DIR / "python"), env.get("PYTHONPATH")))
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", source],
+        cwd=ROOT_DIR,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

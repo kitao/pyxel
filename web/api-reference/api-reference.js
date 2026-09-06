@@ -9,142 +9,6 @@ let searchQuery = "";
 // visibility updates must not scan the whole document per entry.
 const domCache = {};
 
-function cacheDomRefs() {
-  for (const attr of [
-    "item-key",
-    "desc-key",
-    "detail-key",
-    "const-key",
-    "const-grid",
-    "const-section",
-    "items-card",
-    "cg-id",
-    "cg-label",
-    "sec-label",
-    "sec-details",
-    "cat-id",
-    "cat-title",
-    "cat-title2",
-  ]) {
-    const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-    const map = new Map();
-    document.querySelectorAll(`[data-${attr}]`).forEach((el) => {
-      map.set(el.dataset[prop], el);
-    });
-    domCache[attr] = map;
-  }
-}
-
-const cached = (attr, key) => domCache[attr].get(key);
-
-const constantMatchesQuery = (constant, query) => {
-  if (!query) return true;
-  return constant.toLowerCase().includes(query.toLowerCase());
-};
-
-function badgeColor(type) {
-  switch (type) {
-    case "function":
-      return "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
-    case "variable":
-      return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-    case "class":
-      return "bg-amber-500/20 text-amber-300 border border-amber-500/30";
-    case "constant":
-      return "bg-pink-500/20 text-pink-300 border border-pink-500/30";
-    default:
-      return "bg-gray-500/20 text-gray-300 border border-gray-500/30";
-  }
-}
-
-function matchesSearch(item) {
-  if (!searchQuery) return true;
-  const q = searchQuery.toLowerCase();
-  return (
-    item.name.toLowerCase().includes(q) ||
-    item.signature.toLowerCase().includes(q) ||
-    t(item.description).toLowerCase().includes(q)
-  );
-}
-
-function isVisible(item) {
-  if (!showAdvanced && item.advanced) return false;
-  return matchesSearch(item);
-}
-
-function hasDetails(item) {
-  return (
-    (item.params && item.params.length > 0) ||
-    (item.returns && item.returns.type !== "None") ||
-    (item.examples && item.examples.length > 0) ||
-    item.notes ||
-    item.value_type
-  );
-}
-
-function buildDetailContent(container, item) {
-  container.innerHTML = "";
-  const wrap = document.createElement("div");
-  wrap.className = "mt-2 pl-3 border-l-2 border-gray-700 space-y-2.5";
-
-  if (item.value_type) {
-    const sec = document.createElement("div");
-    sec.innerHTML =
-      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("type_label"))}</div>` +
-      `<code class="text-emerald-300 text-xs font-mono">${esc(item.value_type)}</code>`;
-    wrap.appendChild(sec);
-  }
-
-  if (item.params && item.params.length > 0) {
-    const sec = document.createElement("div");
-    let html = `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
-    html += '<div class="space-y-1">';
-    for (const p of item.params) {
-      html += '<div class="text-xs leading-relaxed">';
-      html += `<code class="text-indigo-300 font-mono">${esc(p.name)}</code>`;
-      html += ` <span class="text-gray-400">(${esc(p.type)})</span>`;
-      if (p.description) {
-        html += ` <span class="text-gray-400">\u2014 ${esc(t(p.description))}</span>`;
-      }
-      html += "</div>";
-    }
-    html += "</div>";
-    sec.innerHTML = html;
-    wrap.appendChild(sec);
-  }
-
-  if (item.returns && item.returns.type !== "None") {
-    const sec = document.createElement("div");
-    let html = `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
-    html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.returns.type)}</code>`;
-    if (item.returns.description) {
-      html += ` <span class="text-gray-400">\u2014 ${esc(t(item.returns.description))}</span>`;
-    }
-    html += "</div>";
-    sec.innerHTML = html;
-    wrap.appendChild(sec);
-  }
-
-  if (item.examples && item.examples.length > 0) {
-    const sec = document.createElement("div");
-    const exampleCode = item.examples.join("\n");
-    sec.innerHTML =
-      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("example"))}</div>` +
-      `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(exampleCode)}</pre>`;
-    wrap.appendChild(sec);
-  }
-
-  if (item.notes) {
-    const sec = document.createElement("div");
-    sec.innerHTML =
-      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("notes"))}</div>` +
-      `<p class="text-gray-400 text-xs leading-relaxed">${esc(t(item.notes))}</p>`;
-    wrap.appendChild(sec);
-  }
-
-  container.appendChild(wrap);
-}
-
 function buildPage() {
   const app = document.getElementById("app");
   app.innerHTML = "";
@@ -532,4 +396,140 @@ function updateVisibility() {
   document
     .getElementById("no-results")
     .classList.toggle("hidden", totalVisible > 0);
+}
+
+function cacheDomRefs() {
+  for (const attr of [
+    "item-key",
+    "desc-key",
+    "detail-key",
+    "const-key",
+    "const-grid",
+    "const-section",
+    "items-card",
+    "cg-id",
+    "cg-label",
+    "sec-label",
+    "sec-details",
+    "cat-id",
+    "cat-title",
+    "cat-title2",
+  ]) {
+    const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    const map = new Map();
+    document.querySelectorAll(`[data-${attr}]`).forEach((el) => {
+      map.set(el.dataset[prop], el);
+    });
+    domCache[attr] = map;
+  }
+}
+
+const cached = (attr, key) => domCache[attr].get(key);
+
+const constantMatchesQuery = (constant, query) => {
+  if (!query) return true;
+  return constant.toLowerCase().includes(query.toLowerCase());
+};
+
+function badgeColor(type) {
+  switch (type) {
+    case "function":
+      return "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+    case "variable":
+      return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+    case "class":
+      return "bg-amber-500/20 text-amber-300 border border-amber-500/30";
+    case "constant":
+      return "bg-pink-500/20 text-pink-300 border border-pink-500/30";
+    default:
+      return "bg-gray-500/20 text-gray-300 border border-gray-500/30";
+  }
+}
+
+function isVisible(item) {
+  if (!showAdvanced && item.advanced) return false;
+  return matchesSearch(item);
+}
+
+function matchesSearch(item) {
+  if (!searchQuery) return true;
+  const q = searchQuery.toLowerCase();
+  return (
+    item.name.toLowerCase().includes(q) ||
+    item.signature.toLowerCase().includes(q) ||
+    t(item.description).toLowerCase().includes(q)
+  );
+}
+
+function hasDetails(item) {
+  return (
+    (item.params && item.params.length > 0) ||
+    (item.returns && item.returns.type !== "None") ||
+    (item.examples && item.examples.length > 0) ||
+    item.notes ||
+    item.value_type
+  );
+}
+
+function buildDetailContent(container, item) {
+  container.innerHTML = "";
+  const wrap = document.createElement("div");
+  wrap.className = "mt-2 pl-3 border-l-2 border-gray-700 space-y-2.5";
+
+  if (item.value_type) {
+    const sec = document.createElement("div");
+    sec.innerHTML =
+      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("type_label"))}</div>` +
+      `<code class="text-emerald-300 text-xs font-mono">${esc(item.value_type)}</code>`;
+    wrap.appendChild(sec);
+  }
+
+  if (item.params && item.params.length > 0) {
+    const sec = document.createElement("div");
+    let html = `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
+    html += '<div class="space-y-1">';
+    for (const p of item.params) {
+      html += '<div class="text-xs leading-relaxed">';
+      html += `<code class="text-indigo-300 font-mono">${esc(p.name)}</code>`;
+      html += ` <span class="text-gray-400">(${esc(p.type)})</span>`;
+      if (p.description) {
+        html += ` <span class="text-gray-400">\u2014 ${esc(t(p.description))}</span>`;
+      }
+      html += "</div>";
+    }
+    html += "</div>";
+    sec.innerHTML = html;
+    wrap.appendChild(sec);
+  }
+
+  if (item.returns && item.returns.type !== "None") {
+    const sec = document.createElement("div");
+    let html = `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
+    html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.returns.type)}</code>`;
+    if (item.returns.description) {
+      html += ` <span class="text-gray-400">\u2014 ${esc(t(item.returns.description))}</span>`;
+    }
+    html += "</div>";
+    sec.innerHTML = html;
+    wrap.appendChild(sec);
+  }
+
+  if (item.examples && item.examples.length > 0) {
+    const sec = document.createElement("div");
+    const exampleCode = item.examples.join("\n");
+    sec.innerHTML =
+      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("example"))}</div>` +
+      `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(exampleCode)}</pre>`;
+    wrap.appendChild(sec);
+  }
+
+  if (item.notes) {
+    const sec = document.createElement("div");
+    sec.innerHTML =
+      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("notes"))}</div>` +
+      `<p class="text-gray-400 text-xs leading-relaxed">${esc(t(item.notes))}</p>`;
+    wrap.appendChild(sec);
+  }
+
+  container.appendChild(wrap);
 }

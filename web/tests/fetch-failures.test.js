@@ -48,6 +48,7 @@ test("loadFromGist rejects a missing truncated file before reading its body", as
   const context = {
     base64ToUint8: () => new Uint8Array(),
     fetch: async () => responses.shift(),
+    window: {},
     loadProjectFromZip: async () => {
       loadCount += 1;
     },
@@ -61,7 +62,7 @@ test("loadFromGist rejects a missing truncated file before reading its body", as
 
   await assert.rejects(
     loadFromGist("https://gist.github.com/example/0123456789abcdef0123"),
-    { name: "Error", message: "Gist file not found" },
+    { name: "Error", message: "Failed to fetch Gist file: 404" },
   );
   assert.equal(textCount, 0);
   assert.equal(loadCount, 0);
@@ -76,6 +77,7 @@ test("loadFromGitHub fetches a commit but keeps the source ref in share URLs", a
       requestedUrl = url;
       return { ok: true, arrayBuffer: async () => new ArrayBuffer(0) };
     },
+    window: {},
     loadProjectFromZip: async () => {},
     resolveGitHubBlobUrl: async () => ({
       user: "example",
@@ -121,6 +123,7 @@ test("loadFromGitHub keeps a compact ref when SHA lookup is unavailable", async 
         arrayBuffer: async () => new ArrayBuffer(0),
       };
     },
+    window: {},
     loadProjectFromZip: async () => {},
     resolveGitHubBlobUrl: async (_input, _fetchImpl, preferred) => {
       preferredRef = preferred;
@@ -208,6 +211,7 @@ test("Code Maker preserves longest-ref resolution for legacy share URLs", async 
   const loadFromGitHub = loadNamedFunction(codeMakerSource, "loadFromGitHub", {
     encodeUrlPath,
     fetch: fetchImpl,
+    window: {},
     loadProjectFromZip: async () => {
       loaded = true;
     },
@@ -281,6 +285,7 @@ test("Code Maker uses the recorded SHA when an explicit ref is missing", async (
       {
         encodeUrlPath,
         fetch: fetchImpl,
+        window: {},
         loadProjectFromZip: async () => {
           loaded = true;
         },
@@ -374,6 +379,66 @@ test("sanitizeProjectName neutralizes unsafe archive path syntax", () => {
   assert.equal(sanitizeProjectName("COM¹"), "_COM¹");
   assert.equal(sanitizeProjectName("CONIN$"), "_CONIN$");
 });
+
+for (const delay of ["download", "unpack"]) {
+  test(`Code Maker keeps the latest project when an earlier ${delay} finishes last`, async () => {
+    let resume;
+    let entered;
+    const paused = new Promise((resolve) => {
+      resume = resolve;
+    });
+    const waiting = new Promise((resolve) => {
+      entered = resolve;
+    });
+    const window = { _project: {}, _codeEditor: { setValue() {} } };
+    const shared = [];
+    const context = {
+      window,
+      URL,
+      TextDecoder,
+      fetch: async (url) => {
+        if (delay === "download" && url.includes("first.zip")) {
+          entered();
+          await paused;
+        }
+        return { ok: true, arrayBuffer: async () => url };
+      },
+      JSZip: {
+        loadAsync: async (url) => {
+          if (delay === "unpack" && url.includes("first.zip")) {
+            entered();
+            await paused;
+          }
+          const entry = { async: async () => new TextEncoder().encode(url) };
+          return {
+            files: { "app/main.py": entry, "app/my_resource.pyxres": entry },
+          };
+        },
+      },
+      uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
+      base64ToUint8: (value) => Buffer.from(value, "base64"),
+      resetRuntimeScreen() {},
+      resetResourceEditor() {},
+      updateShareUrl: (...args) => shared.push(args),
+    };
+    for (const name of [
+      "sanitizeProjectName",
+      "loadProjectFromZip",
+      "loadFromUrl",
+    ]) {
+      context[name] = loadNamedFunction(codeMakerSource, name, context);
+    }
+    const first = context.loadFromUrl("https://example.test/first.zip");
+    await waiting;
+    await context.loadFromUrl("https://example.test/last.zip");
+    resume();
+    await first;
+
+    assert.equal(window._project.name, "last");
+    assert.equal(window._project.code, "https://example.test/last.zip");
+    assert.deepEqual(shared, [["url", "https://example.test/last.zip"]]);
+  });
+}
 
 test("loadProjectFromZip sanitizes the project name at assignment", async () => {
   const sanitizeProjectName = loadNamedFunction(
@@ -487,6 +552,7 @@ test("loadFromUrl derives the project name from the URL pathname", async () => {
       ok: true,
       arrayBuffer: async () => new ArrayBuffer(0),
     }),
+    window: {},
     loadProjectFromZip: async (_buffer, name) => {
       loadedNames.push(name);
     },
@@ -519,7 +585,7 @@ test("loadFromUrl derives the project name from the URL pathname", async () => {
   ]);
 });
 
-test("Code Maker reports a missing starter project without loading it", async () => {
+test("Code Maker reports a failed starter request without loading it", async () => {
   let arrayBufferCount = 0;
   let loadCount = 0;
   let initialize;
@@ -559,7 +625,9 @@ test("Code Maker reports a missing starter project without loading it", async ()
   vm.runInNewContext(codeMakerSource.slice(start, end), context);
 
   await initialize();
-  assert.deepEqual(errors, ["Load failed: Starter project not found"]);
+  assert.deepEqual(errors, [
+    "Load failed: Failed to fetch starter project: 500",
+  ]);
   assert.equal(arrayBufferCount, 0);
   assert.equal(loadCount, 0);
 });
