@@ -10,6 +10,11 @@ class ImportHook:
         self.imported_modules = set()
         self.main_dir = None
 
+    def invalidate_caches(self):
+        # Runtime resets remove downloaded modules and may change the main script.
+        self.imported_modules.clear()
+        self.main_dir = None
+
     def find_spec(self, fullname, path, target=None):
         if (
             fullname in self.imported_modules

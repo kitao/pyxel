@@ -92,9 +92,12 @@ class SoundField(Widget):
         pyxel.text(self.x - 13, self.y + 17, "EFX", TEXT_LABEL_COLOR)
         pyxel.blt(self.x, self.y, EDITOR_IMAGE, 0, 79, 193, 23)
 
+        pyxel.clip(self.x, self.y, self.width, self.height)
+
         # Draw field data
         data_str = [
-            "".join(_FIELD_CHARS[i][v] for v in self.get_field(i + 1)) for i in range(3)
+            "".join(chars[v] if v < len(chars) else "?" for v in self.get_field(i + 1))
+            for i, chars in enumerate(_FIELD_CHARS)
         ]
         for i in range(3):
             pyxel.text(31, 150 + i * 8, data_str[i], SOUND_FIELD_DATA_NORMAL_COLOR)
@@ -103,6 +106,7 @@ class SoundField(Widget):
         cursor_y = self.field_cursor.y
         cursor_x = self.field_cursor.x
         if self.is_playing_var or cursor_y == 0:
+            pyxel.clip()
             return
 
         x = cursor_x * 4 + 31
@@ -121,3 +125,5 @@ class SoundField(Widget):
                 data_str[cursor_y - 1][cursor_x : cursor_x + self.field_cursor.width],
                 SOUND_FIELD_DATA_SELECT_COLOR,
             )
+
+        pyxel.clip()

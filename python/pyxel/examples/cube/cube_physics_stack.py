@@ -64,20 +64,6 @@ class Bullet(Node):
         self.sphere(Vec3.ZERO, 0.3, 14)
 
 
-def apply_contact(node, contact):
-    offset = contact.normal * contact.depth
-    if node.parent is not None:
-        parent_world = node.parent.world_transform
-        offset = (
-            Vec3.ZERO
-            if abs(parent_world.determinant()) < 1e-12
-            else offset.to_local_dir(parent_world)
-        )
-    push = Mat4.from_translation(offset)
-    node.transform = push * node.transform
-    node.collider.velocity += contact.delta_velocity
-
-
 class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Stack")
@@ -103,6 +89,20 @@ class App:
 
     def draw(self):
         self.scene.draw(0, 0, 160, 120)
+
+
+def apply_contact(node, contact):
+    offset = contact.normal * contact.depth
+    if node.parent is not None:
+        parent_world = node.parent.world_transform
+        offset = (
+            Vec3.ZERO
+            if abs(parent_world.determinant()) < 1e-12
+            else offset.to_local_dir(parent_world)
+        )
+    push = Mat4.from_translation(offset)
+    node.transform = push * node.transform
+    node.collider.velocity += contact.delta_velocity
 
 
 if __name__ == "__main__":

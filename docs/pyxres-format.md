@@ -41,7 +41,7 @@ format_version = 1
 
 The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty fields inside an entry use empty arrays (e.g., `notes = []`), and a section intentionally skipped by `save(..., exclude_*)` is written as an empty array. A save records the current runtime banks, including non-default bank counts and dimensions.
 
-Pyxel currently writes `format_version = 1` for maximum backward compatibility. On load, files with format version up to **4** (the current maximum) are accepted. Files that contain the legacy archive layout (`pyxel_resource/version` + separate files) are detected and loaded with automatic conversion.
+Pyxel writes `format_version = 1` and accepts format versions up to **4** when loading.
 
 ## Images
 
@@ -120,7 +120,7 @@ The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the so
 
 **Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11, and octave ranges from 0 to 4. For example, C0=0, A4=57, B4=59.
 
-**MML-defined sounds:** Sounds defined with `Sound.mml()` cannot be saved to `.pyxres`; only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are persisted. To preserve MML-based sounds, keep the MML strings in your source code and call `sound.mml()` at runtime.
+**MML and PCM:** Only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are saved to `.pyxres`. Keep MML strings and audio files separately, and call `sound.mml(code)` or `sound.pcm(filename)` at runtime.
 
 ## Music
 

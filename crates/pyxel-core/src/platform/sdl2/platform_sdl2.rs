@@ -25,137 +25,6 @@ struct MainLoopState<F> {
     next_frame_ms: f64,
 }
 
-// Advance the frame schedule and return the delta to report when a frame is
-// due. Frames run up to half a frame early so a display refreshing at the
-// target fps never skips on clock jitter.
-#[cfg(any(target_os = "emscripten", test))]
-fn advance_frame_schedule(
-    now_ms: f64,
-    frame_ms: f64,
-    last_frame_ms: &mut f64,
-    next_frame_ms: &mut f64,
-) -> Option<f32> {
-    if now_ms < *next_frame_ms - frame_ms / 2.0 {
-        return None;
-    }
-    let delta_ms = (*next_frame_ms - *last_frame_ms) as f32;
-    *last_frame_ms = *next_frame_ms;
-    *next_frame_ms += frame_ms;
-    while *next_frame_ms <= now_ms {
-        *next_frame_ms += frame_ms;
-    }
-    Some(delta_ms)
-}
-
-#[cfg(any(target_os = "emscripten", test))]
-fn browser_save_script(filename: &str) -> CString {
-    let mut quoted_filename = String::from("\"");
-    for c in filename.chars() {
-        match c {
-            '"' => quoted_filename.push_str("\\\""),
-            '\\' => quoted_filename.push_str("\\\\"),
-            '\n' => quoted_filename.push_str("\\n"),
-            '\r' => quoted_filename.push_str("\\r"),
-            '\t' => quoted_filename.push_str("\\t"),
-            '\u{08}' => quoted_filename.push_str("\\b"),
-            '\u{0c}' => quoted_filename.push_str("\\f"),
-            '\u{2028}' => quoted_filename.push_str("\\u2028"),
-            '\u{2029}' => quoted_filename.push_str("\\u2029"),
-            '\0'..='\u{1f}' => write!(&mut quoted_filename, "\\u{:04x}", c as u32)
-                .expect("writing to String cannot fail"),
-            _ => quoted_filename.push(c),
-        }
-    }
-    quoted_filename.push('"');
-    CString::new(format!("_savePyxelFile({quoted_filename});"))
-        .expect("browser save script is built from escaped filename text")
-}
-
-fn window_title_c_string(title: &str) -> CString {
-    let title = title.replace('\0', " ");
-    CString::new(title).expect("window title NUL bytes are replaced")
-}
-
-#[cfg(any(not(target_os = "emscripten"), test))]
-fn release_window_resources<DropGlowContext, DeleteSdlContext, DestroyWindow>(
-    gl_context: &mut *mut Context,
-    sdl_gl_context: &mut SDL_GLContext,
-    window: &mut *mut SDL_Window,
-    mut drop_glow_context: DropGlowContext,
-    mut delete_sdl_context: DeleteSdlContext,
-    mut destroy_window: DestroyWindow,
-) where
-    DropGlowContext: FnMut(*mut Context),
-    DeleteSdlContext: FnMut(SDL_GLContext),
-    DestroyWindow: FnMut(*mut SDL_Window),
-{
-    let gl_context = std::mem::replace(gl_context, null_mut());
-    if !gl_context.is_null() {
-        drop_glow_context(gl_context);
-    }
-
-    let sdl_gl_context = std::mem::replace(sdl_gl_context, null_mut());
-    if !sdl_gl_context.is_null() {
-        delete_sdl_context(sdl_gl_context);
-    }
-
-    let window = std::mem::replace(window, null_mut());
-    if !window.is_null() {
-        destroy_window(window);
-    }
-}
-
-#[cfg(target_os = "emscripten")]
-extern "C" {
-    fn emscripten_run_script(script: *const std::os::raw::c_char);
-    fn emscripten_set_main_loop_arg(
-        func: unsafe extern "C" fn(*mut c_void),
-        arg: *mut c_void,
-        fps: c_int,
-        simulate_infinite_loop: c_int,
-    );
-    fn emscripten_cancel_main_loop();
-    fn emscripten_get_now() -> f64;
-}
-
-#[cfg(target_os = "emscripten")]
-unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
-    // SAFETY: run_frame_loop passes a non-null Box<MainLoopState<F>> as arg;
-    // Emscripten invokes callbacks serially and retains the allocation for the loop lifetime.
-    let state = &mut *arg.cast::<MainLoopState<F>>();
-    let now_ms = emscripten_get_now();
-    if let Some(delta_ms) = advance_frame_schedule(
-        now_ms,
-        state.frame_ms,
-        &mut state.last_frame_ms,
-        &mut state.next_frame_ms,
-    ) {
-        (state.callback)(delta_ms);
-    }
-}
-
-extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
-    // SAFETY: start_audio passes its boxed callback as userdata and keeps it
-    // alive until SDL_CloseAudioDevice has stopped callbacks. AUDIO_S16 makes
-    // stream i16-aligned, len is a non-negative byte count, and SDL gives this
-    // callback exclusive access to the buffer for the duration of the call.
-    let callback = unsafe { &mut *userdata.cast::<AudioCallback>() };
-    let stream = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
-    (*callback)(stream);
-}
-
-#[cfg(target_os = "emscripten")]
-fn saved_audio_device_id_for_start() -> Option<SDL_AudioDeviceID> {
-    let saved_id = AUDIO_DEVICE_ID.load(Ordering::Relaxed);
-    (saved_id != 0).then_some(saved_id)
-}
-
-#[cfg(not(target_os = "emscripten"))]
-fn saved_audio_device_id_for_start() -> Option<SDL_AudioDeviceID> {
-    AUDIO_DEVICE_ID.store(0, Ordering::Relaxed);
-    None
-}
-
 pub struct PlatformSdl2 {
     pub window: *mut SDL_Window,
     pub sdl_gl_context: SDL_GLContext,
@@ -165,6 +34,7 @@ pub struct PlatformSdl2 {
     pub audio_userdata: *mut c_void,
     pub mouse_x: i32,
     pub mouse_y: i32,
+    pub key_modifiers: SDL_Keymod,
     pub is_wayland: bool,
     pub gamepads: Vec<GamepadSlot>,
     #[cfg(target_os = "emscripten")]
@@ -184,6 +54,7 @@ impl PlatformSdl2 {
             audio_userdata: null_mut(),
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
+            key_modifiers: KMOD_NONE,
             is_wayland: false,
             gamepads: Vec::new(),
             #[cfg(target_os = "emscripten")]
@@ -630,6 +501,136 @@ impl Drop for PlatformSdl2 {
             self.close_window();
         }
     }
+}
+
+// Frames may run up to half a frame early to tolerate callback timing jitter.
+#[cfg(any(target_os = "emscripten", test))]
+fn advance_frame_schedule(
+    now_ms: f64,
+    frame_ms: f64,
+    last_frame_ms: &mut f64,
+    next_frame_ms: &mut f64,
+) -> Option<f32> {
+    if now_ms < *next_frame_ms - frame_ms / 2.0 {
+        return None;
+    }
+    let delta_ms = (*next_frame_ms - *last_frame_ms) as f32;
+    *last_frame_ms = *next_frame_ms;
+    *next_frame_ms += frame_ms;
+    while *next_frame_ms <= now_ms {
+        *next_frame_ms += frame_ms;
+    }
+    Some(delta_ms)
+}
+
+#[cfg(any(target_os = "emscripten", test))]
+fn browser_save_script(filename: &str) -> CString {
+    let mut quoted_filename = String::from("\"");
+    for c in filename.chars() {
+        match c {
+            '"' => quoted_filename.push_str("\\\""),
+            '\\' => quoted_filename.push_str("\\\\"),
+            '\n' => quoted_filename.push_str("\\n"),
+            '\r' => quoted_filename.push_str("\\r"),
+            '\t' => quoted_filename.push_str("\\t"),
+            '\u{08}' => quoted_filename.push_str("\\b"),
+            '\u{0c}' => quoted_filename.push_str("\\f"),
+            '\u{2028}' => quoted_filename.push_str("\\u2028"),
+            '\u{2029}' => quoted_filename.push_str("\\u2029"),
+            '\0'..='\u{1f}' => write!(&mut quoted_filename, "\\u{:04x}", c as u32)
+                .expect("writing to String cannot fail"),
+            _ => quoted_filename.push(c),
+        }
+    }
+    quoted_filename.push('"');
+    CString::new(format!("_savePyxelFile({quoted_filename});"))
+        .expect("browser save script is built from escaped filename text")
+}
+
+fn window_title_c_string(title: &str) -> CString {
+    let title = title.replace('\0', " ");
+    CString::new(title).expect("window title NUL bytes are replaced")
+}
+
+#[cfg(any(not(target_os = "emscripten"), test))]
+fn release_window_resources<DropGlowContext, DeleteSdlContext, DestroyWindow>(
+    gl_context: &mut *mut Context,
+    sdl_gl_context: &mut SDL_GLContext,
+    window: &mut *mut SDL_Window,
+    mut drop_glow_context: DropGlowContext,
+    mut delete_sdl_context: DeleteSdlContext,
+    mut destroy_window: DestroyWindow,
+) where
+    DropGlowContext: FnMut(*mut Context),
+    DeleteSdlContext: FnMut(SDL_GLContext),
+    DestroyWindow: FnMut(*mut SDL_Window),
+{
+    let gl_context = std::mem::replace(gl_context, null_mut());
+    if !gl_context.is_null() {
+        drop_glow_context(gl_context);
+    }
+
+    let sdl_gl_context = std::mem::replace(sdl_gl_context, null_mut());
+    if !sdl_gl_context.is_null() {
+        delete_sdl_context(sdl_gl_context);
+    }
+
+    let window = std::mem::replace(window, null_mut());
+    if !window.is_null() {
+        destroy_window(window);
+    }
+}
+
+#[cfg(target_os = "emscripten")]
+extern "C" {
+    fn emscripten_run_script(script: *const std::os::raw::c_char);
+    fn emscripten_set_main_loop_arg(
+        func: unsafe extern "C" fn(*mut c_void),
+        arg: *mut c_void,
+        fps: c_int,
+        simulate_infinite_loop: c_int,
+    );
+    fn emscripten_cancel_main_loop();
+    fn emscripten_get_now() -> f64;
+}
+
+#[cfg(target_os = "emscripten")]
+unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
+    // SAFETY: run_frame_loop passes a non-null Box<MainLoopState<F>> as arg;
+    // Emscripten invokes callbacks serially and retains the allocation for the loop lifetime.
+    let state = &mut *arg.cast::<MainLoopState<F>>();
+    let now_ms = emscripten_get_now();
+    if let Some(delta_ms) = advance_frame_schedule(
+        now_ms,
+        state.frame_ms,
+        &mut state.last_frame_ms,
+        &mut state.next_frame_ms,
+    ) {
+        (state.callback)(delta_ms);
+    }
+}
+
+extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
+    // SAFETY: start_audio passes its boxed callback as userdata and keeps it
+    // alive until SDL_CloseAudioDevice has stopped callbacks. AUDIO_S16 makes
+    // stream i16-aligned, len is a non-negative byte count, and SDL gives this
+    // callback exclusive access to the buffer for the duration of the call.
+    let callback = unsafe { &mut *userdata.cast::<AudioCallback>() };
+    #[allow(clippy::cast_ptr_alignment)] // SDL supplies the S16 alignment described above.
+    let stream = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
+    (*callback)(stream);
+}
+
+#[cfg(target_os = "emscripten")]
+fn saved_audio_device_id_for_start() -> Option<SDL_AudioDeviceID> {
+    let saved_id = AUDIO_DEVICE_ID.load(Ordering::Relaxed);
+    (saved_id != 0).then_some(saved_id)
+}
+
+#[cfg(not(target_os = "emscripten"))]
+fn saved_audio_device_id_for_start() -> Option<SDL_AudioDeviceID> {
+    AUDIO_DEVICE_ID.store(0, Ordering::Relaxed);
+    None
 }
 
 #[cfg(test)]

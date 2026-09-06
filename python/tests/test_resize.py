@@ -80,7 +80,7 @@ pyxel.init(8, 8, headless=True)
 try:
     pyxel.resize(65536, 65536)
 except ValueError as exc:
-    assert str(exc) == "screen dimensions are too large"
+    assert str(exc) == "width and height are too large"
 else:
     raise AssertionError("oversized resize succeeded")
 assert pyxel.width == 8 and pyxel.height == 8

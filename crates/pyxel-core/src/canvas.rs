@@ -29,7 +29,7 @@ pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
 impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn new(width: u32, height: u32) -> Self {
-        Self::try_new(width, height).expect("canvas dimensions are too large")
+        Self::try_new(width, height).expect("width and height are too large")
     }
 
     pub(crate) fn try_new(width: u32, height: u32) -> Option<Self> {
@@ -594,7 +594,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         palette: Option<&[T]>,
         rotate: f32,
         scale: f32,
-        use_canvas_clip: bool,
     ) {
         let Some(proj) = TransformProjection::new(
             x,
@@ -618,11 +617,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             proj.width as u32,
             proj.height as u32,
         )
-        .intersection(if use_canvas_clip {
-            canvas.clip_rect
-        } else {
-            canvas.self_rect
-        });
+        .intersection(canvas.self_rect);
         if canvas_area.is_empty() {
             return;
         }

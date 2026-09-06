@@ -66,7 +66,7 @@ class TestBlt:
         pyxel.images[0].cls(0)
         pyxel.images[0].pset(0, 0, 7)
         pyxel.blt(0, 0, 0, 0, 0, 1, 1, scale=4)
-        # A 1x1 source with scale=4 paints a 2x2 block.
+        # At the origin, clipping leaves four painted pixels.
         drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
         assert drawn == 4
 

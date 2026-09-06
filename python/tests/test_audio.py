@@ -39,11 +39,12 @@ class TestPlay:
         finally:
             pyxel.stop(3)
 
-    def test_play_seek_past_end_stops(self):
+    @pytest.mark.parametrize("options", [{}, {"tick": None}])
+    def test_play_seek_past_end_stops(self, options):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.play(3, 0, loop=True)
         try:
-            pyxel.play(3, 0, sec=1)
+            pyxel.play(3, 0, sec=1, **options)
             assert pyxel.play_pos(3) is None
         finally:
             pyxel.stop(3)
@@ -53,7 +54,8 @@ class TestPlay:
         pyxel.play(3, 0, sec=0, tick=120)  # type: ignore[call-arg]
         out = capfd.readouterr().out
         assert (
-            out == "tick option of pyxel.play is deprecated. Use sec option instead.\n"
+            out
+            == "tick option of pyxel.play is deprecated. Use sec in seconds (tick / 120) instead.\n"
         )
         assert pyxel.play_pos(3) is None
         pyxel.stop(3)
@@ -73,12 +75,13 @@ class TestPlaym:
         assert pyxel.play_pos(0) is None
         assert pyxel.play_pos(1) is None
 
-    def test_playm_seek_past_end_stops(self):
+    @pytest.mark.parametrize("options", [{}, {"tick": None}])
+    def test_playm_seek_past_end_stops(self, options):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.musics[0].set([0])
         pyxel.playm(0, loop=True)
         try:
-            pyxel.playm(0, sec=1)
+            pyxel.playm(0, sec=1, **options)
             assert pyxel.play_pos(0) is None
         finally:
             pyxel.stop()
@@ -89,7 +92,8 @@ class TestPlaym:
         pyxel.playm(0, sec=0, tick=240)  # type: ignore[call-arg]
         out = capfd.readouterr().out
         assert (
-            out == "tick option of pyxel.playm is deprecated. Use sec option instead.\n"
+            out
+            == "tick option of pyxel.playm is deprecated. Use sec in seconds (tick / 120) instead.\n"
         )
         assert pyxel.play_pos(0) is None
         pyxel.stop()

@@ -25,16 +25,6 @@
       let data = null;
       let lang = "en";
 
-      function shortcutTable(items) {
-        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
-          <thead><tr><th class="th">${esc(t("th_key"))}</th><th class="th">${esc(t("th_action"))}</th></tr></thead><tbody>`;
-        const inlineCode = (s) =>
-          esc(s).replace(/`([^`]+)`/g, (_, m) => chip(m));
-        for (const i of items)
-          html += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${inlineCode(t(i.action))}</td></tr>`;
-        return html + "</tbody></table></div>";
-      }
-
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
@@ -409,6 +399,16 @@ pyxel.show()`,
 
         setDocLang(lang);
         hljs.highlightAll();
+      }
+
+      function shortcutTable(items) {
+        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
+          <thead><tr><th class="th">${esc(t("th_key"))}</th><th class="th">${esc(t("th_action"))}</th></tr></thead><tbody>`;
+        const inlineCode = (s) =>
+          esc(s).replace(/`([^`]+)`/g, (_, m) => chip(m));
+        for (const i of items)
+          html += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${inlineCode(t(i.action))}</td></tr>`;
+        return html + "</tbody></table></div>";
       }
 
       initPage("user-guide.json", buildPage);

@@ -385,111 +385,13 @@
       };
       window._isCopyingResource = false;
 
-      function copyCodeToProject() {
-        window._project.code = window._codeEditor.getValue();
-      }
-
-      async function copyResourceToProject() {
-        if (!resourceEditor.contentWindow?.pyxelContext?.pyodide) {
-          return;
-        }
-
-        window._isCopyingResource = true;
-
-        try {
-          const doc = resourceEditor.contentWindow.document;
-          doc.dispatchEvent(
-            new KeyboardEvent("keydown", {
-              key: "F13",
-              code: "F13",
-              bubbles: true,
-            }),
-          );
-          doc.dispatchEvent(
-            new KeyboardEvent("keyup", {
-              key: "F13",
-              code: "F13",
-              bubbles: true,
-            }),
-          );
-
-          // Give the editor update loop time to process the save before reading.
-          await new Promise((resolve) => setTimeout(resolve, 100));
-
-          window._project.resource = uint8ToBase64(
-            resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
-              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres",
-            ),
-          );
-        } finally {
-          window._isCopyingResource = false;
-        }
-      }
-
-      function resetRuntimeScreen() {
-        runtimeScreen.contentWindow?.resetPyxel?.();
-      }
-
-      function resetResourceEditor() {
-        resourceEditor.contentWindow?.resetPyxel?.();
-      }
-
-      function sanitizeProjectName(name) {
-        let safeName = name
-          .replace(/[\/\\<>:"|?*\u0000-\u001f\u007f-\u009f]/g, "_")
-          .trim()
-          .replace(/[ .]+$/g, "");
-        if (!safeName) {
-          return "untitled";
-        }
-
-        const windowsBaseName = safeName.split(".", 1)[0].trimEnd();
-        if (
-          /^(?:CON|PRN|AUX|NUL|CONIN\$|CONOUT\$|COM[1-9¹²³]|LPT[1-9¹²³])$/i.test(
-            windowsBaseName,
-          )
-        ) {
-          safeName = `_${safeName}`;
-        }
-        return safeName;
-      }
-
-      async function loadProjectFromZip(buf, name) {
-        const zip = await JSZip.loadAsync(buf);
-        const files = {};
-
-        for (const [path, entry] of Object.entries(zip.files)) {
-          if (!entry.dir) {
-            const relativePath = path.split("/").slice(1).join("/");
-            const content = await entry.async("uint8array");
-            files[relativePath] = uint8ToBase64(content);
-          }
-        }
-
-        if (!files["main.py"]) {
-          throw new Error("Missing main.py");
-        }
-        if (!files["my_resource.pyxres"]) {
-          throw new Error("Missing my_resource.pyxres");
-        }
-
-        window._project.name = sanitizeProjectName(name);
-        window._project.files = files;
-        window._project.code = new TextDecoder().decode(
-          base64ToUint8(files["main.py"]),
-        );
-        window._project.resource = files["my_resource.pyxres"];
-
-        window._codeEditor.setValue(window._project.code, -1);
-        resetRuntimeScreen();
-        resetResourceEditor();
-      }
-
       async function loadProject(file) {
+        const load = (window._projectLoad = Symbol());
         try {
           const buf = await file.arrayBuffer();
           const name = file.name.replace(/\.zip$/i, "");
-          await loadProjectFromZip(buf, name);
+          await loadProjectFromZip(buf, name, load);
+          if (load !== window._projectLoad) return;
           updateShareUrl();
         } catch (e) {
           alert(`Load failed: ${e.message}`);
@@ -497,6 +399,7 @@
       }
 
       async function loadFromGist(input) {
+        const load = (window._projectLoad = Symbol());
         const match = input.match(/([a-f0-9]{20,})\s*$/i);
         if (!match) {
           throw new Error("Invalid Gist URL");
@@ -504,7 +407,7 @@
         const gistId = match[1];
         const res = await fetch(`https://api.github.com/gists/${gistId}`);
         if (!res.ok) {
-          throw new Error("Gist not found");
+          throw new Error(`Failed to fetch Gist: ${res.status}`);
         }
         const gist = await res.json();
         const gistFiles = Object.values(gist.files);
@@ -517,14 +420,15 @@
         if (file.truncated) {
           const raw = await fetch(file.raw_url);
           if (!raw.ok) {
-            throw new Error("Gist file not found");
+            throw new Error(`Failed to fetch Gist file: ${raw.status}`);
           }
           content = await raw.text();
         }
 
         const buf = base64ToUint8(content).buffer;
         const name = file.filename.replace(/\.[^.]+$/, "") || "untitled";
-        await loadProjectFromZip(buf, name);
+        await loadProjectFromZip(buf, name, load);
+        if (load !== window._projectLoad) return;
         updateShareUrl("gist", gistId);
       }
 
@@ -533,6 +437,7 @@
         preferredRef = null,
         fallbackSha = null,
       ) {
+        const load = (window._projectLoad = Symbol());
         const { user, repo, ref, sha, path } = await resolveGitHubBlobUrl(
           input,
           fetch,
@@ -554,9 +459,10 @@
 
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error("File not found");
+          throw new Error(`Failed to fetch file: ${res.status}`);
         }
-        await loadProjectFromZip(await res.arrayBuffer(), name);
+        await loadProjectFromZip(await res.arrayBuffer(), name, load);
+        if (load !== window._projectLoad) return;
         updateShareUrl(
           "github",
           `${user}/${repo}/${ref}/${path.replace(/\.zip$/i, "")}`,
@@ -566,6 +472,7 @@
       }
 
       async function loadFromUrl(input) {
+        const load = (window._projectLoad = Symbol());
         const url = input.trim();
         if (!/^https?:\/\/.+/i.test(url)) {
           throw new Error("Invalid URL");
@@ -580,18 +487,11 @@
         const name = sanitizeProjectName(decodedName.replace(/\.zip$/i, ""));
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error("File not found");
+          throw new Error(`Failed to fetch file: ${res.status}`);
         }
-        await loadProjectFromZip(await res.arrayBuffer(), name);
+        await loadProjectFromZip(await res.arrayBuffer(), name, load);
+        if (load !== window._projectLoad) return;
         updateShareUrl("url", url);
-      }
-
-      function buildGitHubProjectUrl(value) {
-        const parts = value.split("/");
-        const user = encodeURIComponent(parts[0]);
-        const repo = encodeURIComponent(parts[1]);
-        const refAndPath = encodeUrlPath(parts.slice(2).join("/"));
-        return `https://github.com/${user}/${repo}/blob/${refAndPath}.zip`;
       }
 
       async function loadFromGitHubShare(
@@ -603,22 +503,6 @@
         const ref =
           preferredRef ?? (/^[0-9a-f]{40}$/i.test(revision) ? revision : null);
         await loadFromGitHub(buildGitHubProjectUrl(value), ref, fallbackSha);
-      }
-
-      async function buildArchiveBlob() {
-        const archive = new JSZip();
-        const prefix = sanitizeProjectName(window._project.name);
-        window._project.name = prefix;
-        for (const [path, b64] of Object.entries(window._project.files)) {
-          archive.file(`${prefix}/${path}`, base64ToUint8(b64));
-        }
-        archive.file(`${prefix}/.pyxapp_startup_script`, "main.py");
-        archive.file(`${prefix}/main.py`, window._project.code);
-        archive.file(
-          `${prefix}/my_resource.pyxres`,
-          base64ToUint8(window._project.resource),
-        );
-        return archive.generateAsync({ type: "blob" });
       }
 
       async function saveToFile() {
@@ -724,149 +608,6 @@
         document.head.appendChild(aceThemeStyle);
 
         window._codeEditor = codeEditor;
-      }
-
-      function updateShareUrl(param, value, ref = null, sha = null) {
-        const base = location.href.split("?")[0];
-        if (param && value) {
-          const encoded = encodeURIComponent(value)
-            .replace(/%3A/g, ":")
-            .replace(/%2F/g, "/");
-          const refParam = ref ? `&ref=${encodeURIComponent(ref)}` : "";
-          const shaParam = /^[0-9a-f]{40}$/i.test(sha) ? `&sha=${sha}` : "";
-          history.replaceState(
-            null,
-            "",
-            `${base}?${param}=${encoded}${refParam}${shaParam}`,
-          );
-        } else {
-          history.replaceState(null, "", base);
-        }
-      }
-
-      function animateButton(button) {
-        button.classList.add("active");
-        setTimeout(() => button.classList.remove("active"), 150);
-      }
-
-      // Dropdown helpers keep only one toolbar menu open at a time.
-      function toggleDropdown(menuId) {
-        const menu = document.getElementById(menuId);
-        const wasHidden = menu.classList.contains("hidden");
-        closeAllDropdowns();
-        if (wasHidden) {
-          menu.classList.remove("hidden");
-          const trigger = menu.parentElement.querySelector(".btn-dropdown");
-          trigger.classList.add("active");
-          trigger.setAttribute("aria-expanded", "true");
-          menu.querySelector(".dropdown-item")?.focus();
-        }
-      }
-
-      function closeAllDropdowns() {
-        document.querySelectorAll(".dropdown-menu").forEach((m) => {
-          m.classList.add("hidden");
-          const trigger = m.parentElement.querySelector(".btn-dropdown");
-          trigger.classList.remove("active");
-          trigger.setAttribute("aria-expanded", "false");
-        });
-      }
-
-      function handleMenuKeydown(menu, event) {
-        const items = [...menu.querySelectorAll(".dropdown-item")];
-        if (items.length === 0) return;
-
-        const currentIndex = items.indexOf(document.activeElement);
-        let targetIndex;
-        switch (event.key) {
-          case "ArrowDown":
-            targetIndex =
-              currentIndex < 0 ? 0 : (currentIndex + 1) % items.length;
-            break;
-          case "ArrowUp":
-            targetIndex =
-              currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
-            break;
-          case "Home":
-            targetIndex = 0;
-            break;
-          case "End":
-            targetIndex = items.length - 1;
-            break;
-          case "Tab":
-            closeAllDropdowns();
-            return;
-          case "Escape":
-            event.preventDefault();
-            closeAllDropdowns();
-            menu.parentElement.querySelector(".btn-dropdown")?.focus();
-            return;
-          default:
-            return;
-        }
-
-        event.preventDefault();
-        items[targetIndex].focus();
-      }
-
-      function activateMenuItem(item, loadFileInput) {
-        const trigger = item
-          .closest(".relative")
-          ?.querySelector(".btn-dropdown");
-        closeAllDropdowns();
-        trigger?.focus();
-
-        switch (item.dataset.action) {
-          case "load-local":
-            loadFileInput.value = "";
-            loadFileInput.click();
-            break;
-          case "load-gist":
-            showModal("modal-load-gist");
-            break;
-          case "load-github":
-            showModal("modal-load-github");
-            break;
-          case "load-url":
-            showModal("modal-load-url");
-            break;
-          case "save-local":
-            saveToFile();
-            break;
-          case "save-gist":
-            saveToGist();
-            break;
-        }
-      }
-
-      let modalReturnFocus = null;
-
-      const getModalFocusables = (modal) =>
-        [...modal.querySelectorAll("a[href], button, input")].filter(
-          (element) => !element.disabled,
-        );
-
-      function showModal(modalId) {
-        const modal = document.getElementById(modalId);
-        modalReturnFocus =
-          document.activeElement
-            ?.closest(".relative")
-            ?.querySelector("button") ?? document.activeElement;
-        modal.classList.remove("hidden");
-        const input = modal.querySelector(".modal-input");
-        if (input) {
-          input.value = "";
-        }
-        setTimeout(() => (input ?? getModalFocusables(modal)[0])?.focus(), 0);
-      }
-
-      function closeModal(el) {
-        const overlay = el.closest(".modal-overlay");
-        if (overlay) {
-          overlay.classList.add("hidden");
-          modalReturnFocus?.focus();
-          modalReturnFocus = null;
-        }
       }
 
       function setupButtonHandlers() {
@@ -1035,11 +776,17 @@
       }
 
       async function loadInitialFiles() {
+        const load = (window._projectLoad = Symbol());
         const res = await fetch("pyxel-project.zip");
         if (!res.ok) {
-          throw new Error("Starter project not found");
+          throw new Error(`Failed to fetch starter project: ${res.status}`);
         }
-        await loadProjectFromZip(await res.arrayBuffer(), "pyxel-project");
+        await loadProjectFromZip(
+          await res.arrayBuffer(),
+          "pyxel-project",
+          load,
+        );
+        if (load !== window._projectLoad) return;
         window._codeEditor.focus();
       }
 
@@ -1090,17 +837,6 @@
             const splitterHandle = document.getElementById("splitter-handle");
             splitterHandle.style.pointerEvents = "auto";
           },
-        );
-      }
-
-      function updateFocusLine(state) {
-        focusLineLeft.classList.toggle(
-          "focus-line-segment-active",
-          state === "left",
-        );
-        focusLineRight.classList.toggle(
-          "focus-line-segment-active",
-          state === "right",
         );
       }
 
@@ -1352,31 +1088,62 @@
       }
 
       function setupFileDrop() {
-        document.addEventListener("dragover", (e) => e.preventDefault());
-        document.addEventListener("drop", (e) => e.preventDefault());
-
-        const codeEditorEl = document.getElementById("code-editor");
-        codeEditorEl.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = "copy";
-        });
-        codeEditorEl.addEventListener("drop", (e) => {
+        async function handleDrop(e) {
           e.preventDefault();
           const file = e.dataTransfer.files?.[0];
-          if (file && file.name.endsWith(".py")) {
-            file.text().then((text) => {
+          if (!file) return;
+          const isCode = file.name.endsWith(".py");
+          if (!isCode && !file.name.endsWith(".pyxres")) return;
+
+          // Handle project files before Ace or an embedded app handles the drop.
+          e.stopPropagation();
+          try {
+            if (isCode) {
+              let text = await file.text();
               text = text.replace(
                 /((?:\w+\.)?\bload\()(["'])[^"']*\.pyxres\2/g,
                 "$1$2my_resource.pyxres$2",
               );
+              document.getElementById("code-tab-button").click();
               window._codeEditor.setValue(text, -1);
               window._project.code = text;
               window._project.files["main.py"] = uint8ToBase64(
                 new TextEncoder().encode(text),
               );
-            });
+            } else {
+              const data = await file.arrayBuffer();
+              waitForPyxelReady(
+                () => {
+                  const context = resourceEditor.contentWindow?.pyxelContext;
+                  context?.resolveInput?.();
+                  return context?.initialized;
+                },
+                () => {
+                  document.getElementById("resource-tab-button").click();
+                  resourceEditor.contentWindow.dropFileToPyxel(file.name, data);
+                },
+              );
+            }
+          } catch (e) {
+            alert(`Load failed: ${e.message}`);
           }
-        });
+        }
+
+        function bindDocument(doc) {
+          doc.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+          });
+          doc.addEventListener("drop", handleDrop, { capture: true });
+        }
+
+        bindDocument(document);
+        for (const frame of [runtimeScreen, resourceEditor]) {
+          bindDocument(frame.contentWindow.document);
+          frame.addEventListener("load", () => {
+            bindDocument(frame.contentWindow.document);
+          });
+        }
       }
 
       // Runtime input unlock forwarded to both embedded Pyxel contexts.
@@ -1396,6 +1163,286 @@
           window.addEventListener(eventName, resolvePyxelInput);
         });
       }
+
+      async function loadProjectFromZip(buf, name, load = window._projectLoad) {
+        const zip = await JSZip.loadAsync(buf);
+        const files = {};
+
+        for (const [path, entry] of Object.entries(zip.files)) {
+          if (!entry.dir) {
+            const relativePath = path.split("/").slice(1).join("/");
+            const content = await entry.async("uint8array");
+            files[relativePath] = uint8ToBase64(content);
+          }
+        }
+
+        if (load !== window._projectLoad) return;
+
+        if (!files["main.py"]) {
+          throw new Error("Missing main.py");
+        }
+        if (!files["my_resource.pyxres"]) {
+          throw new Error("Missing my_resource.pyxres");
+        }
+
+        window._project.name = sanitizeProjectName(name);
+        window._project.files = files;
+        window._project.code = new TextDecoder().decode(
+          base64ToUint8(files["main.py"]),
+        );
+        window._project.resource = files["my_resource.pyxres"];
+
+        window._codeEditor.setValue(window._project.code, -1);
+        resetRuntimeScreen();
+        resetResourceEditor();
+      }
+
+      async function buildArchiveBlob() {
+        const archive = new JSZip();
+        const prefix = sanitizeProjectName(window._project.name);
+        window._project.name = prefix;
+        for (const [path, b64] of Object.entries(window._project.files)) {
+          archive.file(`${prefix}/${path}`, base64ToUint8(b64));
+        }
+        archive.file(`${prefix}/.pyxapp_startup_script`, "main.py");
+        archive.file(`${prefix}/main.py`, window._project.code);
+        archive.file(
+          `${prefix}/my_resource.pyxres`,
+          base64ToUint8(window._project.resource),
+        );
+        return archive.generateAsync({ type: "blob" });
+      }
+
+      function copyCodeToProject() {
+        window._project.code = window._codeEditor.getValue();
+      }
+
+      async function copyResourceToProject() {
+        if (!resourceEditor.contentWindow?.pyxelContext?.pyodide) {
+          return;
+        }
+
+        window._isCopyingResource = true;
+
+        try {
+          const doc = resourceEditor.contentWindow.document;
+          doc.dispatchEvent(
+            new KeyboardEvent("keydown", {
+              key: "F13",
+              code: "F13",
+              bubbles: true,
+            }),
+          );
+          doc.dispatchEvent(
+            new KeyboardEvent("keyup", {
+              key: "F13",
+              code: "F13",
+              bubbles: true,
+            }),
+          );
+
+          // Give the editor update loop time to process the save before reading.
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          window._project.resource = uint8ToBase64(
+            resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
+              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres",
+            ),
+          );
+        } finally {
+          window._isCopyingResource = false;
+        }
+      }
+
+      function resetRuntimeScreen() {
+        runtimeScreen.contentWindow?.resetPyxel?.();
+      }
+
+      function resetResourceEditor() {
+        resourceEditor.contentWindow?.resetPyxel?.();
+      }
+
+      function buildGitHubProjectUrl(value) {
+        const parts = value.split("/");
+        const user = encodeURIComponent(parts[0]);
+        const repo = encodeURIComponent(parts[1]);
+        const refAndPath = encodeUrlPath(parts.slice(2).join("/"));
+        return `https://github.com/${user}/${repo}/blob/${refAndPath}.zip`;
+      }
+
+      function sanitizeProjectName(name) {
+        let safeName = name
+          .replace(/[\/\\<>:"|?*\u0000-\u001f\u007f-\u009f]/g, "_")
+          .trim()
+          .replace(/[ .]+$/g, "");
+        if (!safeName) {
+          return "untitled";
+        }
+
+        const windowsBaseName = safeName.split(".", 1)[0].trimEnd();
+        if (
+          /^(?:CON|PRN|AUX|NUL|CONIN\$|CONOUT\$|COM[1-9¹²³]|LPT[1-9¹²³])$/i.test(
+            windowsBaseName,
+          )
+        ) {
+          safeName = `_${safeName}`;
+        }
+        return safeName;
+      }
+
+      function updateShareUrl(param, value, ref = null, sha = null) {
+        const base = location.href.split("?")[0];
+        if (param && value) {
+          const encoded = encodeURIComponent(value)
+            .replace(/%3A/g, ":")
+            .replace(/%2F/g, "/");
+          const refParam = ref ? `&ref=${encodeURIComponent(ref)}` : "";
+          const shaParam = /^[0-9a-f]{40}$/i.test(sha) ? `&sha=${sha}` : "";
+          history.replaceState(
+            null,
+            "",
+            `${base}?${param}=${encoded}${refParam}${shaParam}`,
+          );
+        } else {
+          history.replaceState(null, "", base);
+        }
+      }
+
+      function handleMenuKeydown(menu, event) {
+        const items = [...menu.querySelectorAll(".dropdown-item")];
+        if (items.length === 0) return;
+
+        const currentIndex = items.indexOf(document.activeElement);
+        let targetIndex;
+        switch (event.key) {
+          case "ArrowDown":
+            targetIndex =
+              currentIndex < 0 ? 0 : (currentIndex + 1) % items.length;
+            break;
+          case "ArrowUp":
+            targetIndex =
+              currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
+            break;
+          case "Home":
+            targetIndex = 0;
+            break;
+          case "End":
+            targetIndex = items.length - 1;
+            break;
+          case "Tab":
+            closeAllDropdowns();
+            return;
+          case "Escape":
+            event.preventDefault();
+            closeAllDropdowns();
+            menu.parentElement.querySelector(".btn-dropdown")?.focus();
+            return;
+          default:
+            return;
+        }
+
+        event.preventDefault();
+        items[targetIndex].focus();
+      }
+
+      function activateMenuItem(item, loadFileInput) {
+        const trigger = item
+          .closest(".relative")
+          ?.querySelector(".btn-dropdown");
+        closeAllDropdowns();
+        trigger?.focus();
+
+        switch (item.dataset.action) {
+          case "load-local":
+            loadFileInput.value = "";
+            loadFileInput.click();
+            break;
+          case "load-gist":
+            showModal("modal-load-gist");
+            break;
+          case "load-github":
+            showModal("modal-load-github");
+            break;
+          case "load-url":
+            showModal("modal-load-url");
+            break;
+          case "save-local":
+            saveToFile();
+            break;
+          case "save-gist":
+            saveToGist();
+            break;
+        }
+      }
+
+      function animateButton(button) {
+        button.classList.add("active");
+        setTimeout(() => button.classList.remove("active"), 150);
+      }
+
+      // Dropdown helpers keep only one toolbar menu open at a time.
+      function toggleDropdown(menuId) {
+        const menu = document.getElementById(menuId);
+        const wasHidden = menu.classList.contains("hidden");
+        closeAllDropdowns();
+        if (wasHidden) {
+          menu.classList.remove("hidden");
+          const trigger = menu.parentElement.querySelector(".btn-dropdown");
+          trigger.classList.add("active");
+          trigger.setAttribute("aria-expanded", "true");
+          menu.querySelector(".dropdown-item")?.focus();
+        }
+      }
+
+      function closeAllDropdowns() {
+        document.querySelectorAll(".dropdown-menu").forEach((m) => {
+          m.classList.add("hidden");
+          const trigger = m.parentElement.querySelector(".btn-dropdown");
+          trigger.classList.remove("active");
+          trigger.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modalReturnFocus =
+          document.activeElement
+            ?.closest(".relative")
+            ?.querySelector("button") ?? document.activeElement;
+        modal.classList.remove("hidden");
+        const input = modal.querySelector(".modal-input");
+        if (input) {
+          input.value = "";
+        }
+        setTimeout(() => (input ?? getModalFocusables(modal)[0])?.focus(), 0);
+      }
+
+      function closeModal(el) {
+        const overlay = el.closest(".modal-overlay");
+        if (overlay) {
+          overlay.classList.add("hidden");
+          modalReturnFocus?.focus();
+          modalReturnFocus = null;
+        }
+      }
+
+      function updateFocusLine(state) {
+        focusLineLeft.classList.toggle(
+          "focus-line-segment-active",
+          state === "left",
+        );
+        focusLineRight.classList.toggle(
+          "focus-line-segment-active",
+          state === "right",
+        );
+      }
+
+      let modalReturnFocus = null;
+
+      const getModalFocusables = (modal) =>
+        [...modal.querySelectorAll("a[href], button, input")].filter(
+          (element) => !element.disabled,
+        );
 
       window.addEventListener("DOMContentLoaded", async () => {
         initAceEditor();

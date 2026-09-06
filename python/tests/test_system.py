@@ -397,7 +397,7 @@ class TestSystemSetters:
         try:
             with raises_exact(
                 ValueError,
-                "Invalid icon data at row 0, column 0: color 15 exceeds palette size 1",
+                "Invalid icon data at row 0, column 0: color 15 is out of range for palette size 1",
             ):
                 pyxel.icon(["f"], 1)
             assert self._capture_state() == before
@@ -475,8 +475,8 @@ class TestSystemFlow:
         ("0, 8, headless=True", "width and height must be greater than 0"),
         ("8, 0, headless=True", "width and height must be greater than 0"),
         ("8, 8, fps=0, headless=True", "fps must be greater than 0"),
-        ("65536, 65536, headless=True", "screen dimensions are too large"),
-        ("65536, 65536", "screen dimensions are too large"),
+        ("65536, 65536, headless=True", "width and height are too large"),
+        ("65536, 65536", "width and height are too large"),
         (
             "8, 8, display_scale=2**32 - 1",
             "display_scale is too large for the window dimensions",

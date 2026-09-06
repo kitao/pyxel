@@ -17,7 +17,9 @@ Pyxel Editor is a built-in resource editing tool for Pyxel. It consists of four 
 
 Launch Pyxel Editor with the following command:
 
+```sh
 pyxel edit [PYXEL_RESOURCE_FILE]
+```
 
 If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file with the specified name will be created. If the filename is omitted, `my_resource.pyxres` will be created.
 
@@ -265,7 +267,7 @@ Sets the playback duration per note. This is a common setting for all notes, spe
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/sound_piano.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_piano.png)
 
-Click to input note pitch. Red squares represent notes, blue squares represent rests. During piano roll editing, a blue cursor is displayed; during property area editing, a different cursor shape appears. Notes are played from left to right, and rests are automatically inserted in empty positions. Clicking an already-filled position overwrites it. Dragging inputs notes continuously with linear interpolation.
+Click to input note pitch. Red squares represent notes, blue squares represent rests. During piano roll editing, a blue cursor is displayed; during property area editing, a different cursor shape appears. Notes are played from left to right, and rests are automatically inserted in empty positions. Clicking an already-filled position overwrites it. Drag to enter notes continuously along the pointer's path.
 
 | Shortcut | Action |
 | --- | --- |
@@ -284,8 +286,8 @@ Click to input note pitch. Red squares represent notes, blue squares represent r
 | Ctrl(Cmd)+C | Copy the selection |
 | Ctrl(Cmd)+X | Cut the selection (copy and clear) |
 | Ctrl(Cmd)+V | Paste the copied area |
-| Ctrl(Cmd)+U | Raise the pitch of the selection by 1 |
-| Ctrl(Cmd)+D | Lower the pitch of the selection by 1 |
+| Ctrl(Cmd)+U | Raise the pitch of the selection by a semitone |
+| Ctrl(Cmd)+D | Lower the pitch of the selection by a semitone |
 
 #### Octave Bar
 
@@ -336,7 +338,7 @@ You can input notes using the PC keyboard. The upper row (QWE row + number row) 
 | A# | J |
 | B | M |
 
-| Rest | A |
+**Rest:** A
 
 | Shortcut | Action |
 | --- | --- |

@@ -5,16 +5,10 @@ from pathlib import Path
 SCRIPT_PATH = Path(__file__).parents[2] / "scripts" / "run_examples"
 
 
-def _write_executable(path: Path, text: str) -> None:
-    path.write_text(text, encoding="utf-8")
-    path.chmod(0o755)
-
-
 def test_child_failure_is_returned_by_entrypoint(tmp_path):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     _write_executable(bin_dir / "pyxel", "#!/usr/bin/env bash\nexit 23\n")
-    _write_executable(bin_dir / "sleep", "#!/usr/bin/env bash\nexit 0\n")
     env = os.environ.copy()
     env["PATH"] = f"{bin_dir}{os.pathsep}{env['PATH']}"
 
@@ -28,3 +22,8 @@ def test_child_failure_is_returned_by_entrypoint(tmp_path):
     )
 
     assert result.returncode == 23, result.stdout + result.stderr
+
+
+def _write_executable(path: Path, text: str) -> None:
+    path.write_text(text, encoding="utf-8")
+    path.chmod(0o755)

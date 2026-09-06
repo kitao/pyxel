@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_ROOT_DIRS = (
+    ROOT_DIR / "docs",
     ROOT_DIR / "web",
     ROOT_DIR / "wasm",
     ROOT_DIR / "python" / "pyxel" / "examples",
@@ -54,15 +55,6 @@ INJECT_SNIPPET = """
 })();
 </script>
 """.replace("__SW_PATH__", SW_PATH)
-
-
-def _get_ip() -> str:
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-            sock.connect(("8.8.8.8", 80))
-            return sock.getsockname()[0]
-    except OSError:
-        return "127.0.0.1"
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -121,6 +113,29 @@ class Handler(SimpleHTTPRequestHandler):
         return super().send_head()
 
 
+def main() -> int:
+    ip = _get_ip()
+    print(f"Serving HTTP on {ip} port {PORT} (http://{ip}:{PORT}/) ...")
+    server = ThreadingHTTPServer(("", PORT), Handler)
+    threading.Timer(
+        0.5, lambda: webbrowser.open(f"http://localhost:{PORT}/web/showcase/")
+    ).start()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    return 0
+
+
+def _get_ip() -> str:
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+
+
 def _is_public_path(path: Path) -> bool:
     return any(
         path == root_dir or path.is_relative_to(root_dir)
@@ -146,20 +161,6 @@ def _inject_html(text: str) -> str:
     if body_idx != -1:
         return text[:body_idx] + INJECT_SNIPPET + text[body_idx:]
     return text + INJECT_SNIPPET
-
-
-def main() -> int:
-    ip = _get_ip()
-    print(f"Serving HTTP on {ip} port {PORT} (http://{ip}:{PORT}/) ...")
-    server = ThreadingHTTPServer(("", PORT), Handler)
-    threading.Timer(
-        0.5, lambda: webbrowser.open(f"http://localhost:{PORT}/web/showcase/")
-    ).start()
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    return 0
 
 
 if __name__ == "__main__":

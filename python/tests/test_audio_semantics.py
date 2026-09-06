@@ -27,38 +27,6 @@ def isolate_audio_resources():
         pyxel.musics[7] = original_music
 
 
-def _write_pcm_wav(path, sec=0.05, freq=440.0):
-    num_samples = int(RATE * sec)
-    with wave.open(str(path), "w") as w:
-        w.setnchannels(1)
-        w.setsampwidth(2)
-        w.setframerate(RATE)
-        w.writeframes(
-            b"".join(
-                struct.pack("<h", int(12000 * math.sin(2 * math.pi * freq * i / RATE)))
-                for i in range(num_samples)
-            )
-        )
-
-
-def _read_samples(path):
-    with wave.open(str(path)) as w:
-        raw = w.readframes(w.getnframes())
-    return struct.unpack(f"<{len(raw) // 2}h", raw)
-
-
-def _rms(samples, start_sec, end_sec):
-    seg = samples[int(RATE * start_sec) : int(RATE * end_sec)]
-    return math.sqrt(sum(s * s for s in seg) / len(seg))
-
-
-def _assert_looping_position(pos, duration_sec):
-    assert pos is not None
-    assert pos[0] == 0
-    # Audio-thread timing may advance playback before play_pos obtains the lock.
-    assert 0.0 <= pos[1] < duration_sec
-
-
 class TestPcmSynthBoundary:
     def test_music_save_pcm_then_synth(self, tmp_path):
         pcm_path = tmp_path / "pcm.wav"
@@ -300,3 +268,35 @@ else:
         for call in calls:
             with raises_exact(ValueError, message):
                 call(-1.0)
+
+
+def _write_pcm_wav(path, sec=0.05, freq=440.0):
+    num_samples = int(RATE * sec)
+    with wave.open(str(path), "w") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(RATE)
+        w.writeframes(
+            b"".join(
+                struct.pack("<h", int(12000 * math.sin(2 * math.pi * freq * i / RATE)))
+                for i in range(num_samples)
+            )
+        )
+
+
+def _read_samples(path):
+    with wave.open(str(path)) as w:
+        raw = w.readframes(w.getnframes())
+    return struct.unpack(f"<{len(raw) // 2}h", raw)
+
+
+def _rms(samples, start_sec, end_sec):
+    seg = samples[int(RATE * start_sec) : int(RATE * end_sec)]
+    return math.sqrt(sum(s * s for s in seg) / len(seg))
+
+
+def _assert_looping_position(pos, duration_sec):
+    assert pos is not None
+    assert pos[0] == 0
+    # Audio-thread timing may advance playback before play_pos obtains the lock.
+    assert 0.0 <= pos[1] < duration_sec

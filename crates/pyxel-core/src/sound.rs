@@ -6,7 +6,6 @@ use crate::audio::Audio;
 use crate::channel::Channel;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{parse_mml, total_duration_sec};
-use crate::old_mml_parser::parse_old_mml;
 use crate::pcm_decoder::{load_pcm, PcmData};
 use crate::pyxel;
 use crate::settings::{
@@ -196,8 +195,9 @@ impl Sound {
     // MML & PCM
 
     pub fn set_mml(&mut self, code: &str) -> Result<(), String> {
+        let commands = parse_mml(code)?;
         self.clear_pcm();
-        self.commands = parse_mml(code)?;
+        self.commands = commands;
         self.command_revision = self.command_revision.wrapping_add(1);
         Ok(())
     }
@@ -207,17 +207,9 @@ impl Sound {
         self.command_revision = self.command_revision.wrapping_add(1);
     }
 
-    pub fn old_mml(&mut self, code: &str) -> Result<(), String> {
-        self.clear_pcm();
-        self.commands = parse_old_mml(code)?;
-        self.command_revision = self.command_revision.wrapping_add(1);
-        Ok(())
-    }
-
     pub fn load_pcm(&mut self, filename: &str) -> Result<(), String> {
-        self.clear_mml();
-
         let pcm = load_pcm(filename, AUDIO_SAMPLE_RATE)?;
+        self.clear_mml();
         self.pcm = Some(pcm);
         Ok(())
     }
@@ -262,12 +254,6 @@ impl Sound {
     }
 
     // Command emission
-
-    pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
-        let mut commands = Vec::new();
-        self.emit_commands(&mut commands);
-        commands
-    }
 
     pub(crate) fn command_snapshot(&mut self) -> Arc<[MmlCommand]> {
         if self.commands.is_empty() {
@@ -349,14 +335,14 @@ impl Sound {
 
     pub(crate) fn emit_commands(&self, commands: &mut Vec<MmlCommand>) {
         commands.clear();
-        self.emit_fixed_params(commands);
+        Self::emit_fixed_params(commands);
         self.emit_envelope_slots(commands);
         self.emit_vibrato_slot(commands);
         self.emit_glide_slot(commands);
         self.emit_notes(commands);
     }
 
-    fn emit_fixed_params(&self, commands: &mut Vec<MmlCommand>) {
+    fn emit_fixed_params(commands: &mut Vec<MmlCommand>) {
         commands.push(MmlCommand::Tempo {
             clocks_per_tick: AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND,
         });
@@ -438,9 +424,9 @@ impl Sound {
                 continue;
             }
 
-            let tone = self.cycled_or(i, &self.tones, TONE_TRIANGLE);
-            let volume = self.cycled_or(i, &self.volumes, MAX_VOLUME);
-            let effect = self.cycled_or(i, &self.effects, EFFECT_NONE);
+            let tone = Self::cycled_or(i, &self.tones, TONE_TRIANGLE);
+            let volume = Self::cycled_or(i, &self.volumes, MAX_VOLUME);
+            let effect = Self::cycled_or(i, &self.effects, EFFECT_NONE);
 
             if last_tone != Some(tone) {
                 last_tone = Some(tone);
@@ -489,7 +475,7 @@ impl Sound {
         }
     }
 
-    fn cycled_or<T: Copy>(&self, index: usize, values: &[T], default: T) -> T {
+    fn cycled_or<T: Copy>(index: usize, values: &[T], default: T) -> T {
         if values.is_empty() {
             default
         } else {
@@ -501,6 +487,30 @@ impl Sound {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn failed_mml_preserves_pcm() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.pcm = Some(PcmData {
+            samples: vec![1, -2, 3],
+        });
+
+        assert!(sound.set_mml("X1").is_err());
+        assert_eq!(sound.pcm.as_ref().unwrap().samples, [1, -2, 3]);
+    }
+
+    #[test]
+    fn failed_pcm_preserves_mml() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.set_mml("T120 O4 C").unwrap();
+        let commands = sound.command_snapshot();
+
+        assert!(sound.load_pcm("").is_err());
+        assert!(!sound.commands.is_empty());
+        assert!(Arc::ptr_eq(&commands, &sound.command_snapshot()));
+    }
 
     #[test]
     fn command_snapshot_is_reused_until_legacy_sound_changes() {

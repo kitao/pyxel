@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import pytest
 import pyxel
 from _capture import (  # type: ignore[reportMissingImports]
@@ -70,7 +73,6 @@ CAPTURE_PLANS = {
         {"frame": 100, "press": [pyxel.KEY_UP, pyxel.KEY_SPACE]},
     ],
     "c06_3d_physics": [{"frame": 1}, {"frame": 70}, {"frame": 140}],
-    "cube_demo": [{"frame": 1}, {"frame": 45}],
     "cube_physics_character": [{"frame": 1}, {"frame": 60}],
     "cube_physics_shoot": [
         {"frame": 1},
@@ -83,7 +85,7 @@ CAPTURE_PLANS = {
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
     "17_app_launcher": [{"frame": 1}],
-    # pyxel.run() with SPACE toggling clip
+    # pyxel.run() with SPACE held for clipping
     "03_draw_api": [
         {"frame": 1},
         {"frame": 155, "press": [pyxel.KEY_SPACE]},
@@ -94,7 +96,6 @@ CAPTURE_PLANS = {
 
 # Examples living in the examples/cube subdirectory rather than the top level
 CUBE_DIR_EXAMPLES = {
-    "cube_demo",
     "cube_physics_character",
     "cube_physics_shoot",
     "cube_physics_stack",
@@ -105,6 +106,50 @@ FLIP_EXAMPLES = {"99_flip_animation"}
 
 
 class TestExamples:
+    def test_wavetable_strokes_start_at_click_and_fill_dragged_columns(self):
+        code = """
+import runpy
+import sys
+
+import pyxel
+
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+namespace = runpy.run_path(sys.argv[1])
+editor = namespace["WavetableEditor"](8, 8, 0, "Test")
+wave = pyxel.tones[0].wavetable
+wave[:] = [8] * 32
+
+def frame(col, row, pressed=None):
+    pyxel.set_mouse_pos(editor.x + 1 + col * 5, editor.y + 8 + (15 - row) * 3)
+    if pressed is not None:
+        pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, pressed)
+    editor.update()
+    pyxel.flip()
+
+frame(2, 8, False)
+frame(20, 15, True)
+expected = [8] * 20 + [15] + [8] * 11
+assert list(wave) == expected, list(wave)
+frame(24, 1)
+expected[20:25] = [1] * 5
+assert list(wave) == expected, list(wave)
+frame(7, 9, False)
+assert list(wave) == expected, list(wave)
+frame(5, 0, True)
+expected[5] = 0
+assert list(wave) == expected, list(wave)
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(EXAMPLES_DIR / "14_synthesizer.py")],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
     def test_top_level_examples_have_capture_plans(self):
         planned = set(CAPTURE_PLANS) - CUBE_DIR_EXAMPLES
         examples = {

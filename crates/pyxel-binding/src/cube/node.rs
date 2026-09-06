@@ -392,7 +392,7 @@ impl Node {
         self.inner_mut().visible = v;
     }
 
-    // None inherits from the nearest ancestor camera; on_draw uses effective_camera.
+    // Calling draw() on this node uses its camera or the nearest ancestor's camera.
     #[getter]
     fn camera(&self) -> Option<Camera> {
         self.inner_ref()

@@ -15,7 +15,6 @@ name = "cube"
 
 [dependencies]
 blip_buf = "0.2"
-# wasmbind routes time queries through js-sys for Emscripten/WASM builds
 chrono = { features = ["wasmbind"], version = "0.4" }
 directories = "6.0"
 fontdue = "0.9"
@@ -40,13 +39,13 @@ zip = { default-features = false, features = ["deflate"], version = "8.1" }
 
 [dev-dependencies]
 serde_json = "1.0"
-sha2 = "0.10"
+sha2 = "0.11"
 
 [build-dependencies]
-bindgen = "0.72"
+bindgen = "0.73"
 cmake = "0.1"
 flate2 = "1.0"
-sha2 = "0.10"
+sha2 = "0.11"
 tar = "0.4"
 
 [features]

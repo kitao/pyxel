@@ -13,7 +13,7 @@ We recommend trying Pyxel's example code in the following order.
 4. 04_sound_api — Sound API
 5. 02_jump_game — Game implementation
 
-You can copy the examples with `pyxel copy_examples`, or run them in your browser on [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
+You can copy the examples by following the [User Guide](https://kitao.github.io/pyxel/web/user-guide/#s-usage), or run them in your browser on [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
 
 </details>
 
@@ -107,11 +107,11 @@ In Pyxel 2.4, the sound engine and MML syntax have been revamped.
 To make your code compatible with version 2.4, please make the following changes:
 
 - Rename the `waveform` field of the Tone class to `wavetable`
-- Change the `tick` argument of the `play` and `playm` functions to `sec` (a float value in seconds)
+- Replace the `tick` argument of the `play` and `playm` functions with `sec`, converting its value to `tick / 120` seconds
 - Update code to handle the return value of the `play_pos` function, which is now `(sound_index, sec)`
-- Change the `count` argument of the `save` function in the Sound and Music classes to `sec`
+- For the Sound and Music classes' `save` function, replace the repeat count `count` with the duration in seconds, `sec`
 - If you need the playback duration of a sound, use the `total_sec` function of the Sound class
-- For the Sound class's `mml` function, use code that follows the new MML syntax (old syntax is auto-detected; the `old_mml` function is deprecated)
+- For the Sound class's `mml` function, rewrite the code in the new MML syntax
 - Change the `excl_*` option in the `save` and `load` functions to `exclude_*`
 - Remove the `incl_*` option from the `save` and `load` functions
 

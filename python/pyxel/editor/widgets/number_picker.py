@@ -13,14 +13,26 @@ class NumberPicker(Widget):
     # Events:
     #   change (value)
 
-    def __init__(self, parent, x, y, *, min_value, max_value, value, **kwargs):
+    def __init__(
+        self,
+        parent,
+        x,
+        y,
+        *,
+        min_value,
+        max_value,
+        value,
+        allow_out_of_range=False,
+        **kwargs,
+    ):
         self._number_len = max(len(str(min_value)), len(str(max_value)))
         width = self._number_len * 4 + 21
         super().__init__(parent, x, y, width, 7, **kwargs)
         self._min_value = min_value
         self._max_value = max_value
+        self._allow_out_of_range = allow_out_of_range
 
-        self.new_var("value_var", clamp(value, min_value, max_value))
+        self.new_var("value_var", self.__on_value_set(value))
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
@@ -41,7 +53,11 @@ class NumberPicker(Widget):
     # Event handlers
 
     def __on_value_set(self, value):
-        return clamp(value, self._min_value, self._max_value)
+        return (
+            value
+            if self._allow_out_of_range
+            else clamp(value, self._min_value, self._max_value)
+        )
 
     def __on_value_change(self, value):
         self.dec_button.is_enabled_var = value > self._min_value
@@ -49,16 +65,22 @@ class NumberPicker(Widget):
         self.trigger_event("change", value)
 
     def __on_dec_button_press(self):
-        self.value_var -= self._step_delta()
+        self.value_var = clamp(
+            self.value_var - self._step_delta(), self._min_value, self._max_value
+        )
 
     def __on_inc_button_press(self):
-        self.value_var += self._step_delta()
+        self.value_var = clamp(
+            self.value_var + self._step_delta(), self._min_value, self._max_value
+        )
 
     def __on_draw(self):
         pyxel.rect(self.x + 9, self.y, self.width - 18, self.height, INPUT_FIELD_COLOR)
+        value = self.value_var
+        text = str(value) if self._min_value <= value <= self._max_value else "?"
         pyxel.text(
             self.x + 11,
             self.y + 1,
-            f"{self.value_var:>{self._number_len}}",
+            f"{text:>{self._number_len}}",
             INPUT_TEXT_COLOR,
         )

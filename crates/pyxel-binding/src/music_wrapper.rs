@@ -32,13 +32,6 @@ impl DerefMut for MusicSeqMut<'_> {
     }
 }
 
-fn seq_mut(inner: &SeqRef) -> MusicSeqMut<'_> {
-    MusicSeqMut {
-        music: audio_mut!(inner.inner),
-        index: inner.index,
-    }
-}
-
 wrap_as_python_primitive_sequence!(
     Seq,
     SeqRef,
@@ -60,7 +53,7 @@ wrap_as_python_primitive_sequence!(
     })
 );
 
-// Seqs is hand-written because it returns Seq wrapper objects (asymmetric get/set types)
+// Seqs returns live Seq views; removed sequences are plain lists.
 #[pyclass(sequence, unsendable, skip_from_py_object)]
 #[derive(Clone)]
 pub struct Seqs {
@@ -247,7 +240,7 @@ impl Seqs {
     fn from_list(&self, list: Vec<Vec<u32>>) {
         deprecation_warning!(
             FROM_LIST_ONCE,
-            "Seqs.from_list() is deprecated. Use slice assignment instead."
+            "Seqs.from_list() is deprecated. Use Music.set(*seqs) instead."
         );
         self.inner_mut().set(list);
     }
@@ -255,7 +248,7 @@ impl Seqs {
     fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
         deprecation_warning!(
             TO_LIST_ONCE,
-            "Seqs.to_list() is deprecated. Use list(seq) instead."
+            "Seqs.to_list() is deprecated. Use [list(seq) for seq in seqs] instead."
         );
         let seqs: Vec<Vec<u32>> = self.inner_ref().seqs.clone();
         let list = PyList::new(py, seqs)?;
@@ -302,6 +295,13 @@ impl Music {
             "Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead."
         );
         Seqs::wrap(self.inner.clone())
+    }
+}
+
+fn seq_mut(inner: &SeqRef) -> MusicSeqMut<'_> {
+    MusicSeqMut {
+        music: audio_mut!(inner.inner),
+        index: inner.index,
     }
 }
 

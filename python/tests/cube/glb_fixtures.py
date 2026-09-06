@@ -7,74 +7,6 @@ import struct
 import zlib
 from pathlib import Path
 
-# Binary container builders
-
-
-def _pad4(data: bytes, pad: bytes = b" ") -> bytes:
-    # glTF chunks are 4-byte aligned: JSON pads with spaces, BIN with zeros.
-    return data + pad * ((4 - len(data) % 4) % 4)
-
-
-def _png(
-    width: int,
-    height: int,
-    color_type: int,
-    pixels: list[tuple[int, ...]],
-) -> bytes:
-    raw = bytearray()
-    for y in range(height):
-        raw.append(0)  # per-scanline filter byte: 0 = None
-        for x in range(width):
-            raw.extend(pixels[y * width + x])
-
-    def chunk(kind: bytes, payload: bytes) -> bytes:
-        body = kind + payload
-        return (
-            struct.pack(">I", len(payload))
-            + body
-            + struct.pack(">I", zlib.crc32(body) & 0xFFFFFFFF)
-        )
-
-    return (
-        b"\x89PNG\r\n\x1a\n"
-        + chunk(
-            b"IHDR",
-            # Fields: width, height, bit depth 8, color type (0 = gray,
-            # 2 = RGB, 4 = gray+alpha, 6 = RGBA), then compression /
-            # filter methods 0 and interlace 0 (non-interlaced).
-            struct.pack(">IIBBBBB", width, height, 8, color_type, 0, 0, 0),
-        )
-        + chunk(b"IDAT", zlib.compress(bytes(raw)))
-        + chunk(b"IEND", b"")
-    )
-
-
-def _pack_chunks(chunks: list[bytes]) -> tuple[bytes, list[int]]:
-    data = bytearray()
-    offsets = []
-    for chunk in chunks:
-        offsets.append(len(data))
-        data.extend(_pad4(chunk, b"\x00"))
-    return bytes(data), offsets
-
-
-def _write_glb(path: Path, gltf: dict, bin_blob: bytes) -> Path:
-    json_chunk = _pad4(json.dumps(gltf, separators=(",", ":")).encode())
-    bin_chunk = _pad4(bin_blob, b"\x00")
-    total_len = 12 + 8 + len(json_chunk) + 8 + len(bin_chunk)
-    # GLB container: 12-byte header (magic, version 2, total length),
-    # then length-prefixed JSON and BIN chunks.
-    path.write_bytes(
-        b"glTF"
-        + struct.pack("<II", 2, total_len)
-        + struct.pack("<I4s", len(json_chunk), b"JSON")
-        + json_chunk
-        + struct.pack("<I4s", len(bin_chunk), b"BIN\x00")
-        + bin_chunk
-    )
-    return path
-
-
 # Fixture writers
 
 
@@ -917,3 +849,71 @@ def write_materialless_primitive_glb(path: Path) -> Path:
     return write_two_material_two_texture_glb(
         path, textured=False, right_material=False
     )
+
+
+def _png(
+    width: int,
+    height: int,
+    color_type: int,
+    pixels: list[tuple[int, ...]],
+) -> bytes:
+    raw = bytearray()
+    for y in range(height):
+        raw.append(0)  # per-scanline filter byte: 0 = None
+        for x in range(width):
+            raw.extend(pixels[y * width + x])
+
+    def chunk(kind: bytes, payload: bytes) -> bytes:
+        body = kind + payload
+        return (
+            struct.pack(">I", len(payload))
+            + body
+            + struct.pack(">I", zlib.crc32(body) & 0xFFFFFFFF)
+        )
+
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(
+            b"IHDR",
+            # Fields: width, height, bit depth 8, color type (0 = gray,
+            # 2 = RGB, 4 = gray+alpha, 6 = RGBA), then compression /
+            # filter methods 0 and interlace 0 (non-interlaced).
+            struct.pack(">IIBBBBB", width, height, 8, color_type, 0, 0, 0),
+        )
+        + chunk(b"IDAT", zlib.compress(bytes(raw)))
+        + chunk(b"IEND", b"")
+    )
+
+
+def _pack_chunks(chunks: list[bytes]) -> tuple[bytes, list[int]]:
+    data = bytearray()
+    offsets = []
+    for chunk in chunks:
+        offsets.append(len(data))
+        data.extend(_pad4(chunk, b"\x00"))
+    return bytes(data), offsets
+
+
+def _write_glb(path: Path, gltf: dict, bin_blob: bytes) -> Path:
+    json_chunk = _pad4(json.dumps(gltf, separators=(",", ":")).encode())
+    bin_chunk = _pad4(bin_blob, b"\x00")
+    total_len = 12 + 8 + len(json_chunk) + 8 + len(bin_chunk)
+    # GLB container: 12-byte header (magic, version 2, total length),
+    # then length-prefixed JSON and BIN chunks.
+    path.write_bytes(
+        b"glTF"
+        + struct.pack("<II", 2, total_len)
+        + struct.pack("<I4s", len(json_chunk), b"JSON")
+        + json_chunk
+        + struct.pack("<I4s", len(bin_chunk), b"BIN\x00")
+        + bin_chunk
+    )
+    return path
+
+
+# Binary container builders
+
+
+def _pad4(data: bytes, pad: bytes = b" ") -> bytes:
+    # glTF chunks are 4-byte aligned: JSON pads with spaces, BIN with zeros.
+    return data + pad * ((4 - len(data) % 4) % 4)

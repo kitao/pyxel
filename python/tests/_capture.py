@@ -18,13 +18,6 @@ EDITOR_REFS_DIR = REFERENCES_DIR / "editor"
 _RUNNER = Path(__file__).parent / "_runner.py"
 
 
-# Capture subprocess wrappers
-
-
-def _run_subprocess(*args):
-    subprocess.run([sys.executable, str(_RUNNER), *args], check=True)
-
-
 def run_example_subprocess(script_path, plan, out_dir):
     _run_subprocess("example", str(script_path), json.dumps(plan), str(out_dir))
 
@@ -85,3 +78,10 @@ def compare_or_update_all(name, results, refs_dir, update_references):
         pytest.skip(f"References updated: {', '.join(updated)}")
     if failures:
         pytest.fail("\n".join(failures))
+
+
+# Capture subprocess wrappers
+
+
+def _run_subprocess(*args):
+    subprocess.run([sys.executable, str(_RUNNER), *args], check=True)

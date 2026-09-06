@@ -152,7 +152,7 @@ Load the resource file (.pyxres). If an option is set to True, the corresponding
 - `exclude_sounds` (*bool*) — Exclude sounds. Defaults to False.
 - `exclude_musics` (*bool*) — Exclude music tracks. Defaults to False.
 
-**Note:** If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.
+**Note:** If a palette file (.pyxpal) with the same name exists in the same directory as the resource file, the palette display colors will also be updated.
 
 ### `user_data_dir(vendor_name, app_name)` — function *(Advanced)*
 

@@ -55,25 +55,13 @@ class TestChannel:
         ch.play("T120 L4 C", sec=1, resume=True)
         assert ch.play_pos() == (0, 5.196189522393979e-05)
 
-    def test_play_with_sec(self):
+    @pytest.mark.parametrize("options", [{}, {"tick": None}])
+    def test_play_with_sec(self, options):
         snd = pyxel.Sound()
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
-        ch.play(snd, sec=0.125)
+        ch.play(snd, sec=0.125, **options)
         assert ch.play_pos() == (0, 0.1250002086162567)
-
-    def test_play_with_tick_deprecated(self, capfd):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2", "sss", "777", "nnn", 10)
-        ch = pyxel.Channel()
-        ch.play(snd, sec=0, tick=15)  # type: ignore[call-arg]
-        out = capfd.readouterr().out
-        assert (
-            out
-            == "tick option of Channel.play is deprecated. Use sec option instead.\n"
-        )
-        assert ch.play_pos() == (0, 0.1250002086162567)
-        ch.stop()
 
     def test_play_pos_when_not_playing(self):
         ch = pyxel.Channel()
@@ -94,3 +82,16 @@ class TestChannel:
         finally:
             pyxel.channels.pop()
         assert len(pyxel.channels) == original_len
+
+    def test_play_with_tick_deprecated(self, capfd):
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        ch = pyxel.Channel()
+        ch.play(snd, sec=0, tick=15)  # type: ignore[call-arg]
+        out = capfd.readouterr().out
+        assert (
+            out
+            == "tick option of Channel.play is deprecated. Use sec in seconds (tick / 120) instead.\n"
+        )
+        assert ch.play_pos() == (0, 0.1250002086162567)
+        ch.stop()

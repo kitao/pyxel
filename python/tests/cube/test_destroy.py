@@ -14,20 +14,6 @@ class _DestroyTracker(Node):
         _DestroyTracker.fire_log.append(self.label)
 
 
-def _setup_root_with_subtree() -> tuple[
-    Node, _DestroyTracker, _DestroyTracker, _DestroyTracker
-]:
-    _DestroyTracker.fire_log = []
-    root_node = Node()
-    root = _DestroyTracker("root")
-    mid = _DestroyTracker("mid")
-    leaf = _DestroyTracker("leaf")
-    root_node.add_child(root)
-    root.add_child(mid)
-    mid.add_child(leaf)
-    return root_node, root, mid, leaf
-
-
 def test_destroyed_flag_set_immediately_but_not_detached():
     _root_node, root, mid, leaf = _setup_root_with_subtree()
     mid.destroy()
@@ -66,3 +52,17 @@ def test_destroying_update_root_fires_once():
 
     assert _DestroyTracker.fire_log == ["root"]
     assert root.destroyed is False
+
+
+def _setup_root_with_subtree() -> tuple[
+    Node, _DestroyTracker, _DestroyTracker, _DestroyTracker
+]:
+    _DestroyTracker.fire_log = []
+    root_node = Node()
+    root = _DestroyTracker("root")
+    mid = _DestroyTracker("mid")
+    leaf = _DestroyTracker("leaf")
+    root_node.add_child(root)
+    root.add_child(mid)
+    mid.add_child(leaf)
+    return root_node, root, mid, leaf

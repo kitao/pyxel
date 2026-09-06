@@ -156,20 +156,6 @@ class Blast:
         pyxel.circb(self.x, self.y, self.radius, BLAST_COLOR_OUT)
 
 
-def update_entities(entities):
-    for entity in entities:
-        entity.update()
-
-
-def draw_entities(entities):
-    for entity in entities:
-        entity.draw()
-
-
-def cleanup_entities(entities):
-    entities[:] = [e for e in entities if e.is_alive]
-
-
 class App:
     def __init__(self):
         pyxel.init(120, 160, title="Pyxel Shooter")
@@ -374,6 +360,20 @@ class App:
 
         pyxel.text(43, 66, "GAME OVER", 8)
         pyxel.text(31, 126, "- PRESS ENTER -", 13)
+
+
+def update_entities(entities):
+    for entity in entities:
+        entity.update()
+
+
+def draw_entities(entities):
+    for entity in entities:
+        entity.draw()
+
+
+def cleanup_entities(entities):
+    entities[:] = [e for e in entities if e.is_alive]
 
 
 App()

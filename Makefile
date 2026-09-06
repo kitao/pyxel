@@ -3,16 +3,22 @@
 #   - git, make, cmake, rustup, python 3.11+, node.js
 #   - Windows: Git Bash
 #   - Linux: python3-pip, python3-venv, clang, libclang-dev, libsdl2-dev 2.32.10
-#   - ./scripts/setup_venv
+#
+# Setup once:
+#   - ./scripts/setup_venv (replaces an existing .venv directory)
+#   - npm ci --prefix web
 #
 # Each new shell:
 #   - macOS/Linux: source .venv/bin/activate
 #   - Windows (Git Bash): source .venv/Scripts/activate
 #
+# Common checks:
+#   - Format: make format
+#   - Test: make test (Python/Rust/JavaScript; builds and installs native)
+#
 # Native:
 #   - Lint: make lint
 #   - Build: make clean build
-#   - Test: make test
 #   - Run: make run
 #
 # WASM:
@@ -23,8 +29,8 @@
 #   - Run: make run-wasm
 #
 # Web pages:
-#   - Setup once: cd web && npm install
 #   - Build: make pages
+#   - Test: npm test --prefix web (JavaScript only, on Node.js)
 #
 
 # Project directories

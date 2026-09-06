@@ -452,7 +452,6 @@ impl Scene {
         }
         let c_a = world_a.pos_value();
         let c_b = world_b.pos_value();
-        // Dispatch exact solvers by shape pair
         match (classify_shape(size_a, r_a), classify_shape(size_b, r_b)) {
             (S::Sphere { r: ra }, S::Sphere { r: rb }) => sphere_vs_sphere(c_a, ra, c_b, rb)
                 .or_else(|| Self::swept_sphere_vs_sphere(c_a, ra, vel_a, c_b, rb, vel_b)),
@@ -1622,6 +1621,7 @@ fn ray_vs_rounded_box(
             }
         }
     }
+    // Edge capsules include the rounded corners at their endpoints.
     for axis in 0..3 {
         let other0 = (axis + 1) % 3;
         let other1 = (axis + 2) % 3;
@@ -1641,16 +1641,6 @@ fn ray_vs_rounded_box(
                 set_axis(&mut b, other1, sign1 * component(half, other1));
                 if let Some(hit) = ray_vs_segment_capsule(origin, direction, a, b, r, max_distance)
                 {
-                    set_nearer_hit(&mut best, hit);
-                }
-            }
-        }
-    }
-    for x in [-half.x, half.x] {
-        for y in [-half.y, half.y] {
-            for z in [-half.z, half.z] {
-                let center = Vec3 { x, y, z };
-                if let Some(hit) = ray_vs_sphere(origin, direction, center, r, max_distance) {
                     set_nearer_hit(&mut best, hit);
                 }
             }
@@ -1763,8 +1753,7 @@ fn narrow_phase_mesh_vs_dynamic(
 ) -> Option<ContactGeom> {
     let shape_dyn = classify_shape(size_dyn, r_dyn);
     let mesh_inv = world_mesh.inverse_value();
-    // Map the dynamic body's AABB into the mesh-local BVH as a broad filter;
-    // per-triangle tests remain shape-exact.
+    // Map the dynamic body's AABB into the mesh-local BVH as a broad filter.
     let dyn_aabb_world = if matches!(shape_dyn, ColliderShape::Sphere { .. }) {
         Aabb::from_sphere(world_dyn.pos_value(), r_dyn)
     } else {
@@ -3136,7 +3125,7 @@ mod tests {
     }
 
     #[test]
-    fn test_detect_contacts_reuses_collider_entry_capacity() {
+    fn test_detect_contacts_preserves_collider_entry_capacity() {
         let root = Node::new();
         let a = Node::new();
         let b = Node::new();
@@ -3828,8 +3817,7 @@ mod tests {
 
     #[test]
     fn test_detect_contacts_skips_two_static() {
-        // mass==0 on both sides means neither moves; the broad/narrow
-        // pipeline drops the pair to avoid emitting no-op deltas.
+        // Neither collider responds to collision, so omit this non-trigger pair.
         let root = Node::new();
         let a = Node::new();
         let b = Node::new();

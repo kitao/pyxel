@@ -45,7 +45,7 @@ pub struct GeneratorParams {
     pub melo_lowest_note: i32,
     // Melody density selector, from 0 to 4.
     pub melo_density: i32,
-    // Enables melody rhythm patterns with 16th-note onsets.
+    // Allows adjacent note onsets one 16th-note step apart.
     pub melo_use16: bool,
     // Optional custom chord progression entries for Composer-managed slots.
     #[serde(default)]
@@ -526,7 +526,11 @@ const CHORD_PROGRESSIONS: [&[ChordEntry]; PRESET_COUNT] =
     [&CP0, &CP1, &CP2, &CP3, &CP4, &CP5, &CP6, &CP7];
 
 fn preset_params(preset: i32) -> GeneratorParams {
-    assert!((0..PRESET_COUNT as i32).contains(&preset), "invalid preset");
+    assert!(
+        (0..PRESET_COUNT as i32).contains(&preset),
+        "preset must be between 0 and {}",
+        PRESET_COUNT - 1
+    );
     PRESETS[preset as usize].clone()
 }
 
@@ -831,6 +835,10 @@ fn parse_notes_bits(s: &str) -> [i32; 12] {
     for (i, ch) in s.bytes().take(12).enumerate() {
         out[i] = i32::from(ch.saturating_sub(b'0'));
     }
+    // Use the same empty-chord fallback for bass and melody note pools.
+    if !out.iter().any(|kind| matches!(kind, 1 | 2 | 3 | 9)) {
+        return parse_notes_bits(I_MAJOR_NOTES_BITS);
+    }
     out
 }
 
@@ -926,14 +934,7 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
                 break;
             }
         }
-        let bits = resolve_entry_notes(progression, entry_idx).map_or([0; 12], parse_notes_bits);
-
-        // Fall back to I major because an empty chord pool cannot produce a note
-        *slot = if bits.iter().any(|kind| matches!(kind, 1 | 2 | 3 | 9)) {
-            bits
-        } else {
-            default_bits
-        };
+        *slot = resolve_entry_notes(progression, entry_idx).map_or(default_bits, parse_notes_bits);
     }
     out
 }
@@ -1054,7 +1055,7 @@ fn rhythm_has_16th(line: &str) -> bool {
     line.as_bytes().windows(2).any(|w| w == b"00")
 }
 
-// Pick per-bar rhythm events while enforcing 16th-note availability when requested.
+// Treat adjacent `00` as 16th-note runs when selecting rhythm patterns.
 fn pick_rhythm_events(
     rng: &mut Xoshiro256StarStar,
     use_16th: bool,
@@ -1968,32 +1969,52 @@ fn build_tone(idx: usize) -> BgmTone {
 
 // Assemble BgmData from GeneratorParams + seed: bass, melody, optional
 // submelody and drum per `instrumentation`, plus tone metadata for Pyxel Composer.
-fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
+fn generate_bgm(
+    params: &GeneratorParams,
+    seed: u64,
+    transpose_name: &str,
+    instrumentation_name: &str,
+) -> BgmData {
     assert!(
         (-5..=5).contains(&params.transpose),
-        "transp must be between -5 and 5"
+        "{transpose_name} must be between -5 and 5"
     );
     assert!(
         (0..=3).contains(&params.instrumentation),
-        "instr must be between 0 and 3"
+        "{instrumentation_name} must be between 0 and 3"
     );
-    assert!(params.speed >= 1, "invalid speed");
-    assert!((0..10).contains(&params.chord), "invalid chord");
-    assert!((0..8).contains(&params.base), "invalid base");
+    assert!(params.speed >= 1, "speed must be greater than 0");
+    assert!(
+        (0..10).contains(&params.chord),
+        "chord must be between 0 and 9"
+    );
+    assert!(
+        (0..8).contains(&params.base),
+        "base must be between 0 and 7"
+    );
     assert!(
         (12..=15).contains(&params.base_quantize),
-        "invalid base_quantize"
+        "base_quantize must be between 12 and 15"
     );
-    assert!((0..8).contains(&params.drums), "invalid drums");
-    assert!((0..6).contains(&params.melo_tone), "invalid melo_tone");
-    assert!((0..6).contains(&params.sub_tone), "invalid sub_tone");
+    assert!(
+        (0..8).contains(&params.drums),
+        "drums must be between 0 and 7"
+    );
+    assert!(
+        (0..6).contains(&params.melo_tone),
+        "melo_tone must be between 0 and 5"
+    );
+    assert!(
+        (0..6).contains(&params.sub_tone),
+        "sub_tone must be between 0 and 5"
+    );
     assert!(
         (28..=33).contains(&params.melo_lowest_note),
-        "invalid melo_lowest_note"
+        "melo_lowest_note must be between 28 and 33"
     );
     assert!(
         (0..=4).contains(&params.melo_density),
-        "invalid melo_density"
+        "melo_density must be between 0 and 4"
     );
 
     let instr = params.instrumentation as usize;
@@ -2143,8 +2164,7 @@ fn compile_to_mml(data: &BgmData) -> Vec<String> {
 
 // Public API
 
-// One-shot entry: pick a preset, override transpose/instrumentation, return MML strings.
-// Backend for `pyxel.gen_bgm()`; also reachable from Composer via the `*_json` wrappers below.
+// Backend for `pyxel.gen_bgm()`; Composer uses the separate JSON entry points below.
 pub fn generate_bgm_mml(
     preset: i32,
     transpose: i32,
@@ -2154,7 +2174,7 @@ pub fn generate_bgm_mml(
     let mut params = preset_params(preset);
     params.transpose = transpose;
     params.instrumentation = instrumentation;
-    let data = generate_bgm(&params, seed);
+    let data = generate_bgm(&params, seed, "transp", "instr");
     compile_to_mml(&data)
 }
 
@@ -2169,7 +2189,7 @@ pub fn preset_params_json(preset: i32) -> String {
 #[cfg(any(not(pyxel_core), test))]
 pub fn generate_bgm_json(params_json: &str, seed: u64) -> String {
     let params = GeneratorParams::from_json(params_json);
-    generate_bgm(&params, seed).to_json()
+    generate_bgm(&params, seed, "transpose", "instrumentation").to_json()
 }
 
 #[cfg(any(not(pyxel_core), test))]
@@ -2243,13 +2263,13 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "invalid preset")]
+    #[should_panic(expected = "preset must be between 0 and 7")]
     fn test_preset_params_negative_panics() {
         let _ = preset_params(-1);
     }
 
     #[test]
-    #[should_panic(expected = "invalid preset")]
+    #[should_panic(expected = "preset must be between 0 and 7")]
     fn test_preset_params_above_range_panics() {
         let _ = preset_params(PRESET_COUNT as i32);
     }
@@ -2260,7 +2280,7 @@ mod tests {
             let params = preset_params(preset_idx);
             let one_shot =
                 generate_bgm_mml(preset_idx, params.transpose, params.instrumentation, 12345);
-            let data = generate_bgm(&params, 12345);
+            let data = generate_bgm(&params, 12345, "transpose", "instrumentation");
             let pipeline = compile_to_mml(&data);
             assert_eq!(one_shot, pipeline, "mismatch for preset {preset_idx}");
         }
@@ -2299,6 +2319,20 @@ mod tests {
         let bits = chord_bits_per_step(&progression);
         assert_eq!(bits[0], parse_notes_bits(I_MAJOR_NOTES_BITS));
         assert_ne!(build_chord_note_pool(&bits[0], 0, 24), []);
+
+        let mut params = preset_params(0);
+        params.chord = 8;
+        params.custom_progression = Some(vec![CustomChordEntry {
+            loc: 0,
+            notes: Some("000000000000".to_string()),
+            repeat: None,
+        }]);
+        let empty_chord = generate_bgm(&params, 12345, "transpose", "instrumentation");
+        params.custom_progression.as_mut().unwrap()[0].notes = Some(I_MAJOR_NOTES_BITS.to_string());
+        assert_eq!(
+            empty_chord,
+            generate_bgm(&params, 12345, "transpose", "instrumentation")
+        );
     }
 
     // The Composer JSON helpers stay out of production pyxel-core builds but
@@ -2344,6 +2378,31 @@ mod tests {
         let mml_from_json: Vec<String> = serde_json::from_str(&mml_json).unwrap();
         let mml_direct = generate_bgm_mml(0, 0, 3, 42);
         assert_eq!(mml_from_json, mml_direct);
+    }
+
+    #[test]
+    #[should_panic(expected = "transpose must be between -5 and 5")]
+    fn test_json_invalid_transpose_panics() {
+        let mut params = preset_params(0);
+        params.transpose = 6;
+        generate_bgm_json(&params.to_json(), 42);
+    }
+
+    #[test]
+    #[should_panic(expected = "instrumentation must be between 0 and 3")]
+    fn test_json_invalid_instrumentation_panics() {
+        let mut params = preset_params(0);
+        params.instrumentation = 4;
+        generate_bgm_json(&params.to_json(), 42);
+    }
+
+    #[test]
+    #[should_panic(expected = "transpose must be between -5 and 5")]
+    fn test_json_invalid_transpose_precedes_instrumentation() {
+        let mut params = preset_params(0);
+        params.transpose = 6;
+        params.instrumentation = 4;
+        generate_bgm_json(&params.to_json(), 42);
     }
 
     #[test]

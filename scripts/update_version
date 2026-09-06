@@ -39,25 +39,33 @@ EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
 PRE_RELEASE_MAP = {"a": "alpha", "b": "beta", "rc": "rc"}
 
 
-def pep440_to_semver(version: str) -> str:
-    m = re.match(r"^(\d+\.\d+\.\d+)(a|b|rc)(\d+)$", version)
-    if m:
-        base, tag, num = m.groups()
-        return f"{base}-{PRE_RELEASE_MAP[tag]}.{num}"
-    return version
+def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] == "--check":
+        if len(argv) > 2:
+            print("Usage: update_version --check [v<version>]", file=sys.stderr)
+            return 1
+        try:
+            errors = version_errors(tag=argv[1] if len(argv) == 2 else None)
+        except ValueError as error:
+            print(f"ERROR: {error}", file=sys.stderr)
+            return 1
+        if errors:
+            for error in errors:
+                print(f"ERROR: {error}", file=sys.stderr)
+            return 1
+        print("Version surfaces are consistent")
+        return 0
 
-
-def replace_file(path: Path, pattern: str, version: str) -> None:
-    text = path.read_text(encoding="utf-8")
-    new_text, count = re.subn(
-        pattern,
-        lambda match: f"{match.group(1)}{version}{match.group(2)}",
-        text,
-        count=1,
-    )
-    if count != 1:
-        raise ValueError(f"version pattern not found in {path}")
-    path.write_text(new_text, encoding="utf-8")
+    if len(argv) != 1:
+        print("Usage: update_version <version>", file=sys.stderr)
+        return 1
+    try:
+        update_version(argv[0])
+    except ValueError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 1
+    return 0
 
 
 def update_version(version: str, root_dir: Path = ROOT_DIR) -> None:
@@ -67,41 +75,6 @@ def update_version(version: str, root_dir: Path = ROOT_DIR) -> None:
         replace_file(root_dir / relative_path, pattern, version)
     for relative_path, pattern in CARGO_VERSION_REPLACEMENTS:
         replace_file(root_dir / relative_path, pattern, cargo_version)
-
-
-def _read_version(root_dir: Path, relative_path: str, pattern: str) -> str:
-    text = (root_dir / relative_path).read_text(encoding="utf-8")
-    match = re.search(pattern, text)
-    if match is None:
-        raise ValueError(f"version pattern not found in {relative_path}")
-    return match.group(1)
-
-
-def _wheel_tag_errors(wheel_path: Path, version: str) -> list[str]:
-    wheel_metadata_name = f"pyxel-{version}.dist-info/WHEEL"
-    try:
-        with zipfile.ZipFile(wheel_path) as wheel_zip:
-            if wheel_zip.namelist().count(wheel_metadata_name) != 1:
-                return [
-                    (
-                        f"wasm/{wheel_path.name}: expected wheel metadata member "
-                        f"{wheel_metadata_name}"
-                    )
-                ]
-            wheel_metadata = Parser().parsestr(
-                wheel_zip.read(wheel_metadata_name).decode("utf-8", errors="strict")
-            )
-    except (OSError, UnicodeDecodeError, zipfile.BadZipFile) as error:
-        return [f"wasm/{wheel_path.name}: invalid wheel: {error}"]
-
-    if wheel_metadata.get_all("Tag", []) != [EXPECTED_WHEEL_TAG]:
-        return [
-            (
-                f"wasm/{wheel_path.name}: WHEEL Tag fields do not match "
-                f"{EXPECTED_WHEEL_TAG}"
-            )
-        ]
-    return []
 
 
 def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[str]:
@@ -160,33 +133,60 @@ def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[st
     return errors
 
 
-def main(argv: list[str] | None = None) -> int:
-    argv = sys.argv[1:] if argv is None else argv
-    if argv and argv[0] == "--check":
-        if len(argv) > 2:
-            print("Usage: update_version --check [v<version>]", file=sys.stderr)
-            return 1
-        try:
-            errors = version_errors(tag=argv[1] if len(argv) == 2 else None)
-        except ValueError as error:
-            print(f"ERROR: {error}", file=sys.stderr)
-            return 1
-        if errors:
-            for error in errors:
-                print(f"ERROR: {error}", file=sys.stderr)
-            return 1
-        print("Version surfaces are consistent")
-        return 0
+def pep440_to_semver(version: str) -> str:
+    m = re.match(r"^(\d+\.\d+\.\d+)(a|b|rc)(\d+)$", version)
+    if m:
+        base, tag, num = m.groups()
+        return f"{base}-{PRE_RELEASE_MAP[tag]}.{num}"
+    return version
 
-    if len(argv) != 1:
-        print("Usage: update_version <version>", file=sys.stderr)
-        return 1
+
+def replace_file(path: Path, pattern: str, version: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    new_text, count = re.subn(
+        pattern,
+        lambda match: f"{match.group(1)}{version}{match.group(2)}",
+        text,
+        count=1,
+    )
+    if count != 1:
+        raise ValueError(f"version pattern not found in {path}")
+    path.write_text(new_text, encoding="utf-8")
+
+
+def _read_version(root_dir: Path, relative_path: str, pattern: str) -> str:
+    text = (root_dir / relative_path).read_text(encoding="utf-8")
+    match = re.search(pattern, text)
+    if match is None:
+        raise ValueError(f"version pattern not found in {relative_path}")
+    return match.group(1)
+
+
+def _wheel_tag_errors(wheel_path: Path, version: str) -> list[str]:
+    wheel_metadata_name = f"pyxel-{version}.dist-info/WHEEL"
     try:
-        update_version(argv[0])
-    except ValueError as error:
-        print(f"ERROR: {error}", file=sys.stderr)
-        return 1
-    return 0
+        with zipfile.ZipFile(wheel_path) as wheel_zip:
+            if wheel_zip.namelist().count(wheel_metadata_name) != 1:
+                return [
+                    (
+                        f"wasm/{wheel_path.name}: expected wheel metadata member "
+                        f"{wheel_metadata_name}"
+                    )
+                ]
+            wheel_metadata = Parser().parsestr(
+                wheel_zip.read(wheel_metadata_name).decode("utf-8", errors="strict")
+            )
+    except (OSError, UnicodeDecodeError, zipfile.BadZipFile) as error:
+        return [f"wasm/{wheel_path.name}: invalid wheel: {error}"]
+
+    if wheel_metadata.get_all("Tag", []) != [EXPECTED_WHEEL_TAG]:
+        return [
+            (
+                f"wasm/{wheel_path.name}: WHEEL Tag fields do not match "
+                f"{EXPECTED_WHEEL_TAG}"
+            )
+        ]
+    return []
 
 
 if __name__ == "__main__":

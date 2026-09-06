@@ -13,33 +13,6 @@ ROOT_DIR = Path(__file__).parents[2]
 EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
 
 
-def _load_script(name):
-    loader = SourceFileLoader(f"{name}_test", str(ROOT_DIR / "scripts" / name))
-    spec = importlib.util.spec_from_loader(loader.name, loader)
-    assert spec is not None
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
-
-
-def _write_project_version(root: Path, version: str) -> None:
-    pyproject_path = root / "python" / "pyproject.toml"
-    pyproject_path.parent.mkdir(parents=True, exist_ok=True)
-    pyproject_path.write_text(
-        f'[project]\nname = "pyxel"\nversion = "{version}"\n'
-        'requires-python = ">=3.11"\n',
-        encoding="utf-8",
-    )
-
-
-def _write_wasm_wheel(path: Path, version: str, tag: str = EXPECTED_WHEEL_TAG) -> None:
-    with zipfile.ZipFile(path, "w") as wheel_zip:
-        wheel_zip.writestr(
-            f"pyxel-{version}.dist-info/WHEEL",
-            f"Wheel-Version: 1.0\nRoot-Is-Purelib: false\nTag: {tag}\n",
-        )
-
-
 def test_wasm_wheel_check_rejects_generated_metadata_and_host_paths(tmp_path, capsys):
     checker = _load_script("check_wasm_wheel")
     wheel_path = tmp_path / f"pyxel-3.0.0-{EXPECTED_WHEEL_TAG}.whl"
@@ -350,3 +323,30 @@ def test_install_wasm_wheel_rejects_wrong_wheel_contract_before_changes(
     assert result.returncode == 1
     assert current_wheel.read_bytes() == b"current"
     assert (wasm_dir / "pyxel.js").read_text(encoding="utf-8") == script
+
+
+def _load_script(name):
+    loader = SourceFileLoader(f"{name}_test", str(ROOT_DIR / "scripts" / name))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    assert spec is not None
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def _write_project_version(root: Path, version: str) -> None:
+    pyproject_path = root / "python" / "pyproject.toml"
+    pyproject_path.parent.mkdir(parents=True, exist_ok=True)
+    pyproject_path.write_text(
+        f'[project]\nname = "pyxel"\nversion = "{version}"\n'
+        'requires-python = ">=3.11"\n',
+        encoding="utf-8",
+    )
+
+
+def _write_wasm_wheel(path: Path, version: str, tag: str = EXPECTED_WHEEL_TAG) -> None:
+    with zipfile.ZipFile(path, "w") as wheel_zip:
+        wheel_zip.writestr(
+            f"pyxel-{version}.dist-info/WHEEL",
+            f"Wheel-Version: 1.0\nRoot-Is-Purelib: false\nTag: {tag}\n",
+        )

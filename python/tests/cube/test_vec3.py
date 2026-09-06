@@ -4,14 +4,6 @@ from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Vec3
 
 
-def approx_v(a, b, tol=1e-5):
-    return (
-        isclose(a.x, b.x, abs_tol=tol)
-        and isclose(a.y, b.y, abs_tol=tol)
-        and isclose(a.z, b.z, abs_tol=tol)
-    )
-
-
 class TestConstructor:
     def test_default(self):
         v = Vec3()
@@ -216,3 +208,11 @@ class TestCoordinateConversions:
     def test_to_local_dir_ignores_translation(self):
         local_origin = Mat4.from_translation(Vec3(10, 0, 0))
         assert Vec3(1, 0, 0).to_local_dir(local_origin) == Vec3(1, 0, 0)
+
+
+def approx_v(a, b, tol=1e-5):
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
+    )

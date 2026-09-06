@@ -6,7 +6,7 @@
 
 ![Pyxel](images/pyxel_logo_152x64.png)
 
-**Pyxel** (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as 16 colors and 4 sound channels by default, you can easily enjoy making pixel-art-style games.
+**Pyxel** (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
@@ -18,8 +18,8 @@ Also, this project is developed by one person, kept going by your [GitHub](https
 - Programming in Python
 - Customizable screen size
 - 16-color palette
-- 3 256x256 image banks
-- 8 256x256 tilemaps
+- 3 image banks (256x256 pixels)
+- 8 tilemaps (256x256 tiles)
 - 4 channels with 64 definable sounds
 - 8 music tracks that can combine any sounds
 - Keyboard, mouse, and gamepad inputs
@@ -86,7 +86,7 @@ usage:
 
 ### Try Examples
 
-The following command copies Pyxel examples to the current directory:
+The following command copies Pyxel examples into pyxel_examples in the current directory, replacing all contents of that folder if it already exists:
 
 ```sh
 pyxel copy_examples
@@ -239,7 +239,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 To include resources or additional modules, place them in `APP_DIR`. When collecting files from the application directory, `pyxel package` excludes files with the `.gif` or `.zip` extension, hidden files and directories, and `__pycache__` directories.
 
-Metadata can be displayed at runtime by specifying it in the following format within the startup script. Every field, including `title` and `author`, is optional.
+Metadata can be displayed at runtime by specifying it in the following format within the startup script. When specifying metadata, `title` and `author` are required; the other fields are optional.
 
 ```python
 # title: Pyxel Platformer

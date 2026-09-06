@@ -41,12 +41,12 @@ define_rc_type!(RcTilemap, Tilemap);
 
 impl Tilemap {
     pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> RcTilemap {
-        Self::try_new(width, height, imgsrc).expect("tilemap dimensions are too large")
+        Self::try_new(width, height, imgsrc).expect("width and height are too large")
     }
 
     pub fn try_new(width: u32, height: u32, imgsrc: ImageSource) -> Result<RcTilemap, String> {
         let canvas = Canvas::try_new(width, height)
-            .ok_or_else(|| "tilemap dimensions are too large".to_string())?;
+            .ok_or_else(|| "width and height are too large".to_string())?;
         Ok(new_rc_type!(Self { imgsrc, canvas }))
     }
 
@@ -282,7 +282,6 @@ impl Tilemap {
                 None,
                 rotate,
                 scale,
-                false,
             );
         } else {
             self.canvas.blit(

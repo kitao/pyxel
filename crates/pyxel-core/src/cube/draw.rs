@@ -1550,7 +1550,7 @@ mod tests {
     }
 
     #[test]
-    fn test_should_cull_none_draws_everything() {
+    fn test_should_cull_none_keeps_all_area_signs() {
         assert!(!should_cull(1.0, CULL_NONE));
         assert!(!should_cull(-1.0, CULL_NONE));
         assert!(!should_cull(0.0, CULL_NONE));

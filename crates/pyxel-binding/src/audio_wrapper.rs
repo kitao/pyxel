@@ -6,17 +6,6 @@ use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 
-pub(crate) fn validate_sec(sec: Option<f32>) -> PyResult<()> {
-    pyxel::Channel::validate_sec(sec).map_err(PyValueError::new_err)
-}
-
-fn validate_channel_index(ch: u32) -> PyResult<()> {
-    if ch as usize >= pyxel::channels().len() {
-        return Err(invalid_index_error!("ch", "channel"));
-    }
-    Ok(())
-}
-
 // Playback functions
 
 #[pyfunction]
@@ -32,7 +21,7 @@ fn play(
     let sec = if let Some(tick) = tick {
         deprecation_warning!(
             PLAY_TICK_ONCE,
-            "tick option of pyxel.play is deprecated. Use sec option instead."
+            "tick option of pyxel.play is deprecated. Use sec in seconds (tick / 120) instead."
         );
         Some(tick as f32 / 120.0)
     } else {
@@ -101,7 +90,7 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) ->
     let sec = if let Some(tick) = tick {
         deprecation_warning!(
             PLAYM_TICK_ONCE,
-            "tick option of pyxel.playm is deprecated. Use sec option instead."
+            "tick option of pyxel.playm is deprecated. Use sec in seconds (tick / 120) instead."
         );
         Some(tick as f32 / 120.0)
     } else {
@@ -180,6 +169,17 @@ fn music(msc: u32) -> PyResult<Music> {
         .cloned()
         .map(Music::wrap)
         .ok_or_else(|| invalid_index_error!("msc", "music"))
+}
+
+pub(crate) fn validate_sec(sec: Option<f32>) -> PyResult<()> {
+    pyxel::Channel::validate_sec(sec).map_err(PyValueError::new_err)
+}
+
+fn validate_channel_index(ch: u32) -> PyResult<()> {
+    if ch as usize >= pyxel::channels().len() {
+        return Err(invalid_index_error!("ch", "channel"));
+    }
+    Ok(())
 }
 
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

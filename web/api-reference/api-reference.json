@@ -1117,18 +1117,18 @@
             "type": "None"
           },
           "notes": {
-            "en": "If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.",
-            "cn": "如果存在同名的调色板文件 (.pyxpal)，调色板的显示颜色也会被更新。",
-            "de": "Wenn eine Palettendatei (.pyxpal) mit dem gleichen Namen existiert, werden auch die Palettenanzeigefarben aktualisiert.",
-            "es": "Si existe un archivo de paleta (.pyxpal) con el mismo nombre, los colores de visualización de la paleta también se actualizarán.",
-            "fr": "Si un fichier de palette (.pyxpal) portant le même nom existe, les couleurs d'affichage de la palette seront également mises à jour.",
-            "it": "Se esiste un file di palette (.pyxpal) con lo stesso nome, verranno aggiornati anche i colori di visualizzazione della palette.",
-            "ja": "同名のパレットファイル (.pyxpal) が存在する場合、パレットの表示色も変更される。",
-            "ko": "동일 이름의 팔레트 파일 (.pyxpal)이 존재하면 팔레트의 표시 색상도 변경된다.",
-            "pt": "Se um arquivo de paleta (.pyxpal) com o mesmo nome existir, as cores de exibição da paleta também serão atualizadas.",
-            "ru": "Если существует файл палитры (.pyxpal) с тем же именем, цвета отображения палитры также будут обновлены.",
-            "tr": "Aynı adlı bir palet dosyası (.pyxpal) varsa, paletin görüntüleme renkleri de güncellenir.",
-            "uk": "Якщо існує файл палітри (.pyxpal) з такою ж назвою, кольори відображення палітри також будуть оновлені."
+            "en": "If a palette file (.pyxpal) with the same name exists in the same directory as the resource file, the palette display colors will also be updated.",
+            "cn": "如果在资源文件的同一目录中存在同名的调色板文件 (.pyxpal)，调色板的显示颜色也会被更新。",
+            "de": "Wenn eine Palettendatei (.pyxpal) mit dem gleichen Namen im selben Verzeichnis wie die Ressourcendatei existiert, werden auch die Palettenanzeigefarben aktualisiert.",
+            "es": "Si existe un archivo de paleta (.pyxpal) con el mismo nombre en el mismo directorio que el archivo de recursos, los colores de visualización de la paleta también se actualizarán.",
+            "fr": "Si un fichier de palette (.pyxpal) portant le même nom existe dans le même répertoire que le fichier de ressources, les couleurs d'affichage de la palette seront également mises à jour.",
+            "it": "Se esiste un file di palette (.pyxpal) con lo stesso nome nella stessa cartella del file di risorse, verranno aggiornati anche i colori di visualizzazione della palette.",
+            "ja": "リソースファイルと同じ場所に同名のパレットファイル (.pyxpal) が存在する場合、パレットの表示色も変更される。",
+            "ko": "리소스 파일과 같은 디렉터리에 동일 이름의 팔레트 파일 (.pyxpal)이 존재하면 팔레트의 표시 색상도 변경된다.",
+            "pt": "Se um arquivo de paleta (.pyxpal) com o mesmo nome existir no mesmo diretório que o arquivo de recursos, as cores de exibição da paleta também serão atualizadas.",
+            "ru": "Если в том же каталоге, что и файл ресурсов, существует файл палитры (.pyxpal) с тем же именем, цвета отображения палитры также будут обновлены.",
+            "tr": "Kaynak dosyasıyla aynı dizinde aynı adlı bir palet dosyası (.pyxpal) varsa, paletin görüntüleme renkleri de güncellenir.",
+            "uk": "Якщо в тому самому каталозі, що й файл ресурсів, існує файл палітри (.pyxpal) з такою ж назвою, кольори відображення палітри також будуть оновлені."
           },
           "advanced": false
         },
@@ -5302,7 +5302,7 @@
               "type": "float",
               "description": {
                 "en": "Field of view in degrees. Defaults to 60.",
-                "cn": "视野角度。默认为 60。",
+                "cn": "视野角，以度为单位。默认为 60。",
                 "de": "Sichtfeld in Grad. Standard ist 60.",
                 "es": "Campo de visión en grados. Por defecto es 60.",
                 "fr": "Champ de vision en degrés. Par défaut : 60.",
@@ -5489,7 +5489,7 @@
               "type": "float",
               "description": {
                 "en": "Field of view in degrees. Defaults to 60.",
-                "cn": "视野角度。默认为 60。",
+                "cn": "视野角，以度为单位。默认为 60。",
                 "de": "Sichtfeld in Grad. Standard ist 60.",
                 "es": "Campo de visión en grados. Por defecto es 60.",
                 "fr": "Champ de vision en degrés. Par défaut : 60.",
@@ -9908,7 +9908,7 @@
             "fr": "Charge un fichier audio (WAV/OGG) pour la lecture.",
             "it": "Carica un file audio (WAV/OGG) per la riproduzione.",
             "ja": "再生用のオーディオファイル (WAV/OGG) を読み込む。",
-            "ko": "오디오 파일 (WAV/OGG)을 로드하여 재생한다.",
+            "ko": "재생용 오디오 파일 (WAV/OGG)을 로드한다.",
             "pt": "Carrega um arquivo de áudio (WAV/OGG) para reprodução.",
             "ru": "Загружает аудиофайл (WAV/OGG) для воспроизведения.",
             "tr": "Çalma için ses dosyası (WAV/OGG) yükler.",

@@ -193,3 +193,63 @@ test("embedded runtime frames have accessible names", () => {
     }
   }
 });
+
+test("MML Studio toggles expose their state and channel names", () => {
+  const source = read("mml-studio", "index.html");
+  const actions = [
+    "loop",
+    "solo1",
+    "mute1",
+    "solo2",
+    "mute2",
+    "solo3",
+    "mute3",
+    "solo4",
+    "mute4",
+  ];
+  for (const action of actions) {
+    const openingTag = source.match(
+      new RegExp(`<button[^>]+data-action="${action}"[^>]*>`, "s"),
+    )?.[0];
+    assert.ok(openingTag, action);
+    const initialState = action === "loop" ? "true" : "false";
+    assert.match(openingTag, new RegExp(`aria-pressed="${initialState}"`));
+    if (action !== "loop") {
+      assert.match(
+        openingTag,
+        new RegExp(`aria-label="(?:Solo|Mute) channel ${action.at(-1)}"`),
+      );
+    }
+  }
+
+  const attributes = {};
+  const button = {
+    dataset: new Proxy(
+      { action: "solo1", state: "false" },
+      {
+        set(target, name, value) {
+          target[name] = String(value);
+          return true;
+        },
+      },
+    ),
+    classList: { toggle() {} },
+    setAttribute: (name, value) => {
+      attributes[name] = String(value);
+    },
+  };
+  const context = { runtimeScreen: { contentWindow: {} } };
+  context.setButtonStyle = loadNamedFunction(source, "setButtonStyle", context);
+  const handleButtonPress = loadNamedFunction(
+    source,
+    "handleButtonPress",
+    context,
+  );
+
+  handleButtonPress(button);
+  assert.equal(attributes["aria-pressed"], "true");
+  assert.equal(context.runtimeScreen.contentWindow.js_solo1, true);
+  handleButtonPress(button);
+  assert.equal(attributes["aria-pressed"], "false");
+  assert.equal(context.runtimeScreen.contentWindow.js_solo1, false);
+});

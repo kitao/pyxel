@@ -3,31 +3,6 @@ from cube_physics_camera import OrbitCamera
 from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
 
-def _stage_mesh() -> Mesh:
-    verts = [
-        -8.0,
-        0.0,
-        -8.0,
-        8.0,
-        0.0,
-        -8.0,
-        -8.0,
-        0.0,
-        8.0,
-        8.0,
-        0.0,
-        8.0,
-    ]
-    indices = [0, 2, 1, 1, 2, 3]
-    primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
-    return Mesh(
-        primitives=[primitive],
-        transforms=[Mat4.IDENTITY],
-        parents=[-1],
-        col_img=11,
-    )
-
-
 class Stage(Node):
     def __init__(self):
         super().__init__()
@@ -127,6 +102,31 @@ class App:
 
     def draw(self):
         self.scene.draw(0, 0, 160, 120)
+
+
+def _stage_mesh() -> Mesh:
+    verts = [
+        -8.0,
+        0.0,
+        -8.0,
+        8.0,
+        0.0,
+        -8.0,
+        -8.0,
+        0.0,
+        8.0,
+        8.0,
+        0.0,
+        8.0,
+    ]
+    indices = [0, 2, 1, 1, 2, 3]
+    primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
+    return Mesh(
+        primitives=[primitive],
+        transforms=[Mat4.IDENTITY],
+        parents=[-1],
+        col_img=11,
+    )
 
 
 if __name__ == "__main__":

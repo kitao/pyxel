@@ -15,27 +15,10 @@ from pyxel.cube import (
     Vec3,
 )
 
-# Frame-level pipeline (update + draw) and spatial queries are tested
-# here against the universal Node API. The camera attaches to the tree
-# via Node.camera (cascading to descendants); clear_color is a Camera
-# attribute.
-
 
 class TestUpdate:
     def test_update_no_children(self):
         Node().update()
-
-
-# Collision pipeline smoke tests. The detailed geometric correctness
-# lives in the Rust unit tests under crates/pyxel-core/src/cube/; these
-# verify that the Python-facing API plumbs the call through end-to-end.
-
-
-def _ball(pos: Vec3, *, radius: float = 0.5, mass: float = 1.0) -> Node:
-    n = Node()
-    n.transform = Mat4.from_translation(pos)
-    n.collider = Collider(radius=radius, mass=mass)
-    return n
 
 
 class _CollisionCounter(Node):
@@ -86,7 +69,7 @@ class TestCollisionPipeline:
         assert a.collide_count == 0
         assert b.collide_count == 0
 
-    def test_static_trigger_still_notifies_without_response(self):
+    def test_static_trigger_notifies_with_zero_depth(self):
         root = Node()
         sensor = _StaticCollisionCounter(Vec3(0, 0, 0), trigger=True)
         wall = _StaticCollisionCounter(Vec3(0.5, 0, 0))
@@ -119,7 +102,6 @@ class TestMeshColliderRobustness:
         return primitive, root
 
     def test_bad_primitive_indices_do_not_crash_collision(self):
-        # Invalid triangles are ignored when the collision BVH is built.
         prim = Primitive(
             Primitive.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
@@ -135,8 +117,6 @@ class TestMeshColliderRobustness:
 
         root.update()
 
-        # Both mesh triangles are invalid, so the ray passes through the
-        # terrain and hits the ball beneath it.
         hit = root.raycast(Vec3(0, 5, 0), Vec3(0, -1, 0))
         assert hit is not None
         assert hit.node is ball
@@ -257,7 +237,6 @@ class TestRaycast:
         assert ball_ref() is None
 
     def test_raycasthit_not_user_constructible(self):
-        # RaycastHit is an engine-built payload with no public constructor.
         with raises_exact(TypeError, "cannot create 'pyxel.cube.RaycastHit' instances"):
             RaycastHit()
 
@@ -353,7 +332,6 @@ class TestNestedDraw:
         root.draw(0, 0, 32, 24)
 
 
-# State set in one Node.on_draw must not leak to siblings or children.
 class TestStateSetterIsolation:
     @staticmethod
     def _camera():
@@ -400,3 +378,10 @@ class TestStateSetterIsolation:
         root.draw(0, 0, 160, 120)
 
         assert pyxel.pget(80, 60) == 8
+
+
+def _ball(pos: Vec3, *, radius: float = 0.5, mass: float = 1.0) -> Node:
+    n = Node()
+    n.transform = Mat4.from_translation(pos)
+    n.collider = Collider(radius=radius, mass=mass)
+    return n

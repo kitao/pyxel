@@ -16,6 +16,7 @@ from pyxel.editor.field_cursor import FieldCursor
 from pyxel.editor.image_editor import ImageEditor
 from pyxel.editor.image_viewer import ImageViewer
 from pyxel.editor.music_field import MusicField
+from pyxel.editor.sound_editor import SoundEditor
 from pyxel.editor.tilemap_editor import TilemapEditor
 from pyxel.editor.widgets import NumberPicker, ScrollBar, Widget
 
@@ -38,14 +39,6 @@ def _param_id(editor, palette_count):
     if palette_count is None:
         return editor
     return f"{editor}_{palette_count}colors"
-
-
-def _hsv_pyxpal_lines(count):
-    lines = []
-    for i in range(count):
-        r, g, b = colorsys.hsv_to_rgb(i / count, 0.8, 1.0)
-        lines.append(f"{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}")
-    return lines
 
 
 class TestEditor:
@@ -82,6 +75,61 @@ assert [list(seq) for seq in pyxel.musics[0].seqs] == expected
 """
         result = subprocess.run(
             [sys.executable, "-c", code, path],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
+    @pytest.mark.parametrize("case", ["music", "sound", "note-below", "note-above"])
+    def test_audio_drawing_stays_inside_fields(self, tmp_path, case):
+        code = """
+import sys
+
+import pyxel
+from pyxel.editor.app import App
+
+path, case = sys.argv[1:]
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(path, "music" if case == "music" else "sound")
+sound = pyxel.sounds[0]
+if case == "music":
+    pyxel.musics[0].seqs[:] = [[], [], [], [0] * 32]
+else:
+    sound.set("c2" * 48, "p" * 48, "7" * 48, "n" * 48, 30)
+app.draw_all()
+before = [[pyxel.pget(x, y) for x in range(pyxel.width)]
+          for y in range(pyxel.height)]
+if case == "music":
+    pyxel.musics[0].seqs[3].extend([0] * 16)
+elif case == "sound":
+    sound.set("c2" * 52, "p" * 52, "7" * 52, "n" * 52, 30)
+else:
+    sound.notes[:] = [-2 if case == "note-below" else 60]
+    pyxel.play_pos = lambda ch: (0, 0.0)
+fields = ("notes", "tones", "volumes", "effects")
+expected = [list(getattr(sound, field)) for field in fields]
+seqs = [list(seq) for seq in pyxel.musics[0].seqs]
+app.draw_all()
+for y in range(pyxel.height):
+    for x in range(pyxel.width):
+        if case.startswith("note-") and 17 <= x < 223 and 25 <= y < 148:
+            continue
+        assert pyxel.pget(x, y) == before[y][x], (case, x, y)
+assert [list(getattr(sound, field)) for field in fields] == expected
+assert [list(seq) for seq in pyxel.musics[0].seqs] == seqs
+pyxel.save(path)
+pyxel.sounds[0] = pyxel.Sound()
+pyxel.musics[0].seqs[:] = []
+pyxel.load(path)
+assert [list(getattr(pyxel.sounds[0], field)) for field in fields] == expected
+assert [list(seq) for seq in pyxel.musics[0].seqs] == seqs
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(tmp_path / "audio.pyxres"), case],
             capture_output=True,
             text=True,
             timeout=10,
@@ -190,6 +238,96 @@ assert pyxel.num_user_colors == len(expected)
         run_editor_subprocess(editor, resource, tmp_path)
         results = collect_editor_results(tmp_path)
         compare_screenshots(ref_name, results, EDITOR_REFS_DIR)
+
+
+class TestSoundEditor:
+    @pytest.fixture
+    def sound_editor(self):
+        originals = [pyxel.sounds[i] for i in range(2)]
+        try:
+            for i in range(2):
+                pyxel.sounds[i] = pyxel.Sound()
+            parent = Widget(None, 0, 0, 240, 180)
+            parent.new_var("help_message_var", "")
+            yield SoundEditor(parent)
+        finally:
+            for i, sound in enumerate(originals):
+                pyxel.sounds[i] = sound
+
+    @pytest.mark.parametrize(
+        "y,note", [(2, 59), (6, 57), (10, 55), (13, 53), (16, 52), (20, 50)]
+    )
+    def test_keyboard_click_matches_white_key_bottom(self, sound_editor, y, note):
+        keyboard = sound_editor._piano_keyboard
+
+        keyboard.trigger_event(
+            "mouse_down", pyxel.MOUSE_BUTTON_LEFT, keyboard.x + 8, keyboard.y + y
+        )
+
+        assert keyboard._mouse_note == note
+
+    @pytest.mark.parametrize(
+        "field,values,expected",
+        [
+            ("tones", [0, 1, 2, 3, 4, 9, 255], "TSPN???"),
+            ("volumes", [0, 7, 8, 255], "07??"),
+            ("effects", [0, 1, 2, 3, 4, 5, 6, 255], "NSVFHQ??"),
+        ],
+    )
+    def test_draw_marks_unknown_values_without_changing_data(
+        self, sound_editor, monkeypatch, field, values, expected
+    ):
+        sound = pyxel.sounds[0]
+        sound.set("c2", "t", "7", "n", 30)
+        getattr(sound, field)[:] = values
+        drawn_text = []
+        monkeypatch.setattr(
+            pyxel, "text", lambda x, y, text, col: drawn_text.append(text)
+        )
+
+        sound_editor._sound_field.trigger_event("draw")
+
+        assert expected in drawn_text
+        assert list(getattr(sound, field)) == values
+
+    @pytest.mark.parametrize(
+        "speed,expected_text",
+        [(1, " 1"), (99, "99"), (100, " ?"), (150, " ?"), (2**16 - 1, " ?")],
+    )
+    def test_view_and_bank_switch_preserve_speed(
+        self, sound_editor, monkeypatch, speed, expected_text
+    ):
+        pyxel.sounds[0].speed = speed
+        sound_editor.trigger_event("update")
+        assert pyxel.sounds[0].speed == speed
+        assert sound_editor.speed_var == speed
+
+        pyxel.sounds[1].speed = speed
+        sound_editor.sound_index_var = 1
+        sound_editor.trigger_event("update")
+        assert pyxel.sounds[1].speed == speed
+        assert sound_editor.speed_var == speed
+
+        drawn_text = []
+        monkeypatch.setattr(
+            pyxel, "text", lambda x, y, text, col: drawn_text.append(text)
+        )
+        sound_editor._speed_picker.trigger_event("draw")
+        assert drawn_text == [expected_text]
+
+    def test_speed_is_clamped_only_when_user_edits(self, sound_editor):
+        sound_editor.speed_var = 150
+        sound_editor.trigger_event("update")
+        assert pyxel.sounds[0].speed == 150
+        assert sound_editor.speed_var == 150
+
+        sound_editor._speed_picker.dec_button.trigger_event("press")
+        assert pyxel.sounds[0].speed == 99
+        assert sound_editor.speed_var == 99
+
+        sound_editor._speed_picker.dec_button.trigger_event("press")
+        assert pyxel.sounds[0].speed == 98
+        assert sound_editor.speed_var == 98
 
 
 class TestNumberPicker:
@@ -337,3 +475,11 @@ class TestUserPal:
                     delattr(pyxel, "num_user_colors")
             else:
                 pyxel.num_user_colors = saved_num_user  # type: ignore[attr-defined]
+
+
+def _hsv_pyxpal_lines(count):
+    lines = []
+    for i in range(count):
+        r, g, b = colorsys.hsv_to_rgb(i / count, 0.8, 1.0)
+        lines.append(f"{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}")
+    return lines

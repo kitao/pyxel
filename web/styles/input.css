@@ -103,7 +103,8 @@
 
   /* Launcher form controls and generated-link display */
   .link-strong {
-    @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 break-all;
+    @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+    overflow-wrap: anywhere;
   }
   .label {
     @apply font-medium text-sm;

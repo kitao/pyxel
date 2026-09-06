@@ -68,7 +68,8 @@ Use these principles and standards when reading, changing, or reviewing Pyxel.
   - Exposed members in `crates/pyxel-binding/src/` follow the Python API's names and argument order, including historical names such as `blt` and PyO3's constructor/property conventions. Internal helpers remain idiomatic Rust.
   - SDL2 call sites retain the external API's C names so calls remain recognizable.
   - Examples in `python/pyxel/examples/` may keep direct control flow and local names when abstraction would obscure the lesson.
-- Error and warning messages form families by failure kind across files. Python-standard errors retain CPython's exact wording; parameter constraints start with the parameter's public name; other messages follow their family's consistent, idiomatic form.
+- Expose failures as Python exceptions when callers need to catch them and decide how to proceed. Otherwise, preserve Rust-side failure handling unless a concrete requirement justifies conversion and its added code and runtime cost.
+- Error and warning messages form families by failure kind across files. Use CPython's exact wording for Python-standard errors written by Pyxel; parameter constraints start with the parameter's public name; other messages follow their family's consistent, idiomatic form.
   - e.g., `fps must be greater than 0` and `scale must be greater than 0` belong to the same constraint family.
 
 ## Testing

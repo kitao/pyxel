@@ -1,19 +1,12 @@
 import importlib.util
+import json
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
+import pytest
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "generate_docs"
-
-
-def _load_generate_docs():
-    loader = SourceFileLoader("generate_docs_test", str(MODULE_PATH))
-    spec = importlib.util.spec_from_loader(loader.name, loader)
-    assert spec is not None
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
 
 
 def test_generate_from_html_rejects_missing_update_texts(tmp_path):
@@ -31,3 +24,62 @@ def test_generate_from_html_rejects_missing_update_texts(tmp_path):
         generate_docs.generate_from_html(html_path, json_path, "broken")
 
     assert not (generate_docs.DOCS_DIR / "broken.md").exists()
+
+
+@pytest.mark.parametrize("padding", ["", "\n  "])
+@pytest.mark.parametrize("separator", ["", ", "])
+def test_link_lists_preserve_pairs_and_separator(padding, separator):
+    generate_docs = _load_generate_docs()
+    evaluator = generate_docs.JsEval({}, {}, "user-guide")
+    expression = (
+        f'[{padding}["../api-reference/", "API"], '
+        f'["../editor-manual/", "Editor"]{padding}]'
+        ".map(([url, name]) => `${link(url, name)}`)"
+        f'.join("{separator}")'
+    )
+
+    assert evaluator.eval(expression) == separator.join(
+        [
+            "[API](https://kitao.github.io/pyxel/web/api-reference/)",
+            "[Editor](https://kitao.github.io/pyxel/web/editor-manual/)",
+        ]
+    )
+
+
+def test_mapped_labels_preserve_separator():
+    generate_docs = _load_generate_docs()
+    evaluator = generate_docs.JsEval({}, {})
+
+    assert evaluator.eval('["A", "B"].map(k => `${k}`).join(", ")') == "A, B"
+
+
+def test_keyboard_diagram_renders_rest_as_text():
+    generate_docs = _load_generate_docs()
+    data = json.loads(generate_docs.EDITOR_MANUAL_JSON.read_text(encoding="utf-8"))
+    evaluator = generate_docs.JsEval({}, data)
+
+    assert evaluator.eval("keyboardDiagram()").endswith("\n\n**Rest:** A\n")
+
+
+@pytest.mark.parametrize(
+    ("expression", "expected"),
+    [
+        ('"Pyxel " + "Editor"', "Pyxel Editor"),
+        ('"Ctrl+" + "C"', "Ctrl+C"),
+        (r'"A\\\"+B" + "C"', 'A\\"+BC'),
+    ],
+)
+def test_string_concatenation_preserves_literal_contents(expression, expected):
+    generate_docs = _load_generate_docs()
+    evaluator = generate_docs.JsEval({}, {})
+
+    assert evaluator.eval(expression) == expected
+
+
+def _load_generate_docs():
+    loader = SourceFileLoader("generate_docs_test", str(MODULE_PATH))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    assert spec is not None
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module

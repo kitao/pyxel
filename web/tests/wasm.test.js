@@ -64,7 +64,7 @@ const loadVirtualGamepad = () => {
       _setMinWidthFromRatio() {},
       _addVirtualGamepad: context.__test.add,
     }),
-    reset() {
+    addAgain() {
       context.__test.add("enabled");
     },
   };
@@ -262,9 +262,9 @@ test("virtual gamepad keeps remaining touches when one touch is canceled", () =>
   assert.equal(gamepad.read(), 0);
 });
 
-test("virtual gamepad replaces touch handlers after reset", () => {
+test("virtual gamepad replaces touch handlers before controls load", () => {
   const gamepad = loadVirtualGamepad();
-  gamepad.reset();
+  gamepad.addAgain();
   dispatchTouches(gamepad.document, "touchstart", [
     { clientX: 250, clientY: 75 },
   ]);
@@ -734,4 +734,68 @@ test("MML URL codec roundtrips UTF-8 and dispatches legacy URL forms", async () 
     assert.equal(legacyCalls.at(-1), value);
   }
   assert.equal(legacyCalls.length, 3);
+});
+
+test("MML share updates keep the newest content when compression finishes out of order", async () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, "..", "mml-studio", "index.html"),
+    "utf8",
+  );
+  const textareas = Array.from({ length: 4 }, () => ({ value: "" }));
+  const shareUrl = {};
+  const qrCodeImage = {};
+  const replacedUrls = [];
+  const context = {
+    document: {
+      getElementById: (id) => {
+        if (id === "share-url") return shareUrl;
+        if (id === "qr-code-image") return qrCodeImage;
+        return textareas[Number(id.slice(2)) - 1];
+      },
+    },
+    window: {
+      addEventListener() {},
+      history: {
+        replaceState: (_state, _title, url) => replacedUrls.push(url),
+      },
+    },
+    location: { origin: "https://example.test", pathname: "/mml-studio/" },
+    clearTimeout() {},
+  };
+  vm.runInNewContext(source.match(/<script>([\s\S]*?)<\/script>/)[1], context);
+  const pending = [];
+  context.encodeMmlToUrl = (text) =>
+    new Promise((resolve) => pending.push({ text, resolve }));
+
+  textareas[0].value = "cdef";
+  const old = context.updateShareUrl();
+  textareas[0].value = "gab";
+  const newer = context.updateShareUrl();
+  assert.deepEqual(
+    pending.map(({ text }) => text),
+    ["cdef;;;", "gab;;;"],
+  );
+  pending[1].resolve("newer");
+  await newer;
+  const newestUrl = "https://example.test/mml-studio/?mml=newer";
+  assert.equal(shareUrl.href, newestUrl);
+  const newestQr = qrCodeImage.src;
+  pending[0].resolve("older");
+  await old;
+  assert.equal(shareUrl.href, newestUrl);
+  assert.equal(shareUrl.textContent, newestUrl);
+  assert.equal(qrCodeImage.src, newestQr);
+  assert.deepEqual(replacedUrls, [newestUrl]);
+
+  const stale = context.updateShareUrl();
+  textareas[0].value = "";
+  await context.updateShareUrl();
+  const emptyUrl = "https://example.test/mml-studio/";
+  assert.equal(shareUrl.href, emptyUrl);
+  const emptyQr = qrCodeImage.src;
+  pending[2].resolve("stale");
+  await stale;
+  assert.equal(shareUrl.href, emptyUrl);
+  assert.equal(qrCodeImage.src, emptyQr);
+  assert.deepEqual(replacedUrls, [newestUrl, emptyUrl]);
 });

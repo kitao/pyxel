@@ -13,7 +13,7 @@ Pyxel のサンプルコードを以下の順に試すのがおすすめです�
 4. 04_sound_api — サウンド API
 5. 02_jump_game — ゲーム実装
 
-サンプルコードは `pyxel copy_examples` でコピーできるほか、[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) でブラウザ上でも実行できます。
+サンプルコードは [ユーザーガイドの手順](https://kitao.github.io/pyxel/web/user-guide/#s-usage) でコピーできるほか、[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) でブラウザ上でも実行できます。
 
 </details>
 
@@ -107,11 +107,11 @@ Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されていま�
 コードをバージョン 2.4 に対応させるには、以下の変更を行ってください。
 
 - Tone クラスの `waveform` フィールドを `wavetable` にリネームする
-- `play` 関数、`playm` 関数の `tick` 引数を `sec`（小数形式の秒数）に変更する
+- `play` 関数、`playm` 関数の `tick` 引数を `sec` に変更し、値を `tick / 120` 秒に換算する
 - `play_pos` 関数の戻り値が `(sound_index, sec)` に変わったことに対応する
-- Sound クラス、Music クラスの `save` 関数の `count` 引数を `sec` に変更する
+- Sound クラス、Music クラスの `save` 関数では、再生回数 `count` の代わりに保存する秒数を `sec` に指定する
 - サウンドの再生秒数が必要な場合は、Sound クラスの `total_sec` 関数を利用する
-- Sound クラスの `mml` 関数には新 MML 文法に沿ったコードを指定する（旧文法は自動検出される。`old_mml` 関数は非推奨）
+- Sound クラスの `mml` 関数には、新 MML 文法に書き換えたコードを指定する
 - `save`、`load` 関数の `excl_*` オプションを `exclude_*` に変更する
 - `save`、`load` 関数の `incl_*` オプションの指定を削除する
 

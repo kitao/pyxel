@@ -20,7 +20,7 @@ type ImageCacheKey = (usize, TextureTintKey, Option<(i32, u32)>);
 
 pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
     if !fps.is_finite() || fps <= 0.0 {
-        return Err("fps must be greater than 0".to_string());
+        return Err("fps must be finite and greater than 0".to_string());
     }
 
     let bytes = fs::read(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
@@ -740,7 +740,7 @@ fn import_primitive(
         .map(|indices| indices.into_u32().map(|i| i as i32).collect::<Vec<i32>>())
         .unwrap_or_default();
     if indices.iter().any(|&index| index as usize >= vertex_count) {
-        return Err("GLB primitive index exceeds POSITION count".to_string());
+        return Err("GLB primitive index is out of range for POSITION count".to_string());
     }
     if indices.is_empty() {
         if !vertex_count.is_multiple_of(3) {
@@ -789,7 +789,7 @@ fn authored_normals_to_flat_normals(
             )
         };
         if a >= vertex_count || b >= vertex_count || c >= vertex_count {
-            return Err("GLB primitive index exceeds NORMAL count".to_string());
+            return Err("GLB primitive index is out of range for NORMAL count".to_string());
         }
 
         let nx = vertex_normals[a * 3] + vertex_normals[b * 3] + vertex_normals[c * 3];

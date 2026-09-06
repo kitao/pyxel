@@ -5,18 +5,6 @@ use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::{validate_tilemap_imgsrc, Tilemap};
 use crate::utils::ctypes_array_from_address;
 
-fn resolve_include_colors(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
-    if deprecated.is_some() {
-        deprecation_warning!(
-            INCL_COLORS_OPTION_ONCE,
-            "incl_colors option is deprecated. Use include_colors instead."
-        );
-        deprecated
-    } else {
-        preferred
-    }
-}
-
 define_wrapper!(Image, pyxel::Image);
 
 #[pymethods]
@@ -323,6 +311,18 @@ impl Image {
     fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
         let font_ref = font.as_ref().map(|f| &f.inner);
         self.inner_mut().draw_text(x, y, s, col, font_ref);
+    }
+}
+
+fn resolve_include_colors(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
+    if deprecated.is_some() {
+        deprecation_warning!(
+            INCL_COLORS_OPTION_ONCE,
+            "incl_colors option is deprecated. Use include_colors instead."
+        );
+        deprecated
+    } else {
+        preferred
     }
 }
 

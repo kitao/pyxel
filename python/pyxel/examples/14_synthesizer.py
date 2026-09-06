@@ -61,6 +61,94 @@ WAVETABLE_EDITOR_PARAMS = [
 ]
 
 
+class WavetableEditor:
+    def __init__(self, x, y, tone, desc):
+        self.x = x
+        self.y = y
+        self.tone = tone
+        self.desc = desc
+        self.target = None
+        self.last_col = 0
+
+    def update(self):
+        col = (pyxel.mouse_x - self.x - 1) // 5
+        row = 15 - (pyxel.mouse_y - self.y - 8) // 3
+
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and 0 <= row <= 15:
+            if 0 <= col <= 31:
+                self.target = "wave"
+                self.last_col = col
+            elif 167 <= pyxel.mouse_x - self.x <= 174:
+                self.target = "gain"
+
+        if pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT):
+            self.target = None
+
+        if self.target == "wave":
+            for x in range(min(self.last_col, col), max(self.last_col, col) + 1):
+                pyxel.tones[self.tone].wavetable[int(pyxel.clamp(x, 0, 31))] = int(
+                    pyxel.clamp(row, 0, 15)
+                )
+        elif self.target == "gain":
+            pyxel.tones[self.tone].gain = pyxel.clamp(row, 0, 15) / 15
+
+        self.last_col = col
+
+    def draw(self):
+        pyxel.text(self.x, self.y, f"TONE:{self.tone} {self.desc}", 12)
+
+        self.draw_panel(self.x, self.y + 7, 162, 50)
+        pyxel.line(self.x + 1, self.y + 32, self.x + 161, self.y + 32, 15)
+        pyxel.line(self.x + 81, self.y + 8, self.x + 81, self.y + 56, 15)
+
+        for i in range(32):
+            amp = pyxel.tones[self.tone].wavetable[i]
+            for j in range(amp, 8) if amp < 8 else range(8, amp + 1):
+                self.draw_rect(self.x + i * 5 + 2, self.y + 54 - j * 3)
+
+        self.draw_panel(self.x + 167, self.y + 7, 7, 50)
+        for i in range(int(pyxel.tones[self.tone].gain * 16)):
+            self.draw_rect(self.x + 169, self.y + 54 - i * 3)
+
+    @staticmethod
+    def draw_panel(x, y, w, h):
+        pyxel.rectb(x, y, w + 1, h + 1, 5)
+        pyxel.rectb(x, y, w, h, 4)
+        pyxel.rect(x + 1, y + 1, w - 1, h - 1, 9)
+
+    @staticmethod
+    def draw_rect(x, y):
+        pyxel.rect(x, y, 4, 2, 1)
+
+
+class App:
+    def __init__(self):
+        pyxel.init(191, 264, title="Synthesizer")
+        extend_audio()
+        setup_music()
+
+        self.wavetable_editors = [
+            WavetableEditor(*param) for param in WAVETABLE_EDITOR_PARAMS
+        ]
+
+        pyxel.mouse(True)
+        pyxel.playm(0, loop=True)
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        if pyxel.btnp(pyxel.KEY_Q):
+            pyxel.quit()
+
+        for wavetable_editor in self.wavetable_editors:
+            wavetable_editor.update()
+
+    def draw(self):
+        pyxel.cls(1)
+
+        for wavetable_editor in self.wavetable_editors:
+            wavetable_editor.draw()
+
+
 def extend_audio():
     channels = []
     for gain, detune in EXTENDED_CHANNELS:
@@ -144,93 +232,6 @@ def setup_music():
     pyxel.musics[0].set(
         [0, 1], [0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11], [12, 13]
     )
-
-
-class WavetableEditor:
-    def __init__(self, x, y, tone, desc):
-        self.x = x
-        self.y = y
-        self.tone = tone
-        self.desc = desc
-        self.target = None
-        self.last_col = 0
-
-    def update(self):
-        col = (pyxel.mouse_x - self.x - 1) // 5
-        row = 15 - (pyxel.mouse_y - self.y - 8) // 3
-
-        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and 0 <= row <= 15:
-            if 0 <= col <= 31:
-                self.target = "wave"
-            elif 167 <= pyxel.mouse_x - self.x <= 174:
-                self.target = "gain"
-
-        if pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT):
-            self.target = None
-
-        if self.target == "wave":
-            for x in range(min(self.last_col, col), max(self.last_col, col) + 1):
-                pyxel.tones[self.tone].wavetable[int(pyxel.clamp(x, 0, 31))] = int(
-                    pyxel.clamp(row, 0, 15)
-                )
-        elif self.target == "gain":
-            pyxel.tones[self.tone].gain = pyxel.clamp(row, 0, 15) / 15
-
-        self.last_col = col
-
-    def draw(self):
-        pyxel.text(self.x, self.y, f"TONE:{self.tone} {self.desc}", 12)
-
-        self.draw_panel(self.x, self.y + 7, 162, 50)
-        pyxel.line(self.x + 1, self.y + 32, self.x + 161, self.y + 32, 15)
-        pyxel.line(self.x + 81, self.y + 8, self.x + 81, self.y + 56, 15)
-
-        for i in range(32):
-            amp = pyxel.tones[self.tone].wavetable[i]
-            for j in range(amp, 8) if amp < 8 else range(8, amp + 1):
-                self.draw_rect(self.x + i * 5 + 2, self.y + 54 - j * 3)
-
-        self.draw_panel(self.x + 167, self.y + 7, 7, 50)
-        for i in range(int(pyxel.tones[self.tone].gain * 16)):
-            self.draw_rect(self.x + 169, self.y + 54 - i * 3)
-
-    @staticmethod
-    def draw_panel(x, y, w, h):
-        pyxel.rectb(x, y, w + 1, h + 1, 5)
-        pyxel.rectb(x, y, w, h, 4)
-        pyxel.rect(x + 1, y + 1, w - 1, h - 1, 9)
-
-    @staticmethod
-    def draw_rect(x, y):
-        pyxel.rect(x, y, 4, 2, 1)
-
-
-class App:
-    def __init__(self):
-        pyxel.init(191, 264, title="Synthesizer")
-        extend_audio()
-        setup_music()
-
-        self.wavetable_editors = [
-            WavetableEditor(*param) for param in WAVETABLE_EDITOR_PARAMS
-        ]
-
-        pyxel.mouse(True)
-        pyxel.playm(0, loop=True)
-        pyxel.run(self.update, self.draw)
-
-    def update(self):
-        if pyxel.btnp(pyxel.KEY_Q):
-            pyxel.quit()
-
-        for wavetable_editor in self.wavetable_editors:
-            wavetable_editor.update()
-
-    def draw(self):
-        pyxel.cls(1)
-
-        for wavetable_editor in self.wavetable_editors:
-            wavetable_editor.draw()
 
 
 App()

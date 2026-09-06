@@ -1,7 +1,6 @@
 #![warn(clippy::pedantic)]
-// Relax pedantic lints inherent to mirroring the Python API through PyO3: numeric
-// casts, exact float comparisons, Python-style by-value args and self conventions,
-// and short math names.
+// Preserve Python argument order, ownership, list equality, and historical names.
+// Coordinate casts/names mirror the API; the constant registration stays one list.
 #![allow(
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,

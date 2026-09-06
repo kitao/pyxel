@@ -147,19 +147,6 @@
       let data = null;
       let lang = "en";
 
-      function getFileExt(value) {
-        let pathname = value;
-        try {
-          pathname = new URL(value).pathname;
-        } catch {}
-        const match = pathname.match(/\.([^./]+)$/);
-        return match ? match[1] : "";
-      }
-
-      function cmdChip(name) {
-        return `<span class="inline-block" style="width:50px">${chip(name)}</span>`;
-      }
-
       function updateTexts() {
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
@@ -212,33 +199,6 @@
           : "none";
       }
 
-      const createLaunchUrl = (
-        base,
-        command,
-        target,
-        editorScreen,
-        virtualGamepad,
-        sourceRef = null,
-        fallbackSha = null,
-      ) => {
-        const url = new URL(base);
-        url.searchParams.set(command, target);
-        if (sourceRef?.includes("/")) {
-          url.searchParams.set("ref", sourceRef);
-          if (/^[0-9a-f]{40}$/i.test(fallbackSha)) {
-            url.searchParams.set("sha", fallbackSha);
-          }
-        }
-        if (command === "edit") {
-          url.searchParams.set("editor", editorScreen);
-        } else if (virtualGamepad) {
-          url.searchParams.set("gamepad", "enabled");
-        }
-        return url.href;
-      };
-
-      let launchBuildGeneration = 0;
-
       async function buildLaunchUrl() {
         const generation = ++launchBuildGeneration;
         const startupFile = document.getElementById("startup-file").value;
@@ -283,6 +243,46 @@
         launchLink.textContent = launchUrl;
         launchLink.href = launchUrl;
       }
+
+      function getFileExt(value) {
+        let pathname = value;
+        try {
+          pathname = new URL(value).pathname;
+        } catch {}
+        const match = pathname.match(/\.([^./]+)$/);
+        return match ? match[1] : "";
+      }
+
+      function cmdChip(name) {
+        return `<span class="inline-block" style="width:50px">${chip(name)}</span>`;
+      }
+
+      const createLaunchUrl = (
+        base,
+        command,
+        target,
+        editorScreen,
+        virtualGamepad,
+        sourceRef = null,
+        fallbackSha = null,
+      ) => {
+        const url = new URL(base);
+        url.searchParams.set(command, target);
+        if (sourceRef?.includes("/")) {
+          url.searchParams.set("ref", sourceRef);
+          if (/^[0-9a-f]{40}$/i.test(fallbackSha)) {
+            url.searchParams.set("sha", fallbackSha);
+          }
+        }
+        if (command === "edit") {
+          url.searchParams.set("editor", editorScreen);
+        } else if (virtualGamepad) {
+          url.searchParams.set("gamepad", "enabled");
+        }
+        return url.href;
+      };
+
+      let launchBuildGeneration = 0;
 
       document.getElementById("startup-file").addEventListener("input", () => {
         updateOptions();

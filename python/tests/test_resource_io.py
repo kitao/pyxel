@@ -5,210 +5,52 @@ from uuid import uuid4
 import PIL.Image
 import pytest
 import pyxel
+import tomllib
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
-def _write_legacy_resource(path, entries):
-    entries = dict(entries)
-    with zipfile.ZipFile(path, "w") as zf:
-        zf.writestr("pyxel_resource/version", entries.pop("version", "1.9.0"))
-        for name, value in entries.items():
-            zf.writestr(f"pyxel_resource/{name}", value)
-
-
-def _write_resource(path, toml_text):
-    with zipfile.ZipFile(path, "w") as zf:
-        zf.writestr("pyxel_resource.toml", toml_text)
-
-
-def _mark_zip_entry_encrypted(path, entry):
-    # Set encryption flags in both ZIP headers without encrypting the payload.
-    data = bytearray(path.read_bytes())
-    entry = entry.encode()
-
-    local_patched = False
-    offset = 0
-    while (offset := data.find(b"PK\x03\x04", offset)) >= 0:
-        name_length = int.from_bytes(data[offset + 26 : offset + 28], "little")
-        name_start = offset + 30
-        if data[name_start : name_start + name_length] == entry:
-            flags = int.from_bytes(data[offset + 6 : offset + 8], "little") | 1
-            data[offset + 6 : offset + 8] = flags.to_bytes(2, "little")
-            local_patched = True
-            break
-        offset += 4
-
-    central_patched = False
-    offset = 0
-    while (offset := data.find(b"PK\x01\x02", offset)) >= 0:
-        name_length = int.from_bytes(data[offset + 28 : offset + 30], "little")
-        name_start = offset + 46
-        if data[name_start : name_start + name_length] == entry:
-            flags = int.from_bytes(data[offset + 8 : offset + 10], "little") | 1
-            data[offset + 8 : offset + 10] = flags.to_bytes(2, "little")
-            central_patched = True
-            break
-        offset += 4
-
-    assert local_patched and central_patched
-    path.write_bytes(data)
-
-
 class TestSaveLoad:
-    @pytest.mark.parametrize(("version", "tile"), [("1.4.0", "021"), ("1.9.0", "0101")])
-    def test_load_old_format_pyxres(self, tmp_path, version, tile):
-        # Legacy text format: hex grids per bank under pyxel_resource/.
-        path = tmp_path / "legacy.pyxres"
-        _write_legacy_resource(
+    @pytest.mark.parametrize("version", [1, 2, 3, 4])
+    def test_load_toml_resource_versions(self, tmp_path, version):
+        path = tmp_path / "toml.pyxres"
+        _write_resource(
             path,
-            {
-                "version": version,
-                "image0": "78\n9a\n",
-                "tilemap0": tile + "\n",
-                "sound00": "000cff\n01\n73\n00\n20\n",
-                "music0": "0001\nnone\nnone\nnone\n",
-            },
+            f"format_version = {version}\n"
+            "images = []\ntilemaps = []\nmusics = []\n"
+            "[[sounds]]\nnotes = [24, -1, 28]\ntones = [0, 1]\n"
+            "volumes = [7, 3]\neffects = [0, 2]\nspeed = 20\n",
         )
 
-        pyxel.load(str(path))
-        assert pyxel.images[0].pget(0, 0) == 7
-        assert pyxel.images[0].pget(1, 0) == 8
-        assert pyxel.images[0].pget(0, 1) == 9
-        assert pyxel.images[0].pget(1, 1) == 10
-        assert pyxel.tilemaps[0].pget(0, 0) == (1, 1)
-        assert list(pyxel.sounds[0].notes) == [0, 12, -1]
-        assert list(pyxel.sounds[0].tones) == [0, 1]
-        assert list(pyxel.sounds[0].volumes) == [7, 3]
-        assert list(pyxel.sounds[0].effects) == [0, 0]
-        assert pyxel.sounds[0].speed == 20
-        assert list(pyxel.musics[0].seqs[0]) == [0, 1]
-
-    @pytest.mark.parametrize(
-        ("entries", "detail"),
-        [
-            (
-                {"version": b"\xff"},
-                "failed to read 'pyxel_resource/version' as UTF-8",
-            ),
-            ({"version": "not-a-version"}, "invalid version 'not-a-version'"),
-            ({"version": "42949673.96"}, "invalid version '42949673.96'"),
-            ({"version": "999.0"}, "unsupported version '999.0'"),
-            (
-                {"image0": b"\xff"},
-                "failed to read 'pyxel_resource/image0' as UTF-8",
-            ),
-            (
-                {"image0": "0g"},
-                (
-                    "invalid hexadecimal digit 'g' in 'pyxel_resource/image0' "
-                    "at line 1, column 2"
-                ),
-            ),
-            (
-                {"image0": "0あ"},
-                (
-                    "invalid hexadecimal digit 'あ' in 'pyxel_resource/image0' "
-                    "at line 1, column 2"
-                ),
-            ),
-            (
-                {"image0": "0\n" * 257},
-                "too many image rows in 'pyxel_resource/image0': got 257, maximum 256",
-            ),
-            (
-                {"tilemap0": "000"},
-                (
-                    "invalid tile width in 'pyxel_resource/tilemap0' at line 1: "
-                    "expected groups of 4 hexadecimal digits"
-                ),
-            ),
-            (
-                {"tilemap0": "00z0"},
-                (
-                    "invalid hexadecimal digit 'z' in 'pyxel_resource/tilemap0' "
-                    "at line 1, column 3"
-                ),
-            ),
-            (
-                {"tilemap0": "0000" * 257},
-                (
-                    "too many tiles in 'pyxel_resource/tilemap0' at line 1: "
-                    "got 257, maximum 256"
-                ),
-            ),
-            (
-                {"tilemap0": "0000\n" * 256 + "bad\n"},
-                "invalid decimal value 'bad' in 'pyxel_resource/tilemap0' at line 257",
-            ),
-            (
-                {"tilemap0": "0000\n" * 256 + "9999\n"},
-                (
-                    "image index 9999 in 'pyxel_resource/tilemap0' at line 257 "
-                    "is out of range 0..3"
-                ),
-            ),
-            (
-                {"sound00": "0g"},
-                (
-                    "invalid hexadecimal digit 'g' in 'pyxel_resource/sound00' "
-                    "at line 1, column 2"
-                ),
-            ),
-            (
-                {"sound00": "0"},
-                (
-                    "invalid value width in 'pyxel_resource/sound00' at line 1: "
-                    "expected groups of 2 hexadecimal digits"
-                ),
-            ),
-            (
-                {"sound00": "none\nnone\nnone\nnone\nfast\n"},
-                "invalid decimal value 'fast' in 'pyxel_resource/sound00' at line 5",
-            ),
-            (
-                {"music0": "00\n00\n00\n00\n00\n"},
-                "too many music channels in 'pyxel_resource/music0': got 5, maximum 4",
-            ),
-        ],
-    )
-    def test_malformed_legacy_resource_has_exact_error(self, tmp_path, entries, detail):
-        path = tmp_path / "malformed.pyxres"
-        _write_legacy_resource(path, entries)
-
-        with raises_exact(
-            Exception, f"Failed to load legacy resource file '{path}': {detail}"
-        ):
+        original_sounds = list(pyxel.sounds)
+        try:
             pyxel.load(str(path))
 
-    def test_malformed_legacy_resource_does_not_partially_commit(self, tmp_path):
-        path = tmp_path / "partial.pyxres"
-        _write_legacy_resource(path, {"image0": "1", "tilemap0": "g"})
-        pyxel.images[0].cls(7)
+            sound = pyxel.sounds[0]
+            assert list(sound.notes) == [24, -1, 28]
+            assert list(sound.tones) == [0, 1]
+            assert list(sound.volumes) == [7, 3]
+            assert list(sound.effects) == [0, 2]
+            assert sound.speed == 20
+        finally:
+            pyxel.sounds[:] = original_sounds
 
-        with pytest.raises(
-            Exception, match="invalid tile width in 'pyxel_resource/tilemap0'"
-        ):
-            pyxel.load(str(path))
+    def test_pre_2_resource_format_is_rejected(self, tmp_path):
+        path = tmp_path / "legacy.pyxres"
+        with zipfile.ZipFile(path, "w") as archive:
+            archive.writestr("pyxel_resource/version", "1.9.0")
+            archive.writestr("pyxel_resource/image0", "1")
 
-        assert pyxel.images[0].pget(0, 0) == 7
-
-    @pytest.mark.parametrize("entry", ["version", "image0"])
-    def test_unreadable_legacy_entry_is_not_treated_as_missing(self, tmp_path, entry):
-        path = tmp_path / "encrypted-entry.pyxres"
-        _write_legacy_resource(path, {"image0": "1"})
-        archive_entry = f"pyxel_resource/{entry}"
-        _mark_zip_entry_encrypted(path, archive_entry)
-
-        with raises_exact(
-            Exception,
-            f"Failed to load legacy resource file '{path}': "
-            f"failed to open '{archive_entry}'",
-        ):
+        with raises_exact(Exception, f"Failed to read file '{path}'"):
             pyxel.load(str(path))
 
     def test_invalid_sidecar_palette_does_not_partially_commit(self, tmp_path):
         path = tmp_path / "invalid-palette.pyxres"
-        _write_legacy_resource(path, {"image0": "1"})
+        _write_resource(
+            path,
+            "format_version = 1\n"
+            "tilemaps = []\nsounds = []\nmusics = []\n"
+            "[[images]]\nwidth = 1\nheight = 1\ndata = [[1]]\n",
+        )
         path.with_suffix(".pyxpal").write_text("not-hex\n", encoding="utf-8")
         pyxel.images[0].cls(7)
 
@@ -394,6 +236,28 @@ class TestSaveLoad:
         assert pyxel.images[0].pget(0, 0) == 0
         assert list(pyxel.sounds[0].notes) == modified_notes
 
+    @pytest.mark.parametrize("bank_name", ["images", "tilemaps"])
+    def test_save_ignores_excluded_graphics(self, tmp_path, bank_name):
+        bank = getattr(pyxel, bank_name)
+        original = bank[0]
+        original_sound = pyxel.sounds[0]
+        path = tmp_path / "excluded.pyxres"
+        try:
+            bank[0] = (
+                pyxel.Image(0, 1) if bank_name == "images" else pyxel.Tilemap(0, 1, 0)
+            )
+            pyxel.sounds[0] = pyxel.Sound()
+            pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+            pyxel.save(str(path), **{f"exclude_{bank_name}": True})
+        finally:
+            bank[0] = original
+            pyxel.sounds[0] = original_sound
+
+        with zipfile.ZipFile(path) as archive:
+            data = tomllib.loads(archive.read("pyxel_resource.toml").decode("utf-8"))
+        assert data[bank_name] == []
+        assert data["sounds"][0]["notes"] == [24, 28, 31]
+
     def test_excl_aliases_deprecated(self, capfd, tmp_path):
         # Save and load share a once-per-session deprecation warning.
         pyxel.images[0].cls(0)
@@ -492,6 +356,11 @@ class TestUserDataDir:
             assert result
             assert path.is_dir()
         finally:
-            if path.name == "TestApp" and path.parent.name == vendor:
+            if path.name == "testapp" and path.parent.name == vendor.lower():
                 path.rmdir()
                 path.parent.rmdir()
+
+
+def _write_resource(path, toml_text):
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("pyxel_resource.toml", toml_text)

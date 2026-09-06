@@ -71,17 +71,6 @@ MML_PARTS = [
 ]
 
 
-def _compare_or_update(name, rendered_path, update_references):
-    ref_path = REFS_DIR / f"{name}.wav"
-    rendered = Path(rendered_path).read_bytes()
-    if update_references:
-        REFS_DIR.mkdir(parents=True, exist_ok=True)
-        ref_path.write_bytes(rendered)
-        pytest.skip(f"References updated: {ref_path.name}")
-    else:
-        assert rendered == ref_path.read_bytes(), f"{name}.wav changed"
-
-
 class TestAudioRender:
     def test_classic_sound(self, tmp_path, update_references):
         snd = pyxel.Sound()
@@ -151,3 +140,14 @@ class TestAudioRender:
         path = tmp_path / "out.wav"
         snd.save(str(path), 0.5)
         _compare_or_update("pcm_sound", path, update_references)
+
+
+def _compare_or_update(name, rendered_path, update_references):
+    ref_path = REFS_DIR / f"{name}.wav"
+    rendered = Path(rendered_path).read_bytes()
+    if update_references:
+        REFS_DIR.mkdir(parents=True, exist_ok=True)
+        ref_path.write_bytes(rendered)
+        pytest.skip(f"References updated: {ref_path.name}")
+    else:
+        assert rendered == ref_path.read_bytes(), f"{name}.wav changed"

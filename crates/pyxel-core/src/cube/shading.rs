@@ -145,7 +145,7 @@ impl Shading {
          -> Option<(Entry, Entry)> {
             let base_entry: Entry = (source as i32, source as i32);
             let source_luma = luma[source];
-            // Reject equal-luma duplicates so each shade is visibly darker.
+            // Reject equal-luma duplicates so each shade is darker.
             let darker_than_source = |entry: Entry| -> bool { entry_luma(entry) < source_luma };
             // Use the best independent flat as Pattern C's lv 1 quality gate.
             let mut lv1_solo_best = f32::INFINITY;

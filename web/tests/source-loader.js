@@ -1,20 +1,6 @@
 const assert = require("node:assert/strict");
 const vm = require("node:vm");
 
-const extractBlock = (source, marker) => {
-  const start = source.indexOf(marker);
-  assert.notEqual(start, -1, `Missing source marker: ${marker}`);
-  const bodyStart = source.indexOf("{", start);
-  assert.notEqual(bodyStart, -1, `Missing function body: ${marker}`);
-  let depth = 0;
-  for (let i = bodyStart; i < source.length; i++) {
-    if (source[i] === "{") depth += 1;
-    if (source[i] === "}") depth -= 1;
-    if (depth === 0) return source.slice(start, i + 1);
-  }
-  throw new Error(`Unclosed function body: ${marker}`);
-};
-
 const loadNamedFunction = (source, name, context) => {
   const asyncMarker = `async function ${name}`;
   const marker = source.includes(asyncMarker)
@@ -44,6 +30,20 @@ const loadArrowFunction = (source, name, context) => {
     return vm.runInNewContext(name, context);
   }
   throw new Error(`Unclosed function declaration: ${name}`);
+};
+
+const extractBlock = (source, marker) => {
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `Missing source marker: ${marker}`);
+  const bodyStart = source.indexOf("{", start);
+  assert.notEqual(bodyStart, -1, `Missing function body: ${marker}`);
+  let depth = 0;
+  for (let i = bodyStart; i < source.length; i++) {
+    if (source[i] === "{") depth += 1;
+    if (source[i] === "}") depth -= 1;
+    if (depth === 0) return source.slice(start, i + 1);
+  }
+  throw new Error(`Unclosed function body: ${marker}`);
 };
 
 module.exports = { loadArrowFunction, loadNamedFunction };

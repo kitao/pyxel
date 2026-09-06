@@ -102,11 +102,15 @@ MESSAGE_PAD_Y = MESSAGE_Y - MESSAGE_PAD
 DRAW_LAYOUT_GUIDES = False
 
 
-def load_example_image(example_id, frame):
-    gif_file = USER_EXAMPLES_IMAGES_DIR / f"{example_id}.gif"
-    with PIL.Image.open(gif_file) as gif:
-        gif.seek(frame - 1)
-        return gif.copy()
+def generate_thanks_image():
+    thanks_image = PIL.Image.new(
+        "RGB", (THANKS_IMAGE_WIDTH, THANKS_IMAGE_HEIGHT), (0, 0, 0)
+    )
+    draw_example_images(thanks_image)
+    draw_message_image(thanks_image)
+
+    thanks_image.show()
+    thanks_image.save(THANKS_IMAGE_FILE)
 
 
 def draw_example_images(thanks_image):
@@ -214,15 +218,11 @@ def draw_message_image(thanks_image):
     thanks_image.paste(message_image, (MESSAGE_X, MESSAGE_Y))
 
 
-def generate_thanks_image():
-    thanks_image = PIL.Image.new(
-        "RGB", (THANKS_IMAGE_WIDTH, THANKS_IMAGE_HEIGHT), (0, 0, 0)
-    )
-    draw_example_images(thanks_image)
-    draw_message_image(thanks_image)
-
-    thanks_image.show()
-    thanks_image.save(THANKS_IMAGE_FILE)
+def load_example_image(example_id, frame):
+    gif_file = USER_EXAMPLES_IMAGES_DIR / f"{example_id}.gif"
+    with PIL.Image.open(gif_file) as gif:
+        gif.seek(frame - 1)
+        return gif.copy()
 
 
 if __name__ == "__main__":

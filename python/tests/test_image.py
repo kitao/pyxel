@@ -231,7 +231,7 @@ class TestImageBlt:
         dst = pyxel.Image(32, 32)
         dst.cls(0)
         dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
-        # A 1x1 source with scale=4 deterministically paints a 2x2 block.
+        # At the origin, clipping leaves four painted pixels.
         drawn = sum(1 for x in range(8) for y in range(8) if dst.pget(x, y) == 7)
         assert drawn == 4
 

@@ -8,40 +8,6 @@ EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
 WHEEL_SUFFIX = f"-{EXPECTED_WHEEL_TAG}.whl"
 
 
-def _load_update_version():
-    loader = SourceFileLoader("update_version_test", str(MODULE_PATH))
-    spec = importlib.util.spec_from_loader(loader.name, loader)
-    assert spec is not None
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
-
-
-def _write_wasm_wheel(path: Path, version: str, tag: str = EXPECTED_WHEEL_TAG) -> None:
-    with zipfile.ZipFile(path, "w") as wheel_zip:
-        wheel_zip.writestr(
-            f"pyxel-{version}.dist-info/WHEEL",
-            f"Wheel-Version: 1.0\nRoot-Is-Purelib: false\nTag: {tag}\n",
-        )
-
-
-def _write_version_files(root: Path) -> None:
-    files = {
-        "crates/Cargo.toml": '[workspace.package]\nversion = "2.9.7"\n',
-        "crates/pyxel-core/src/settings.rs": 'pub const VERSION: &str = "2.9.7";\n',
-        "python/pyproject.toml": '[project]\nversion = "2.9.7"\n',
-        "wasm/pyxel.js": (
-            "const PYXEL_WHEEL_PATH = "
-            '"pyxel-2.9.7-cp311-abi3-pyemscripten_2026_0_wasm32.whl";\n'
-        ),
-    }
-    for relative_path, text in files.items():
-        path = root / relative_path
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text, encoding="utf-8")
-    _write_wasm_wheel(root / "wasm" / f"pyxel-2.9.7{WHEEL_SUFFIX}", "2.9.7")
-
-
 def test_update_version_updates_and_verifies_every_runtime_surface(tmp_path):
     update_version = _load_update_version()
     _write_version_files(tmp_path)
@@ -54,6 +20,12 @@ def test_update_version_updates_and_verifies_every_runtime_surface(tmp_path):
     )
 
     assert update_version.version_errors(tmp_path, "v3.0.0a1") == []
+    assert 'pub const VERSION: &str = "3.0.0a1";' in (
+        tmp_path / "crates/pyxel-core/src/settings.rs"
+    ).read_text(encoding="utf-8")
+    assert 'version = "3.0.0a1"' in (tmp_path / "python/pyproject.toml").read_text(
+        encoding="utf-8"
+    )
     assert 'version = "3.0.0-alpha.1"' in (tmp_path / "crates/Cargo.toml").read_text(
         encoding="utf-8"
     )
@@ -165,3 +137,37 @@ def test_version_errors_rejects_wrong_internal_wasm_wheel_tag(tmp_path):
     assert errors == [
         (f"wasm/{wheel_path.name}: WHEEL Tag fields do not match {EXPECTED_WHEEL_TAG}")
     ]
+
+
+def _load_update_version():
+    loader = SourceFileLoader("update_version_test", str(MODULE_PATH))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    assert spec is not None
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def _write_version_files(root: Path) -> None:
+    files = {
+        "crates/Cargo.toml": '[workspace.package]\nversion = "2.9.7"\n',
+        "crates/pyxel-core/src/settings.rs": 'pub const VERSION: &str = "2.9.7";\n',
+        "python/pyproject.toml": '[project]\nversion = "2.9.7"\n',
+        "wasm/pyxel.js": (
+            "const PYXEL_WHEEL_PATH = "
+            '"pyxel-2.9.7-cp311-abi3-pyemscripten_2026_0_wasm32.whl";\n'
+        ),
+    }
+    for relative_path, text in files.items():
+        path = root / relative_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    _write_wasm_wheel(root / "wasm" / f"pyxel-2.9.7{WHEEL_SUFFIX}", "2.9.7")
+
+
+def _write_wasm_wheel(path: Path, version: str, tag: str = EXPECTED_WHEEL_TAG) -> None:
+    with zipfile.ZipFile(path, "w") as wheel_zip:
+        wheel_zip.writestr(
+            f"pyxel-{version}.dist-info/WHEEL",
+            f"Wheel-Version: 1.0\nRoot-Is-Purelib: false\nTag: {tag}\n",
+        )

@@ -30,6 +30,236 @@
       let data = null;
       let lang = "en";
 
+      function buildPage() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        app.appendChild(buildPageHeader(updateTexts));
+
+        const wrap = document.createElement("div");
+        wrap.className = "space-y-6";
+        wrap.id = "content";
+        wrap.innerHTML = `
+          <section class="card" id="s-overview"></section>
+
+          <section class="card" id="s-starting"></section>
+
+          <section class="card" id="s-common"></section>
+
+          <details class="mt-6" open id="s-image">
+            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
+              <span class="tri" id="s-image-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
+            </summary>
+            <div class="card" id="s-image-body"></div>
+          </details>
+
+          <details class="mt-6" open id="s-tilemap">
+            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
+              <span class="tri" id="s-tilemap-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
+            </summary>
+            <div class="card" id="s-tilemap-body"></div>
+          </details>
+
+          <details class="mt-6" open id="s-sound">
+            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
+              <span class="tri" id="s-sound-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
+            </summary>
+            <div class="card" id="s-sound-body"></div>
+          </details>
+
+          <details class="mt-6" open id="s-music">
+            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
+              <span class="tri" id="s-music-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
+            </summary>
+            <div class="card" id="s-music-body"></div>
+          </details>
+        `;
+        app.appendChild(wrap);
+        updateTexts();
+      }
+
+      function updateTexts() {
+        document.title = t("title");
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+
+        let editorCards = "";
+        for (const e of data.overview_editors) {
+          editorCards += `<div class="flex items-start gap-3 bg-gray-900/50 rounded-lg px-4 py-3">
+            ${icon(e.icon)}
+            <div>
+              <div class="text-sm font-medium text-gray-200">${esc(t(e.label))}</div>
+              <div class="text-xs text-gray-400 mt-0.5">${esc(t(e.desc))}</div>
+            </div>
+          </div>`;
+        }
+        document.getElementById("s-overview").innerHTML =
+          `<h2 class="section-title">${esc(t("overview_title"))}</h2>
+          <p class="body mb-3">${esc(t("overview_body"))}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${editorCards}</div>`;
+
+        document.getElementById("s-starting").innerHTML =
+          `<h2 class="section-title">${esc(t("starting_title"))}</h2>
+          <p class="body">${esc(t("starting_body"))
+            .replace(
+              "{0}",
+              `</p>${code("pyxel edit [PYXEL_RESOURCE_FILE]", "sh")}<p class="body">`,
+            )
+            .replace("{1}", chip("my_resource.pyxres"))}</p>`;
+
+        document.getElementById("s-common").innerHTML =
+          `<h2 class="section-title">${esc(t("common_title"))}</h2>
+          <p class="body">${esc(t("common_body"))}</p>
+          <h3 class="sub-title">${esc(t("menubar_title"))}</h3>
+          <p class="body">${esc(t("menubar_body"))}</p>
+          <img src="images/ui_menubar.png" alt="Menu Bar" class="pix rounded-lg border border-gray-700 my-3 w-full">
+          ${iconTable(data.menubar_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
+          <h3 class="sub-title">${esc(t("other_shortcuts_title"))}</h3>
+          ${shortcutTable(data.common_extra_shortcuts)}
+          <h3 class="sub-title">${esc(t("starting_usage_title"))}</h3>
+          <p class="body">${esc(t("starting_usage_body")).replace("{0}", chip("pyxel.load()"))}</p>
+          <h3 class="sub-title">${esc(t("starting_load_title"))}</h3>
+          <p class="body">${esc(t("starting_load_body"))}</p>`;
+
+        document.getElementById("s-image-title").textContent = t("image_title");
+        document.getElementById("s-image-body").innerHTML = `
+          <h2 class="section-title">${esc(t("image_title"))}</h2>
+          <p class="body">${esc(t("image_body"))}</p>
+          <h3 class="sub-title">${esc(t("image_specs_title"))}</h3>
+          ${specsGrid(data.image_specs)}
+          <h3 class="sub-title">${esc(t("image_ui_title"))}</h3>
+          ${annotatedImg("images/image_editor.gif", data.annotations.image)}
+          ${areaTitle(data.annotations.image[0].label, 0)}
+          ${areaCrop("image", 0)}
+          <p class="body mb-2">${esc(t("image_canvas_body"))}</p>
+          ${shortcutTable(data.image_canvas_shortcuts)}
+          ${areaTitle(data.annotations.image[1].label, 1)}
+          ${areaCrop("image", 1)}
+          <p class="body mb-2">${esc(t("image_bankview_body"))}</p>
+          ${shortcutTable(data.image_nav_shortcuts)}
+          ${areaTitle(data.annotations.image[3].label, 3)}
+          ${areaCrop("image", 3)}
+          <p class="body mb-2">${esc(t("image_tools_body"))}</p>
+          ${toolIcons()}
+          <h4 class="sub-title">${esc(t("image_selection_title"))}</h4>
+          <p class="body mb-2">${esc(t("image_selection_body"))}</p>
+          ${shortcutTable(data.image_selection_shortcuts)}
+          ${areaTitle(data.annotations.image[2].label, 2)}
+          ${areaCrop("image", 2)}
+          <p class="body mb-2">${esc(t("image_palette_body"))}</p>
+          ${shortcutTable(data.image_colors)}
+          ${areaTitle(data.annotations.image[4].label, 4)}
+          ${areaCrop("image", 4)}
+          <p class="body">${esc(t("image_banknum_body"))}</p>
+          <h3 class="sub-title">${esc(t("image_file_title"))}</h3>
+          <p class="body">${esc(t("image_file_body"))}</p>`;
+
+        document.getElementById("s-tilemap-title").textContent =
+          t("tilemap_title");
+        document.getElementById("s-tilemap-body").innerHTML = `
+          <h2 class="section-title">${esc(t("tilemap_title"))}</h2>
+          <p class="body">${esc(t("tilemap_body"))}</p>
+          <h3 class="sub-title">${esc(t("tilemap_specs_title"))}</h3>
+          ${specsGrid(data.tilemap_specs)}
+          <h3 class="sub-title">${esc(t("tilemap_ui_title"))}</h3>
+          ${annotatedImg("images/tilemap_editor.gif", data.annotations.tilemap)}
+          ${areaTitle(data.annotations.tilemap[0].label, 0)}
+          ${areaCrop("tilemap", 0)}
+          <p class="body mb-2">${esc(t("tilemap_canvas_body"))}</p>
+          ${shortcutTable(data.tilemap_canvas_shortcuts)}
+          ${areaTitle(data.annotations.tilemap[1].label, 1)}
+          ${areaCrop("tilemap", 1)}
+          <p class="body mb-2">${esc(t("tilemap_mapview_body"))}</p>
+          ${shortcutTable(data.tilemap_mapview_shortcuts)}
+          ${areaTitle(data.annotations.tilemap[2].label, 2)}
+          ${areaCrop("tilemap", 2)}
+          <p class="body mb-2">${esc(t("tilemap_tileview_body"))}</p>
+          ${shortcutTable(data.tilemap_tileview_shortcuts)}
+          ${areaTitle(data.annotations.tilemap[3].label, 3)}
+          ${areaCrop("tilemap", 3)}
+          <p class="body">${esc(t("tilemap_tmnum_body"))}</p>
+          ${areaTitle(data.annotations.tilemap[5].label, 5)}
+          ${areaCrop("tilemap", 5)}
+          <p class="body">${esc(t("tilemap_imgnum_body"))}</p>
+          ${areaTitle(data.annotations.tilemap[4].label, 4)}
+          ${areaCrop("tilemap", 4)}
+          <p class="body mb-2">${esc(t("image_tools_body"))}</p>
+          ${toolIcons()}
+          <h3 class="sub-title">${esc(t("tilemap_multi_title"))}</h3>
+          <p class="body">${esc(t("tilemap_multi_body"))}</p>
+          <h3 class="sub-title">${esc(t("tilemap_tmx_title"))}</h3>
+          <p class="body">${esc(t("tilemap_tmx_body")).replace("{0}", link("https://www.mapeditor.org/", "Tiled"))}</p>`;
+
+        document.getElementById("s-sound-title").textContent = t("sound_title");
+        document.getElementById("s-sound-body").innerHTML = `
+          <h2 class="section-title">${esc(t("sound_title"))}</h2>
+          <p class="body">${esc(t("sound_body"))}</p>
+          <h3 class="sub-title">${esc(t("sound_specs_title"))}</h3>
+          ${specsGrid(data.sound_specs)}
+          <h3 class="sub-title">${esc(t("sound_ui_title"))}</h3>
+          ${annotatedImg("images/sound_editor.gif", data.annotations.sound)}
+          ${areaTitle(data.annotations.sound[0].label, 0)}
+          ${areaCrop("sound", 0)}
+          <p class="body">${esc(t("sound_sndnum_body"))}</p>
+          ${areaTitle(data.annotations.sound[1].label, 1)}
+          ${areaCrop("sound", 1)}
+          <p class="body">${esc(t("sound_speed_body"))}</p>
+          ${areaTitle(data.annotations.sound[2].label, 2)}
+          ${areaCrop("sound", 2)}
+          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
+          ${areaTitle(data.annotations.sound[4].label, 4)}
+          ${areaCrop("sound", 4)}
+          <p class="body mb-2">${esc(t("sound_piano_body"))}</p>
+          ${shortcutTable(data.sound_piano_shortcuts)}
+          <h4 class="sub-title">${esc(t("sound_range_title"))}</h4>
+          ${shortcutTable(data.sound_selection_shortcuts)}
+          ${areaTitle(data.annotations.sound[3].label, 3)}
+          ${areaCrop("sound", 3)}
+          <p class="body mb-2">${esc(t("sound_octave_body"))}</p>
+          ${shortcutTable(data.sound_octave_shortcuts)}
+          <h3 class="sub-title">${esc(t("sound_keyboard_title"))}</h3>
+          <p class="body mb-2">${esc(t("sound_keyboard_body"))}</p>
+          ${keyboardDiagram()}
+          ${shortcutTable(data.sound_keyboard_shortcuts)}
+          ${areaTitle(data.annotations.sound[6].label, 6)}
+          ${areaCrop("sound", 6)}
+          <p class="body">${esc(t("sound_property_body"))}</p>
+          <h4 class="sub-title">${esc(t("sound_tone_title"))}</h4>
+          <p class="body mb-2">${esc(t("sound_tone_body"))}</p>
+          ${propTable(data.sound_tones)}
+          <h4 class="sub-title">${esc(t("sound_volume_title"))}</h4>
+          <p class="body">${esc(t("sound_volume_body"))}</p>
+          <h4 class="sub-title">${esc(t("sound_effect_title"))}</h4>
+          <p class="body mb-2">${esc(t("sound_effect_body"))}</p>
+          ${propTable(data.sound_effects)}`;
+
+        document.getElementById("s-music-title").textContent = t("music_title");
+        document.getElementById("s-music-body").innerHTML = `
+          <h2 class="section-title">${esc(t("music_title"))}</h2>
+          <p class="body">${esc(t("music_body"))}</p>
+          <h3 class="sub-title">${esc(t("music_specs_title"))}</h3>
+          ${specsGrid(data.music_specs)}
+          <h3 class="sub-title">${esc(t("music_ui_title"))}</h3>
+          ${annotatedImg("images/music_editor.gif", data.annotations.music)}
+          ${areaTitle(data.annotations.music[0].label, 0)}
+          ${areaCrop("music", 0)}
+          <p class="body">${esc(t("music_mscnum_body"))}</p>
+          ${areaTitle(data.annotations.music[1].label, 1)}
+          ${areaCrop("music", 1)}
+          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
+          ${areaTitle(data.annotations.music[2].label, 2)}
+          ${areaCrop("music", 2)}
+          <p class="body mb-2">${esc(t("music_sequence_body"))}</p>
+          ${shortcutTable(data.music_sequence_shortcuts)}
+          ${areaTitle(data.annotations.music[3].label, 3)}
+          ${areaCrop("music", 3)}
+          <p class="body">${esc(t("music_buttons_body"))}</p>`;
+
+        setDocLang(lang);
+      }
+
       function icon(src) {
         return `<img src="${src}" alt="" class="pix inline-block align-middle" style="width:28px;height:28px">`;
       }
@@ -183,231 +413,6 @@
             desc: tool.desc,
           })),
         );
-      }
-
-      function buildPage() {
-        const app = document.getElementById("app");
-        app.innerHTML = "";
-
-        app.appendChild(buildPageHeader(updateTexts));
-
-        const wrap = document.createElement("div");
-        wrap.className = "space-y-6";
-        wrap.id = "content";
-        wrap.innerHTML = `
-          <section class="card" id="s-overview"></section>
-
-          <section class="card" id="s-starting"></section>
-
-          <section class="card" id="s-common"></section>
-
-          <details class="mt-6" open id="s-image">
-            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
-              <span class="tri" id="s-image-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
-            </summary>
-            <div class="card" id="s-image-body"></div>
-          </details>
-
-          <details class="mt-6" open id="s-tilemap">
-            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
-              <span class="tri" id="s-tilemap-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
-            </summary>
-            <div class="card" id="s-tilemap-body"></div>
-          </details>
-
-          <details class="mt-6" open id="s-sound">
-            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
-              <span class="tri" id="s-sound-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
-            </summary>
-            <div class="card" id="s-sound-body"></div>
-          </details>
-
-          <details class="mt-6" open id="s-music">
-            <summary class="flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider">
-              <span class="tri" id="s-music-title"></span><span class="flex-1 bg-gray-700 h-px"></span>
-            </summary>
-            <div class="card" id="s-music-body"></div>
-          </details>
-        `;
-        app.appendChild(wrap);
-        updateTexts();
-      }
-
-      function updateTexts() {
-        document.title = t("title");
-        document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t(
-          "subtitle",
-        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
-
-        let editorCards = "";
-        for (const e of data.overview_editors) {
-          editorCards += `<div class="flex items-start gap-3 bg-gray-900/50 rounded-lg px-4 py-3">
-            ${icon(e.icon)}
-            <div>
-              <div class="text-sm font-medium text-gray-200">${esc(t(e.label))}</div>
-              <div class="text-xs text-gray-400 mt-0.5">${esc(t(e.desc))}</div>
-            </div>
-          </div>`;
-        }
-        document.getElementById("s-overview").innerHTML =
-          `<h2 class="section-title">${esc(t("overview_title"))}</h2>
-          <p class="body mb-3">${esc(t("overview_body"))}</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${editorCards}</div>`;
-
-        document.getElementById("s-starting").innerHTML =
-          `<h2 class="section-title">${esc(t("starting_title"))}</h2>
-          <p class="body">${esc(t("starting_body")).replace("{0}", '</p><pre class="bg-gray-900 rounded-lg px-4 py-2.5 my-3 font-mono text-sm text-indigo-300 overflow-x-auto">pyxel edit [PYXEL_RESOURCE_FILE]</pre><p class="body">').replace("{1}", chip("my_resource.pyxres"))}</p>`;
-
-        document.getElementById("s-common").innerHTML =
-          `<h2 class="section-title">${esc(t("common_title"))}</h2>
-          <p class="body">${esc(t("common_body"))}</p>
-          <h3 class="sub-title">${esc(t("menubar_title"))}</h3>
-          <p class="body">${esc(t("menubar_body"))}</p>
-          <img src="images/ui_menubar.png" alt="Menu Bar" class="pix rounded-lg border border-gray-700 my-3 w-full">
-          ${iconTable(data.menubar_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
-          <h3 class="sub-title">${esc(t("other_shortcuts_title"))}</h3>
-          ${shortcutTable(data.common_extra_shortcuts)}
-          <h3 class="sub-title">${esc(t("starting_usage_title"))}</h3>
-          <p class="body">${esc(t("starting_usage_body")).replace("{0}", chip("pyxel.load()"))}</p>
-          <h3 class="sub-title">${esc(t("starting_load_title"))}</h3>
-          <p class="body">${esc(t("starting_load_body"))}</p>`;
-
-        document.getElementById("s-image-title").textContent = t("image_title");
-        document.getElementById("s-image-body").innerHTML = `
-          <h2 class="section-title">${esc(t("image_title"))}</h2>
-          <p class="body">${esc(t("image_body"))}</p>
-          <h3 class="sub-title">${esc(t("image_specs_title"))}</h3>
-          ${specsGrid(data.image_specs)}
-          <h3 class="sub-title">${esc(t("image_ui_title"))}</h3>
-          ${annotatedImg("images/image_editor.gif", data.annotations.image)}
-          ${areaTitle(data.annotations.image[0].label, 0)}
-          ${areaCrop("image", 0)}
-          <p class="body mb-2">${esc(t("image_canvas_body"))}</p>
-          ${shortcutTable(data.image_canvas_shortcuts)}
-          ${areaTitle(data.annotations.image[1].label, 1)}
-          ${areaCrop("image", 1)}
-          <p class="body mb-2">${esc(t("image_bankview_body"))}</p>
-          ${shortcutTable(data.image_nav_shortcuts)}
-          ${areaTitle(data.annotations.image[3].label, 3)}
-          ${areaCrop("image", 3)}
-          <p class="body mb-2">${esc(t("image_tools_body"))}</p>
-          ${toolIcons()}
-          <h4 class="sub-title">${esc(t("image_selection_title"))}</h4>
-          <p class="body mb-2">${esc(t("image_selection_body"))}</p>
-          ${shortcutTable(data.image_selection_shortcuts)}
-          ${areaTitle(data.annotations.image[2].label, 2)}
-          ${areaCrop("image", 2)}
-          <p class="body mb-2">${esc(t("image_palette_body"))}</p>
-          ${shortcutTable(data.image_colors)}
-          ${areaTitle(data.annotations.image[4].label, 4)}
-          ${areaCrop("image", 4)}
-          <p class="body">${esc(t("image_banknum_body"))}</p>
-          <h3 class="sub-title">${esc(t("image_file_title"))}</h3>
-          <p class="body">${esc(t("image_file_body"))}</p>`;
-
-        document.getElementById("s-tilemap-title").textContent =
-          t("tilemap_title");
-        document.getElementById("s-tilemap-body").innerHTML = `
-          <h2 class="section-title">${esc(t("tilemap_title"))}</h2>
-          <p class="body">${esc(t("tilemap_body"))}</p>
-          <h3 class="sub-title">${esc(t("tilemap_specs_title"))}</h3>
-          ${specsGrid(data.tilemap_specs)}
-          <h3 class="sub-title">${esc(t("tilemap_ui_title"))}</h3>
-          ${annotatedImg("images/tilemap_editor.gif", data.annotations.tilemap)}
-          ${areaTitle(data.annotations.tilemap[0].label, 0)}
-          ${areaCrop("tilemap", 0)}
-          <p class="body mb-2">${esc(t("tilemap_canvas_body"))}</p>
-          ${shortcutTable(data.tilemap_canvas_shortcuts)}
-          ${areaTitle(data.annotations.tilemap[1].label, 1)}
-          ${areaCrop("tilemap", 1)}
-          <p class="body mb-2">${esc(t("tilemap_mapview_body"))}</p>
-          ${shortcutTable(data.tilemap_mapview_shortcuts)}
-          ${areaTitle(data.annotations.tilemap[2].label, 2)}
-          ${areaCrop("tilemap", 2)}
-          <p class="body mb-2">${esc(t("tilemap_tileview_body"))}</p>
-          ${shortcutTable(data.tilemap_tileview_shortcuts)}
-          ${areaTitle(data.annotations.tilemap[3].label, 3)}
-          ${areaCrop("tilemap", 3)}
-          <p class="body">${esc(t("tilemap_tmnum_body"))}</p>
-          ${areaTitle(data.annotations.tilemap[5].label, 5)}
-          ${areaCrop("tilemap", 5)}
-          <p class="body">${esc(t("tilemap_imgnum_body"))}</p>
-          ${areaTitle(data.annotations.tilemap[4].label, 4)}
-          ${areaCrop("tilemap", 4)}
-          <p class="body mb-2">${esc(t("image_tools_body"))}</p>
-          ${toolIcons()}
-          <h3 class="sub-title">${esc(t("tilemap_multi_title"))}</h3>
-          <p class="body">${esc(t("tilemap_multi_body"))}</p>
-          <h3 class="sub-title">${esc(t("tilemap_tmx_title"))}</h3>
-          <p class="body">${esc(t("tilemap_tmx_body")).replace("{0}", link("https://www.mapeditor.org/", "Tiled"))}</p>`;
-
-        document.getElementById("s-sound-title").textContent = t("sound_title");
-        document.getElementById("s-sound-body").innerHTML = `
-          <h2 class="section-title">${esc(t("sound_title"))}</h2>
-          <p class="body">${esc(t("sound_body"))}</p>
-          <h3 class="sub-title">${esc(t("sound_specs_title"))}</h3>
-          ${specsGrid(data.sound_specs)}
-          <h3 class="sub-title">${esc(t("sound_ui_title"))}</h3>
-          ${annotatedImg("images/sound_editor.gif", data.annotations.sound)}
-          ${areaTitle(data.annotations.sound[0].label, 0)}
-          ${areaCrop("sound", 0)}
-          <p class="body">${esc(t("sound_sndnum_body"))}</p>
-          ${areaTitle(data.annotations.sound[1].label, 1)}
-          ${areaCrop("sound", 1)}
-          <p class="body">${esc(t("sound_speed_body"))}</p>
-          ${areaTitle(data.annotations.sound[2].label, 2)}
-          ${areaCrop("sound", 2)}
-          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
-          ${areaTitle(data.annotations.sound[4].label, 4)}
-          ${areaCrop("sound", 4)}
-          <p class="body mb-2">${esc(t("sound_piano_body"))}</p>
-          ${shortcutTable(data.sound_piano_shortcuts)}
-          <h4 class="sub-title">${esc(t("sound_range_title"))}</h4>
-          ${shortcutTable(data.sound_selection_shortcuts)}
-          ${areaTitle(data.annotations.sound[3].label, 3)}
-          ${areaCrop("sound", 3)}
-          <p class="body mb-2">${esc(t("sound_octave_body"))}</p>
-          ${shortcutTable(data.sound_octave_shortcuts)}
-          <h3 class="sub-title">${esc(t("sound_keyboard_title"))}</h3>
-          <p class="body mb-2">${esc(t("sound_keyboard_body"))}</p>
-          ${keyboardDiagram()}
-          ${shortcutTable(data.sound_keyboard_shortcuts)}
-          ${areaTitle(data.annotations.sound[6].label, 6)}
-          ${areaCrop("sound", 6)}
-          <p class="body">${esc(t("sound_property_body"))}</p>
-          <h4 class="sub-title">${esc(t("sound_tone_title"))}</h4>
-          <p class="body mb-2">${esc(t("sound_tone_body"))}</p>
-          ${propTable(data.sound_tones)}
-          <h4 class="sub-title">${esc(t("sound_volume_title"))}</h4>
-          <p class="body">${esc(t("sound_volume_body"))}</p>
-          <h4 class="sub-title">${esc(t("sound_effect_title"))}</h4>
-          <p class="body mb-2">${esc(t("sound_effect_body"))}</p>
-          ${propTable(data.sound_effects)}`;
-
-        document.getElementById("s-music-title").textContent = t("music_title");
-        document.getElementById("s-music-body").innerHTML = `
-          <h2 class="section-title">${esc(t("music_title"))}</h2>
-          <p class="body">${esc(t("music_body"))}</p>
-          <h3 class="sub-title">${esc(t("music_specs_title"))}</h3>
-          ${specsGrid(data.music_specs)}
-          <h3 class="sub-title">${esc(t("music_ui_title"))}</h3>
-          ${annotatedImg("images/music_editor.gif", data.annotations.music)}
-          ${areaTitle(data.annotations.music[0].label, 0)}
-          ${areaCrop("music", 0)}
-          <p class="body">${esc(t("music_mscnum_body"))}</p>
-          ${areaTitle(data.annotations.music[1].label, 1)}
-          ${areaCrop("music", 1)}
-          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
-          ${areaTitle(data.annotations.music[2].label, 2)}
-          ${areaCrop("music", 2)}
-          <p class="body mb-2">${esc(t("music_sequence_body"))}</p>
-          ${shortcutTable(data.music_sequence_shortcuts)}
-          ${areaTitle(data.annotations.music[3].label, 3)}
-          ${areaCrop("music", 3)}
-          <p class="body">${esc(t("music_buttons_body"))}</p>`;
-
-        setDocLang(lang);
       }
 
       initPage("editor-manual.json", buildPage);

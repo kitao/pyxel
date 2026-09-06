@@ -11,6 +11,123 @@ import pyxel
 # pyxel.init() can run only once per process; spawn a fresh interpreter per test.
 
 
+class _FlipCapture(Exception):
+    # Patched flip() raises this at the target frame to exit the while+flip() loop.
+    pass
+
+
+# Command dispatch
+
+
+def main():
+    mode = sys.argv[1]
+    out_dir = Path(sys.argv[-1])
+    if mode == "example":
+        _run_example(sys.argv[2], json.loads(sys.argv[3]), out_dir)
+    elif mode == "flip_example":
+        _run_flip_example(sys.argv[2], json.loads(sys.argv[3]), out_dir)
+    elif mode == "app":
+        _run_app(sys.argv[2], json.loads(sys.argv[3]), out_dir)
+    elif mode == "editor":
+        _run_editor(sys.argv[2], sys.argv[3], out_dir)
+    else:
+        sys.exit(f"Unknown mode: {mode}")
+
+
+# pyxel.run() example capture
+
+
+def _run_example(script_path, plan, out_dir):
+    captured = {}
+    _patch_init()
+    pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
+    pyxel.show = lambda: None
+    script_dir = Path(script_path).parent
+    os.chdir(script_dir)
+    # Match `python script.py`, which puts the script's directory on sys.path
+    # so sibling modules import.
+    sys.path.insert(0, str(script_dir))
+    runpy.run_path(str(script_path), run_name="__main__")
+    _capture_frames(captured, plan, out_dir)
+
+
+# while+flip() example capture
+
+
+def _run_flip_example(script_path, plan, out_dir):
+    capture_at = {step["frame"] for step in plan}
+    max_frame = max(capture_at)
+    frame_count = [0]
+    original_flip = pyxel.flip
+
+    def patched_flip():
+        original_flip()
+        frame_count[0] += 1
+        if frame_count[0] in capture_at:
+            pyxel.screenshot(str(out_dir / f"frame_{frame_count[0]}.png"))
+        if frame_count[0] >= max_frame:
+            raise _FlipCapture()
+
+    _patch_init()
+    pyxel.flip = patched_flip
+    os.chdir(Path(script_path).parent)
+    try:
+        runpy.run_path(str(script_path), run_name="__main__")
+    except _FlipCapture:
+        pass
+
+
+# Packaged app capture
+
+
+def _run_app(pyxapp_path, plan, out_dir):
+    extract_dir = out_dir / "extract"
+    extract_dir.mkdir()
+    startup = _extract_pyxapp(pyxapp_path, extract_dir)
+
+    captured = {}
+    _patch_init(extra=lambda: random.seed(0))
+    pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
+    pyxel.show = lambda: None
+    app_dir = str(Path(startup).parent)
+    sys.path.insert(0, app_dir)
+    os.chdir(app_dir)
+    runpy.run_path(startup, run_name="__main__")
+    _capture_frames(captured, plan, out_dir)
+
+
+# Editor capture
+
+
+def _run_editor(editor, resource_file, out_dir):
+    from pyxel import editor as pyxel_editor
+
+    captured = {}
+    _patch_init(extra=lambda: pyxel.set_mouse_pos(0, 0))
+    pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
+    pyxel_editor.App(resource_file, editor)
+
+    _editor_frame(captured)
+    pyxel.screenshot(str(out_dir / "f1.png"))
+
+    if editor == "image":
+        _editor_press(captured, pyxel.KEY_B)
+        _editor_press(captured, pyxel.KEY_3)
+        _editor_click(captured, 76, 81)
+    elif editor == "tilemap":
+        _editor_click(captured, 15, 136, pyxel.MOUSE_BUTTON_RIGHT)
+        _editor_press(captured, pyxel.KEY_B)
+        _editor_click(captured, 67, 40)
+    elif editor == "sound":
+        for key in [pyxel.KEY_Z, pyxel.KEY_X, pyxel.KEY_C, pyxel.KEY_V, pyxel.KEY_B]:
+            _editor_press(captured, key, pyxel.KEY_RETURN)
+    elif editor == "music":
+        for mx in [82, 95, 108]:
+            _editor_click(captured, mx, 138)
+
+    _editor_capture(captured, out_dir / "fedit.png")
+
+
 def _patch_init(*, extra=None):
     original_init = pyxel.init
 
@@ -51,57 +168,6 @@ def _capture_frames(captured, plan, out_dir):
                 pyxel.set_btn(key, False)
 
 
-# pyxel.run() example capture
-
-
-def _run_example(script_path, plan, out_dir):
-    captured = {}
-    _patch_init()
-    pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
-    pyxel.show = lambda: None
-    script_dir = Path(script_path).parent
-    os.chdir(script_dir)
-    # Match `python script.py`, which puts the script's directory on sys.path
-    # so sibling modules import.
-    sys.path.insert(0, str(script_dir))
-    runpy.run_path(str(script_path), run_name="__main__")
-    _capture_frames(captured, plan, out_dir)
-
-
-# while+flip() example capture
-
-
-class _FlipCapture(Exception):
-    # Patched flip() raises this at the target frame to exit the while+flip() loop.
-    pass
-
-
-def _run_flip_example(script_path, plan, out_dir):
-    capture_at = {step["frame"] for step in plan}
-    max_frame = max(capture_at)
-    frame_count = [0]
-    original_flip = pyxel.flip
-
-    def patched_flip():
-        original_flip()
-        frame_count[0] += 1
-        if frame_count[0] in capture_at:
-            pyxel.screenshot(str(out_dir / f"frame_{frame_count[0]}.png"))
-        if frame_count[0] >= max_frame:
-            raise _FlipCapture()
-
-    _patch_init()
-    pyxel.flip = patched_flip
-    os.chdir(Path(script_path).parent)
-    try:
-        runpy.run_path(str(script_path), run_name="__main__")
-    except _FlipCapture:
-        pass
-
-
-# Packaged app capture
-
-
 def _extract_pyxapp(pyxapp_path, extract_dir):
     with zipfile.ZipFile(pyxapp_path) as zf:
         zf.extractall(extract_dir)
@@ -110,31 +176,6 @@ def _extract_pyxapp(pyxapp_path, extract_dir):
             setting_file.parent / setting_file.read_text(encoding="utf-8").strip()
         )
     sys.exit(f"No startup script found in {pyxapp_path}")
-
-
-def _run_app(pyxapp_path, plan, out_dir):
-    extract_dir = out_dir / "extract"
-    extract_dir.mkdir()
-    startup = _extract_pyxapp(pyxapp_path, extract_dir)
-
-    captured = {}
-    _patch_init(extra=lambda: random.seed(0))
-    pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
-    pyxel.show = lambda: None
-    app_dir = str(Path(startup).parent)
-    sys.path.insert(0, app_dir)
-    os.chdir(app_dir)
-    runpy.run_path(startup, run_name="__main__")
-    _capture_frames(captured, plan, out_dir)
-
-
-# Editor capture
-
-
-def _editor_frame(captured):
-    captured["update"]()
-    captured["draw"]()
-    pyxel.flip()
 
 
 def _editor_press(captured, *keys):
@@ -161,51 +202,10 @@ def _editor_capture(captured, path):
     pyxel.screenshot(str(path))
 
 
-def _run_editor(editor, resource_file, out_dir):
-    from pyxel import editor as pyxel_editor
-
-    captured = {}
-    _patch_init(extra=lambda: pyxel.set_mouse_pos(0, 0))
-    pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
-    pyxel_editor.App(resource_file, editor)
-
-    _editor_frame(captured)
-    pyxel.screenshot(str(out_dir / "f1.png"))
-
-    if editor == "image":
-        _editor_press(captured, pyxel.KEY_B)
-        _editor_press(captured, pyxel.KEY_3)
-        _editor_click(captured, 76, 81)
-    elif editor == "tilemap":
-        _editor_click(captured, 15, 136, pyxel.MOUSE_BUTTON_RIGHT)
-        _editor_press(captured, pyxel.KEY_B)
-        _editor_click(captured, 67, 40)
-    elif editor == "sound":
-        for key in [pyxel.KEY_Z, pyxel.KEY_X, pyxel.KEY_C, pyxel.KEY_V, pyxel.KEY_B]:
-            _editor_press(captured, key, pyxel.KEY_RETURN)
-    elif editor == "music":
-        for mx in [82, 95, 108]:
-            _editor_click(captured, mx, 138)
-
-    _editor_capture(captured, out_dir / "fedit.png")
-
-
-# Command dispatch
-
-
-def main():
-    mode = sys.argv[1]
-    out_dir = Path(sys.argv[-1])
-    if mode == "example":
-        _run_example(sys.argv[2], json.loads(sys.argv[3]), out_dir)
-    elif mode == "flip_example":
-        _run_flip_example(sys.argv[2], json.loads(sys.argv[3]), out_dir)
-    elif mode == "app":
-        _run_app(sys.argv[2], json.loads(sys.argv[3]), out_dir)
-    elif mode == "editor":
-        _run_editor(sys.argv[2], sys.argv[3], out_dir)
-    else:
-        sys.exit(f"Unknown mode: {mode}")
+def _editor_frame(captured):
+    captured["update"]()
+    captured["draw"]()
+    pyxel.flip()
 
 
 if __name__ == "__main__":

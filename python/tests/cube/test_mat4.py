@@ -4,22 +4,6 @@ from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Quat, Vec3
 
 
-def approx_v(a, b, tol=1e-4):
-    return (
-        isclose(a.x, b.x, abs_tol=tol)
-        and isclose(a.y, b.y, abs_tol=tol)
-        and isclose(a.z, b.z, abs_tol=tol)
-    )
-
-
-def approx_m(a, b, tol=1e-4):
-    for i in range(4):
-        for j in range(4):
-            if not isclose(a[i, j], b[i, j], abs_tol=tol):
-                return False
-    return True
-
-
 class TestConstructor:
     def test_default_is_identity(self):
         m = Mat4()
@@ -118,7 +102,7 @@ class TestFactories:
         m = Mat4.from_axis_angle(Vec3.UP, 90)
         assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
 
-    def test_from_quat_round_trip(self):
+    def test_from_quat_matches_rotation(self):
         q = Quat.from_axis_angle(Vec3.UP, 90)
         m = Mat4.from_quat(q)
         assert approx_v(m * Vec3(1, 0, 0), q * Vec3(1, 0, 0))
@@ -188,3 +172,19 @@ class TestCoordinateConversions:
         local = inner.to_local(outer)
         assert local.pos == Vec3(5, 0, 0)
         assert local.to_world(outer) == inner
+
+
+def approx_v(a, b, tol=1e-4):
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
+    )
+
+
+def approx_m(a, b, tol=1e-4):
+    for i in range(4):
+        for j in range(4):
+            if not isclose(a[i, j], b[i, j], abs_tol=tol):
+                return False
+    return True

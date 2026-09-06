@@ -76,193 +76,6 @@ def cli() -> None:
     sys.exit(1)
 
 
-# Helpers
-
-
-def _exit_with_error(message):
-    print(message)
-    sys.exit(1)
-
-
-def _complete_extension(filename, command, valid_ext):
-    file_ext = Path(filename).suffix.lower()
-    if not file_ext:
-        filename += valid_ext
-    elif file_ext != valid_ext:
-        _exit_with_error(f"'{command}' command only accepts {valid_ext} files")
-    return filename
-
-
-def _files_in_dir(dirname):
-    # Exclude dotfiles and dot-directories to avoid OS and tool artifacts.
-    base = Path(dirname)
-    return sorted(
-        str(path)
-        for path in base.rglob("*")
-        if path.is_file()
-        and not any(part.startswith(".") for part in path.relative_to(base).parts)
-    )
-
-
-def _check_file_exists(filename):
-    if not Path(filename).is_file():
-        _exit_with_error(f"no such file: '{filename}'")
-
-
-def _check_dir_exists(dirname):
-    if not Path(dirname).is_dir():
-        _exit_with_error(f"no such directory: '{dirname}'")
-
-
-def _check_file_under_dir(filename, dirname):
-    if not Path(filename).resolve().is_relative_to(Path(dirname).resolve()):
-        _exit_with_error("specified file is not under the directory")
-
-
-def _resolve_pyxapp_startup_path(
-    application_dir: Path, startup_path: str
-) -> Path | None:
-    if not startup_path:
-        return None
-
-    application_dir = application_dir.resolve()
-    # Try native paths first to preserve POSIX filenames containing backslashes.
-    relative_paths = [Path(startup_path)]
-    portable_path = Path(startup_path.replace("\\", "/"))
-    if portable_path != relative_paths[0] and not PureWindowsPath(startup_path).drive:
-        relative_paths.append(portable_path)
-
-    for relative_path in relative_paths:
-        if relative_path.is_absolute():
-            continue
-        try:
-            startup_file = (application_dir / relative_path).resolve()
-            if startup_file.is_relative_to(application_dir) and startup_file.is_file():
-                return startup_file
-        except (OSError, ValueError):
-            continue
-    return None
-
-
-def _create_app_dir():
-    play_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "play"
-    play_dir.mkdir(parents=True, exist_ok=True)
-
-    for path in play_dir.glob("*"):
-        try:
-            pid = int(path.name.split("_")[0])
-        except ValueError:
-            shutil.rmtree(path, ignore_errors=True)
-            continue
-        if pyxel._pid_exists(pid):
-            continue
-        try:
-            is_stale = time.time() - path.stat().st_mtime > 300
-        except FileNotFoundError:
-            continue
-        if is_stale:
-            shutil.rmtree(path, ignore_errors=True)
-
-    app_dir = play_dir / f"{os.getpid()}_{uuid.uuid4()}"
-    if app_dir.exists():
-        shutil.rmtree(app_dir)
-    app_dir.mkdir()
-    return str(app_dir)
-
-
-def _create_watch_state_file():
-    watch_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "watch"
-    watch_dir.mkdir(parents=True, exist_ok=True)
-
-    for path in watch_dir.glob("*"):
-        try:
-            pid = int(path.name)
-        except ValueError:
-            continue
-        if not pyxel._pid_exists(pid):
-            path.unlink(missing_ok=True)
-
-    watch_state_file = watch_dir / str(os.getpid())
-    watch_state_file.touch()
-    return str(watch_state_file)
-
-
-def _timestamps_in_dir(dirname):
-    timestamps = {}
-    for path in Path(dirname).rglob("*"):
-        if path.is_file():
-            try:
-                timestamps[str(path)] = path.stat().st_mtime
-            except FileNotFoundError:
-                continue
-    return timestamps
-
-
-def _run_python_script_in_separate_process(python_script_file):
-    python_script_file = str(Path(python_script_file).absolute())
-    worker = multiprocessing.Process(
-        target=run_python_script, args=(python_script_file,), daemon=True
-    )
-    worker.start()
-    return worker
-
-
-def _extract_pyxel_app(pyxel_app_file):
-    _check_file_exists(pyxel_app_file)
-    app_dir = Path(_create_app_dir())
-
-    with zipfile.ZipFile(pyxel_app_file) as zf:
-        app_dir_abs = app_dir.resolve()
-        for name in zf.namelist():
-            target = (app_dir / name).resolve()
-            if target != app_dir_abs and not target.is_relative_to(app_dir_abs):
-                _exit_with_error(f"unsafe path in Pyxel app: '{name}'")
-        zf.extractall(app_dir)
-
-    for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
-        startup_path = setting_file.read_text(encoding="utf-8").strip()
-        startup_file = _resolve_pyxapp_startup_path(setting_file.parent, startup_path)
-        if startup_file is None:
-            _exit_with_error(
-                f"invalid startup script path in Pyxel app: {startup_path!r}"
-            )
-        return str(startup_file)
-    return None
-
-
-def _make_metadata_comment(startup_script_file):
-    metadata = {}
-
-    with Path(startup_script_file).open(encoding="utf-8") as f:
-        for line in f:
-            match = _METADATA_PATTERN.match(line)
-            if match:
-                key, value = match.groups()
-                key = key.strip().lower()
-                if key in _METADATA_FIELDS:
-                    metadata[key] = value.strip()
-
-    if not metadata:
-        return ""
-
-    max_key_len = max(len(key) for key in metadata)
-    max_value_len = max(len(value) for value in metadata.values())
-    border = "-" * min((max_key_len + max_value_len + 3), 80)
-
-    metadata_comment = border + "\n"
-    for key in _METADATA_FIELDS:
-        if key in metadata:
-            value = metadata[key]
-            metadata_comment += f"{key.ljust(max_key_len)} : {value}\n"
-    metadata_comment += border
-
-    return metadata_comment
-
-
-def _js_string_literal(value):
-    return json.dumps(value, ensure_ascii=True)
-
-
 # CLI commands
 
 
@@ -460,7 +273,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
 
         startup_script_file = _extract_pyxel_app(pyxel_app_file)
         if startup_script_file is None:
-            _exit_with_error("Failed to extract startup script from Pyxel app")
+            _exit_with_error(f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
 
         modules = pyxel.utils.list_imported_modules(startup_script_file)["system"]
         hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]
@@ -522,3 +335,202 @@ def copy_pyxel_examples() -> None:
         dst_file.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src_file, dst_file)
         print(f"copied '{dst_file}'")
+
+
+# Helpers
+
+
+def _exit_with_error(message):
+    print(message)
+    sys.exit(1)
+
+
+def _complete_extension(filename, command, valid_ext):
+    file_ext = Path(filename).suffix.lower()
+    if not file_ext:
+        filename += valid_ext
+    elif file_ext != valid_ext:
+        _exit_with_error(f"'{command}' command only accepts {valid_ext} files")
+    return filename
+
+
+def _files_in_dir(dirname):
+    # Exclude dotfiles and dot-directories to avoid OS and tool artifacts.
+    base = Path(dirname)
+    return sorted(
+        str(path)
+        for path in _iter_files_in_dir(base)
+        if not any(part.startswith(".") for part in path.relative_to(base).parts)
+    )
+
+
+def _iter_files_in_dir(dirname, ancestors=()):
+    base = Path(dirname)
+    resolved = base.resolve()
+    if resolved in ancestors:
+        return
+    # Track ancestors only, so separate aliases retain their app-relative paths.
+    ancestors = (*ancestors, resolved)
+    for path in base.glob("*"):
+        if path.is_dir():
+            yield from _iter_files_in_dir(path, ancestors)
+        elif path.is_file():
+            yield path
+
+
+def _check_file_exists(filename):
+    if not Path(filename).is_file():
+        _exit_with_error(f"no such file: '{filename}'")
+
+
+def _check_dir_exists(dirname):
+    if not Path(dirname).is_dir():
+        _exit_with_error(f"no such directory: '{dirname}'")
+
+
+def _check_file_under_dir(filename, dirname):
+    if not Path(filename).resolve().is_relative_to(Path(dirname).resolve()):
+        _exit_with_error("specified file is not under the directory")
+
+
+def _resolve_pyxapp_startup_path(
+    application_dir: Path, startup_path: str
+) -> Path | None:
+    if not startup_path:
+        return None
+
+    application_dir = application_dir.resolve()
+    # Try native paths first to preserve POSIX filenames containing backslashes.
+    relative_paths = [Path(startup_path)]
+    portable_path = Path(startup_path.replace("\\", "/"))
+    if portable_path != relative_paths[0] and not PureWindowsPath(startup_path).drive:
+        relative_paths.append(portable_path)
+
+    for relative_path in relative_paths:
+        if relative_path.is_absolute():
+            continue
+        try:
+            startup_file = (application_dir / relative_path).resolve()
+            if startup_file.is_relative_to(application_dir) and startup_file.is_file():
+                return startup_file
+        except (OSError, ValueError):
+            continue
+    return None
+
+
+def _create_app_dir():
+    play_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "play"
+    play_dir.mkdir(parents=True, exist_ok=True)
+
+    for path in play_dir.glob("*"):
+        try:
+            pid = int(path.name.split("_")[0])
+        except ValueError:
+            shutil.rmtree(path, ignore_errors=True)
+            continue
+        if pyxel._pid_exists(pid):
+            continue
+        try:
+            is_stale = time.time() - path.stat().st_mtime > 300
+        except FileNotFoundError:
+            continue
+        if is_stale:
+            shutil.rmtree(path, ignore_errors=True)
+
+    app_dir = play_dir / f"{os.getpid()}_{uuid.uuid4()}"
+    if app_dir.exists():
+        shutil.rmtree(app_dir)
+    app_dir.mkdir()
+    return str(app_dir)
+
+
+def _create_watch_state_file():
+    watch_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "watch"
+    watch_dir.mkdir(parents=True, exist_ok=True)
+
+    for path in watch_dir.glob("*"):
+        try:
+            pid = int(path.name)
+        except ValueError:
+            continue
+        if not pyxel._pid_exists(pid):
+            path.unlink(missing_ok=True)
+
+    watch_state_file = watch_dir / str(os.getpid())
+    watch_state_file.touch()
+    return str(watch_state_file)
+
+
+def _timestamps_in_dir(dirname):
+    timestamps = {}
+    for path in _iter_files_in_dir(dirname):
+        try:
+            timestamps[str(path)] = path.stat().st_mtime
+        except FileNotFoundError:
+            continue
+    return timestamps
+
+
+def _run_python_script_in_separate_process(python_script_file):
+    python_script_file = str(Path(python_script_file).absolute())
+    worker = multiprocessing.Process(
+        target=run_python_script, args=(python_script_file,), daemon=True
+    )
+    worker.start()
+    return worker
+
+
+def _extract_pyxel_app(pyxel_app_file):
+    _check_file_exists(pyxel_app_file)
+    app_dir = Path(_create_app_dir())
+
+    with zipfile.ZipFile(pyxel_app_file) as zf:
+        app_dir_abs = app_dir.resolve()
+        for name in zf.namelist():
+            target = (app_dir / name).resolve()
+            if target != app_dir_abs and not target.is_relative_to(app_dir_abs):
+                _exit_with_error(f"unsafe path in Pyxel app: '{name}'")
+        zf.extractall(app_dir)
+
+    for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
+        startup_path = setting_file.read_text(encoding="utf-8").strip()
+        startup_file = _resolve_pyxapp_startup_path(setting_file.parent, startup_path)
+        if startup_file is None:
+            _exit_with_error(
+                f"invalid startup script path in Pyxel app: {startup_path!r}"
+            )
+        return str(startup_file)
+    return None
+
+
+def _make_metadata_comment(startup_script_file):
+    metadata = {}
+
+    with Path(startup_script_file).open(encoding="utf-8") as f:
+        for line in f:
+            match = _METADATA_PATTERN.match(line)
+            if match:
+                key, value = match.groups()
+                key = key.strip().lower()
+                if key in _METADATA_FIELDS:
+                    metadata[key] = value.strip()
+
+    if not metadata:
+        return ""
+
+    max_key_len = max(len(key) for key in metadata)
+    max_value_len = max(len(value) for value in metadata.values())
+    border = "-" * min((max_key_len + max_value_len + 3), 80)
+
+    metadata_comment = border + "\n"
+    for key in _METADATA_FIELDS:
+        if key in metadata:
+            value = metadata[key]
+            metadata_comment += f"{key.ljust(max_key_len)} : {value}\n"
+    metadata_comment += border
+
+    return metadata_comment
+
+
+def _js_string_literal(value):
+    return json.dumps(value, ensure_ascii=True)

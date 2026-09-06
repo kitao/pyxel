@@ -449,7 +449,7 @@ impl Pyxel {
         // Graphics owns the bound handles, and texture dimensions match the slices.
         let (window_width, window_height) = platform::window_size();
         platform::with_gl_context(|gl| unsafe {
-            self.set_viewport(gl, window_width, window_height);
+            Self::set_viewport(gl, window_width, window_height);
             self.use_screen_shader(gl, window_height);
             self.bind_screen_texture(gl);
             self.bind_colors_texture(gl);
@@ -457,7 +457,7 @@ impl Pyxel {
         });
     }
 
-    unsafe fn set_viewport(&self, gl: &mut glow::Context, window_width: u32, window_height: u32) {
+    unsafe fn set_viewport(gl: &mut glow::Context, window_width: u32, window_height: u32) {
         gl.viewport(0, 0, window_width as i32, window_height as i32);
     }
 

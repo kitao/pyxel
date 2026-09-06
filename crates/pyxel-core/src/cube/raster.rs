@@ -1551,8 +1551,8 @@ mod tests {
         assert!(p1.0 <= 31.0);
         assert_eq!(p0.1, 16.0);
         assert_eq!(p1.1, 16.0);
-        assert!((p0.2 - 0.5).abs() < 0.01);
-        assert!((p1.2 - 0.5).abs() < 0.01);
+        assert_eq!(p0.2, 0.5);
+        assert!((p1.2 - 0.5000155).abs() < 1e-6);
     }
 
     #[test]

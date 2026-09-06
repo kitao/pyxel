@@ -4023,18 +4023,18 @@
             "node.prim(Mat4.IDENTITY, prim, 11)"
           ],
           "notes": {
-            "en": "The list attributes are live proxies: edit elements or assign slices (positions[:] = ...); whole-attribute assignment is not supported.",
-            "cn": "列表属性是实时代理：可以编辑元素或赋值切片 (positions[:] = ...)；不支持整体属性赋值。",
-            "de": "Die Listenattribute sind Live-Proxys: Elemente bearbeiten oder Slices zuweisen (positions[:] = ...); Zuweisung des gesamten Attributs wird nicht unterstützt.",
-            "es": "Los atributos de lista son proxies vivos: edita elementos o asigna slices (positions[:] = ...); no se admite asignación del atributo completo.",
-            "fr": "Les attributs de liste sont des proxies vivants : modifiez les éléments ou assignez des tranches (positions[:] = ...) ; l’assignation de l’attribut entier n’est pas prise en charge.",
-            "it": "Gli attributi lista sono proxy live: modifica gli elementi o assegna slice (positions[:] = ...); l’assegnazione dell’intero attributo non è supportata.",
-            "ja": "リスト属性はライブプロキシで、要素の変更やスライス代入 (positions[:] = ...) で編集する。属性全体の再代入はできない。",
-            "ko": "리스트 속성은 라이브 프록시입니다. 요소를 편집하거나 슬라이스를 할당하세요(positions[:] = ...). 전체 속성 할당은 지원하지 않습니다.",
-            "pt": "Os atributos de lista são proxies vivos: edite elementos ou atribua fatias (positions[:] = ...); atribuição do atributo inteiro não é suportada.",
-            "ru": "Списковые атрибуты являются live-прокси: редактируйте элементы или присваивайте срезы (positions[:] = ...); присваивание всего атрибута не поддерживается.",
-            "tr": "Liste öznitelikleri canlı proxy’lerdir: elemanları düzenleyin veya dilim atayın (positions[:] = ...); tüm özniteliğe atama desteklenmez.",
-            "uk": "Спискові атрибути є live-проксі: редагуйте елементи або призначайте зрізи (positions[:] = ...); призначення всього атрибута не підтримується."
+            "en": "Edit list attributes through their elements or slices (positions[:] = ...); whole-attribute assignment is not supported.",
+            "cn": "列表属性可通过修改元素或切片赋值 (positions[:] = ...) 来编辑；不支持整体属性赋值。",
+            "de": "Listenattribute durch Bearbeiten der Elemente oder Zuweisen von Slices (positions[:] = ...) ändern; Zuweisung des gesamten Attributs wird nicht unterstützt.",
+            "es": "Edita los atributos de lista mediante sus elementos o asignando slices (positions[:] = ...); no se admite asignación del atributo completo.",
+            "fr": "Modifiez les attributs de liste via leurs éléments ou en assignant des tranches (positions[:] = ...) ; l’assignation de l’attribut entier n’est pas prise en charge.",
+            "it": "Modifica gli attributi lista tramite gli elementi o assegnando slice (positions[:] = ...); l’assegnazione dell’intero attributo non è supportata.",
+            "ja": "リスト属性は、要素の変更やスライス代入 (positions[:] = ...) で編集する。属性全体の再代入はできない。",
+            "ko": "리스트 속성은 요소를 편집하거나 슬라이스를 할당해 수정합니다(positions[:] = ...). 전체 속성 할당은 지원하지 않습니다.",
+            "pt": "Edite os atributos de lista pelos elementos ou atribuindo fatias (positions[:] = ...); atribuição do atributo inteiro não é suportada.",
+            "ru": "Изменяйте списковые атрибуты через их элементы или присваивание срезов (positions[:] = ...); присваивание всего атрибута не поддерживается.",
+            "tr": "Liste özniteliklerini elemanları düzenleyerek veya dilim atayarak (positions[:] = ...) değiştirin; tüm özniteliğe atama desteklenmez.",
+            "uk": "Редагуйте спискові атрибути через їхні елементи або призначення зрізів (positions[:] = ...); призначення всього атрибута не підтримується."
           },
           "advanced": false
         },
@@ -4485,7 +4485,7 @@
         {
           "name": "Mesh",
           "type": "class",
-          "signature": "Mesh(primitives=None, transforms=None, parents=None, names=None, col_img=7, colkey=None)",
+          "signature": "Mesh(primitives=[], transforms=[], parents=[], names=None, col_img=7, colkey=None)",
           "description": {
             "en": "A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.",
             "cn": "分层 3D 模型资产。primitives、transforms、parents 和 names 是描述部件树的并行数组；父部件必须位于子部件之前 (parents[i] < i)。可用 Node.from_mesh() 实例化，用 Mesh.from_glb() 加载，或设置到 Collider.mesh 作为静态地形。",
@@ -5171,7 +5171,7 @@
               "description": {
                 "en": "Bounciness. The larger of the two contacting values is used. Defaults to 0.0.",
                 "cn": "弹性。使用两个接触值中较大的一个。默认值为 0.0。",
-                "de": "Sprungkraft. Der größere der beiden Kontaktwerte wird verwendet. Standardwert ist 0.0.",
+                "de": "Rückprallkoeffizient. Der größere der beiden Kontaktwerte wird verwendet. Standardwert ist 0.0.",
                 "es": "Rebote. Se usa el mayor de los dos valores en contacto. El valor predeterminado es 0.0.",
                 "fr": "Rebond. La plus grande des deux valeurs en contact est utilisée. La valeur par défaut est 0.0.",
                 "it": "Rimbalzo. Viene usato il maggiore dei due valori in contatto. Il valore predefinito è 0.0.",
@@ -5378,7 +5378,7 @@
           "description": {
             "en": "Bounciness. The larger of the two contacting values is used.",
             "cn": "弹性。使用两个接触值中较大的一个。",
-            "de": "Sprungkraft. Der größere der beiden Kontaktwerte wird verwendet.",
+            "de": "Rückprallkoeffizient. Der größere der beiden Kontaktwerte wird verwendet.",
             "es": "Rebote. Se usa el mayor de los dos valores en contacto.",
             "fr": "Rebond. La plus grande des deux valeurs en contact est utilisée.",
             "it": "Rimbalzo. Viene usato il maggiore dei due valori in contatto.",
@@ -6110,18 +6110,18 @@
           "type": "variable",
           "signature": "effective_camera",
           "description": {
-            "en": "The camera after cascade resolution: this node's camera, or the closest ancestor's.",
-            "cn": "级联解析后的 camera：此节点的 camera，或最近祖先的 camera。",
-            "de": "Die Camera nach Kaskadenauflösung: die Camera dieses Nodes oder die des nächsten Vorfahren.",
-            "es": "La camera tras resolver la cascada: la camera de este nodo o la del ancestro más cercano.",
-            "fr": "La camera après résolution en cascade : celle de ce nœud, ou celle de l’ancêtre le plus proche.",
-            "it": "La camera dopo la risoluzione a cascata: la camera di questo nodo o quella dell’antenato più vicino.",
-            "ja": "カスケード解決後のカメラ。自分のカメラか、最も近い祖先のもの。",
-            "ko": "계단식 해석 후의 camera입니다. 이 노드의 camera 또는 가장 가까운 조상의 camera입니다.",
-            "pt": "A camera após a resolução em cascata: a camera deste nó ou a do ancestral mais próximo.",
-            "ru": "camera после каскадного разрешения: camera этого узла или ближайшего предка.",
-            "tr": "Basamaklı çözümlemeden sonraki camera: bu düğümün camera değeri veya en yakın atanınki.",
-            "uk": "camera після каскадного розв’язання: camera цього вузла або найближчого предка."
+            "en": "This node's camera, or the camera of the closest ancestor that has one.",
+            "cn": "此节点的 camera，或从最近的已设置 camera 的祖先继承的值。",
+            "de": "Die Camera dieses Nodes oder die des nächsten Vorfahren, bei dem eine gesetzt ist.",
+            "es": "La camera de este nodo o la del ancestro más cercano que tenga una configurada.",
+            "fr": "La camera de ce nœud ou celle de l’ancêtre le plus proche qui en possède une.",
+            "it": "La camera di questo nodo o quella dell’antenato più vicino che ne ha una impostata.",
+            "ja": "自分のカメラか、最も近い設定済みの祖先のカメラ。",
+            "ko": "이 노드의 camera 또는 camera가 설정된 가장 가까운 조상의 camera입니다.",
+            "pt": "A camera deste nó ou a do ancestral mais próximo que tenha uma definida.",
+            "ru": "Камера этого узла или ближайшего предка, у которого она задана.",
+            "tr": "Bu düğümün camera değeri veya camera değeri ayarlanmış en yakın atanınki.",
+            "uk": "Камера цього вузла або найближчого предка, у якого її задано."
           },
           "value_type": "Camera | None",
           "advanced": true
@@ -6131,18 +6131,18 @@
           "type": "variable",
           "signature": "effective_shading",
           "description": {
-            "en": "The shading table after cascade resolution: this node's shading, or the closest ancestor's.",
-            "cn": "级联解析后的 shading 表：此节点的 shading，或最近祖先的 shading。",
-            "de": "Die Shading-Tabelle nach Kaskadenauflösung: das shading dieses Nodes oder das des nächsten Vorfahren.",
-            "es": "La tabla de shading tras resolver la cascada: el shading de este nodo o el del ancestro más cercano.",
-            "fr": "La table de shading après résolution en cascade : celle de ce nœud, ou celle de l’ancêtre le plus proche.",
-            "it": "La tabella shading dopo la risoluzione a cascata: lo shading di questo nodo o quello dell’antenato più vicino.",
-            "ja": "カスケード解決後のシェーディング。自分の Shading か、最も近い祖先のもの。",
-            "ko": "계단식 해석 후의 shading 테이블입니다. 이 노드의 shading 또는 가장 가까운 조상의 shading입니다.",
-            "pt": "A tabela de shading após a resolução em cascata: o shading deste nó ou o do ancestral mais próximo.",
-            "ru": "Таблица shading после каскадного разрешения: shading этого узла или ближайшего предка.",
-            "tr": "Basamaklı çözümlemeden sonraki shading tablosu: bu düğümün shading değeri veya en yakın atanınki.",
-            "uk": "Таблиця shading після каскадного розв’язання: shading цього вузла або найближчого предка."
+            "en": "This node's shading table, or the table of the closest ancestor that has one.",
+            "cn": "此节点的 shading，或从最近的已设置 shading 的祖先继承的值。",
+            "de": "Die Shading-Tabelle dieses Nodes oder die des nächsten Vorfahren, bei dem eine gesetzt ist.",
+            "es": "La tabla de shading de este nodo o la del ancestro más cercano que tenga una configurada.",
+            "fr": "La table de shading de ce nœud ou celle de l’ancêtre le plus proche qui en possède une.",
+            "it": "La tabella shading di questo nodo o quella dell’antenato più vicino che ne ha una impostata.",
+            "ja": "自分の Shading か、最も近い設定済みの祖先の Shading。",
+            "ko": "이 노드의 shading 또는 shading이 설정된 가장 가까운 조상의 shading입니다.",
+            "pt": "A tabela de shading deste nó ou a do ancestral mais próximo que tenha uma definida.",
+            "ru": "Таблица shading этого узла или ближайшего предка, у которого она задана.",
+            "tr": "Bu düğümün shading değeri veya shading değeri ayarlanmış en yakın atanınki.",
+            "uk": "Таблиця shading цього вузла або найближчого предка, у якого її задано."
           },
           "value_type": "Shading | None",
           "advanced": true
@@ -6394,16 +6394,16 @@
               "type": "bool",
               "description": {
                 "en": "When True, wrap the frame inside the clip length. Defaults to True.",
-                "cn": "为 True 时，将帧包回片段长度范围内。默认值为 True。",
-                "de": "Wenn True, wird der Frame innerhalb der Cliplänge umgebrochen. Standardwert ist True.",
-                "es": "Cuando es True, ajusta el fotograma dentro de la longitud del clip. El valor predeterminado es True.",
+                "cn": "为 True 时，帧位置按片段长度循环。默认值为 True。",
+                "de": "Wenn True, wiederholen sich die Framepositionen nach jeder Cliplänge. Standardwert ist True.",
+                "es": "Cuando es True, ajusta cíclicamente el fotograma dentro de la longitud del clip. El valor predeterminado es True.",
                 "fr": "Si True, reboucle l’image dans la longueur du clip. La valeur par défaut est True.",
-                "it": "Se True, riavvolge il frame entro la lunghezza della clip. Il valore predefinito è True.",
+                "it": "Se True, riporta ciclicamente il frame entro la durata della clip. Il valore predefinito è True.",
                 "ja": "True のとき、フレームをクリップ長でループさせる。デフォルトは True。",
-                "ko": "True이면 프레임을 클립 길이 안에서 래핑합니다. 기본값은 True입니다.",
-                "pt": "Quando True, envolve o frame dentro do comprimento do clipe. O padrão é True.",
+                "ko": "True이면 프레임 위치를 클립 길이에 맞춰 순환시킵니다. 기본값은 True입니다.",
+                "pt": "Quando True, ajusta ciclicamente o frame dentro da duração do clipe. O padrão é True.",
                 "ru": "Если True, кадр зацикливается внутри длины клипа. По умолчанию True.",
-                "tr": "True olduğunda kareyi klip uzunluğu içinde döndürür. Varsayılan değer True.",
+                "tr": "True olduğunda kare konumunu klip süresi içinde döngüsel olarak ayarlar. Varsayılan değer True.",
                 "uk": "Якщо True, кадр зациклюється в межах довжини кліпу. Типове значення True."
               }
             }
@@ -6455,16 +6455,16 @@
               "type": "bool",
               "description": {
                 "en": "When True, wrap playback inside the clip length. Defaults to True.",
-                "cn": "为 True 时，将播放包回片段长度范围内。默认值为 True。",
-                "de": "Wenn True, wird die Wiedergabe innerhalb der Cliplänge umgebrochen. Standardwert ist True.",
-                "es": "Cuando es True, ajusta la reproducción dentro de la longitud del clip. El valor predeterminado es True.",
+                "cn": "为 True 时，循环播放片段。默认值为 True。",
+                "de": "Wenn True, wird der Clip in einer Schleife abgespielt. Standardwert ist True.",
+                "es": "Cuando es True, reproduce el clip en bucle. El valor predeterminado es True.",
                 "fr": "Si True, reboucle la lecture dans la longueur du clip. La valeur par défaut est True.",
-                "it": "Se True, riavvolge la riproduzione entro la lunghezza della clip. Il valore predefinito è True.",
+                "it": "Se True, riproduce la clip in loop. Il valore predefinito è True.",
                 "ja": "True のとき、再生位置をクリップ長でループさせる。デフォルトは True。",
-                "ko": "True이면 재생을 클립 길이 안에서 래핑합니다. 기본값은 True입니다.",
-                "pt": "Quando True, envolve a reprodução dentro do comprimento do clipe. O padrão é True.",
+                "ko": "True이면 클립을 반복 재생합니다. 기본값은 True입니다.",
+                "pt": "Quando True, reproduz o clipe em loop. O padrão é True.",
                 "ru": "Если True, воспроизведение зацикливается внутри длины клипа. По умолчанию True.",
-                "tr": "True olduğunda oynatmayı klip uzunluğu içinde döndürür. Varsayılan değer True.",
+                "tr": "True olduğunda klibi döngü halinde oynatır. Varsayılan değer True.",
                 "uk": "Якщо True, відтворення зациклюється в межах довжини кліпу. Типове значення True."
               }
             },
@@ -6515,18 +6515,18 @@
           "type": "function",
           "signature": "stop_motion()",
           "description": {
-            "en": "Stop the active Motion playback cursor on this node.",
-            "cn": "停止此节点上的活动 Motion 播放游标。",
-            "de": "Stoppt den aktiven Motion-Wiedergabecursor auf diesem Node.",
-            "es": "Detiene el cursor activo de reproducción de Motion en este nodo.",
-            "fr": "Arrête le curseur de lecture Motion actif sur ce nœud.",
-            "it": "Ferma il cursore di riproduzione Motion attivo su questo nodo.",
-            "ja": "このノードの Motion 再生カーソルを停止する。",
-            "ko": "이 노드의 활성 Motion 재생 커서를 중지합니다.",
-            "pt": "Para o cursor ativo de reprodução de Motion neste nó.",
-            "ru": "Останавливает активный курсор воспроизведения Motion на этом узле.",
-            "tr": "Bu düğümdeki etkin Motion oynatma imlecini durdurur.",
-            "uk": "Зупиняє активний курсор відтворення Motion на цьому вузлі."
+            "en": "Stop Motion playback on this node.",
+            "cn": "停止此节点上的 Motion 播放。",
+            "de": "Stoppt die Motion-Wiedergabe auf diesem Node.",
+            "es": "Detiene la reproducción de Motion en este nodo.",
+            "fr": "Arrête la lecture de Motion sur ce nœud.",
+            "it": "Ferma la riproduzione di Motion su questo nodo.",
+            "ja": "このノードの Motion 再生を停止する。",
+            "ko": "이 노드의 Motion 재생을 중지합니다.",
+            "pt": "Para a reprodução de Motion neste nó.",
+            "ru": "Останавливает воспроизведение Motion на этом узле.",
+            "tr": "Bu düğümdeki Motion oynatmasını durdurur.",
+            "uk": "Зупиняє відтворення Motion на цьому вузлі."
           },
           "returns": {
             "type": "None"
@@ -8970,7 +8970,7 @@
             }
           },
           "examples": [
-            "hit = scene.raycast(self.transform.pos, Vec3.DOWN, max_distance=2.0)"
+            "hit = scene.raycast(self.world_transform.pos, Vec3.DOWN, max_distance=2.0)"
           ],
           "advanced": false
         },
