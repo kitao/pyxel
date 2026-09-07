@@ -3,6 +3,32 @@ from cube_physics_camera import OrbitCamera
 from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
 
+def _slope_mesh() -> Mesh:
+    # 6x6 grid sloped along +X. Y drops as X increases.
+    verts: list[float] = []
+    indices: list[int] = []
+    nx, nz = 6, 6
+    extent = 12.0
+    step = extent / (nx - 1)
+    for iz in range(nz):
+        for ix in range(nx):
+            x = -extent / 2 + ix * step
+            z = -extent / 2 + iz * step
+            y = -x * 0.4
+            verts.extend([x, y, z])
+    for iz in range(nz - 1):
+        for ix in range(nx - 1):
+            i = iz * nx + ix
+            indices.extend([i, i + nx, i + 1, i + 1, i + nx, i + nx + 1])
+    primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
+    return Mesh(
+        primitives=[primitive],
+        transforms=[Mat4.IDENTITY],
+        parents=[-1],
+        col_img=3,
+    )
+
+
 class Floor(Node):
     def __init__(self):
         super().__init__()
@@ -63,32 +89,6 @@ class App:
 
     def draw(self):
         self.scene.draw(0, 0, 160, 120)
-
-
-def _slope_mesh() -> Mesh:
-    # 6x6 grid sloped along +X. Y drops as X increases.
-    verts: list[float] = []
-    indices: list[int] = []
-    nx, nz = 6, 6
-    extent = 12.0
-    step = extent / (nx - 1)
-    for iz in range(nz):
-        for ix in range(nx):
-            x = -extent / 2 + ix * step
-            z = -extent / 2 + iz * step
-            y = -x * 0.4
-            verts.extend([x, y, z])
-    for iz in range(nz - 1):
-        for ix in range(nx - 1):
-            i = iz * nx + ix
-            indices.extend([i, i + nx, i + 1, i + 1, i + nx, i + nx + 1])
-    primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
-    return Mesh(
-        primitives=[primitive],
-        transforms=[Mat4.IDENTITY],
-        parents=[-1],
-        col_img=3,
-    )
 
 
 if __name__ == "__main__":

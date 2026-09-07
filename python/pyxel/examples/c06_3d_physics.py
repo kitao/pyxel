@@ -4,6 +4,41 @@ from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Primitive, Shading, V
 GRAVITY = Vec3(0.0, -0.025, 0.0)
 
 
+def make_quad_mesh(corners, color):
+    positions = []
+    for v in corners:
+        positions += [v.x, v.y, v.z]
+    primitive = Primitive(
+        Primitive.MODE_TRIANGLES,
+        positions,
+        [0, 1, 2, 1, 3, 2],
+        cull=Primitive.CULL_BACK,
+    )
+    primitive.compute_normals()
+    return Mesh(
+        primitives=[primitive],
+        transforms=[Mat4.IDENTITY],
+        parents=[-1],
+        col_img=color,
+    )
+
+
+def apply_contact(node, contact):
+    offset = contact.normal * contact.depth
+    if node.parent is not None:
+        parent_world = node.parent.world_transform
+        offset = (
+            Vec3.ZERO
+            if abs(parent_world.determinant()) < 1e-12
+            else offset.to_local_dir(parent_world)
+        )
+    push = Mat4.from_translation(offset)
+    spin = Mat4.from_quat(contact.delta_rotation)
+    node.transform = push * node.transform * spin
+    node.collider.velocity += contact.delta_velocity
+    node.collider.angular_velocity += contact.delta_angular_velocity
+
+
 class QuadSurface(Node):
     def __init__(self, corners, color):
         super().__init__()
@@ -144,41 +179,6 @@ class App:
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
         pyxel.text(8, 8, "Capsule vs. barrel stack  R/Space: Reset", 7)
-
-
-def make_quad_mesh(corners, color):
-    positions = []
-    for v in corners:
-        positions += [v.x, v.y, v.z]
-    primitive = Primitive(
-        Primitive.MODE_TRIANGLES,
-        positions,
-        [0, 1, 2, 1, 3, 2],
-        cull=Primitive.CULL_BACK,
-    )
-    primitive.compute_normals()
-    return Mesh(
-        primitives=[primitive],
-        transforms=[Mat4.IDENTITY],
-        parents=[-1],
-        col_img=color,
-    )
-
-
-def apply_contact(node, contact):
-    offset = contact.normal * contact.depth
-    if node.parent is not None:
-        parent_world = node.parent.world_transform
-        offset = (
-            Vec3.ZERO
-            if abs(parent_world.determinant()) < 1e-12
-            else offset.to_local_dir(parent_world)
-        )
-    push = Mat4.from_translation(offset)
-    spin = Mat4.from_quat(contact.delta_rotation)
-    node.transform = push * node.transform * spin
-    node.collider.velocity += contact.delta_velocity
-    node.collider.angular_velocity += contact.delta_angular_velocity
 
 
 App()
