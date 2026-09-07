@@ -38,6 +38,20 @@ bullets = []
 blasts = []
 
 
+def update_entities(entities):
+    for entity in entities:
+        entity.update()
+
+
+def draw_entities(entities):
+    for entity in entities:
+        entity.draw()
+
+
+def cleanup_entities(entities):
+    entities[:] = [e for e in entities if e.is_alive]
+
+
 class Background:
     def __init__(self):
         self.stars = [
@@ -360,20 +374,6 @@ class App:
 
         pyxel.text(43, 66, "GAME OVER", 8)
         pyxel.text(31, 126, "- PRESS ENTER -", 13)
-
-
-def update_entities(entities):
-    for entity in entities:
-        entity.update()
-
-
-def draw_entities(entities):
-    for entity in entities:
-        entity.draw()
-
-
-def cleanup_entities(entities):
-    entities[:] = [e for e in entities if e.is_alive]
 
 
 App()
