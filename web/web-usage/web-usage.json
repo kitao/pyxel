@@ -652,20 +652,6 @@
       "tr": "Pyxel uygulamalarını kendi HTML sayfalarınıza gömmek için HTML özel öğelerini kullanın.",
       "uk": "Використовуйте користувацькі HTML-елементи, щоб вбудовувати застосунки Pyxel у власні HTML-сторінки."
     },
-    "custom_elements_overview": {
-      "en": "Loading this script makes three HTML custom elements available, corresponding to Pyxel's {0}, {1}, and {2} commands: {3}, {4}, and {5}.",
-      "cn": "加载此脚本后，可以使用与 Pyxel 的 {0}、{1}、{2} 命令对应的三个 HTML 自定义元素：{3}、{4}、{5}。",
-      "de": "Durch das Laden dieses Skripts werden drei HTML Custom Elements verfügbar, die den Pyxel-Befehlen {0}, {1} und {2} entsprechen: {3}, {4} und {5}.",
-      "es": "Cargar este script hace disponibles tres elementos HTML personalizados, correspondientes a los comandos {0}, {1} y {2} de Pyxel: {3}, {4} y {5}.",
-      "fr": "Le chargement de ce script rend disponibles trois éléments HTML personnalisés, correspondant aux commandes {0}, {1} et {2} de Pyxel : {3}, {4} et {5}.",
-      "it": "Il caricamento di questo script rende disponibili tre elementi HTML personalizzati, corrispondenti ai comandi {0}, {1} e {2} di Pyxel: {3}, {4} e {5}.",
-      "ja": "このスクリプトを読み込むと、Pyxel の {0}、{1}、{2} コマンドに対応する {3}、{4}、{5} の 3 つの HTML カスタム要素が使えるようになります。",
-      "ko": "이 스크립트를 로드하면 Pyxel의 {0}, {1}, {2} 명령어에 대응하는 {3}, {4}, {5} 세 가지 HTML 커스텀 요소를 사용할 수 있습니다.",
-      "pt": "Carregar este script disponibiliza três elementos HTML personalizados, correspondentes aos comandos {0}, {1} e {2} do Pyxel: {3}, {4} e {5}.",
-      "ru": "Загрузка этого скрипта делает доступными три пользовательских HTML-элемента, соответствующих командам Pyxel {0}, {1} и {2}: {3}, {4} и {5}.",
-      "tr": "Bu betiği yüklemek, Pyxel'in {0}, {1} ve {2} komutlarına karşılık gelen üç HTML özel öğesini kullanılabilir hale getirir: {3}, {4} ve {5}.",
-      "uk": "Завантаження цього скрипту робить доступними три власні HTML-елементи, що відповідають командам Pyxel {0}, {1} та {2}: {3}, {4} та {5}."
-    },
     "custom_elements_setup_title": {
       "en": "Setup",
       "cn": "设置",
@@ -707,6 +693,20 @@
       "ru": "Вы можете зафиксировать версию Pyxel, указав номер версии после {0}.",
       "tr": "{0} ifadesinden sonra bir sürüm numarası belirterek Pyxel sürümünü sabitleyebilirsiniz.",
       "uk": "Ви можете зафіксувати версію Pyxel, вказавши номер версії після {0}."
+    },
+    "custom_elements_overview": {
+      "en": "Loading this script makes three HTML custom elements available, corresponding to Pyxel's {0}, {1}, and {2} commands: {3}, {4}, and {5}.",
+      "cn": "加载此脚本后，可以使用与 Pyxel 的 {0}、{1}、{2} 命令对应的三个 HTML 自定义元素：{3}、{4}、{5}。",
+      "de": "Durch das Laden dieses Skripts werden drei HTML Custom Elements verfügbar, die den Pyxel-Befehlen {0}, {1} und {2} entsprechen: {3}, {4} und {5}.",
+      "es": "Cargar este script hace disponibles tres elementos HTML personalizados, correspondientes a los comandos {0}, {1} y {2} de Pyxel: {3}, {4} y {5}.",
+      "fr": "Le chargement de ce script rend disponibles trois éléments HTML personnalisés, correspondant aux commandes {0}, {1} et {2} de Pyxel : {3}, {4} et {5}.",
+      "it": "Il caricamento di questo script rende disponibili tre elementi HTML personalizzati, corrispondenti ai comandi {0}, {1} e {2} di Pyxel: {3}, {4} e {5}.",
+      "ja": "このスクリプトを読み込むと、Pyxel の {0}、{1}、{2} コマンドに対応する {3}、{4}、{5} の 3 つの HTML カスタム要素が使えるようになります。",
+      "ko": "이 스크립트를 로드하면 Pyxel의 {0}, {1}, {2} 명령어에 대응하는 {3}, {4}, {5} 세 가지 HTML 커스텀 요소를 사용할 수 있습니다.",
+      "pt": "Carregar este script disponibiliza três elementos HTML personalizados, correspondentes aos comandos {0}, {1} e {2} do Pyxel: {3}, {4} e {5}.",
+      "ru": "Загрузка этого скрипта делает доступными три пользовательских HTML-элемента, соответствующих командам Pyxel {0}, {1} и {2}: {3}, {4} и {5}.",
+      "tr": "Bu betiği yüklemek, Pyxel'in {0}, {1} ve {2} komutlarına karşılık gelen üç HTML özel öğesini kullanılabilir hale getirir: {3}, {4} ve {5}.",
+      "uk": "Завантаження цього скрипту робить доступними три власні HTML-елементи, що відповідають командам Pyxel {0}, {1} та {2}: {3}, {4} та {5}."
     },
     "custom_elements_run_title": {
       "en": "pyxel-run",

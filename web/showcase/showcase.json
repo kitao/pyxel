@@ -384,18 +384,18 @@
             "uk": "Гра «Змійка» з BGM"
           },
           "details": {
-            "en": "A classic snake game with background music composed in Pyxel MML. A useful reference for game logic such as grid-based movement and managing the snake body with a list.",
-            "cn": "使用 Pyxel MML 创作 BGM 的经典贪吃蛇游戏。网格移动处理和列表管理蛇身等游戏逻辑的实用参考。",
-            "de": "Klassisches Schlangenspiel mit in Pyxel MML komponierter Hintergrundmusik. Nützliche Referenz für Spiellogik wie rasterbasierte Bewegung und Verwaltung des Schlangenkörpers mit einer Liste.",
-            "es": "Juego clásico de la serpiente con música de fondo compuesta en Pyxel MML. Referencia útil para lógica de juego como movimiento basado en cuadrícula y gestión del cuerpo de la serpiente con una lista.",
-            "fr": "Jeu de serpent classique avec musique de fond composée en Pyxel MML. Référence utile pour la logique de jeu comme le déplacement sur grille et la gestion du corps du serpent avec une liste.",
-            "it": "Gioco del serpente classico con musica di sottofondo composta in Pyxel MML. Riferimento utile per la logica di gioco come il movimento su griglia e la gestione del corpo del serpente con una lista.",
-            "ja": "Pyxel MML で作曲した BGM 付きのクラシックなスネークゲーム。グリッドベースの移動処理やリストによる蛇の管理など、ゲームロジックの実装例として参考になります。",
-            "ko": "Pyxel MML로 작곡한 BGM이 있는 클래식 스네이크 게임. 그리드 기반 이동 처리와 리스트로 뱀 몸체를 관리하는 등 게임 로직의 구현 참고가 됩니다.",
-            "pt": "Jogo clássico da cobrinha com música de fundo composta em Pyxel MML. Referência útil para lógica de jogo como movimento baseado em grade e gerenciamento do corpo da cobra com uma lista.",
-            "ru": "Классическая «Змейка» с фоновой музыкой на Pyxel MML. Полезный пример логики игры: движение по сетке и управление телом змеи с помощью списка.",
-            "tr": "Pyxel MML ile bestelenmiş BGM'li klasik yılan oyunu. Izgara tabanlı hareket ve yılan gövdesini liste ile yönetme gibi oyun mantığı için pratik bir referans.",
-            "uk": "Класична «Змійка» з фоновою музикою на Pyxel MML. Корисний приклад логіки гри: рух по сітці та керування тілом змії за допомогою списку."
+            "en": "A classic snake game with background music created with Pyxel’s sound APIs. A useful reference for game logic such as grid-based movement and managing the snake body.",
+            "cn": "使用 Pyxel 声音 API 创建 BGM 的经典贪吃蛇游戏。网格移动处理和管理蛇身等游戏逻辑的实用参考。",
+            "de": "Klassisches Schlangenspiel mit Hintergrundmusik, die mit den Sound-APIs von Pyxel erstellt wurde. Nützliche Referenz für Spiellogik wie rasterbasierte Bewegung und Verwaltung des Schlangenkörpers.",
+            "es": "Juego clásico de la serpiente con música de fondo creada con las API de sonido de Pyxel. Referencia útil para lógica de juego como movimiento basado en cuadrícula y gestión del cuerpo de la serpiente.",
+            "fr": "Jeu de serpent classique avec musique de fond créée avec les API audio de Pyxel. Référence utile pour la logique de jeu comme le déplacement sur grille et la gestion du corps du serpent.",
+            "it": "Gioco del serpente classico con musica di sottofondo creata con le API audio di Pyxel. Riferimento utile per la logica di gioco come il movimento su griglia e la gestione del corpo del serpente.",
+            "ja": "Pyxel のサウンド API で作成した BGM 付きのクラシックなスネークゲーム。グリッドベースの移動処理や蛇の体の管理など、ゲームロジックの実装例として参考になります。",
+            "ko": "Pyxel의 사운드 API로 만든 BGM이 있는 클래식 스네이크 게임. 그리드 기반 이동 처리와 뱀 몸체를 관리하는 등 게임 로직의 구현 참고가 됩니다.",
+            "pt": "Jogo clássico da cobrinha com música de fundo criada com as APIs de som do Pyxel. Referência útil para lógica de jogo como movimento baseado em grade e gerenciamento do corpo da cobra.",
+            "ru": "Классическая «Змейка» с фоновой музыкой, созданной с помощью API звука Pyxel. Полезный пример логики игры: движение по сетке и управление телом змеи.",
+            "tr": "Pyxel’in ses API’leriyle oluşturulmuş BGM'li klasik yılan oyunu. Izgara tabanlı hareket ve yılan gövdesini yönetme gibi oyun mantığı için pratik bir referans.",
+            "uk": "Класична «Змійка» з фоновою музикою, створеною за допомогою API звуку Pyxel. Корисний приклад логіки гри: рух по сітці та керування тілом змії."
           }
         },
         {

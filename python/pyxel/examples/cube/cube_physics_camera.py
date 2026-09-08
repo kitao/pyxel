@@ -32,9 +32,11 @@ class OrbitCamera:
         if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
             self.yaw -= dx * 0.6
             self.pitch = max(-85.0, min(85.0, self.pitch + dy * 0.6))
+
         wheel = pyxel.mouse_wheel
         if wheel:
             self.radius = max(1.5, self.radius * (0.9 if wheel > 0 else 1.1))
+
         self._refresh()
 
     def _refresh(self):

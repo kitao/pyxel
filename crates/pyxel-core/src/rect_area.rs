@@ -68,6 +68,7 @@ impl RectArea {
         if self.is_empty() || other.is_empty() {
             return Self::new(0, 0, 0, 0);
         }
+
         let left = self.left.max(other.left);
         let top = self.top.max(other.top);
         // Intersect logical extents rather than saturated coordinate bounds.
@@ -164,6 +165,7 @@ mod tests {
         assert!(rect.contains(0, 0));
         assert!(!rect.contains(i32::MAX, i32::MAX));
         assert_eq!(rect.intersection(rect), rect);
+
         let small = RectArea::new(0, 0, 2, 2);
         assert_eq!(rect.intersection(small), small);
     }
@@ -183,7 +185,6 @@ mod tests {
         let rect1 = RectArea::new(1, 2, 3, 3);
         assert!(rect1.contains(1, 2));
         assert!(rect1.contains(3, 4));
-
         assert!(!rect1.contains(0, 2));
         assert!(!rect1.contains(1, 1));
         assert!(!rect1.contains(4, 4));

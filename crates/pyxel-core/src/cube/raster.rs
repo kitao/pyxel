@@ -39,13 +39,13 @@ pub fn compute_clip_rect(
 ) -> ClipRect {
     let left = vp_x.floor() as i32;
     let top = vp_y.floor() as i32;
-    let right = (vp_x + vp_w).ceil() as i32 - 1;
-    let bottom = (vp_y + vp_h).ceil() as i32 - 1;
+    let right = ((vp_x + vp_w).ceil() as i32).saturating_sub(1);
+    let bottom = ((vp_y + vp_h).ceil() as i32).saturating_sub(1);
     ClipRect {
         left: left.max(0),
         top: top.max(0),
-        right: right.min(target_w as i32 - 1),
-        bottom: bottom.min(target_h as i32 - 1),
+        right: (right as i64).min(target_w as i64 - 1) as i32,
+        bottom: (bottom as i64).min(target_h as i64 - 1) as i32,
     }
 }
 
@@ -59,6 +59,7 @@ pub fn projection_matrix(camera: &Camera, vp_w: f32, vp_h: f32) -> Mat4x4 {
     let aspect = if vp_h == 0.0 { 1.0 } else { vp_w / vp_h };
     let near = camera.near;
     let far = camera.far;
+
     if let Some(size) = camera.ortho_size {
         let half_h = size * 0.5;
         let half_w = half_h * aspect;
@@ -86,6 +87,7 @@ pub fn projection_matrix(camera: &Camera, vp_w: f32, vp_h: f32) -> Mat4x4 {
 
 pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
     let mut r = [[0.0_f32; 4]; 4];
+
     for i in 0..4 {
         for j in 0..4 {
             for k in 0..4 {
@@ -93,6 +95,7 @@ pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
             }
         }
     }
+
     r
 }
 
@@ -126,10 +129,12 @@ pub fn world_to_screen(
     if front <= 0.0 {
         return None;
     }
+
     let cx = m[0][0] * pos.x + m[0][1] * pos.y + m[0][2] * pos.z + m[0][3];
     let cy = m[1][0] * pos.x + m[1][1] * pos.y + m[1][2] * pos.z + m[1][3];
     let cz = m[2][0] * pos.x + m[2][1] * pos.y + m[2][2] * pos.z + m[2][3];
     let cw = m[3][0] * pos.x + m[3][1] * pos.y + m[3][2] * pos.z + m[3][3];
+
     let ndc_x = cx / cw;
     let ndc_y = cy / cw;
     let ndc_z = cz / cw;
@@ -152,6 +157,7 @@ pub fn tri_normal(p0: &Vec3, p1: &Vec3, p2: &Vec3) -> Vec3 {
         y: p2.y - p0.y,
         z: p2.z - p0.z,
     };
+
     Vec3 {
         x: e1.y * e2.z - e1.z * e2.y,
         y: e1.z * e2.x - e1.x * e2.z,
@@ -187,6 +193,7 @@ pub fn sprite_corners(pos: &Vec3, w: f32, h: f32, angle_deg: f32, camera: &Camer
     let rad = angle_deg.to_radians();
     let c = rad.cos();
     let s = rad.sin();
+
     let rright = Vec3 {
         x: c * right.x + s * up.x,
         y: c * right.y + s * up.y,
@@ -197,6 +204,7 @@ pub fn sprite_corners(pos: &Vec3, w: f32, h: f32, angle_deg: f32, camera: &Camer
         y: -s * right.y + c * up.y,
         z: -s * right.z + c * up.z,
     };
+
     let hw = w * 0.5;
     let hh = h * 0.5;
     [
@@ -245,15 +253,20 @@ pub fn screen_circle(
         z: pos.z + radius * right.z,
     };
     let edge = world_to_screen(&edge_pos, m, clip_row, vp_x, vp_y, vp_w, vp_h)?;
+
     let dx = edge.0 - center.0;
     let dy = edge.1 - center.1;
     let screen_r = (dx * dx + dy * dy).sqrt();
     Some((center.0, center.1, screen_r, center.2))
 }
 
+// Pixel output and shading
+
 // Alpha uses Bayer thresholds; shading uses the checker in dither_pick.
 pub const BAYER4: [[u8; 4]; 4] = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+// Match Canvas circle boundary rounding.
 const CIRCLE_ROUNDING_BIAS: f32 = 0.01;
+// Keep coplanar outlines visible over filled surfaces.
 const LINE_DEPTH_BIAS: f32 = 1.0e-5;
 
 // Pick between primary and secondary for the LUT cell at pixel (x, y).
@@ -288,6 +301,7 @@ pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
         }
         None => 0.0,
     };
+
     let max_level = (LEVEL_COUNT - 1) as f32;
     let level_f = dot_factor * max_level;
     level_f.clamp(0.0, max_level).round() as usize
@@ -300,6 +314,7 @@ pub fn lookup_ramp(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> (
         let c = base_col.max(0);
         return (c, c);
     }
+
     let direction = rc_ref!(&shading.direction);
     let level = face_shade_level(&direction, normal);
     let col = base_col.clamp(0, palette_size as i32 - 1) as usize;
@@ -336,6 +351,9 @@ fn visible_pixel_index(
     dither_alpha: f32,
     depth_test: bool,
 ) -> Option<usize> {
+    if !depth_in_clip_range(z) {
+        return None;
+    }
     if dither_alpha < 1.0 {
         let bayer = BAYER4[(y.rem_euclid(4)) as usize][(x.rem_euclid(4)) as usize];
         let threshold = (bayer as f32 + 0.5) / 16.0;
@@ -343,11 +361,19 @@ fn visible_pixel_index(
             return None;
         }
     }
+
     let i = (y as usize) * depth_w as usize + x as usize;
     if depth_test && z >= depth[i] {
         return None;
     }
     Some(i)
+}
+
+#[inline]
+fn depth_in_clip_range(z: f32) -> bool {
+    // Projection arithmetic can move exact near/far endpoints a few f32 ULPs.
+    const EPSILON: f32 = 8.0 * f32::EPSILON;
+    (-1.0 - EPSILON..=1.0 + EPSILON).contains(&z)
 }
 
 #[inline]
@@ -420,6 +446,7 @@ pub fn rasterize_triangle(
         return;
     }
     let inv_area = 1.0 / area;
+
     let min_x = p0.0.min(p1.0).min(p2.0).floor() as i32;
     let max_x = p0.0.max(p1.0).max(p2.0).ceil() as i32;
     let min_y = p0.1.min(p1.1).min(p2.1).floor() as i32;
@@ -431,6 +458,7 @@ pub fn rasterize_triangle(
     if bx_min > bx_max || by_min > by_max {
         return;
     }
+
     // Winding and top-left ownership are hoisted out of the pixel loop.
     // The half-open edge rule keeps adjacent triangles from drawing the
     // same shared-edge pixel in different orders.
@@ -438,11 +466,13 @@ pub fn rasterize_triangle(
     let include_w0 = includes_edge_boundary((p1.0, p1.1), (p2.0, p2.1), pos_area);
     let include_w1 = includes_edge_boundary((p2.0, p2.1), (p0.0, p0.1), pos_area);
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
+
     for y in by_min..=by_max {
         let py = y as f32 + 0.5;
         // A triangle intersects each scanline in one contiguous span. Once
         // the loop leaves that span, no later pixel on the row can be inside.
         let mut was_inside = false;
+
         for x in bx_min..=bx_max {
             let p = (x as f32 + 0.5, py);
             let w0 = edge_function((p1.0, p1.1), (p2.0, p2.1), p);
@@ -452,6 +482,7 @@ pub fn rasterize_triangle(
                 }
                 continue;
             }
+
             let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
             if !edge_inside(w1, include_w1, pos_area) {
                 if was_inside {
@@ -459,6 +490,7 @@ pub fn rasterize_triangle(
                 }
                 continue;
             }
+
             let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
             if !edge_inside(w2, include_w2, pos_area) {
                 if was_inside {
@@ -467,6 +499,7 @@ pub fn rasterize_triangle(
                 continue;
             }
             was_inside = true;
+
             let bary0 = w0 * inv_area;
             let bary1 = w1 * inv_area;
             let bary2 = w2 * inv_area;
@@ -513,6 +546,7 @@ pub fn rasterize_textured_triangle<F>(
         return;
     }
     let inv_area = 1.0 / area;
+
     let min_x = p0.0.min(p1.0).min(p2.0).floor() as i32;
     let max_x = p0.0.max(p1.0).max(p2.0).ceil() as i32;
     let min_y = p0.1.min(p1.1).min(p2.1).floor() as i32;
@@ -524,14 +558,17 @@ pub fn rasterize_textured_triangle<F>(
     if bx_min > bx_max || by_min > by_max {
         return;
     }
+
     let pos_area = area > 0.0;
     let include_w0 = includes_edge_boundary((p1.0, p1.1), (p2.0, p2.1), pos_area);
     let include_w1 = includes_edge_boundary((p2.0, p2.1), (p0.0, p0.1), pos_area);
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
+
     for y in by_min..=by_max {
         let py = y as f32 + 0.5;
         // Same lazy-edge, contiguous-span row scan as rasterize_triangle.
         let mut was_inside = false;
+
         for x in bx_min..=bx_max {
             let p = (x as f32 + 0.5, py);
             let w0 = edge_function((p1.0, p1.1), (p2.0, p2.1), p);
@@ -541,6 +578,7 @@ pub fn rasterize_textured_triangle<F>(
                 }
                 continue;
             }
+
             let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
             if !edge_inside(w1, include_w1, pos_area) {
                 if was_inside {
@@ -548,6 +586,7 @@ pub fn rasterize_textured_triangle<F>(
                 }
                 continue;
             }
+
             let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
             if !edge_inside(w2, include_w2, pos_area) {
                 if was_inside {
@@ -556,6 +595,7 @@ pub fn rasterize_textured_triangle<F>(
                 continue;
             }
             was_inside = true;
+
             let bary0 = w0 * inv_area;
             let bary1 = w1 * inv_area;
             let bary2 = w2 * inv_area;
@@ -589,13 +629,18 @@ pub fn rasterize_circle_filled(
     depth_test: bool,
     depth_write: bool,
 ) {
+    if !depth_in_clip_range(z) {
+        return;
+    }
     let x = f32_to_i32(cx);
     let y = f32_to_i32(cy);
     let radius = f32_to_u32(radius);
-    let r = radius as f32;
+    let ranges = circle_scan_ranges(x, y, radius, clip);
+    let x = i64::from(x);
+    let y = i64::from(y);
 
-    for xi in 0..=radius as i32 {
-        let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
+    for xi in ranges.into_iter().flat_map(|(start, end)| start..=end) {
+        let (x1, y1, x2, y2) = circle_area(radius, xi);
         rasterize_circle_column(
             target,
             depth,
@@ -626,6 +671,7 @@ pub fn rasterize_circle_filled(
             depth_test,
             depth_write,
         );
+
         rasterize_circle_row(
             target,
             depth,
@@ -675,13 +721,18 @@ pub fn rasterize_circle_border(
     depth_test: bool,
     depth_write: bool,
 ) {
+    if !depth_in_clip_range(z) {
+        return;
+    }
     let x = f32_to_i32(cx);
     let y = f32_to_i32(cy);
     let radius = f32_to_u32(radius);
-    let r = radius as f32;
+    let ranges = circle_scan_ranges(x, y, radius, clip);
+    let x = i64::from(x);
+    let y = i64::from(y);
 
-    for xi in 0..=radius as i32 {
-        let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
+    for xi in ranges.into_iter().flat_map(|(start, end)| start..=end) {
+        let (x1, y1, x2, y2) = circle_area(radius, xi);
         rasterize_circle_pixel(
             target,
             depth,
@@ -738,6 +789,7 @@ pub fn rasterize_circle_border(
             depth_test,
             depth_write,
         );
+
         rasterize_circle_pixel(
             target,
             depth,
@@ -797,21 +849,72 @@ pub fn rasterize_circle_border(
     }
 }
 
-#[inline]
-fn circle_area(cx: f32, cy: f32, ra: f32, rb: f32, x: i32) -> (i32, i32, i32, i32) {
-    let dx = x as f32 - cx;
-    let dy = if ra > 0.0 {
-        rb * (1.0 - dx * dx / (ra * ra)).sqrt()
+// Every symmetric span or pixel has one coordinate at +/- xi. Only the
+// offsets crossing a viewport axis can contribute, even when the circle encloses it.
+fn circle_scan_ranges(x: i32, y: i32, radius: u32, clip: ClipRect) -> [(i64, i64); 2] {
+    if clip.left > clip.right || clip.top > clip.bottom {
+        return [(1, 0); 2];
+    }
+
+    let mut ranges = [
+        circle_axis_range(x, clip.left, clip.right),
+        circle_axis_range(y, clip.top, clip.bottom),
+    ];
+    for range in &mut ranges {
+        range.1 = range.1.min(i64::from(radius));
+    }
+
+    if ranges[0].0 > ranges[1].0 {
+        ranges.swap(0, 1);
+    }
+    if ranges[1].0 <= ranges[0].1 + 1 {
+        ranges[0].1 = ranges[0].1.max(ranges[1].1);
+        ranges[1] = (1, 0);
+    }
+    ranges
+}
+
+fn circle_axis_range(center: i32, min: i32, max: i32) -> (i64, i64) {
+    let min = i64::from(min) - i64::from(center);
+    let max = i64::from(max) - i64::from(center);
+    let nearest = if min <= 0 && max >= 0 {
+        0
     } else {
-        rb
+        min.abs().min(max.abs())
     };
+    (nearest, min.abs().max(max.abs()))
+}
 
-    let x1 = f32_to_i32(cx - dx - CIRCLE_ROUNDING_BIAS);
-    let y1 = f32_to_i32(cy - dy - CIRCLE_ROUNDING_BIAS);
-    let x2 = f32_to_i32(cx + dx + CIRCLE_ROUNDING_BIAS);
-    let y2 = f32_to_i32(cy + dy + CIRCLE_ROUNDING_BIAS);
-
-    (x1, y1, x2, y2)
+#[inline]
+fn circle_area(radius: u32, x: i64) -> (i64, i64, i64, i64) {
+    // Keep ordinary-radius pixel rounding; f64 retains subpixel precision once
+    // f32 steps reach half a pixel. Offsets stay wide until viewport clipping.
+    if radius < (1 << 22) {
+        let r = radius as f32;
+        let dx = x as f32;
+        let dy = if r > 0.0 {
+            r * (1.0 - dx * dx / (r * r)).sqrt()
+        } else {
+            r
+        };
+        (
+            (-dx - CIRCLE_ROUNDING_BIAS).round() as i64,
+            (-dy - CIRCLE_ROUNDING_BIAS).round() as i64,
+            (dx + CIRCLE_ROUNDING_BIAS).round() as i64,
+            (dy + CIRCLE_ROUNDING_BIAS).round() as i64,
+        )
+    } else {
+        let r = f64::from(radius);
+        let dx = x as f64;
+        let dy = r * (1.0 - dx * dx / (r * r)).sqrt();
+        let bias = f64::from(CIRCLE_ROUNDING_BIAS);
+        (
+            (-dx - bias).round() as i64,
+            (-dy - bias).round() as i64,
+            (dx + bias).round() as i64,
+            (dy + bias).round() as i64,
+        )
+    }
 }
 
 #[inline]
@@ -819,8 +922,8 @@ fn rasterize_circle_pixel(
     target: &mut Image,
     depth: &mut [f32],
     depth_w: u32,
-    x: i32,
-    y: i32,
+    x: i64,
+    y: i64,
     z: f32,
     primary: u8,
     secondary: u8,
@@ -829,9 +932,16 @@ fn rasterize_circle_pixel(
     depth_test: bool,
     depth_write: bool,
 ) {
-    if !clip.contains(x, y) {
+    if x < i64::from(clip.left)
+        || x > i64::from(clip.right)
+        || y < i64::from(clip.top)
+        || y > i64::from(clip.bottom)
+    {
         return;
     }
+
+    let x = x as i32;
+    let y = y as i32;
     let col = dither_pick(primary as i32, secondary as i32, x, y);
     write_pixel(
         target,
@@ -852,9 +962,9 @@ fn rasterize_circle_row(
     target: &mut Image,
     depth: &mut [f32],
     depth_w: u32,
-    x1: i32,
-    x2: i32,
-    y: i32,
+    x1: i64,
+    x2: i64,
+    y: i64,
     z: f32,
     primary: u8,
     secondary: u8,
@@ -863,11 +973,12 @@ fn rasterize_circle_row(
     depth_test: bool,
     depth_write: bool,
 ) {
-    if y < clip.top || y > clip.bottom {
+    if y < i64::from(clip.top) || y > i64::from(clip.bottom) {
         return;
     }
-    let left = x1.max(clip.left);
-    let right = x2.min(clip.right);
+    let left = x1.max(i64::from(clip.left));
+    let right = x2.min(i64::from(clip.right));
+
     for x in left..=right {
         rasterize_circle_pixel(
             target,
@@ -891,9 +1002,9 @@ fn rasterize_circle_column(
     target: &mut Image,
     depth: &mut [f32],
     depth_w: u32,
-    y1: i32,
-    y2: i32,
-    x: i32,
+    y1: i64,
+    y2: i64,
+    x: i64,
     z: f32,
     primary: u8,
     secondary: u8,
@@ -902,11 +1013,12 @@ fn rasterize_circle_column(
     depth_test: bool,
     depth_write: bool,
 ) {
-    if x < clip.left || x > clip.right {
+    if x < i64::from(clip.left) || x > i64::from(clip.right) {
         return;
     }
-    let top = y1.max(clip.top);
-    let bottom = y2.min(clip.bottom);
+    let top = y1.max(i64::from(clip.top));
+    let bottom = y2.min(i64::from(clip.bottom));
+
     for y in top..=bottom {
         rasterize_circle_pixel(
             target,
@@ -980,7 +1092,11 @@ fn clip_screen_line_to_rect(
 
 #[inline]
 fn line_depth(z: f32) -> f32 {
-    z - LINE_DEPTH_BIAS
+    if depth_in_clip_range(z) {
+        (z - LINE_DEPTH_BIAS).max(-1.0)
+    } else {
+        f32::INFINITY
+    }
 }
 
 // Floating-point DDA line with linear z interpolation and fixed 1-pixel width.
@@ -1001,12 +1117,14 @@ pub fn rasterize_line(
     let Some((p0, p1)) = clip_screen_line_to_rect(p0, p1, clip) else {
         return;
     };
+
     let x1 = p0.0.round() as i32;
     let y1 = p0.1.round() as i32;
     let x2 = p1.0.round() as i32;
     let y2 = p1.1.round() as i32;
     let dx = (x2 - x1).abs();
     let dy = (y2 - y1).abs();
+
     if dx == 0 && dy == 0 {
         if clip.contains(x1, y1) {
             let col = dither_pick(primary as i32, secondary as i32, x1, y1);
@@ -1025,6 +1143,7 @@ pub fn rasterize_line(
         }
         return;
     }
+
     let steps = dx.max(dy);
     let inv = 1.0 / steps as f32;
     let dx_f = (x2 - x1) as f32 * inv;
@@ -1033,6 +1152,7 @@ pub fn rasterize_line(
     let mut fx = x1 as f32;
     let mut fy = y1 as f32;
     let mut fz = p0.2;
+
     for _ in 0..=steps {
         let xi = fx.round() as i32;
         let yi = fy.round() as i32;
@@ -1051,6 +1171,7 @@ pub fn rasterize_line(
                 depth_write,
             );
         }
+
         fx += dx_f;
         fy += dy_f;
         fz += dz_f;
@@ -1083,6 +1204,122 @@ mod tests {
     }
 
     #[test]
+    fn test_camera_clip_range_applies_without_depth_testing() {
+        for ortho_size in [None, Some(4.0)] {
+            let camera = Camera::new();
+            rc_mut!(&camera).near = 1.0;
+            rc_mut!(&camera).far = 10.0;
+            rc_mut!(&camera).ortho_size = ortho_size;
+            let view = view_matrix(&rc_ref!(&camera));
+            let vp = matmul(&projection_matrix(&rc_ref!(&camera), 16.0, 16.0), &view);
+            let clip_row = camera_clip_row(&view);
+
+            for depth_test in [false, true] {
+                for (distance, expected) in [(0.5, 0), (1.0, 7), (2.0, 7), (10.0, 7), (20.0, 0)] {
+                    let (image, mut depth, _) = make_target_and_depth(16, 16);
+                    let (_, _, z) = world_to_screen(
+                        &vec3(0.0, 0.0, -distance),
+                        &vp,
+                        &clip_row,
+                        0.0,
+                        0.0,
+                        16.0,
+                        16.0,
+                    )
+                    .unwrap();
+                    write_pixel(
+                        &mut rc_mut!(&image),
+                        &mut depth,
+                        16,
+                        8,
+                        8,
+                        z,
+                        7,
+                        1.0,
+                        depth_test,
+                        true,
+                    );
+                    assert_eq!(rc_ref!(&image).canvas.data[8 * 16 + 8], expected);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_line_depth_bias_preserves_clip_range() {
+        for end_x in [2.0, 4.0] {
+            for (z, expected) in [
+                (-1.0, 7),
+                (1.0, 7),
+                (-1.0 - LINE_DEPTH_BIAS * 0.5, 0),
+                (1.0 + LINE_DEPTH_BIAS * 0.5, 0),
+            ] {
+                let (image, mut depth, clip) = make_target_and_depth(8, 8);
+                rasterize_line(
+                    &mut rc_mut!(&image),
+                    &mut depth,
+                    8,
+                    (2.0, 2.0, z),
+                    (end_x, 2.0, z),
+                    7,
+                    7,
+                    clip,
+                    1.0,
+                    false,
+                    true,
+                );
+                assert_eq!(rc_ref!(&image).canvas.data[2 * 8 + 2], expected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_triangle_clip_preserves_visible_portion() {
+        for textured in [false, true] {
+            let (image, mut depth, clip) = make_target_and_depth(4, 4);
+            let points = [(0.0, 0.0, -2.0), (4.0, 0.0, 0.0), (0.0, 4.0, 0.0)];
+
+            if textured {
+                rasterize_textured_triangle(
+                    &mut rc_mut!(&image),
+                    &mut depth,
+                    4,
+                    points[0],
+                    points[1],
+                    points[2],
+                    (0.0, 0.0),
+                    (0.0, 0.0),
+                    (0.0, 0.0),
+                    |_, _, _, _| Some(7),
+                    clip,
+                    1.0,
+                    false,
+                    true,
+                );
+            } else {
+                rasterize_triangle(
+                    &mut rc_mut!(&image),
+                    &mut depth,
+                    4,
+                    points[0],
+                    points[1],
+                    points[2],
+                    7,
+                    7,
+                    clip,
+                    1.0,
+                    false,
+                    true,
+                );
+            }
+
+            let data = image_data(&image);
+            assert_eq!(data[0], 0);
+            assert_eq!(data[5], 7);
+        }
+    }
+
+    #[test]
     fn test_matmul_identity() {
         let identity: Mat4x4 = [
             [1.0, 0.0, 0.0, 0.0],
@@ -1108,6 +1345,7 @@ mod tests {
             [0.0, 0.0, 2.0, 0.0],
             [0.0, 0.0, 0.0, 1.0],
         ];
+
         // translate * scale: scale applied first, then translation.
         let result = matmul(&translate, &scale);
         assert_eq!(result[0][0], 2.0);
@@ -1132,7 +1370,7 @@ mod tests {
         assert!((p[0][0] - f / aspect).abs() < 1e-4);
         assert!((p[1][1] - f).abs() < 1e-4);
         // Last row uses w = -z (standard perspective divide).
-        assert!((p[3][2] - (-1.0)).abs() < 1e-6);
+        assert_eq!(p[3][2], -1.0);
     }
 
     #[test]
@@ -1145,7 +1383,7 @@ mod tests {
         assert!((p[0][0] - 1.0 / half_w).abs() < 1e-6);
         assert!((p[1][1] - 1.0 / half_h).abs() < 1e-6);
         // Orthographic last row stays affine.
-        assert!((p[3][3] - 1.0).abs() < 1e-6);
+        assert_eq!(p[3][3], 1.0);
     }
 
     #[test]
@@ -1173,6 +1411,7 @@ mod tests {
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
+
         let result = world_to_screen(&vec3(0.0, 0.0, -2.0), &vp, &clip, 0.0, 0.0, 256.0, 192.0);
         let (sx, sy, _z) = result.expect("point in front of camera should project");
         assert!((sx - 128.0).abs() < 1e-3);
@@ -1186,6 +1425,7 @@ mod tests {
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
+
         let result = world_to_screen(&vec3(0.0, 0.0, 5.0), &vp, &clip, 0.0, 0.0, 256.0, 192.0);
         assert!(result.is_none());
     }
@@ -1220,11 +1460,11 @@ mod tests {
     fn test_camera_right_up_default() {
         let camera = Camera::new();
         let (right, up) = camera_right_up(&rc_ref!(&camera));
-        assert!((right.x - 1.0).abs() < 1e-6);
+        assert_eq!(right.x, 1.0);
         assert_eq!(right.y, 0.0);
         assert_eq!(right.z, 0.0);
         assert_eq!(up.x, 0.0);
-        assert!((up.y - 1.0).abs() < 1e-6);
+        assert_eq!(up.y, 1.0);
         assert_eq!(up.z, 0.0);
     }
 
@@ -1235,6 +1475,7 @@ mod tests {
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
+
         let result = screen_circle(
             &vec3(0.0, 0.0, -2.0),
             0.5,
@@ -1261,6 +1502,7 @@ mod tests {
         let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
+
         let result = screen_circle(
             &vec3(0.0, 0.0, 5.0),
             0.5,
@@ -1283,6 +1525,7 @@ mod tests {
             right: 30,
             bottom: 40,
         };
+
         assert!(clip.contains(10, 20));
         assert!(clip.contains(30, 40));
         assert!(clip.contains(20, 30));
@@ -1315,6 +1558,24 @@ mod tests {
         let clip = compute_clip_rect(-10.0, -5.0, 100.0, 100.0, 256, 192);
         assert_eq!(clip.left, 0);
         assert_eq!(clip.top, 0);
+    }
+
+    #[test]
+    fn test_compute_clip_rect_extreme_negative_origin_is_empty() {
+        let clip = compute_clip_rect(i32::MIN as f32, i32::MIN as f32, 1.0, 1.0, 8, 8);
+        assert!(clip.right < clip.left);
+        assert!(clip.bottom < clip.top);
+    }
+
+    #[test]
+    fn test_compute_clip_rect_target_extents() {
+        let empty = compute_clip_rect(0.0, 0.0, 8.0, 8.0, 0, 0);
+        assert_eq!(empty.right, -1);
+        assert_eq!(empty.bottom, -1);
+
+        let wide = compute_clip_rect(0.0, 0.0, 8.0, 8.0, 1 << 31, 0);
+        assert_eq!(wide.right, 7);
+        assert_eq!(wide.bottom, -1);
     }
 
     #[test]
@@ -1408,6 +1669,7 @@ mod tests {
             true,
             true,
         );
+
         rasterize_line(
             &mut img_mut,
             &mut depth,
@@ -1462,6 +1724,7 @@ mod tests {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
         let mut img_mut = rc_mut!(&img);
         draw_flat_square_surface(&mut img_mut, &mut depth, clip);
+
         rasterize_line(
             &mut img_mut,
             &mut depth,
@@ -1475,7 +1738,6 @@ mod tests {
             true,
             true,
         );
-
         for x in 2..=5 {
             assert_eq!(img_mut.canvas.read_data(x, 2), 11);
         }
@@ -1486,6 +1748,7 @@ mod tests {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
         let mut img_mut = rc_mut!(&img);
         draw_flat_square_surface(&mut img_mut, &mut depth, clip);
+
         rasterize_line(
             &mut img_mut,
             &mut depth,
@@ -1499,7 +1762,6 @@ mod tests {
             true,
             true,
         );
-
         for x in 2..=5 {
             assert_eq!(img_mut.canvas.read_data(x, 2), 3);
         }
@@ -1515,6 +1777,7 @@ mod tests {
             right: 3,
             bottom: 3,
         };
+
         rasterize_line(
             &mut img_mut,
             &mut depth,
@@ -1537,6 +1800,166 @@ mod tests {
     }
 
     #[test]
+    fn test_circle_scan_ranges_bound_enclosing_and_partial_circles() {
+        let clip = ClipRect {
+            left: 0,
+            top: 0,
+            right: 15,
+            bottom: 15,
+        };
+
+        assert_eq!(circle_scan_ranges(8, 8, 100_000, clip), [(0, 8), (1, 0)]);
+        assert_eq!(
+            circle_scan_ranges(-99_995, 8, 100_000, clip),
+            [(0, 8), (99_995, 100_000)]
+        );
+        assert!(circle_scan_ranges(-100_100, -100_100, 100_000, clip)
+            .into_iter()
+            .all(|(start, end)| start > end));
+    }
+
+    #[test]
+    fn test_circle_huge_tangent_and_enclosing_pixels() {
+        for border in [false, true] {
+            for cx in [-2_000_000_000.0, 0.0, 2_000_000_000.0] {
+                for alpha in [0.5, 1.0] {
+                    for depth_write in [false, true] {
+                        let (img, mut depth, clip) = make_target_and_depth(16, 16);
+                        let draw = if border {
+                            rasterize_circle_border
+                        } else {
+                            rasterize_circle_filled
+                        };
+                        draw(
+                            &mut rc_mut!(&img),
+                            &mut depth,
+                            16,
+                            cx,
+                            0.0,
+                            2_000_000_000.0,
+                            0.25,
+                            7,
+                            3,
+                            clip,
+                            alpha,
+                            true,
+                            depth_write,
+                        );
+
+                        for y in 0..16 {
+                            for x in 0..16 {
+                                // At this radius the rounded tangent is the x=0 column;
+                                // the opposite boundary lies beyond the viewport.
+                                let covered = if border {
+                                    cx != 0.0 && x == 0
+                                } else {
+                                    cx >= 0.0 || x == 0
+                                };
+                                let drawn = covered && (alpha == 1.0 || (x + y) % 2 != 0);
+                                let color = if drawn {
+                                    if (x + y) % 2 == 0 {
+                                        7
+                                    } else {
+                                        3
+                                    }
+                                } else {
+                                    0
+                                };
+
+                                assert_eq!(rc_ref!(&img).canvas.read_data(x, y), color);
+                                assert_eq!(
+                                    depth[y * 16 + x],
+                                    if drawn && depth_write {
+                                        0.25
+                                    } else {
+                                        f32::INFINITY
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_circle_rejects_constant_depth_outside_camera_range() {
+        for border in [false, true] {
+            for z in [-2.0, 2.0, f32::NEG_INFINITY, f32::INFINITY, f32::NAN] {
+                let (img, mut depth, clip) = make_target_and_depth(16, 16);
+                let draw = if border {
+                    rasterize_circle_border
+                } else {
+                    rasterize_circle_filled
+                };
+                draw(
+                    &mut rc_mut!(&img),
+                    &mut depth,
+                    16,
+                    8.0,
+                    8.0,
+                    1000.0,
+                    z,
+                    7,
+                    3,
+                    clip,
+                    0.5,
+                    false,
+                    true,
+                );
+                assert_eq!(image_data(&img), vec![0; 256]);
+                assert_eq!(depth, vec![f32::INFINITY; 256]);
+            }
+        }
+    }
+
+    #[test]
+    fn test_circle_clip_keeps_tangent_pixels_and_rejects_disjoint_bounds() {
+        for border in [false, true] {
+            for (cx, cy, px, py) in [
+                (-2.0, 3.0, 0, 3),
+                (9.0, 3.0, 7, 3),
+                (3.0, -2.0, 3, 0),
+                (3.0, 9.0, 3, 7),
+            ] {
+                for outside in [false, true] {
+                    let (img, mut depth, clip) = make_target_and_depth(8, 8);
+                    let radius = if outside { 1.0 } else { 2.0 };
+                    let draw = if border {
+                        rasterize_circle_border
+                    } else {
+                        rasterize_circle_filled
+                    };
+                    draw(
+                        &mut rc_mut!(&img),
+                        &mut depth,
+                        8,
+                        cx,
+                        cy,
+                        radius,
+                        0.0,
+                        7,
+                        7,
+                        clip,
+                        1.0,
+                        true,
+                        true,
+                    );
+                    assert_eq!(
+                        rc_ref!(&img).canvas.read_data(px, py),
+                        if outside { 0 } else { 7 }
+                    );
+                    if outside {
+                        assert_eq!(image_data(&img), vec![0; 64]);
+                        assert_eq!(depth, vec![f32::INFINITY; 64]);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
     fn test_clip_screen_line_to_rect_limits_huge_span() {
         let clip = ClipRect {
             left: 0,
@@ -1544,6 +1967,7 @@ mod tests {
             right: 31,
             bottom: 31,
         };
+
         let (p0, p1) =
             clip_screen_line_to_rect((-1_000_000.0, 16.0, 0.0), (1_000_000.0, 16.0, 1.0), clip)
                 .unwrap();
@@ -1585,7 +2009,6 @@ mod tests {
             true,
             true,
         );
-
         assert_eq!(image_data(&actual), image_data(&expected));
     }
 
@@ -1652,6 +2075,7 @@ mod tests {
                 false,
             );
         };
+
         let tri_b = |img_mut: &mut Image, depth: &mut [f32]| {
             rasterize_triangle(
                 img_mut,
@@ -1668,6 +2092,7 @@ mod tests {
                 false,
             );
         };
+
         if reverse_order {
             tri_b(&mut img_mut, &mut depth);
             tri_a(&mut img_mut, &mut depth);
@@ -1839,6 +2264,7 @@ mod tests {
             right: 7,
             bottom: 7,
         };
+
         rasterize_triangle(
             &mut img_mut,
             &mut depth,
@@ -1955,7 +2381,6 @@ mod tests {
             true,
             true,
         );
-
         assert_eq!(image_data(&actual), image_data(&expected));
     }
 
@@ -1980,7 +2405,6 @@ mod tests {
             true,
             true,
         );
-
         assert_eq!(image_data(&actual), image_data(&expected));
     }
 
@@ -1994,6 +2418,7 @@ mod tests {
             right: 7,
             bottom: 7,
         };
+
         for (clip, outside_color) in [(small_clip, 0), (clip, 5)] {
             rasterize_circle_filled(
                 &mut img_mut,

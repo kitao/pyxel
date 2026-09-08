@@ -1,7 +1,11 @@
+import ast
 import importlib.util
 import os
+import posixpath
+import re
 import runpy
 import sys
+import textwrap
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from types import SimpleNamespace
@@ -33,7 +37,6 @@ def test_pyodide_pseudo_module_is_skipped(import_hook, monkeypatch, module_name)
         pytest.fail("skipped Pyodide module reached standard module lookup")
 
     monkeypatch.setattr(import_hook.importlib.util, "find_spec", unexpected_find_spec)
-
     assert hook.find_spec(module_name, None) is None
 
 
@@ -51,7 +54,6 @@ def test_bare_cwd_collision_does_not_set_main_dir(import_hook, monkeypatch):
 
     monkeypatch.setattr(import_hook.os.path, "exists", exists)
     hook.find_spec("pkg", None)
-
     assert probes == [
         os.path.join("/virtual/caller", "pkg.py"),
         os.path.join("/virtual/caller", "pkg", "__init__.py"),
@@ -73,7 +75,6 @@ def test_caller_relative_module_sets_main_dir(import_hook, monkeypatch, tmp_path
     )
 
     hook.find_spec("pkg", None)
-
     assert hook.main_dir == str(caller.resolve())
 
 
@@ -87,20 +88,32 @@ def test_find_spec_suppresses_reentrant_lookup(import_hook, monkeypatch):
         return SimpleNamespace(origin="built-in")
 
     monkeypatch.setattr(import_hook.importlib.util, "find_spec", find_spec)
-
     assert hook.find_spec("recursive_pkg", None) is None
     assert calls == ["recursive_pkg"]
 
 
+@pytest.mark.parametrize(
+    "app_dir", ["main", "site-packages-game", "dist-packages-demo", "python-other"]
+)
 def test_cached_main_dir_is_probed_from_another_caller(
-    import_hook, monkeypatch, tmp_path
+    import_hook, monkeypatch, tmp_path, app_dir
 ):
     hook = import_hook.ImportHook()
     probes = []
-    main = tmp_path / "main"
+    main = tmp_path / app_dir
     other = tmp_path / "other"
     caller = str(main / "app.py")
-    monkeypatch.setattr(import_hook.importlib.util, "find_spec", lambda name: None)
+
+    monkeypatch.setattr(
+        import_hook.importlib.util,
+        "find_spec",
+        lambda name: (
+            SimpleNamespace(origin=str(main / "first.py"))
+            if name == "first" and app_dir != "main"
+            else None
+        ),
+    )
+    monkeypatch.setattr(import_hook.sys, "base_prefix", str(tmp_path / "python"))
     monkeypatch.setattr(import_hook.sys, "_getframe", lambda depth: _frame(caller))
 
     def exists(path):
@@ -109,11 +122,10 @@ def test_cached_main_dir_is_probed_from_another_caller(
 
     monkeypatch.setattr(import_hook.os.path, "exists", exists)
     hook.find_spec("first", None)
+
     caller = str(other / "plugin.py")
     probes.clear()
-
     hook.find_spec("nested.module", None)
-
     assert hook.main_dir == str(main)
     assert probes == [
         str(other / "nested" / "module.py"),
@@ -121,6 +133,54 @@ def test_cached_main_dir_is_probed_from_another_caller(
         str(main / "nested" / "module.py"),
         str(main / "nested" / "module" / "__init__.py"),
     ]
+
+
+def test_runtime_reset_selects_only_modules_inside_application_directories():
+    runtime_path = MODULE_PATH.with_name("pyxel.js")
+    source = runtime_path.read_text(encoding="utf-8")
+    block = next(
+        block
+        for block in re.findall(r"runPython\(`(.*?)`\)", source, re.DOTALL)
+        if "mods = [" in block
+    )
+
+    selection = next(
+        node.value
+        for node in ast.walk(ast.parse(textwrap.dedent(block)))
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "mods"
+            for target in node.targets
+        )
+    )
+
+    modules = {
+        "app": SimpleNamespace(__file__="/work/app.py"),
+        "temp": SimpleNamespace(__file__="/tmp/package/__init__.py"),
+        "work_sibling": SimpleNamespace(__file__="/work-other/app.py"),
+        "temp_sibling": SimpleNamespace(__file__="/tmp-other/app.py"),
+        "root": SimpleNamespace(__file__="/work"),
+        "escaped": SimpleNamespace(__file__="/work/../outside/app.py"),
+        "relative": SimpleNamespace(__file__="package/helper.py"),
+        "builtin": SimpleNamespace(),
+        "empty": SimpleNamespace(__file__=""),
+    }
+    # Evaluate only module selection, using Pyodide's POSIX paths on every host.
+    namespace = {
+        "sys": SimpleNamespace(modules=modules),
+        "os": SimpleNamespace(
+            path=SimpleNamespace(
+                abspath=lambda path: posixpath.normpath(posixpath.join("/work", path))
+            )
+        ),
+        "work_dir": "/work",
+        "temp_dir": "/tmp",
+    }
+
+    selected = eval(
+        compile(ast.Expression(selection), str(runtime_path), "eval"), namespace
+    )
+    assert selected == ["app", "temp", "relative", "__main__"]
 
 
 def test_cache_invalidation_redownloads_removed_application_modules(
@@ -157,7 +217,6 @@ def test_cache_invalidation_redownloads_removed_application_modules(
         sys.modules.pop(module_name)
         import_hook.importlib.invalidate_caches()
         module_path.unlink()
-
         namespace = runpy.run_path(str(script_path))
         assert namespace["value"] == 2
         assert downloads == [str(module_path), str(module_path)]
@@ -189,7 +248,6 @@ def test_cache_invalidation_forgets_the_previous_main_directory(
     caller = new_main
     probes.clear()
     hook.find_spec("helper", None)
-
     assert hook.main_dir == str(new_main.parent)
     assert probes == [str(new_main.parent / "helper.py")]
 

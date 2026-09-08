@@ -80,6 +80,7 @@ class TestBltm:
         tm = pyxel.Tilemap(32, 32, img)
         tm.cls((0, 0))
         tm.pset(0, 0, (0, 0))
+
         pyxel.bltm(0, 0, tm, 0, 0, 8, 8)
         assert pyxel.pget(0, 0) == 5
 
@@ -89,6 +90,7 @@ class TestBltm:
         pyxel.images[0].pset(0, 0, 7)
         pyxel.tilemaps[0].cls((0, 0))
         pyxel.tilemaps[0].pset(0, 0, (0, 0))
+
         pyxel.bltm(0, 0, 0, 0, 0, 1, 1, scale=4)
         drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
         assert drawn == 4
@@ -110,6 +112,7 @@ class TestBlt3d:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.rect(0, 0, 8, 8, (0, 0))
+
         pyxel.bltm3d(0, 0, 160, 120, tm, (0, 0, 10), (0, 30, 0))
         assert any(pyxel.pget(x, y) == 14 for x in range(160) for y in range(120))
 
@@ -119,6 +122,7 @@ class TestBlt3d:
         pyxel.images[0].rect(0, 0, 16, 16, 9)
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=60.0)
         narrow = [pyxel.pget(x, y) for x in range(160) for y in range(120)]
+
         pyxel.cls(0)
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0)
         wide = [pyxel.pget(x, y) for x in range(160) for y in range(120)]
@@ -147,6 +151,7 @@ class TestBlt3d:
         pyxel.images[0].rect(0, 0, 8, 8, 6)
         pyxel.tilemaps[0].cls((0, 0))
         pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
+
         pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
         assert any(pyxel.pget(x, y) == 6 for x in range(160) for y in range(120))
         assert not any(pyxel.pget(x, y) == 0 for x in range(160) for y in range(120))
@@ -224,6 +229,7 @@ class TestDeprecatedAccessors:
     def test_image_function_aliases_bank_entry(self, capfd):
         result = pyxel.image(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Image)
+
         original = pyxel.images[0].pget(0, 0)
         try:
             pyxel.images[0].pset(0, 0, 0)
@@ -231,12 +237,14 @@ class TestDeprecatedAccessors:
             assert pyxel.images[0].pget(0, 0) == 7
         finally:
             pyxel.images[0].pset(0, 0, original)
+
         out = capfd.readouterr().out
         assert out == "pyxel.image(img) is deprecated. Use pyxel.images[img] instead.\n"
 
     def test_tilemap_function_aliases_bank_entry(self, capfd):
         result = pyxel.tilemap(0)  # type: ignore[attr-defined]
         assert isinstance(result, pyxel.Tilemap)
+
         original = pyxel.tilemaps[0].pget(0, 0)
         try:
             pyxel.tilemaps[0].pset(0, 0, (0, 0))
@@ -244,6 +252,7 @@ class TestDeprecatedAccessors:
             assert pyxel.tilemaps[0].pget(0, 0) == (3, 4)
         finally:
             pyxel.tilemaps[0].pset(0, 0, original)
+
         out = capfd.readouterr().out
         assert (
             out == "pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead.\n"

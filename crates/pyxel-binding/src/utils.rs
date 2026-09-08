@@ -117,6 +117,8 @@ macro_rules! python_type_error {
 
 // Type conversion
 
+// Extraction may invoke Python code; matched branches must revalidate
+// resource indices that conversion could invalidate.
 macro_rules! cast_pyany {
     ($value:ident, $expected:literal, $(($type:ty, $block:block)),*) => {
         {
@@ -158,6 +160,7 @@ pub(crate) fn ctypes_array_from_address(
         .getattr(element_type)?
         .call_method1("__mul__", (length,))?;
     let array = array_type.call_method1("from_address", (address,))?;
+    // ctypes.from_address does not retain the native allocation's owner.
     array.setattr("_pyxel_owner", owner)?;
     Ok(array.unbind())
 }
@@ -284,6 +287,8 @@ macro_rules! items_to_pyiter {
 
 // Sequence impl blocks
 
+// Resolve Python inputs before validation or native borrows.
+// Snapshot result values before Python allocation can trigger reentrant mutation.
 macro_rules! impl_python_sequence_read {
     ($wrapper_name:ident, $inner_type:ty, $len:expr, $get_type:ty, $get:expr) => {
         #[pymethods]
@@ -299,6 +304,7 @@ macro_rules! impl_python_sequence_read {
                 key: &Bound<'py, PyAny>,
             ) -> PyResult<Py<PyAny>> {
                 use pyo3::types::PySlice;
+
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let bounds = $crate::utils::SliceBounds::new(slice)?;
                     self.validate()?;
@@ -308,7 +314,8 @@ macro_rules! impl_python_sequence_read {
                         indices.step,
                         indices.slicelength,
                     )
-                    .map(|i| $get(&self.inner, i));
+                    .map(|i| $get(&self.inner, i))
+                    .collect::<Vec<_>>();
                     let list = pyo3::types::PyList::new(py, items)?;
                     Ok(list.into_any().unbind())
                 } else {
@@ -324,20 +331,25 @@ macro_rules! impl_python_sequence_read {
 
             fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
                 self.validate()?;
-                let items = (0..$len(&self.inner)).map(|i| $get(&self.inner, i));
+                let items = (0..$len(&self.inner))
+                    .map(|i| $get(&self.inner, i))
+                    .collect::<Vec<_>>();
                 items_to_pyiter!(py, items)
             }
 
             fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
                 self.validate()?;
-                let items = (0..$len(&self.inner)).rev().map(|i| $get(&self.inner, i));
+                let items = (0..$len(&self.inner))
+                    .rev()
+                    .map(|i| $get(&self.inner, i))
+                    .collect::<Vec<_>>();
                 items_to_pyiter!(py, items)
             }
 
             fn __repr__(&self, py: Python) -> PyResult<String> {
                 self.validate()?;
                 let len = $len(&self.inner);
-                let items = (0..len).map(|i| $get(&self.inner, i));
+                let items = (0..len).map(|i| $get(&self.inner, i)).collect::<Vec<_>>();
                 let list = pyo3::types::PyList::new(py, items)?;
                 Ok(format!(
                     "{}{}",
@@ -354,7 +366,7 @@ macro_rules! impl_python_sequence_read {
     };
 }
 
-macro_rules! impl_python_sequence_cmp {
+macro_rules! impl_python_sequence_operators {
     ($wrapper_name:ident, $inner_type:ty, $len:expr, $get_type:ty, $get:expr) => {
         #[pymethods]
         impl $wrapper_name {
@@ -393,7 +405,10 @@ macro_rules! impl_python_sequence_cmp {
                 let other_items: Vec<$get_type> = other.extract()?;
                 self.validate()?;
                 let len = $len(&self.inner);
-                let items = (0..len).map(|i| $get(&self.inner, i)).chain(other_items);
+                let items = (0..len)
+                    .map(|i| $get(&self.inner, i))
+                    .chain(other_items)
+                    .collect::<Vec<_>>();
                 let list = pyo3::types::PyList::new(py, items)?;
                 Ok(list.into_any().unbind())
             }
@@ -401,7 +416,7 @@ macro_rules! impl_python_sequence_cmp {
             fn __mul__(&self, py: Python<'_>, n: isize) -> PyResult<Py<PyAny>> {
                 self.validate()?;
                 let len = $len(&self.inner);
-                let items = (0..len).map(|i| $get(&self.inner, i));
+                let items = (0..len).map(|i| $get(&self.inner, i)).collect::<Vec<_>>();
                 let list = pyo3::types::PyList::new(py, items)?;
                 Ok(list.call_method1("__mul__", (n,))?.unbind())
             }
@@ -426,11 +441,13 @@ macro_rules! impl_python_sequence_write {
                 value: &Bound<'py, PyAny>,
             ) -> PyResult<()> {
                 use pyo3::types::PySlice;
+
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let bounds = $crate::utils::SliceBounds::new(slice)?;
                     let new_values: Vec<$set_type> = value.extract()?;
                     self.validate()?;
                     let indices = bounds.indices($len(&self.inner));
+
                     if indices.step == 1 {
                         let start = indices.start as usize;
                         let end = indices.stop.max(indices.start) as usize;
@@ -445,6 +462,7 @@ macro_rules! impl_python_sequence_write {
                                 indices.slicelength
                             )));
                         }
+
                         let positions = $crate::utils::slice_indices(
                             indices.start,
                             indices.step,
@@ -477,6 +495,7 @@ macro_rules! impl_python_sequence_write {
                 key: &Bound<'py, PyAny>,
             ) -> PyResult<()> {
                 use pyo3::types::PySlice;
+
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let bounds = $crate::utils::SliceBounds::new(slice)?;
                     self.validate()?;
@@ -487,6 +506,7 @@ macro_rules! impl_python_sequence_write {
                         indices.slicelength,
                     )
                     .descending();
+
                     let mut vec = $list_mut(&self.inner);
                     for i in positions {
                         std::ops::DerefMut::deref_mut(&mut vec).remove(i);
@@ -550,6 +570,7 @@ macro_rules! impl_python_sequence_write {
                         "pop from empty list",
                     ));
                 }
+
                 let idx = index.unwrap_or(-1);
                 let i = resolve_index!(idx, len, "pop index out of range")?;
                 let raw: $raw_item = std::ops::DerefMut::deref_mut(&mut vec).remove(i);
@@ -623,7 +644,7 @@ macro_rules! wrap_as_python_primitive_sequence {
         }
 
         impl_python_sequence_read!($wrapper_name, $inner_type, $len, $get_type, $get);
-        impl_python_sequence_cmp!($wrapper_name, $inner_type, $len, $get_type, $get);
+        impl_python_sequence_operators!($wrapper_name, $inner_type, $len, $get_type, $get);
         impl_python_sequence_write!(
             $wrapper_name,
             $inner_type,

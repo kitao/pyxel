@@ -42,8 +42,6 @@ impl Quat {
         self.inner_ref().w
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let q = self.inner_ref();
         format!("Quat({}, {}, {}, {})", q.x, q.y, q.z, q.w)
@@ -55,6 +53,7 @@ impl Quat {
 
     fn __hash__(&self) -> u64 {
         use std::hash::{Hash, Hasher};
+
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         let q = self.inner_ref();
         // Adding 0.0 folds -0.0 into +0.0 so values equal under __eq__ hash equally.
@@ -97,9 +96,7 @@ impl Quat {
             let result = Vec3::wrap(self.inner_ref().mul_vec(&vec.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else {
-            Err(pyo3::exceptions::PyTypeError::new_err(
-                "other must be Quat or Vec3",
-            ))
+            Ok(py.NotImplemented())
         }
     }
 

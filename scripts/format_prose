@@ -88,6 +88,7 @@ def _collect_json_replacements(node, replacements):
 def _apply_json_replacements(raw, replacements):
     parts = []
     cursor = 0
+
     for key, old, new in replacements:
         old_json = json.dumps(old, ensure_ascii=False)
         new_json = json.dumps(new, ensure_ascii=False)
@@ -95,9 +96,11 @@ def _apply_json_replacements(raw, replacements):
         match = pattern.search(raw, cursor)
         if match is None:
             raise RuntimeError(f"Failed to locate JSON value for '{key}'")
+
         parts.append(raw[cursor : match.start(2)])
         parts.append(new_json)
         cursor = match.end(2)
+
     parts.append(raw[cursor:])
     return "".join(parts)
 
@@ -106,6 +109,7 @@ def _format_lines(path, fenced):
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
     in_fence = False
     changed = False
+
     for i, line in enumerate(lines):
         if fenced and line.lstrip().startswith("```"):
             in_fence = not in_fence
@@ -115,6 +119,7 @@ def _format_lines(path, fenced):
             if formatted != line:
                 lines[i] = formatted
                 changed = True
+
     if changed:
         path.write_text("".join(lines), encoding="utf-8")
 
@@ -140,11 +145,13 @@ def format_text(text, lang):
     text = _STRUCTURAL_SPAN.sub(protect, text)
     text = _normalize_api_call_spacing(text)
     text = _API_CALL_SPAN.sub(protect, text)
+
     text = _normalize_common(text)
     if lang in ("ja", "cn"):
         text = _normalize_parentheses(text, lang)
         text = _space_around_tokens(text)
         text = _remove_line_break_padding(text)
+
     return placeholder_re.sub(restore, text)
 
 
@@ -193,6 +200,7 @@ def _normalize_parentheses(text, lang):
     text = re.sub(r"[（(]([^（）()]*)[）)]", repl, text)
     text = re.sub(r" *（ *", "（", text)
     text = re.sub(r" *） *", "）", text)
+
     edge = rf"{_CJK}0-9A-Za-z{_PLACEHOLDER}"
     text = re.sub(rf"([{edge}])\(", r"\1 (", text)
     text = re.sub(rf"\)([{edge}])", r") \1", text)

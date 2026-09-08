@@ -49,7 +49,6 @@ class SoundEditor(EditorBase):
         )
 
         self.new_var("octave_var", 2)
-
         self.new_var("is_playing_var", None)
         self.add_var_event_listener("is_playing_var", "get", self.__on_is_playing_get)
 
@@ -100,11 +99,8 @@ class SoundEditor(EditorBase):
 
         self._piano_keyboard = PianoKeyboard(self)
         self.copy_var("note_var", self._piano_keyboard)
-
         self._piano_roll = PianoRoll(self)
-
         self._sound_field = SoundField(self)
-
         self._left_octave_bar = OctaveBar(self, 12, 25)
         self._right_octave_bar = OctaveBar(self, 224, 25)
 

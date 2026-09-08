@@ -30,12 +30,14 @@ def test_wasm_wheel_check_rejects_generated_metadata_and_host_paths(tmp_path, ca
         ("pyxel/examples/.DS_Store", "platform metadata file"),
         ("pyxel/pyxel_binding.abi3.so", "host path b'/Users/'"),
     ]
+
     checker.DIST_DIR = tmp_path
     _write_project_version(tmp_path, "3.0.0")
     checker.PYPROJECT_PATH = tmp_path / "python" / "pyproject.toml"
     assert checker.main() == 1
-    output = capsys.readouterr().out
-    assert "error: invalid contents detected" in output
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert "error: invalid contents detected" in output.err
 
 
 def test_wasm_wheel_check_detects_stale_packaged_sources(tmp_path):
@@ -43,6 +45,7 @@ def test_wasm_wheel_check_detects_stale_packaged_sources(tmp_path):
     source_dir = tmp_path / "pyxel"
     source_dir.mkdir()
     (source_dir / "cli.py").write_text("current\n", encoding="utf-8")
+
     wheel_path = tmp_path / "pyxel-test-pyemscripten_2026_0_wasm32.whl"
     with zipfile.ZipFile(wheel_path, "w") as wheel_zip:
         wheel_zip.writestr("pyxel/cli.py", "stale\n")
@@ -57,6 +60,7 @@ def test_wasm_wheel_check_detects_removed_packaged_sources(tmp_path):
     source_dir = tmp_path / "pyxel"
     source_dir.mkdir()
     (source_dir / "cli.py").write_text("current\n", encoding="utf-8")
+
     wheel_path = tmp_path / "pyxel-test-pyemscripten_2026_0_wasm32.whl"
     with zipfile.ZipFile(wheel_path, "w") as wheel_zip:
         wheel_zip.writestr("pyxel/cli.py", "current\n")
@@ -76,6 +80,7 @@ def test_wasm_wheel_check_detects_stale_project_metadata(tmp_path):
         '[project.optional-dependencies]\napp2exe = ["pyinstaller>=6.22,<7"]\n',
         encoding="utf-8",
     )
+
     wheel_path = tmp_path / "pyxel-test-pyemscripten_2026_0_wasm32.whl"
     with zipfile.ZipFile(wheel_path, "w") as wheel_zip:
         wheel_zip.writestr(
@@ -187,7 +192,6 @@ def test_install_wasm_wheel_updates_prettier_formatted_path(tmp_path):
     )
 
     subprocess.run([installer], check=True)
-
     assert sorted(path.name for path in wasm_dir.glob("*.whl")) == [wheel_name]
     assert (wasm_dir / "pyxel.js").read_text(encoding="utf-8") == (
         f'const PYXEL_WHEEL_PATH =\n  "{wheel_name}";\n'
@@ -210,13 +214,13 @@ def test_install_wasm_wheel_preserves_current_wheel_on_ambiguous_input(tmp_path)
             dist_dir / f"pyxel-{version}-cp311-abi3-pyemscripten_2026_0_wasm32.whl",
             version,
         )
+
     current_wheel = wasm_dir / ("pyxel-3.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl")
     current_wheel.write_bytes(b"current")
     script = 'const PYXEL_WHEEL_PATH = "' + current_wheel.name + '";\n'
     (wasm_dir / "pyxel.js").write_text(script, encoding="utf-8")
 
     result = subprocess.run([installer], check=False)
-
     assert result.returncode == 1
     assert current_wheel.read_bytes() == b"current"
     assert (wasm_dir / "pyxel.js").read_text(encoding="utf-8") == script
@@ -235,13 +239,13 @@ def test_install_wasm_wheel_preserves_current_wheel_on_invalid_loader(tmp_path):
     shutil.copy2(ROOT_DIR / "scripts" / "install_wasm_wheel", installer)
     new_wheel = dist_dir / "pyxel-3.1.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl"
     _write_wasm_wheel(new_wheel, "3.1.0")
+
     current_wheel = wasm_dir / ("pyxel-3.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl")
     current_wheel.write_bytes(b"current")
     script = 'const INVALID_WHEEL_PATH = "pyxel-old.whl";\n'
     (wasm_dir / "pyxel.js").write_text(script, encoding="utf-8")
 
     result = subprocess.run([installer], check=False)
-
     assert result.returncode == 1
     assert current_wheel.read_bytes() == b"current"
     assert not (wasm_dir / new_wheel.name).exists()
@@ -280,7 +284,6 @@ def test_install_wasm_wheel_preserves_loader_target_when_script_replace_fails(
 
     with pytest.raises(OSError, match="injected script replacement failure"):
         installer.main()
-
     assert script_path.read_text(encoding="utf-8") == script
     assert old_wheel.read_bytes() == b"old"
     assert (wasm_dir / new_wheel.name).read_bytes() == new_wheel.read_bytes()
@@ -310,6 +313,7 @@ def test_install_wasm_wheel_rejects_wrong_wheel_contract_before_changes(
     dist_dir.mkdir()
     wasm_dir.mkdir()
     _write_project_version(tmp_path, "3.1.0")
+
     installer = scripts_dir / "install_wasm_wheel"
     shutil.copy2(ROOT_DIR / "scripts" / "install_wasm_wheel", installer)
     _write_wasm_wheel(dist_dir / wheel_name, "3.1.0", internal_tag)
@@ -319,7 +323,6 @@ def test_install_wasm_wheel_rejects_wrong_wheel_contract_before_changes(
     (wasm_dir / "pyxel.js").write_text(script, encoding="utf-8")
 
     result = subprocess.run([installer], check=False)
-
     assert result.returncode == 1
     assert current_wheel.read_bytes() == b"current"
     assert (wasm_dir / "pyxel.js").read_text(encoding="utf-8") == script

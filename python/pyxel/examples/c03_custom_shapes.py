@@ -32,6 +32,7 @@ class Enemy(Node):
     def update_body(self, time):
         phase = self.phase
         positions = []
+
         for i in range(0, len(self.base_positions), 3):
             x, y, z = self.base_positions[i : i + 3]
             radius = (
@@ -41,6 +42,7 @@ class Enemy(Node):
                 + 0.20 * math.sin(4.0 * z + 2.1 * time + phase * 0.6)
             )
             positions += [x * radius, y * radius, z * radius]
+
         self.body.positions[:] = positions
         self.body.compute_normals()
 
@@ -201,6 +203,7 @@ class Laser(Node):
             if target_side == 0.0:
                 target_side = 1.0
         side_sign = 1.0 if target_side >= 0.0 else -1.0
+
         target_direction = (enemy_center - LASER_ORIGIN).normalize()
         fan_strength = side_sign * 1.2 * (0.7 + 0.3 * abs(lock_side))
         return (target_direction + right * fan_strength).normalize()
@@ -212,6 +215,7 @@ class Laser(Node):
         step_length = to_enemy.length() * 1.15 / (LASER_POINTS - 1)
         current_point = LASER_ORIGIN
         full_path = [current_point]
+
         for point_index in range(1, LASER_POINTS):
             path_ratio = (point_index - 1) / (LASER_POINTS - 2)
             if path_ratio <= 0.3:
@@ -221,6 +225,7 @@ class Laser(Node):
                 steer_strength = (
                     steer_ratio * steer_ratio * (3.0 - 2.0 * steer_ratio) * 0.35
                 )
+
             direction = (
                 direction * (1.0 - steer_strength)
                 + (enemy_center - current_point).normalize() * steer_strength
@@ -243,6 +248,7 @@ class Laser(Node):
                 full_path[segment_index] * (1.0 - segment_blend)
                 + full_path[segment_index + 1] * segment_blend
             )
+
         return visible_path
 
     def hit_enemies(self):
@@ -274,6 +280,7 @@ class Laser(Node):
     def update_beam(self, beam, path_points, width=LASER_OUTER_WIDTH):
         camera_pos, right, _ = self.camera_axes()
         beam_positions = []
+
         for point_index, point in enumerate(path_points):
             prev_point = path_points[max(0, point_index - 1)]
             next_point = path_points[min(len(path_points) - 1, point_index + 1)]
@@ -286,6 +293,7 @@ class Laser(Node):
             )
             for vertex in (point - side_vector, point + side_vector):
                 beam_positions += [vertex.x, vertex.y, vertex.z]
+
         beam.positions[:] = beam_positions
 
 
@@ -300,7 +308,6 @@ class Scene(Node):
         self.camera.clear_color = 0
 
         self.enemies = [Enemy(index) for index in range(len(ENEMY_COLORS))]
-
         for enemy in self.enemies:
             self.add_child(enemy)
 

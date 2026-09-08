@@ -41,6 +41,7 @@ class TestListImportedModules:
             "raise RuntimeError('package was imported')\n", encoding="utf-8"
         )
         (package / "child.py").write_text("VALUE = 1\n", encoding="utf-8")
+
         app_dir = tmp_path / "app"
         app_dir.mkdir()
         script = app_dir / "main.py"
@@ -48,7 +49,6 @@ class TestListImportedModules:
         monkeypatch.syspath_prepend(str(module_root))
 
         result = pyxel.utils.list_imported_modules(str(script))
-
         assert result["system"] == ["probe_package", "probe_package.child"]
         assert "probe_package" not in sys.modules
         assert "probe_package.child" not in sys.modules
@@ -68,6 +68,7 @@ class TestListImportedModules:
         pkg.mkdir()
         (pkg / "__init__.py").write_text("", encoding="utf-8")
         (pkg / "helper.py").write_text("import zlib\n", encoding="utf-8")
+
         result = pyxel.utils.list_imported_modules(str(script))
         assert result == {
             "system": ["zlib"],
@@ -95,6 +96,7 @@ class TestListImportedModules:
             encoding="utf-8",
         )
         (sub / "__init__.py").write_text("import fractions\n", encoding="utf-8")
+
         if leaf_is_package:
             (sub / "leaf").mkdir()
             leaf = sub / "leaf" / "__init__.py"
@@ -103,7 +105,6 @@ class TestListImportedModules:
         leaf.write_text("import zlib\nVALUE = 1\n", encoding="utf-8")
 
         result = pyxel.utils.list_imported_modules(str(script))
-
         assert result == {
             "system": ["fractions", "sqlite3", "zlib"],
             "local": sorted(
@@ -122,7 +123,6 @@ class TestListImportedModules:
         leaf.write_text("import zlib\n", encoding="utf-8")
 
         result = pyxel.utils.list_imported_modules(str(script))
-
         assert result == {
             "system": ["sqlite3", "zlib"],
             "local": [str(init_file), str(leaf)],
@@ -151,7 +151,6 @@ class TestListImportedModules:
         monkeypatch.setattr(Path, "read_text", record_read)
 
         result = pyxel.utils.list_imported_modules(str(script))
-
         assert read_files == [script, pkg / "__init__.py", sub / "__init__.py"]
         assert result == {
             "system": ["zlib"],
@@ -174,7 +173,6 @@ class TestListImportedModules:
         monkeypatch.chdir(tmp_path)
 
         result = pyxel.utils.list_imported_modules("pkg/main.py")
-
         assert result == {
             "system": ["zlib"],
             "local": [str(pkg / ".." / "helper.py")],
@@ -194,7 +192,6 @@ class TestListImportedModules:
         monkeypatch.chdir(tmp_path)
 
         result = pyxel.utils.list_imported_modules("alias/main.py")
-
         assert result == {
             "system": ["zlib"],
             "local": [str(alias / "helper.py")],
@@ -210,7 +207,6 @@ class TestListImportedModules:
         (pkg / "loop").symlink_to(pkg, target_is_directory=True)
 
         result = pyxel.utils.list_imported_modules(str(script))
-
         assert result == {
             "system": [],
             "local": [str(pkg / "__init__.py"), str(pkg / "loop" / "__init__.py")],
@@ -246,6 +242,7 @@ class TestListImportedModules:
         zebra = tmp_path / "zebra.py"
         alpha.write_text("", encoding="utf-8")
         zebra.write_text("", encoding="utf-8")
+
         result = pyxel.utils.list_imported_modules(str(script))
         assert result == {
             "system": ["abc", "sys", "zlib"],

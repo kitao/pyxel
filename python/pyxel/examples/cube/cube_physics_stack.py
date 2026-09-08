@@ -12,6 +12,21 @@ CAN_LAYOUT = [
 ]
 
 
+def apply_contact(node, contact):
+    offset = contact.normal * contact.depth
+    if node.parent is not None:
+        parent_world = node.parent.world_transform
+        offset = (
+            Vec3.ZERO
+            if abs(parent_world.determinant()) < 1e-12
+            else offset.to_local_dir(parent_world)
+        )
+
+    push = Mat4.from_translation(offset)
+    node.transform = push * node.transform
+    node.collider.velocity += contact.delta_velocity
+
+
 class Floor(Node):
     def __init__(self):
         super().__init__()
@@ -68,15 +83,19 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Stack")
         pyxel.mouse(True)
+
         self.scene = Node()
         self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
+
         self.scene.add_child(Floor())
         for pos in CAN_LAYOUT:
             self.scene.add_child(Can(pos))
+
         self.orbit = OrbitCamera(target=Vec3(0, 1, 0), pitch_deg=15, radius=10)
         self.orbit.camera.clear_color = 1
         self.scene.camera = self.orbit.camera
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -84,25 +103,12 @@ class App:
             pyxel.quit()
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.scene.add_child(Bullet(Vec3(0, 1.0, 8), Vec3(0, 0, -0.4)))
+
         self.orbit.update()
         self.scene.update()
 
     def draw(self):
         self.scene.draw(0, 0, 160, 120)
-
-
-def apply_contact(node, contact):
-    offset = contact.normal * contact.depth
-    if node.parent is not None:
-        parent_world = node.parent.world_transform
-        offset = (
-            Vec3.ZERO
-            if abs(parent_world.determinant()) < 1e-12
-            else offset.to_local_dir(parent_world)
-        )
-    push = Mat4.from_translation(offset)
-    node.transform = push * node.transform
-    node.collider.velocity += contact.delta_velocity
 
 
 if __name__ == "__main__":

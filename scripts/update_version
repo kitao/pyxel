@@ -54,6 +54,7 @@ def main(argv: list[str] | None = None) -> int:
             for error in errors:
                 print(f"ERROR: {error}", file=sys.stderr)
             return 1
+
         print("Version surfaces are consistent")
         return 0
 
@@ -70,7 +71,6 @@ def main(argv: list[str] | None = None) -> int:
 
 def update_version(version: str, root_dir: Path = ROOT_DIR) -> None:
     cargo_version = pep440_to_semver(version)
-
     for relative_path, pattern in PYTHON_VERSION_REPLACEMENTS:
         replace_file(root_dir / relative_path, pattern, version)
     for relative_path, pattern in CARGO_VERSION_REPLACEMENTS:
@@ -130,6 +130,7 @@ def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[st
             "wasm: expected exactly one Pyxel wheel, "
             f"found {len(wheel_paths)}: {wheel_names or 'none'}"
         )
+
     return errors
 
 

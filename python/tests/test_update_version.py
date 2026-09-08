@@ -49,7 +49,6 @@ def test_version_errors_names_the_mismatched_surface(tmp_path):
     )
 
     errors = update_version.version_errors(tmp_path, "v2.9.7")
-
     assert errors == ["wasm/pyxel.js: expected 2.9.7, found 2.9.6"]
 
 
@@ -76,7 +75,6 @@ def test_version_errors_reports_a_missing_referenced_wasm_wheel(tmp_path):
     )
 
     errors = update_version.version_errors(tmp_path, "v2.9.7")
-
     assert errors == [
         f"wasm/pyxel.js: referenced wheel not found: wasm/pyxel-2.9.7{WHEEL_SUFFIX}"
     ]
@@ -91,7 +89,6 @@ def test_version_errors_rejects_multiple_wasm_wheels(tmp_path):
     )
 
     errors = update_version.version_errors(tmp_path, "v2.9.7")
-
     assert errors == [
         (
             "wasm: expected exactly one Pyxel wheel, found 2: "
@@ -116,7 +113,6 @@ def test_version_errors_rejects_wrong_wasm_wheel_filename_contract(tmp_path):
     )
 
     errors = update_version.version_errors(tmp_path, "v2.9.7")
-
     assert errors == [
         (f"wasm/pyxel.js: expected wheel pyxel-2.9.7{WHEEL_SUFFIX}, found {wrong_name}")
     ]
@@ -133,7 +129,6 @@ def test_version_errors_rejects_wrong_internal_wasm_wheel_tag(tmp_path):
     )
 
     errors = update_version.version_errors(tmp_path, "v2.9.7")
-
     assert errors == [
         (f"wasm/{wheel_path.name}: WHEEL Tag fields do not match {EXPECTED_WHEEL_TAG}")
     ]
@@ -158,10 +153,12 @@ def _write_version_files(root: Path) -> None:
             '"pyxel-2.9.7-cp311-abi3-pyemscripten_2026_0_wasm32.whl";\n'
         ),
     }
+
     for relative_path, text in files.items():
         path = root / relative_path
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
+
     _write_wasm_wheel(root / "wasm" / f"pyxel-2.9.7{WHEEL_SUFFIX}", "2.9.7")
 
 

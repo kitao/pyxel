@@ -24,7 +24,6 @@ class TestSaveLoad:
         original_sounds = list(pyxel.sounds)
         try:
             pyxel.load(str(path))
-
             sound = pyxel.sounds[0]
             assert list(sound.notes) == [24, -1, 28]
             assert list(sound.tones) == [0, 1]
@@ -56,7 +55,6 @@ class TestSaveLoad:
 
         with pytest.raises(Exception, match="^Failed to parse line"):
             pyxel.load(str(path))
-
         assert pyxel.images[0].pget(0, 0) == 7
 
     @pytest.mark.parametrize(
@@ -70,7 +68,6 @@ class TestSaveLoad:
     def test_load_unsupported_format_version(self, tmp_path, header):
         path = tmp_path / "future.pyxres"
         _write_resource(path, header)
-
         with raises_exact(Exception, "Unsupported resource format version '99'"):
             pyxel.load(str(path))
 
@@ -84,14 +81,12 @@ class TestSaveLoad:
     def test_format_version_precedes_body_parse_error(self, tmp_path, version, message):
         path = tmp_path / "broken.pyxres"
         _write_resource(path, f"format_version = {version}\nimages = [\n")
-
         with raises_exact(Exception, message):
             pyxel.load(str(path))
 
     def test_nested_format_version_is_not_the_resource_version(self, tmp_path):
         path = tmp_path / "nested-version.pyxres"
         _write_resource(path, "[metadata]\nformat_version = 99\n")
-
         with raises_exact(Exception, "Failed to parse resource format version"):
             pyxel.load(str(path))
 
@@ -135,7 +130,6 @@ class TestSaveLoad:
     def test_malformed_resource_has_exact_error(self, tmp_path, toml_text, message):
         path = tmp_path / "malformed-new.pyxres"
         _write_resource(path, toml_text)
-
         with raises_exact(Exception, message):
             pyxel.load(str(path))
 
@@ -152,7 +146,6 @@ class TestSaveLoad:
 
         with pytest.raises(Exception, match=r"tilemaps\[0\]\.data must not be empty"):
             pyxel.load(str(path))
-
         assert pyxel.images[0].pget(0, 0) == 7
 
     def test_save_load_roundtrip(self, tmp_path):
@@ -277,6 +270,7 @@ class TestSaveLoad:
         pyxel.images[0].cls(0)
         pyxel.load(full_path, exclude_images=False, excl_images=True)  # type: ignore[call-arg]
         assert pyxel.images[0].pget(0, 0) == 0
+
         pyxel.load(full_path)
         assert pyxel.images[0].pget(0, 0) == 7
 
@@ -304,7 +298,6 @@ class TestPalette:
         original_colors = list(pyxel.colors)
         path = str(tmp_path / "test.pyxpal")
         pyxel.save_pal(path)
-
         try:
             pyxel.colors[0] = 0xFFFFFF
             pyxel.load_pal(path)

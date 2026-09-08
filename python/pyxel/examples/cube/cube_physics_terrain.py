@@ -10,16 +10,19 @@ def _slope_mesh() -> Mesh:
     nx, nz = 6, 6
     extent = 12.0
     step = extent / (nx - 1)
+
     for iz in range(nz):
         for ix in range(nx):
             x = -extent / 2 + ix * step
             z = -extent / 2 + iz * step
             y = -x * 0.4
             verts.extend([x, y, z])
+
     for iz in range(nz - 1):
         for ix in range(nx - 1):
             i = iz * nx + ix
             indices.extend([i, i + nx, i + 1, i + 1, i + nx, i + nx + 1])
+
     primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
     return Mesh(
         primitives=[primitive],
@@ -57,6 +60,7 @@ class Ball(Node):
                 if abs(parent_world.determinant()) < 1e-12
                 else offset.to_local_dir(parent_world)
             )
+
         push = Mat4.from_translation(offset)
         spin = Mat4.from_quat(contact.delta_rotation)
         self.transform = push * self.transform * spin
@@ -71,19 +75,24 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Terrain")
         pyxel.mouse(True)
+
         self.scene = Node()
         self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
+
         self.scene.add_child(Floor())
         self.scene.add_child(Ball())
+
         self.orbit = OrbitCamera(target=Vec3(0, 0, 0), pitch_deg=25, radius=18)
         self.orbit.camera.clear_color = 1
         self.scene.camera = self.orbit.camera
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
         self.orbit.update()
         self.scene.update()
 

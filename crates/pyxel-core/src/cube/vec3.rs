@@ -159,6 +159,13 @@ impl Vec3 {
     }
 
     pub fn slerp(&self, other: &Self, t: f32) -> RcVec3 {
+        if t == 0.0 {
+            return Self::new(self.x, self.y, self.z);
+        }
+        if t == 1.0 {
+            return Self::new(other.x, other.y, other.z);
+        }
+
         let len_product = self.length() * other.length();
         if len_product == 0.0 {
             return self.lerp(other, t);
@@ -168,34 +175,54 @@ impl Vec3 {
         if theta.abs() < 1e-6 {
             return self.lerp(other, t);
         }
+
         if std::f32::consts::PI - theta < 1e-3 {
-            // Anti-parallel vectors: rotate through any perpendicular axis.
-            let self_len = self.length();
-            let axis = if self.x.abs() < 0.9 * self_len {
-                Vec3 {
-                    x: 1.0,
-                    y: 0.0,
-                    z: 0.0,
-                }
-            } else {
-                Vec3 {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.0,
-                }
+            let cross = Self {
+                x: self.y * other.z - self.z * other.y,
+                y: self.z * other.x - self.x * other.z,
+                z: self.x * other.y - self.y * other.x,
             };
-            let perp_rc = self.cross(&axis);
-            let perp = rc_ref!(&perp_rc).normalize();
-            let perp = rc_ref!(&perp);
+            let cross_len = cross.length();
+            let self_len = self.length();
+
+            let (tangent, theta) = if cross_len > 0.0 {
+                // Near-opposite vectors still define a unique interpolation plane.
+                (
+                    Self {
+                        x: cross.y * self.z - cross.z * self.y,
+                        y: cross.z * self.x - cross.x * self.z,
+                        z: cross.x * self.y - cross.y * self.x,
+                    },
+                    (cross_len / len_product).atan2(dot),
+                )
+            } else {
+                // Exactly opposite vectors admit any perpendicular direction.
+                let tangent = if self.x.abs() < 0.9 * self_len {
+                    Self {
+                        x: 0.0,
+                        y: self.z,
+                        z: -self.y,
+                    }
+                } else {
+                    Self {
+                        x: -self.z,
+                        y: 0.0,
+                        z: self.x,
+                    }
+                };
+                (tangent, theta)
+            };
+
             let angle = t * theta;
             let c = angle.cos();
-            let s = angle.sin() * self.length();
+            let s = angle.sin() * self_len / tangent.length();
             return Self::new(
-                self.x * c + perp.x * s,
-                self.y * c + perp.y * s,
-                self.z * c + perp.z * s,
+                self.x * c + tangent.x * s,
+                self.y * c + tangent.y * s,
+                self.z * c + tangent.z * s,
             );
         }
+
         let sin_theta = theta.sin();
         let a = ((1.0 - t) * theta).sin() / sin_theta;
         let b = (t * theta).sin() / sin_theta;
@@ -269,6 +296,7 @@ mod tests {
             y: 5.0,
             z: 6.0,
         };
+
         assert_eq!(
             deref(&a.add(&b)),
             Vec3 {
@@ -323,8 +351,10 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         assert!((a.angle_to(&b) - 90.0).abs() < 1e-3);
         assert!((a.angle_to(&a) - 0.0).abs() < 1e-3);
+
         // Zero-length input returns 0 instead of NaN.
         let z = Vec3 {
             x: 0.0,
@@ -346,14 +376,17 @@ mod tests {
             y: 0.0,
             z: 0.0,
         };
+
         let mid = deref(&a.slerp(&b, 0.5));
         assert!((mid.length() - 1.0).abs() < 1e-5);
         assert!(mid.x.abs() < 1e-5);
         assert!((mid.z - 1.0).abs() < 1e-5);
+
         let quarter = deref(&a.slerp(&b, 0.25));
         let expected = (0.5_f32).sqrt();
         assert!((quarter.x - expected).abs() < 1e-5);
         assert!((quarter.z - expected).abs() < 1e-5);
+
         let end = deref(&a.slerp(&b, 1.0));
         assert!((end.x - (-1.0)).abs() < 1e-5);
     }
@@ -371,6 +404,7 @@ mod tests {
             z: -1.0,
         });
         let mat = rc_ref!(&mat_rc);
+
         let world = v.to_world(&mat);
         let back = rc_ref!(&world).to_local(&mat);
         let back = deref(&back);
@@ -390,6 +424,7 @@ mod tests {
             z: 100.0,
         });
         let mat = rc_ref!(&mat_rc);
+
         let r = deref(&dir.to_world_dir(&mat));
         assert_eq!(r.x, 1.0);
         assert_eq!(r.y, 0.0);
@@ -409,9 +444,34 @@ mod tests {
             z: 0.0,
         });
         let mat = rc_ref!(&mat_rc);
+
         let world = dir.to_world_dir(&mat);
         let back = rc_ref!(&world).to_local_dir(&mat);
         let back = deref(&back);
         assert_eq!(back, dir);
+    }
+
+    #[test]
+    fn test_slerp_near_opposite_preserves_target_plane_and_endpoints() {
+        let a = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let delta = 0.0005_f32;
+        let b = Vec3 {
+            x: -delta.cos(),
+            y: delta.sin(),
+            z: 0.0,
+        };
+
+        let mid = a.slerp(&b, 0.5);
+        let mid = rc_ref!(&mid);
+        // Half of the XY angle PI-delta is (sin(delta/2), cos(delta/2), 0).
+        assert!((mid.x - (delta * 0.5).sin()).abs() < 1e-6);
+        assert!((mid.y - (delta * 0.5).cos()).abs() < 1e-6);
+        assert_eq!(mid.z, 0.0);
+        assert_eq!(*rc_ref!(&a.slerp(&b, 0.0)), a);
+        assert_eq!(*rc_ref!(&a.slerp(&b, 1.0)), b);
     }
 }

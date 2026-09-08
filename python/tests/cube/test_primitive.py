@@ -19,6 +19,7 @@ def test_positions_proxy_in_place_write():
     p = Primitive(Primitive.MODE_TRIANGLES, [0.0] * 9, [0, 1, 2])
     p.positions[0] = 9.0
     assert p.positions[0] == 9.0
+
     p.positions.append(1.0)
     assert len(p.positions) == 10
 
@@ -29,10 +30,9 @@ def test_positions_proxy_extended_slice_assignment():
         [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
         [0, 1, 0],
     )
-
     p.positions[::2] = [10.0, 20.0, 30.0]
-
     assert list(p.positions) == [10.0, 1.0, 20.0, 3.0, 30.0, 5.0]
+
     with raises_exact(
         ValueError,
         "attempt to assign sequence of size 1 to extended slice of size 3",
@@ -56,7 +56,6 @@ def test_normals_default_empty_not_none():
 
 def test_plane_factory_builds_textured_quad():
     p = Primitive.plane(2.0, 4.0)
-
     assert p.mode == Primitive.MODE_TRIANGLES
     assert p.cull == Primitive.CULL_NONE
     assert list(p.positions) == [-1, 2, 0, 1, 2, 0, -1, -2, 0, 1, -2, 0]
@@ -67,7 +66,6 @@ def test_plane_factory_builds_textured_quad():
 
 def test_box_factory_builds_textured_box():
     p = Primitive.box(Vec3(2.0, 4.0, 6.0))
-
     assert p.mode == Primitive.MODE_TRIANGLES
     assert p.cull == Primitive.CULL_BACK
     assert len(p.positions) == 72
@@ -80,10 +78,9 @@ def test_box_factory_builds_textured_box():
 
 def test_sphere_factory_builds_low_poly_sphere():
     p = Primitive.sphere(2.0)
-
     assert p.mode == Primitive.MODE_TRIANGLES
     assert p.cull == Primitive.CULL_BACK
     assert len(p.indices) == 240
     assert len(p.normals) == 240
     assert len(p.uvs) == len(p.positions) // 3 * 2
-    assert max(abs(v) for v in p.positions) == pytest.approx(2.0)
+    assert max(abs(v) for v in p.positions) == pytest.approx(2.0, abs=1e-6)

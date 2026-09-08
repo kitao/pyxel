@@ -119,7 +119,6 @@ impl Sound {
             self.inner_mut().clear_mml();
             return Ok(());
         };
-
         self.inner_mut().set_mml(code).map_err(PyException::new_err)
     }
 
@@ -131,7 +130,6 @@ impl Sound {
             self.inner_mut().clear_pcm();
             return Ok(());
         };
-
         self.inner_mut()
             .load_pcm(filename)
             .map_err(PyException::new_err)

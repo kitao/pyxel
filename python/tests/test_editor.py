@@ -63,16 +63,20 @@ expected = [[0], [1], [2], [3], [4, 5], [6, 7]]
 init = pyxel.init
 pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
 pyxel.run = lambda update, draw: None
+
 app = App(path, "sound")
 assert [list(seq) for seq in pyxel.musics[0].seqs] == expected
+
 app.editor_type_var = 3
 app.draw_all()
 viewed = [list(seq) for seq in pyxel.musics[0].seqs]
+
 app._save_button.trigger_event("press")
 pyxel.load(path)
 assert viewed == expected, viewed
 assert [list(seq) for seq in pyxel.musics[0].seqs] == expected
 """
+
         result = subprocess.run(
             [sys.executable, "-c", code, path],
             capture_output=True,
@@ -81,6 +85,66 @@ assert [list(seq) for seq in pyxel.musics[0].seqs] == expected
             check=False,
         )
         assert result.returncode == 0, result.stderr
+
+    def test_failed_save_preserves_edits_and_allows_retry(self, tmp_path):
+        code = """
+import sys
+from pathlib import Path
+
+import pyxel
+from pyxel.editor.app import App
+
+path = Path(sys.argv[1])
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(str(path), "image")
+editor = app._editor
+old_canvas = pyxel.images[0].get_slice(0, 0, 16, 16)
+pyxel.images[0].pset(0, 0, 7)
+editor.add_history({
+    "image_index": 0,
+    "focus_pos": (0, 0),
+    "old_canvas": old_canvas,
+    "new_canvas": pyxel.images[0].get_slice(0, 0, 16, 16),
+})
+
+# A directory at the destination causes a real file-creation failure.
+path.mkdir()
+app._save_button.trigger_event("press")
+assert app._editor is editor
+assert pyxel.images[0].pget(0, 0) == 7
+editor.undo()
+assert pyxel.images[0].pget(0, 0) == old_canvas[0][0]
+editor.redo()
+assert pyxel.images[0].pget(0, 0) == 7
+app.update_all()
+messages = []
+text = pyxel.text
+pyxel.text = lambda x, y, message, color: messages.append(message)
+app.draw_all()
+assert "SAVE FAILED: SEE CONSOLE" in messages
+
+path.rmdir()
+app._save_button.trigger_event("press")
+messages.clear()
+app.draw_all()
+assert "SAVE FAILED: SEE CONSOLE" not in messages
+pyxel.text = text
+pyxel.images[0].pset(0, 0, 0)
+pyxel.load(str(path))
+assert pyxel.images[0].pget(0, 0) == 7
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(tmp_path / "retry.pyxres")],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        assert result.stdout.count("Failed to save resource:") == 1
+        assert "Failed to create file" in result.stdout
 
     @pytest.mark.parametrize("case", ["music", "sound", "note-below", "note-above"])
     def test_audio_drawing_stays_inside_fields(self, tmp_path, case):
@@ -95,6 +159,7 @@ init = pyxel.init
 pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
 pyxel.run = lambda update, draw: None
 app = App(path, "music" if case == "music" else "sound")
+
 sound = pyxel.sounds[0]
 if case == "music":
     pyxel.musics[0].seqs[:] = [[], [], [], [0] * 32]
@@ -103,6 +168,7 @@ else:
 app.draw_all()
 before = [[pyxel.pget(x, y) for x in range(pyxel.width)]
           for y in range(pyxel.height)]
+
 if case == "music":
     pyxel.musics[0].seqs[3].extend([0] * 16)
 elif case == "sound":
@@ -110,10 +176,12 @@ elif case == "sound":
 else:
     sound.notes[:] = [-2 if case == "note-below" else 60]
     pyxel.play_pos = lambda ch: (0, 0.0)
+
 fields = ("notes", "tones", "volumes", "effects")
 expected = [list(getattr(sound, field)) for field in fields]
 seqs = [list(seq) for seq in pyxel.musics[0].seqs]
 app.draw_all()
+
 for y in range(pyxel.height):
     for x in range(pyxel.width):
         if case.startswith("note-") and 17 <= x < 223 and 25 <= y < 148:
@@ -121,6 +189,7 @@ for y in range(pyxel.height):
         assert pyxel.pget(x, y) == before[y][x], (case, x, y)
 assert [list(getattr(sound, field)) for field in fields] == expected
 assert [list(seq) for seq in pyxel.musics[0].seqs] == seqs
+
 pyxel.save(path)
 pyxel.sounds[0] = pyxel.Sound()
 pyxel.musics[0].seqs[:] = []
@@ -128,6 +197,7 @@ pyxel.load(path)
 assert [list(getattr(pyxel.sounds[0], field)) for field in fields] == expected
 assert [list(seq) for seq in pyxel.musics[0].seqs] == seqs
 """
+
         result = subprocess.run(
             [sys.executable, "-c", code, str(tmp_path / "audio.pyxres"), case],
             capture_output=True,
@@ -149,6 +219,7 @@ folder = Path(sys.argv[1])
 init = pyxel.init
 pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
 pyxel.run = lambda update, draw: None
+
 app = App(str(folder / "empty.pyxres"), "image")
 system = list(pyxel.colors[:pyxel.NUM_COLORS])
 editor = app._editors[0]
@@ -165,12 +236,14 @@ for count in (64, 8, None):
         pyxel.colors[:] = expected
         pyxel.save_pal(path)
         pyxel.colors[:] = colors
+
     previous = editor.color_var
     pyxel._dropped_files = [path]
     app.update_all()
     assert list(pyxel.colors) == system + expected
     assert pyxel.num_user_colors == len(expected)
     assert editor.color_var == min(previous, len(expected) - 1)
+
     cw = 4 if len(expected) > 16 else 8
     ch = 4 if len(expected) > 32 else 8
     last = len(expected) - 1
@@ -178,6 +251,7 @@ for count in (64, 8, None):
         picker.x + 1 + last % (64 // cw) * cw,
         picker.y + 1 + last // (64 // cw) * ch,
     ) == last
+
     editor.color_var = last
     app.draw_all()
 
@@ -187,6 +261,7 @@ app.draw_all()
 assert list(pyxel.colors) == system + expected
 assert pyxel.num_user_colors == len(expected)
 """
+
         result = subprocess.run(
             [sys.executable, "-c", code, str(tmp_path)],
             capture_output=True,
@@ -209,7 +284,6 @@ assert pyxel.num_user_colors == len(expected)
         colors = list(pyxel.colors)
         handler = getattr(editor_type, f"_{editor_type.__name__}__on_drop")
         handler(state, path)
-
         kind = "image" if editor_type is ImageEditor else "tilemap"
         assert capsys.readouterr().out == (
             f"Failed to load {kind}: Failed to open file '{path}'\n"
@@ -247,6 +321,7 @@ class TestSoundEditor:
         try:
             for i in range(2):
                 pyxel.sounds[i] = pyxel.Sound()
+
             parent = Widget(None, 0, 0, 240, 180)
             parent.new_var("help_message_var", "")
             yield SoundEditor(parent)
@@ -259,11 +334,9 @@ class TestSoundEditor:
     )
     def test_keyboard_click_matches_white_key_bottom(self, sound_editor, y, note):
         keyboard = sound_editor._piano_keyboard
-
         keyboard.trigger_event(
             "mouse_down", pyxel.MOUSE_BUTTON_LEFT, keyboard.x + 8, keyboard.y + y
         )
-
         assert keyboard._mouse_note == note
 
     @pytest.mark.parametrize(
@@ -286,7 +359,6 @@ class TestSoundEditor:
         )
 
         sound_editor._sound_field.trigger_event("draw")
-
         assert expected in drawn_text
         assert list(getattr(sound, field)) == values
 
@@ -370,6 +442,7 @@ class TestScrollBar:
         assert bar.value_var == 32 - slider_amount
         bar.inc_button.trigger_event("press")
         assert bar.value_var == 32 - slider_amount
+
         bar.value_var = -1
         assert bar.value_var == 0
         bar.dec_button.trigger_event("press")
@@ -390,14 +463,12 @@ class TestImageViewer:
         viewer.trigger_event(
             "mouse_drag", pyxel.MOUSE_BUTTON_RIGHT, viewer.x, viewer.y, -1000, -1000
         )
-
         assert viewer.viewport_x_var == 24
         assert viewer.viewport_y_var == (24 if tilemap_mode else 16)
 
         viewer.trigger_event(
             "mouse_drag", pyxel.MOUSE_BUTTON_RIGHT, viewer.x, viewer.y, 1000, 1000
         )
-
         assert viewer.viewport_x_var == 0
         assert viewer.viewport_y_var == 0
 
@@ -427,9 +498,7 @@ class TestFieldCursor:
     ):
         cursor, _ = cursor_fields
         cursor.move_to(0, source, False)
-
         cursor.move_to(x, destination, with_select_key)
-
         assert (cursor.x, cursor.y) == (expected_x, destination)
         assert not cursor.is_selecting
 
@@ -447,7 +516,6 @@ class TestFieldCursor:
 
         field.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, 21 + 4 * 12, 2)
         cursor.insert(63)
-
         assert fields == [[], [10, 11, 12, 13, 63, 14, 15], [3]]
 
 
@@ -459,7 +527,6 @@ class TestUserPal:
             user_colors = [0x100000 + i for i in range(64)]
             pyxel.colors[:] = saved_colors + user_colors
             pyxel.num_user_colors = len(user_colors)  # type: ignore[attr-defined]
-
             pyxel.user_pal()  # type: ignore[attr-defined]
             try:
                 for i in range(pyxel.num_user_colors):  # type: ignore[attr-defined]

@@ -53,7 +53,6 @@ float distYCbCr(vec3 pixA, vec3 pixB) {
     float Y = dot(diff.rgb, w);
     float Cb = scaleB * (diff.b - Y);
     float Cr = scaleR * (diff.r - Y);
-
     return sqrt(((LUMINANCE_WEIGHT * Y) * (LUMINANCE_WEIGHT * Y)) + (Cb * Cb) + (Cr * Cr));
 }
 
@@ -68,7 +67,6 @@ float getLeftRatio(vec2 center, vec2 origin, vec2 direction, vec2 scale) {
     vec2 orth = vec2(-direction.y, direction.x);
     float side = sign(dot(P0, orth));
     float v = side * length(distv * scale);
-
     return smoothstep(-sqrt(2.0) / 2.0, sqrt(2.0) / 2.0, v);
 }
 
@@ -160,7 +158,6 @@ void main() {
     }
 
     vec3 res = E;
-
     if (blendResult.z != BLEND_NONE) {
         float dist_F_G = distYCbCr(F, G);
         float dist_H_C = distYCbCr(H, C);
@@ -198,6 +195,7 @@ void main() {
             direction.y += haveShallowLine ? 1.0 : 0.0;
             direction.x += haveSteepLine ? 1.0 : 0.0;
         }
+
         vec3 blendPix = mix(H, D, step(distYCbCr(E, D), distYCbCr(E, H)));
         res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
@@ -243,6 +241,5 @@ void main() {
         vec3 blendPix = mix(D, B, step(distYCbCr(E, B), distYCbCr(E, D)));
         res = mix(res, blendPix, getLeftRatio(pos, origin, direction, scale));
     }
-
     FragColor = vec4(res, 1.0);
 }

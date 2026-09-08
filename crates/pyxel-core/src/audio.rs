@@ -73,7 +73,6 @@ impl AudioStreamRenderer {
 impl Audio {
     pub fn start() {
         let mut stream_renderer = AudioStreamRenderer::new();
-
         platform::start_audio(
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SAMPLES,
@@ -109,6 +108,7 @@ impl Audio {
             let mut target_samples = ((out.len() - written) as u32).min(AUDIO_RENDER_STEP_SAMPLES);
             let mut needs_blip = false;
             let mut needs_pcm = false;
+
             for (i, ch) in channels.iter().enumerate() {
                 let mut channel = audio_mut!(ch);
                 channel.prepare_pcm();
@@ -122,7 +122,6 @@ impl Audio {
             }
 
             let step_start = written;
-
             let clocks = match blip_buf
                 .clocks_needed(target_samples)
                 .expect("blip_buf capacity must not be exceeded")
@@ -130,6 +129,7 @@ impl Audio {
                 0 => AUDIO_CLOCKS_PER_SAMPLE,
                 clocks => clocks,
             };
+
             if needs_blip {
                 for (i, ch) in channels.iter().enumerate() {
                     let mut channel = audio_mut!(ch);
@@ -137,6 +137,8 @@ impl Audio {
                         let was_playing_pcm = channel.is_playing_pcm();
                         let elapsed_before = channel.total_elapsed_clocks();
                         channel.process(Some(blip_buf), clocks);
+
+                        // Start PCM at its transition sample, not the beginning of this render step.
                         if !was_playing_pcm && channel.is_playing_pcm() {
                             let consumed_clocks = channel
                                 .total_elapsed_clocks()
@@ -150,6 +152,7 @@ impl Audio {
                     }
                 }
             }
+
             blip_buf
                 .end_frame(clocks)
                 .expect("blip_buf capacity must not be exceeded");
@@ -168,6 +171,7 @@ impl Audio {
     fn samples_for_clocks(blip_buf: &BlipBuf, clocks: u32, max_samples: u32) -> usize {
         let mut low = 0;
         let mut high = max_samples;
+
         while low < high {
             let mid = u32::midpoint(low, high);
             if blip_buf
@@ -180,6 +184,7 @@ impl Audio {
                 high = mid;
             }
         }
+
         low as usize
     }
 
@@ -256,8 +261,8 @@ impl Audio {
             .ok_or_else(|| "Failed to create temporary file path".to_string())?;
         let wav_file = &filename;
         let mp4_file = Self::mp4_filename(&filename);
-
         write(&image_path, image_data).map_err(|_| "Failed to save temporary file".to_string())?;
+
         let output = Command::new("ffmpeg")
             .args([
                 "-loop",
@@ -283,12 +288,13 @@ impl Audio {
                 "-y",
             ])
             .output();
-
         let _ = remove_file(png_file);
+
         let output = output.map_err(|_| "Failed to execute FFmpeg".to_string())?;
         if !output.status.success() {
             return Err("Failed to convert file with FFmpeg".to_string());
         }
+
         platform::export_browser_file(&mp4_file);
         Ok(())
     }
@@ -334,7 +340,6 @@ impl Pyxel {
         should_resume: bool,
     ) -> Result<(), String> {
         let sound = pyxel::sounds()[sound_index as usize].clone();
-
         let _lock = AudioLock::lock();
         audio_mut!(pyxel::channels()[channel_index as usize]).play_sound(
             sound,
@@ -469,9 +474,11 @@ mod tests {
             .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
             .unwrap();
         let mut samples = vec![0; num_samples];
+
         for chunk in samples.chunks_mut(chunk_samples) {
             Audio::render_samples(std::slice::from_ref(&channel), &mut blip_buf, chunk);
         }
+
         samples
     }
 
@@ -496,7 +503,6 @@ mod tests {
         let note_clocks = AUDIO_CLOCK_RATE / crate::settings::SOUND_TICKS_PER_SECOND;
         let expected_start = (u64::from(note_clocks) * u64::from(AUDIO_SAMPLE_RATE))
             .div_ceil(u64::from(AUDIO_CLOCK_RATE)) as usize;
-
         assert_eq!(pcm_start, expected_start);
     }
 
@@ -510,7 +516,6 @@ mod tests {
 
         let whole = render_in_chunks(sounds.clone(), 512, 512);
         let split = render_in_chunks(sounds, 512, 32);
-
         assert_eq!(
             whole
                 .iter()
@@ -533,7 +538,6 @@ mod tests {
         let mut samples = [0; 64];
 
         Audio::render_samples(std::slice::from_ref(&channel), &mut blip_buf, &mut samples);
-
         assert!(!audio_ref!(channel).is_playing_pcm());
         assert!(samples.iter().all(|&sample| sample == 0));
     }
@@ -553,6 +557,7 @@ mod tests {
                 channel
             })
             .collect();
+
         let mut blip_buf = BlipBuf::new(64);
         blip_buf
             .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
@@ -560,7 +565,6 @@ mod tests {
         let mut samples = [0; 64];
 
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);
-
         assert!(samples.iter().any(|&sample| sample != 0));
     }
 }

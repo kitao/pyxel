@@ -66,11 +66,13 @@ class TestSound:
             list(tone.wavetable),
             tone.gain,
         )
+
         try:
             tone.mode = 0
             tone.sample_bits = 2
             tone.wavetable[:] = [0, 3, 3, 0]
             tone.gain = 0.75
+
             snd = pyxel.Sound()
             snd.set("c2r e2g2", "0000", "7531", "nfhq", 3)
             first_path = str(tmp_path / "first.wav")
@@ -93,6 +95,7 @@ class TestSound:
         snd.set("c2e2g2", "9", "7", "n", 30)
         path = str(tmp_path / "test_snd_tone9.wav")
         snd.save(path, 0.5)
+
         expected_path = str(tmp_path / "test_snd_tone0.wav")
         snd.set_tones("0")
         snd.save(expected_path, 0.5)
@@ -107,6 +110,7 @@ class TestSound:
             'snd.set("c2e2", "tt", "77", "nn", 10)\n'
             f"snd.save({str(path)!r}, 0.1)\n"
         )
+
         result = subprocess.run(
             [sys.executable, "-c", code],
             capture_output=True,
@@ -133,6 +137,7 @@ class TestSound:
         snd = pyxel.Sound()
         snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
         assert len(snd.notes) == 4
+
         snd.set("c2e2", "ss", "77", "nn", 20)
         assert len(snd.notes) == 2
         assert snd.speed == 20
@@ -150,6 +155,7 @@ class TestSoundMml:
         snd = pyxel.Sound()
         snd.mml("T120 O4 CDEF")
         assert snd.total_sec() > 0.0
+
         snd.mml(*args)
         assert snd.total_sec() == 0.0
 
@@ -173,6 +179,7 @@ class TestSoundPcm:
         snd = pyxel.Sound()
         snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
         assert snd.total_sec() > 0.0
+
         snd.pcm(*args)
         assert snd.total_sec() == 0.0
 

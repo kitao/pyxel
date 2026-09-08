@@ -92,6 +92,7 @@ class TestAudioRender:
             snd = pyxel.Sound()
             snd.set(*params)
             sounds.append(snd)
+
         base = len(pyxel.sounds)
         pyxel.sounds.extend(sounds)
         try:
@@ -109,6 +110,7 @@ class TestAudioRender:
             snd = pyxel.Sound()
             snd.mml(mml)
             sounds.append(snd)
+
         base = len(pyxel.sounds)
         pyxel.sounds.extend(sounds)
         try:

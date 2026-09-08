@@ -23,6 +23,7 @@ class TestConstruction:
             col_img=8,
             colkey=0,
         )
+
         assert len(m.primitives) == 3
         assert m.primitives[2] is None
         assert m.parents == [-1, 0, 1]
@@ -109,6 +110,7 @@ class TestAttributes:
         m = Mesh()
         m.colkey = 0
         assert m.colkey == 0
+
         m.colkey = None
         assert m.colkey is None
 
@@ -138,23 +140,19 @@ class TestAttributes:
     def test_set_transforms_revalidates(self):
         p = _triangle_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
-
         with raises_exact(
             ValueError,
             "Mesh parallel arrays length mismatch: primitives=1, transforms=2, "
             "parents=1, names=1, material_indices=0",
         ):
             m.transforms = [Mat4(), Mat4()]
-
         assert len(m.transforms) == 1
 
     def test_set_parents_revalidates_without_mutating(self):
         p = _triangle_prim()
         m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
-
         with raises_exact(ValueError, "Mesh.parents[0] = -2 < -1"):
             m.parents = [-2]
-
         assert m.parents == [-1]
 
     def test_set_names_revalidates(self):
@@ -181,6 +179,7 @@ class TestDescendants:
             transforms=[Mat4(), Mat4(), Mat4(), Mat4()],
             parents=[-1, 0, 0, 2],
         )
+
         # Tree: 0 (root) -> 1, 2; 2 -> 3.
         assert m.descendants(0) == [1, 2, 3]
         assert m.descendants(2) == [3]

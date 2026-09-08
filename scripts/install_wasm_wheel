@@ -95,6 +95,7 @@ def _validate_wheel_tag(wheel_path, version):
         wheel_metadata = Parser().parsestr(
             wheel_zip.read(wheel_metadata_name).decode("utf-8", errors="strict")
         )
+
     if wheel_metadata.get_all("Tag", []) != [EXPECTED_WHEEL_TAG]:
         raise ValueError(f"WHEEL Tag fields do not match {EXPECTED_WHEEL_TAG}")
 

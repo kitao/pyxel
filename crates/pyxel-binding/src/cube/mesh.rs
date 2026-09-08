@@ -45,11 +45,13 @@ impl Mesh {
             } else if !m.primitives.is_empty() {
                 m.names = vec![String::new(); m.primitives.len()];
             }
+
             if let Some(ci) = col_img {
                 m.col_img = parse_col_img(&ci)?;
             }
             m.colkey = colkey;
         }
+
         rc_ref!(&mesh).validate().map_err(PyValueError::new_err)?;
         Ok(Self::wrap(mesh))
     }
@@ -195,8 +197,6 @@ impl Mesh {
         self.inner_ref().descendants(i)
     }
 }
-
-// Internal helpers
 
 pub(crate) fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
     if let Ok(c) = v.extract::<i32>() {

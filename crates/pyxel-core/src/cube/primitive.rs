@@ -84,6 +84,7 @@ impl Primitive {
             self.normals = Vec::new();
             return;
         }
+
         let sequential = self.indices.is_empty();
         let face_count = if sequential {
             vertex_count / 3
@@ -91,6 +92,7 @@ impl Primitive {
             self.indices.len() / 3
         };
         let mut out = vec![0.0_f32; face_count * 3];
+
         for f in 0..face_count {
             let (a, b, c) = if sequential {
                 (f * 3, f * 3 + 1, f * 3 + 2)
@@ -103,12 +105,14 @@ impl Primitive {
                 }
                 (i0, i1, i2)
             };
+
             let pa = read_vec3(&self.positions, a);
             let pb = read_vec3(&self.positions, b);
             let pc = read_vec3(&self.positions, c);
             let face_normal = vec_normalize(vec_cross(vec_sub(pb, pa), vec_sub(pc, pa)));
             write_vec3(&mut out, f, face_normal);
         }
+
         self.normals = out;
     }
 }
@@ -193,12 +197,14 @@ fn clone_scaled(base: &Primitive, sx: f32, sy: f32, sz: f32) -> RcPrimitive {
         p.indices.clone_from(&base.indices);
         p.uvs.clone_from(&base.uvs);
         p.cull = base.cull;
+
         p.positions.reserve(base.positions.len());
         for chunk in base.positions.chunks(3) {
             p.positions.push(chunk[0] * sx);
             p.positions.push(chunk[1] * sy);
             p.positions.push(chunk[2] * sz);
         }
+
         p.compute_normals();
     }
     p
@@ -311,11 +317,13 @@ const ICOSA_BASE_EDGE_INDICES: [i32; 60] = [
     3, 6, 3, 8, 3, 9, 4, 5, 4, 9, 4, 11, 5, 9, 5, 11, 6, 7, 6, 8, 6, 10, 7, 8, 7, 10, 8, 9, 10, 11,
 ];
 
+// A level-1 subdivided icosahedron has 42 vertices, 80 triangles, and 120 edges.
 fn unit_icosa_lv1_positions() -> &'static [f32; 126] {
     static POSITIONS: OnceLock<[f32; 126]> = OnceLock::new();
     POSITIONS.get_or_init(|| {
         let mut p = [0.0_f32; 126];
         p[..36].copy_from_slice(&ICOSA_BASE_POSITIONS);
+
         for (edge_index, edge_pair) in ICOSA_BASE_EDGE_INDICES.chunks(2).enumerate() {
             let a = edge_pair[0] as usize;
             let b = edge_pair[1] as usize;
@@ -328,6 +336,7 @@ fn unit_icosa_lv1_positions() -> &'static [f32; 126] {
             p[dst + 1] = my * inv_len;
             p[dst + 2] = mz * inv_len;
         }
+
         p
     })
 }
@@ -348,6 +357,7 @@ fn unit_icosa_lv1_tri_indices() -> &'static [i32; 240] {
     static INDICES: OnceLock<[i32; 240]> = OnceLock::new();
     INDICES.get_or_init(|| {
         let mut out = [0_i32; 240];
+
         for (tri_index, tri) in ICOSA_BASE_TRI_INDICES.chunks(3).enumerate() {
             let (a, b, c) = (tri[0], tri[1], tri[2]);
             let m_ab = icosa_midpoint_vertex(a, b);
@@ -359,6 +369,7 @@ fn unit_icosa_lv1_tri_indices() -> &'static [i32; 240] {
             out[dst + 6..dst + 9].copy_from_slice(&[c, m_ca, m_bc]);
             out[dst + 9..dst + 12].copy_from_slice(&[m_ab, m_bc, m_ca]);
         }
+
         out
     })
 }
@@ -368,6 +379,7 @@ fn unit_icosa_lv1_edge_indices() -> &'static [i32; 240] {
     INDICES.get_or_init(|| {
         let mut out = [0_i32; 240];
         let mut cursor = 0;
+
         for (edge_index, edge_pair) in ICOSA_BASE_EDGE_INDICES.chunks(2).enumerate() {
             let (a, b) = (edge_pair[0], edge_pair[1]);
             let m = 12 + edge_index as i32;
@@ -377,6 +389,7 @@ fn unit_icosa_lv1_edge_indices() -> &'static [i32; 240] {
             out[cursor + 3] = b;
             cursor += 4;
         }
+
         for tri in ICOSA_BASE_TRI_INDICES.chunks(3) {
             let (a, b, c) = (tri[0], tri[1], tri[2]);
             let m_ab = icosa_midpoint_vertex(a, b);
@@ -390,6 +403,7 @@ fn unit_icosa_lv1_edge_indices() -> &'static [i32; 240] {
             out[cursor + 5] = m_ab;
             cursor += 6;
         }
+
         out
     })
 }
@@ -399,6 +413,7 @@ fn build_unit_sphere_textured() -> Primitive {
     let base_indices = unit_icosa_lv1_tri_indices();
     let vertex_count = base_positions.len() / 3;
     let mut base_uvs = Vec::with_capacity(vertex_count * 2);
+
     for i in 0..vertex_count {
         let x = base_positions[i * 3];
         let y = base_positions[i * 3 + 1];
@@ -423,6 +438,7 @@ fn build_unit_sphere_textured() -> Primitive {
         let u2 = base_uvs[i2 * 2];
         let straddles_seam = (u0.max(u1).max(u2) - u0.min(u1).min(u2)) > 0.5;
         let side = |u: f32| usize::from(straddles_seam && u < 0.5);
+
         indices.push(add_sphere_uv_vertex(
             &mut positions,
             &mut uvs,
@@ -451,6 +467,7 @@ fn build_unit_sphere_textured() -> Primitive {
             side(u2),
         ));
     }
+
     make_primitive(MODE_TRIANGLES, CULL_BACK, positions, indices, uvs)
 }
 
@@ -466,6 +483,7 @@ fn add_sphere_uv_vertex(
     if let Some(existing) = vertex_map[base_idx][seam_side] {
         return existing;
     }
+
     let new_idx = (positions.len() / 3) as i32;
     positions.extend_from_slice(&base_positions[base_idx * 3..base_idx * 3 + 3]);
     let mut u = base_uvs[base_idx * 2];
@@ -594,6 +612,7 @@ mod tests {
                 1.0, 1.0, 0.0, // 4
             ];
             p.indices = vec![0, 1, 2, 1, 4, 3];
+
             p.compute_normals();
         }
         let p = rc_ref!(&p);

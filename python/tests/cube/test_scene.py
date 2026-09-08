@@ -55,6 +55,7 @@ class TestCollisionPipeline:
         b = _CollisionCounter(Vec3(0.5, 0, 0))
         root.add_child(a)
         root.add_child(b)
+
         root.update()
         assert a.collide_count == 1
         assert b.collide_count == 1
@@ -65,6 +66,7 @@ class TestCollisionPipeline:
         b = _CollisionCounter(Vec3(5, 0, 0))
         root.add_child(a)
         root.add_child(b)
+
         root.update()
         assert a.collide_count == 0
         assert b.collide_count == 0
@@ -75,6 +77,7 @@ class TestCollisionPipeline:
         wall = _StaticCollisionCounter(Vec3(0.5, 0, 0))
         root.add_child(sensor)
         root.add_child(wall)
+
         root.update()
         assert sensor.collide_count == 1
         assert wall.collide_count == 1
@@ -95,6 +98,7 @@ class TestMeshColliderRobustness:
             transforms=[Mat4.IDENTITY],
             parents=[-1],
         )
+
         terrain = Node()
         terrain.collider = Collider(mesh=mesh, mass=0.0)
         root = Node()
@@ -108,6 +112,7 @@ class TestMeshColliderRobustness:
             [0, 1, 99, 0, -1, 2],
         )
         mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1])
+
         root = Node()
         terrain = Node()
         terrain.collider = Collider(mesh=mesh, mass=0.0)
@@ -116,7 +121,6 @@ class TestMeshColliderRobustness:
         root.add_child(ball)
 
         root.update()
-
         hit = root.raycast(Vec3(0, 5, 0), Vec3(0, -1, 0))
         assert hit is not None
         assert hit.node is ball
@@ -128,7 +132,6 @@ class TestMeshColliderRobustness:
         assert root.raycast(origin, direction) is not None
 
         primitive.positions[::3] = [value + 100.0 for value in primitive.positions[::3]]
-
         assert root.raycast(origin, direction) is None
 
     def test_primitive_index_mutation_invalidates_mesh_collision_cache(self):
@@ -138,11 +141,9 @@ class TestMeshColliderRobustness:
         assert root.raycast(origin, direction) is not None
 
         primitive.indices[:] = []
-
         assert root.raycast(origin, direction) is not None
 
         primitive.indices[:] = [0, 1, 99]
-
         assert root.raycast(origin, direction) is None
 
     def test_primitive_mode_mutation_invalidates_mesh_collision_cache(self):
@@ -152,7 +153,6 @@ class TestMeshColliderRobustness:
         assert root.raycast(origin, direction) is not None
 
         primitive.mode = Primitive.MODE_LINES
-
         assert root.raycast(origin, direction) is None
 
     @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
@@ -174,6 +174,7 @@ class TestMeshColliderRobustness:
         assert hit.node is root.children[0]
         assert hit.distance == 1.0
         assert (hit.point.x, hit.point.y, hit.point.z) == (0.0, y, 0.0)
+
         assert query(origin, direction, max_distance=0.5) == (
             [] if method == "raycast_all" else None
         )
@@ -186,6 +187,7 @@ class TestRaycast:
         far = _ball(Vec3(0, 0, -5))
         root.add_child(far)
         root.add_child(near)
+
         hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -1))
         assert hit is not None
         # The near sphere sits at z=0 with radius 0.5; the ray enters
@@ -224,6 +226,7 @@ class TestRaycast:
         ball.transform = Mat4.from_translation(Vec3.ZERO)
         ball.collider = Collider(radius=0.5)
         root.add_child(ball)
+
         hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -1))
         assert hit is not None
         assert gc.is_tracked(hit)
@@ -248,6 +251,7 @@ class TestOverlapQueries:
         outside = _ball(Vec3(10, 0, 0))
         root.add_child(inside)
         root.add_child(outside)
+
         nodes = root.overlap_sphere(Vec3.ZERO, 1.0)
         assert nodes == [inside]
 
@@ -257,6 +261,7 @@ class TestOverlapQueries:
         outside = _ball(Vec3(10, 0, 0))
         root.add_child(inside)
         root.add_child(outside)
+
         nodes = root.overlap_box(Mat4.IDENTITY, Vec3(2, 2, 2))
         assert nodes == [inside]
 
@@ -268,6 +273,7 @@ class TestOverlapQueries:
         friend.tags = ["friend"]
         root.add_child(enemy)
         root.add_child(friend)
+
         nodes = root.overlap_sphere(Vec3.ZERO, 1.0, tags=["enemy"])
         assert nodes == [enemy]
 
@@ -278,6 +284,7 @@ class TestOverlapQueries:
         root.add_child(trigger)
         nodes = root.overlap_sphere(Vec3.ZERO, 1.0)
         assert nodes == []
+
         nodes_with_triggers = root.overlap_sphere(Vec3.ZERO, 1.0, hit_triggers=True)
         assert nodes_with_triggers == [trigger]
 
@@ -307,7 +314,6 @@ class TestOrthoCameraClipping:
         scene.add_child(_ColoredBox(Vec3(0, 0, 8), 8))
 
         scene.draw(0, 0, pyxel.width, pyxel.height)
-
         assert pyxel.pget(pyxel.width // 2, pyxel.height // 2) == 11
 
 
@@ -325,6 +331,7 @@ class TestNestedDraw:
         root.camera.clear_color = 0
         hud = Hud()
         root.add_child(hud)
+
         with raises_exact(ValueError, "draw cannot be called from inside on_draw"):
             root.draw(0, 0, 32, 24)
 
@@ -354,9 +361,9 @@ class TestStateSetterIsolation:
         root.camera = self._camera()
         root.add_child(A())
         root.add_child(B())
+
         pyxel.cls(0)
         root.draw(0, 0, 160, 120)
-
         assert pyxel.pget(80, 60) == 8
 
     def test_child_isolation(self):
@@ -374,9 +381,9 @@ class TestStateSetterIsolation:
         parent = Parent()
         parent.add_child(Child())
         root.add_child(parent)
+
         pyxel.cls(0)
         root.draw(0, 0, 160, 120)
-
         assert pyxel.pget(80, 60) == 8
 
 

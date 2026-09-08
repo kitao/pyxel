@@ -146,7 +146,6 @@ impl Node {
         let Some(drawable) = self.drawable_primitive.borrow().clone() else {
             return Ok(());
         };
-
         let world_mat = self.world_mat();
         let p = rc_ref!(&drawable.primitive);
         self.draw_primitive(&world_mat, &p, &drawable.col_img, drawable.colkey)
@@ -167,6 +166,7 @@ impl Node {
         let uvs = (!p.uvs.is_empty()).then_some(p.uvs.as_slice());
         let (col_flat, col_image) = col_img.as_flat_and_image();
         let mut inner_result: Option<Result<(), &str>> = None;
+
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             inner_result = Some(pyxel::cube::draw::prim(
                 ctx,
@@ -231,7 +231,6 @@ impl Node {
         let node = bound.borrow();
         let node_source = node.mesh_source.borrow().clone();
         let node_index = *node.mesh_part_index.borrow();
-
         if node_source
             .as_ref()
             .is_some_and(|node_source| Rc::ptr_eq(node_source, source))
@@ -258,11 +257,13 @@ impl Node {
         let mut nodes = Vec::new();
         Self::collect_mesh_nodes(root, py, source, &mut nodes);
         nodes.sort_unstable_by_key(|(part_index, _)| *part_index);
+
         let mut node_cursor = 0;
         for (part_index, transform) in sampled {
             while node_cursor < nodes.len() && nodes[node_cursor].0 < part_index {
                 node_cursor += 1;
             }
+
             let mut matching_cursor = node_cursor;
             while matching_cursor < nodes.len() && nodes[matching_cursor].0 == part_index {
                 nodes[matching_cursor]
@@ -288,6 +289,7 @@ impl Node {
         args: &Bound<'_, PyTuple>,
         kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Self> {
+        // Subclass __init__ arguments pass through this inherited constructor.
         let node_type = cls.py().get_type::<Node>();
         let is_exact_node = cls.as_ptr() == node_type.as_ptr();
         let has_kwargs = kwargs.is_some_and(|kwargs| !kwargs.is_empty());
@@ -299,35 +301,45 @@ impl Node {
 
     #[staticmethod]
     fn from_mesh(py: Python<'_>, mesh: PyRef<'_, super::mesh::Mesh>) -> PyResult<Py<Node>> {
-        let mesh_inner = mesh.inner_ref();
-        mesh_inner.validate().map_err(PyValueError::new_err)?;
+        // Python allocations can trigger GC callbacks that mutate the source mesh.
+        let (nodes, parents) = {
+            let mesh_inner = mesh.inner_ref();
+            mesh_inner.validate().map_err(PyValueError::new_err)?;
 
-        let count = mesh_inner.primitives.len();
-        let mut nodes: Vec<Py<Node>> = Vec::with_capacity(count);
-        for i in 0..count {
-            let inner = InnerNode::new();
-            {
-                let mut node_inner = rc_mut!(&inner);
-                node_inner.name = mesh_inner.names.get(i).cloned().unwrap_or_default();
-                node_inner.transform = mesh_inner.transforms[i].clone();
+            let count = mesh_inner.primitives.len();
+            let mut nodes = Vec::with_capacity(count);
+            for i in 0..count {
+                let inner = InnerNode::new();
+                {
+                    let mut node_inner = rc_mut!(&inner);
+                    node_inner.name = mesh_inner.names.get(i).cloned().unwrap_or_default();
+                    node_inner.transform = mesh_inner.transforms[i].clone();
+                }
+
+                let node = Self::wrap(inner);
+                *node.mesh_source.borrow_mut() = Some(mesh.inner.clone());
+                *node.mesh_part_index.borrow_mut() = Some(i);
+                if let Some(primitive) = &mesh_inner.primitives[i] {
+                    let material = mesh_inner.material_for_part(i);
+                    *node.drawable_primitive.borrow_mut() = Some(DrawablePrimitive {
+                        primitive: primitive.clone(),
+                        col_img: material.col_img,
+                        colkey: material.colkey,
+                    });
+                }
+                nodes.push(node);
             }
 
-            let node = Self::wrap(inner);
-            *node.mesh_source.borrow_mut() = Some(mesh.inner.clone());
-            *node.mesh_part_index.borrow_mut() = Some(i);
-            if let Some(primitive) = &mesh_inner.primitives[i] {
-                let material = mesh_inner.material_for_part(i);
-                *node.drawable_primitive.borrow_mut() = Some(DrawablePrimitive {
-                    primitive: primitive.clone(),
-                    col_img: material.col_img,
-                    colkey: material.colkey,
-                });
-            }
-            nodes.push(Py::new(py, node)?);
-        }
+            (nodes, mesh_inner.parents.clone())
+        };
+
+        let nodes = nodes
+            .into_iter()
+            .map(|node| Py::new(py, node))
+            .collect::<PyResult<Vec<_>>>()?;
 
         let mut root_indices = Vec::new();
-        for (i, &parent) in mesh_inner.parents.iter().enumerate() {
+        for (i, &parent) in parents.iter().enumerate() {
             if parent == -1 {
                 root_indices.push(i);
             } else {
@@ -456,6 +468,7 @@ impl Node {
     fn children<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyTuple>> {
         let core_children = InnerNode::children(&self.inner);
         let mut cache = self.children.borrow_mut();
+
         // Reconcile wrappers with core children while preserving Python identity.
         // Wide nodes use a pointer index to keep lookup linear.
         let mut items: Vec<Py<Node>> = Vec::with_capacity(core_children.len());
@@ -479,6 +492,7 @@ impl Node {
                 }
             }
         }
+
         let unchanged = items.len() == cache.len()
             && items
                 .iter()
@@ -487,6 +501,7 @@ impl Node {
         if !unchanged {
             *cache = items.iter().map(|p| p.clone_ref(py)).collect();
         }
+
         // The tuple allocation can run Python's gc, whose __traverse__
         // reads the cache, so release the borrow first.
         drop(cache);
@@ -597,6 +612,8 @@ impl Node {
         InnerNode::destroy(&slf.inner);
     }
 
+    // Motion
+
     #[pyo3(signature = (motion, frame, *, r#loop=true))]
     fn apply_motion(
         slf: PyRef<'_, Self>,
@@ -636,6 +653,7 @@ impl Node {
         } else {
             start_frame
         };
+
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
         Self::apply_motion_inner(&self_py, py, &source, &motion_inner, start_frame, r#loop);
         *self_py.bind(py).borrow().motion_player.borrow_mut() = Some(MotionPlayer {
@@ -666,6 +684,8 @@ impl Node {
 
     #[allow(clippy::unused_self)]
     fn on_destroy(&self) {}
+
+    // Drawing state
 
     // PyO3 requires instance receivers; these setters use the active draw context.
     #[allow(clippy::unused_self)]
@@ -935,6 +955,8 @@ impl Node {
         });
     }
 
+    // Frame lifecycle
+
     // Each phase visits the whole subtree before the next phase begins.
     fn update(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<()> {
         let root_inner = slf.inner.clone();
@@ -942,6 +964,7 @@ impl Node {
         traverse_update(&any)?;
         traverse_motion_players(&any)?;
         pyxel::cube::Scene::integrate_motion(&root_inner);
+
         let pairs = pyxel::cube::Scene::detect_contacts(&root_inner);
         if !pairs.is_empty() {
             let node_index = build_py_node_index(&any)?;
@@ -957,6 +980,7 @@ impl Node {
                 }
             }
         }
+
         let destroyed = pyxel::cube::Scene::collect_destroyed_post_order(&root_inner);
         if !destroyed.is_empty() {
             let node_index = build_py_node_index(&any)?;
@@ -965,6 +989,7 @@ impl Node {
                     py_node.bind(py).call_method0("on_destroy")?;
                 }
             }
+
             for inner in &destroyed {
                 if let Some(py_node) = find_indexed_py_node(&node_index, inner, py) {
                     py_node.bind(py).borrow().detach_from_parent_py(py);
@@ -991,6 +1016,7 @@ impl Node {
                 "draw cannot be called from inside on_draw",
             ));
         }
+
         let node_inner = slf.borrow().inner.clone();
         let cam_inner = InnerNode::effective_camera(&node_inner).ok_or_else(|| {
             PyValueError::new_err("draw requires a camera on this node or an ancestor")
@@ -1004,16 +1030,19 @@ impl Node {
         if let Some(col) = rc_ref!(&cam_inner).clear_color {
             rc_mut!(&target_rc).clear(col as u8);
         }
+
         // Lend camera buffers to the draw context for this traversal.
         rc_mut!(&cam_inner).ensure_depth(target_w, target_h);
         rc_mut!(&cam_inner).clear_depth();
         let depth = std::mem::take(&mut rc_mut!(&cam_inner).depth);
         let vertex_cache = std::mem::take(&mut rc_mut!(&cam_inner).vertex_scratch);
+
         let view = view_matrix(&rc_ref!(&cam_inner));
         let proj = projection_matrix(&rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);
         let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(x as f32, y as f32, w as f32, h as f32, target_w, target_h);
+
         set_draw_context(DrawContext {
             target: target_rc,
             vp,
@@ -1024,16 +1053,19 @@ impl Node {
             vp_h: h as f32,
             clip,
             camera: cam_inner.clone(),
+
             depth,
             depth_w: target_w,
             depth_h: target_h,
             vertex_cache,
+
             dither_alpha: 1.0,
             depth_test: true,
             depth_write: true,
             depth_offset: 0.0,
             shaded: true,
         });
+
         let any = slf.into_any();
         let result = traverse_draw(&any);
         if let Some(ctx) = take_draw_context() {
@@ -1068,6 +1100,7 @@ impl Node {
             hit_triggers,
             tags.as_deref(),
         );
+
         match hit {
             Some(info) => {
                 let node_index = build_py_node_index(&root_any)?;
@@ -1103,6 +1136,7 @@ impl Node {
         if infos.is_empty() {
             return Ok(Vec::new());
         }
+
         let node_index = build_py_node_index(&root_any)?;
         let mut out: Vec<super::raycast_hit::RaycastHit> = Vec::with_capacity(infos.len());
         for info in infos {
@@ -1133,6 +1167,7 @@ impl Node {
         if inner_results.is_empty() {
             return Ok(Vec::new());
         }
+
         let node_index = build_py_node_index(&root_any)?;
         Ok(wrap_node_results(&node_index, py, &inner_results))
     }
@@ -1160,6 +1195,7 @@ impl Node {
         if inner_results.is_empty() {
             return Ok(Vec::new());
         }
+
         let node_index = build_py_node_index(&root_any)?;
         Ok(wrap_node_results(&node_index, py, &inner_results))
     }
@@ -1208,6 +1244,7 @@ fn traverse_update(root: &Bound<'_, PyAny>) -> PyResult<()> {
 fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
     let py = root.py();
     let mut stack = vec![root.clone().unbind()];
+
     while let Some(node) = stack.pop() {
         let node = node.bind(py);
         if !node.getattr("active")?.extract::<bool>()? {
@@ -1234,6 +1271,7 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
             );
             *node_py.bind(node.py()).borrow().motion_player.borrow_mut() = Some(player);
         }
+
         push_children_reverse(node_bound, py, &mut stack);
     }
     Ok(())
@@ -1279,7 +1317,6 @@ fn build_py_node_index(root: &Bound<'_, PyAny>) -> PyResult<PyNodeIndex> {
         drop(node_ref);
         index.insert(key, node_bound.clone().unbind());
     }
-
     Ok(index)
 }
 

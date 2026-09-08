@@ -80,8 +80,6 @@ impl Vec3 {
         self.inner_ref().z
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let v = self.inner_ref();
         format!("Vec3({}, {}, {})", v.x, v.y, v.z)
@@ -93,6 +91,7 @@ impl Vec3 {
 
     fn __hash__(&self) -> u64 {
         use std::hash::{Hash, Hasher};
+
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         let v = self.inner_ref();
         // Adding 0.0 folds -0.0 into +0.0 so values equal under __eq__ hash equally.

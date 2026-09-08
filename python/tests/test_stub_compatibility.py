@@ -10,6 +10,7 @@ def test_stub_accepts_none_reset_calls(tmp_path):
     source = tmp_path / "reset_calls.py"
     source.write_text(
         "import pyxel\n"
+        "\n"
         "pyxel.clip()\n"
         "pyxel.clip(None)\n"
         "pyxel.clip(w=None)\n"
@@ -22,6 +23,7 @@ def test_stub_accepts_none_reset_calls(tmp_path):
         "pyxel.pal(None)\n"
         "pyxel.pal(col2=None)\n"
         "pyxel.pal(None, None)\n"
+        "\n"
         "image = pyxel.Image(1, 1)\n"
         "image.clip()\n"
         "image.clip(None)\n"
@@ -35,6 +37,7 @@ def test_stub_accepts_none_reset_calls(tmp_path):
         "image.pal(None)\n"
         "image.pal(col2=None)\n"
         "image.pal(None, None)\n"
+        "\n"
         "tilemap = pyxel.Tilemap(1, 1, 0)\n"
         "tilemap.clip()\n"
         "tilemap.clip(None)\n"
@@ -46,8 +49,8 @@ def test_stub_accepts_none_reset_calls(tmp_path):
         "tilemap.camera(None, None)\n",
         encoding="utf-8",
     )
-    result = _run_mypy(source)
 
+    result = _run_mypy(source)
     assert result.returncode == 0, result.stdout + result.stderr
 
 
@@ -55,12 +58,14 @@ def test_stub_rejects_partial_numeric_or_mixed_none_reset_calls(tmp_path):
     source = tmp_path / "invalid_reset_calls.py"
     source.write_text(
         "import pyxel\n"
+        "\n"
         "pyxel.clip(1.0)\n"
         "pyxel.clip(None, 2.0, None, None)\n"
         "pyxel.camera(1.0)\n"
         "pyxel.camera(None, 2.0)\n"
         "pyxel.pal(1)\n"
         "pyxel.pal(None, 2)\n"
+        "\n"
         "image = pyxel.Image(1, 1)\n"
         "image.clip(1.0)\n"
         "image.clip(None, 2.0, None, None)\n"
@@ -68,6 +73,7 @@ def test_stub_rejects_partial_numeric_or_mixed_none_reset_calls(tmp_path):
         "image.camera(None, 2.0)\n"
         "image.pal(1)\n"
         "image.pal(None, 2)\n"
+        "\n"
         "tilemap = pyxel.Tilemap(1, 1, 0)\n"
         "tilemap.clip(1.0)\n"
         "tilemap.clip(None, 2.0, None, None)\n"
@@ -75,8 +81,8 @@ def test_stub_rejects_partial_numeric_or_mixed_none_reset_calls(tmp_path):
         "tilemap.camera(None, 2.0)\n",
         encoding="utf-8",
     )
-    result = _run_mypy(source)
 
+    result = _run_mypy(source)
     assert result.returncode == 1
     assert result.stdout.count("[call-overload]") == 16, result.stdout
 
@@ -95,8 +101,8 @@ def test_cube_stub_exposes_primitive_lists(tmp_path):
         "Shading(pyxel.colors).build(pyxel.colors)\n",
         encoding="utf-8",
     )
-    result = _run_mypy(source)
 
+    result = _run_mypy(source)
     assert result.returncode == 0, result.stdout + result.stderr
 
 
@@ -104,6 +110,7 @@ def test_stub_exposes_resource_lists(tmp_path):
     source = tmp_path / "resource_lists.py"
     source.write_text(
         "import pyxel\n"
+        "\n"
         "colors: list[int] = pyxel.colors\n"
         "images: list[pyxel.Image] = pyxel.images\n"
         "tilemaps: list[pyxel.Tilemap] = pyxel.tilemaps\n"
@@ -111,12 +118,14 @@ def test_stub_exposes_resource_lists(tmp_path):
         "tones: list[pyxel.Tone] = pyxel.tones\n"
         "sounds: list[pyxel.Sound] = pyxel.sounds\n"
         "musics: list[pyxel.Music] = pyxel.musics\n"
+        "\n"
         "sound = pyxel.Sound()\n"
         "notes: list[int] = sound.notes\n"
         "tone_values: list[int] = sound.tones\n"
         "volumes: list[int] = sound.volumes\n"
         "effects: list[int] = sound.effects\n"
         "wavetable: list[int] = pyxel.Tone().wavetable\n"
+        "\n"
         "music = pyxel.Music()\n"
         "seqs: list[list[int]] = music.seqs\n"
         "music.set(*seqs)\n"
@@ -124,8 +133,8 @@ def test_stub_exposes_resource_lists(tmp_path):
         "pyxel.Channel().play(sounds)\n",
         encoding="utf-8",
     )
-    result = _run_mypy(source)
 
+    result = _run_mypy(source)
     assert result.returncode == 0, result.stdout + result.stderr
 
 
@@ -135,12 +144,14 @@ def test_stub_rejects_resource_property_assignment(
     source = tmp_path / "invalid_resource_operations.py"
     source.write_text(
         "import pyxel\n"
+        "\n"
         "image = pyxel.Image(1, 1)\n"
         "image.width = 2\n"
         "image.height = 2\n"
         "tilemap = pyxel.Tilemap(1, 1, 0)\n"
         "tilemap.width = 2\n"
         "tilemap.height = 2\n"
+        "\n"
         "sound = pyxel.Sound()\n"
         "sound.notes = [1]\n"
         "sound.tones = [1]\n"
@@ -152,8 +163,8 @@ def test_stub_rejects_resource_property_assignment(
         "pyxel.Music().seqs += [[1]]\n",
         encoding="utf-8",
     )
-    result = _run_mypy(source)
 
+    result = _run_mypy(source)
     assert result.returncode == 1
     assert result.stdout.count("is read-only") == 12, result.stdout
 
@@ -171,6 +182,7 @@ def test_cube_stub_rejects_read_only_property_assignment(tmp_path):
         "primitive.positions = [0.0]\n",
         encoding="utf-8",
     )
+
     result = _run_mypy(source)
 
     assert result.returncode == 1
@@ -186,7 +198,6 @@ def test_cube_stub_rejects_read_only_property_assignment(tmp_path):
 
 def _run_mypy(source):
     env = {**os.environ, "MYPYPATH": str(ROOT_DIR / "python")}
-
     return subprocess.run(
         [sys.executable, "-m", "mypy", "--no-error-summary", str(source)],
         cwd=ROOT_DIR,

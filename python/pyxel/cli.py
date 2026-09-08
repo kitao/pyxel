@@ -128,7 +128,6 @@ def watch_and_run_python_script(watch_dir: str, python_script_file: str) -> None
 def get_pyxel_app_metadata(pyxel_app_file: str) -> dict[str, str]:
     _check_file_exists(pyxel_app_file)
     metadata: dict[str, str] = {}
-
     with zipfile.ZipFile(pyxel_app_file) as zf:
         if not zf.comment:
             return metadata
@@ -140,7 +139,6 @@ def get_pyxel_app_metadata(pyxel_app_file: str) -> dict[str, str]:
         if ":" in line:
             key, value = line.split(":", 1)
             metadata[key.strip()] = value.strip()
-
     return metadata
 
 
@@ -161,7 +159,6 @@ def play_pyxel_app(pyxel_app_file: str) -> None:
 
     print_pyxel_app_metadata(pyxel_app_file)
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
-
     if not startup_script_file:
         _exit_with_error(f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
 
@@ -176,7 +173,6 @@ def edit_pyxel_resource(
 
     if not pyxel_resource_file:
         pyxel_resource_file = "my_resource"
-
     pyxel_resource_file = _complete_extension(
         pyxel_resource_file, "edit", pyxel.RESOURCE_FILE_EXTENSION
     )
@@ -227,6 +223,7 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
             ).as_posix()
             zf.writestr(startup_arcname, startup_marker)
             print(f"added '{startup_arcname}'")
+
             for file in _files_in_dir(app_path):
                 file_path = Path(file)
                 relative_path = file_path.relative_to(app_path)
@@ -239,6 +236,7 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
                 arcname = file_path.relative_to(app_parent_dir).as_posix()
                 zf.write(file_path, arcname)
                 print(f"added '{arcname}'")
+
         temp_app_path.replace(pyxel_app_path)
     finally:
         temp_app_path.unlink(missing_ok=True)
@@ -294,7 +292,6 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
         ]
         print(" ".join(command))
         result = subprocess.run(command, check=False)
-
         if result.returncode != 0:
             _exit_with_error(
                 f"PyInstaller build failed with exit code {result.returncode}"
@@ -398,7 +395,6 @@ def _resolve_pyxapp_startup_path(
 ) -> Path | None:
     if not startup_path:
         return None
-
     application_dir = application_dir.resolve()
     # Try native paths first to preserve POSIX filenames containing backslashes.
     relative_paths = [Path(startup_path)]
@@ -490,6 +486,7 @@ def _extract_pyxel_app(pyxel_app_file):
             target = (app_dir / name).resolve()
             if target != app_dir_abs and not target.is_relative_to(app_dir_abs):
                 _exit_with_error(f"unsafe path in Pyxel app: '{name}'")
+
         zf.extractall(app_dir)
 
     for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
@@ -505,7 +502,6 @@ def _extract_pyxel_app(pyxel_app_file):
 
 def _make_metadata_comment(startup_script_file):
     metadata = {}
-
     with Path(startup_script_file).open(encoding="utf-8") as f:
         for line in f:
             match = _METADATA_PATTERN.match(line)
@@ -528,7 +524,6 @@ def _make_metadata_comment(startup_script_file):
             value = metadata[key]
             metadata_comment += f"{key.ljust(max_key_len)} : {value}\n"
     metadata_comment += border
-
     return metadata_comment
 
 

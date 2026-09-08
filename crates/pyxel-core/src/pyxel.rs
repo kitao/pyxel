@@ -137,6 +137,7 @@ impl<T> DerefMut for AudioGlobalGuard<T> {
     }
 }
 
+// Audio banks are shared with SDL's callback thread.
 macro_rules! define_audio_global {
     ($func:ident, $static:ident, $type:ty, $init:expr) => {
         static $static: Mutex<Option<$type>> = Mutex::new(None);
@@ -197,17 +198,14 @@ pub fn init(
 
     let headless = headless.unwrap_or(false);
     *is_headless() = headless;
-
     *width() = w;
     *height() = h;
     *frame_count() = 0;
-
     let title = title.unwrap_or(DEFAULT_TITLE);
     let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
     let fps = fps.unwrap_or(DEFAULT_FPS);
 
     platform::init(headless);
-
     if !headless {
         let (display_width, display_height) = platform::display_size();
         let display_scale = display_scale
@@ -220,7 +218,6 @@ pub fn init(
             .max(1);
         let window_width = w * display_scale;
         let window_height = h * display_scale;
-
         platform::init_window(title, window_width, window_height);
     }
 
@@ -243,7 +240,6 @@ pub fn init(
     } else {
         Some(Graphics::new())
     };
-
     set_pyxel(Pyxel {
         system,
         resource,
@@ -272,6 +268,7 @@ pub fn validate_init_params(
     if fps.unwrap_or(DEFAULT_FPS) == 0 {
         return Err("fps must be greater than 0".to_string());
     }
+
     if !headless.unwrap_or(false) {
         validate_platform_screen_dimensions(w, h)?;
         let max_window_size = i32::MAX as u32;
@@ -288,6 +285,7 @@ pub fn validate_init_params(
             }
         }
     }
+
     validate_screen_area(w, h)?;
     Ok(())
 }
@@ -409,6 +407,7 @@ fn init_font_image() -> RcImage {
         palette_is_identity: true,
     });
     let mut image = rc_mut!(rc);
+
     // Each u32 packs one 4x6 glyph MSB-first in its low 24 bits (bit 23 = top-left)
     for (i, data) in FONT_DATA.iter().enumerate() {
         let row = i as u32 / NUM_FONT_COLS;
@@ -424,6 +423,7 @@ fn init_font_image() -> RcImage {
             }
         }
     }
+
     drop(image);
     rc
 }
@@ -474,7 +474,6 @@ mod tests {
     #[test]
     fn scalar_state_is_isolated_between_threads() {
         *width() = 123;
-
         std::thread::spawn(|| {
             *width() = 999;
             assert_eq!(*width(), 999);
@@ -499,6 +498,7 @@ mod tests {
                 std::sync::Arc::as_ptr(&musics[0]) as usize,
             )
         };
+
         let callback_resources = std::thread::spawn(|| {
             let channels = channels();
             let tones = tones();

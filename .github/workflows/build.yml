@@ -223,7 +223,6 @@ jobs:
 
           export PKG_CONFIG_LIBDIR="$SYSROOT/usr/lib/pkgconfig"
           export PKG_CONFIG_PATH=""
-
           cmake -S SDL2-${{ env.SDL2_VERSION }} -B sdl2-build \
             -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
             -DCMAKE_BUILD_TYPE=Release \
@@ -243,7 +242,6 @@ jobs:
             -DSDL_ALSA=ON -DSDL_ALSA_SHARED=ON \
             -DSDL_PULSEAUDIO=ON -DSDL_PULSEAUDIO_SHARED=ON \
             -DSDL_DBUS=ON
-
           cmake --build sdl2-build -j$(nproc)
           cmake --install sdl2-build
 
@@ -276,8 +274,7 @@ jobs:
           export BINDGENFLAGS="-I$PREFIX/include/SDL2 -I$SYSROOT/usr/include"
           export RUSTFLAGS="-L$PREFIX/lib"
           export LD_LIBRARY_PATH="$PREFIX/lib:${LD_LIBRARY_PATH:-}"
-
-          # Bundle SDL2 for X11/Wayland (other backends use system SDL2)
+          # Bundle an SDL2 fallback with X11/Wayland support.
           mkdir -p python/pyxel/libs
           cp $PREFIX/lib/libSDL2-2.0.so.0 python/pyxel/libs/
           make TARGET=${{ matrix.target }} MATURIN_OPTS="--manylinux 2_28 --auditwheel skip"
@@ -357,7 +354,6 @@ jobs:
           mkdir -p /tmp/wheel-contents
           unzip -o dist/*.whl -d /tmp/wheel-contents
           SDL2_LIB=$(find /tmp/wheel-contents -path "*/libs/libSDL2*" -name "*.so*" -print -quit 2>/dev/null)
-
           if [ -z "$SDL2_LIB" ]; then
             echo "FAIL: Could not find bundled SDL2 in libs/ directory"
             exit 1

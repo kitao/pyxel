@@ -123,10 +123,12 @@ seq = pyxel.Sound().notes if {kind!r} == "notes" else pyxel.Music().seqs
 value = 1 if {kind!r} == "notes" else [1]
 seq[:] = [value, value]
 
+
 class Start:
     def __index__(self):
         seq.clear()
         return 0
+
 
 if {operation!r} == "get":
     assert seq[Start():] == []
@@ -183,6 +185,7 @@ class TestSeqDelitem:
         try:
             pyxel.sounds.append(pyxel.Sound())
             assert len(pyxel.sounds) == len(original) + 1
+
             del pyxel.sounds[-1]
             assert len(pyxel.sounds) == len(original)
         finally:
@@ -214,6 +217,7 @@ class TestSeqAppendPop:
         try:
             sequence.append(item)
             assert len(sequence) == len(original) + 1
+
             popped = sequence.pop()
             assert len(sequence) == len(original)
             assert isinstance(popped, item_type)
@@ -287,7 +291,6 @@ class TestSeqSliceOperations:
         original = [pyxel.colors[0], pyxel.colors[2]]
         try:
             pyxel.colors[0:3:2] = [0x123456, 0xABCDEF]
-
             assert pyxel.colors[0] == 0x123456
             assert pyxel.colors[2] == 0xABCDEF
         finally:
@@ -298,7 +301,6 @@ class TestSeqSliceOperations:
         untouched_size = (pyxel.images[1].width, pyxel.images[1].height)
         try:
             pyxel.images[0:3:2] = [pyxel.Image(3, 5), pyxel.Image(7, 9)]
-
             assert (pyxel.images[0].width, pyxel.images[0].height) == (3, 5)
             assert (pyxel.images[1].width, pyxel.images[1].height) == untouched_size
             assert (pyxel.images[2].width, pyxel.images[2].height) == (7, 9)
@@ -477,6 +479,67 @@ class TestSeqValueOps:
         assert isinstance(result, list)
 
 
+class TestSeqReentry:
+    @pytest.mark.parametrize(
+        ("operation", "expected"),
+        [
+            ("iter(seq)", [1, 2, 3]),
+            ("repr(seq)", "Wavetable[1, 2, 3]"),
+            ("operator.mul(seq, 2)", [1, 2, 3, 1, 2, 3]),
+        ],
+    )
+    def test_sequence_results_allow_garbage_collection_reentry(
+        self, operation, expected
+    ):
+        code = """
+import gc
+import operator
+
+import pyxel
+
+seq = pyxel.Tone().wavetable
+seq[:] = [1, 2, 3]
+active = False
+collected = False
+
+
+def collect(phase, info):
+    global collected
+    if active and phase == "start":
+        seq.clear()
+        collected = True
+
+
+gc.callbacks.append(collect)
+gc.collect()
+gc.disable()
+# Exhaust the list free list so constructing a result can trigger collection.
+retained = [[] for _ in range(1000)]
+gc.set_threshold(1, 1000000, 1000000)
+active = True
+gc.enable()
+
+result = OPERATION
+active = False
+gc.callbacks.remove(collect)
+
+assert collected
+if not isinstance(result, str):
+    result = list(result)
+assert result == EXPECTED
+assert len(seq) == 0
+    """
+        code = code.replace("OPERATION", operation).replace("EXPECTED", repr(expected))
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+
 class TestDeprecatedSequenceMethods:
     @pytest.mark.parametrize("case", DEPRECATED_SEQUENCE_CASES)
     def test_from_list_replaces_values_and_warns(self, capfd, case):
@@ -485,7 +548,6 @@ class TestDeprecatedSequenceMethods:
         original = list(sequence)
         try:
             result = sequence.from_list(replacements)  # type: ignore[attr-defined]
-
             assert result is None
             assert sequence_snapshot(case, sequence) == sequence_snapshot(
                 case, replacements
@@ -501,9 +563,7 @@ class TestDeprecatedSequenceMethods:
     def test_to_list_returns_values_and_warns(self, capfd, case):
         sequence, _ = make_deprecated_sequence_case(case)
         wrapper_name = type(sequence).__name__
-
         result = sequence.to_list()  # type: ignore[attr-defined]
-
         assert isinstance(result, list)
         assert sequence_snapshot(case, result) == sequence_snapshot(case, sequence)
         assert (
@@ -537,10 +597,8 @@ def make_deprecated_sequence_case(case):
 
     if case == "colors":
         return pyxel.colors, [0x123456, 0xABCDEF]
-
     if case == "images":
         return pyxel.images, [pyxel.Image(3, 5)]
-
     if case == "tilemaps":
         return pyxel.tilemaps, [pyxel.Tilemap(4, 6, 0)]
 
@@ -572,10 +630,8 @@ def make_deprecated_sequence_case(case):
 def sequence_snapshot(case, sequence):
     if case == "images":
         return [(item.width, item.height) for item in sequence]
-
     if case == "tilemaps":
         return [(item.width, item.height, item.imgsrc) for item in sequence]
-
     if case == "channels":
         return [(item.gain, item.detune) for item in sequence]
 

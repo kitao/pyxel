@@ -22,7 +22,6 @@ def test_generate_from_html_rejects_missing_update_texts(tmp_path):
         ValueError, f"{html_path}: required function updateTexts() not found"
     ):
         generate_docs.generate_from_html(html_path, json_path, "broken")
-
     assert not (generate_docs.DOCS_DIR / "broken.md").exists()
 
 
@@ -49,7 +48,6 @@ def test_link_lists_preserve_pairs_and_separator(padding, separator):
 def test_mapped_labels_preserve_separator():
     generate_docs = _load_generate_docs()
     evaluator = generate_docs.JsEval({}, {})
-
     assert evaluator.eval('["A", "B"].map(k => `${k}`).join(", ")') == "A, B"
 
 
@@ -57,7 +55,6 @@ def test_keyboard_diagram_renders_rest_as_text():
     generate_docs = _load_generate_docs()
     data = json.loads(generate_docs.EDITOR_MANUAL_JSON.read_text(encoding="utf-8"))
     evaluator = generate_docs.JsEval({}, data)
-
     assert evaluator.eval("keyboardDiagram()").endswith("\n\n**Rest:** A\n")
 
 
@@ -72,7 +69,6 @@ def test_keyboard_diagram_renders_rest_as_text():
 def test_string_concatenation_preserves_literal_contents(expression, expected):
     generate_docs = _load_generate_docs()
     evaluator = generate_docs.JsEval({}, {})
-
     assert evaluator.eval(expression) == expected
 
 

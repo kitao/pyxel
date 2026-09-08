@@ -16,6 +16,47 @@ const sharedSource = fs.readFileSync(
   "utf8",
 );
 
+test("unknown errors retain their summary without duplicating stack headers", () => {
+  const format = loadArrowFunction(pyxelSource, "_formatUnknownError", {});
+  const summary = "TypeError: invalid value";
+  const frames = "    at run (app.js:1:2)";
+  for (const stack of ["", frames, `${summary}\n${frames}`, summary]) {
+    assert.equal(
+      format({ name: "TypeError", message: "invalid value", stack }),
+      stack.includes(frames) ? `${summary}\n${frames}` : summary,
+    );
+  }
+});
+
+test("optional showcase registration failures stay inside its warning handler", async () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, "..", "..", "scripts", "start_showcase"),
+    "utf8",
+  );
+  const script = source.match(
+    /INJECT_SNIPPET = """\s*<script>([\s\S]*?)<\/script>/,
+  )[1];
+  for (const asynchronous of [false, true]) {
+    const failure = new Error("registration denied");
+    const warnings = [];
+    const context = {
+      location: { hostname: "localhost" },
+      window: { isSecureContext: true },
+      navigator: {
+        serviceWorker: {
+          register() {
+            if (asynchronous) return Promise.reject(failure);
+            throw failure;
+          },
+        },
+      },
+      console: { warn: (...args) => warnings.push(args) },
+    };
+    await vm.runInNewContext(script, context);
+    assert.deepEqual(warnings, [["SW register failed", failure]]);
+  }
+});
+
 const loadVirtualGamepad = () => {
   const screen = { style: {}, appendChild() {} };
   const rects = {
@@ -161,8 +202,10 @@ for (const order of [
       runtimeScreen.contentWindow = frameWindow;
       runtimeScreen.dispatchEvent(new Event("load"));
     }
+
     finishDecode("t120cdef;;;");
     await pending;
+
     if (order !== "frame-before-decode") {
       assert.equal(buttons[0].disabled, true);
       textareas[0].value = "t90gab";
@@ -208,6 +251,7 @@ for (const state of ["both initialized", "one awaiting input"]) {
       "waitForPyxelReady",
       context,
     );
+
     loadNamedFunction(source, "onPyxelReady", context)();
     assert.equal(controls["run-button"].disabled, true);
 
@@ -220,7 +264,6 @@ for (const state of ["both initialized", "one awaiting input"]) {
         ? { initialized: false, resolveInput() {} }
         : { initialized: true, resolveInput: null };
     polls.shift()();
-
     assert.equal(controls["run-button"].disabled, false);
     assert.equal(controls["resource-tab-button"].disabled, false);
     assert.equal(controls["splitter-handle"].style.pointerEvents, "auto");
@@ -243,7 +286,6 @@ test("virtual gamepad releases canceled touches", () => {
   let preventDefaultCalls = 0;
   event.preventDefault = () => preventDefaultCalls++;
   gamepad.document.dispatchEvent(event);
-
   assert.equal(gamepad.read(), 0);
   assert.equal(preventDefaultCalls, 0);
 });
@@ -269,7 +311,6 @@ test("virtual gamepad replaces touch handlers before controls load", () => {
     { clientX: 250, clientY: 75 },
   ]);
   assert.equal(gamepad.read(), 1 << 4);
-
   for (const type of ["touchstart", "touchmove", "touchend", "touchcancel"]) {
     assert.equal(
       getEventListeners(gamepad.document, type).length,
@@ -298,7 +339,6 @@ test("virtual gamepad refreshes touch bounds after screen sizing", () => {
   dispatchTouches(gamepad.document, "touchmove", [
     { clientX: 100, clientY: 50 },
   ]);
-
   assert.equal(gamepad.read(), 1 << 0);
 });
 
@@ -355,7 +395,6 @@ test("launchPyxel preserves initialization failures for external callers", async
     launchPyxel({ command: "run" }),
     (error) => error === failure,
   );
-
   assert.equal(reportedError, null);
 });
 
@@ -387,7 +426,6 @@ test("launchPyxel reports command failures and resolves for external callers", a
   const launchPyxel = loadNamedFunction(pyxelSource, "launchPyxel", context);
 
   await launchPyxel({ command: "run" });
-
   assert.equal(window.pyxelContext.initialized, true);
   assert.equal(reportedError, failure);
 });
@@ -437,14 +475,13 @@ test("simultaneous bootstrap failures have one fatal path and no unhandled rejec
       _displayFatalErrorOverlay: (error) => fatalErrors.push(error),
     },
   );
+
   const unhandled = [];
   const recordUnhandled = (error) => unhandled.push(error);
   process.on("unhandledRejection", recordUnhandled);
-
   try {
     launchFromElement({ command: "run" });
     await new Promise((resolve) => setTimeout(resolve, 20));
-
     assert.deepEqual(fatalErrors, [scriptFailure]);
     assert.deepEqual(unhandled, []);
   } finally {
@@ -463,7 +500,6 @@ test("_loadImage rejects immediately when an image fails to load", async () => {
 
   const pending = loadImage(image, "missing.png");
   listeners.get("error")();
-
   await assert.rejects(pending, {
     name: "Error",
     message: "Failed to load image: missing.png",
@@ -521,7 +557,6 @@ test("the startup prompt is keyboard accessible", async () => {
 
   const pending = waitForInput();
   await new Promise((resolve) => setImmediate(resolve));
-
   assert.equal(prompt.alt, "Start Pyxel");
   assert.equal(prompt.role, "button");
   assert.equal(prompt.tabIndex, 0);
@@ -543,7 +578,6 @@ test("the startup prompt is keyboard accessible", async () => {
     },
   });
   await pending;
-
   assert.equal(defaultPrevented, true);
   assert.equal(prompt.removed, true);
   assert.equal(window.pyxelContext.resolveInput, null);
@@ -577,7 +611,6 @@ test("custom-element launch callbacks consume rejected promises", async () => {
 
   assert.equal(launchFromElement({ command: "run" }), undefined);
   await new Promise((resolve) => setImmediate(resolve));
-
   assert.equal(reportedError, failure);
 });
 
@@ -620,9 +653,19 @@ test("Web runtime escapes reserved characters in fetched file paths", () => {
   hookFileOperations({ FS: fs }, "https://example.test/root");
 
   fs.open("/work/apps/demo#preview?.py", 557056);
-
+  for (const name of [
+    "/work-other/outside.py",
+    "/work/../outside.py",
+    "../work-other/outside.py",
+    "/work",
+  ]) {
+    fs.open(name, 557056);
+    fs.stat(name);
+  }
+  fs.open("apps/../inside.py", 557056);
   assert.deepEqual(requests, [
     "https://example.test/root/apps/demo%23preview%3F.py",
+    "https://example.test/root/inside.py",
   ]);
 });
 
@@ -775,11 +818,13 @@ test("MML share updates keep the newest content when compression finishes out of
     pending.map(({ text }) => text),
     ["cdef;;;", "gab;;;"],
   );
+
   pending[1].resolve("newer");
   await newer;
   const newestUrl = "https://example.test/mml-studio/?mml=newer";
   assert.equal(shareUrl.href, newestUrl);
   const newestQr = qrCodeImage.src;
+
   pending[0].resolve("older");
   await old;
   assert.equal(shareUrl.href, newestUrl);
@@ -793,6 +838,7 @@ test("MML share updates keep the newest content when compression finishes out of
   const emptyUrl = "https://example.test/mml-studio/";
   assert.equal(shareUrl.href, emptyUrl);
   const emptyQr = qrCodeImage.src;
+
   pending[2].resolve("stale");
   await stale;
   assert.equal(shareUrl.href, emptyUrl);

@@ -53,7 +53,7 @@ wrap_as_python_primitive_sequence!(
     })
 );
 
-// Seqs returns live Seq views; removed sequences are plain lists.
+// Indexing returns live Seq views; pop returns a detached list.
 #[pyclass(sequence, unsendable, skip_from_py_object)]
 #[derive(Clone)]
 pub struct Seqs {
@@ -116,8 +116,9 @@ impl Seqs {
     }
 
     fn __repr__(&self, py: Python) -> PyResult<String> {
-        let music = self.inner_ref();
-        let list = PyList::new(py, music.seqs.iter())?;
+        // Python allocation can run GC callbacks that access this music.
+        let seqs = self.inner_ref().seqs.clone();
+        let list = PyList::new(py, seqs)?;
         Ok(format!(
             "{}{}",
             stringify!(Seqs),
@@ -140,6 +141,7 @@ impl Seqs {
             let new_values: Vec<Vec<u32>> = value.extract()?;
             let mut music = self.inner_mut();
             let indices = bounds.indices(music.seqs.len());
+
             if indices.step == 1 {
                 let start = indices.start as usize;
                 let end = indices.stop.max(indices.start) as usize;
@@ -152,6 +154,7 @@ impl Seqs {
                         indices.slicelength
                     )));
                 }
+
                 let positions =
                     crate::utils::slice_indices(indices.start, indices.step, indices.slicelength);
                 for (pos, val) in positions.zip(new_values) {
@@ -177,6 +180,7 @@ impl Seqs {
             let positions =
                 crate::utils::slice_indices(indices.start, indices.step, indices.slicelength)
                     .descending();
+
             for i in positions {
                 music.seqs.remove(i);
             }
@@ -226,8 +230,10 @@ impl Seqs {
                 "pop from empty list",
             ));
         }
+
         let i = resolve_index!(index.unwrap_or(-1), len, "pop index out of range")?;
         let removed = music.seqs.remove(i);
+        drop(music);
         Ok(PyList::new(py, &removed)?.unbind().into_any())
     }
 

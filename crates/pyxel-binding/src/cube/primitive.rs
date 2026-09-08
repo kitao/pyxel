@@ -39,7 +39,6 @@ define_wrapper!(Primitive, pyxel::cube::Primitive, module = "pyxel.cube");
 #[pymethods]
 impl Primitive {
     // Topology mode constants
-
     #[classattr]
     const MODE_POINTS: i32 = pyxel::cube::primitive::MODE_POINTS;
     #[classattr]
@@ -48,7 +47,6 @@ impl Primitive {
     const MODE_TRIANGLES: i32 = pyxel::cube::primitive::MODE_TRIANGLES;
 
     // Back-face cull constants
-
     #[classattr]
     const CULL_NONE: i32 = pyxel::cube::primitive::CULL_NONE;
     #[classattr]

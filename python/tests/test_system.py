@@ -384,10 +384,8 @@ class TestSystemSetters:
         self, data, scale, message
     ):
         before = self._capture_state()
-
         with raises_exact(ValueError, message):
             pyxel.icon(data, scale)
-
         assert self._capture_state() == before
 
     def test_icon_rejects_color_outside_palette_without_changing_state(self):
@@ -441,17 +439,20 @@ class TestSystemFlow:
         env.pop(pyxel.WATCH_STATE_FILE_ENV, None)
         if watching:
             env[pyxel.WATCH_STATE_FILE_ENV] = "watch-state"
+
         code = (
             "import os, sys\n"
             "if os.environ.pop('PYXEL_RESET_TEST_DONE', None) == '1':\n"
             "    print('reset completed', flush=True)\n"
             "    sys.exit(0)\n"
+            "\n"
             "os.environ['PYXEL_RESET_TEST_DONE'] = '1'\n"
             "import pyxel\n"
             "pyxel.init(64, 64, headless=True)\n"
             "pyxel.reset()\n"
             "raise AssertionError('reset() returned')\n"
         )
+
         result = subprocess.run(
             [sys.executable, "-c", code],
             env=env,
@@ -459,6 +460,7 @@ class TestSystemFlow:
             timeout=10,
             check=False,
         )
+
         if watching:
             assert result.returncode == pyxel.WATCH_RESET_EXIT_CODE, (
                 result.stderr.decode()
@@ -488,6 +490,7 @@ class TestSystemFlow:
 def test_invalid_init_does_not_consume_singleton_or_change_cwd(args, message):
     code = f"""
 import os
+
 import pyxel
 
 before = os.getcwd()
@@ -499,9 +502,11 @@ else:
     raise AssertionError("invalid init succeeded")
 assert os.getcwd() == before
 assert pyxel.width == 0 and pyxel.height == 0
+
 pyxel.init(8, 8, headless=True)
 assert pyxel.width == 8 and pyxel.height == 8
 """
+
     result = subprocess.run(
         [sys.executable, "-c", code],
         capture_output=True,

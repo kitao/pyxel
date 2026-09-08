@@ -37,7 +37,6 @@ test("Base64 preserves exact bytes across its chunk boundary", () => {
   const { uint8ToBase64, base64ToUint8 } = loadShared().__test;
   const bytes = Uint8Array.from({ length: 0x8001 }, (_, i) => i % 256);
   const encoded = uint8ToBase64(bytes);
-
   assert.equal(encoded, Buffer.from(bytes).toString("base64"));
   assert.deepEqual(base64ToUint8(` \n${encoded}\t`), bytes);
   assert.equal(uint8ToBase64(new Uint8Array()), "");
@@ -64,11 +63,11 @@ for (const page of ["api-reference", "user-guide"]) {
           },
         },
       );
+
       const [base, cube] = buildVariantSwitch().children;
       const onCube = suffix.startsWith("cube/");
       const active = onCube ? cube : base;
       const sibling = onCube ? base : cube;
-
       assert.equal(base.textContent, "Base");
       assert.equal(cube.textContent, "Cube");
       assert.equal(active.tagName, "span");
@@ -104,7 +103,6 @@ test("resolveGitHubBlobUrl finds the longest slash-containing ref", async () => 
     "https://github.com/example/game/blob/feature/physics/apps/demo.pyxapp",
     fetchImpl,
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -138,7 +136,6 @@ test("resolveGitHubBlobUrl continues after GitHub rejects a ref candidate", asyn
     "https://github.com/example/game/blob/main/python/pyproject.toml",
     fetchImpl,
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -193,7 +190,6 @@ test("resolveGitHubBlobUrl preserves an established ref boundary", async () => {
     fetchImpl,
     "main",
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -228,7 +224,6 @@ test("resolveGitHubBlobUrl preserves a missing explicit ref boundary", async () 
       fetchImpl,
       "feature",
     );
-
     assert.deepEqual(
       { ...result },
       {
@@ -248,7 +243,6 @@ test("resolveGitHubBlobUrl preserves a missing explicit ref boundary", async () 
 test("resolveGitHubBlobUrl accepts a commit SHA without an API request", async () => {
   let fetchCount = 0;
   const sha = "0123456789abcdef0123456789abcdef01234567";
-
   const result = await resolveGitHubBlobUrl(
     `https://github.com/example/game/blob/${sha}/apps/demo.pyxapp`,
     async () => {
@@ -257,7 +251,6 @@ test("resolveGitHubBlobUrl accepts a commit SHA without an API request", async (
     },
     sha,
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -273,7 +266,6 @@ test("resolveGitHubBlobUrl accepts a commit SHA without an API request", async (
 
 test("resolveGitHubBlobUrl keeps a preferred ref when the API is unavailable", async () => {
   const requested = [];
-
   const result = await resolveGitHubBlobUrl(
     "https://github.com/example/game/blob/main/apps/demo.pyxapp",
     async (url) => {
@@ -282,7 +274,6 @@ test("resolveGitHubBlobUrl keeps a preferred ref when the API is unavailable", a
     },
     "main",
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -315,7 +306,6 @@ test("resolveGitHubBlobUrl keeps a preferred ref when the API body is unreadable
     },
     "main",
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -378,7 +368,6 @@ test("initPage builds after a successful JSON response", async () => {
     buildCount += 1;
   });
   await settlePromises();
-
   assert.equal(buildCount, 1);
   assert.equal(context.lang, "en");
 });
@@ -402,7 +391,6 @@ test("initPage rejects an HTTP error before decoding JSON", async () => {
     buildCount += 1;
   });
   await settlePromises();
-
   assert.equal(jsonCount, 0);
   assert.equal(buildCount, 0);
   assert.equal(errors[0][1].message, "Failed to fetch data.json: 503");
@@ -426,7 +414,6 @@ test("initPage reports malformed JSON without building", async () => {
     buildCount += 1;
   });
   await settlePromises();
-
   assert.equal(buildCount, 0);
   assert.equal(errors[0][1].message, "invalid JSON");
 });

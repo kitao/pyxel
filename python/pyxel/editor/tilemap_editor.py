@@ -31,10 +31,8 @@ class TilemapEditor(EditorBase):
 
     def __init__(self, parent):
         super().__init__(parent)
-
         self.new_var("canvas_var", None)
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
-
         self.new_var("color_var", (255, 255))
 
         self._tool_button = RadioButton(
@@ -83,7 +81,6 @@ class TilemapEditor(EditorBase):
         self.copy_var("tile_y_var", self._image_viewer, "focus_y_var")
         self.copy_var("tile_w_var", self._image_viewer, "focus_w_var")
         self.copy_var("tile_h_var", self._image_viewer, "focus_h_var")
-
         self._canvas_panel = CanvasPanel(self)
 
         self.add_event_listener("undo", self.__on_undo)

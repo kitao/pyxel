@@ -14,9 +14,10 @@ use sha2::{Digest, Sha256};
 #[cfg(not(test))]
 use tar::Archive;
 
-pub(crate) const SDL2_VERSION: &str = "2.32.10"; // Emscripten 5.0.3 uses SDL 2.32.10
-pub(crate) const SDL2_SHA256: &str =
-    "5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165";
+#[cfg(not(test))]
+const SDL2_VERSION: &str = "2.32.10"; // Emscripten 5.0.3 uses SDL 2.32.10
+#[cfg(not(test))]
+const SDL2_SHA256: &str = "5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165";
 
 #[cfg(not(test))]
 struct Sdl2BindingsBuilder {

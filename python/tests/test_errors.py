@@ -377,7 +377,6 @@ class TestInlineDataErrors:
     def test_image_set_rejects_malformed_data_without_writing(self, data, message):
         image = pyxel.Image(2, 2)
         image.cls(7)
-
         with raises_exact(ValueError, message):
             image.set(0, 0, data)
         assert [image.pget(x, y) for y in range(2) for x in range(2)] == [7] * 4
@@ -417,7 +416,6 @@ class TestInlineDataErrors:
     def test_tilemap_set_rejects_malformed_data_without_writing(self, data, message):
         tilemap = pyxel.Tilemap(2, 2, 0)
         tilemap.cls((7, 7))
-
         with raises_exact(ValueError, message):
             tilemap.set(0, 0, data)
         assert [tilemap.pget(x, y) for y in range(2) for x in range(2)] == [(7, 7)] * 4

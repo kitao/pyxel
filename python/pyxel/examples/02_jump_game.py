@@ -80,7 +80,6 @@ class App:
             y += 6
 
         x -= 4
-
         if x < -40:
             x += 240
             y = pyxel.rndi(8, 104)
@@ -96,7 +95,6 @@ class App:
             pyxel.play(3, 4)
 
         x -= 2
-
         if x < -40:
             x += 240
             y = pyxel.rndi(0, 104)

@@ -73,12 +73,10 @@
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
-
         app.appendChild(buildPageHeader(updateTexts));
 
         const sections = document.createElement("div");
         sections.className = "space-y-6";
-
         for (const name of [
           "overview",
           "layout",
@@ -98,7 +96,6 @@
         }
 
         app.appendChild(sections);
-
         updateTexts();
       }
 

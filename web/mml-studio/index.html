@@ -313,6 +313,7 @@
       async function updateShareUrl() {
         const generation = ++shareUrlGeneration;
         clearTimeout(shareUrlUpdateTimer);
+
         let mmlStr = "";
         for (let i = 1; i <= 4; i++) {
           const textarea = document.getElementById(`ch${i}`);
@@ -327,7 +328,6 @@
         if (!/^[\s;]*$/.test(mmlStr)) {
           url += "?mml=" + (await encodeMmlToUrl(mmlStr));
         }
-
         if (generation !== shareUrlGeneration) return;
 
         shareUrl.textContent = shareUrl.href = url;
@@ -470,6 +470,7 @@
                 runtimeScreen.contentWindow[`js_${textarea.id}_mml`] =
                   textarea.value;
               });
+
             document
               .querySelectorAll("button[data-action]")
               .forEach((button) => {
@@ -477,6 +478,7 @@
                 runtimeScreen.contentWindow[varName] =
                   button.dataset.state === "true";
               });
+
             document
               .querySelectorAll(
                 'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]',

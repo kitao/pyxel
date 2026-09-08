@@ -24,7 +24,6 @@ fn clamp(
     upper: Bound<'_, PyAny>,
 ) -> PyResult<Py<PyAny>> {
     let py = x.py();
-
     if let (Ok(xi), Ok(li), Ok(ui)) = (
         x.extract::<i64>(),
         lower.extract::<i64>(),
@@ -45,7 +44,6 @@ fn clamp(
 #[pyfunction]
 fn sgn(x: Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
     let py = x.py();
-
     if let Ok(xi) = x.extract::<i64>() {
         let v = match xi.cmp(&0) {
             Ordering::Greater => 1,

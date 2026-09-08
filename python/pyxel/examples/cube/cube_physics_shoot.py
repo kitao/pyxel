@@ -41,14 +41,18 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Shoot")
         pyxel.mouse(True)
+
         self.scene = Node()
         self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
+
         for x in (-3.0, 0.0, 3.0):
             self.scene.add_child(Target(Vec3(x, 0, 0)))
+
         self.orbit = OrbitCamera(target=Vec3(0, 0, 0), pitch_deg=20, radius=10)
         self.orbit.camera.clear_color = 1
         self.scene.camera = self.orbit.camera
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -56,6 +60,7 @@ class App:
             pyxel.quit()
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.scene.add_child(Bullet(Vec3(0, 2, 8), Vec3(0, -0.05, -0.4)))
+
         self.orbit.update()
         self.scene.update()
 

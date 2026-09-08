@@ -29,6 +29,7 @@ class PianoRoll(Widget):
         super().__init__(parent, 30, 25, 193, 123)
         self._press_x = 0
         self._press_y = 0
+
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
         self.add_pre_history = parent.add_pre_history
@@ -123,7 +124,6 @@ class PianoRoll(Widget):
 
     def __on_draw(self):
         pyxel.rect(self.x, self.y, self.width, self.height, PIANO_ROLL_BACKGROUND_COLOR)
-
         pyxel.clip(self.x, self.y, self.width, self.height)
 
         # Draw cursor or playback position

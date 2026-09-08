@@ -69,9 +69,15 @@ fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
         "mouse_x" => value_to_py_any!(py, *pyxel::mouse_x()),
         "mouse_y" => value_to_py_any!(py, *pyxel::mouse_y()),
         "mouse_wheel" => value_to_py_any!(py, *pyxel::mouse_wheel()),
-        "input_keys" => value_to_py_any!(py, &*pyxel::input_keys()),
+        "input_keys" => {
+            let keys = pyxel::input_keys().clone();
+            value_to_py_any!(py, keys)
+        }
         "input_text" => value_to_py_any!(py, &*pyxel::input_text()),
-        "dropped_files" => value_to_py_any!(py, &*pyxel::dropped_files()),
+        "dropped_files" => {
+            let files = pyxel::dropped_files().clone();
+            value_to_py_any!(py, files)
+        }
 
         // Graphics
         "colors" => instance_to_py_any!(py, Colors::wrap(0)),

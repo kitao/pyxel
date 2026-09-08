@@ -54,7 +54,6 @@ def test_fresh_explicit_cube_import_has_the_same_identity():
 @pytest.mark.parametrize("name", PUBLIC_CUBE_CLASSES)
 def test_public_cube_classes_use_their_importable_module(name):
     cls = getattr(cube, name)
-
     assert cls.__module__ == "pyxel.cube"
     assert getattr(importlib.import_module(cls.__module__), name) is cls
     assert pickle.loads(pickle.dumps(cls)) is cls

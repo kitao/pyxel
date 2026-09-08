@@ -7,20 +7,22 @@
 - Updated Pyodide to version 314.0.6
 - Added an app2exe install extra for PyInstaller
 - Improved Python type hints and catchable API errors
-- Fixed blit clipping, self-copying, and flood fills
+- Fixed blit clipping, self-copying, flood fills, and tilemap collisions
 - Fixed GIF capture colors and failures on large captures
 - Fixed key repeat, modifier states, and mouse positioning
+- Fixed frame timing during long-running sessions
 - Fixed sound playback, sequence data loss, and BGM generation hangs
 - Fixed resource saving, version parsing, and TMX imports
-- Fixed unwanted data changes and import errors in Pyxel Editor
+- Fixed sequence access failures and deadlocks during Python garbage collection
+- Fixed unwanted data changes, import errors, and save failures in Pyxel Editor
 - Fixed drawing and wavetable editing in Pyxel Editor and examples
 - Fixed app packaging paths, overwrites, and directory symlinks
 - Fixed app2exe imports and concurrent builds
 - Fixed play and watch process cleanup
 - Fixed Web startup, imports, and virtual gamepad resizing
-- Fixed project loading, downloads, and share URLs in Web tools
+- Fixed project loading, saving, downloads, and share URLs in Web tools
 - Improved Web layouts, accessibility, and API reference search
-- Improved blit performance and reduced audio allocations
+- Improved blit and primitive drawing performance and reduced audio allocations
 - Fixed OpenGL cleanup on application shutdown
 - Improved wheel builds and SDL2 download verification
 - Improved documentation and translations

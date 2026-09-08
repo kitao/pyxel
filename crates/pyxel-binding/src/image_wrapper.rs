@@ -2,7 +2,7 @@ use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 
 use crate::font_wrapper::Font;
-use crate::tilemap_wrapper::{validate_tilemap_imgsrc, Tilemap};
+use crate::tilemap_wrapper::Tilemap;
 use crate::utils::ctypes_array_from_address;
 
 define_wrapper!(Image, pyxel::Image);
@@ -231,12 +231,10 @@ impl Image {
                 let tilemaps = pyxel::tilemaps();
                 let tilemap = tilemaps.get(tm as usize)
                     .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
-                validate_tilemap_imgsrc(tilemap)?;
                 self.inner_mut().draw_tilemap(x, y, tilemap, u, v, w, h, colkey, rotate, scale);
             }),
 
             (Tilemap, {
-                validate_tilemap_imgsrc(&tm.inner)?;
                 self.inner_mut().draw_tilemap(x, y, &tm.inner, u, v, w, h, colkey, rotate, scale);
             })
         }
@@ -295,12 +293,10 @@ impl Image {
                 let tilemaps = pyxel::tilemaps();
                 let tilemap = tilemaps.get(tm as usize)
                     .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
-                validate_tilemap_imgsrc(tilemap)?;
                 self.inner_mut().draw_tilemap_3d(x, y, w, h, tilemap, pos, rot, fov, colkey);
             }),
 
             (Tilemap, {
-                validate_tilemap_imgsrc(&tm.inner)?;
                 self.inner_mut().draw_tilemap_3d(x, y, w, h, &tm.inner, pos, rot, fov, colkey);
             })
         }

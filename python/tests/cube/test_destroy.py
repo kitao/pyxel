@@ -45,11 +45,9 @@ def test_destroy_on_subtree_does_not_destroy_root():
 def test_destroying_update_root_fires_once():
     _DestroyTracker.fire_log = []
     root = _DestroyTracker("root")
-
     root.destroy()
     root.update()
     root.update()
-
     assert _DestroyTracker.fire_log == ["root"]
     assert root.destroyed is False
 
@@ -62,6 +60,7 @@ def _setup_root_with_subtree() -> tuple[
     root = _DestroyTracker("root")
     mid = _DestroyTracker("mid")
     leaf = _DestroyTracker("leaf")
+
     root_node.add_child(root)
     root.add_child(mid)
     mid.add_child(leaf)

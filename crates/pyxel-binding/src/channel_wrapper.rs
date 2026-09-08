@@ -56,6 +56,7 @@ impl Channel {
             sec
         };
         validate_sec(sec)?;
+
         let should_loop = r#loop.unwrap_or(false);
         let resume = resume.unwrap_or(false);
         let _lock = pyxel::AudioLock::lock();
@@ -102,7 +103,6 @@ impl Channel {
                     .map_err(PyException::new_err)?;
             })
         }
-
         Ok(())
     }
 

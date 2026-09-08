@@ -508,18 +508,18 @@
     {
       "label": "SOLO",
       "desc": {
-        "en": "Play only this channel, muting all others.",
-        "cn": "仅播放此通道，将其他通道静音。",
-        "de": "Nur diesen Kanal abspielen, alle anderen stummschalten.",
-        "es": "Reproducir solo este canal, silenciando todos los demás.",
-        "fr": "Jouer uniquement ce canal, en coupant tous les autres.",
-        "it": "Riprodurre solo questo canale, silenziando tutti gli altri.",
-        "ja": "他のチャンネルをミュートし、このチャンネルのみを再生します。",
-        "ko": "다른 채널을 음소거하고 이 채널만 재생합니다.",
-        "pt": "Reproduzir apenas este canal, silenciando todos os outros.",
-        "ru": "Воспроизводить только этот канал, заглушая все остальные.",
-        "tr": "Diğerlerini sessize alarak yalnızca bu kanalı çalın.",
-        "uk": "Відтворювати лише цей канал, вимкнувши всі інші."
+        "en": "Play only channels with SOLO enabled. Multiple channels can be selected; MUTE takes precedence over SOLO.",
+        "cn": "仅播放启用了 SOLO 的通道。可以选择多个通道；MUTE 优先于 SOLO。",
+        "de": "Nur Kanäle mit aktiviertem SOLO abspielen. Mehrere Kanäle können ausgewählt werden; MUTE hat Vorrang vor SOLO.",
+        "es": "Reproducir solo los canales con SOLO activado. Se pueden seleccionar varios canales; MUTE tiene prioridad sobre SOLO.",
+        "fr": "Jouer uniquement les canaux dont SOLO est activé. Plusieurs canaux peuvent être sélectionnés ; MUTE est prioritaire sur SOLO.",
+        "it": "Riprodurre solo i canali con SOLO attivo. È possibile selezionare più canali; MUTE ha la precedenza su SOLO.",
+        "ja": "SOLO が有効なチャンネルだけを再生します。複数選択でき、MUTE は SOLO より優先されます。",
+        "ko": "SOLO가 활성화된 채널만 재생합니다. 여러 채널을 선택할 수 있으며, MUTE가 SOLO보다 우선합니다.",
+        "pt": "Reproduzir apenas os canais com SOLO ativado. É possível selecionar vários canais; MUTE tem prioridade sobre SOLO.",
+        "ru": "Воспроизводить только каналы с включённым SOLO. Можно выбрать несколько каналов; MUTE имеет приоритет над SOLO.",
+        "tr": "Yalnızca SOLO etkin olan kanalları çalın. Birden fazla kanal seçilebilir; MUTE, SOLO’dan önceliklidir.",
+        "uk": "Відтворювати лише канали з увімкненим SOLO. Можна вибрати кілька каналів; MUTE має пріоритет над SOLO."
       }
     },
     {

@@ -32,6 +32,7 @@ def apply_contact(node, contact):
             if abs(parent_world.determinant()) < 1e-12
             else offset.to_local_dir(parent_world)
         )
+
     push = Mat4.from_translation(offset)
     spin = Mat4.from_quat(contact.delta_rotation)
     node.transform = push * node.transform * spin

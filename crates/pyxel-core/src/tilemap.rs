@@ -88,6 +88,7 @@ impl Tilemap {
                 "Invalid tilemap data at row 0: hexadecimal digit count {digit_count} is not divisible by 4"
             ));
         }
+
         for (row_index, row) in rows.iter().enumerate() {
             let row_digit_count = row.chars().count();
             if row_digit_count != digit_count {
@@ -111,6 +112,7 @@ impl Tilemap {
                             "Invalid tilemap data at row {y}, column {column}: expected hexadecimal digit, got '{digit}'"
                         )
                     })?;
+
                     tile = (tile << 4) | value;
                     if column % 4 == 3 {
                         tilemap.canvas.write_data(
@@ -126,6 +128,7 @@ impl Tilemap {
                 }
             }
         }
+
         self.draw_tilemap(
             x as f32,
             y as f32,
@@ -145,6 +148,7 @@ impl Tilemap {
         let rc = Self::from_tmx(filename, layer_index)?;
         let w = rc_ref!(rc).width();
         let h = rc_ref!(rc).height();
+
         self.draw_tilemap(
             x as f32, y as f32, &rc, 0.0, 0.0, w as f32, h as f32, None, None, None,
         );
@@ -259,7 +263,8 @@ impl Tilemap {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
-        // Preserve source pixels when the destination overlaps the source.
+
+        // Preserve source tiles when the destination overlaps the source.
         let borrowed;
         let copied_canvas;
         let src = if ptr::eq(tilemap.as_ptr(), self) {
@@ -269,6 +274,7 @@ impl Tilemap {
             borrowed = rc_ref!(tilemap);
             &borrowed.canvas
         };
+
         if rotate != 0.0 || scale != 1.0 {
             self.canvas.blit_with_transform(
                 x,
@@ -313,6 +319,7 @@ impl Tilemap {
         let mut cur_y = y;
         let mut ndx = dx;
         let mut ndy = dy;
+
         if dx.abs() >= dy.abs() {
             ndx = self.collide_resolve_x(cur_x, cur_y, width, height, ndx, walls);
             cur_x += ndx;
@@ -322,6 +329,7 @@ impl Tilemap {
             cur_y += ndy;
             ndx = self.collide_resolve_x(cur_x, cur_y, width, height, ndx, walls);
         }
+
         (ndx, ndy)
     }
 
@@ -342,12 +350,12 @@ impl Tilemap {
         }
 
         let tile_size = TILE_SIZE as f32;
-
         if delta > 0.0 {
             let cur_edge = pos + size - 1.0;
             let new_edge = cur_edge + delta;
-            let start = (cur_edge / tile_size).floor() as i32 + 1;
+            let start = ((cur_edge / tile_size).floor() as i32).saturating_add(1);
             let end = (new_edge / tile_size).floor() as i32;
+
             for primary in start..=end {
                 for cross in cross_start..=cross_end {
                     let (tx, ty) = make_tile_coords(primary, cross);
@@ -358,8 +366,9 @@ impl Tilemap {
             }
         } else {
             let new_edge = pos + delta;
-            let start = (pos / tile_size).floor() as i32 - 1;
+            let start = ((pos / tile_size).floor() as i32).saturating_sub(1);
             let end = (new_edge / tile_size).floor() as i32;
+
             for primary in (end..=start).rev() {
                 for cross in cross_start..=cross_end {
                     let (tx, ty) = make_tile_coords(primary, cross);

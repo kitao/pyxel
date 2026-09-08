@@ -14,6 +14,59 @@ const sharedSource = fs.readFileSync(
   "utf8",
 );
 
+test("Code Maker loads an empty main.py and rejects an absent one", async () => {
+  const files = {
+    "project/main.py": { async: async () => new Uint8Array() },
+    "project/my_resource.pyxres": {
+      async: async () => new Uint8Array([1, 2, 3]),
+    },
+  };
+  const displayed = [];
+  const window = {
+    _projectLoad: 1,
+    _project: {},
+    _codeEditor: { setValue: (code) => displayed.push(code) },
+  };
+  const loadProject = loadNamedFunction(source, "loadProjectFromZip", {
+    JSZip: { loadAsync: async () => ({ files }) },
+    TextDecoder,
+    window,
+    uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
+    base64ToUint8: (value) => Buffer.from(value, "base64"),
+    sanitizeProjectName: (name) => name,
+    resetRuntimeScreen() {},
+    resetResourceEditor() {},
+  });
+
+  await loadProject(new ArrayBuffer(0), "project");
+  assert.equal(window._project.code, "");
+  assert.deepEqual(displayed, [""]);
+
+  delete files["project/main.py"];
+  await assert.rejects(loadProject(new ArrayBuffer(0), "project"), {
+    message: "Missing main.py",
+  });
+});
+
+test("Code Maker share URLs replace existing queries and fragments", () => {
+  for (const suffix of ["#editor", "?gist=old#editor"]) {
+    const urls = [];
+    const updateShareUrl = loadNamedFunction(source, "updateShareUrl", {
+      URL,
+      location: { href: `https://example.test/code-maker/${suffix}` },
+      history: {
+        replaceState: (_state, _title, url) => urls.push(String(url)),
+      },
+    });
+    updateShareUrl("github", "kitao/pyxel", "feature/demo");
+    updateShareUrl();
+    assert.deepEqual(urls, [
+      "https://example.test/code-maker/?github=kitao/pyxel&ref=feature%2Fdemo",
+      "https://example.test/code-maker/",
+    ]);
+  }
+});
+
 function createDropTarget() {
   const listeners = [];
   return {
@@ -120,6 +173,7 @@ for (const surface of ["page", "runtime", "resource"]) {
     });
     assert.equal(unlocked, true);
     assert.deepEqual(resources, []);
+
     resourceEditor.contentWindow.pyxelContext.initialized = true;
     timers.shift()();
     assert.deepEqual(resources, [{ name: "assets.pyxres", data }]);
@@ -145,3 +199,143 @@ for (const surface of ["page", "runtime", "resource"]) {
     }
   });
 }
+
+test("Code Maker reads resources only after Python saving completes", async () => {
+  const calls = [];
+  const window = { _project: { resource: "old" }, _isCopyingResource: false };
+  let fail = false;
+  const pyodide = {
+    runPython() {
+      assert.equal(window._isCopyingResource, true);
+      calls.push("save");
+      if (fail) throw new Error("disk full");
+    },
+    FS: {
+      readFile(filename) {
+        assert.equal(filename, "/work/my_resource.pyxres");
+        calls.push("read");
+        return new Uint8Array([1, 2, 3]);
+      },
+    },
+  };
+  const copy = loadNamedFunction(source, "copyResourceToProject", {
+    window,
+    resourceEditor: {
+      contentWindow: {
+        pyxelContext: { pyodide },
+        document: { dispatchEvent: (event) => calls.push(event.type) },
+      },
+    },
+    KeyboardEvent: class {
+      constructor(type) {
+        this.type = type;
+      }
+    },
+    setTimeout: (fn) => fn(),
+    PYXEL_WORKING_DIRECTORY: "/work",
+    uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
+  });
+  const pending = copy();
+  assert.deepEqual(calls, [], "unwind an existing Python save callback first");
+  await pending;
+  assert.deepEqual(calls, ["save", "read"]);
+  assert.equal(window._project.resource, "AQID");
+  assert.equal(window._isCopyingResource, false);
+
+  calls.length = 0;
+  fail = true;
+  await assert.rejects(copy(), { message: "disk full" });
+  assert.deepEqual(calls, ["save"]);
+  assert.equal(window._project.resource, "AQID");
+  assert.equal(window._isCopyingResource, false);
+});
+
+test("Code Maker stops Run, File and Gist when resource saving fails", async () => {
+  for (const action of ["Run", "Save", "Copy"]) {
+    const calls = [];
+    const controls = new Map();
+    const document = {
+      getElementById(id) {
+        if (!controls.has(id)) {
+          controls.set(id, {
+            addEventListener: (event, fn) => controls.set(`${id}:${event}`, fn),
+          });
+        }
+        return controls.get(id);
+      },
+      addEventListener() {},
+      querySelectorAll: () => [],
+    };
+    const context = {
+      window: {
+        _isCopyingResource: false,
+        addEventListener() {},
+        showSaveFilePicker: () => calls.push("picker"),
+      },
+      document,
+      copyCodeToProject() {},
+      copyResourceToProject: async () => {
+        throw new Error("disk full");
+      },
+      buildArchiveBlob: () => calls.push("archive"),
+      resetRuntimeScreen: () => calls.push("run"),
+      showModal: () => calls.push("modal"),
+      navigator: { clipboard: { writeText: () => calls.push("clipboard") } },
+      alert: (message) => calls.push(message),
+      animateButton() {},
+      loadFromGist() {},
+      loadFromGitHub() {},
+      loadFromUrl() {},
+    };
+    let operation;
+    if (action === "Run") {
+      loadNamedFunction(source, "setupButtonHandlers", context)();
+      operation = controls.get("run-button:click");
+    } else {
+      operation = loadNamedFunction(
+        source,
+        action === "Save" ? "saveToFile" : "saveToGist",
+        context,
+      );
+    }
+    await operation();
+    assert.deepEqual(calls, [`${action} failed: disk full`]);
+  }
+});
+
+test("Code Maker does not fall back to downloading after a file write fails", async () => {
+  const calls = [];
+  const save = loadNamedFunction(source, "saveToFile", {
+    window: {
+      _project: { name: "project" },
+      showSaveFilePicker: async () => ({
+        name: "project.zip",
+        createWritable: async () => ({
+          write: async () => {
+            throw new Error("disk full");
+          },
+          close: () => calls.push("close"),
+        }),
+      }),
+    },
+    copyCodeToProject() {},
+    copyResourceToProject: async () => {},
+    sanitizeProjectName: (name) => name,
+    buildArchiveBlob: async () => {
+      calls.push("archive");
+      return new Uint8Array();
+    },
+    alert: (message) => calls.push(message),
+    document: {
+      createElement: () => {
+        calls.push("download");
+        return { click() {} };
+      },
+      body: { appendChild() {}, removeChild() {} },
+    },
+    URL: { createObjectURL: () => "blob:test", revokeObjectURL() {} },
+    setTimeout: (fn) => fn(),
+  });
+  await save();
+  assert.deepEqual(calls, ["archive", "Save failed: disk full"]);
+});

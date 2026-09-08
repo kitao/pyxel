@@ -95,6 +95,7 @@ impl Motion {
             let Some(base) = self.base_transforms.get(channel.part_index) else {
                 continue;
             };
+
             let (pos, rot, scale) = sampled_parts[channel.part_index].get_or_insert_with(|| {
                 (base.pos_value(), base.rot_value(), base.scale_vec_value())
             });
@@ -162,10 +163,12 @@ impl MotionChannel {
         if frame.is_nan() {
             return Some((key_count - 1, key_count - 1, 0.0));
         }
+
         let to = self.inputs[..key_count].partition_point(|&time| time <= frame);
         if to == key_count {
             return Some((key_count - 1, key_count - 1, 0.0));
         }
+
         let from = to - 1;
         let start = self.inputs[from];
         let end = self.inputs[to];
@@ -210,6 +213,7 @@ impl MotionChannel {
         if from == to {
             return from_key.value;
         }
+
         let dt = self.inputs[to] - self.inputs[from];
         cubic_vec3(
             &from_key.value,
@@ -231,6 +235,7 @@ impl MotionChannel {
         if from == to {
             return from_key.value;
         }
+
         let dt = self.inputs[to] - self.inputs[from];
         cubic_quat(
             &from_key.value,
@@ -249,6 +254,7 @@ impl MotionChannel {
         let (Some(from), Some(to)) = (values.get(from), values.get(to)) else {
             return identity_quat();
         };
+
         match self.interpolation {
             MotionInterpolation::CubicSpline | MotionInterpolation::Step => *from,
             MotionInterpolation::Linear => from.slerp_value(to, t),
@@ -262,6 +268,7 @@ impl MotionChannel {
         let (Some(from), Some(to)) = (values.get(from), values.get(to)) else {
             return zero_vec3();
         };
+
         match self.interpolation {
             MotionInterpolation::CubicSpline | MotionInterpolation::Step => *from,
             MotionInterpolation::Linear => Vec3 {
@@ -441,6 +448,7 @@ mod tests {
             ]),
             interpolation: MotionInterpolation::CubicSpline,
         };
+
         let q = channel.sample_quat(1.0);
         assert_eq!((q.x, q.z), (0.0, 0.0));
         assert!((q.y - std::f32::consts::FRAC_1_SQRT_2).abs() < 1e-6);
@@ -492,7 +500,6 @@ mod tests {
             base_transforms: vec![Mat4::identity_value()],
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
-
         assert_eq!(sampled_x(&motion, 15.0, false), 0.5);
     }
 
@@ -504,7 +511,6 @@ mod tests {
             base_transforms: vec![Mat4::identity_value()],
             channels: vec![translation_channel(MotionInterpolation::Step)],
         };
-
         assert_eq!(sampled_x(&motion, 15.0, false), 0.0);
     }
 
@@ -516,7 +522,6 @@ mod tests {
             base_transforms: vec![Mat4::identity_value()],
             channels: vec![cubic_translation_channel()],
         };
-
         assert!((sampled_x(&motion, 7.5, false) - 0.25).abs() < 1e-6);
     }
 
@@ -528,7 +533,6 @@ mod tests {
             base_transforms: vec![Mat4::identity_value()],
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
-
         assert_eq!(sampled_x(&motion, 99.0, false), 1.0);
     }
 
@@ -540,7 +544,6 @@ mod tests {
             base_transforms: vec![Mat4::identity_value()],
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
-
         assert_eq!(sampled_x(&motion, 45.0, true), 0.5);
     }
 

@@ -31,7 +31,6 @@ class NumberPicker(Widget):
         self._min_value = min_value
         self._max_value = max_value
         self._allow_out_of_range = allow_out_of_range
-
         self.new_var("value_var", self.__on_value_set(value))
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)

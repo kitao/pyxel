@@ -13,9 +13,7 @@ impl Tilemap {
         let imgsrc = cast_pyany! {
             img,
             "img must be int or Image",
-
             (u32, { pyxel::ImageSource::Index(img) }),
-
             (Image, { pyxel::ImageSource::Image(img.inner) })
         };
         pyxel::Tilemap::try_new(width, height, imgsrc)
@@ -55,9 +53,7 @@ impl Tilemap {
         let imgsrc = cast_pyany! {
             img,
             "imgsrc must be int or Image",
-
             (u32, { pyxel::ImageSource::Index(img) }),
-
             (Image, { pyxel::ImageSource::Image(img.inner) })
         };
         self.inner_mut().imgsrc = imgsrc;
@@ -263,18 +259,5 @@ impl Tilemap {
 
 pub fn add_tilemap_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Tilemap>()?;
-    Ok(())
-}
-
-pub(crate) fn validate_tilemap_imgsrc(tilemap: &pyxel::RcTilemap) -> PyResult<()> {
-    let index = match &rc_ref!(tilemap).imgsrc {
-        pyxel::ImageSource::Index(index) => Some(*index),
-        pyxel::ImageSource::Image(_) => None,
-    };
-    if index.is_some_and(|index| index as usize >= pyxel::images().len()) {
-        return Err(PyValueError::new_err(
-            "imgsrc references an invalid image index",
-        ));
-    }
     Ok(())
 }

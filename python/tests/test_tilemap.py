@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
@@ -60,21 +63,32 @@ class TestTilemapCreation:
 
 
 class TestTilemapDrawing:
+    @pytest.mark.parametrize("use_bank", [False, True])
     @pytest.mark.parametrize(
         "operation", ["bltm", "bltm3d", "image_bltm", "image_bltm3d"]
     )
-    def test_invalid_imgsrc_raises(self, operation):
+    def test_empty_draw_does_not_resolve_imgsrc(self, operation, use_bank):
         tilemap = pyxel.Tilemap(1, 1, 999)
-        image = pyxel.Image(1, 1)
-        with raises_exact(ValueError, "imgsrc references an invalid image index"):
+        original_tilemap = pyxel.tilemaps[0]
+        image = pyxel.Image(1, 1) if operation.startswith("image_") else pyxel.screen
+        image.cls(7)
+        try:
+            if use_bank:
+                pyxel.tilemaps[0] = tilemap
+            source = 0 if use_bank else tilemap
+
             if operation == "bltm":
-                pyxel.bltm(0, 0, tilemap, 0, 0, 1, 1)
+                pyxel.bltm(0, 0, source, 0, 0, 0, 1)
             elif operation == "bltm3d":
-                pyxel.bltm3d(0, 0, 1, 1, tilemap, (0, 0, 1), (0, 0, 0))
+                pyxel.bltm3d(0, 0, 0, 1, source, (0, 0, 1), (0, 0, 0))
             elif operation == "image_bltm":
-                image.bltm(0, 0, tilemap, 0, 0, 1, 1)
+                image.bltm(0, 0, source, 0, 0, 0, 1)
             else:
-                image.bltm3d(0, 0, 1, 1, tilemap, (0, 0, 1), (0, 0, 0))
+                image.bltm3d(0, 0, 0, 1, source, (0, 0, 1), (0, 0, 0))
+
+            assert list(image.data_ptr()) == [7] * (image.width * image.height)
+        finally:
+            pyxel.tilemaps[0] = original_tilemap
 
     def test_line(self):
         tm = pyxel.Tilemap(16, 16, 0)
@@ -150,6 +164,7 @@ class TestTilemapBlt:
             for y in range(8):
                 for x in range(8):
                     tm.pset(x, y, (x, y))
+
         for dst, src in ((expected, snapshot), (actual, actual)):
             dst.blt(2, 2, src, source_pos, source_pos, -4, 4, rotate=rotate)
         assert list(expected.data_ptr()) != list(snapshot.data_ptr())
@@ -248,7 +263,6 @@ class TestTilemapIO:
         )
 
         tm = pyxel.Tilemap.from_tmx(str(tmx_path), 0)
-
         assert tm.pget(0, 0) == (1, 0)
 
     @pytest.mark.parametrize(
@@ -326,7 +340,6 @@ class TestTilemapDataPtr:
     def test_data_ptr_keeps_tilemap_alive(self):
         tm = pyxel.Tilemap(2, 2, 0)
         ptr = tm.data_ptr()
-
         assert ptr._pyxel_owner is tm
 
     def test_data_ptr_read(self):
@@ -366,6 +379,24 @@ class TestTilemapCollide:
         assert isinstance(result[0], float)
         assert isinstance(result[1], float)
 
+    def test_collide_extreme_offscreen_coordinates(self):
+        code = """
+import pyxel
+
+tilemap = pyxel.Tilemap(8, 8, 0)
+for position, delta in [(2.0**40, 1.0), (-(2.0**40), -1.0)]:
+    assert tilemap.collide(position, 0, 8, 8, delta, 0, [(0, 0)]) == (delta, 0)
+    assert tilemap.collide(0, position, 8, 8, 0, delta, [(0, 0)]) == (0, delta)
+        """
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
     def test_collide_horizontal_wall(self):
         tm = pyxel.Tilemap(8, 8, 0)
         tm.cls((0, 0))
@@ -399,6 +430,7 @@ class TestTilemapCollide:
         wall2 = (2, 0)
         tm.pset(2, 0, wall1)
         tm.pset(0, 2, wall2)
+
         # The entity's leading edge starts at 8 and each wall starts at 16
         dx, _ = tm.collide(0, 0, 8, 8, 100.0, 0.0, [wall1, wall2])
         assert dx == 8.0
@@ -409,8 +441,7 @@ class TestTilemapCollide:
         tm = pyxel.Tilemap(8, 8, 0)
         tm.cls((0, 0))
         wall_tile = (1, 0)
-        tm.pset(0, 0, wall_tile)  # Wall at origin
-        # Moving left into the wall starts from position (24, 0).
+        tm.pset(0, 0, wall_tile)
         dx, dy = tm.collide(24, 0, 8, 8, -100.0, 0.0, [wall_tile])
         assert dx == -16.0  # Stopped at the wall's right edge (8)
         assert dy == 0.0
@@ -437,8 +468,10 @@ class TestTilemapDeprecatedProperties:
         new_img = pyxel.Image(256, 256)
         tm.image = new_img  # type: ignore[attr-defined]
         assert isinstance(tm.imgsrc, pyxel.Image)
+
         new_img.pset(0, 0, 7)
         assert tm.imgsrc.pget(0, 0) == 7
+
         out = capfd.readouterr().out
         assert out == "Tilemap.image is deprecated. Use Tilemap.imgsrc instead.\n"
 
@@ -446,8 +479,10 @@ class TestTilemapDeprecatedProperties:
         tm = pyxel.Tilemap(8, 8, 0)
         result = tm.refimg  # type: ignore[attr-defined]
         assert result == 0
+
         tm.imgsrc = pyxel.Image(8, 8)
         assert tm.refimg is None  # type: ignore[attr-defined]
+
         out = capfd.readouterr().out
         assert out == "Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.\n"
 

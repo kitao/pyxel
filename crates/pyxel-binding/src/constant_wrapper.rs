@@ -407,6 +407,5 @@ pub fn add_module_constants(m: &Bound<'_, PyModule>) -> PyResult<()> {
         GAMEPAD4_BUTTON_DPAD_LEFT,
         GAMEPAD4_BUTTON_DPAD_RIGHT,
     );
-
     Ok(())
 }

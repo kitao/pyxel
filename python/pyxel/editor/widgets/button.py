@@ -19,7 +19,6 @@ class Button(Widget):
     def __init__(self, parent, x, y, width, height, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)
         self._pressing_time = 0
-
         self.new_var("is_pressed_var", None)
         self.add_var_event_listener("is_pressed_var", "get", self.__on_is_pressed_get)
         self.add_var_event_listener("is_pressed_var", "set", self.__on_is_pressed_set)

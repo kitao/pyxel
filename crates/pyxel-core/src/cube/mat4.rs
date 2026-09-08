@@ -81,6 +81,7 @@ impl Mat4 {
         let sx = if scale.x.abs() > 1e-9 { scale.x } else { 1.0 };
         let sy = if scale.y.abs() > 1e-9 { scale.y } else { 1.0 };
         let sz = if scale.z.abs() > 1e-9 { scale.z } else { 1.0 };
+
         let rot_only = Mat4 {
             data: [
                 [
@@ -104,6 +105,7 @@ impl Mat4 {
                 [0.0, 0.0, 0.0, 1.0],
             ],
         };
+
         Quat::from_matrix_value(&rot_only)
     }
 
@@ -118,6 +120,7 @@ impl Mat4 {
     #[must_use]
     pub fn mul_mat_value(&self, other: &Self) -> Self {
         let mut result = [[0.0; 4]; 4];
+
         for i in 0..4 {
             for j in 0..4 {
                 let mut sum = 0.0;
@@ -127,6 +130,7 @@ impl Mat4 {
                 result[i][j] = sum;
             }
         }
+
         Self { data: result }
     }
 
@@ -203,6 +207,7 @@ impl Mat4 {
         let x = axis.x / len;
         let y = axis.y / len;
         let z = axis.z / len;
+
         Self {
             data: [
                 [
@@ -259,10 +264,11 @@ impl Mat4 {
     }
 
     pub fn look_at(eye: &Vec3, target: &Vec3, up: &Vec3) -> RcMat4 {
-        // Right-handed, forward = -Z. Camera looks toward target.
+        // Camera-to-world transform; right-handed with forward = -Z.
         let f_rc = target.sub(eye);
         let f = rc_ref!(&f_rc).normalize();
         let f = rc_ref!(&f);
+
         let mut s_rc = f.cross(up);
         if rc_ref!(&s_rc).length_squared() < 1e-12 {
             // Choose a nonparallel up axis when the requested one collapses the basis.
@@ -283,6 +289,7 @@ impl Mat4 {
         }
         let s = rc_ref!(&s_rc).normalize();
         let s = rc_ref!(&s);
+
         let u_rc = s.cross(&f);
         let u = rc_ref!(&u_rc);
         Self::from_rows([
@@ -337,7 +344,7 @@ impl Mat4 {
         Self::from_rows(self.inverse_value().data)
     }
 
-    // A singular matrix falls back to identity.
+    // Adjugate divided by determinant; near-singular matrices fall back to identity.
     #[must_use]
     pub fn inverse_value(&self) -> Self {
         let m = &self.data;
@@ -365,6 +372,7 @@ impl Mat4 {
             - m[1][1] * m[0][3] * m[2][2]
             - m[2][1] * m[0][2] * m[1][3]
             + m[2][1] * m[0][3] * m[1][2];
+
         inv[1][0] = -m[1][0] * m[2][2] * m[3][3]
             + m[1][0] * m[2][3] * m[3][2]
             + m[2][0] * m[1][2] * m[3][3]
@@ -387,6 +395,7 @@ impl Mat4 {
                 + m[1][0] * m[0][3] * m[2][2]
                 + m[2][0] * m[0][2] * m[1][3]
                 - m[2][0] * m[0][3] * m[1][2];
+
         inv[2][0] =
             m[1][0] * m[2][1] * m[3][3] - m[1][0] * m[2][3] * m[3][1] - m[2][0] * m[1][1] * m[3][3]
                 + m[2][0] * m[1][3] * m[3][1]
@@ -409,6 +418,7 @@ impl Mat4 {
             - m[1][0] * m[0][3] * m[2][1]
             - m[2][0] * m[0][1] * m[1][3]
             + m[2][0] * m[0][3] * m[1][1];
+
         inv[3][0] = -m[1][0] * m[2][1] * m[3][2]
             + m[1][0] * m[2][2] * m[3][1]
             + m[2][0] * m[1][1] * m[3][2]
@@ -437,12 +447,14 @@ impl Mat4 {
         if det.abs() < 1e-12 {
             return Self::identity_value();
         }
+
         let inv_det = 1.0 / det;
         for row in &mut inv {
             for value in row {
                 *value *= inv_det;
             }
         }
+
         Self { data: inv }
     }
 
@@ -595,6 +607,7 @@ mod tests {
         assert_eq!(m.data[0][0], 2.0);
         assert_eq!(m.data[1][1], 3.0);
         assert_eq!(m.data[2][2], 4.0);
+
         let s = deref_v(&m.scale_vec());
         assert_eq!(s, v);
         assert_eq!(m.scale_vec_value(), s);
@@ -610,6 +623,7 @@ mod tests {
         ]);
         let m_ref = rc_ref!(&m);
         let i = Mat4::identity();
+
         let result = deref(&m_ref.mul_mat(&rc_ref!(&i)));
         assert_eq!(result, *m_ref);
     }
@@ -626,6 +640,7 @@ mod tests {
             y: 2.0,
             z: 3.0,
         };
+
         let r = deref_v(&rc_ref!(&t).mul_dir(&v));
         assert_eq!(r, v);
     }
@@ -638,6 +653,7 @@ mod tests {
             [9.0, 10.0, 11.0, 12.0],
             [13.0, 14.0, 15.0, 16.0],
         ]);
+
         let t = deref(&rc_ref!(&m).transpose());
         for i in 0..4 {
             for j in 0..4 {
@@ -666,6 +682,7 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         let m = deref(&Mat4::look_at(&eye, &target, &up));
         assert_eq!(m.data[0][..3], [1.0, 0.0, 0.0]);
         assert_eq!(m.data[1][..3], [0.0, 1.0, 0.0]);
@@ -692,10 +709,12 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         let m = deref(&Mat4::look_at(&eye, &target, &up));
         assert_eq!(m.data[0][3], 0.0);
         assert_eq!(m.data[1][3], 5.0);
         assert_eq!(m.data[2][3], 0.0);
+
         // The fallback deterministically yields a proper orthonormal
         // rotation: the 3x3 upper-left determinant is exactly +1.
         let det = m.data[0][0] * (m.data[1][1] * m.data[2][2] - m.data[1][2] * m.data[2][1])
@@ -725,6 +744,7 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         let m = deref(&Mat4::look_at(&eye, &target, &up));
         // A proper fallback rotation has determinant +1.
         let det = m.data[0][0] * (m.data[1][1] * m.data[2][2] - m.data[1][2] * m.data[2][1])
@@ -751,6 +771,7 @@ mod tests {
             y: 0.0,
             z: 0.0,
         };
+
         let r = deref_v(&rc_ref!(&m).mul_vec(&v));
         assert!(approx_eq_vec(
             &r,
@@ -838,6 +859,7 @@ mod tests {
             z: 0.0,
         });
         let inner_val = *rc_ref!(&inner);
+
         // _dir variants drop translation: inner's translation column
         // stays, outer's contribution is the rotation-only part.
         let world = inner_val.to_world_dir(&outer_val);

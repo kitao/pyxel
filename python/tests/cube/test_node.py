@@ -1,5 +1,7 @@
 import inspect
 import math
+import subprocess
+import sys
 
 import pytest
 import pyxel
@@ -62,6 +64,7 @@ class TestAttributes:
         shading = Shading(palette())
         n.shading = shading
         assert n.shading[0, 2] == shading[0, 2]
+
         n.shading = None
         assert n.shading is None
 
@@ -70,6 +73,7 @@ class TestAttributes:
         collider = Collider()
         n.collider = collider
         assert isinstance(n.collider, Collider)
+
         n.collider = None
         assert n.collider is None
 
@@ -107,6 +111,7 @@ class TestHierarchy:
         parent, child = Node(), Node()
         parent.add_child(node=child)
         assert child.parent is parent
+
         parent.remove_child(node=child)
         assert child.parent is None
 
@@ -145,6 +150,7 @@ class TestHierarchy:
         c = Node()
         p.add_child(c)
         assert p.children == (c,)
+
         p.remove_child(c)
         assert p.children == ()
 
@@ -180,6 +186,7 @@ class TestHierarchy:
         leaf = Node()
         root.add_child(mid)
         mid.add_child(leaf)
+
         with raises_exact(ValueError, "add_child would create a cycle"):
             leaf.add_child(root)
         assert root.parent is None
@@ -192,6 +199,7 @@ class TestHierarchy:
         head.name = "head"
         root.add_child(head)
         root.name = "root"
+
         assert root.find_by_name("root") == [root]
         assert root.find_by_name("head") == [head]
         assert root.find_by_name("missing") == []
@@ -206,6 +214,7 @@ class TestHierarchy:
         b.name = "zako"
         root.add_child(a)
         root.add_child(b)
+
         assert root.find_by_name("zako") == [a, b]
 
     def test_find_by_tags(self):
@@ -216,6 +225,7 @@ class TestHierarchy:
         b.tags = ["player"]
         root.add_child(a)
         root.add_child(b)
+
         assert root.find_by_tags(["enemy"]) == [a]
         # Multiple tags match any (OR).
         assert root.find_by_tags(["enemy", "player"]) == [a, b]
@@ -233,8 +243,6 @@ class TestSubclassing:
         assert isinstance(a, Node)
 
     def test_subclass_with_init_args(self):
-        # A subclass __init__ taking extra positional args must work because
-        # Node.__new__ accepts and ignores them.
         class Tagged(Node):
             def __init__(self, label):
                 super().__init__()
@@ -328,11 +336,55 @@ class TestImmediateDrawSafety:
         )
 
         root = Node.from_mesh(m)
-
         assert root.name == "rig"
         assert [child.name for child in root.children] == ["body", "arm"]
         assert root.children[0].parent is root
         assert root.find_by_name("arm")[0].transform.pos == Vec3(0, 1, 0)
+
+    def test_from_mesh_allows_garbage_collection_reentry(self):
+        code = """
+import gc
+
+from pyxel.cube import Mat4, Mesh, Node
+
+mesh = Mesh(
+    primitives=[None] * 64,
+    transforms=[Mat4.IDENTITY] * 64,
+    parents=[-1] * 64,
+    names=["part"] * 64,
+)
+active = False
+collected = False
+
+
+def collect(phase, info):
+    global collected
+    if active and phase == "start":
+        mesh.names = ["changed"] * 64
+        collected = True
+
+
+gc.collect()
+gc.callbacks.append(collect)
+gc.set_threshold(1, 1, 1)
+active = True
+root = Node.from_mesh(mesh)
+active = False
+gc.callbacks.remove(collect)
+
+assert collected
+assert len(root.children) == 64
+assert all(child.parent is root for child in root.children)
+    """
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert result.stderr == ""
 
     def test_prim_with_primitive(self):
         prim = Primitive(
@@ -386,6 +438,7 @@ class TestStateSetters:
         root.camera = camera
         root.shading = shading
         root.add_child(probe)
+
         pyxel.cls(0)
         root.draw(0, 0, 160, 120)
         return pyxel.pget(80, 60)
@@ -499,6 +552,7 @@ class TestCameraCascade:
         leaf = Node()
         root.add_child(branch)
         branch.add_child(leaf)
+
         c = Camera()
         c.fov = 37
         root.camera = c
@@ -508,6 +562,7 @@ class TestCameraCascade:
         branch.camera = Camera()
         branch.camera.fov = 73
         assert leaf.effective_camera.fov == 73
+
         branch.camera = None
         assert leaf.effective_camera.fov == 37
 
@@ -521,6 +576,7 @@ class TestCameraCascade:
     def test_camera_clear_color_roundtrip(self):
         c = Camera()
         assert c.clear_color is None
+
         c.clear_color = 5
         assert c.clear_color == 5
 

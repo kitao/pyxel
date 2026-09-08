@@ -1174,6 +1174,7 @@ def on_collide(self, other, contact):
             if abs(parent_world.determinant()) < 1e-12
             else offset.to_local_dir(parent_world)
         )
+
     push = Mat4.from_translation(offset)
     self.transform = push * self.transform
     self.collider.velocity += contact.delta_velocity
@@ -1378,14 +1379,6 @@ The world transform composed from the root down to this node.
 
 - **Type:** `Mat4`
 
-### `add_child(node)` — function
-
-Add a node as a child. A node that already has a parent is reparented.
-
-**Parameters:**
-
-- `node` (*Node*) — The node to add.
-
 ### `Node.from_mesh(mesh)` — class
 
 Create a Node tree from a Mesh and return its root node.
@@ -1395,6 +1388,14 @@ Create a Node tree from a Mesh and return its root node.
 - `mesh` (*Mesh*) — The mesh asset to instantiate.
 
 **Returns:** `Node` — The generated root node.
+
+### `add_child(node)` — function
+
+Add a node as a child. A node that already has a parent is reparented.
+
+**Parameters:**
+
+- `node` (*Node*) — The node to add.
 
 ### `remove_child(node)` — function
 

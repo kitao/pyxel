@@ -34,9 +34,11 @@ class TestChannel:
             "sounds": [snd, snd],
             "mml": "T120 O4 L4 CDEF",
         }
+
         ch = pyxel.Channel()
         ch.play(sounds[form])
         assert ch.play_pos() == (0, 0.0)
+
         ch.stop()
         assert ch.play_pos() is None
 

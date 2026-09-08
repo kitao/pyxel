@@ -36,8 +36,6 @@ impl Mat4 {
         Vec3::wrap(self.inner_ref().scale_vec())
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
         format!(
@@ -67,6 +65,7 @@ impl Mat4 {
 
     fn __hash__(&self) -> u64 {
         use std::hash::{Hash, Hasher};
+
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         let m = self.inner_ref();
         // Adding 0.0 folds -0.0 into +0.0 so values equal under __eq__ hash equally.
@@ -96,9 +95,7 @@ impl Mat4 {
             let result = Vec3::wrap(self.inner_ref().mul_vec(&vec.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else {
-            Err(pyo3::exceptions::PyTypeError::new_err(
-                "other must be Mat4 or Vec3",
-            ))
+            Ok(py.NotImplemented())
         }
     }
 

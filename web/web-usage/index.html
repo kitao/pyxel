@@ -28,7 +28,6 @@
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
-
         app.appendChild(buildPageHeader(updateTexts));
 
         const wrap = document.createElement("div");
@@ -167,7 +166,6 @@
           ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"><\/script>', "html")}
           <p class="body">${t("custom_elements_setup_version").replace("{0}", chip("@"))}</p>
           ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.9.9/wasm/pyxel.js"><\/script>', "html")}
-
           <p class="body mt-3">${t("custom_elements_overview")
             .replace("{0}", chip("run"))
             .replace("{1}", chip("play"))
@@ -183,6 +181,7 @@
             `<pyxel-run
   script="
 import pyxel
+
 pyxel.init(200, 150)
 pyxel.cls(8)
 pyxel.line(20, 20, 180, 130, 7)

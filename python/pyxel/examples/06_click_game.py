@@ -12,6 +12,17 @@ NUM_INITIAL_BUBBLES = 50
 NUM_EXPLODE_BUBBLES = 11
 
 
+def random_bubble():
+    r = pyxel.rndf(3, 10)
+    return Bubble(
+        pyxel.rndf(r, pyxel.width - r),
+        pyxel.rndf(r, pyxel.height - r),
+        r,
+        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
+        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
+    )
+
+
 class Bubble:
     def __init__(self, x, y, r, vx, vy):
         self.x = x
@@ -111,17 +122,6 @@ class App:
 
         if not self.is_exploded and pyxel.frame_count % 20 < 10:
             pyxel.text(96, 50, "CLICK ON BUBBLE", pyxel.frame_count % 15 + 1)
-
-
-def random_bubble():
-    r = pyxel.rndf(3, 10)
-    return Bubble(
-        pyxel.rndf(r, pyxel.width - r),
-        pyxel.rndf(r, pyxel.height - r),
-        r,
-        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
-        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
-    )
 
 
 App()

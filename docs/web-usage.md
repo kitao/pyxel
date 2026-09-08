@@ -125,6 +125,7 @@ To run Python code directly, write the code in the `script` attribute.
 <pyxel-run
   script="
 import pyxel
+
 pyxel.init(200, 150)
 pyxel.cls(8)
 pyxel.line(20, 20, 180, 130, 7)

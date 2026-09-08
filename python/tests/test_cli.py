@@ -84,6 +84,7 @@ class TestWatchCommand:
             f"Path({str(result_file)!r}).write_text('started')\n"
         )
         script.write_text(source + "import time\ntime.sleep(30)\n", encoding="utf-8")
+
         monkeypatch.setenv(pyxel.WATCH_STATE_FILE_ENV, "")
         monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
         children_before = set(multiprocessing.active_children())
@@ -97,6 +98,7 @@ class TestWatchCommand:
             errors += capfd.readouterr().err
             assert time.monotonic() < deadline, (stage, errors)
             value = result_file.read_text() if result_file.exists() else ""
+
             if stage == 0 and value == "started":
                 script.write_text("syntax error!!!\n", encoding="utf-8")
                 os.utime(script, (1_000_000_000, 1_000_000_000))
@@ -114,6 +116,7 @@ class TestWatchCommand:
         monkeypatch.setattr(
             pyxel.cli, "time", SimpleNamespace(time=time.time, sleep=advance)
         )
+
         try:
             pyxel.cli.watch_and_run_python_script(str(app_dir), str(script))
         finally:
@@ -185,7 +188,6 @@ class TestPyxelAppMetadata:
         capsys.readouterr()
 
         pyxel.cli.play_pyxel_app(app_file)
-
         assert "app ran" in capsys.readouterr().out.splitlines()
 
     def test_get_metadata_returns_expected_fields(self, tmp_path, monkeypatch):
@@ -200,6 +202,7 @@ class TestPyxelAppMetadata:
         monkeypatch.chdir(tmp_path)
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
         capsys.readouterr()  # discard package output
+
         pyxel.cli.print_pyxel_app_metadata(str(tmp_path / "my_app.pyxapp"))
         out = capsys.readouterr().out
         assert "My App" in out
@@ -253,7 +256,6 @@ class TestPlayCommand:
 
         with pytest.raises(SystemExit) as exc:
             pyxel.cli.play_pyxel_app(str(app_file))
-
         assert exc.value.code == 1
         assert (
             capsys.readouterr().out
@@ -300,7 +302,6 @@ class TestPackage:
         monkeypatch.chdir(tmp_path)
 
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-
         with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
             assert zf.read("my_app/linked/data.txt") == b"shared asset"
 
@@ -327,7 +328,6 @@ class TestPackage:
         monkeypatch.chdir(tmp_path)
 
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-
         with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
             names = set(zf.namelist())
         assert "my_app/preview.GIF" not in names
@@ -343,7 +343,6 @@ class TestPackage:
         monkeypatch.chdir(work_dir)
 
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-
         with zipfile.ZipFile(work_dir / "my_app.pyxapp") as zf:
             names = set(zf.namelist())
         assert "my_app/main.py" in names
@@ -362,7 +361,6 @@ class TestPackage:
         monkeypatch.chdir(tmp_path)
 
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-
         with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
             names = set(zf.namelist())
         assert "my_app/__pycache__/ignored.pyc" not in names
@@ -382,6 +380,7 @@ class TestPackage:
         startup_file.parent.mkdir()
         startup_file.write_text("", encoding="utf-8")
         monkeypatch.chdir(tmp_path)
+
         pyxel.cli.package_pyxel_app("my_app", "my_app/src/main.py")
         with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
             pointer = zf.read(f"my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}").decode("utf-8")
@@ -394,7 +393,6 @@ class TestPackage:
         monkeypatch.chdir(tmp_path)
 
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-
         assert setting_file.read_text(encoding="utf-8") == "preserve-me"
         with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
             pointer = zf.read(f"my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}").decode("utf-8")
@@ -416,6 +414,7 @@ class TestPackage:
         outside = tmp_path / "outside.py"
         outside.write_text("", encoding="utf-8")
         monkeypatch.chdir(tmp_path)
+
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli.package_pyxel_app("my_app", str(outside))
         assert exc_info.value.code == 1
@@ -435,7 +434,6 @@ class TestPackage:
 
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli.package_pyxel_app("my_app", str(Path("my_app") / startup))
-
         assert exc_info.value.code == 1
         assert (
             capsys.readouterr().out == "startup script is excluded from the Pyxel app\n"
@@ -459,7 +457,6 @@ class TestPackage:
         pyxel.cli.package_pyxel_app("my_app", str(Path("my_app") / startup))
         capsys.readouterr()
         pyxel.cli.play_pyxel_app("my_app.pyxapp")
-
         assert capsys.readouterr().out == "startup ran\n"
 
     def test_stdout_shows_added_files(self, capsys, tmp_path, monkeypatch):
@@ -481,10 +478,8 @@ class TestPackage:
             raise RuntimeError("zip write failed")
 
         monkeypatch.setattr(zipfile.ZipFile, "write", raise_on_write)
-
         with raises_exact(RuntimeError, "zip write failed"):
             pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-
         assert app_file.read_bytes() == b"existing app"
         assert list(tmp_path.glob(".my_app.pyxapp.*.tmp")) == []
         assert not (app_dir / pyxel.APP_STARTUP_SCRIPT_FILE).exists()
@@ -501,7 +496,6 @@ class TestApp2exe:
 
         with pytest.raises(SystemExit) as exc:
             pyxel.cli.create_executable_from_pyxel_app(str(app_file))
-
         assert exc.value.code == 1
         assert capsys.readouterr().out == (
             "PyInstaller is not installed. Install app2exe support with: "
@@ -561,6 +555,7 @@ class TestApp2exe:
             add_data = command[command.index("--add-data") + 1]
             assert add_data == f"{app_file}{os.pathsep}."
             assert not app2exe_dir.exists()
+
         assert work_dirs[0] != work_dirs[1]
         assert build_sentinel.read_text(encoding="utf-8") == "keep"
         assert spec_sentinel.read_text(encoding="utf-8") == "keep"
@@ -599,7 +594,6 @@ class TestApp2exe:
         monkeypatch.setattr(pyxel.cli.subprocess, "run", run_pyinstaller)
 
         pyxel.cli.create_executable_from_pyxel_app(str(symlink))
-
         assert command is not None
         add_data = command[command.index("--add-data") + 1]
         assert add_data == f"{symlink.absolute()}{os.pathsep}."
@@ -632,7 +626,6 @@ class TestApp2exe:
         monkeypatch.setattr(pyxel.cli.subprocess, "run", run_pyinstaller)
 
         pyxel.cli.create_executable_from_pyxel_app(str(app_file))
-
         assert bootstrap_script is not None
         assert "Demo.PYXAPP" in bootstrap_script
         assert "Demo.pyxapp" not in bootstrap_script
@@ -648,18 +641,27 @@ class TestApp2exe:
         )
         (app_dir / "main.py").write_text(
             "from xml.etree import ElementTree\n"
+            "\n"
             "import pyxel\n"
+            "\n"
             "assert ElementTree.fromstring('<root />').tag == 'root'\n"
             "pyxel.init(64, 64, headless=True)\n"
             'pyxel.load("assets/sample.pyxres")\n'
+            "\n"
+            "\n"
             "def update():\n"
             "    pyxel.quit()\n"
+            "\n"
+            "\n"
             "def draw():\n"
             "    pyxel.cls(0)\n"
             "    pyxel.blt(0, 0, 0, 0, 0, 16, 16)\n"
+            "\n"
+            "\n"
             "pyxel.run(update, draw)\n",
             encoding="utf-8",
         )
+
         monkeypatch.chdir(tmp_path)
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
         pyxel.cli.create_executable_from_pyxel_app("my_app.pyxapp")
@@ -699,9 +701,9 @@ class TestApp2exe:
             "Path(os.environ['PYXEL_PARENT_IMPORT_SENTINEL']).write_text('ok')\n",
             encoding="utf-8",
         )
+
         monkeypatch.chdir(tmp_path)
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-
         pyxel.cli.create_executable_from_pyxel_app("my_app.pyxapp")
 
         exe_name = "my_app.exe" if sys.platform == "win32" else "my_app"
@@ -728,9 +730,9 @@ class TestApp2exe:
             encoding="utf-8",
         )
         monkeypatch.chdir(tmp_path)
+
         pyxel.cli.package_pyxel_app("real", "real/main.py")
         Path("alias.pyxapp").symlink_to("real.pyxapp")
-
         pyxel.cli.create_executable_from_pyxel_app("alias.pyxapp")
 
         executable = tmp_path / "dist" / "alias" / "alias"
@@ -771,7 +773,6 @@ class TestApp2exe:
 
         with pytest.raises(SystemExit) as exc:
             pyxel.cli.create_executable_from_pyxel_app(str(app_file))
-
         assert exc.value.code == 1
         assert (
             capsys.readouterr().out
@@ -802,13 +803,12 @@ class TestApp2html:
         payload = base64.b64decode(match.group(1))
         assert payload == (tmp_path / "my_app.pyxapp").read_bytes()
 
+    @pytest.mark.skipif(sys.platform == "win32", reason="requires POSIX filenames")
     def test_html_escapes_app_name_as_javascript_string(self, tmp_path, monkeypatch):
         pyxel_app_file = tmp_path / 'bad"name\\line.pyxapp'
         pyxel_app_file.write_bytes(b"payload")
         monkeypatch.chdir(tmp_path)
-
         pyxel.cli.create_html_from_pyxel_app(str(pyxel_app_file))
-
         html = (tmp_path / 'bad"name\\line.html').read_text(encoding="utf-8")
         assert 'name: "bad\\"name\\\\line.pyxapp"' in html
 
@@ -818,6 +818,7 @@ class TestApp2html:
         node = shutil.which("node")
         if node is None:
             pytest.skip("Node.js is required to check the generated JavaScript")
+
         web_usage = (
             Path(__file__).resolve().parents[2] / "web/web-usage/index.html"
         ).read_text(encoding="utf-8")
@@ -831,6 +832,7 @@ class TestApp2html:
         monkeypatch.chdir(tmp_path)
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
         pyxel.cli.create_html_from_pyxel_app("my_app.pyxapp")
+
         html = (tmp_path / "my_app.html").read_text(encoding="utf-8")
         script = re.search(r"<script>\s*(.*?)\s*</script>", html, re.DOTALL)
         assert script is not None
@@ -881,7 +883,6 @@ class TestCopyExamples:
         monkeypatch.chdir(tmp_path)
 
         pyxel.cli.copy_pyxel_examples()
-
         dst = tmp_path / "pyxel_examples"
         assert (dst / "main.py").read_text(encoding="utf-8") == "import pyxel\n"
         assert list(dst.rglob("__pycache__")) == []
@@ -890,7 +891,8 @@ class TestCopyExamples:
         monkeypatch.chdir(tmp_path)
         pyxel.cli.copy_pyxel_examples()
         out = capsys.readouterr().out
-        assert "copied 'pyxel_examples/01_hello_pyxel.py'" in out
+        path = Path("pyxel_examples") / "01_hello_pyxel.py"
+        assert f"copied '{path}'" in out
 
     def test_overwrites_existing_dir(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
@@ -898,6 +900,7 @@ class TestCopyExamples:
         dst.mkdir()
         stale = dst / "stale.txt"
         stale.write_text("old", encoding="utf-8")
+
         pyxel.cli.copy_pyxel_examples()
         assert not stale.exists()
         assert (dst / "01_hello_pyxel.py").is_file()
@@ -948,10 +951,10 @@ class TestWatchHelpers:
         target.write_text("after", encoding="utf-8")
         os.utime(target, (1_000_000_002, 1_000_000_002))
         after = pyxel.cli._timestamps_in_dir(app_dir)
-
         linked_file = str(app_dir / "linked" / "data.txt")
         assert before == {linked_file: 1_000_000_000}
         assert after == {linked_file: 1_000_000_002}
+
         target.unlink()
         assert pyxel.cli._timestamps_in_dir(app_dir) == {}
 
@@ -971,9 +974,7 @@ class TestWatchHelpers:
             return original_stat(path, *args, **kwargs)
 
         monkeypatch.setattr(Path, "stat", remove_before_stat)
-
         app_dir = Path(pyxel.cli._create_app_dir())
-
         assert app_dir.is_dir()
 
     @pytest.mark.parametrize("disappear", [False, True])
@@ -994,9 +995,7 @@ class TestWatchHelpers:
             return is_file
 
         monkeypatch.setattr(Path, "is_file", remove_after_is_file)
-
         result = pyxel.cli._timestamps_in_dir(str(tmp_path))
-
         expected = {str(tmp_path / "a.py")}
         if not disappear:
             expected.add(str(nested_file))
@@ -1007,6 +1006,7 @@ class TestWatchHelpers:
         f.write_text("a", encoding="utf-8")
         os.utime(f, (1_000_000_000, 1_000_000_000))
         before = pyxel.cli._timestamps_in_dir(str(tmp_path))
+
         f.write_text("b", encoding="utf-8")
         os.utime(f, (1_000_000_002, 1_000_000_002))
         after = pyxel.cli._timestamps_in_dir(str(tmp_path))
@@ -1028,6 +1028,7 @@ class TestWatchHelpers:
         watch_dir.mkdir(parents=True)
         dead_file = watch_dir / str(os.getpid() + 1)
         dead_file.touch()
+
         pyxel.cli._create_watch_state_file()
         assert not dead_file.exists()
 
@@ -1048,9 +1049,7 @@ class TestWatchHelpers:
             return original_unlink(path, *args, **kwargs)
 
         monkeypatch.setattr(Path, "unlink", remove_before_unlink)
-
         state_file = pyxel.cli._create_watch_state_file()
-
         assert Path(state_file).is_file()
 
 
@@ -1104,7 +1103,6 @@ class TestExtractPyxelAppSafety:
 
         with pytest.raises(SystemExit) as exc_info:
             pyxel.cli._extract_pyxel_app(str(app_file))
-
         assert exc_info.value.code == 1
         assert capsys.readouterr().out == (
             f"invalid startup script path in Pyxel app: {startup_path!r}\n"
@@ -1124,7 +1122,6 @@ class TestExtractPyxelAppSafety:
             zf.writestr(f"app/{startup_path}", "VALUE = 42\n")
 
         startup_script = pyxel.cli._extract_pyxel_app(str(app_file))
-
         assert startup_script is not None
         assert Path(startup_script).name == startup_path
         assert Path(startup_script).read_text(encoding="utf-8") == "VALUE = 42\n"
@@ -1138,7 +1135,6 @@ class TestExtractPyxelAppSafety:
             zf.writestr("app/src/main.py", "VALUE = 42\n")
 
         startup_script = pyxel.cli._extract_pyxel_app(str(app_file))
-
         assert startup_script is not None
         assert Path(startup_script).read_text(encoding="utf-8") == "VALUE = 42\n"
 
@@ -1154,7 +1150,6 @@ class TestExtractPyxelAppSafety:
             zf.writestr("app/main.py", "VALUE = 42\n")
 
         startup_script = pyxel.cli._extract_pyxel_app(str(app_file))
-
         assert startup_script is not None
         assert Path(startup_script).name == "main.py"
         assert Path(startup_script).resolve().parent.name == "app"

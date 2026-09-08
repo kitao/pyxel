@@ -23,6 +23,7 @@ CLASS_CATEGORIES = {
 def generate_pyi_docstrings():
     api_data = json.loads(API_REF_JSON.read_text(encoding="utf-8"))
     doc_map = _build_doc_map(api_data)
+
     content = PYI_PATH.read_text(encoding="utf-8")
     content = _strip_docstrings(content)
     content = _add_docstrings(content, doc_map)
@@ -51,7 +52,6 @@ def _lowercase_first(s):
 def _merge_items(existing, new):
     existing_desc = localize(existing.get("description"))
     new_desc = localize(new.get("description"))
-
     if new.get("params") and not existing.get("params"):
         merged = (
             f"{new_desc} Call without arguments to {_lowercase_first(existing_desc)}"
@@ -63,7 +63,6 @@ def _merge_items(existing, new):
         )
     else:
         merged = f"{existing_desc} {new_desc}"
-
     existing.setdefault("description", {})["en"] = merged
 
 
@@ -111,14 +110,11 @@ def _adapt_for_tilemap(item):
 
 def _build_doc_map(api_data):
     doc_map = {}
-
     for category in api_data["categories"]:
         scope = CLASS_CATEGORIES.get(category["id"])
-
         for item in category.get("items", []):
             if not isinstance(item, dict) or "name" not in item:
                 continue
-
             name = item["name"]
             if scope and "." in name:
                 key = (scope, name.split(".", 1)[1])
@@ -126,12 +122,10 @@ def _build_doc_map(api_data):
                 key = (scope, "__init__")
             else:
                 key = (scope, name)
-
             if key in doc_map:
                 _merge_items(doc_map[key], item)
             else:
                 doc_map[key] = item
-
     return doc_map
 
 
@@ -161,18 +155,15 @@ def _make_docstring(item, indent):
     desc = localize(item.get("description"))
     if not desc:
         return None
-
     params = item.get("params", [])
     param_lines = []
     for p in params:
         p_desc = localize(p.get("description"))
         if p_desc:
             param_lines.append(f"{indent}    {p['name']}: {p_desc}")
-
     ret_desc = localize(item.get("returns", {}).get("description"))
     notes = localize(item.get("notes"))
     examples = item.get("examples", [])
-
     if not param_lines and not ret_desc and not notes and not examples:
         return [f'{indent}"""{desc}"""']
 
@@ -216,7 +207,6 @@ def _strip_docstrings(content):
 
     while i < len(lines):
         stripped = lines[i].strip()
-
         if stripped.startswith('"""'):
             if stripped.count('"""') >= 2:
                 i += 1
@@ -225,20 +215,19 @@ def _strip_docstrings(content):
                 while i < len(lines) and '"""' not in lines[i]:
                     i += 1
                 i += 1
+
             # Restore the placeholder body that the docstring replaced.
             if result:
                 prev = result[-1].rstrip()
                 if prev.endswith(":"):
                     result[-1] = prev + " ..."
             continue
-
         if stripped == "..." and result:
             prev = result[-1].rstrip()
             if prev.endswith(":"):
                 result[-1] = prev + " ..."
                 i += 1
                 continue
-
         result.append(lines[i])
         i += 1
 
@@ -256,7 +245,6 @@ def _add_docstrings(content, doc_map):
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
-
         cm = re.match(r"^class (\w+)", line)
         if cm:
             current_class = cm.group(1)
@@ -283,7 +271,6 @@ def _add_docstrings(content, doc_map):
 
         if stripped.startswith("@"):
             last_decorator = stripped
-
         dm = re.match(r"^(\s*)def (\w+)\(", line)
         if dm:
             func_indent = dm.group(1)
@@ -344,7 +331,6 @@ def _add_docstrings(content, doc_map):
 
         if not stripped.startswith("@"):
             last_decorator = None
-
         result.append(line)
         i += 1
 

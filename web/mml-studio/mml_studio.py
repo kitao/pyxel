@@ -19,7 +19,6 @@ class App:
 
     def start_playback(self):
         self.loop_enabled = _get_js_var("js_loop", False)
-
         pyxel.stop()
         for i in range(pyxel.NUM_CHANNELS):
             pyxel.play(i, i, loop=self.loop_enabled)
@@ -50,13 +49,11 @@ class App:
 
     def draw(self):
         pyxel.cls(1)
-
         pyxel.rectb(0, -1, pyxel.width, pyxel.height + 2, 5)
 
         for i in range(pyxel.NUM_CHANNELS):
             total_sec = pyxel.sounds[i].total_sec()
             (_, play_sec) = pyxel.play_pos(i) or (None, None)
-
             if play_sec is None:
                 continue
 

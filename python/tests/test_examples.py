@@ -116,10 +116,12 @@ import pyxel
 init = pyxel.init
 pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
 pyxel.run = lambda update, draw: None
+
 namespace = runpy.run_path(sys.argv[1])
 editor = namespace["WavetableEditor"](8, 8, 0, "Test")
 wave = pyxel.tones[0].wavetable
 wave[:] = [8] * 32
+
 
 def frame(col, row, pressed=None):
     pyxel.set_mouse_pos(editor.x + 1 + col * 5, editor.y + 8 + (15 - row) * 3)
@@ -128,19 +130,24 @@ def frame(col, row, pressed=None):
     editor.update()
     pyxel.flip()
 
+
 frame(2, 8, False)
 frame(20, 15, True)
 expected = [8] * 20 + [15] + [8] * 11
 assert list(wave) == expected, list(wave)
+
 frame(24, 1)
 expected[20:25] = [1] * 5
 assert list(wave) == expected, list(wave)
+
 frame(7, 9, False)
 assert list(wave) == expected, list(wave)
+
 frame(5, 0, True)
 expected[5] = 0
 assert list(wave) == expected, list(wave)
 """
+
         result = subprocess.run(
             [sys.executable, "-c", code, str(EXAMPLES_DIR / "14_synthesizer.py")],
             capture_output=True,

@@ -39,13 +39,13 @@ def main() -> int:
         violations.extend(find_metadata_mismatches(wheel_path, PYPROJECT_PATH))
         violations.extend(find_wheel_tag_mismatches(wheel_path, version))
     except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
-        print(f"error: {error}")
+        print(f"error: {error}", file=sys.stderr)
         return 1
 
     if violations:
-        print(f"error: invalid contents detected in {wheel_path.name}")
+        print(f"error: invalid contents detected in {wheel_path.name}", file=sys.stderr)
         for entry, reason in violations:
-            print(f"  - {entry}: {reason}")
+            print(f"  - {entry}: {reason}", file=sys.stderr)
         return 1
 
     print(f"ok: {wheel_path.name}")
@@ -104,6 +104,7 @@ def find_violations(wheel_path):
                 if pattern in data:
                     violations.append((name, f"host path {pattern!r}"))
                     break
+
     return violations
 
 
@@ -147,6 +148,7 @@ def find_source_mismatches(wheel_path, source_dir):
                 continue
             if archive_name not in expected_names:
                 mismatches.append((archive_name, "not present in python/pyxel"))
+
     return mismatches
 
 
@@ -158,6 +160,7 @@ def _project_metadata_contract(pyproject_path):
         requires_python = project["requires-python"]
         dependencies = project.get("dependencies", [])
         optional_dependencies = project.get("optional-dependencies", {})
+
         if not all(
             isinstance(value, str) for value in (name, version, requires_python)
         ):
@@ -205,7 +208,6 @@ def find_metadata_mismatches(wheel_path, pyproject_path):
                     "expected exactly one .dist-info/METADATA member",
                 )
             ]
-
         metadata_name = metadata_names[0]
         metadata = Parser().parsestr(
             wheel_zip.read(metadata_name).decode("utf-8", errors="strict")

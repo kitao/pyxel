@@ -211,7 +211,6 @@
 
         const ext = getFileExt(startupFile);
         const isEdit = ext === "pyxres";
-
         if (
           !startupFile.startsWith("https://github.com/") ||
           !(ext === "py" || ext === "pyxapp" || ext === "pyxres")
@@ -226,6 +225,7 @@
           return;
         }
         if (generation !== launchBuildGeneration) return;
+
         const filePathNoExt = resolved.path.replace(/\.[^.]+$/, "");
         const command = isEdit ? "edit" : ext === "py" ? "run" : "play";
         const base = new URL("./", location.href).href;

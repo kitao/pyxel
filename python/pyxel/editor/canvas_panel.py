@@ -41,7 +41,6 @@ class CanvasPanel(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 11, 16, 130, 130)
-
         if hasattr(parent, "tilemap_index_var"):
             self._is_tilemap_mode = True
             self.copy_var("tilemap_index_var", parent)
@@ -70,6 +69,7 @@ class CanvasPanel(Widget):
         self._edit_canvas = (
             pyxel.Tilemap(16, 16, 0) if self._is_tilemap_mode else pyxel.Image(16, 16)
         )
+
         self.add_history = parent.add_history
         self.copy_var("color_var", parent)
         self.copy_var("tool_var", parent)
@@ -140,7 +140,6 @@ class CanvasPanel(Widget):
                 data["tilemap_index"] = self.tilemap_index_var
             else:
                 data["image_index"] = self.image_index_var
-
             data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
             data["old_canvas"] = self.canvas_var.get_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
@@ -165,7 +164,6 @@ class CanvasPanel(Widget):
             data["new_canvas"] = self.canvas_var.get_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
             )
-
             if data["new_canvas"] != data["old_canvas"]:
                 self.add_history(data)
 
@@ -246,6 +244,7 @@ class CanvasPanel(Widget):
             self._reset_edit_canvas()
             self._edit_canvas.fill(x, y, self.color_var)
             self._finish_edit_canvas()
+
             self.canvas_var.blt(
                 self.focus_x_var * 8,
                 self.focus_y_var * 8,
@@ -426,6 +425,7 @@ class CanvasPanel(Widget):
                 width -= max(self._select_x1 + width - 16, 0)
                 height -= max(self._select_y1 + height - 16, 0)
                 clipped = [row[:width] for row in self._canvas_buffer[:height]]
+
                 self.canvas_var.set_slice(
                     self.focus_x_var * 8 + self._select_x1,
                     self.focus_y_var * 8 + self._select_y1,
