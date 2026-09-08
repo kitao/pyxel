@@ -40,7 +40,7 @@ pub struct PlatformSdl2 {
     #[cfg(target_os = "emscripten")]
     pub virtual_gamepad_states: [bool; 10],
     #[cfg(not(target_os = "emscripten"))]
-    pub next_update_ms: Option<f32>,
+    pub next_update_ms: Option<f64>,
 }
 
 impl PlatformSdl2 {
@@ -73,7 +73,6 @@ impl PlatformSdl2 {
         }
 
         let sdl_flags = SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
-
         // Prefer Wayland driver on Wayland sessions because bundled SDL2 fails
         // to auto-detect Wayland. Falls back to auto-detection.
         let initialized = if std::env::var("XDG_SESSION_TYPE").is_ok_and(|v| v == "wayland")
@@ -388,26 +387,26 @@ impl PlatformSdl2 {
 
     #[cfg(not(target_os = "emscripten"))]
     pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, mut callback: F) {
-        let frame_ms = 1000.0 / fps as f32;
-        let mut next_frame_ms = unsafe { SDL_GetTicks() } as f32;
+        let frame_ms = 1000.0 / f64::from(fps);
+        let mut next_frame_ms = unsafe { SDL_GetTicks64() } as f64;
         let mut last_frame_ms = next_frame_ms;
 
         loop {
             // Busy-wait with short sleeps until the next frame time
             loop {
-                let remaining_ms = next_frame_ms - unsafe { SDL_GetTicks() } as f32;
+                let remaining_ms = next_frame_ms - unsafe { SDL_GetTicks64() } as f64;
                 if remaining_ms <= 0.0 {
                     break;
                 }
                 unsafe { SDL_Delay((remaining_ms as u32 / 2).max(1)) };
             }
 
-            callback(next_frame_ms - last_frame_ms);
+            callback((next_frame_ms - last_frame_ms) as f32);
             super::super::facade::swap_window();
             last_frame_ms = next_frame_ms;
 
             // Catch up if frames were missed
-            let ticks = unsafe { SDL_GetTicks() } as f32;
+            let ticks = unsafe { SDL_GetTicks64() } as f64;
             while next_frame_ms <= ticks {
                 next_frame_ms += frame_ms;
             }
@@ -437,12 +436,14 @@ impl PlatformSdl2 {
 
     #[cfg(not(target_os = "emscripten"))]
     pub fn step_frame(&mut self, fps: u32) {
-        let frame_ms = 1000.0 / fps as f32;
-        let mut next_frame_ms = self.next_update_ms.unwrap_or(self.ticks() as f32);
+        let frame_ms = 1000.0 / f64::from(fps);
+        let mut next_frame_ms = self
+            .next_update_ms
+            .unwrap_or(unsafe { SDL_GetTicks64() } as f64);
 
         // Busy-wait with short sleeps until the next frame time
         loop {
-            let remaining_ms = next_frame_ms - self.ticks() as f32;
+            let remaining_ms = next_frame_ms - unsafe { SDL_GetTicks64() } as f64;
             if remaining_ms <= 0.0 {
                 break;
             }
@@ -452,7 +453,7 @@ impl PlatformSdl2 {
         self.swap_window();
 
         // Catch up if frames were missed
-        let ticks = self.ticks() as f32;
+        let ticks = unsafe { SDL_GetTicks64() } as f64;
         while next_frame_ms <= ticks {
             next_frame_ms += frame_ms;
         }
@@ -514,6 +515,7 @@ fn advance_frame_schedule(
     if now_ms < *next_frame_ms - frame_ms / 2.0 {
         return None;
     }
+
     let delta_ms = (*next_frame_ms - *last_frame_ms) as f32;
     *last_frame_ms = *next_frame_ms;
     *next_frame_ms += frame_ms;
@@ -526,6 +528,7 @@ fn advance_frame_schedule(
 #[cfg(any(target_os = "emscripten", test))]
 fn browser_save_script(filename: &str) -> CString {
     let mut quoted_filename = String::from("\"");
+
     for c in filename.chars() {
         match c {
             '"' => quoted_filename.push_str("\\\""),
@@ -542,6 +545,7 @@ fn browser_save_script(filename: &str) -> CString {
             _ => quoted_filename.push(c),
         }
     }
+
     quoted_filename.push('"');
     CString::new(format!("_savePyxelFile({quoted_filename});"))
         .expect("browser save script is built from escaped filename text")
@@ -655,7 +659,6 @@ mod tests {
         let script = browser_save_script(
             "quote'and\n\"slash\\\0\r\t\u{08}\u{0c}\u{1f}\u{2028}\u{2029}.pyxres",
         );
-
         assert_eq!(
             script.to_str().unwrap(),
             r#"_savePyxelFile("quote'and\n\"slash\\\u0000\r\t\b\f\u001f\u2028\u2029.pyxres");"#
@@ -665,7 +668,6 @@ mod tests {
     #[test]
     fn test_window_title_c_string_replaces_nul_bytes() {
         let title = window_title_c_string("Py\0xel");
-
         assert_eq!(title.to_str().unwrap(), "Py xel");
     }
 
@@ -713,7 +715,6 @@ mod tests {
             |_| actions.borrow_mut().push("delete_sdl_context"),
             |_| actions.borrow_mut().push("destroy_window"),
         );
-
         assert_eq!(actions.borrow().len(), 3);
     }
 
@@ -721,7 +722,6 @@ mod tests {
     #[test]
     fn test_native_audio_start_does_not_reuse_saved_device() {
         AUDIO_DEVICE_ID.store(42, Ordering::Relaxed);
-
         assert_eq!(saved_audio_device_id_for_start(), None);
         assert_eq!(AUDIO_DEVICE_ID.load(Ordering::Relaxed), 0);
     }
@@ -730,9 +730,7 @@ mod tests {
     fn test_advance_frame_schedule_runs_first_frame_immediately() {
         let mut last = 100.0;
         let mut next = 100.0;
-
         let delta = advance_frame_schedule(100.0, 33.0, &mut last, &mut next);
-
         assert_eq!(delta, Some(0.0));
         assert_eq!(last, 100.0);
         assert_eq!(next, 133.0);
@@ -742,10 +740,8 @@ mod tests {
     fn test_advance_frame_schedule_waits_outside_tolerance() {
         let mut last = 0.0;
         let mut next = 33.0;
-
         // More than half a frame before the scheduled time is too early.
         let delta = advance_frame_schedule(16.0, 33.0, &mut last, &mut next);
-
         assert_eq!(delta, None);
         assert_eq!(last, 0.0);
         assert_eq!(next, 33.0);
@@ -755,9 +751,7 @@ mod tests {
     fn test_advance_frame_schedule_runs_at_half_frame_tolerance() {
         let mut last = 0.0;
         let mut next = 33.0;
-
         let delta = advance_frame_schedule(16.5, 33.0, &mut last, &mut next);
-
         assert_eq!(delta, Some(33.0));
         assert_eq!(last, 33.0);
         assert_eq!(next, 66.0);
@@ -776,6 +770,7 @@ mod tests {
         );
         assert_eq!(last, 33.0);
         assert_eq!(next, 132.0);
+
         assert_eq!(
             advance_frame_schedule(next, 33.0, &mut last, &mut next),
             Some(99.0)
@@ -790,6 +785,7 @@ mod tests {
         let mut last = 0.0;
         let mut next = 0.0;
         let mut frames = 0;
+
         for i in 0..60 {
             let now = (i as f64 * frame_ms).floor();
             if advance_frame_schedule(now, frame_ms, &mut last, &mut next).is_some() {
@@ -809,6 +805,7 @@ mod tests {
         let mut last = 0.0;
         let mut next = frame_ms;
         let mut frames = 0;
+
         for i in 1..=60 {
             let now = i as f64 * raf_ms + 1.0;
             if advance_frame_schedule(now, frame_ms, &mut last, &mut next).is_some() {

@@ -536,6 +536,7 @@ fn preset_params(preset: i32) -> GeneratorParams {
 
 // MML token helpers
 
+// Generator pitch 0 is C2.
 fn note_name(note: i32) -> (&'static str, i32) {
     let semitone = note.rem_euclid(12);
     let octave = note.div_euclid(12) + 2;
@@ -577,8 +578,10 @@ fn length_units_to_tokens(units: usize) -> Vec<&'static str> {
         (2usize, "8"),
         (1usize, "16"),
     ];
+
     let mut out = Vec::new();
     let mut remaining = units;
+
     for (u, tok) in table {
         while remaining >= u {
             out.push(tok);
@@ -588,6 +591,7 @@ fn length_units_to_tokens(units: usize) -> Vec<&'static str> {
             break;
         }
     }
+
     out
 }
 
@@ -598,13 +602,14 @@ fn select_default_length(notes: &[Option<i32>]) -> &'static str {
     let mut c4 = 0usize;
     let mut c8 = 0usize;
     let mut c16 = 0usize;
-
     let mut i = 0usize;
+
     while i < notes.len() {
         let Some(_) = notes[i] else {
             i += 1;
             continue;
         };
+
         let mut len = 1usize;
         let mut j = i + 1;
         while j < notes.len() && notes[j].is_none() {
@@ -612,6 +617,7 @@ fn select_default_length(notes: &[Option<i32>]) -> &'static str {
             j += 1;
         }
         i = j;
+
         if let Some(head) = length_units_to_tokens(len).first().copied() {
             match head {
                 "1" => c1 += 1,
@@ -635,6 +641,7 @@ fn select_default_length(notes: &[Option<i32>]) -> &'static str {
             best = cand;
         }
     }
+
     best.0
 }
 
@@ -643,11 +650,13 @@ fn note_token(note: &str, units: usize, default_len: &str, tie_out: bool) -> Str
     if lens.is_empty() {
         return note.to_string();
     }
+
     let mut out = String::new();
     out.push_str(note);
     if lens[0] != default_len {
         out.push_str(lens[0]);
     }
+
     for tok in lens.iter().skip(1) {
         out.push('&');
         out.push_str(tok);
@@ -676,6 +685,7 @@ fn env_def_from_tone(tone_idx: usize, slot: i32) -> String {
     if release > 0 {
         segs.push((release, 0));
     }
+
     let mut out = format!("@ENV{slot}{{0");
     for (dur, vol) in segs {
         let _ = write!(out, ",{dur},{vol}");
@@ -732,6 +742,7 @@ fn env_def_from_drum_key(key: i32, slot: i32) -> String {
     let velocity = DRUM_VELOCITY[idx].clamp(0, 100);
     let sustain_level = (sustain * 127 + 50) / 100;
     let init = (velocity * 127 + 50) / 100;
+
     if decay == 0 && sustain_level == 0 {
         return format!("@ENV{slot}{{{init}}}");
     }
@@ -745,11 +756,13 @@ fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) ->
     if group <= 1 {
         let mut out = Vec::new();
         let mut i = 0usize;
+
         while i < items.len() {
             let mut j = i + 1;
             while j < items.len() && items[j] == items[i] {
                 j += 1;
             }
+
             let count = j - i;
             if count > 1 && !(skip_octave_shifts && (items[i] == "<" || items[i] == ">")) {
                 let expanded = items[i].repeat(count);
@@ -764,11 +777,13 @@ fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) ->
             }
             i = j;
         }
+
         return out;
     }
 
     let mut out = Vec::new();
     let mut i = 0usize;
+
     while i < items.len() {
         if i + group <= items.len() {
             let chunk = &items[i..i + group];
@@ -778,6 +793,7 @@ fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) ->
                 while j + group <= items.len() && &items[j..j + group] == chunk {
                     j += group;
                 }
+
                 let count = (j - i) / group;
                 if count > 1 {
                     let joined = chunk.join("");
@@ -793,15 +809,18 @@ fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) ->
                 }
             }
         }
+
         out.push(items[i].clone());
         i += 1;
     }
+
     out
 }
 
 fn format_tokens(tokens: &[String]) -> String {
     let mut out = String::new();
     let mut last = "";
+
     for tok in tokens {
         let is_cmd = tok.starts_with('@') || tok.starts_with('O');
         let last_is_cmd = last.starts_with('@') || last.starts_with('O');
@@ -811,9 +830,11 @@ fn format_tokens(tokens: &[String]) -> String {
         {
             out.push(' ');
         }
+
         out.push_str(tok);
         last = tok;
     }
+
     out
 }
 
@@ -835,6 +856,7 @@ fn parse_notes_bits(s: &str) -> [i32; 12] {
     for (i, ch) in s.bytes().take(12).enumerate() {
         out[i] = i32::from(ch.saturating_sub(b'0'));
     }
+
     // Use the same empty-chord fallback for bass and melody note pools.
     if !out.iter().any(|kind| matches!(kind, 1 | 2 | 3 | 9)) {
         return parse_notes_bits(I_MAJOR_NOTES_BITS);
@@ -877,6 +899,7 @@ fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<O
                     repeat: e.repeat,
                 })
                 .collect();
+
             // `repeat` indices are 0-based positions in the input slice; do not reorder.
             // Pyxel Composer is expected to emit entries in `loc` order.
             // Guarantee there is an entry at loc 0 so every step has a defined chord.
@@ -889,6 +912,7 @@ fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<O
                         repeat: None,
                     },
                 );
+
                 // Shift every repeat index up by 1 to account for the prepended entry.
                 for entry in out.iter_mut().skip(1) {
                     if let Some(r) = entry.repeat.as_mut() {
@@ -896,8 +920,10 @@ fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<O
                     }
                 }
             }
+
             return out;
         }
+
         // Fallback: hold I major for the full 8 bars.
         return vec![OwnedChordEntry {
             loc: 0,
@@ -905,6 +931,7 @@ fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<O
             repeat: None,
         }];
     }
+
     CHORD_PROGRESSIONS[chord_idx]
         .iter()
         .copied()
@@ -934,8 +961,10 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
                 break;
             }
         }
+
         *slot = resolve_entry_notes(progression, entry_idx).map_or(default_bits, parse_notes_bits);
     }
+
     out
 }
 
@@ -943,6 +972,7 @@ fn build_chord_note_pool(bits: &[i32; 12], transpose: i32, lowest: i32) -> Vec<(
     let mut note_highest = None;
     let mut idx = 0i32;
     let mut results = Vec::new();
+
     loop {
         let note_type = bits[idx.rem_euclid(12) as usize];
         let note = 12 + idx + transpose;
@@ -953,11 +983,13 @@ fn build_chord_note_pool(bits: &[i32; 12], transpose: i32, lowest: i32) -> Vec<(
                 note_highest = Some(note + 15);
             }
         }
+
         if note_highest.is_some_and(|h| note >= h) {
             break;
         }
         idx += 1;
     }
+
     results
 }
 
@@ -1006,11 +1038,13 @@ fn build_melody_chord_plan(
     lowest: i32,
 ) -> Vec<MelodyChord> {
     let mut out: Vec<MelodyChord> = Vec::with_capacity(progression.len());
+
     for p in progression {
         let mut base = 0;
         if let Some(repeat_idx) = p.repeat {
             base = out[repeat_idx].base;
         }
+
         let mut notes = Vec::new();
         let mut notes_bits = [0; 12];
         let mut no_root = false;
@@ -1028,6 +1062,7 @@ fn build_melody_chord_plan(
             no_root = note_chord_count > 3;
             notes = build_chord_note_pool(&notes_bits, key_shift, lowest);
         }
+
         out.push(MelodyChord {
             loc: p.loc,
             base,
@@ -1037,6 +1072,7 @@ fn build_melody_chord_plan(
             repeat: p.repeat,
         });
     }
+
     out
 }
 
@@ -1064,6 +1100,7 @@ fn pick_rhythm_events(
     loop {
         let mut results = Vec::new();
         let mut used16 = false;
+
         for bar in 0..BARS {
             let line = if is_sub {
                 "0.0.0.0.0.0.0.0."
@@ -1082,6 +1119,7 @@ fn pick_rhythm_events(
                     }
                 }
             };
+
             for (i, ch) in line.bytes().enumerate() {
                 let val = match ch {
                     b'-' => -1,
@@ -1092,6 +1130,7 @@ fn pick_rhythm_events(
                 results.push((bar * STEPS_PER_BAR + i, val));
             }
         }
+
         if is_sub || !use_16th || used16 {
             // Two sentinels: next_note_events reads one entry past rhythm_idx
             // even when rhythm_idx itself lands on the first sentinel
@@ -1128,6 +1167,7 @@ fn next_note_events(
 ) -> Option<Vec<(usize, i32, usize)>> {
     let mut rhythm_kind = None;
     let mut rhythm_idx = 0usize;
+
     for (i, (rh_loc, rh_pat)) in rhythm_set.iter().enumerate() {
         if loc == *rh_loc {
             rhythm_idx = i;
@@ -1171,6 +1211,7 @@ fn next_note_events(
     if chord.notes.is_empty() {
         return Some(vec![(loc, -1, note_len)]);
     }
+
     let no_root = state.first_in_chord || chord.no_root;
     let sub_pool = if is_sub {
         match (melody, base) {
@@ -1183,6 +1224,7 @@ fn next_note_events(
     } else {
         Vec::new()
     };
+
     let note_pool: &[(i32, i32)] = if is_sub && !sub_pool.is_empty() {
         &sub_pool
     } else {
@@ -1192,6 +1234,7 @@ fn next_note_events(
 
     let mut following = Vec::new();
     let mut prev_loc = loc;
+
     loop {
         let next_rhythm_loc = rhythm_set[rhythm_idx + 1 + following.len()].0;
         let no_next =
@@ -1222,11 +1265,13 @@ fn next_note_events(
         if cnt == 0 || is_sub || rng.random_range(0..=1) == 0 {
             return Some(vec![(first_loc, state.prev_note, first_len)]);
         }
+
         let mut results = Vec::new();
         for i in 0..cnt {
             while next_idx == cur_idx {
                 next_idx = pick_target_note_idx(&chord.notes, state.prev_note, no_root, false, rng);
             }
+
             let dir = if next_idx > cur_idx { 1isize } else { -1isize };
             let next_pos = (cur_idx as isize + dir) as usize;
             let note = note_pool[next_pos].0;
@@ -1236,6 +1281,7 @@ fn next_note_events(
             let b = following[i * 2 + 1];
             results.push((b.0, prev_note, b.1));
         }
+
         return Some(results);
     }
 
@@ -1245,6 +1291,7 @@ fn next_note_events(
 
     let mut results = Vec::new();
     let mut i = 0usize;
+
     while next_idx != cur_idx {
         cur_idx = (cur_idx as isize + direction) as usize;
         let note = note_pool[cur_idx].0;
@@ -1252,6 +1299,7 @@ fn next_note_events(
         results.push((seg.0, note, seg.1));
         i += 1;
     }
+
     Some(results)
 }
 
@@ -1271,6 +1319,7 @@ fn melody_has_required_tones(
             if !need.is_empty() {
                 return false;
             }
+
             cur_chord_idx = next_chord_idx as i32;
             need.clear();
             for (n, note_type) in &chord_plan[next_chord_idx].notes {
@@ -1298,6 +1347,7 @@ fn melody_has_required_tones(
             }
         }
     }
+
     need.is_empty()
 }
 
@@ -1317,6 +1367,7 @@ fn pick_target_note(
     let allowed: &[i32] = if no_root { &[1, 3] } else { &[1, 2, 3] };
     let mut highest_note = 0;
     let mut highest_idx = 0usize;
+
     for (idx, (note, note_type)) in chord_notes.iter().enumerate() {
         if allowed.contains(note_type) && *note > highest_note {
             highest_note = *note;
@@ -1333,6 +1384,7 @@ fn pick_target_note(
         if !allowed.contains(&note_type) {
             continue;
         }
+
         if prev_note >= 0 {
             let diff = (prev_note - note).abs();
             if diff > 12 {
@@ -1343,6 +1395,7 @@ fn pick_target_note(
                 continue;
             }
         }
+
         return note;
     }
 }
@@ -1375,6 +1428,7 @@ fn generate_melody(
 ) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
     let density = density as usize;
     let chord_plan = build_melody_chord_plan(progression, key_shift, lowest);
+
     // Retry until the phrase satisfies the requested chord-tone constraints
     loop {
         let mut note_line = vec![NOTE_UNSET; TOTAL_STEPS];
@@ -1387,13 +1441,13 @@ fn generate_melody(
         }
         rhythm_main_list.sort_by_key(Vec::len);
         let rhythm_main = &rhythm_main_list[density.min(rhythm_main_list.len() - 1)];
-
         let mut state = MelodyState::new();
 
         for loc in 0..TOTAL_STEPS {
             if note_line[loc] != NOTE_UNSET {
                 continue;
             }
+
             let Some(note_events) = next_note_events(
                 rhythm_main,
                 loc,
@@ -1417,12 +1471,14 @@ fn generate_melody(
                     Some(repeat_note)
                 };
                 sub_seed[loc] = sub_seed[target_loc];
+
                 if repeat_note != NOTE_UNSET && repeat_note != NOTE_CONT {
                     state.prev_note = repeat_note;
                     state.first_in_chord = false;
                 }
                 continue;
             };
+
             let mut total_event_len = 0usize;
             for (l, n, len) in note_events {
                 place_melody(&mut note_line, l, n, len);
@@ -1438,6 +1494,7 @@ fn generate_melody(
                 state.first_in_chord = false;
                 total_event_len += len;
             }
+
             if total_event_len > 0 {
                 place_harmony(
                     &mut sub_seed,
@@ -1479,12 +1536,14 @@ fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<
     let (basic, final_pat) = BASS_PATTERNS[bass_idx];
     let adjust_list = [0, -1, 1, -2, 2, -3, 3];
     let base_highest_note = 26i32;
+
     for bar in 0..BARS {
         let pat = if bar < 7 {
             basic.as_bytes()
         } else {
             final_pat.as_bytes()
         };
+
         for (step, pat_cell) in pat.iter().enumerate().take(STEPS_PER_BAR) {
             let step_symbol = *pat_cell as char;
             let idx = bar * STEPS_PER_BAR + step;
@@ -1494,6 +1553,7 @@ fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<
             while base_root + 24 > base_highest_note {
                 base_root -= 12;
             }
+
             if step_symbol == '.' {
                 notes[idx] = None;
                 continue;
@@ -1502,6 +1562,7 @@ fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<
                 notes[idx] = Some(-1);
                 continue;
             }
+
             let base_add = match step_symbol {
                 '1' => 7,
                 '3' => 19,
@@ -1519,6 +1580,7 @@ fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<
             notes[idx] = Some(chosen);
         }
     }
+
     notes
 }
 
@@ -1536,6 +1598,7 @@ fn harmony_note_pool_at(
     let mut master_note: Option<i32> = None;
     let mut base_note: Option<i32> = None;
     let mut loc = start_loc % TOTAL_STEPS;
+
     for _ in 0..TOTAL_STEPS {
         if master_note.is_none() && melody[loc] != Some(-1) {
             if let Some(v) = melody[loc] {
@@ -1558,6 +1621,7 @@ fn harmony_note_pool_at(
     let mut results = Vec::new();
     let mut has_important_tone = false;
     let mut idx = 0i32;
+
     loop {
         let note_type = chord_bits[idx.rem_euclid(12) as usize];
         if matches!(note_type, 1 | 2 | 3 | 9) {
@@ -1574,6 +1638,7 @@ fn harmony_note_pool_at(
         }
         idx += 1;
     }
+
     results
 }
 
@@ -1591,6 +1656,7 @@ fn find_lower_harmony_at(
     if (prev_note - master_note).abs() >= 3 {
         return prev_note;
     }
+
     let mut cur = master_note - 3;
     while cur >= lowest {
         for (note, note_type) in &notes {
@@ -1600,6 +1666,7 @@ fn find_lower_harmony_at(
         }
         cur -= 1;
     }
+
     -1
 }
 
@@ -1619,6 +1686,7 @@ fn place_harmony(
     let mut master_note: Option<i32> = None;
     let mut sub_note = note;
     let mut master_loc = loc as i32;
+
     while master_loc >= 0 {
         if let Some(m) = melody[master_loc as usize] {
             if m >= 0 {
@@ -1646,6 +1714,7 @@ fn place_harmony(
         if pos >= TOTAL_STEPS {
             break;
         }
+
         if let Some(m) = melody[pos] {
             if m >= 0 {
                 master_note = Some(m);
@@ -1656,6 +1725,7 @@ fn place_harmony(
                 sub_note, m, pos, melody, base, chord_bits, key_shift, lowest,
             );
         }
+
         let out = if prev_sub == Some(sub_note) {
             None
         } else {
@@ -1682,6 +1752,7 @@ fn generate_submelody(
 
     let mut sub = sub_seed.to_vec();
     let mut prev_note_loc: i32 = -1;
+
     for loc in 0..TOTAL_STEPS {
         if let Some(n) = sub[loc] {
             if n >= 0 {
@@ -1693,6 +1764,7 @@ fn generate_submelody(
         if (loc as i32) - prev_note_loc < 4 || loc % 4 != 0 {
             continue;
         }
+
         if let Some(note_events) = next_note_events(
             &rhythm_sub,
             loc,
@@ -1721,6 +1793,7 @@ fn generate_submelody(
             prev_note_loc = loc as i32;
         }
     }
+
     sub
 }
 
@@ -1784,6 +1857,7 @@ fn notes_to_mml(
     } else {
         "@VIB0".to_string()
     });
+
     let used_keys = if drums {
         let used = used_drum_keys(notes);
         let insert_at = tokens
@@ -1800,6 +1874,7 @@ fn notes_to_mml(
     } else {
         Vec::new()
     };
+
     let mut cur_oct = None;
     let mut drum_note_idx = [0usize; 10];
     let drum_env_slot = if drums {
@@ -1812,12 +1887,14 @@ fn notes_to_mml(
     let mut bar_tokens: Vec<Vec<String>> = vec![Vec::new()];
     let mut bar_units = 0usize;
     let mut i = 0usize;
+
     // Encode note events into bar-aligned MML tokens
     while i < notes.len() {
         let Some(event) = notes[i] else {
             i += 1;
             continue;
         };
+
         let mut len = 1usize;
         while i + len < notes.len() && notes[i + len].is_none() {
             len += 1;
@@ -1833,6 +1910,7 @@ fn notes_to_mml(
                 current_bar_mut(&mut bar_tokens[..]).push(token);
                 bar_units += seg;
                 remaining -= seg;
+
                 if bar_units == 16 {
                     bar_tokens.push(Vec::new());
                     bar_units = 0;
@@ -1855,6 +1933,7 @@ fn notes_to_mml(
                     cur_env_slot = target_env_slot;
                 }
             }
+
             let note_list = drum_notes_for_key(key as i32);
             let idx = drum_note_idx[key] % note_list.len();
             drum_note_idx[key] += 1;
@@ -1862,9 +1941,11 @@ fn notes_to_mml(
         } else {
             event
         };
+
         let (name, oct) = note_name(pitch);
         let mut remaining = len;
         let mut first = true;
+
         while remaining > 0 {
             let space = 16 - bar_units;
             let seg = remaining.min(space);
@@ -1877,6 +1958,7 @@ fn notes_to_mml(
             bar_units += seg;
             remaining -= seg;
             first = false;
+
             if bar_units == 16 {
                 bar_tokens.push(Vec::new());
                 bar_units = 0;
@@ -1926,6 +2008,7 @@ fn make_channel(notes: Vec<Option<i32>>, tone_idx: i32, volume: i32, quantize: i
     tones[0] = Some(tone_idx);
     volumes[0] = Some(volume);
     quantizes[0] = Some(quantize);
+
     BgmChannel {
         notes,
         tones,
@@ -2025,7 +2108,6 @@ fn generate_bgm(
     let density = params.melo_density;
     let use_16th = params.melo_use16;
     let lowest = params.melo_lowest_note;
-
     let mut rng = Xoshiro256StarStar::seed_from_u64(seed);
 
     let progression = resolve_progression(chord, params.custom_progression.as_deref());
@@ -2055,10 +2137,12 @@ fn generate_bgm(
             lowest,
             &mut rng,
         );
+
         loop {
             if melody_has_required_tones(&melody_and_seed.0, Some(&candidate), &chord_plan) {
                 break;
             }
+
             melody_and_seed = generate_melody(
                 &progression,
                 density,
@@ -2069,6 +2153,7 @@ fn generate_bgm(
                 &mut rng,
                 false,
             );
+
             candidate = generate_submelody(
                 &progression,
                 &melody_and_seed.0,
@@ -2079,6 +2164,7 @@ fn generate_bgm(
                 &mut rng,
             );
         }
+
         submelody = Some(candidate);
     }
 
@@ -2086,7 +2172,6 @@ fn generate_bgm(
     let melo_tone_idx = TONE_CANDIDATES[params.melo_tone as usize] as i32;
     let sub_tone_idx = TONE_CANDIDATES[params.sub_tone as usize] as i32;
     let base_quantize = ((params.base_quantize * 100) + 8) / 16;
-
     let ch1 = make_channel(bass, BASS_TONE_IDX as i32, 112, base_quantize);
 
     let (ch2, ch3) = if instr == 0 {
@@ -2107,14 +2192,15 @@ fn generate_bgm(
                 c3 = make_channel(drum, DRUM_TONE_IDX as i32, 80, 94);
             }
         }
+
         if instr == 2 || instr == 3 {
             let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
             c2 = make_channel(sub, sub_tone_idx, 64, 94);
         }
         (c2, c3)
     };
-
     let ch0 = make_channel(melody, melo_tone_idx, 96, 88);
+
     let mut tone_indices: Vec<usize> = Vec::new();
     for ch in [&ch0, &ch1, &ch2, &ch3] {
         for idx in ch.tones.iter().flatten() {
@@ -2153,6 +2239,7 @@ fn compile_to_mml(data: &BgmData) -> Vec<String> {
             if ch.notes.is_empty() {
                 return silent_channel_mml(data.tempo);
             }
+
             let tone_idx = ch.tones.iter().find_map(|t| *t).unwrap_or(0) as usize;
             let volume = ch.volumes.iter().find_map(|v| *v).unwrap_or(96);
             let quantize = ch.quantizes.iter().find_map(|q| *q).unwrap_or(88);
@@ -2316,6 +2403,7 @@ mod tests {
             notes: Some("000000000000".to_string()),
             repeat: None,
         }];
+
         let bits = chord_bits_per_step(&progression);
         assert_eq!(bits[0], parse_notes_bits(I_MAJOR_NOTES_BITS));
         assert_ne!(build_chord_note_pool(&bits[0], 0, 24), []);
@@ -2327,6 +2415,7 @@ mod tests {
             notes: Some("000000000000".to_string()),
             repeat: None,
         }]);
+
         let empty_chord = generate_bgm(&params, 12345, "transpose", "instrumentation");
         params.custom_progression.as_mut().unwrap()[0].notes = Some(I_MAJOR_NOTES_BITS.to_string());
         assert_eq!(
@@ -2357,6 +2446,7 @@ mod tests {
                 quantizes: vec![Some(88), None, None, None],
             }],
         };
+
         let json = data.to_json();
         let restored = BgmData::from_json(&json);
         assert_eq!(data, restored);
@@ -2428,6 +2518,7 @@ mod tests {
                 "T133 L16 @ENV1{127} Q100 V112 @0 @ENV1 @VIB0",
             ]),
         ];
+
         for (preset, transpose, instrumentation, seed, expected) in cases {
             let mml = generate_bgm_mml(*preset, *transpose, *instrumentation, *seed);
             assert_eq!(

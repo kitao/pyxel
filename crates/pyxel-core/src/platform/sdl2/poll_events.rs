@@ -78,7 +78,6 @@ impl PlatformSdl2 {
     pub fn poll_events(&mut self, pyxel_events: &mut Vec<Event>) {
         // SAFETY: SDL_Event is a C union used here only as an output buffer.
         let mut sdl_event: SDL_Event = unsafe { zeroed() };
-
         while unsafe { SDL_PollEvent(&raw mut sdl_event) } != 0 {
             // SAFETY: a successful SDL_PollEvent initializes type_; each match
             // arm reads only the union member selected by that SDL event tag.
@@ -113,14 +112,13 @@ impl PlatformSdl2 {
                 // Keyboard
                 SDL_KEYDOWN | SDL_KEYUP => {
                     let key = unsafe { sdl_event.key.keysym.sym } as Key;
-
                     #[cfg(target_os = "emscripten")]
                     let key = correct_emscripten_key(key, unsafe { sdl_event.key.keysym.scancode }
                         as u32);
-
                     if unsafe { sdl_event.key.repeat } == 0 {
                         let pressed = unsafe { sdl_event.type_ } as SDL_EventType == SDL_KEYDOWN;
                         push_key_event(pyxel_events, key, pressed);
+
                         if let Some((unified_key, mask)) = key_to_virtual_key(key) {
                             // Use this event's state so queued transitions stay in order.
                             let modifiers = unsafe { sdl_event.key.keysym.mod_ } as SDL_Keymod;
@@ -225,7 +223,6 @@ impl PlatformSdl2 {
         }
 
         // Mouse motion (polling)
-
         let (mouse_x, mouse_y) = if self.is_wayland || cfg!(target_os = "emscripten") {
             // Wayland: SDL_GetGlobalMouseState is unsupported, so use
             // SDL_GetMouseState which returns SDL's window-relative event state.
@@ -255,7 +252,6 @@ impl PlatformSdl2 {
         }
 
         // Virtual gamepad (Emscripten)
-
         #[cfg(target_os = "emscripten")]
         {
             const VIRTUAL_GAMEPAD_BUTTONS: [Key; 10] = [
@@ -316,7 +312,6 @@ fn correct_emscripten_key(sdl_key: Key, scancode: u32) -> Key {
         return sdl_key;
     };
     let js_key = unsafe { emscripten_run_script_int(script.as_ptr()) } as u32;
-
     // Only correct printable ASCII keys (0x20 space .. 0x7E tilde)
     if !(0x20..=0x7E).contains(&sdl_key) || !(0x20..=0x7E).contains(&js_key) {
         return sdl_key;
@@ -326,7 +321,6 @@ fn correct_emscripten_key(sdl_key: Key, scancode: u32) -> Key {
     if (0x41..=0x5A).contains(&js_key) {
         return js_key + 0x20;
     }
-
     js_key
 }
 
@@ -389,6 +383,7 @@ mod tests {
     fn test_combined_modifiers_follow_either_side() {
         // Push real SDL events without opening a window or using the OS keyboard.
         assert_eq!(unsafe { SDL_InitSubSystem(SDL_INIT_EVENTS) }, 0);
+
         for (left, right, unified, left_mask, right_mask) in [
             (KEY_LSHIFT, KEY_RSHIFT, KEY_SHIFT, KMOD_LSHIFT, KMOD_RSHIFT),
             (KEY_LCTRL, KEY_RCTRL, KEY_CTRL, KMOD_LCTRL, KMOD_RCTRL),
@@ -403,6 +398,7 @@ mod tests {
                     let mut platform = PlatformSdl2::new();
                     platform.is_wayland = true;
                     let mut events = Vec::new();
+
                     for (key, pressed, modifiers, repeat) in [
                         (first, true, first_mask, 0),
                         (first, true, first_mask, 1),
@@ -421,6 +417,7 @@ mod tests {
                         }
                     }
                     platform.poll_events(&mut events);
+
                     let actual: Vec<_> = events
                         .iter()
                         .filter_map(|event| match event {
@@ -444,6 +441,7 @@ mod tests {
                 }
             }
         }
+
         unsafe { SDL_QuitSubSystem(SDL_INIT_EVENTS) };
     }
 }

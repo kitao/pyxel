@@ -43,12 +43,12 @@ self.addEventListener('fetch', (event) => {
 
 INJECT_SNIPPET = """
 <script>
-(function() {
+(async function() {
   try {
     const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     const isSecure = window.isSecureContext || isLocalhost;
     if (!isSecure || !('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('__SW_PATH__', { scope: '/' });
+    await navigator.serviceWorker.register('__SW_PATH__', { scope: '/' });
   } catch (e) {
     console.warn('SW register failed', e);
   }
@@ -120,6 +120,7 @@ def main() -> int:
     threading.Timer(
         0.5, lambda: webbrowser.open(f"http://localhost:{PORT}/web/showcase/")
     ).start()
+
     try:
         server.serve_forever()
     except KeyboardInterrupt:
@@ -153,6 +154,7 @@ def _inject_html(text: str) -> str:
         )
         lower = text.lower()
         head_idx = lower.rfind("</head>")
+
     if "serviceworker" in lower or "service-worker" in lower:
         return text
     if head_idx != -1:

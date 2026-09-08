@@ -76,13 +76,13 @@ class PianoKeyboard(Widget):
         self._preview_sound.set("g2", "p", "3", "n", 30)
         self._preview_tone = 0
         self._mouse_note = None
+
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
         self.copy_var("speed_var", parent)
         self.copy_var("octave_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
-
         self.new_var("note_var", None)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
@@ -161,7 +161,6 @@ class PianoKeyboard(Widget):
 
         play_pos = pyxel.play_pos(0)
         notes = self.get_field(0)
-
         if play_pos is not None and notes:
             note = notes[min(round(play_pos[1] * 120 / self.speed_var), len(notes) - 1)]
         elif play_pos is None and self.note_var is not None:

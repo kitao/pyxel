@@ -14,6 +14,7 @@ const loadNamedFunction = (source, name, context) => {
 const loadArrowFunction = (source, name, context) => {
   const start = source.indexOf(`const ${name} =`);
   assert.notEqual(start, -1, `Missing function declaration: ${name}`);
+
   for (
     let end = source.indexOf(";", start);
     end !== -1;
@@ -29,6 +30,7 @@ const loadArrowFunction = (source, name, context) => {
     script.runInNewContext(context);
     return vm.runInNewContext(name, context);
   }
+
   throw new Error(`Unclosed function declaration: ${name}`);
 };
 
@@ -37,12 +39,14 @@ const extractBlock = (source, marker) => {
   assert.notEqual(start, -1, `Missing source marker: ${marker}`);
   const bodyStart = source.indexOf("{", start);
   assert.notEqual(bodyStart, -1, `Missing function body: ${marker}`);
+
   let depth = 0;
   for (let i = bodyStart; i < source.length; i++) {
     if (source[i] === "{") depth += 1;
     if (source[i] === "}") depth -= 1;
     if (depth === 0) return source.slice(start, i + 1);
   }
+
   throw new Error(`Unclosed function body: ${marker}`);
 };
 

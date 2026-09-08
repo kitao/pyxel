@@ -9,6 +9,7 @@ pub struct Camera {
     pub far: f32,
     pub ortho_size: Option<f32>,
     pub clear_color: Option<i32>,
+
     pub depth: Vec<f32>,
     pub depth_w: u32,
     pub depth_h: u32,
@@ -27,6 +28,7 @@ impl Camera {
             far: 1000.0,
             ortho_size: None,
             clear_color: None,
+
             depth: Vec::new(),
             depth_w: 0,
             depth_h: 0,
@@ -56,10 +58,12 @@ mod tests {
         let c = Camera::new();
         rc_mut!(&c).ensure_depth(4, 4);
         assert_eq!(rc_ref!(&c).depth.len(), 16);
+
         // A sentinel detects an unwanted reset when dimensions stay unchanged.
         rc_mut!(&c).depth[0] = 5.0;
         rc_mut!(&c).ensure_depth(4, 4);
         assert_eq!(rc_ref!(&c).depth[0], 5.0);
+
         // New size: reallocated and reset even though the length stays 16.
         rc_mut!(&c).ensure_depth(2, 8);
         assert_eq!(rc_ref!(&c).depth.len(), 16);

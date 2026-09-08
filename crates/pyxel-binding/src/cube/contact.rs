@@ -41,8 +41,6 @@ impl Contact {
         Vec3::wrap(self.inner_ref().delta_angular_velocity.clone())
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let c = self.inner_ref();
         let p = rc_ref!(&c.point);

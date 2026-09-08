@@ -32,10 +32,10 @@ class ImportHook:
             origin = spec.origin
             if (
                 origin in (None, "built-in", "builtin", "frozen")
-                or "site-packages" in origin
-                or "dist-packages" in origin
+                or "site-packages" in os.path.normpath(origin).split(os.sep)
+                or "dist-packages" in os.path.normpath(origin).split(os.sep)
                 or os.path.realpath(origin).startswith(
-                    os.path.realpath(sys.base_prefix)
+                    os.path.join(os.path.realpath(sys.base_prefix), "")
                 )
             ):
                 return

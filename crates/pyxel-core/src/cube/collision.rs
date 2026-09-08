@@ -139,8 +139,6 @@ impl Aabb {
         Self::from_transformed_corners(transform, &corners)
     }
 
-    // Transform 8 local-space corners and take the world-space min /
-    // max.
     fn from_transformed_corners(transform: &Mat4, corners: &[Vec3; 8]) -> Self {
         let mut min = Vec3 {
             x: f32::INFINITY,
@@ -152,6 +150,7 @@ impl Aabb {
             y: f32::NEG_INFINITY,
             z: f32::NEG_INFINITY,
         };
+
         for c in corners {
             let wc = transform.mul_vec_value(c);
             min.x = min.x.min(wc.x);
@@ -161,6 +160,7 @@ impl Aabb {
             max.y = max.y.max(wc.y);
             max.z = max.z.max(wc.z);
         }
+
         Self { min, max }
     }
 
@@ -244,6 +244,7 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
     if dist_sq >= r_sum * r_sum {
         return None;
     }
+
     let dist = dist_sq.sqrt();
     let depth = r_sum - dist;
     let normal = if dist > 1e-12 {
@@ -259,6 +260,7 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
             z: 0.0,
         }
     };
+
     let point = Vec3 {
         x: c_b.x + normal.x * r_b,
         y: c_b.y + normal.y * r_b,
@@ -290,11 +292,13 @@ pub fn sphere_vs_rounded_obb(
     {
         return None;
     }
+
     let inv = box_world.inverse_value();
     let p = inv.mul_vec_value(&c_sphere);
     if !vec_is_finite(p) {
         return None;
     }
+
     let q = Vec3 {
         x: p.x.clamp(-half.x, half.x),
         y: p.y.clamp(-half.y, half.y),
@@ -305,6 +309,7 @@ pub fn sphere_vs_rounded_obb(
     let dz = p.z - q.z;
     let dist2 = dx * dx + dy * dy + dz * dz;
     let reach = r_sphere + box_r;
+
     if dist2 > f32::EPSILON {
         // Center outside the core box.
         let dist = dist2.sqrt();
@@ -312,6 +317,7 @@ pub fn sphere_vs_rounded_obb(
         if depth <= CONTACT_EPSILON {
             return None;
         }
+
         let n_local = Vec3 {
             x: dx / dist,
             y: dy / dist,
@@ -330,6 +336,7 @@ pub fn sphere_vs_rounded_obb(
             depth,
         });
     }
+
     // Center inside the core box: push along the local axis with the
     // smallest margin; depth covers the interior margin plus the full
     // combined radius.
@@ -383,6 +390,7 @@ pub fn sphere_vs_rounded_obb(
             },
         ),
     ];
+
     let mut margin = margins[0].0;
     let mut n_local = margins[0].1;
     for (candidate_margin, candidate_normal) in &margins[1..] {
@@ -391,6 +399,7 @@ pub fn sphere_vs_rounded_obb(
             n_local = *candidate_normal;
         }
     }
+
     let n_world = box_world.mul_dir_value(&n_local);
     let point = box_world.mul_vec_value(&p);
     Some(ContactGeom {
@@ -420,6 +429,7 @@ pub fn capsule_vs_sphere(
         y: -half_h,
         z: 0.0,
     });
+
     let on_axis = closest_point_on_segment(c_sphere, top, bot);
     // Reverse the sphere/capsule argument order to get the capsule-to-sphere normal.
     sphere_vs_sphere(c_sphere, r_sphere, on_axis, cap_r.max(0.0))
@@ -455,6 +465,7 @@ pub fn capsule_vs_capsule(
         y: -half_h_b,
         z: 0.0,
     });
+
     let (on_a, on_b) = closest_points_segment_segment(a_top, a_bot, b_top, b_bot);
     sphere_vs_sphere(on_a, r_a.max(0.0), on_b, r_b.max(0.0))
 }
@@ -486,10 +497,8 @@ pub fn capsule_vs_rounded_obb(
         z: 0.0,
     });
     let bot = to_local(&bot_world);
+
     let (on_seg, _) = closest_points_segment_aabb(top, bot, half);
-    // Resolve at the segment's closest point: identical contract to a
-    // sphere of the capsule radius centered there (handles both the
-    // outside gap and the inside fallback uniformly).
     let on_seg_world = box_world.mul_vec_value(&on_seg);
     // sphere_vs_rounded_obb's normal points box → "sphere" = box → capsule.
     sphere_vs_rounded_obb(on_seg_world, cap_r.max(0.0), box_world, half, box_r)
@@ -563,6 +572,7 @@ pub fn rounded_obb_vs_rounded_obb(
             },
         ),
     ];
+
     let ha = [half_a.x, half_a.y, half_a.z];
     let hb = [half_b.x, half_b.y, half_b.z];
     let ca = world_a.pos_value();
@@ -572,6 +582,7 @@ pub fn rounded_obb_vs_rounded_obb(
         y: ca.y - cb.y,
         z: ca.z - cb.z,
     };
+
     let dot = |u: &Vec3, v: &Vec3| u.x * v.x + u.y * v.y + u.z * v.z;
     let cross = |u: &Vec3, v: &Vec3| Vec3 {
         x: u.y * v.z - u.z * v.y,
@@ -586,17 +597,20 @@ pub fn rounded_obb_vs_rounded_obb(
         y: 0.0,
         z: 0.0,
     };
+
     let mut test_axis = |n: Vec3| -> bool {
         let len2 = dot(&n, &n);
         if len2 < 1e-8 {
             return true; // degenerate cross axis: skip
         }
+
         let inv_len = 1.0 / len2.sqrt();
         let n = Vec3 {
             x: n.x * inv_len,
             y: n.y * inv_len,
             z: n.z * inv_len,
         };
+
         let dist = dot(&delta, &n).abs();
         let proj_a: f32 = (0..3).map(|i| (dot(&ax[i], &n) * ha[i]).abs()).sum();
         let proj_b: f32 = (0..3).map(|i| (dot(&bx[i], &n) * hb[i]).abs()).sum();
@@ -604,6 +618,7 @@ pub fn rounded_obb_vs_rounded_obb(
         if overlap <= 0.0 {
             return false; // separating axis found
         }
+
         if overlap < min_overlap {
             min_overlap = overlap;
             // Orient from b toward a.
@@ -630,6 +645,7 @@ pub fn rounded_obb_vs_rounded_obb(
             return None;
         }
     }
+
     for a in &ax {
         for b in &bx {
             if !test_axis(cross(a, b)) {
@@ -637,6 +653,7 @@ pub fn rounded_obb_vs_rounded_obb(
             }
         }
     }
+
     if !min_overlap.is_finite() || min_overlap <= 0.0 {
         return None;
     }
@@ -676,12 +693,14 @@ pub fn ray_vs_sphere(
     if a < 1e-12 {
         return None;
     }
+
     let b = 2.0 * (oc.x * dir.x + oc.y * dir.y + oc.z * dir.z);
     let c = oc.x * oc.x + oc.y * oc.y + oc.z * oc.z - radius * radius;
     let disc = b * b - 4.0 * a * c;
     if disc < 0.0 {
         return None;
     }
+
     let sqrt_disc = disc.sqrt();
     let t1 = (-b - sqrt_disc) / (2.0 * a);
     let t2 = (-b + sqrt_disc) / (2.0 * a);
@@ -695,11 +714,13 @@ pub fn ray_vs_sphere(
     if t > max_distance {
         return None;
     }
+
     let point = Vec3 {
         x: origin.x + dir.x * t,
         y: origin.y + dir.y * t,
         z: origin.z + dir.z * t,
     };
+
     let nx = point.x - center.x;
     let ny = point.y - center.y;
     let nz = point.z - center.z;
@@ -732,7 +753,6 @@ pub fn ray_vs_aabb(
     let mut tmax = max_distance;
     let mut entry_axis: usize = 0;
     let mut entry_sign = 1.0_f32;
-
     let bounds = [
         (origin.x, dir.x, aabb.min.x, aabb.max.x),
         (origin.y, dir.y, aabb.min.y, aabb.max.y),
@@ -746,6 +766,7 @@ pub fn ray_vs_aabb(
             }
             continue;
         }
+
         let t1 = (bmin - o) / d;
         let t2 = (bmax - o) / d;
         // With nonzero d and bmin < bmax, the entry face's outward normal
@@ -755,6 +776,7 @@ pub fn ray_vs_aabb(
         } else {
             (t2, t1, 1.0)
         };
+
         if t_near > tmin {
             tmin = t_near;
             entry_axis = axis;
@@ -770,6 +792,7 @@ pub fn ray_vs_aabb(
     if tmin > max_distance {
         return None;
     }
+
     let point = Vec3 {
         x: origin.x + dir.x * tmin,
         y: origin.y + dir.y * tmin,
@@ -816,6 +839,7 @@ pub fn ray_vs_triangle(
         y: v2.y - v0.y,
         z: v2.z - v0.z,
     };
+
     let h = Vec3 {
         x: dir.y * edge2.z - dir.z * edge2.y,
         y: dir.z * edge2.x - dir.x * edge2.z,
@@ -825,6 +849,7 @@ pub fn ray_vs_triangle(
     if a.abs() < 1e-9 {
         return None;
     }
+
     let f = 1.0 / a;
     let s = Vec3 {
         x: origin.x - v0.x,
@@ -835,6 +860,7 @@ pub fn ray_vs_triangle(
     if !(0.0..=1.0).contains(&u) {
         return None;
     }
+
     let q = Vec3 {
         x: s.y * edge1.z - s.z * edge1.y,
         y: s.z * edge1.x - s.x * edge1.z,
@@ -844,15 +870,18 @@ pub fn ray_vs_triangle(
     if v < 0.0 || u + v > 1.0 {
         return None;
     }
+
     let t = f * (edge2.x * q.x + edge2.y * q.y + edge2.z * q.z);
     if t < 0.0 || t > max_distance {
         return None;
     }
+
     let point = Vec3 {
         x: origin.x + dir.x * t,
         y: origin.y + dir.y * t,
         z: origin.z + dir.z * t,
     };
+
     let mut nx = edge1.y * edge2.z - edge1.z * edge2.y;
     let mut ny = edge1.z * edge2.x - edge1.x * edge2.z;
     let mut nz = edge1.x * edge2.y - edge1.y * edge2.x;
@@ -862,6 +891,7 @@ pub fn ray_vs_triangle(
         ny /= nlen;
         nz /= nlen;
     }
+
     // Flip the normal to face the ray origin.
     if nx * dir.x + ny * dir.y + nz * dir.z > 0.0 {
         nx = -nx;
@@ -894,6 +924,7 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
     if dist_sq >= r * r {
         return None;
     }
+
     let dist = dist_sq.sqrt();
     let normal = if dist > 1e-9 {
         Vec3 {
@@ -913,6 +944,7 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
             y: v2.y - v0.y,
             z: v2.z - v0.z,
         };
+
         let nx = e1.y * e2.z - e1.z * e2.y;
         let ny = e1.z * e2.x - e1.x * e2.z;
         let nz = e1.x * e2.y - e1.y * e2.x;
@@ -923,6 +955,7 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
             z: nz / nl,
         }
     };
+
     Some(ContactGeom {
         point: closest,
         normal,
@@ -944,6 +977,7 @@ pub fn capsule_vs_triangle(
     if cap_r == 0.0 {
         return None;
     }
+
     let top = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: half_h,
@@ -954,6 +988,7 @@ pub fn capsule_vs_triangle(
         y: -half_h,
         z: 0.0,
     });
+
     let (on_seg, on_tri) = closest_points_segment_triangle(top, bot, v0, v1, v2);
     if on_seg == on_tri {
         let (ax, ay, az) = (v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
@@ -966,6 +1001,7 @@ pub fn capsule_vs_triangle(
                 y: ny / len,
                 z: nz / len,
             };
+
             let distance = |p: Vec3| {
                 (p.x - v0.x) * normal.x + (p.y - v0.y) * normal.y + (p.z - v0.z) * normal.z
             };
@@ -988,6 +1024,7 @@ pub fn capsule_vs_triangle(
             });
         }
     }
+
     sphere_vs_triangle(on_seg, cap_r, v0, v1, v2)
 }
 
@@ -1008,6 +1045,7 @@ pub(crate) fn closest_points_segment_triangle(
     if let Some((_, point, _)) = ray_vs_triangle(a0, direction, v0, v1, v2, 1.0) {
         return (point, point);
     }
+
     let mut best = (a0, closest_point_on_triangle(a0, v0, v1, v2));
     let mut best_dist_sq = point_dist2(best.0, best.1);
     let on_tri = closest_point_on_triangle(a1, v0, v1, v2);
@@ -1016,6 +1054,7 @@ pub(crate) fn closest_points_segment_triangle(
         best = (a1, on_tri);
         best_dist_sq = dist_sq;
     }
+
     for (edge0, edge1) in [(v0, v1), (v1, v2), (v2, v0)] {
         let candidate = closest_points_segment_segment(a0, a1, edge0, edge1);
         let dist_sq = point_dist2(candidate.0, candidate.1);
@@ -1024,6 +1063,7 @@ pub(crate) fn closest_points_segment_triangle(
             best_dist_sq = dist_sq;
         }
     }
+
     best
 }
 
@@ -1041,6 +1081,7 @@ pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> V
         y: c.y - a.y,
         z: c.z - a.z,
     };
+
     let ap = Vec3 {
         x: p.x - a.x,
         y: p.y - a.y,
@@ -1051,6 +1092,7 @@ pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> V
     if d1 <= 0.0 && d2 <= 0.0 {
         return a;
     }
+
     let bp = Vec3 {
         x: p.x - b.x,
         y: p.y - b.y,
@@ -1061,6 +1103,7 @@ pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> V
     if d3 >= 0.0 && d4 <= d3 {
         return b;
     }
+
     let vc = d1 * d4 - d3 * d2;
     if vc <= 0.0 && d1 >= 0.0 && d3 <= 0.0 {
         let v = d1 / (d1 - d3);
@@ -1070,6 +1113,7 @@ pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> V
             z: a.z + ab.z * v,
         };
     }
+
     let cp = Vec3 {
         x: p.x - c.x,
         y: p.y - c.y,
@@ -1080,6 +1124,7 @@ pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> V
     if d6 >= 0.0 && d5 <= d6 {
         return c;
     }
+
     let vb = d5 * d2 - d1 * d6;
     if vb <= 0.0 && d2 >= 0.0 && d6 <= 0.0 {
         let w = d2 / (d2 - d6);
@@ -1089,6 +1134,7 @@ pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> V
             z: a.z + ac.z * w,
         };
     }
+
     let va = d3 * d6 - d5 * d4;
     if va <= 0.0 && (d4 - d3) >= 0.0 && (d5 - d6) >= 0.0 {
         let w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
@@ -1098,6 +1144,7 @@ pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> V
             z: b.z + (c.z - b.z) * w,
         };
     }
+
     let denom = 1.0 / (va + vb + vc);
     let v = vb * denom;
     let w = vc * denom;
@@ -1119,6 +1166,7 @@ fn closest_point_on_segment(p: Vec3, a: Vec3, b: Vec3) -> Vec3 {
     if ab_len2 <= f32::EPSILON {
         return a;
     }
+
     let ap = Vec3 {
         x: p.x - a.x,
         y: p.y - a.y,
@@ -1155,6 +1203,7 @@ pub(crate) fn closest_points_segment_segment(
         y: p1.y - p2.y,
         z: p1.z - p2.z,
     };
+
     let a = d1.x * d1.x + d1.y * d1.y + d1.z * d1.z;
     let e = d2.x * d2.x + d2.y * d2.y + d2.z * d2.z;
     let f = d2.x * r.x + d2.y * r.y + d2.z * r.z;
@@ -1162,6 +1211,7 @@ pub(crate) fn closest_points_segment_segment(
     if a <= f32::EPSILON && e <= f32::EPSILON {
         return (p1, p2);
     }
+
     if a <= f32::EPSILON {
         s = 0.0;
         t = (f / e).clamp(0.0, 1.0);
@@ -1179,6 +1229,7 @@ pub(crate) fn closest_points_segment_segment(
             } else {
                 ((b * f - c * e) / denom).clamp(0.0, 1.0)
             };
+
             let t0 = (b * s0 + f) / e;
             if t0 < 0.0 {
                 t = 0.0;
@@ -1192,6 +1243,7 @@ pub(crate) fn closest_points_segment_segment(
             }
         }
     }
+
     (
         Vec3 {
             x: p1.x + d1.x * s,
@@ -1217,6 +1269,7 @@ fn clip_segment_axis(
     if delta.abs() <= f32::EPSILON {
         return start >= min && start <= max;
     }
+
     let inv_delta = 1.0 / delta;
     let mut t0 = (min - start) * inv_delta;
     let mut t1 = (max - start) * inv_delta;
@@ -1265,6 +1318,7 @@ fn sort_unique_segment_params(params: &mut [f32; 8], len: usize) -> usize {
         }
         params[j] = value;
     }
+
     let mut unique_len = 0;
     for i in 0..len {
         if unique_len == 0 || (params[i] - params[unique_len - 1]).abs() > 1e-6 {
@@ -1340,12 +1394,14 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
         return (on_seg, on_seg);
     }
 
+    // Two endpoints plus one crossing for each of the six slab faces.
     let mut params = [0.0; 8];
     let mut param_len = 0;
     params[param_len] = 0.0;
     param_len += 1;
     params[param_len] = 1.0;
     param_len += 1;
+
     if d.x.abs() > f32::EPSILON {
         push_segment_param(&mut params, &mut param_len, (-half.x - a.x) / d.x);
         push_segment_param(&mut params, &mut param_len, (half.x - a.x) / d.x);
@@ -1365,12 +1421,14 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
     for &t in params.iter().take(param_len) {
         consider_segment_aabb_candidate(a, d, half, t, &mut best_t, &mut best_dist2);
     }
+
     for i in 0..param_len - 1 {
         let lo = params[i];
         let hi = params[i + 1];
         if hi - lo <= 1e-6 {
             continue;
         }
+
         let mid_t = (lo + hi) * 0.5;
         let mid = segment_point(a, d, mid_t);
         let mut denom = 0.0;
@@ -1445,6 +1503,7 @@ pub fn local_box_vs_triangle(
             z: 1.0,
         },
     ];
+
     // SAT 13-axis pass: any separating axis disqualifies the pair.
     // The overlaps themselves are not used as depth — the triangle
     // is a thin shell, so the SAT face-normal projection collapses
@@ -1463,9 +1522,11 @@ pub fn local_box_vs_triangle(
             sat_overlap(&axis, &p0, &p1, &p2, &half, r)?;
         }
     }
+
     for a in &aabb_axes {
         sat_overlap(a, &p0, &p1, &p2, &half, r)?;
     }
+
     let face_normal = {
         let e1 = edges[0];
         let e2 = Vec3 {
@@ -1486,6 +1547,7 @@ pub fn local_box_vs_triangle(
         return None;
     }
     sat_overlap(&face_normal, &p0, &p1, &p2, &half, r)?;
+
     // Orient toward the box center; an exact plane tie retains the winding normal.
     let centroid_dot = ((p0.x + p1.x + p2.x) * face_normal.x
         + (p0.y + p1.y + p2.y) * face_normal.y
@@ -1506,6 +1568,7 @@ pub fn local_box_vs_triangle(
         y: face_normal.y / fnlen,
         z: face_normal.z / fnlen,
     };
+
     // Penetration depth along the (oriented) face normal: swept box
     // half-extent along the normal minus the signed distance from
     // the box center (origin) to the triangle plane.
@@ -1540,6 +1603,7 @@ fn sat_overlap(
     let pr2 = p2.x * axis.x + p2.y * axis.y + p2.z * axis.z;
     let tri_min = pr0.min(pr1).min(pr2);
     let tri_max = pr0.max(pr1).max(pr2);
+
     let swell_proj = if swell > 0.0 {
         swell * (axis.x * axis.x + axis.y * axis.y + axis.z * axis.z).sqrt()
     } else {
@@ -1621,6 +1685,7 @@ mod tests {
             1.0,
         );
         assert!(a.overlaps(&b));
+
         let c = Aabb::from_sphere(
             Vec3 {
                 x: 5.0,
@@ -1696,7 +1761,7 @@ mod tests {
         .unwrap();
         assert!(approx_eq(t, 4.0));
         assert_vec3_close(point, vec3(0.0, 0.0, -1.0));
-        assert_vec3_close(normal, vec3(0.0, 0.0, -1.0));
+        assert_eq!(normal, vec3(0.0, 0.0, -1.0));
     }
 
     #[test]
@@ -1713,6 +1778,7 @@ mod tests {
                 z: 1.0,
             },
         };
+
         let (t, point, normal) = ray_vs_aabb(
             Vec3 {
                 x: 0.0,
@@ -1788,6 +1854,7 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         let r = sphere_vs_triangle(
             Vec3 {
                 x: 0.25,
@@ -1821,6 +1888,7 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         let r = sphere_vs_triangle(
             Vec3 {
                 x: 5.0,
@@ -1942,6 +2010,7 @@ mod tests {
             y: 0.0,
             z: 0.0,
         };
+
         assert!(ray_vs_sphere(origin, dir, center, 1.0, 4.5).is_some());
         assert!(ray_vs_sphere(origin, dir, center, 1.0, 3.5).is_none());
     }
@@ -1960,6 +2029,7 @@ mod tests {
                 z: 1.0,
             },
         };
+
         let r = ray_vs_aabb(
             Vec3 {
                 x: 0.0,
@@ -1992,6 +2062,7 @@ mod tests {
                 z: 1.0,
             },
         };
+
         let r = ray_vs_aabb(
             Vec3 {
                 x: -5.0,
@@ -2023,6 +2094,7 @@ mod tests {
                 z: 1.0,
             },
         };
+
         let (_, _, n) = ray_vs_aabb(
             Vec3 {
                 x: -5.0,
@@ -2039,6 +2111,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!((n.x, n.y, n.z), (-1.0, 0.0, 0.0));
+
         let (_, _, n) = ray_vs_aabb(
             Vec3 {
                 x: 0.0,
@@ -2076,6 +2149,7 @@ mod tests {
                 z: 0.0,
             },
         );
+
         // Ray parallel to the z=0 triangle plane.
         let r = ray_vs_triangle(
             Vec3 {
@@ -2115,6 +2189,7 @@ mod tests {
                 z: 0.0,
             },
         );
+
         // Ray crosses the plane but well outside the triangle's UV.
         let r = ray_vs_triangle(
             Vec3 {
@@ -2157,6 +2232,7 @@ mod tests {
                 z: 0.0,
             },
         );
+
         let r = sphere_vs_triangle(
             Vec3 {
                 x: 0.5,
@@ -2194,6 +2270,7 @@ mod tests {
                 z: 0.0,
             },
         );
+
         let r = sphere_vs_triangle(
             Vec3 {
                 x: -0.2,
@@ -2207,7 +2284,7 @@ mod tests {
         )
         .unwrap();
         // Closest is vertex a (0, 0, 0).
-        assert_vec3_close(r.point, vec3(0.0, 0.0, 0.0));
+        assert_eq!(r.point, vec3(0.0, 0.0, 0.0));
     }
 
     #[test]
@@ -2227,6 +2304,7 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         // Outside near vertex a.
         let p = Vec3 {
             x: -1.0,
@@ -2234,7 +2312,8 @@ mod tests {
             z: 0.0,
         };
         let cp = closest_point_on_triangle(p, a, b, c);
-        assert_vec3_close(cp, a);
+        assert_eq!(cp, a);
+
         // Outside near vertex b.
         let p = Vec3 {
             x: 2.0,
@@ -2242,7 +2321,8 @@ mod tests {
             z: 0.0,
         };
         let cp = closest_point_on_triangle(p, a, b, c);
-        assert_vec3_close(cp, b);
+        assert_eq!(cp, b);
+
         // Outside near vertex c.
         let p = Vec3 {
             x: -1.0,
@@ -2250,7 +2330,8 @@ mod tests {
             z: 0.0,
         };
         let cp = closest_point_on_triangle(p, a, b, c);
-        assert_vec3_close(cp, c);
+        assert_eq!(cp, c);
+
         // Interior projects straight down to the plane.
         let p = Vec3 {
             x: 0.25,
@@ -2281,6 +2362,7 @@ mod tests {
             z: 3.0,
         });
         let transform = *rc_ref!(&transform_rc);
+
         let aabb = collider_aabb(&rc_ref!(&coll), &transform);
         assert_vec3_close(aabb.min, vec3(0.5, 1.5, 2.5));
         assert_vec3_close(aabb.max, vec3(1.5, 2.5, 3.5));
@@ -2378,6 +2460,7 @@ mod tests {
             ColliderShape::RoundedBox { half, r }
                 if (half.x, half.y, half.z, r) == (1.0, 0.5, 0.25, 0.1)
         ));
+
         // radius = 0 stays in the box family (sharp box).
         let s0 = classify_shape(
             Vec3 {
@@ -2388,6 +2471,7 @@ mod tests {
             0.0,
         );
         assert!(matches!(s0, ColliderShape::RoundedBox { r, .. } if r == 0.0));
+
         // A planar size with nonzero X/Z is still a box.
         let plate = classify_shape(
             Vec3 {
@@ -2412,6 +2496,7 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         let mid = closest_point_on_segment(
             Vec3 {
                 x: 3.0,
@@ -2422,6 +2507,7 @@ mod tests {
             b,
         );
         assert_vec3_close(mid, vec3(0.0, 0.5, 0.0));
+
         let below = closest_point_on_segment(
             Vec3 {
                 x: 0.0,
@@ -2432,6 +2518,7 @@ mod tests {
             b,
         );
         assert_vec3_close(below, a);
+
         // Degenerate zero-length segment returns the endpoint.
         let pt = closest_point_on_segment(
             Vec3 {
@@ -2442,7 +2529,7 @@ mod tests {
             a,
             a,
         );
-        assert_vec3_close(pt, a);
+        assert_eq!(pt, a);
     }
 
     #[test]
@@ -2472,6 +2559,7 @@ mod tests {
         );
         assert_vec3_close(p, vec3(0.0, 0.0, 0.0));
         assert_vec3_close(q, vec3(0.0, 0.0, 1.0));
+
         // Parallel overlapping segments: any valid pair has distance 2 on X.
         let (p2, q2) = closest_points_segment_segment(
             Vec3 {
@@ -2537,6 +2625,7 @@ mod tests {
         let rot = *rc_ref!(&rot_rc);
         let d = 1.5 / std::f32::consts::SQRT_2;
         let c = Vec3 { x: d, y: 0.0, z: d }; // 1.5 along u, true gap 0.5
+
         assert!(sphere_vs_rounded_obb(
             c,
             0.3,
@@ -2549,6 +2638,7 @@ mod tests {
             0.0,
         )
         .is_none());
+
         // 1.2 along u with r=0.3 → depth = 0.3 - 0.2 = 0.1, normal = u.
         let d2 = 1.2 / std::f32::consts::SQRT_2;
         let c2 = Vec3 {
@@ -2631,7 +2721,6 @@ mod tests {
         let half = vec3(2.0, 0.1, 2.0);
         let center = vec3(0.0, 0.55, 0.0);
         let geom = sphere_vs_rounded_obb(center, 0.5, &plate, half, 0.0).unwrap();
-
         assert_vec3_close(geom.normal, vec3(0.0, 1.0, 0.0));
         assert!(approx_eq(geom.depth, 0.05), "depth={}", geom.depth);
 
@@ -2759,6 +2848,7 @@ mod tests {
         });
         let m_b_rc = rc_ref!(&shift_rc).mul_mat(&rc_ref!(&rot_rc));
         let m_b = *rc_ref!(&m_b_rc);
+
         assert!(capsule_vs_capsule(&m_a, 1.0, 0.3, &m_b, 1.0, 0.3).is_none());
     }
 
@@ -2794,9 +2884,8 @@ mod tests {
             vec3(-1.0, 0.0, 1.2),
             vec3(1.0, 1.0, 1.0),
         );
-
-        assert_vec3_close(on_seg, vec3(0.0, 0.0, 1.0));
-        assert_vec3_close(on_box, vec3(0.0, 0.0, 1.0));
+        assert_eq!(on_seg, vec3(0.0, 0.0, 1.0));
+        assert_eq!(on_box, vec3(0.0, 0.0, 1.0));
     }
 
     #[test]
@@ -2806,7 +2895,6 @@ mod tests {
             vec3(2.0, 0.25, 0.5),
             vec3(1.0, 1.0, 1.0),
         );
-
         assert_vec3_close(on_seg, vec3(0.0, 0.25, 0.5));
         assert_vec3_close(on_box, vec3(0.0, 0.25, 0.5));
     }
@@ -2818,7 +2906,6 @@ mod tests {
             vec3(0.0, 0.0, 2.0),
             vec3(1.0, 1.0, 1.0),
         );
-
         assert_vec3_close(on_seg, vec3(0.0, 1.2, 1.4));
         assert_vec3_close(on_box, vec3(0.0, 1.0, 1.0));
     }
@@ -2830,9 +2917,8 @@ mod tests {
             vec3(2.0, 0.5, -2.0),
             vec3(1.0, 1.0, 1.0),
         );
-
-        assert_vec3_close(on_seg, vec3(2.0, 0.5, -2.0));
-        assert_vec3_close(on_box, vec3(1.0, 0.5, -1.0));
+        assert_eq!(on_seg, vec3(2.0, 0.5, -2.0));
+        assert_eq!(on_box, vec3(1.0, 0.5, -1.0));
     }
 
     #[test]
@@ -2868,7 +2954,6 @@ mod tests {
         let wall_half = vec3(0.2, 0.8, 6.0);
         let capsule = translation(vec3(0.52, 0.75, 0.0));
         let geom = capsule_vs_rounded_obb(&capsule, 0.4, 0.35, &wall, wall_half, 0.0).unwrap();
-
         assert_vec3_close(geom.normal, vec3(1.0, 0.0, 0.0));
         assert!(approx_eq(geom.depth, 0.03), "depth={}", geom.depth);
 
@@ -2917,6 +3002,7 @@ mod tests {
         let d = 1.5 / std::f32::consts::SQRT_2;
         let cap_rc = Mat4::from_translation(&Vec3 { x: d, y: 0.0, z: d });
         let cap = *rc_ref!(&cap_rc);
+
         assert!(capsule_vs_rounded_obb(
             &cap,
             0.5,
@@ -2972,7 +3058,9 @@ mod tests {
             y: 1.0,
             z: 1.0,
         };
+
         assert!(rounded_obb_vs_rounded_obb(&m_a, one, 0.0, &m_b, one, 0.0).is_some());
+
         let d2 = 2.6 / std::f32::consts::SQRT_2;
         let shift2_rc = Mat4::from_translation(&Vec3 {
             x: d2,
@@ -3027,6 +3115,7 @@ mod tests {
             y: 1.0,
             z: 1.0,
         };
+
         assert!(local_box_vs_triangle(half, 0.0, v0, v1, v2).is_none());
         let geom = local_box_vs_triangle(half, 0.3, v0, v1, v2).unwrap();
         assert!(approx_eq(geom.depth, 0.1));
@@ -3058,6 +3147,7 @@ mod tests {
             z: 0.0,
         });
         let cap = *rc_ref!(&cap_rc);
+
         let geom = capsule_vs_triangle(&cap, 0.5, 0.3, v0, v1, v2).unwrap();
         assert!(approx_eq(geom.depth, 0.05));
         assert_vec3_close(geom.normal, vec3(0.0, 1.0, 0.0));
@@ -3068,6 +3158,7 @@ mod tests {
         let v0 = vec3(-10.0, 0.0, -10.0);
         let v1 = vec3(10.0, 0.0, -10.0);
         let v2 = vec3(0.0, 0.0, 10.0);
+
         for (b, c, tie_sign) in [(v1, v2, -1.0), (v2, v1, 1.0)] {
             for (y, angle, expected_depth) in [
                 (0.0, 0.0, 1.1),
@@ -3087,6 +3178,7 @@ mod tests {
                     geom.depth
                 );
                 assert!(approx_eq(geom.point.y, 0.0));
+
                 let push = translation(vec3(
                     geom.normal.x * geom.depth,
                     geom.normal.y * geom.depth,
@@ -3096,6 +3188,7 @@ mod tests {
                 let remaining = capsule_vs_triangle(&resolved, 1.0, 0.1, v0, b, c)
                     .map_or(0.0, |contact| contact.depth);
                 assert!(remaining < CONTACT_EPSILON, "remaining depth={remaining}");
+
                 assert!(capsule_vs_triangle(&cap, 1.0, 0.0, v0, b, c).is_none());
             }
         }
@@ -3118,6 +3211,7 @@ mod tests {
         });
         let cap_rc = rc_ref!(&shift_rc).mul_mat(&rc_ref!(&rot_rc));
         let cap = *rc_ref!(&cap_rc);
+
         let v0 = Vec3 {
             x: -2.0,
             y: 0.0,
@@ -3133,6 +3227,7 @@ mod tests {
             y: 0.0,
             z: 2.0,
         };
+
         let geom = capsule_vs_triangle(&cap, 0.5, 0.3, v0, v1, v2).unwrap();
         assert!(approx_eq(geom.depth, 0.05));
         assert_vec3_close(geom.normal, vec3(0.0, 1.0, 0.0));
@@ -3161,6 +3256,7 @@ mod tests {
             z: 0.0,
         });
         let cap = *rc_ref!(&cap_rc);
+
         assert!(capsule_vs_triangle(&cap, 0.5, 0.3, v0, v1, v2).is_none());
     }
 }

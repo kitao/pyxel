@@ -49,14 +49,12 @@ struct TmxMap {
 
 pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
     let err = |msg| format!("{msg} '{path}'");
-
     let mut file = File::open(path).map_err(|_| err("Failed to open file"))?;
     let mut tmx_text = String::new();
     file.read_to_string(&mut tmx_text)
         .map_err(|_| err("Failed to read file"))?;
 
     let tmx: TmxMap = serde_xml_rs::from_str(&tmx_text).map_err(|_| err("Failed to parse file"))?;
-
     if tmx.tilewidth != TILE_SIZE || tmx.tileheight != TILE_SIZE {
         return Err(err("Invalid tile size in file"));
     }
@@ -97,6 +95,7 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
     let tilemap = Tilemap::try_new(layer.width, layer.height, ImageSource::Index(0))
         .map_err(|_| err("Layer dimensions are too large in file"))?;
     let mut tilemap_ref = rc_mut!(tilemap);
+
     for (y, row) in tile_ids.chunks(layer.width as usize).enumerate() {
         for (x, &id) in row.iter().enumerate() {
             let id = (id & !TMX_TILE_FLAG_MASK).saturating_sub(tileset.firstgid);
@@ -110,6 +109,7 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
             );
         }
     }
+
     drop(tilemap_ref);
     Ok(tilemap)
 }

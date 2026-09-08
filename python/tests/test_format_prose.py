@@ -183,7 +183,6 @@ class TestJsonFormatting:
         )
 
         format_prose._format_json(path)
-
         assert (
             path.read_text(encoding="utf-8")
             == '{\n  "en": "検索API",\n  "ja": "検索 API"\n}\n'
@@ -197,7 +196,6 @@ class TestJsonFormatting:
         )
 
         format_prose._format_json(path)
-
         assert (
             path.read_text(encoding="utf-8")
             == '{\n  "items": [\n    {"ja": "画面 640"},\n    {"ja": "画面 640"}\n  ]\n}\n'

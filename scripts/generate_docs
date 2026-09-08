@@ -62,6 +62,7 @@ class JsEval:
     def eval_template(self, template):
         result = []
         i = 0
+
         while i < len(template):
             if template[i] == "\\" and i + 1 < len(template):
                 c = template[i + 1]
@@ -74,6 +75,7 @@ class JsEval:
             else:
                 result.append(template[i])
                 i += 1
+
         return "".join(result)
 
     def eval(self, expr):
@@ -138,7 +140,6 @@ class JsEval:
         # esc(t("key")).replace(...) chain (must come before bare esc)
         if expr.startswith("esc(t(") and re.search(r"\.replace(All)?\(", expr):
             return self._replace_chain(expr)
-
         # esc(inner) -> just evaluate inner
         if expr.startswith("esc("):
             return self.eval(expr[4 : _find_matching(expr, 4, "(", ")") - 1])
@@ -233,6 +234,7 @@ class JsEval:
             ]
             tools = self._data.get("image_tools", [])
             rows = []
+
             for i, tool in enumerate(tools):
                 icon = tool_icons[i] if i < len(tool_icons) else ""
                 img = ""
@@ -246,6 +248,7 @@ class JsEval:
         if expr.startswith("keyboardDiagram("):
             kl = self._data.get("sound_keyboard_layout", {})
             notes = localize(kl.get("notes", {}))
+
             rows = [
                 f"\n**{localize(kl.get('upper_label', {}))}**\n",
                 "| Note | Key |",
@@ -253,6 +256,7 @@ class JsEval:
             ]
             for i, key in enumerate(kl.get("upper", [])):
                 rows.append(f"| {notes[i]} | {key} |")
+
             rows += [
                 f"\n**{localize(kl.get('lower_label', {}))}**\n",
                 "| Note | Key |",
@@ -260,6 +264,7 @@ class JsEval:
             ]
             for i, key in enumerate(kl.get("lower", [])):
                 rows.append(f"| {notes[i]} | {key} |")
+
             rows.append(
                 f"\n**{localize(kl.get('rest_label', {}))}:** {kl.get('rest_key', '')}"
             )
@@ -296,6 +301,7 @@ class JsEval:
             return expr
         text = self._localize(m.group(1))
         rest = expr[m.end() :]
+
         while True:
             head = re.match(r"\s*\.replace(All)?\(", rest)
             if not head:
@@ -309,6 +315,7 @@ class JsEval:
             if rest.startswith(","):
                 rest = rest[1:].strip()
             rest = rest.removeprefix(")")
+
             repl = self.eval(repl_s)
             rm = re.match(r"/(.+?)/(g)?", pat_s)
             if rm:
@@ -325,6 +332,7 @@ class JsEval:
                     if replace_all
                     else text.replace(pat, repl, 1)
                 )
+
         return text
 
     def _parse_array(self, arr_str):
@@ -345,10 +353,12 @@ class JsEval:
                 return ""
             if val is None:
                 return ""
+
         if index is not None:
             val = val[int(index)]
             if field:
                 val = val.get(field, "")
+
         if isinstance(val, dict):
             return localize(val)
         if isinstance(val, str):
@@ -437,6 +447,7 @@ class JsEval:
         rest = _skip_comma(rest)
         rows_s, _ = _parse_arg(rest)
         headers = self._parse_array(headers_s)
+
         # Parse the row matrix by removing only the outermost brackets.
         rows_stripped = rows_s.strip()
         if rows_stripped.startswith("[") and rows_stripped.endswith("]"):
@@ -451,6 +462,7 @@ class JsEval:
                 rows_inner = _skip_comma(rows_inner)
             else:
                 break
+
         md = "\n| " + " | ".join(headers) + " |\n"
         md += "| " + " | ".join("---" for _ in headers) + " |\n"
         for row in rows:
@@ -510,6 +522,7 @@ class JsEval:
             j = expr_start
             depth = 0
             in_str = None
+
             while j < len(body):
                 ch = body[j]
                 if in_str:
@@ -531,6 +544,7 @@ class JsEval:
                 elif ch == ";" and depth == 0:
                     break
                 j += 1
+
             self._vars[m.group(1)] = self.eval(body[expr_start:j].strip())
 
         # Expand for-of template loops into accumulated list text.
@@ -569,7 +583,6 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     if not m:
         raise ValueError(f"{html_path}: required function updateTexts() not found")
     body = html_text[m.end() : _find_matching(html_text, m.end(), "{", "}") - 1]
-
     ev.extract_variables(body)
 
     lines = []
@@ -583,6 +596,7 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
         start = sm.end()
         i = start
         depth = 0
+
         while i < len(body):
             ch = body[i]
             if ch == "\\" and i + 1 < len(body):
@@ -600,6 +614,7 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
                 elif ch == "}":
                     depth -= 1
             i += 1
+
         evaluated = ev.eval_template(body[start:i])
 
         # Convert HTML structure to Markdown
@@ -683,8 +698,8 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
 
 def generate_api_reference(json_path, output_name, web_path):
     api_data = json.loads(json_path.read_text(encoding="utf-8"))
-    lines = []
 
+    lines = []
     title = localize(api_data["ui"]["title"])
     url = f"{PYXEL_WEB}/{web_path}/"
     lines.append(f"# {title}")
@@ -708,6 +723,7 @@ def generate_api_reference(json_path, output_name, web_path):
             if item.get("value_type"):
                 lines.append(f"- **Type:** `{item['value_type']}`")
                 lines.append("")
+
             if item.get("params"):
                 lines.append("**Parameters:**")
                 lines.append("")
@@ -716,12 +732,14 @@ def generate_api_reference(json_path, output_name, web_path):
                     suffix = f" — {p_desc}" if p_desc else ""
                     lines.append(f"- `{p['name']}` (*{p['type']}*){suffix}")
                 lines.append("")
+
             ret = item.get("returns")
             if ret and ret.get("type") and ret["type"] != "None":
                 ret_desc = localize(ret.get("description"))
                 suffix = f" — {ret_desc}" if ret_desc else ""
                 lines.append(f"**Returns:** `{ret['type']}`{suffix}")
                 lines.append("")
+
             if item.get("examples"):
                 lines.append("**Example:**")
                 lines.append("")
@@ -729,6 +747,7 @@ def generate_api_reference(json_path, output_name, web_path):
                 lines.extend(item["examples"])
                 lines.append("```")
                 lines.append("")
+
             if item.get("notes"):
                 lines.append(f"**Note:** {localize(item['notes'])}")
                 lines.append("")
@@ -772,7 +791,6 @@ def generate_mml_commands():
     th_desc = localize(mml_data["ui"]["th_description"])
     lines.append(f"| {th_cmd} | {th_desc} |")
     lines.append("| --- | --- |")
-
     for cmd in mml_data["commands"]:
         command = cmd["cmd"].replace("|", "\\|")
         desc = localize(cmd["desc"])
@@ -781,7 +799,6 @@ def generate_mml_commands():
         if example:
             cell_desc += f" Example: `{example}`"
         lines.append(f"| `{command}` | {cell_desc} |")
-
     lines.append("")
 
     path = DOCS_DIR / "mml-commands.md"
@@ -810,6 +827,7 @@ def localize(obj):
 def _find_matching(text, start, open_ch, close_ch):
     depth = 1
     i = start
+
     while i < len(text) and depth > 0:
         ch = text[i]
         if ch == "\\" and i + 1 < len(text):
@@ -829,6 +847,7 @@ def _find_matching(text, start, open_ch, close_ch):
         elif ch == close_ch:
             depth -= 1
         i += 1
+
     return i
 
 
@@ -837,6 +856,7 @@ def _parse_arg(text):
     text = text.lstrip()
     if not text:
         return "", ""
+
     if text[0] in ('"', "'"):
         q = text[0]
         i = 1
@@ -847,6 +867,7 @@ def _parse_arg(text):
             if text[i] == q:
                 return text[: i + 1], text[i + 1 :].lstrip()
             i += 1
+
     elif text[0] == "`":
         i = 1
         while i < len(text):
@@ -859,6 +880,7 @@ def _parse_arg(text):
             if text[i] == "`":
                 return text[: i + 1], text[i + 1 :].lstrip()
             i += 1
+
     elif text[0] == "/":
         i = 1
         while i < len(text) and text[i] != "/":
@@ -869,9 +891,11 @@ def _parse_arg(text):
         while i < len(text) and text[i].isalpha():
             i += 1
         return text[:i], text[i:].lstrip()
+
     elif text[0] == "[":
         end = _find_matching(text, 1, "[", "]")
         return text[:end], text[end:].lstrip()
+
     else:
         depth = 0
         i = 0
@@ -895,6 +919,7 @@ def _parse_arg(text):
             elif ch == "," and depth == 0:
                 break
             i += 1
+
         return text[:i].rstrip(), text[i:].lstrip()
     return text, ""
 
@@ -910,6 +935,7 @@ def _split_plus(expr):
     depth = 0
     in_str = None
     escaped = False
+
     for ch in expr:
         if in_str:
             current.append(ch)
@@ -933,6 +959,7 @@ def _split_plus(expr):
             current = []
             continue
         current.append(ch)
+
     if current:
         parts.append("".join(current))
     return parts if len(parts) > 1 else [expr]
@@ -971,9 +998,11 @@ if __name__ == "__main__":
     for html_path, json_path, output_name, web_path in HTML_DOCS:
         generate_from_html(html_path, json_path, output_name, web_path)
         generated.append(DOCS_DIR / f"{output_name}.md")
+
     for json_path, output_name, web_path in API_REFERENCE_DOCS:
         generate_api_reference(json_path, output_name, web_path)
         generated.append(DOCS_DIR / f"{output_name}.md")
+
     generate_mml_commands()
     generated.append(DOCS_DIR / "mml-commands.md")
 

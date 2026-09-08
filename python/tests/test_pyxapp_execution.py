@@ -18,10 +18,13 @@ def test_play_uses_packaged_application_context(tmp_path, monkeypatch):
         "import os\n"
         "import sys\n"
         "from pathlib import Path\n"
+        "\n"
         "import helper\n"
         "import pyxel\n"
+        "\n"
         "cwd_before = str(Path.cwd().resolve())\n"
         "pyxel.init(8, 8, headless=True)\n"
+        "\n"
         "script_dir = Path(__file__).resolve().parent\n"
         "payload = {\n"
         "    'argv': sys.argv[1:],\n"
@@ -34,11 +37,13 @@ def test_play_uses_packaged_application_context(tmp_path, monkeypatch):
         "    'sys_path_0': str(Path(sys.path[0]).resolve()),\n"
         "    'token': os.environ['PYXAPP_TOKEN'],\n"
         "}\n"
+        "\n"
         "Path(os.environ['PYXAPP_RESULT']).write_text(\n"
         "    json.dumps(payload), encoding='utf-8'\n"
         ")\n"
         "pyxel.quit()\n",
     )
+
     launch_dir = tmp_path / "launch"
     launch_dir.mkdir()
     app_arg = os.path.relpath(app_file, launch_dir)
@@ -80,9 +85,12 @@ def test_reset_restarts_relative_pyxapp_command(tmp_path, monkeypatch):
         "import os\n"
         "import sys\n"
         "from pathlib import Path\n"
+        "\n"
         "import helper\n"
         "import pyxel\n"
+        "\n"
         "pyxel.init(8, 8, headless=True)\n"
+        "\n"
         "if os.environ.get('PYXAPP_RESET_STAGE') == 'second':\n"
         "    payload = {\n"
         "        'argv': sys.argv[1:],\n"
@@ -91,6 +99,7 @@ def test_reset_restarts_relative_pyxapp_command(tmp_path, monkeypatch):
         "        'helper': helper.VALUE,\n"
         "        'resource': Path('data.txt').read_text(encoding='utf-8'),\n"
         "    }\n"
+        "\n"
         "    Path(os.environ['PYXAPP_RESULT']).write_text(\n"
         "        json.dumps(payload), encoding='utf-8'\n"
         "    )\n"
@@ -99,6 +108,7 @@ def test_reset_restarts_relative_pyxapp_command(tmp_path, monkeypatch):
         "    os.environ['PYXAPP_RESET_STAGE'] = 'second'\n"
         "    pyxel.reset()\n",
     )
+
     launch_dir = tmp_path / "launch"
     launch_dir.mkdir()
     app_arg = os.path.relpath(app_file, launch_dir)
@@ -114,6 +124,7 @@ def test_reset_restarts_relative_pyxapp_command(tmp_path, monkeypatch):
         timeout=15,
         check=False,
     )
+
     deadline = time.monotonic() + 10
     while not result_file.is_file() and time.monotonic() < deadline:
         time.sleep(0.05)
@@ -148,6 +159,7 @@ def _package_app(tmp_path: Path, monkeypatch, source: str) -> Path:
     (script_dir / "helper.py").write_text("VALUE = 42\n", encoding="utf-8")
     (script_dir / "data.txt").write_text("resource data\n", encoding="utf-8")
     (script_dir / "main.py").write_text(source, encoding="utf-8")
+
     monkeypatch.chdir(tmp_path)
     pyxel.cli.package_pyxel_app("project", "project/src/main.py")
     return tmp_path / "project.pyxapp"

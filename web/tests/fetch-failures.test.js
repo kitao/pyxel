@@ -97,7 +97,6 @@ test("loadFromGitHub fetches a commit but keeps the source ref in share URLs", a
   );
 
   await loadFromGitHub("https://github.com/example/game/blob/main/project.zip");
-
   assert.equal(
     requestedUrl,
     "https://raw.githubusercontent.com/example/game/0123456789abcdef0123456789abcdef01234567/apps/demo%23preview%3F.zip",
@@ -149,7 +148,6 @@ test("loadFromGitHub keeps a compact ref when SHA lookup is unavailable", async 
     "https://github.com/example/game/blob/main/apps/demo.zip",
     "main",
   );
-
   assert.equal(preferredRef, "main");
   assert.equal(
     requestedUrl,
@@ -169,7 +167,6 @@ test("Code Maker restores reserved characters from a GitHub share URL", () => {
     "buildGitHubProjectUrl",
     { encodeUrlPath },
   );
-
   assert.equal(
     buildGitHubProjectUrl("example/game/feature/physics/apps/demo#preview?"),
     "https://github.com/example/game/blob/feature/physics/apps/demo%23preview%3F.zip",
@@ -232,7 +229,6 @@ test("Code Maker preserves longest-ref resolution for legacy share URLs", async 
   );
 
   await loadFromGitHubShare("example/game/feature/physics/apps/demo");
-
   assert.equal(loaded, true);
   assert.deepEqual(requested, [
     "https://api.github.com/repos/example/game/commits/feature%2Fphysics%2Fapps",
@@ -311,7 +307,6 @@ test("Code Maker uses the recorded SHA when an explicit ref is missing", async (
       "feature/physics",
       savedSha,
     );
-
     assert.equal(loaded, true);
     assert.deepEqual(requested, [
       "https://api.github.com/repos/example/game/commits/feature%2Fphysics",
@@ -329,6 +324,7 @@ test("Code Maker uses the recorded SHA when an explicit ref is missing", async (
 test("Code Maker share URLs preserve and encode an explicit ref boundary", () => {
   let replacedUrl;
   const updateShareUrl = loadNamedFunction(codeMakerSource, "updateShareUrl", {
+    URL,
     location: { href: "https://example.test/web/code-maker/?old=value" },
     history: {
       replaceState: (_state, _title, url) => {
@@ -343,7 +339,6 @@ test("Code Maker share URLs preserve and encode an explicit ref boundary", () =>
     "feature/physics",
     "0123456789abcdef0123456789abcdef01234567",
   );
-
   const result = new URL(replacedUrl);
   assert.equal(
     result.searchParams.get("github"),
@@ -362,7 +357,6 @@ test("sanitizeProjectName neutralizes unsafe archive path syntax", () => {
     "sanitizeProjectName",
     {},
   );
-
   assert.equal(sanitizeProjectName("Space Game"), "Space Game");
   assert.equal(sanitizeProjectName("Foo/Bar"), "Foo_Bar");
   assert.equal(sanitizeProjectName("\\evil"), "_evil");
@@ -428,12 +422,13 @@ for (const delay of ["download", "unpack"]) {
     ]) {
       context[name] = loadNamedFunction(codeMakerSource, name, context);
     }
+
     const first = context.loadFromUrl("https://example.test/first.zip");
     await waiting;
     await context.loadFromUrl("https://example.test/last.zip");
+
     resume();
     await first;
-
     assert.equal(window._project.name, "last");
     assert.equal(window._project.code, "https://example.test/last.zip");
     assert.deepEqual(shared, [["url", "https://example.test/last.zip"]]);
@@ -482,7 +477,6 @@ test("loadProjectFromZip sanitizes the project name at assignment", async () => 
   );
 
   await loadProjectFromZip(new ArrayBuffer(), "..");
-
   assert.equal(window._project.name, "untitled");
 });
 
@@ -497,12 +491,10 @@ for (const [name, root] of [
         generatedArchive = this;
         this.files = new Map();
       }
-
       file(path, content) {
         this.files.set(path, content);
         return this;
       }
-
       async generateAsync() {
         return "archive";
       }
@@ -574,7 +566,6 @@ test("loadFromUrl derives the project name from the URL pathname", async () => {
   await loadFromUrl("https://example.test/downloads/%5Cevil.zip");
   await loadFromUrl("https://example.test/downloads/%2E%2E.zip");
   await loadFromUrl("https://example.test/downloads/Bad%00Name.zip");
-
   assert.deepEqual(loadedNames, [
     "Space Game",
     "Bad%ZZ",
@@ -584,6 +575,116 @@ test("loadFromUrl derives the project name from the URL pathname", async () => {
     "Bad_Name",
   ]);
 });
+
+for (const scope of ["local", "dialog", "starter", "shared URL"]) {
+  for (const superseded of [false, true]) {
+    test(`Code Maker ${scope} load reports only a current failure (superseded: ${superseded})`, async () => {
+      let reject;
+      let entered;
+      let callback;
+      let initialized = false;
+      const waiting = new Promise((resolve) => {
+        entered = resolve;
+      });
+      const pending = new Promise((_, fail) => {
+        reject = fail;
+      });
+      const errors = [];
+      const window = {
+        _codeEditor: { focus() {} },
+        addEventListener: (_name, handler) => {
+          callback = handler;
+        },
+      };
+      const context = {
+        window,
+        URL,
+        fetch: () => {
+          entered();
+          return pending;
+        },
+        alert: (message) => errors.push(message),
+        loadProjectFromZip: async () => {},
+        updateShareUrl() {},
+        sanitizeProjectName: (name) => name,
+        closeModal() {},
+        document: {
+          getElementById: () => ({
+            value: "https://example.test/project.zip",
+            addEventListener: (_name, handler) => {
+              callback = handler;
+            },
+          }),
+        },
+        initAceEditor() {},
+        setupButtonHandlers() {},
+        setupSplitter() {},
+        updateFocusLine() {},
+        setupIframes: async () => {},
+        setupFocusIndicator() {},
+        setupShortcuts() {},
+        setupPyxelInput() {},
+        setupFileDrop() {},
+        onPyxelReady: () => {
+          initialized = true;
+        },
+        location: {
+          href:
+            scope === "shared URL"
+              ? "https://example.test/?url=https://example.test/project.zip"
+              : "https://example.test/",
+        },
+      };
+      for (const name of ["loadProject", "loadFromUrl", "loadInitialFiles"]) {
+        context[name] = loadNamedFunction(codeMakerSource, name, context);
+      }
+
+      let operation;
+      if (scope === "local") {
+        operation = context.loadProject({
+          name: "project.zip",
+          arrayBuffer: () => {
+            entered();
+            return pending;
+          },
+        });
+      } else if (scope === "dialog") {
+        const setupModalSubmit = loadNamedFunction(
+          codeMakerSource,
+          "setupModalSubmit",
+          context,
+        );
+        setupModalSubmit("load-button", "load-input", context.loadFromUrl);
+        operation = callback();
+      } else {
+        if (scope === "shared URL") {
+          context.loadInitialFiles = async () => {
+            window._projectLoad = Symbol();
+          };
+        }
+        const start = codeMakerSource.lastIndexOf(
+          'window.addEventListener("DOMContentLoaded",',
+        );
+        assert.notEqual(start, -1);
+        const end = codeMakerSource.indexOf("</script>", start);
+        vm.runInNewContext(codeMakerSource.slice(start, end), context);
+        operation = callback();
+      }
+
+      await waiting;
+      if (superseded) window._projectLoad = Symbol();
+      reject(new Error("request failed"));
+      await operation;
+
+      assert.deepEqual(
+        errors,
+        superseded ? [] : ["Load failed: request failed"],
+      );
+      if (scope === "starter") assert.equal(initialized, superseded);
+      if (scope === "shared URL") assert.equal(initialized, true);
+    });
+  }
+}
 
 test("Code Maker reports a failed starter request without loading it", async () => {
   let arrayBufferCount = 0;

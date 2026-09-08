@@ -162,62 +162,6 @@
       "tr": "Pyxel Editor şu komutla başlatılır:\n{0}\nBelirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa yüklenir, yoksa belirtilen adla yeni bir dosya oluşturulur. Dosya adı belirtilmezse {1} oluşturulur.",
       "uk": "Pyxel Editor запускається командою:\n{0}\nЯкщо вказаний файл ресурсів Pyxel (.pyxres) існує, він буде завантажений. Інакше буде створено новий файл із зазначеним іменем. Якщо ім'я файлу не вказано, буде створено файл {1}."
     },
-    "starting_load_title": {
-      "en": "Loading Resources",
-      "cn": "加载资源",
-      "de": "Ressourcen laden",
-      "es": "Cargar recursos",
-      "fr": "Charger des ressources",
-      "it": "Caricamento delle risorse",
-      "ja": "リソースの読み込み",
-      "ko": "리소스 불러오기",
-      "pt": "Carregar recursos",
-      "ru": "Загрузка ресурсов",
-      "tr": "Kaynakları yükleme",
-      "uk": "Завантаження ресурсів"
-    },
-    "starting_load_body": {
-      "en": "Drop another .pyxres file onto the window to replace all current edits, including unsaved changes. The save destination stays the same.",
-      "cn": "将另一个 .pyxres 文件拖放到窗口中，会替换当前所有编辑内容，包括未保存的更改。保存目标不变。",
-      "de": "Ziehen Sie eine andere .pyxres-Datei in das Fenster, um alle aktuellen Bearbeitungen einschließlich ungespeicherter Änderungen zu ersetzen. Das Speicherziel bleibt gleich.",
-      "es": "Suelte otro archivo .pyxres en la ventana para reemplazar todas las ediciones actuales, incluidos los cambios sin guardar. El destino de guardado no cambia.",
-      "fr": "Déposez un autre fichier .pyxres dans la fenêtre pour remplacer toutes les modifications en cours, y compris celles non enregistrées. La destination d’enregistrement reste la même.",
-      "it": "Trascina un altro file .pyxres nella finestra per sostituire tutte le modifiche attuali, incluse quelle non salvate. La destinazione del salvataggio resta invariata.",
-      "ja": "別の .pyxres ファイルをウィンドウにドロップすると、未保存の変更を含む編集内容をすべて置き換えます。保存先のファイルは変わりません。",
-      "ko": "다른 .pyxres 파일을 창에 드롭하면 저장하지 않은 변경 사항을 포함해 현재 편집 내용이 모두 교체됩니다. 저장 대상은 바뀌지 않습니다.",
-      "pt": "Solte outro arquivo .pyxres na janela para substituir todas as edições atuais, inclusive as alterações não salvas. O destino de salvamento permanece o mesmo.",
-      "ru": "Перетащите другой файл .pyxres в окно, чтобы заменить все текущие правки, включая несохранённые изменения. Место сохранения остаётся прежним.",
-      "tr": "Kaydedilmemiş değişiklikler dahil tüm mevcut düzenlemeleri değiştirmek için pencereye başka bir .pyxres dosyası bırakın. Kayıt hedefi aynı kalır.",
-      "uk": "Перетягніть інший файл .pyxres у вікно, щоб замінити всі поточні правки, включно з незбереженими змінами. Місце збереження залишається тим самим."
-    },
-    "starting_usage_title": {
-      "en": "Using from Programs",
-      "cn": "从程序中使用",
-      "de": "Verwendung im Programm",
-      "es": "Uso desde el programa",
-      "fr": "Utilisation depuis un programme",
-      "it": "Utilizzo dal programma",
-      "ja": "プログラムからの利用",
-      "ko": "프로그램에서의 사용",
-      "pt": "Uso a partir do programa",
-      "ru": "Использование в программе",
-      "tr": "Programdan kullanım",
-      "uk": "Використання у програмі"
-    },
-    "starting_usage_body": {
-      "en": "The created resource file can be loaded and used in a Pyxel application with the {0} function.",
-      "cn": "创建的资源文件可通过 Pyxel 应用程序的 {0} 函数加载使用。",
-      "de": "Die erstellte Ressourcendatei kann in einer Pyxel-Anwendung mit der Funktion {0} geladen werden.",
-      "es": "El archivo de recursos creado se carga desde una aplicación Pyxel mediante la función {0}.",
-      "fr": "Le fichier de ressources créé peut être chargé dans une application Pyxel avec la fonction {0}.",
-      "it": "Il file di risorse creato può essere caricato dall'applicazione Pyxel tramite la funzione {0}.",
-      "ja": "作成したリソースファイルは、Pyxel アプリケーションから {0} 関数で読み込んで使用します。",
-      "ko": "작성한 리소스 파일은 Pyxel 애플리케이션에서 {0} 함수로 불러와 사용합니다.",
-      "pt": "O arquivo de recursos criado pode ser carregado e utilizado em uma aplicação Pyxel com a função {0}.",
-      "ru": "Созданный файл ресурсов загружается в приложении Pyxel с помощью функции {0}.",
-      "tr": "Oluşturulan kaynak dosyası, Pyxel uygulamasında {0} fonksiyonuyla yüklenir.",
-      "uk": "Створений файл ресурсів завантажується у застосунку Pyxel за допомогою функції {0}."
-    },
     "common_title": {
       "en": "Common Operations",
       "cn": "通用操作",
@@ -274,6 +218,76 @@
       "tr": "Ekranın üst kısmındaki menü çubuğunda 4 düzenleyici geçiş düğmesi, Undo/Redo düğmeleri ve kaydetme düğmesi bulunur. Sağ taraftaki yardım mesajı alanında, fare imlecinin veya düzenleme imlecinin konumuna göre yardımcı bilgiler görüntülenir.",
       "uk": "У верхній частині екрана розташована панель меню з кнопками перемикання 4 редакторів, кнопками Undo/Redo та кнопкою збереження. У правій частині відображається довідкова інформація залежно від положення курсора миші або курсора редагування."
     },
+    "other_shortcuts_title": {
+      "en": "Other Shortcuts",
+      "cn": "其他快捷键",
+      "de": "Weitere Tastenkürzel",
+      "es": "Otros atajos",
+      "fr": "Autres raccourcis",
+      "it": "Altre scorciatoie",
+      "ja": "その他のショートカット",
+      "ko": "기타 단축키",
+      "pt": "Outros atalhos",
+      "ru": "Прочие горячие клавиши",
+      "tr": "Diğer kısayollar",
+      "uk": "Інші гарячі клавіші"
+    },
+    "starting_usage_title": {
+      "en": "Using from Programs",
+      "cn": "从程序中使用",
+      "de": "Verwendung im Programm",
+      "es": "Uso desde el programa",
+      "fr": "Utilisation depuis un programme",
+      "it": "Utilizzo dal programma",
+      "ja": "プログラムからの利用",
+      "ko": "프로그램에서의 사용",
+      "pt": "Uso a partir do programa",
+      "ru": "Использование в программе",
+      "tr": "Programdan kullanım",
+      "uk": "Використання у програмі"
+    },
+    "starting_usage_body": {
+      "en": "The created resource file can be loaded and used in a Pyxel application with the {0} function.",
+      "cn": "创建的资源文件可通过 Pyxel 应用程序的 {0} 函数加载使用。",
+      "de": "Die erstellte Ressourcendatei kann in einer Pyxel-Anwendung mit der Funktion {0} geladen werden.",
+      "es": "El archivo de recursos creado se carga desde una aplicación Pyxel mediante la función {0}.",
+      "fr": "Le fichier de ressources créé peut être chargé dans une application Pyxel avec la fonction {0}.",
+      "it": "Il file di risorse creato può essere caricato dall'applicazione Pyxel tramite la funzione {0}.",
+      "ja": "作成したリソースファイルは、Pyxel アプリケーションから {0} 関数で読み込んで使用します。",
+      "ko": "작성한 리소스 파일은 Pyxel 애플리케이션에서 {0} 함수로 불러와 사용합니다.",
+      "pt": "O arquivo de recursos criado pode ser carregado e utilizado em uma aplicação Pyxel com a função {0}.",
+      "ru": "Созданный файл ресурсов загружается в приложении Pyxel с помощью функции {0}.",
+      "tr": "Oluşturulan kaynak dosyası, Pyxel uygulamasında {0} fonksiyonuyla yüklenir.",
+      "uk": "Створений файл ресурсів завантажується у застосунку Pyxel за допомогою функції {0}."
+    },
+    "starting_load_title": {
+      "en": "Loading Resources",
+      "cn": "加载资源",
+      "de": "Ressourcen laden",
+      "es": "Cargar recursos",
+      "fr": "Charger des ressources",
+      "it": "Caricamento delle risorse",
+      "ja": "リソースの読み込み",
+      "ko": "리소스 불러오기",
+      "pt": "Carregar recursos",
+      "ru": "Загрузка ресурсов",
+      "tr": "Kaynakları yükleme",
+      "uk": "Завантаження ресурсів"
+    },
+    "starting_load_body": {
+      "en": "Drop another .pyxres file onto the window to replace all current edits, including unsaved changes. The save destination stays the same.",
+      "cn": "将另一个 .pyxres 文件拖放到窗口中，会替换当前所有编辑内容，包括未保存的更改。保存目标不变。",
+      "de": "Ziehen Sie eine andere .pyxres-Datei in das Fenster, um alle aktuellen Bearbeitungen einschließlich ungespeicherter Änderungen zu ersetzen. Das Speicherziel bleibt gleich.",
+      "es": "Suelte otro archivo .pyxres en la ventana para reemplazar todas las ediciones actuales, incluidos los cambios sin guardar. El destino de guardado no cambia.",
+      "fr": "Déposez un autre fichier .pyxres dans la fenêtre pour remplacer toutes les modifications en cours, y compris celles non enregistrées. La destination d’enregistrement reste la même.",
+      "it": "Trascina un altro file .pyxres nella finestra per sostituire tutte le modifiche attuali, incluse quelle non salvate. La destinazione del salvataggio resta invariata.",
+      "ja": "別の .pyxres ファイルをウィンドウにドロップすると、未保存の変更を含む編集内容をすべて置き換えます。保存先のファイルは変わりません。",
+      "ko": "다른 .pyxres 파일을 창에 드롭하면 저장하지 않은 변경 사항을 포함해 현재 편집 내용이 모두 교체됩니다. 저장 대상은 바뀌지 않습니다.",
+      "pt": "Solte outro arquivo .pyxres na janela para substituir todas as edições atuais, inclusive as alterações não salvas. O destino de salvamento permanece o mesmo.",
+      "ru": "Перетащите другой файл .pyxres в окно, чтобы заменить все текущие правки, включая несохранённые изменения. Место сохранения остаётся прежним.",
+      "tr": "Kaydedilmemiş değişiklikler dahil tüm mevcut düzenlemeleri değiştirmek için pencereye başka bir .pyxres dosyası bırakın. Kayıt hedefi aynı kalır.",
+      "uk": "Перетягніть інший файл .pyxres у вікно, щоб замінити всі поточні правки, включно з незбереженими змінами. Місце збереження залишається тим самим."
+    },
     "image_title": {
       "en": "Image Editor",
       "cn": "图像编辑器",
@@ -302,6 +316,20 @@
       "tr": "Görüntü bankalarındaki resimleri düzenleme modu. Sprite ve karo için resimleri piksel piksel oluşturabilirsiniz.",
       "uk": "Режим редагування зображень у банках зображень. Дозволяє створювати зображення для спрайтів і тайлів попіксельно."
     },
+    "image_specs_title": {
+      "en": "Specifications",
+      "cn": "规格",
+      "de": "Spezifikationen",
+      "es": "Especificaciones",
+      "fr": "Spécifications",
+      "it": "Specifiche",
+      "ja": "仕様",
+      "ko": "사양",
+      "pt": "Especificações",
+      "ru": "Характеристики",
+      "tr": "Özellikler",
+      "uk": "Характеристики"
+    },
     "image_ui_title": {
       "en": "Screen Layout",
       "cn": "画面结构",
@@ -316,19 +344,103 @@
       "tr": "Ekran yapısı",
       "uk": "Структура екрана"
     },
-    "image_specs_title": {
-      "en": "Specifications",
-      "cn": "规格",
-      "de": "Spezifikationen",
-      "es": "Especificaciones",
-      "fr": "Spécifications",
-      "it": "Specifiche",
-      "ja": "仕様",
-      "ko": "사양",
-      "pt": "Especificações",
-      "ru": "Характеристики",
-      "tr": "Özellikler",
-      "uk": "Характеристики"
+    "image_canvas_body": {
+      "en": "The editing area selected in the image bank view is displayed magnified. Click and drag with the mouse to draw.",
+      "cn": "在图像库视图中选择的编辑区域以放大形式显示。通过鼠标点击和拖动进行绘制。",
+      "de": "Der in der Bildbankansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Zeichnen Sie durch Klicken und Ziehen mit der Maus.",
+      "es": "El área de edición seleccionada en la vista del banco de imágenes se muestra ampliada. Dibuje haciendo clic o arrastrando con el ratón.",
+      "fr": "La zone d'édition sélectionnée dans la vue de la banque d'images est affichée en zoom. Cliquez ou glissez avec la souris pour dessiner.",
+      "it": "L'area di modifica selezionata nella vista banco immagini viene mostrata ingrandita. Cliccare e trascinare con il mouse per disegnare.",
+      "ja": "イメージバンクビューで選択した編集エリアが拡大表示されます。マウスでクリック・ドラッグして描画します。",
+      "ko": "이미지 뱅크 뷰에서 선택한 편집 영역이 확대 표시됩니다. 마우스로 클릭·드래그하여 그립니다.",
+      "pt": "A área de edição selecionada na visualização do banco de imagens é exibida ampliada. Desenhe clicando e arrastando com o mouse.",
+      "ru": "Область редактирования, выбранная в виде банка изображений, отображается в увеличенном масштабе. Рисование выполняется щелчком и перетаскиванием мыши.",
+      "tr": "Görüntü bankası görünümünde seçilen düzenleme alanı büyütülerek gösterilir. Fare ile tıklayıp sürükleyerek çizim yapılır.",
+      "uk": "Область редагування, обрана у виді банку зображень, відображається у збільшеному масштабі. Малювання виконується клацанням та перетягуванням миші."
+    },
+    "image_bankview_body": {
+      "en": "A thumbnail view of the entire image bank. The white frame indicates the current editing area.",
+      "cn": "图像库整体的缩小显示。白色边框表示当前编辑区域。",
+      "de": "Verkleinerte Ansicht der gesamten Bildbank. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
+      "es": "Vista reducida del banco de imágenes completo. El marco blanco indica el área de edición actual.",
+      "fr": "Vue réduite de la banque d'images complète. Le cadre blanc indique la zone d'édition actuelle.",
+      "it": "Vista ridotta dell'intero banco immagini. La cornice bianca indica l'area di modifica corrente.",
+      "ja": "イメージバンク全体の縮小表示です。白い枠が現在の編集エリアを示しています。",
+      "ko": "이미지 뱅크 전체의 축소 표시입니다. 흰 테두리가 현재 편집 영역을 나타냅니다.",
+      "pt": "Visualização reduzida de todo o banco de imagens. A moldura branca indica a área de edição atual.",
+      "ru": "Уменьшенный вид всего банка изображений. Белая рамка показывает текущую область редактирования.",
+      "tr": "Görüntü bankasının tamamının küçültülmüş görünümü. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
+      "uk": "Зменшений вид усього банку зображень. Біла рамка показує поточну область редагування."
+    },
+    "image_tools_body": {
+      "en": "Select a tool for drawing.",
+      "cn": "选择绘制工具。",
+      "de": "Wählt das Zeichenwerkzeug aus.",
+      "es": "Seleccione la herramienta de dibujo a utilizar.",
+      "fr": "Sélectionne l'outil de dessin à utiliser.",
+      "it": "Seleziona lo strumento di disegno da utilizzare.",
+      "ja": "描画に使用するツールを選択します。",
+      "ko": "그리기에 사용할 도구를 선택합니다.",
+      "pt": "Seleciona a ferramenta de desenho a ser utilizada.",
+      "ru": "Выбор инструмента рисования.",
+      "tr": "Çizim aracını seçer.",
+      "uk": "Вибір інструмента малювання."
+    },
+    "image_selection_title": {
+      "en": "Selection Tool Shortcuts",
+      "cn": "范围选择工具的快捷键",
+      "de": "Tastenkürzel bei Bereichsauswahl",
+      "es": "Atajos de la herramienta de selección de rango",
+      "fr": "Raccourcis en mode sélection",
+      "it": "Scorciatoie durante la selezione intervallo",
+      "ja": "範囲選択ツール使用時のショートカット",
+      "ko": "범위 선택 도구 사용 시 단축키",
+      "pt": "Atalhos na ferramenta de seleção de intervalo",
+      "ru": "Горячие клавиши при выделении",
+      "tr": "Aralık seçim aracı kısayolları",
+      "uk": "Гарячі клавіші при виділенні"
+    },
+    "image_selection_body": {
+      "en": "The following shortcut keys are available while using the selection tool.",
+      "cn": "使用范围选择工具时，可使用以下快捷键。",
+      "de": "Bei aktiviertem Bereichsauswahl-Werkzeug stehen folgende Tastenkürzel zur Verfügung.",
+      "es": "Los siguientes atajos están disponibles durante el uso de la herramienta de selección de rango.",
+      "fr": "Les raccourcis suivants sont disponibles lors de l'utilisation de l'outil de sélection.",
+      "it": "Durante l'uso dello strumento di selezione intervallo sono disponibili le seguenti scorciatoie.",
+      "ja": "範囲選択ツール使用中は、以下のショートカットキーが使用できます。",
+      "ko": "범위 선택 도구 사용 중에는 다음 단축키를 사용할 수 있습니다.",
+      "pt": "Durante o uso da ferramenta de seleção de intervalo, os seguintes atalhos estão disponíveis.",
+      "ru": "При использовании инструмента выделения доступны следующие горячие клавиши.",
+      "tr": "Aralık seçim aracı kullanılırken aşağıdaki kısayol tuşları kullanılabilir.",
+      "uk": "При використанні інструмента виділення доступні такі гарячі клавіші."
+    },
+    "image_palette_body": {
+      "en": "Select a drawing color from the palette, which initially has 16 colors.",
+      "cn": "从调色板中选择绘制颜色。初始调色板包含 16 色。",
+      "de": "Wählt die Zeichenfarbe aus der Palette, die anfangs 16 Farben enthält.",
+      "es": "Seleccione el color de dibujo de la paleta, que inicialmente contiene 16 colores.",
+      "fr": "Sélectionne la couleur de dessin dans la palette, qui contient initialement 16 couleurs.",
+      "it": "Seleziona il colore di disegno dalla palette, che inizialmente contiene 16 colori.",
+      "ja": "カラーパレットから描画色を選択します。初期状態は 16 色です。",
+      "ko": "컬러 팔레트에서 그리기 색상을 선택합니다. 초기 팔레트는 16색입니다.",
+      "pt": "Seleciona a cor de desenho na paleta, que inicialmente contém 16 cores.",
+      "ru": "Выбор цвета рисования из палитры, которая изначально содержит 16 цветов.",
+      "tr": "Başlangıçta 16 renk içeren paletten çizim rengini seçer.",
+      "uk": "Вибір кольору малювання з палітри, яка спочатку містить 16 кольорів."
+    },
+    "image_banknum_body": {
+      "en": "Switch the target image bank (0–2).",
+      "cn": "切换编辑对象的图像库 (0~2)。",
+      "de": "Wechselt die zu bearbeitende Bildbank (0–2).",
+      "es": "Cambie el banco de imágenes a editar (0~2).",
+      "fr": "Change la banque d'images à éditer (0~2).",
+      "it": "Cambia il banco immagini in modifica (0–2).",
+      "ja": "編集対象のイメージバンク (0〜2) を切り替えます。",
+      "ko": "편집 대상 이미지 뱅크(0~2)를 전환합니다.",
+      "pt": "Alterna o banco de imagens em edição (0~2).",
+      "ru": "Переключение редактируемого банка изображений (0–2).",
+      "tr": "Düzenlenecek görüntü bankasını (0~2) değiştirir.",
+      "uk": "Перемикання банку зображень для редагування (0–2)."
     },
     "image_file_title": {
       "en": "Loading External Files",
@@ -386,6 +498,20 @@
       "tr": "Görüntü bankalarındaki resimleri karo desenleri olarak yerleştirerek tilemap düzenleme modu.",
       "uk": "Режим редагування тайлових карт із використанням зображень з банків як тайлів."
     },
+    "tilemap_specs_title": {
+      "en": "Specifications",
+      "cn": "规格",
+      "de": "Spezifikationen",
+      "es": "Especificaciones",
+      "fr": "Spécifications",
+      "it": "Specifiche",
+      "ja": "仕様",
+      "ko": "사양",
+      "pt": "Especificações",
+      "ru": "Характеристики",
+      "tr": "Özellikler",
+      "uk": "Характеристики"
+    },
     "tilemap_ui_title": {
       "en": "Screen Layout",
       "cn": "画面结构",
@@ -400,19 +526,75 @@
       "tr": "Ekran yapısı",
       "uk": "Структура екрана"
     },
-    "tilemap_specs_title": {
-      "en": "Specifications",
-      "cn": "规格",
-      "de": "Spezifikationen",
-      "es": "Especificaciones",
-      "fr": "Spécifications",
-      "it": "Specifiche",
-      "ja": "仕様",
-      "ko": "사양",
-      "pt": "Especificações",
-      "ru": "Характеристики",
-      "tr": "Özellikler",
-      "uk": "Характеристики"
+    "tilemap_canvas_body": {
+      "en": "The editing area selected in the tilemap view is displayed magnified. Place tile images selected in the tile image view. Drawing tools and selection shortcuts are shared with the Image Editor. Note that all cells default to tile (0,0), so it is recommended to keep image bank position (0,0) empty.",
+      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在瓦片图像视图中选择的瓦片图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块 (0,0)，建议将图像库的 (0,0) 留空。",
+      "de": "Der in der Tilemap-Ansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Platzieren Sie das in der Kachelbild-Ansicht gewählte Kachelbild. Zeichenwerkzeuge und Bereichsauswahl-Kürzel sind mit dem Bildeditor identisch. Hinweis: Da alle Zellen initial Kachel (0,0) sind, wird empfohlen, Position (0,0) der Bildbank leer zu lassen.",
+      "es": "El área de edición seleccionada en la vista del tilemap se muestra ampliada. Coloque la imagen de tile seleccionada en la vista de imagen de tiles. Los atajos de herramientas de dibujo y selección de rango son los mismos que en el editor de imágenes. El valor inicial de todas las celdas es el tile (0,0), por lo que se recomienda dejar vacía la posición (0,0) del banco de imágenes.",
+      "fr": "La zone d'édition sélectionnée dans la vue de la tilemap est affichée en zoom. Placez les tuiles sélectionnées dans la vue des tuiles. Les raccourcis des outils de dessin et de sélection sont les mêmes que dans l'éditeur d'images. La valeur initiale de toutes les cellules étant la tuile (0,0), il est recommandé de laisser la position (0,0) de la banque d'images vide.",
+      "it": "L'area di modifica selezionata nella vista tilemap viene mostrata ingrandita. Posiziona le immagini tile selezionate nella vista immagini tile. Le scorciatoie per gli strumenti di disegno e la selezione intervallo sono le stesse dell'editor immagini. Si consiglia di lasciare vuota la posizione (0,0) del banco immagini, poiché il valore iniziale di tutte le celle è il tile (0,0).",
+      "ja": "タイルマップビューで選択した編集エリアが拡大表示されます。タイルイメージビューで選択したタイル画像を配置します。描画ツールと範囲選択のショートカットはイメージエディタと共通です。なお、全セルの初期値はタイル (0,0) のため、イメージバンクの (0,0) は空にしておくことを推奨します。",
+      "ko": "타일맵 뷰에서 선택한 편집 영역이 확대 표시됩니다. 타일 이미지 뷰에서 선택한 타일 이미지를 배치합니다. 그리기 도구와 범위 선택 단축키는 이미지 에디터와 공통입니다. 모든 셀의 초기값은 타일(0,0)이므로, 이미지 뱅크의 (0,0)은 비워두는 것을 권장합니다.",
+      "pt": "A área de edição selecionada na visualização do tilemap é exibida ampliada. Posicione a imagem de tile selecionada na visualização de tiles. Os atalhos de ferramentas de desenho e seleção de intervalo são os mesmos do editor de imagem. O valor inicial de todas as células é o tile (0,0), por isso recomenda-se deixar a posição (0,0) do banco de imagens vazia.",
+      "ru": "Область редактирования, выбранная в виде тайловой карты, отображается в увеличенном масштабе. Выбранное в виде тайлов изображение размещается здесь. Горячие клавиши для инструментов рисования и выделения общие с редактором изображений. Начальное значение всех ячеек — тайл (0,0), поэтому рекомендуется оставлять позицию (0,0) банка изображений пустой.",
+      "tr": "Tilemap görünümünde seçilen düzenleme alanı büyütülerek gösterilir. Karo görüntü görünümünde seçilen karo resmi yerleştirilir. Çizim araçları ve aralık seçimi kısayolları görüntü düzenleyiciyle ortaktır. Tüm hücrelerin başlangıç değeri karo (0,0) olduğundan, görüntü bankasında (0,0) konumunu boş bırakmanız önerilir.",
+      "uk": "Область редагування, обрана у виді тайлової карти, відображається у збільшеному масштабі. Обране у виді тайлів зображення розміщується тут. Гарячі клавіші для інструментів малювання та виділення спільні з редактором зображень. Початкове значення всіх комірок — тайл (0,0), тому рекомендується залишати позицію (0,0) банку зображень порожньою."
+    },
+    "tilemap_mapview_body": {
+      "en": "A thumbnail view of the entire tilemap. The white frame indicates the current editing area.",
+      "cn": "瓦片地图整体的缩小显示。白色边框表示当前编辑区域。",
+      "de": "Verkleinerte Ansicht der gesamten Tilemap. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
+      "es": "Vista reducida del tilemap completo. El marco blanco indica el área de edición actual.",
+      "fr": "Vue réduite de la tilemap complète. Le cadre blanc indique la zone d'édition actuelle.",
+      "it": "Vista ridotta dell'intera tilemap. La cornice bianca indica l'area di modifica corrente.",
+      "ja": "タイルマップ全体の縮小表示です。白い枠が現在の編集エリアを示しています。",
+      "ko": "타일맵 전체의 축소 표시입니다. 흰 테두리가 현재 편집 영역을 나타냅니다.",
+      "pt": "Visualização reduzida de todo o tilemap. A moldura branca indica a área de edição atual.",
+      "ru": "Уменьшенный вид всей тайловой карты. Белая рамка показывает текущую область редактирования.",
+      "tr": "Tilemap'in tamamının küçültülmüş görünümü. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
+      "uk": "Зменшений вид усієї тайлової карти. Біла рамка показує поточну область редагування."
+    },
+    "tilemap_tileview_body": {
+      "en": "Displays the referenced image bank. Select tile images with the white frame.",
+      "cn": "参照图像库的显示。用白色边框选择要放置的瓦片图像。",
+      "de": "Ansicht der referenzierten Bildbank. Das zu platzierende Kachelbild wird mit dem weißen Rahmen ausgewählt.",
+      "es": "Vista del banco de imágenes de referencia. Seleccione la imagen de tile a colocar con el marco blanco.",
+      "fr": "Affichage de la banque d'images de référence. Sélectionnez la tuile à placer avec le cadre blanc.",
+      "it": "Vista del banco immagini di riferimento. Selezionare l'immagine tile da posizionare con la cornice bianca.",
+      "ja": "参照先イメージバンクの表示です。配置するタイル画像を白い枠で選択します。",
+      "ko": "참조 이미지 뱅크 표시입니다. 배치할 타일 이미지를 흰 테두리로 선택합니다.",
+      "pt": "Exibição do banco de imagens de referência. Selecione a imagem de tile a posicionar com a moldura branca.",
+      "ru": "Отображение банка изображений-источника. Тайл для размещения выбирается белой рамкой.",
+      "tr": "Kaynak görüntü bankası görünümü. Yerleştirilecek karo resmi beyaz çerçeveyle seçilir.",
+      "uk": "Відображення банку зображень-джерела. Тайл для розміщення обирається білою рамкою."
+    },
+    "tilemap_tmnum_body": {
+      "en": "Switch the target tilemap (0–7).",
+      "cn": "切换编辑对象的瓦片地图 (0~7)。",
+      "de": "Wechselt die zu bearbeitende Tilemap (0–7).",
+      "es": "Cambie el tilemap a editar (0~7).",
+      "fr": "Change la tilemap à éditer (0~7).",
+      "it": "Cambia la tilemap in modifica (0–7).",
+      "ja": "編集対象のタイルマップ (0〜7) を切り替えます。",
+      "ko": "편집 대상 타일맵(0~7)을 전환합니다.",
+      "pt": "Alterna o tilemap em edição (0~7).",
+      "ru": "Переключение редактируемой тайловой карты (0–7).",
+      "tr": "Düzenlenecek tilemap'i (0~7) değiştirir.",
+      "uk": "Перемикання тайлової карти для редагування (0–7)."
+    },
+    "tilemap_imgnum_body": {
+      "en": "Switch the image bank (0–2) referenced for tile images.",
+      "cn": "切换瓦片图像参照的图像库 (0~2)。",
+      "de": "Wechselt die referenzierte Bildbank für Kachelbilder (0–2).",
+      "es": "Cambie el banco de imágenes de referencia para tiles (0~2).",
+      "fr": "Change la banque d'images de référence pour les tuiles (0~2).",
+      "it": "Cambia il banco immagini di riferimento per le immagini tile (0–2).",
+      "ja": "タイル画像を参照するイメージバンク (0〜2) を切り替えます。",
+      "ko": "타일 이미지를 참조하는 이미지 뱅크(0~2)를 전환합니다.",
+      "pt": "Alterna o banco de imagens de referência para tiles (0~2).",
+      "ru": "Переключение банка изображений-источника тайлов (0–2).",
+      "tr": "Karo resimlerinin kaynak görüntü bankasını (0~2) değiştirir.",
+      "uk": "Перемикання банку зображень-джерела тайлів (0–2)."
     },
     "tilemap_multi_title": {
       "en": "Placing Multiple Tiles",
@@ -526,6 +708,48 @@
       "tr": "Ekran yapısı",
       "uk": "Структура екрана"
     },
+    "sound_sndnum_body": {
+      "en": "Switch the target sound (0–63).",
+      "cn": "切换编辑对象的声音 (0~63)。",
+      "de": "Wechselt den zu bearbeitenden Sound (0–63).",
+      "es": "Cambie el sonido a editar (0~63).",
+      "fr": "Change le son à éditer (0~63).",
+      "it": "Cambia il suono in modifica (0–63).",
+      "ja": "編集対象のサウンド (0〜63) を切り替えます。",
+      "ko": "편집 대상 사운드(0~63)를 전환합니다.",
+      "pt": "Alterna o som em edição (0~63).",
+      "ru": "Переключение редактируемого звука (0–63).",
+      "tr": "Düzenlenecek sesi (0~63) değiştirir.",
+      "uk": "Перемикання звуку для редагування (0–63)."
+    },
+    "sound_speed_body": {
+      "en": "Sets the playback duration per note. This is a common setting for all notes, specified in the range 1–99. Smaller values result in faster playback (1 speed unit = 1/120 second; e.g., speed 60 = 0.5 seconds per note). For sound effects, 1–9 is typical; for melodies, 10 or higher is recommended.",
+      "cn": "设置每个音符的播放时长。所有音符共用此设置，范围为 1~99。值越小播放越快 (每 1 速度为 1/120 秒，例如速度 60 时每音 0.5 秒)。音效建议设为 1~9，旋律建议设为 10 以上。",
+      "de": "Legt die Wiedergabedauer pro Ton fest. Diese Einstellung gilt für alle Töne und kann von 1 bis 99 eingestellt werden. Kleinere Werte bedeuten schnellere Wiedergabe (1 Speed-Einheit = 1/120 Sekunde, z.B. Speed 60 = 0,5 Sekunden pro Ton). Für Soundeffekte empfohlen: 1–9, für Melodien: 10 oder höher.",
+      "es": "Establece el tiempo de reproducción por nota. Es una configuración común para todas las notas, con un rango de 1~99. Cuanto menor sea el valor, más rápida será la reproducción (1/120 segundos por unidad de speed; por ejemplo, speed 60 = 0.5 segundos por nota). Para efectos de sonido se recomienda 1~9, para melodías 10 o más.",
+      "fr": "Définit la durée de lecture par note. Ce réglage est commun à toutes les notes, de 1 à 99. Plus la valeur est faible, plus la lecture est rapide (1 unité = 1/120 s ; ex. : speed 60 = 0,5 s par note). Valeur recommandée : 1~9 pour les effets sonores, 10+ pour les mélodies.",
+      "it": "Imposta la durata di riproduzione per nota. È un'impostazione comune a tutte le note, con un intervallo da 1 a 99. Valori più bassi producono una riproduzione più veloce (1 unità di speed = 1/120 di secondo; ad esempio, speed 60 = 0,5 secondi per nota). Per gli effetti sonori si consiglia 1–9, per le melodie 10 o più.",
+      "ja": "1 音あたりの再生時間を設定します。すべての音に共通の設定で、1〜99 の範囲で指定します。値が小さいほど速く再生されます（スピード 1 あたり 1/120 秒。例えばスピード 60 で 1 音 0.5 秒）。効果音では 1〜9 程度、メロディでは 10 以上が目安です。",
+      "ko": "1음당 재생 시간을 설정합니다. 모든 음에 공통인 설정으로, 1~99 범위에서 지정합니다. 값이 작을수록 빠르게 재생됩니다(스피드 1당 1/120초. 예: 스피드 60이면 1음 0.5초). 효과음에서는 1~9 정도, 멜로디에서는 10 이상이 기준입니다.",
+      "pt": "Define o tempo de reprodução por nota. É uma configuração comum a todas as notas, no intervalo de 1~99. Quanto menor o valor, mais rápido a reprodução (1 unidade = 1/120s; por exemplo, speed 60 = 0,5s por nota). Para efeitos sonoros recomenda-se 1~9, para melodias 10 ou mais.",
+      "ru": "Задаёт длительность воспроизведения одной ноты. Общая для всех нот настройка в диапазоне 1–99. Чем меньше значение, тем быстрее воспроизведение (1 единица = 1/120 сек; например, при 60 одна нота длится 0,5 сек). Для эффектов рекомендуется 1–9, для мелодий — 10 и выше.",
+      "tr": "Nota başına çalma süresini ayarlar. Tüm notalar için ortak bir ayardır ve 1–99 arasında belirtilir. Değer küçüldükçe daha hızlı çalınır (1 birim = 1/120 sn; örneğin 60'ta bir nota 0,5 sn). Efektler için 1–9, melodiler için 10 ve üzeri önerilir.",
+      "uk": "Задає тривалість відтворення однієї ноти. Спільне для всіх нот налаштування в діапазоні 1–99. Чим менше значення, тим швидше відтворення (1 одиниця = 1/120 сек; наприклад, при 60 одна нота триває 0,5 сек). Для ефектів рекомендується 1–9, для мелодій — 10 і вище."
+    },
+    "sound_piano_body": {
+      "en": "Click to input note pitch. Red squares represent notes, blue squares represent rests. During piano roll editing, a blue cursor is displayed; during property area editing, a different cursor shape appears. Notes are played from left to right, and rests are automatically inserted in empty positions. Clicking an already-filled position overwrites it. Drag to enter notes continuously along the pointer's path.",
+      "cn": "通过点击输入音高。红色方块表示音符，蓝色方块表示休止符。编辑钢琴卷帘时显示蓝色光标，编辑属性区域时显示其他形式的光标。音符从左到右依次播放，有空位时自动插入休止符。点击已有音符的位置会覆盖。拖动可沿鼠标移动路径连续输入音符。",
+      "de": "Tonhöhe per Klick eingeben. Rote Quadrate zeigen Töne, blaue Quadrate Pausen. Beim Bearbeiten im Pianoroll wird ein blauer Cursor angezeigt, im Eigenschaftsbereich ein anderer Cursor. Töne werden von links nach rechts abgespielt; Lücken werden automatisch mit Pausen gefüllt. Klick auf eine belegte Position überschreibt den Ton. Beim Ziehen werden entlang der Mausbewegung fortlaufend Töne eingegeben.",
+      "es": "Introduzca la altura de las notas haciendo clic. Los cuadrados rojos indican notas y los azules indican silencios. Durante la edición del piano roll se muestra un cursor azul; durante la edición del área de propiedades se muestra un cursor diferente. Las notas se reproducen de izquierda a derecha, y los espacios vacíos se rellenan automáticamente con silencios. Al hacer clic en una posición existente, se sobrescribe. Arrastre para introducir notas continuamente siguiendo el recorrido del cursor.",
+      "fr": "Saisissez les notes en cliquant. Les carrés rouges représentent les notes, les carrés bleus les silences. En mode piano roll, un curseur bleu s'affiche ; en mode propriétés, le curseur change de forme. Les notes sont lues de gauche à droite ; les espaces vides deviennent automatiquement des silences. Cliquer sur une position existante écrase la note. Faites glisser la souris pour saisir des notes en continu le long de son trajet.",
+      "it": "Inserisce le altezze delle note cliccando. Il quadrato rosso indica una nota, il quadrato blu una pausa. Durante la modifica del piano roll appare un cursore blu; durante la modifica dell'area proprietà il cursore cambia forma. Le note vengono riprodotte da sinistra a destra; gli spazi vuoti vengono automaticamente riempiti con pause. Cliccando su una posizione già occupata, la nota viene sovrascritta. Trascinando si inseriscono note in modo continuo lungo il percorso del puntatore.",
+      "ja": "音の高さをクリックで入力します。赤い四角が音、青い四角が休符を示します。ピアノロール編集中は青いカーソルが表示され、プロパティエリア編集中は別の形のカーソルに変わります。音は左から順に再生され、空きがある場合は自動的に休符が挿入されます。既に入力されている位置をクリックすると上書きされます。ドラッグした経路に沿って音を連続入力できます。",
+      "ko": "음 높이를 클릭으로 입력합니다. 빨간 사각형이 음, 파란 사각형이 쉼표를 나타냅니다. 피아노 롤 편집 중에는 파란 커서가 표시되고, 프로퍼티 영역 편집 중에는 다른 형태의 커서로 바뀝니다. 음은 왼쪽부터 순서대로 재생되며, 빈 곳에는 자동으로 쉼표가 삽입됩니다. 이미 입력된 위치를 클릭하면 덮어쓰기됩니다. 드래그한 경로를 따라 음을 연속으로 입력할 수 있습니다.",
+      "pt": "Insira a altura das notas clicando. Quadrados vermelhos indicam notas, azuis indicam pausas. Durante a edição no piano roll, um cursor azul é exibido; durante a edição na área de propriedades, o cursor muda de forma. As notas são reproduzidas da esquerda para a direita, e pausas são inseridas automaticamente nos espaços vazios. Clicar em uma posição já preenchida sobrescreve a nota. Arraste para inserir notas continuamente ao longo do movimento do cursor.",
+      "ru": "Высота ноты вводится щелчком. Красный квадрат — нота, синий — пауза. При редактировании пианоролла отображается синий курсор, при редактировании свойств — курсор другой формы. Ноты воспроизводятся слева направо; пустые позиции автоматически заполняются паузами. Щелчок по существующей ноте перезаписывает её. Перетаскивайте указатель, чтобы непрерывно вводить ноты вдоль его пути.",
+      "tr": "Nota yüksekliği tıklanarak girilir. Kırmızı kare nota, mavi kare sus işaretini gösterir. Piyano rulosu düzenlemesinde mavi imleç, özellik alanı düzenlemesinde farklı bir imleç görünür. Notalar soldan sağa çalınır; boş konumlara otomatik olarak sus işareti eklenir. Var olan bir nota tıklanırsa üzerine yazılır. Sürüklerken imlecin izlediği yol boyunca art arda notalar girilir.",
+      "uk": "Висота ноти вводиться клацанням. Червоний квадрат — нота, синій — пауза. При редагуванні піаноролу відображається синій курсор, при редагуванні властивостей — курсор іншої форми. Ноти відтворюються зліва направо; порожні позиції автоматично заповнюються паузами. Клацання по наявній ноті перезаписує її. Перетягуйте вказівник, щоб безперервно вводити ноти вздовж його шляху."
+    },
     "sound_range_title": {
       "en": "Range Selection",
       "cn": "范围选择",
@@ -539,6 +763,20 @@
       "ru": "Выделение диапазона",
       "tr": "Aralık seçimi",
       "uk": "Виділення діапазону"
+    },
+    "sound_octave_body": {
+      "en": "Displays the starting octave (0–3) for keyboard input. The keyboard covers two octaves from the selected octave.",
+      "cn": "显示键盘输入时的起始八度 (0~3)。键盘覆盖从所选八度起的 2 个八度。",
+      "de": "Zeigt die Startoktave (0–3) für die Tastatureingabe. Die Tastatur deckt zwei Oktaven ab der gewählten Oktave ab.",
+      "es": "Muestra la octava inicial (0~3) para la entrada por teclado. El teclado cubre 2 octavas desde la octava seleccionada.",
+      "fr": "Affiche l'octave de départ (0~3) pour la saisie au clavier. Le clavier couvre 2 octaves à partir de l'octave sélectionnée.",
+      "it": "Mostra l'ottava iniziale (0–3) per l'input da tastiera. La tastiera copre 2 ottave a partire dall'ottava selezionata.",
+      "ja": "鍵盤入力時の開始オクターブ (0〜3) を表示します。キーボードは選択したオクターブから 2 オクターブ分をカバーします。",
+      "ko": "건반 입력 시의 시작 옥타브(0~3)를 표시합니다. 키보드는 선택한 옥타브부터 2옥타브를 커버합니다.",
+      "pt": "Exibe a oitava inicial (0~3) para entrada pelo teclado. O teclado cobre 2 oitavas a partir da oitava selecionada.",
+      "ru": "Отображает начальную октаву (0–3) для ввода с клавиатуры. Клавиатура покрывает 2 октавы от выбранной.",
+      "tr": "Klavye girişi için başlangıç oktavını (0~3) gösterir. Klavye seçilen oktavdan itibaren 2 oktavı kapsar.",
+      "uk": "Відображає початкову октаву (0–3) для введення з клавіатури. Клавіатура покриває 2 октави від обраної."
     },
     "sound_keyboard_title": {
       "en": "Keyboard Input",
@@ -568,19 +806,19 @@
       "tr": "PC klavyesiyle nota girebilirsiniz. Üst sıra (QWE satırı + rakam satırı) ve alt sıra (ZXC satırı + ASD satırı) birer oktavlık piyano tuşlarına karşılık gelir ve aynı anda 2 oktavı kapsar. Beyaz tuşlar Do-Re-Mi-Fa-Sol-La-Si, gri tuşlar diyez notalarına atanmıştır. Oktav çubuğundan başlangıç oktavı (0–3) seçilir.",
       "uk": "Ноти можна вводити з клавіатури ПК. Верхній ряд (QWE + цифри) та нижній ряд (ZXC + ASD) відповідають одній октаві фортепіанної клавіатури кожен, покриваючи 2 октави одночасно. Білі клавіші — ноти До-Ре-Мі-Фа-Соль-Ля-Сі, сірі — дієзи. Початкова октава (0–3) обирається на панелі октав."
     },
-    "sound_speed_body": {
-      "en": "Sets the playback duration per note. This is a common setting for all notes, specified in the range 1–99. Smaller values result in faster playback (1 speed unit = 1/120 second; e.g., speed 60 = 0.5 seconds per note). For sound effects, 1–9 is typical; for melodies, 10 or higher is recommended.",
-      "cn": "设置每个音符的播放时长。所有音符共用此设置，范围为 1~99。值越小播放越快 (每 1 速度为 1/120 秒，例如速度 60 时每音 0.5 秒)。音效建议设为 1~9，旋律建议设为 10 以上。",
-      "de": "Legt die Wiedergabedauer pro Ton fest. Diese Einstellung gilt für alle Töne und kann von 1 bis 99 eingestellt werden. Kleinere Werte bedeuten schnellere Wiedergabe (1 Speed-Einheit = 1/120 Sekunde, z.B. Speed 60 = 0,5 Sekunden pro Ton). Für Soundeffekte empfohlen: 1–9, für Melodien: 10 oder höher.",
-      "es": "Establece el tiempo de reproducción por nota. Es una configuración común para todas las notas, con un rango de 1~99. Cuanto menor sea el valor, más rápida será la reproducción (1/120 segundos por unidad de speed; por ejemplo, speed 60 = 0.5 segundos por nota). Para efectos de sonido se recomienda 1~9, para melodías 10 o más.",
-      "fr": "Définit la durée de lecture par note. Ce réglage est commun à toutes les notes, de 1 à 99. Plus la valeur est faible, plus la lecture est rapide (1 unité = 1/120 s ; ex. : speed 60 = 0,5 s par note). Valeur recommandée : 1~9 pour les effets sonores, 10+ pour les mélodies.",
-      "it": "Imposta la durata di riproduzione per nota. È un'impostazione comune a tutte le note, con un intervallo da 1 a 99. Valori più bassi producono una riproduzione più veloce (1 unità di speed = 1/120 di secondo; ad esempio, speed 60 = 0,5 secondi per nota). Per gli effetti sonori si consiglia 1–9, per le melodie 10 o più.",
-      "ja": "1 音あたりの再生時間を設定します。すべての音に共通の設定で、1〜99 の範囲で指定します。値が小さいほど速く再生されます（スピード 1 あたり 1/120 秒。例えばスピード 60 で 1 音 0.5 秒）。効果音では 1〜9 程度、メロディでは 10 以上が目安です。",
-      "ko": "1음당 재생 시간을 설정합니다. 모든 음에 공통인 설정으로, 1~99 범위에서 지정합니다. 값이 작을수록 빠르게 재생됩니다(스피드 1당 1/120초. 예: 스피드 60이면 1음 0.5초). 효과음에서는 1~9 정도, 멜로디에서는 10 이상이 기준입니다.",
-      "pt": "Define o tempo de reprodução por nota. É uma configuração comum a todas as notas, no intervalo de 1~99. Quanto menor o valor, mais rápido a reprodução (1 unidade = 1/120s; por exemplo, speed 60 = 0,5s por nota). Para efeitos sonoros recomenda-se 1~9, para melodias 10 ou mais.",
-      "ru": "Задаёт длительность воспроизведения одной ноты. Общая для всех нот настройка в диапазоне 1–99. Чем меньше значение, тем быстрее воспроизведение (1 единица = 1/120 сек; например, при 60 одна нота длится 0,5 сек). Для эффектов рекомендуется 1–9, для мелодий — 10 и выше.",
-      "tr": "Nota başına çalma süresini ayarlar. Tüm notalar için ortak bir ayardır ve 1–99 arasında belirtilir. Değer küçüldükçe daha hızlı çalınır (1 birim = 1/120 sn; örneğin 60'ta bir nota 0,5 sn). Efektler için 1–9, melodiler için 10 ve üzeri önerilir.",
-      "uk": "Задає тривалість відтворення однієї ноти. Спільне для всіх нот налаштування в діапазоні 1–99. Чим менше значення, тим швидше відтворення (1 одиниця = 1/120 сек; наприклад, при 60 одна нота триває 0,5 сек). Для ефектів рекомендується 1–9, для мелодій — 10 і вище."
+    "sound_property_body": {
+      "en": "Set each note's tone (TON), volume (VOL), and effect (EFX). From the piano roll, press ↓ or click TON to enter this area. Navigation, selection, and copy/paste work as in the piano roll. For example, P on the TON row sets Pulse. To change a value partway through, set it for every note from that position onward.",
+      "cn": "设置每个音符的音色 (TON)、音量 (VOL) 和效果 (EFX)。在钢琴卷帘中按 ↓ 或点击 TON 即可进入此区域。移动、选择和复制粘贴操作与钢琴卷帘相同。例如，在 TON 行按 P 可设置为 Pulse。若要从中途改变某个值，需为该位置起的每个音符设置此值。",
+      "de": "Stellen Sie Klangfarbe (TON), Lautstärke (VOL) und Effekt (EFX) für jeden Ton ein. Drücken Sie in der Pianoroll ↓ oder klicken Sie auf TON, um diesen Bereich zu öffnen. Navigation, Auswahl und Kopieren/Einfügen funktionieren wie in der Pianoroll. Beispielsweise setzt P in der TON-Zeile Pulse. Um einen Wert ab einer bestimmten Position zu ändern, setzen Sie ihn für jeden Ton ab dieser Position.",
+      "es": "Configure el timbre (TON), el volumen (VOL) y el efecto (EFX) de cada nota. Desde el piano roll, pulse ↓ o haga clic en TON para entrar en esta área. La navegación, la selección y copiar/pegar funcionan como en el piano roll. Por ejemplo, P en la fila TON establece Pulse. Para cambiar un valor a partir de cierta posición, configúrelo en cada nota desde esa posición en adelante.",
+      "fr": "Définissez le timbre (TON), le volume (VOL) et l’effet (EFX) de chaque note. Depuis le piano roll, appuyez sur ↓ ou cliquez sur TON pour accéder à cette zone. La navigation, la sélection et le copier-coller fonctionnent comme dans le piano roll. Par exemple, P sur la ligne TON définit Pulse. Pour changer une valeur à partir d’une position, définissez-la pour chaque note à partir de cette position.",
+      "it": "Imposta timbro (TON), volume (VOL) ed effetto (EFX) di ogni nota. Dal piano roll, premi ↓ o clicca su TON per accedere a quest’area. Navigazione, selezione e copia/incolla funzionano come nel piano roll. Ad esempio, P sulla riga TON imposta Pulse. Per cambiare un valore da un certo punto, impostalo per ogni nota da quella posizione in poi.",
+      "ja": "音ごとの音色 (TON)、音量 (VOL)、エフェクト (EFX) を設定します。ピアノロールからは↓キーまたは TON 行のクリックで移動します。移動・選択・コピー＆ペーストの操作はピアノロールと共通です。例えば TON 行で P キーを押すと Pulse になります。途中から値を変えるには、変更位置以降の各音に設定してください。",
+      "ko": "각 음의 음색(TON), 음량(VOL), 이펙트(EFX)를 설정합니다. 피아노 롤에서 ↓를 누르거나 TON을 클릭하면 이 영역으로 이동합니다. 이동, 선택, 복사 및 붙여넣기는 피아노 롤과 동일합니다. 예를 들어 TON 행에서 P를 누르면 Pulse가 설정됩니다. 중간부터 값을 바꾸려면 해당 위치부터 모든 음에 값을 설정하세요.",
+      "pt": "Defina o timbre (TON), o volume (VOL) e o efeito (EFX) de cada nota. No piano roll, pressione ↓ ou clique em TON para acessar esta área. Navegação, seleção e copiar/colar funcionam como no piano roll. Por exemplo, P na linha TON define Pulse. Para mudar um valor a partir de uma posição, defina-o em cada nota dessa posição em diante.",
+      "ru": "Задайте тембр (TON), громкость (VOL) и эффект (EFX) каждой ноты. В пианоролле нажмите ↓ или щёлкните TON, чтобы перейти в эту область. Навигация, выделение, копирование и вставка работают как в пианоролле. Например, P в строке TON задаёт Pulse. Чтобы изменить значение с определённой позиции, задайте его для каждой ноты начиная с этой позиции.",
+      "tr": "Her notanın ses rengini (TON), ses düzeyini (VOL) ve efektini (EFX) ayarlayın. Bu alana geçmek için piyano rulosunda ↓ tuşuna basın veya TON’a tıklayın. Gezinme, seçim ve kopyalama/yapıştırma işlemleri piyano rulosundaki gibi çalışır. Örneğin TON satırında P tuşu Pulse değerini ayarlar. Bir değeri belli bir noktadan itibaren değiştirmek için o konumdan itibaren her notaya uygulayın.",
+      "uk": "Задайте тембр (TON), гучність (VOL) та ефект (EFX) кожної ноти. У піаноролі натисніть ↓ або клацніть TON, щоб перейти до цієї області. Навігація, виділення, копіювання та вставка працюють як у піаноролі. Наприклад, P у рядку TON задає Pulse. Щоб змінити значення з певної позиції, задайте його для кожної ноти починаючи з цієї позиції."
     },
     "sound_tone_title": {
       "en": "Tone",
@@ -722,202 +960,6 @@
       "tr": "Ekran yapısı",
       "uk": "Структура екрана"
     },
-    "image_canvas_body": {
-      "en": "The editing area selected in the image bank view is displayed magnified. Click and drag with the mouse to draw.",
-      "cn": "在图像库视图中选择的编辑区域以放大形式显示。通过鼠标点击和拖动进行绘制。",
-      "de": "Der in der Bildbankansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Zeichnen Sie durch Klicken und Ziehen mit der Maus.",
-      "es": "El área de edición seleccionada en la vista del banco de imágenes se muestra ampliada. Dibuje haciendo clic o arrastrando con el ratón.",
-      "fr": "La zone d'édition sélectionnée dans la vue de la banque d'images est affichée en zoom. Cliquez ou glissez avec la souris pour dessiner.",
-      "it": "L'area di modifica selezionata nella vista banco immagini viene mostrata ingrandita. Cliccare e trascinare con il mouse per disegnare.",
-      "ja": "イメージバンクビューで選択した編集エリアが拡大表示されます。マウスでクリック・ドラッグして描画します。",
-      "ko": "이미지 뱅크 뷰에서 선택한 편집 영역이 확대 표시됩니다. 마우스로 클릭·드래그하여 그립니다.",
-      "pt": "A área de edição selecionada na visualização do banco de imagens é exibida ampliada. Desenhe clicando e arrastando com o mouse.",
-      "ru": "Область редактирования, выбранная в виде банка изображений, отображается в увеличенном масштабе. Рисование выполняется щелчком и перетаскиванием мыши.",
-      "tr": "Görüntü bankası görünümünde seçilen düzenleme alanı büyütülerek gösterilir. Fare ile tıklayıp sürükleyerek çizim yapılır.",
-      "uk": "Область редагування, обрана у виді банку зображень, відображається у збільшеному масштабі. Малювання виконується клацанням та перетягуванням миші."
-    },
-    "image_bankview_body": {
-      "en": "A thumbnail view of the entire image bank. The white frame indicates the current editing area.",
-      "cn": "图像库整体的缩小显示。白色边框表示当前编辑区域。",
-      "de": "Verkleinerte Ansicht der gesamten Bildbank. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
-      "es": "Vista reducida del banco de imágenes completo. El marco blanco indica el área de edición actual.",
-      "fr": "Vue réduite de la banque d'images complète. Le cadre blanc indique la zone d'édition actuelle.",
-      "it": "Vista ridotta dell'intero banco immagini. La cornice bianca indica l'area di modifica corrente.",
-      "ja": "イメージバンク全体の縮小表示です。白い枠が現在の編集エリアを示しています。",
-      "ko": "이미지 뱅크 전체의 축소 표시입니다. 흰 테두리가 현재 편집 영역을 나타냅니다.",
-      "pt": "Visualização reduzida de todo o banco de imagens. A moldura branca indica a área de edição atual.",
-      "ru": "Уменьшенный вид всего банка изображений. Белая рамка показывает текущую область редактирования.",
-      "tr": "Görüntü bankasının tamamının küçültülmüş görünümü. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
-      "uk": "Зменшений вид усього банку зображень. Біла рамка показує поточну область редагування."
-    },
-    "image_tools_body": {
-      "en": "Select a tool for drawing.",
-      "cn": "选择绘制工具。",
-      "de": "Wählt das Zeichenwerkzeug aus.",
-      "es": "Seleccione la herramienta de dibujo a utilizar.",
-      "fr": "Sélectionne l'outil de dessin à utiliser.",
-      "it": "Seleziona lo strumento di disegno da utilizzare.",
-      "ja": "描画に使用するツールを選択します。",
-      "ko": "그리기에 사용할 도구를 선택합니다.",
-      "pt": "Seleciona a ferramenta de desenho a ser utilizada.",
-      "ru": "Выбор инструмента рисования.",
-      "tr": "Çizim aracını seçer.",
-      "uk": "Вибір інструмента малювання."
-    },
-    "image_palette_body": {
-      "en": "Select a drawing color from the palette, which initially has 16 colors.",
-      "cn": "从调色板中选择绘制颜色。初始调色板包含 16 色。",
-      "de": "Wählt die Zeichenfarbe aus der Palette, die anfangs 16 Farben enthält.",
-      "es": "Seleccione el color de dibujo de la paleta, que inicialmente contiene 16 colores.",
-      "fr": "Sélectionne la couleur de dessin dans la palette, qui contient initialement 16 couleurs.",
-      "it": "Seleziona il colore di disegno dalla palette, che inizialmente contiene 16 colori.",
-      "ja": "カラーパレットから描画色を選択します。初期状態は 16 色です。",
-      "ko": "컬러 팔레트에서 그리기 색상을 선택합니다. 초기 팔레트는 16색입니다.",
-      "pt": "Seleciona a cor de desenho na paleta, que inicialmente contém 16 cores.",
-      "ru": "Выбор цвета рисования из палитры, которая изначально содержит 16 цветов.",
-      "tr": "Başlangıçta 16 renk içeren paletten çizim rengini seçer.",
-      "uk": "Вибір кольору малювання з палітри, яка спочатку містить 16 кольорів."
-    },
-    "image_banknum_body": {
-      "en": "Switch the target image bank (0–2).",
-      "cn": "切换编辑对象的图像库 (0~2)。",
-      "de": "Wechselt die zu bearbeitende Bildbank (0–2).",
-      "es": "Cambie el banco de imágenes a editar (0~2).",
-      "fr": "Change la banque d'images à éditer (0~2).",
-      "it": "Cambia il banco immagini in modifica (0–2).",
-      "ja": "編集対象のイメージバンク (0〜2) を切り替えます。",
-      "ko": "편집 대상 이미지 뱅크(0~2)를 전환합니다.",
-      "pt": "Alterna o banco de imagens em edição (0~2).",
-      "ru": "Переключение редактируемого банка изображений (0–2).",
-      "tr": "Düzenlenecek görüntü bankasını (0~2) değiştirir.",
-      "uk": "Перемикання банку зображень для редагування (0–2)."
-    },
-    "tilemap_canvas_body": {
-      "en": "The editing area selected in the tilemap view is displayed magnified. Place tile images selected in the tile image view. Drawing tools and selection shortcuts are shared with the Image Editor. Note that all cells default to tile (0,0), so it is recommended to keep image bank position (0,0) empty.",
-      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在瓦片图像视图中选择的瓦片图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块 (0,0)，建议将图像库的 (0,0) 留空。",
-      "de": "Der in der Tilemap-Ansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Platzieren Sie das in der Kachelbild-Ansicht gewählte Kachelbild. Zeichenwerkzeuge und Bereichsauswahl-Kürzel sind mit dem Bildeditor identisch. Hinweis: Da alle Zellen initial Kachel (0,0) sind, wird empfohlen, Position (0,0) der Bildbank leer zu lassen.",
-      "es": "El área de edición seleccionada en la vista del tilemap se muestra ampliada. Coloque la imagen de tile seleccionada en la vista de imagen de tiles. Los atajos de herramientas de dibujo y selección de rango son los mismos que en el editor de imágenes. El valor inicial de todas las celdas es el tile (0,0), por lo que se recomienda dejar vacía la posición (0,0) del banco de imágenes.",
-      "fr": "La zone d'édition sélectionnée dans la vue de la tilemap est affichée en zoom. Placez les tuiles sélectionnées dans la vue des tuiles. Les raccourcis des outils de dessin et de sélection sont les mêmes que dans l'éditeur d'images. La valeur initiale de toutes les cellules étant la tuile (0,0), il est recommandé de laisser la position (0,0) de la banque d'images vide.",
-      "it": "L'area di modifica selezionata nella vista tilemap viene mostrata ingrandita. Posiziona le immagini tile selezionate nella vista immagini tile. Le scorciatoie per gli strumenti di disegno e la selezione intervallo sono le stesse dell'editor immagini. Si consiglia di lasciare vuota la posizione (0,0) del banco immagini, poiché il valore iniziale di tutte le celle è il tile (0,0).",
-      "ja": "タイルマップビューで選択した編集エリアが拡大表示されます。タイルイメージビューで選択したタイル画像を配置します。描画ツールと範囲選択のショートカットはイメージエディタと共通です。なお、全セルの初期値はタイル (0,0) のため、イメージバンクの (0,0) は空にしておくことを推奨します。",
-      "ko": "타일맵 뷰에서 선택한 편집 영역이 확대 표시됩니다. 타일 이미지 뷰에서 선택한 타일 이미지를 배치합니다. 그리기 도구와 범위 선택 단축키는 이미지 에디터와 공통입니다. 모든 셀의 초기값은 타일(0,0)이므로, 이미지 뱅크의 (0,0)은 비워두는 것을 권장합니다.",
-      "pt": "A área de edição selecionada na visualização do tilemap é exibida ampliada. Posicione a imagem de tile selecionada na visualização de tiles. Os atalhos de ferramentas de desenho e seleção de intervalo são os mesmos do editor de imagem. O valor inicial de todas as células é o tile (0,0), por isso recomenda-se deixar a posição (0,0) do banco de imagens vazia.",
-      "ru": "Область редактирования, выбранная в виде тайловой карты, отображается в увеличенном масштабе. Выбранное в виде тайлов изображение размещается здесь. Горячие клавиши для инструментов рисования и выделения общие с редактором изображений. Начальное значение всех ячеек — тайл (0,0), поэтому рекомендуется оставлять позицию (0,0) банка изображений пустой.",
-      "tr": "Tilemap görünümünde seçilen düzenleme alanı büyütülerek gösterilir. Karo görüntü görünümünde seçilen karo resmi yerleştirilir. Çizim araçları ve aralık seçimi kısayolları görüntü düzenleyiciyle ortaktır. Tüm hücrelerin başlangıç değeri karo (0,0) olduğundan, görüntü bankasında (0,0) konumunu boş bırakmanız önerilir.",
-      "uk": "Область редагування, обрана у виді тайлової карти, відображається у збільшеному масштабі. Обране у виді тайлів зображення розміщується тут. Гарячі клавіші для інструментів малювання та виділення спільні з редактором зображень. Початкове значення всіх комірок — тайл (0,0), тому рекомендується залишати позицію (0,0) банку зображень порожньою."
-    },
-    "tilemap_mapview_body": {
-      "en": "A thumbnail view of the entire tilemap. The white frame indicates the current editing area.",
-      "cn": "瓦片地图整体的缩小显示。白色边框表示当前编辑区域。",
-      "de": "Verkleinerte Ansicht der gesamten Tilemap. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
-      "es": "Vista reducida del tilemap completo. El marco blanco indica el área de edición actual.",
-      "fr": "Vue réduite de la tilemap complète. Le cadre blanc indique la zone d'édition actuelle.",
-      "it": "Vista ridotta dell'intera tilemap. La cornice bianca indica l'area di modifica corrente.",
-      "ja": "タイルマップ全体の縮小表示です。白い枠が現在の編集エリアを示しています。",
-      "ko": "타일맵 전체의 축소 표시입니다. 흰 테두리가 현재 편집 영역을 나타냅니다.",
-      "pt": "Visualização reduzida de todo o tilemap. A moldura branca indica a área de edição atual.",
-      "ru": "Уменьшенный вид всей тайловой карты. Белая рамка показывает текущую область редактирования.",
-      "tr": "Tilemap'in tamamının küçültülmüş görünümü. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
-      "uk": "Зменшений вид усієї тайлової карти. Біла рамка показує поточну область редагування."
-    },
-    "tilemap_tileview_body": {
-      "en": "Displays the referenced image bank. Select tile images with the white frame.",
-      "cn": "参照图像库的显示。用白色边框选择要放置的瓦片图像。",
-      "de": "Ansicht der referenzierten Bildbank. Das zu platzierende Kachelbild wird mit dem weißen Rahmen ausgewählt.",
-      "es": "Vista del banco de imágenes de referencia. Seleccione la imagen de tile a colocar con el marco blanco.",
-      "fr": "Affichage de la banque d'images de référence. Sélectionnez la tuile à placer avec le cadre blanc.",
-      "it": "Vista del banco immagini di riferimento. Selezionare l'immagine tile da posizionare con la cornice bianca.",
-      "ja": "参照先イメージバンクの表示です。配置するタイル画像を白い枠で選択します。",
-      "ko": "참조 이미지 뱅크 표시입니다. 배치할 타일 이미지를 흰 테두리로 선택합니다.",
-      "pt": "Exibição do banco de imagens de referência. Selecione a imagem de tile a posicionar com a moldura branca.",
-      "ru": "Отображение банка изображений-источника. Тайл для размещения выбирается белой рамкой.",
-      "tr": "Kaynak görüntü bankası görünümü. Yerleştirilecek karo resmi beyaz çerçeveyle seçilir.",
-      "uk": "Відображення банку зображень-джерела. Тайл для розміщення обирається білою рамкою."
-    },
-    "tilemap_tmnum_body": {
-      "en": "Switch the target tilemap (0–7).",
-      "cn": "切换编辑对象的瓦片地图 (0~7)。",
-      "de": "Wechselt die zu bearbeitende Tilemap (0–7).",
-      "es": "Cambie el tilemap a editar (0~7).",
-      "fr": "Change la tilemap à éditer (0~7).",
-      "it": "Cambia la tilemap in modifica (0–7).",
-      "ja": "編集対象のタイルマップ (0〜7) を切り替えます。",
-      "ko": "편집 대상 타일맵(0~7)을 전환합니다.",
-      "pt": "Alterna o tilemap em edição (0~7).",
-      "ru": "Переключение редактируемой тайловой карты (0–7).",
-      "tr": "Düzenlenecek tilemap'i (0~7) değiştirir.",
-      "uk": "Перемикання тайлової карти для редагування (0–7)."
-    },
-    "tilemap_imgnum_body": {
-      "en": "Switch the image bank (0–2) referenced for tile images.",
-      "cn": "切换瓦片图像参照的图像库 (0~2)。",
-      "de": "Wechselt die referenzierte Bildbank für Kachelbilder (0–2).",
-      "es": "Cambie el banco de imágenes de referencia para tiles (0~2).",
-      "fr": "Change la banque d'images de référence pour les tuiles (0~2).",
-      "it": "Cambia il banco immagini di riferimento per le immagini tile (0–2).",
-      "ja": "タイル画像を参照するイメージバンク (0〜2) を切り替えます。",
-      "ko": "타일 이미지를 참조하는 이미지 뱅크(0~2)를 전환합니다.",
-      "pt": "Alterna o banco de imagens de referência para tiles (0~2).",
-      "ru": "Переключение банка изображений-источника тайлов (0–2).",
-      "tr": "Karo resimlerinin kaynak görüntü bankasını (0~2) değiştirir.",
-      "uk": "Перемикання банку зображень-джерела тайлів (0–2)."
-    },
-    "sound_sndnum_body": {
-      "en": "Switch the target sound (0–63).",
-      "cn": "切换编辑对象的声音 (0~63)。",
-      "de": "Wechselt den zu bearbeitenden Sound (0–63).",
-      "es": "Cambie el sonido a editar (0~63).",
-      "fr": "Change le son à éditer (0~63).",
-      "it": "Cambia il suono in modifica (0–63).",
-      "ja": "編集対象のサウンド (0〜63) を切り替えます。",
-      "ko": "편집 대상 사운드(0~63)를 전환합니다.",
-      "pt": "Alterna o som em edição (0~63).",
-      "ru": "Переключение редактируемого звука (0–63).",
-      "tr": "Düzenlenecek sesi (0~63) değiştirir.",
-      "uk": "Перемикання звуку для редагування (0–63)."
-    },
-    "sound_piano_body": {
-      "en": "Click to input note pitch. Red squares represent notes, blue squares represent rests. During piano roll editing, a blue cursor is displayed; during property area editing, a different cursor shape appears. Notes are played from left to right, and rests are automatically inserted in empty positions. Clicking an already-filled position overwrites it. Drag to enter notes continuously along the pointer's path.",
-      "cn": "通过点击输入音高。红色方块表示音符，蓝色方块表示休止符。编辑钢琴卷帘时显示蓝色光标，编辑属性区域时显示其他形式的光标。音符从左到右依次播放，有空位时自动插入休止符。点击已有音符的位置会覆盖。拖动可沿鼠标移动路径连续输入音符。",
-      "de": "Tonhöhe per Klick eingeben. Rote Quadrate zeigen Töne, blaue Quadrate Pausen. Beim Bearbeiten im Pianoroll wird ein blauer Cursor angezeigt, im Eigenschaftsbereich ein anderer Cursor. Töne werden von links nach rechts abgespielt; Lücken werden automatisch mit Pausen gefüllt. Klick auf eine belegte Position überschreibt den Ton. Beim Ziehen werden entlang der Mausbewegung fortlaufend Töne eingegeben.",
-      "es": "Introduzca la altura de las notas haciendo clic. Los cuadrados rojos indican notas y los azules indican silencios. Durante la edición del piano roll se muestra un cursor azul; durante la edición del área de propiedades se muestra un cursor diferente. Las notas se reproducen de izquierda a derecha, y los espacios vacíos se rellenan automáticamente con silencios. Al hacer clic en una posición existente, se sobrescribe. Arrastre para introducir notas continuamente siguiendo el recorrido del cursor.",
-      "fr": "Saisissez les notes en cliquant. Les carrés rouges représentent les notes, les carrés bleus les silences. En mode piano roll, un curseur bleu s'affiche ; en mode propriétés, le curseur change de forme. Les notes sont lues de gauche à droite ; les espaces vides deviennent automatiquement des silences. Cliquer sur une position existante écrase la note. Faites glisser la souris pour saisir des notes en continu le long de son trajet.",
-      "it": "Inserisce le altezze delle note cliccando. Il quadrato rosso indica una nota, il quadrato blu una pausa. Durante la modifica del piano roll appare un cursore blu; durante la modifica dell'area proprietà il cursore cambia forma. Le note vengono riprodotte da sinistra a destra; gli spazi vuoti vengono automaticamente riempiti con pause. Cliccando su una posizione già occupata, la nota viene sovrascritta. Trascinando si inseriscono note in modo continuo lungo il percorso del puntatore.",
-      "ja": "音の高さをクリックで入力します。赤い四角が音、青い四角が休符を示します。ピアノロール編集中は青いカーソルが表示され、プロパティエリア編集中は別の形のカーソルに変わります。音は左から順に再生され、空きがある場合は自動的に休符が挿入されます。既に入力されている位置をクリックすると上書きされます。ドラッグした経路に沿って音を連続入力できます。",
-      "ko": "음 높이를 클릭으로 입력합니다. 빨간 사각형이 음, 파란 사각형이 쉼표를 나타냅니다. 피아노 롤 편집 중에는 파란 커서가 표시되고, 프로퍼티 영역 편집 중에는 다른 형태의 커서로 바뀝니다. 음은 왼쪽부터 순서대로 재생되며, 빈 곳에는 자동으로 쉼표가 삽입됩니다. 이미 입력된 위치를 클릭하면 덮어쓰기됩니다. 드래그한 경로를 따라 음을 연속으로 입력할 수 있습니다.",
-      "pt": "Insira a altura das notas clicando. Quadrados vermelhos indicam notas, azuis indicam pausas. Durante a edição no piano roll, um cursor azul é exibido; durante a edição na área de propriedades, o cursor muda de forma. As notas são reproduzidas da esquerda para a direita, e pausas são inseridas automaticamente nos espaços vazios. Clicar em uma posição já preenchida sobrescreve a nota. Arraste para inserir notas continuamente ao longo do movimento do cursor.",
-      "ru": "Высота ноты вводится щелчком. Красный квадрат — нота, синий — пауза. При редактировании пианоролла отображается синий курсор, при редактировании свойств — курсор другой формы. Ноты воспроизводятся слева направо; пустые позиции автоматически заполняются паузами. Щелчок по существующей ноте перезаписывает её. Перетаскивайте указатель, чтобы непрерывно вводить ноты вдоль его пути.",
-      "tr": "Nota yüksekliği tıklanarak girilir. Kırmızı kare nota, mavi kare sus işaretini gösterir. Piyano rulosu düzenlemesinde mavi imleç, özellik alanı düzenlemesinde farklı bir imleç görünür. Notalar soldan sağa çalınır; boş konumlara otomatik olarak sus işareti eklenir. Var olan bir nota tıklanırsa üzerine yazılır. Sürüklerken imlecin izlediği yol boyunca art arda notalar girilir.",
-      "uk": "Висота ноти вводиться клацанням. Червоний квадрат — нота, синій — пауза. При редагуванні піаноролу відображається синій курсор, при редагуванні властивостей — курсор іншої форми. Ноти відтворюються зліва направо; порожні позиції автоматично заповнюються паузами. Клацання по наявній ноті перезаписує її. Перетягуйте вказівник, щоб безперервно вводити ноти вздовж його шляху."
-    },
-    "sound_octave_body": {
-      "en": "Displays the starting octave (0–3) for keyboard input. The keyboard covers two octaves from the selected octave.",
-      "cn": "显示键盘输入时的起始八度 (0~3)。键盘覆盖从所选八度起的 2 个八度。",
-      "de": "Zeigt die Startoktave (0–3) für die Tastatureingabe. Die Tastatur deckt zwei Oktaven ab der gewählten Oktave ab.",
-      "es": "Muestra la octava inicial (0~3) para la entrada por teclado. El teclado cubre 2 octavas desde la octava seleccionada.",
-      "fr": "Affiche l'octave de départ (0~3) pour la saisie au clavier. Le clavier couvre 2 octaves à partir de l'octave sélectionnée.",
-      "it": "Mostra l'ottava iniziale (0–3) per l'input da tastiera. La tastiera copre 2 ottave a partire dall'ottava selezionata.",
-      "ja": "鍵盤入力時の開始オクターブ (0〜3) を表示します。キーボードは選択したオクターブから 2 オクターブ分をカバーします。",
-      "ko": "건반 입력 시의 시작 옥타브(0~3)를 표시합니다. 키보드는 선택한 옥타브부터 2옥타브를 커버합니다.",
-      "pt": "Exibe a oitava inicial (0~3) para entrada pelo teclado. O teclado cobre 2 oitavas a partir da oitava selecionada.",
-      "ru": "Отображает начальную октаву (0–3) для ввода с клавиатуры. Клавиатура покрывает 2 октавы от выбранной.",
-      "tr": "Klavye girişi için başlangıç oktavını (0~3) gösterir. Klavye seçilen oktavdan itibaren 2 oktavı kapsar.",
-      "uk": "Відображає початкову октаву (0–3) для введення з клавіатури. Клавіатура покриває 2 октави від обраної."
-    },
-    "sound_property_body": {
-      "en": "Set each note's tone (TON), volume (VOL), and effect (EFX). From the piano roll, press ↓ or click TON to enter this area. Navigation, selection, and copy/paste work as in the piano roll. For example, P on the TON row sets Pulse. To change a value partway through, set it for every note from that position onward.",
-      "cn": "设置每个音符的音色 (TON)、音量 (VOL) 和效果 (EFX)。在钢琴卷帘中按 ↓ 或点击 TON 即可进入此区域。移动、选择和复制粘贴操作与钢琴卷帘相同。例如，在 TON 行按 P 可设置为 Pulse。若要从中途改变某个值，需为该位置起的每个音符设置此值。",
-      "de": "Stellen Sie Klangfarbe (TON), Lautstärke (VOL) und Effekt (EFX) für jeden Ton ein. Drücken Sie in der Pianoroll ↓ oder klicken Sie auf TON, um diesen Bereich zu öffnen. Navigation, Auswahl und Kopieren/Einfügen funktionieren wie in der Pianoroll. Beispielsweise setzt P in der TON-Zeile Pulse. Um einen Wert ab einer bestimmten Position zu ändern, setzen Sie ihn für jeden Ton ab dieser Position.",
-      "es": "Configure el timbre (TON), el volumen (VOL) y el efecto (EFX) de cada nota. Desde el piano roll, pulse ↓ o haga clic en TON para entrar en esta área. La navegación, la selección y copiar/pegar funcionan como en el piano roll. Por ejemplo, P en la fila TON establece Pulse. Para cambiar un valor a partir de cierta posición, configúrelo en cada nota desde esa posición en adelante.",
-      "fr": "Définissez le timbre (TON), le volume (VOL) et l’effet (EFX) de chaque note. Depuis le piano roll, appuyez sur ↓ ou cliquez sur TON pour accéder à cette zone. La navigation, la sélection et le copier-coller fonctionnent comme dans le piano roll. Par exemple, P sur la ligne TON définit Pulse. Pour changer une valeur à partir d’une position, définissez-la pour chaque note à partir de cette position.",
-      "it": "Imposta timbro (TON), volume (VOL) ed effetto (EFX) di ogni nota. Dal piano roll, premi ↓ o clicca su TON per accedere a quest’area. Navigazione, selezione e copia/incolla funzionano come nel piano roll. Ad esempio, P sulla riga TON imposta Pulse. Per cambiare un valore da un certo punto, impostalo per ogni nota da quella posizione in poi.",
-      "ja": "音ごとの音色 (TON)、音量 (VOL)、エフェクト (EFX) を設定します。ピアノロールからは↓キーまたは TON 行のクリックで移動します。移動・選択・コピー＆ペーストの操作はピアノロールと共通です。例えば TON 行で P キーを押すと Pulse になります。途中から値を変えるには、変更位置以降の各音に設定してください。",
-      "ko": "각 음의 음색(TON), 음량(VOL), 이펙트(EFX)를 설정합니다. 피아노 롤에서 ↓를 누르거나 TON을 클릭하면 이 영역으로 이동합니다. 이동, 선택, 복사 및 붙여넣기는 피아노 롤과 동일합니다. 예를 들어 TON 행에서 P를 누르면 Pulse가 설정됩니다. 중간부터 값을 바꾸려면 해당 위치부터 모든 음에 값을 설정하세요.",
-      "pt": "Defina o timbre (TON), o volume (VOL) e o efeito (EFX) de cada nota. No piano roll, pressione ↓ ou clique em TON para acessar esta área. Navegação, seleção e copiar/colar funcionam como no piano roll. Por exemplo, P na linha TON define Pulse. Para mudar um valor a partir de uma posição, defina-o em cada nota dessa posição em diante.",
-      "ru": "Задайте тембр (TON), громкость (VOL) и эффект (EFX) каждой ноты. В пианоролле нажмите ↓ или щёлкните TON, чтобы перейти в эту область. Навигация, выделение, копирование и вставка работают как в пианоролле. Например, P в строке TON задаёт Pulse. Чтобы изменить значение с определённой позиции, задайте его для каждой ноты начиная с этой позиции.",
-      "tr": "Her notanın ses rengini (TON), ses düzeyini (VOL) ve efektini (EFX) ayarlayın. Bu alana geçmek için piyano rulosunda ↓ tuşuna basın veya TON’a tıklayın. Gezinme, seçim ve kopyalama/yapıştırma işlemleri piyano rulosundaki gibi çalışır. Örneğin TON satırında P tuşu Pulse değerini ayarlar. Bir değeri belli bir noktadan itibaren değiştirmek için o konumdan itibaren her notaya uygulayın.",
-      "uk": "Задайте тембр (TON), гучність (VOL) та ефект (EFX) кожної ноти. У піаноролі натисніть ↓ або клацніть TON, щоб перейти до цієї області. Навігація, виділення, копіювання та вставка працюють як у піаноролі. Наприклад, P у рядку TON задає Pulse. Щоб змінити значення з певної позиції, задайте його для кожної ноти починаючи з цієї позиції."
-    },
     "music_mscnum_body": {
       "en": "Switch the target music (0–7).",
       "cn": "切换编辑对象的音乐 (0~7)。",
@@ -959,48 +1001,6 @@
       "ru": "Кнопки вставки номеров звуков (0–63). Нажатие вставляет номер звука в позицию курсора. Созданные звуки отображаются синим, пустые — серым. При наведении курсора мыши звук воспроизводится для предпрослушивания.",
       "tr": "Ses numarası ekleme düğmeleri (0~63). Düğmeye basıldığında düzenleme imlecinin konumuna ses numarası eklenir. Oluşturulan sesler mavi, oluşturulmamışlar gri gösterilir. Fare imlecini üzerine getirince ses önizlenir.",
       "uk": "Кнопки вставки номерів звуків (0–63). Натискання вставляє номер звуку в позицію курсора. Створені звуки відображаються синім, порожні — сірим. При наведенні курсора миші звук відтворюється для попереднього прослуховування."
-    },
-    "other_shortcuts_title": {
-      "en": "Other Shortcuts",
-      "cn": "其他快捷键",
-      "de": "Weitere Tastenkürzel",
-      "es": "Otros atajos",
-      "fr": "Autres raccourcis",
-      "it": "Altre scorciatoie",
-      "ja": "その他のショートカット",
-      "ko": "기타 단축키",
-      "pt": "Outros atalhos",
-      "ru": "Прочие горячие клавиши",
-      "tr": "Diğer kısayollar",
-      "uk": "Інші гарячі клавіші"
-    },
-    "image_selection_title": {
-      "en": "Selection Tool Shortcuts",
-      "cn": "范围选择工具的快捷键",
-      "de": "Tastenkürzel bei Bereichsauswahl",
-      "es": "Atajos de la herramienta de selección de rango",
-      "fr": "Raccourcis en mode sélection",
-      "it": "Scorciatoie durante la selezione intervallo",
-      "ja": "範囲選択ツール使用時のショートカット",
-      "ko": "범위 선택 도구 사용 시 단축키",
-      "pt": "Atalhos na ferramenta de seleção de intervalo",
-      "ru": "Горячие клавиши при выделении",
-      "tr": "Aralık seçim aracı kısayolları",
-      "uk": "Гарячі клавіші при виділенні"
-    },
-    "image_selection_body": {
-      "en": "The following shortcut keys are available while using the selection tool.",
-      "cn": "使用范围选择工具时，可使用以下快捷键。",
-      "de": "Bei aktiviertem Bereichsauswahl-Werkzeug stehen folgende Tastenkürzel zur Verfügung.",
-      "es": "Los siguientes atajos están disponibles durante el uso de la herramienta de selección de rango.",
-      "fr": "Les raccourcis suivants sont disponibles lors de l'utilisation de l'outil de sélection.",
-      "it": "Durante l'uso dello strumento di selezione intervallo sono disponibili le seguenti scorciatoie.",
-      "ja": "範囲選択ツール使用中は、以下のショートカットキーが使用できます。",
-      "ko": "범위 선택 도구 사용 중에는 다음 단축키를 사용할 수 있습니다.",
-      "pt": "Durante o uso da ferramenta de seleção de intervalo, os seguintes atalhos estão disponíveis.",
-      "ru": "При использовании инструмента выделения доступны следующие горячие клавиши.",
-      "tr": "Aralık seçim aracı kullanılırken aşağıdaki kısayol tuşları kullanılabilir.",
-      "uk": "При використанні інструмента виділення доступні такі гарячі клавіші."
     }
   },
   "annotations": {
@@ -1497,6 +1497,403 @@
       }
     ]
   },
+  "overview_editors": [
+    {
+      "icon": "images/btn_image.png",
+      "label": {
+        "en": "Image Editor",
+        "cn": "图像编辑器",
+        "de": "Bildeditor",
+        "es": "Editor de imágenes",
+        "fr": "Éditeur d'images",
+        "it": "Editor immagini",
+        "ja": "イメージエディタ",
+        "ko": "이미지 에디터",
+        "pt": "Editor de imagem",
+        "ru": "Редактор изображений",
+        "tr": "Görüntü Düzenleyici",
+        "uk": "Редактор зображень"
+      },
+      "desc": {
+        "en": "Edit images (image banks) used for sprites and tiles",
+        "cn": "编辑用于精灵和瓦片的图像 (图像库)",
+        "de": "Bilder (Bildbanken) für Sprites und Kacheln bearbeiten",
+        "es": "Editar imágenes (bancos de imágenes) para sprites y tiles",
+        "fr": "Éditer les images (banques d'images) utilisées pour les sprites et les tuiles",
+        "it": "Modifica le immagini (banchi immagini) utilizzate per sprite e tile",
+        "ja": "スプライトやタイルに使用する画像（イメージバンク）を編集する",
+        "ko": "스프라이트나 타일에 사용하는 이미지(이미지 뱅크)를 편집",
+        "pt": "Editar imagens (bancos de imagens) usadas em sprites e tiles",
+        "ru": "Редактирование изображений (банков) для спрайтов и тайлов",
+        "tr": "Sprite ve karolar için görüntü bankalarını düzenler",
+        "uk": "Редагування зображень (банків) для спрайтів і тайлів"
+      }
+    },
+    {
+      "icon": "images/btn_tilemap.png",
+      "label": {
+        "en": "Tilemap Editor",
+        "cn": "瓦片地图编辑器",
+        "de": "Tilemap-Editor",
+        "es": "Editor de tilemaps",
+        "fr": "Éditeur de tilemap",
+        "it": "Editor tilemap",
+        "ja": "タイルマップエディタ",
+        "ko": "타일맵 에디터",
+        "pt": "Editor de tilemap",
+        "ru": "Редактор тайловых карт",
+        "tr": "Tilemap Düzenleyici",
+        "uk": "Редактор тайлових карт"
+      },
+      "desc": {
+        "en": "Arrange image bank images as tiles to compose maps",
+        "cn": "将图像库的图像作为瓦片排列构成地图",
+        "de": "Bildbankgrafiken als Kacheln anordnen und Karten erstellen",
+        "es": "Componer mapas colocando imágenes del banco como tiles",
+        "fr": "Composer des cartes en disposant les images de la banque comme tuiles",
+        "it": "Dispone le immagini del banco come tile per comporre le mappe",
+        "ja": "イメージバンクの画像をタイルとして並べてマップを構成する",
+        "ko": "이미지 뱅크의 이미지를 타일로 나열하여 맵을 구성",
+        "pt": "Compor mapas organizando imagens do banco de imagens como tiles",
+        "ru": "Составление карт из тайлов банка изображений",
+        "tr": "Görüntü bankası resimlerini karo olarak dizerek harita oluşturur",
+        "uk": "Складання карт із тайлів банку зображень"
+      }
+    },
+    {
+      "icon": "images/btn_sound.png",
+      "label": {
+        "en": "Sound Editor",
+        "cn": "音效编辑器",
+        "de": "Soundeditor",
+        "es": "Editor de sonido",
+        "fr": "Éditeur de sons",
+        "it": "Editor suoni",
+        "ja": "サウンドエディタ",
+        "ko": "사운드 에디터",
+        "pt": "Editor de som",
+        "ru": "Редактор звуков",
+        "tr": "Ses Düzenleyici",
+        "uk": "Редактор звуків"
+      },
+      "desc": {
+        "en": "Edit sounds used for sound effects and melodies",
+        "cn": "编辑用于音效和旋律的声音",
+        "de": "Sounds für Soundeffekte und Melodien bearbeiten",
+        "es": "Editar sonidos para efectos de sonido y melodías",
+        "fr": "Éditer les sons utilisés pour les effets sonores et les mélodies",
+        "it": "Modifica i suoni utilizzati per effetti sonori e melodie",
+        "ja": "効果音やメロディに使用するサウンドを編集する",
+        "ko": "효과음이나 멜로디에 사용하는 사운드를 편집",
+        "pt": "Editar sons usados em efeitos sonoros e melodias",
+        "ru": "Редактирование звуков для эффектов и мелодий",
+        "tr": "Efekt ve melodi için sesleri düzenler",
+        "uk": "Редагування звуків для ефектів і мелодій"
+      }
+    },
+    {
+      "icon": "images/btn_music.png",
+      "label": {
+        "en": "Music Editor",
+        "cn": "音乐编辑器",
+        "de": "Musikeditor",
+        "es": "Editor de música",
+        "fr": "Éditeur de musique",
+        "it": "Editor musica",
+        "ja": "ミュージックエディタ",
+        "ko": "뮤직 에디터",
+        "pt": "Editor de música",
+        "ru": "Редактор музыки",
+        "tr": "Müzik Düzenleyici",
+        "uk": "Редактор музики"
+      },
+      "desc": {
+        "en": "Arrange sounds in playback order to compose music such as BGM",
+        "cn": "将声音按播放顺序排列，构成 BGM 等音乐",
+        "de": "Sounds in Wiedergabereihenfolge zu Musikstücken (BGM usw.) anordnen",
+        "es": "Componer música como BGM ordenando sonidos en secuencia",
+        "fr": "Composer des pistes musicales (BGM, etc.) en ordonnant les sons",
+        "it": "Compone tracce musicali (es. BGM) disponendo i suoni in ordine di riproduzione",
+        "ja": "サウンドを再生順に並べて BGM などのミュージックを構成する",
+        "ko": "사운드를 재생 순서대로 나열하여 BGM 등의 뮤직을 구성",
+        "pt": "Compor músicas como BGM organizando sons em ordem de reprodução",
+        "ru": "Составление музыкальных треков (BGM и др.) из звуков в порядке воспроизведения",
+        "tr": "Sesleri çalma sırasına göre dizerek BGM gibi müzik parçaları oluşturur",
+        "uk": "Складання музичних треків (BGM тощо) зі звуків у порядку відтворення"
+      }
+    }
+  ],
+  "menubar_buttons": [
+    {
+      "icon": "images/btn_image.png",
+      "key": "",
+      "desc": {
+        "en": "Switch to Image Editor",
+        "cn": "切换到图像编辑器",
+        "de": "Zum Bildeditor wechseln",
+        "es": "Cambiar al editor de imágenes",
+        "fr": "Basculer vers l'éditeur d'images",
+        "it": "Passa all'editor immagini",
+        "ja": "イメージエディタに切り替える",
+        "ko": "이미지 에디터로 전환",
+        "pt": "Alternar para o editor de imagem",
+        "ru": "Переключиться на редактор изображений",
+        "tr": "Görüntü düzenleyicisine geçer",
+        "uk": "Перемкнутися на редактор зображень"
+      }
+    },
+    {
+      "icon": "images/btn_tilemap.png",
+      "key": "",
+      "desc": {
+        "en": "Switch to Tilemap Editor",
+        "cn": "切换到瓦片地图编辑器",
+        "de": "Zum Tilemap-Editor wechseln",
+        "es": "Cambiar al editor de tilemaps",
+        "fr": "Basculer vers l'éditeur de tilemap",
+        "it": "Passa all'editor tilemap",
+        "ja": "タイルマップエディタに切り替える",
+        "ko": "타일맵 에디터로 전환",
+        "pt": "Alternar para o editor de tilemap",
+        "ru": "Переключиться на редактор тайловых карт",
+        "tr": "Tilemap düzenleyicisine geçer",
+        "uk": "Перемкнутися на редактор тайлових карт"
+      }
+    },
+    {
+      "icon": "images/btn_sound.png",
+      "key": "",
+      "desc": {
+        "en": "Switch to Sound Editor",
+        "cn": "切换到音效编辑器",
+        "de": "Zum Soundeditor wechseln",
+        "es": "Cambiar al editor de sonido",
+        "fr": "Basculer vers l'éditeur de sons",
+        "it": "Passa all'editor suoni",
+        "ja": "サウンドエディタに切り替える",
+        "ko": "사운드 에디터로 전환",
+        "pt": "Alternar para o editor de som",
+        "ru": "Переключиться на редактор звуков",
+        "tr": "Ses düzenleyicisine geçer",
+        "uk": "Перемкнутися на редактор звуків"
+      }
+    },
+    {
+      "icon": "images/btn_music.png",
+      "key": "",
+      "desc": {
+        "en": "Switch to Music Editor",
+        "cn": "切换到音乐编辑器",
+        "de": "Zum Musikeditor wechseln",
+        "es": "Cambiar al editor de música",
+        "fr": "Basculer vers l'éditeur de musique",
+        "it": "Passa all'editor musica",
+        "ja": "ミュージックエディタに切り替える",
+        "ko": "뮤직 에디터로 전환",
+        "pt": "Alternar para o editor de música",
+        "ru": "Переключиться на редактор музыки",
+        "tr": "Müzik düzenleyicisine geçer",
+        "uk": "Перемкнутися на редактор музики"
+      }
+    },
+    {
+      "icon": "images/btn_undo.png",
+      "key": "Ctrl(Cmd)+Z",
+      "desc": {
+        "en": "Undo",
+        "cn": "撤销 (Undo)",
+        "de": "Undo (Rückgängig)",
+        "es": "Undo",
+        "fr": "Annuler (Undo)",
+        "it": "Annulla (Undo)",
+        "ja": "元に戻す (Undo)",
+        "ko": "되돌리기(Undo)",
+        "pt": "Desfazer (Undo)",
+        "ru": "Undo (отменить)",
+        "tr": "Undo (geri al)",
+        "uk": "Undo (скасувати)"
+      }
+    },
+    {
+      "icon": "images/btn_redo.png",
+      "key": "Ctrl(Cmd)+Y",
+      "desc": {
+        "en": "Redo",
+        "cn": "重做 (Redo)",
+        "de": "Redo (Wiederherstellen)",
+        "es": "Redo",
+        "fr": "Rétablir (Redo)",
+        "it": "Ripeti (Redo)",
+        "ja": "やり直す (Redo)",
+        "ko": "다시 실행(Redo)",
+        "pt": "Refazer (Redo)",
+        "ru": "Redo (повторить)",
+        "tr": "Redo (yinele)",
+        "uk": "Redo (повторити)"
+      }
+    },
+    {
+      "icon": "images/btn_save.png",
+      "key": "Ctrl(Cmd)+S",
+      "desc": {
+        "en": "Save",
+        "cn": "保存",
+        "de": "Speichern",
+        "es": "Guardar",
+        "fr": "Sauvegarder",
+        "it": "Salva",
+        "ja": "保存する",
+        "ko": "저장",
+        "pt": "Salvar",
+        "ru": "Сохранить",
+        "tr": "Kaydet",
+        "uk": "Зберегти"
+      }
+    }
+  ],
+  "common_extra_shortcuts": [
+    {
+      "key": "Alt(Option)+Left/Right",
+      "action": {
+        "en": "Switch between editor types",
+        "cn": "切换编辑器类型",
+        "de": "Editortyp wechseln",
+        "es": "Cambiar el tipo de editor",
+        "fr": "Changer de type d'éditeur",
+        "it": "Cambia il tipo di editor",
+        "ja": "エディタの種類を切り替える",
+        "ko": "에디터 종류를 전환",
+        "pt": "Alternar o tipo de editor",
+        "ru": "Переключить тип редактора",
+        "tr": "Düzenleyici türünü değiştirir",
+        "uk": "Перемкнути тип редактора"
+      }
+    },
+    {
+      "key": "Shift+Ctrl(Cmd)+C",
+      "action": {
+        "en": "Copy the entire editing target",
+        "cn": "复制整个编辑对象",
+        "de": "Gesamtes Bearbeitungsobjekt kopieren",
+        "es": "Copiar todo el contenido editado",
+        "fr": "Copier l'intégralité de l'objet en cours d'édition",
+        "it": "Copia l'intero oggetto in modifica",
+        "ja": "編集対象全体をコピーする",
+        "ko": "편집 대상 전체를 복사",
+        "pt": "Copiar todo o conteúdo em edição",
+        "ru": "Копировать весь объект редактирования",
+        "tr": "Düzenleme nesnesinin tamamını kopyalar",
+        "uk": "Копіювати весь об'єкт редагування"
+      }
+    },
+    {
+      "key": "Shift+Ctrl(Cmd)+X",
+      "action": {
+        "en": "Cut the entire editing target (copy and clear)",
+        "cn": "剪切整个编辑对象 (复制并清除)",
+        "de": "Gesamtes Bearbeitungsobjekt ausschneiden (Kopieren und Löschen)",
+        "es": "Cortar todo el contenido editado (copiar y borrar)",
+        "fr": "Couper l'intégralité de l'objet en cours d'édition (copier et effacer)",
+        "it": "Taglia l'intero oggetto in modifica (copia e cancella)",
+        "ja": "編集対象全体をカットする（コピー＆クリア）",
+        "ko": "편집 대상 전체를 잘라내기(복사 및 지우기)",
+        "pt": "Recortar todo o conteúdo em edição (copiar e limpar)",
+        "ru": "Вырезать весь объект редактирования (копирование и очистка)",
+        "tr": "Düzenleme nesnesinin tamamını keser (kopyala ve temizle)",
+        "uk": "Вирізати весь об'єкт редагування (копіювання та очищення)"
+      }
+    },
+    {
+      "key": "Shift+Ctrl(Cmd)+V",
+      "action": {
+        "en": "Paste the copied target",
+        "cn": "粘贴复制的对象",
+        "de": "Kopiertes Objekt einfügen",
+        "es": "Pegar el contenido copiado",
+        "fr": "Coller l'objet copié",
+        "it": "Incolla l'oggetto copiato",
+        "ja": "コピーした対象をペーストする",
+        "ko": "복사한 대상을 붙여넣기",
+        "pt": "Colar o conteúdo copiado",
+        "ru": "Вставить скопированный объект",
+        "tr": "Kopyalanan nesneyi yapıştırır",
+        "uk": "Вставити скопійований об'єкт"
+      }
+    },
+    {
+      "key": "Shift+Click ([+]/[-] buttons)",
+      "action": {
+        "en": "Change number or value in increments of ±10",
+        "cn": "以 ±10 为单位更改编号或值",
+        "de": "Werte in ±10er-Schritten ändern",
+        "es": "Cambiar número o valor en unidades de ±10",
+        "fr": "Modifier la valeur ou le numéro par pas de ±10",
+        "it": "Modifica il numero o il valore di ±10",
+        "ja": "番号や値を±10 単位で変更する",
+        "ko": "번호나 값을 ±10 단위로 변경",
+        "pt": "Alterar número ou valor em incrementos de ±10",
+        "ru": "Изменить номер или значение на ±10",
+        "tr": "Numara veya değeri ±10 birim değiştirir",
+        "uk": "Змінити номер або значення на ±10"
+      }
+    }
+  ],
+  "playback_buttons": [
+    {
+      "icon": "images/btn_play.png",
+      "key": "Space",
+      "desc": {
+        "en": "Play",
+        "cn": "播放",
+        "de": "Wiedergabe",
+        "es": "Reproducir",
+        "fr": "Lire",
+        "it": "Riproduci",
+        "ja": "再生する",
+        "ko": "재생",
+        "pt": "Reproduzir",
+        "ru": "Воспроизвести",
+        "tr": "Çal",
+        "uk": "Відтворити"
+      }
+    },
+    {
+      "icon": "images/btn_stop.png",
+      "key": "Space",
+      "desc": {
+        "en": "Stop (press Space during playback to stop)",
+        "cn": "停止 (播放中按 Space 停止)",
+        "de": "Stopp (Space drücken während der Wiedergabe)",
+        "es": "Detener (Space durante la reproducción para detener)",
+        "fr": "Arrêter (Space pendant la lecture pour arrêter)",
+        "it": "Ferma (Space durante la riproduzione per fermare)",
+        "ja": "停止する（再生中に Space で停止）",
+        "ko": "정지(재생 중 Space로 정지)",
+        "pt": "Parar (Space durante reprodução para parar)",
+        "ru": "Остановить (Space во время воспроизведения)",
+        "tr": "Durdur (çalma sırasında Space ile durdurur)",
+        "uk": "Зупинити (Space під час відтворення)"
+      }
+    },
+    {
+      "icon": "images/btn_loop.png",
+      "key": "L",
+      "desc": {
+        "en": "Toggle loop playback",
+        "cn": "开启/关闭循环播放",
+        "de": "Schleifenwiedergabe ein/aus",
+        "es": "Activar/desactivar reproducción en bucle",
+        "fr": "Activer/désactiver la lecture en boucle",
+        "it": "Attiva/disattiva la riproduzione in loop",
+        "ja": "ループ再生のオン/オフ",
+        "ko": "루프 재생 켜기/끄기",
+        "pt": "Ativar/desativar reprodução em loop",
+        "ru": "Включить/выключить циклическое воспроизведение",
+        "tr": "Döngüsel çalmayı aç/kapat",
+        "uk": "Увімкнути/вимкнути циклічне відтворення"
+      }
+    }
+  ],
   "image_specs": [
     {
       "label": {
@@ -1586,6 +1983,95 @@
         "ru": "Начало в (0,0) — левый верхний угол, X+ вправо, Y+ вниз",
         "tr": "Sol üst köşe (0,0), sağa X+, aşağıya Y+",
         "uk": "Початок у (0,0) — лівий верхній кут, X+ праворуч, Y+ донизу"
+      }
+    }
+  ],
+  "image_canvas_shortcuts": [
+    {
+      "key": "Right Click",
+      "action": {
+        "en": "Pick the color at the cursor position (color pick)",
+        "cn": "获取光标位置的颜色 (取色)",
+        "de": "Farbe an der Cursorposition aufnehmen (Farbpipette)",
+        "es": "Obtener el color en la posición del cursor (selector de color)",
+        "fr": "Prélever la couleur à la position du curseur (pipette)",
+        "it": "Preleva il colore alla posizione del cursore (contagocce)",
+        "ja": "カーソル位置の色を取得する（カラーピック）",
+        "ko": "커서 위치의 색상을 가져오기(컬러 픽)",
+        "pt": "Capturar a cor na posição do cursor (conta-gotas)",
+        "ru": "Взять цвет в позиции курсора (пипетка)",
+        "tr": "İmleç konumundaki rengi alır (renk seçici)",
+        "uk": "Отримати колір у позиції курсора (піпетка)"
+      }
+    },
+    {
+      "key": "Right Drag",
+      "action": {
+        "en": "Pan the view",
+        "cn": "平移视图",
+        "de": "Ansicht verschieben",
+        "es": "Desplazar la vista",
+        "fr": "Déplacer la vue (panoramique)",
+        "it": "Sposta la vista con panoramica",
+        "ja": "ビューをパン移動する",
+        "ko": "뷰를 팬 이동",
+        "pt": "Deslocar a visualização (pan)",
+        "ru": "Панорамирование вида",
+        "tr": "Görünümü kaydırır",
+        "uk": "Панорамування виду"
+      }
+    }
+  ],
+  "image_nav_shortcuts": [
+    {
+      "key": "Arrow Keys",
+      "action": {
+        "en": "Move the editing area (white frame)",
+        "cn": "移动编辑区域 (白色边框)",
+        "de": "Bearbeitungsbereich (weißer Rahmen) verschieben",
+        "es": "Mover el área de edición (marco blanco)",
+        "fr": "Déplacer la zone d'édition (cadre blanc)",
+        "it": "Sposta l'area di modifica (cornice bianca)",
+        "ja": "編集エリア（白い枠）を移動する",
+        "ko": "편집 영역(흰 테두리)을 이동",
+        "pt": "Mover a área de edição (moldura branca)",
+        "ru": "Переместить область редактирования (белую рамку)",
+        "tr": "Düzenleme alanını (beyaz çerçeve) taşır",
+        "uk": "Перемістити область редагування (білу рамку)"
+      }
+    },
+    {
+      "key": "Click",
+      "action": {
+        "en": "Move the editing area to the clicked position",
+        "cn": "将编辑区域移动到点击位置",
+        "de": "Bearbeitungsbereich per Klick verschieben",
+        "es": "Mover el área de edición a la posición del clic",
+        "fr": "Déplacer la zone d'édition à la position du clic",
+        "it": "Sposta l'area di modifica alla posizione del clic",
+        "ja": "クリック位置に編集エリアを移動する",
+        "ko": "클릭 위치로 편집 영역을 이동",
+        "pt": "Mover a área de edição para a posição clicada",
+        "ru": "Переместить область редактирования щелчком",
+        "tr": "Tıklanan konuma düzenleme alanını taşır",
+        "uk": "Перемістити область редагування клацанням"
+      }
+    },
+    {
+      "key": "Right Drag",
+      "action": {
+        "en": "Pan the view",
+        "cn": "平移视图",
+        "de": "Ansicht verschieben",
+        "es": "Desplazar la vista",
+        "fr": "Déplacer la vue (panoramique)",
+        "it": "Sposta la vista con panoramica",
+        "ja": "ビューをパン移動する",
+        "ko": "뷰를 팬 이동",
+        "pt": "Deslocar a visualização (pan)",
+        "ru": "Панорамирование вида",
+        "tr": "Görünümü kaydırır",
+        "uk": "Панорамування виду"
       }
     }
   ],
@@ -1814,42 +2300,6 @@
       }
     }
   ],
-  "image_canvas_shortcuts": [
-    {
-      "key": "Right Click",
-      "action": {
-        "en": "Pick the color at the cursor position (color pick)",
-        "cn": "获取光标位置的颜色 (取色)",
-        "de": "Farbe an der Cursorposition aufnehmen (Farbpipette)",
-        "es": "Obtener el color en la posición del cursor (selector de color)",
-        "fr": "Prélever la couleur à la position du curseur (pipette)",
-        "it": "Preleva il colore alla posizione del cursore (contagocce)",
-        "ja": "カーソル位置の色を取得する（カラーピック）",
-        "ko": "커서 위치의 색상을 가져오기(컬러 픽)",
-        "pt": "Capturar a cor na posição do cursor (conta-gotas)",
-        "ru": "Взять цвет в позиции курсора (пипетка)",
-        "tr": "İmleç konumundaki rengi alır (renk seçici)",
-        "uk": "Отримати колір у позиції курсора (піпетка)"
-      }
-    },
-    {
-      "key": "Right Drag",
-      "action": {
-        "en": "Pan the view",
-        "cn": "平移视图",
-        "de": "Ansicht verschieben",
-        "es": "Desplazar la vista",
-        "fr": "Déplacer la vue (panoramique)",
-        "it": "Sposta la vista con panoramica",
-        "ja": "ビューをパン移動する",
-        "ko": "뷰를 팬 이동",
-        "pt": "Deslocar a visualização (pan)",
-        "ru": "Панорамирование вида",
-        "tr": "Görünümü kaydırır",
-        "uk": "Панорамування виду"
-      }
-    }
-  ],
   "image_colors": [
     {
       "key": "1–8",
@@ -1883,59 +2333,6 @@
         "ru": "Выбрать цвет 8–15",
         "tr": "Renk 8–15 seçer",
         "uk": "Обрати колір 8–15"
-      }
-    }
-  ],
-  "image_nav_shortcuts": [
-    {
-      "key": "Arrow Keys",
-      "action": {
-        "en": "Move the editing area (white frame)",
-        "cn": "移动编辑区域 (白色边框)",
-        "de": "Bearbeitungsbereich (weißer Rahmen) verschieben",
-        "es": "Mover el área de edición (marco blanco)",
-        "fr": "Déplacer la zone d'édition (cadre blanc)",
-        "it": "Sposta l'area di modifica (cornice bianca)",
-        "ja": "編集エリア（白い枠）を移動する",
-        "ko": "편집 영역(흰 테두리)을 이동",
-        "pt": "Mover a área de edição (moldura branca)",
-        "ru": "Переместить область редактирования (белую рамку)",
-        "tr": "Düzenleme alanını (beyaz çerçeve) taşır",
-        "uk": "Перемістити область редагування (білу рамку)"
-      }
-    },
-    {
-      "key": "Click",
-      "action": {
-        "en": "Move the editing area to the clicked position",
-        "cn": "将编辑区域移动到点击位置",
-        "de": "Bearbeitungsbereich per Klick verschieben",
-        "es": "Mover el área de edición a la posición del clic",
-        "fr": "Déplacer la zone d'édition à la position du clic",
-        "it": "Sposta l'area di modifica alla posizione del clic",
-        "ja": "クリック位置に編集エリアを移動する",
-        "ko": "클릭 위치로 편집 영역을 이동",
-        "pt": "Mover a área de edição para a posição clicada",
-        "ru": "Переместить область редактирования щелчком",
-        "tr": "Tıklanan konuma düzenleme alanını taşır",
-        "uk": "Перемістити область редагування клацанням"
-      }
-    },
-    {
-      "key": "Right Drag",
-      "action": {
-        "en": "Pan the view",
-        "cn": "平移视图",
-        "de": "Ansicht verschieben",
-        "es": "Desplazar la vista",
-        "fr": "Déplacer la vue (panoramique)",
-        "it": "Sposta la vista con panoramica",
-        "ja": "ビューをパン移動する",
-        "ko": "뷰를 팬 이동",
-        "pt": "Deslocar a visualização (pan)",
-        "ru": "Панорамирование вида",
-        "tr": "Görünümü kaydırır",
-        "uk": "Панорамування виду"
       }
     }
   ],
@@ -2325,39 +2722,247 @@
       }
     }
   ],
-  "sound_keyboard_shortcuts": [
+  "sound_piano_shortcuts": [
     {
-      "key": "Keyboard Key → Enter",
+      "key": "Up/Down",
       "action": {
-        "en": "Input the pressed keyboard note into the piano roll",
-        "cn": "将按下的琴键音符输入到钢琴卷帘",
-        "de": "Gedrückte Taste als Ton im Pianoroll eingeben",
-        "es": "Introducir la nota de la tecla presionada en el piano roll",
-        "fr": "Saisir la note de la touche pressée dans le piano roll",
-        "it": "Inserisce nel piano roll la nota del tasto premuto",
-        "ja": "押した鍵盤キーの音をピアノロールに入力する",
-        "ko": "누른 건반 키의 음을 피아노 롤에 입력",
-        "pt": "Inserir no piano roll a nota da tecla pressionada",
-        "ru": "Ввод ноты нажатой клавишей в пианоролл",
-        "tr": "Basılan tuşun notasını piyano rulosuna girer",
-        "uk": "Введення ноти натиснутою клавішею в піанорол"
+        "en": "Switch between piano roll and property area",
+        "cn": "在钢琴卷帘和属性区域之间切换",
+        "de": "Zwischen Pianoroll und Eigenschaftsbereich wechseln",
+        "es": "Alternar entre piano roll y área de propiedades",
+        "fr": "Basculer entre le piano roll et la zone de propriétés",
+        "it": "Alterna tra piano roll e area proprietà",
+        "ja": "ピアノロールとプロパティエリアを切り替える",
+        "ko": "피아노 롤과 프로퍼티 영역을 전환",
+        "pt": "Alternar entre piano roll e área de propriedades",
+        "ru": "Переключиться между пианороллом и областью свойств",
+        "tr": "Piyano rulosu ve özellik alanı arasında geçiş yapar",
+        "uk": "Перемкнутися між піаноролом та областю властивостей"
       }
     },
     {
-      "key": "1",
+      "key": "Left/Right",
       "action": {
-        "en": "Cycle the preview tone for keyboard input (4 types)",
-        "cn": "切换按键时的预览音色 (4 种循环切换)",
-        "de": "Vorschau-Klangfarbe bei Tastendruck umschalten (4 Klangfarben rotierend)",
-        "es": "Cambiar el tono de vista previa al presionar teclas (rotación de 4 tipos)",
-        "fr": "Changer le timbre de prévisualisation (rotation parmi 4 timbres)",
-        "it": "Cambia il timbro di anteprima alla pressione dei tasti (rotazione tra 4 tipi)",
-        "ja": "鍵盤キー押下時のプレビュー音色を切り替える（4 種類ローテーション）",
-        "ko": "건반 키 누를 때의 미리듣기 음색을 전환(4종류 순환)",
-        "pt": "Alternar o timbre de prévia ao pressionar teclas (rotação de 4 tipos)",
-        "ru": "Переключение тембра предпрослушивания при нажатии клавиши (4 варианта по кругу)",
-        "tr": "Tuş basıldığında önizleme ses rengini değiştirir (4 tür döngüsel)",
-        "uk": "Перемикання тембру попереднього прослуховування при натисканні клавіші (4 варіанти по колу)"
+        "en": "Move the cursor",
+        "cn": "移动光标",
+        "de": "Cursor bewegen",
+        "es": "Mover el cursor",
+        "fr": "Déplacer le curseur",
+        "it": "Sposta il cursore",
+        "ja": "カーソルを移動する",
+        "ko": "커서를 이동",
+        "pt": "Mover o cursor",
+        "ru": "Переместить курсор",
+        "tr": "İmleci taşır",
+        "uk": "Перемістити курсор"
+      }
+    },
+    {
+      "key": "Delete(fn+delete)",
+      "action": {
+        "en": "Delete the note at the current position",
+        "cn": "删除当前位置的音符",
+        "de": "Ton an der aktuellen Position löschen",
+        "es": "Eliminar la nota en la posición actual",
+        "fr": "Supprimer la note à la position actuelle",
+        "it": "Elimina la nota alla posizione corrente",
+        "ja": "現在位置の音を削除する",
+        "ko": "현재 위치의 음을 삭제",
+        "pt": "Excluir a nota na posição atual",
+        "ru": "Удалить ноту в текущей позиции",
+        "tr": "Mevcut konumdaki notayı siler",
+        "uk": "Видалити ноту в поточній позиції"
+      }
+    },
+    {
+      "key": "Backspace(delete)",
+      "action": {
+        "en": "Delete the note before the current position",
+        "cn": "删除当前位置前一个音符",
+        "de": "Ton vor der aktuellen Position löschen",
+        "es": "Eliminar la nota anterior a la posición actual",
+        "fr": "Supprimer la note précédant la position actuelle",
+        "it": "Elimina la nota precedente alla posizione corrente",
+        "ja": "現在位置の 1 つ前の音を削除する",
+        "ko": "현재 위치의 하나 앞 음을 삭제",
+        "pt": "Excluir a nota anterior à posição atual",
+        "ru": "Удалить ноту перед текущей позицией",
+        "tr": "Mevcut konumun bir öncesindeki notayı siler",
+        "uk": "Видалити ноту перед поточною позицією"
+      }
+    },
+    {
+      "key": "Shift+Space",
+      "action": {
+        "en": "Play from the cursor position",
+        "cn": "从光标位置开始播放",
+        "de": "Ab Cursorposition wiedergeben",
+        "es": "Reproducir desde la posición del cursor",
+        "fr": "Lire à partir de la position du curseur",
+        "it": "Riproduce dalla posizione del cursore",
+        "ja": "カーソル位置から再生する",
+        "ko": "커서 위치부터 재생",
+        "pt": "Reproduzir a partir da posição do cursor",
+        "ru": "Воспроизвести от позиции курсора",
+        "tr": "İmleç konumundan çalar",
+        "uk": "Відтворити від позиції курсора"
+      }
+    },
+    {
+      "key": "Ctrl(Cmd)+A",
+      "action": {
+        "en": "Select the entire range",
+        "cn": "选择全部范围",
+        "de": "Alles auswählen",
+        "es": "Seleccionar todo",
+        "fr": "Tout sélectionner",
+        "it": "Seleziona tutto",
+        "ja": "全範囲を選択する",
+        "ko": "전체 범위를 선택",
+        "pt": "Selecionar tudo",
+        "ru": "Выделить всё",
+        "tr": "Tümünü seçer",
+        "uk": "Виділити все"
+      }
+    },
+    {
+      "key": "Shift+Left/Right",
+      "action": {
+        "en": "Start range selection",
+        "cn": "开始范围选择",
+        "de": "Bereichsauswahl starten",
+        "es": "Iniciar selección de rango",
+        "fr": "Commencer la sélection de plage",
+        "it": "Avvia la selezione intervallo",
+        "ja": "範囲選択を開始する",
+        "ko": "범위 선택을 시작",
+        "pt": "Iniciar seleção de intervalo",
+        "ru": "Начать выделение диапазона",
+        "tr": "Aralık seçimini başlatır",
+        "uk": "Почати виділення діапазону"
+      }
+    }
+  ],
+  "sound_selection_shortcuts": [
+    {
+      "key": "Ctrl(Cmd)+C",
+      "action": {
+        "en": "Copy the selection",
+        "cn": "复制选择范围",
+        "de": "Auswahl kopieren",
+        "es": "Copiar la selección",
+        "fr": "Copier la sélection",
+        "it": "Copia la selezione",
+        "ja": "選択範囲をコピーする",
+        "ko": "선택 범위를 복사",
+        "pt": "Copiar a seleção",
+        "ru": "Копировать выделенный диапазон",
+        "tr": "Seçili aralığı kopyalar",
+        "uk": "Копіювати виділений діапазон"
+      }
+    },
+    {
+      "key": "Ctrl(Cmd)+X",
+      "action": {
+        "en": "Cut the selection (copy and clear)",
+        "cn": "剪切选择范围 (复制并清除)",
+        "de": "Auswahl ausschneiden (Kopieren und Löschen)",
+        "es": "Cortar la selección (copiar y borrar)",
+        "fr": "Couper la sélection (copier et effacer)",
+        "it": "Taglia la selezione (copia e cancella)",
+        "ja": "選択範囲をカットする（コピー＆クリア）",
+        "ko": "선택 범위를 잘라내기(복사 및 지우기)",
+        "pt": "Recortar a seleção (copiar e limpar)",
+        "ru": "Вырезать выделенный диапазон (копирование и очистка)",
+        "tr": "Seçili aralığı keser (kopyala ve temizle)",
+        "uk": "Вирізати виділений діапазон (копіювання та очищення)"
+      }
+    },
+    {
+      "key": "Ctrl(Cmd)+V",
+      "action": {
+        "en": "Paste the copied area",
+        "cn": "粘贴复制的内容",
+        "de": "Kopierte Auswahl einfügen",
+        "es": "Pegar lo copiado",
+        "fr": "Coller la sélection copiée",
+        "it": "Incolla l'area copiata",
+        "ja": "コピーした範囲をペーストする",
+        "ko": "복사한 범위를 붙여넣기",
+        "pt": "Colar o conteúdo copiado",
+        "ru": "Вставить скопированный диапазон",
+        "tr": "Kopyalanan aralığı yapıştırır",
+        "uk": "Вставити скопійований діапазон"
+      }
+    },
+    {
+      "key": "Ctrl(Cmd)+U",
+      "action": {
+        "en": "Raise the pitch of the selection by a semitone",
+        "cn": "将选择范围的音高升高半音",
+        "de": "Tonhöhe der Auswahl um einen Halbton erhöhen",
+        "es": "Subir el tono de la selección un semitono",
+        "fr": "Augmenter la hauteur de la sélection d'un demi-ton",
+        "it": "Alza di un semitono l'intonazione della selezione",
+        "ja": "選択範囲の音程を半音上げる",
+        "ko": "선택 범위의 음정을 반음 올림",
+        "pt": "Subir a altura da seleção em um semitom",
+        "ru": "Повысить высоту нот в выделении на полутон",
+        "tr": "Seçili aralıktaki nota perdesini yarım ton yükseltir",
+        "uk": "Підвищити висоту нот у виділенні на півтон"
+      }
+    },
+    {
+      "key": "Ctrl(Cmd)+D",
+      "action": {
+        "en": "Lower the pitch of the selection by a semitone",
+        "cn": "将选择范围的音高降低半音",
+        "de": "Tonhöhe der Auswahl um einen Halbton verringern",
+        "es": "Bajar el tono de la selección un semitono",
+        "fr": "Diminuer la hauteur de la sélection d'un demi-ton",
+        "it": "Abbassa di un semitono l'intonazione della selezione",
+        "ja": "選択範囲の音程を半音下げる",
+        "ko": "선택 범위의 음정을 반음 내림",
+        "pt": "Descer a altura da seleção em um semitom",
+        "ru": "Понизить высоту нот в выделении на полутон",
+        "tr": "Seçili aralıktaki nota perdesini yarım ton alçaltır",
+        "uk": "Знизити висоту нот у виділенні на півтон"
+      }
+    }
+  ],
+  "sound_octave_shortcuts": [
+    {
+      "key": "PageUp(fn+Up)",
+      "action": {
+        "en": "Raise the octave by 1",
+        "cn": "将八度升高 1",
+        "de": "Oktave um 1 erhöhen",
+        "es": "Subir la octava en 1",
+        "fr": "Monter d'une octave",
+        "it": "Alza l'ottava di 1",
+        "ja": "オクターブを 1 つ上げる",
+        "ko": "옥타브를 1 올림",
+        "pt": "Subir a oitava em 1",
+        "ru": "Повысить октаву на 1",
+        "tr": "Oktavı 1 yükseltir",
+        "uk": "Підвищити октаву на 1"
+      }
+    },
+    {
+      "key": "PageDown(fn+Down)",
+      "action": {
+        "en": "Lower the octave by 1",
+        "cn": "将八度降低 1",
+        "de": "Oktave um 1 verringern",
+        "es": "Bajar la octava en 1",
+        "fr": "Descendre d'une octave",
+        "it": "Abbassa l'ottava di 1",
+        "ja": "オクターブを 1 つ下げる",
+        "ko": "옥타브를 1 내림",
+        "pt": "Descer a oitava em 1",
+        "ru": "Понизить октаву на 1",
+        "tr": "Oktavı 1 alçaltır",
+        "uk": "Знизити октаву на 1"
       }
     }
   ],
@@ -2539,6 +3144,42 @@
       "uk": "Нижня октава (ряд ZXC + ASD)"
     }
   },
+  "sound_keyboard_shortcuts": [
+    {
+      "key": "Keyboard Key → Enter",
+      "action": {
+        "en": "Input the pressed keyboard note into the piano roll",
+        "cn": "将按下的琴键音符输入到钢琴卷帘",
+        "de": "Gedrückte Taste als Ton im Pianoroll eingeben",
+        "es": "Introducir la nota de la tecla presionada en el piano roll",
+        "fr": "Saisir la note de la touche pressée dans le piano roll",
+        "it": "Inserisce nel piano roll la nota del tasto premuto",
+        "ja": "押した鍵盤キーの音をピアノロールに入力する",
+        "ko": "누른 건반 키의 음을 피아노 롤에 입력",
+        "pt": "Inserir no piano roll a nota da tecla pressionada",
+        "ru": "Ввод ноты нажатой клавишей в пианоролл",
+        "tr": "Basılan tuşun notasını piyano rulosuna girer",
+        "uk": "Введення ноти натиснутою клавішею в піанорол"
+      }
+    },
+    {
+      "key": "1",
+      "action": {
+        "en": "Cycle the preview tone for keyboard input (4 types)",
+        "cn": "切换按键时的预览音色 (4 种循环切换)",
+        "de": "Vorschau-Klangfarbe bei Tastendruck umschalten (4 Klangfarben rotierend)",
+        "es": "Cambiar el tono de vista previa al presionar teclas (rotación de 4 tipos)",
+        "fr": "Changer le timbre de prévisualisation (rotation parmi 4 timbres)",
+        "it": "Cambia il timbro di anteprima alla pressione dei tasti (rotazione tra 4 tipi)",
+        "ja": "鍵盤キー押下時のプレビュー音色を切り替える（4 種類ローテーション）",
+        "ko": "건반 키 누를 때의 미리듣기 음색을 전환(4종류 순환)",
+        "pt": "Alternar o timbre de prévia ao pressionar teclas (rotação de 4 tipos)",
+        "ru": "Переключение тембра предпрослушивания при нажатии клавиши (4 варианта по кругу)",
+        "tr": "Tuş basıldığında önizleme ses rengini değiştirir (4 tür döngüsel)",
+        "uk": "Перемикання тембру попереднього прослуховування при натисканні клавіші (4 варіанти по колу)"
+      }
+    }
+  ],
   "sound_tones": [
     {
       "key": "T",
@@ -2932,347 +3573,6 @@
       }
     }
   ],
-  "overview_editors": [
-    {
-      "icon": "images/btn_image.png",
-      "label": {
-        "en": "Image Editor",
-        "cn": "图像编辑器",
-        "de": "Bildeditor",
-        "es": "Editor de imágenes",
-        "fr": "Éditeur d'images",
-        "it": "Editor immagini",
-        "ja": "イメージエディタ",
-        "ko": "이미지 에디터",
-        "pt": "Editor de imagem",
-        "ru": "Редактор изображений",
-        "tr": "Görüntü Düzenleyici",
-        "uk": "Редактор зображень"
-      },
-      "desc": {
-        "en": "Edit images (image banks) used for sprites and tiles",
-        "cn": "编辑用于精灵和瓦片的图像 (图像库)",
-        "de": "Bilder (Bildbanken) für Sprites und Kacheln bearbeiten",
-        "es": "Editar imágenes (bancos de imágenes) para sprites y tiles",
-        "fr": "Éditer les images (banques d'images) utilisées pour les sprites et les tuiles",
-        "it": "Modifica le immagini (banchi immagini) utilizzate per sprite e tile",
-        "ja": "スプライトやタイルに使用する画像（イメージバンク）を編集する",
-        "ko": "스프라이트나 타일에 사용하는 이미지(이미지 뱅크)를 편집",
-        "pt": "Editar imagens (bancos de imagens) usadas em sprites e tiles",
-        "ru": "Редактирование изображений (банков) для спрайтов и тайлов",
-        "tr": "Sprite ve karolar için görüntü bankalarını düzenler",
-        "uk": "Редагування зображень (банків) для спрайтів і тайлів"
-      }
-    },
-    {
-      "icon": "images/btn_tilemap.png",
-      "label": {
-        "en": "Tilemap Editor",
-        "cn": "瓦片地图编辑器",
-        "de": "Tilemap-Editor",
-        "es": "Editor de tilemaps",
-        "fr": "Éditeur de tilemap",
-        "it": "Editor tilemap",
-        "ja": "タイルマップエディタ",
-        "ko": "타일맵 에디터",
-        "pt": "Editor de tilemap",
-        "ru": "Редактор тайловых карт",
-        "tr": "Tilemap Düzenleyici",
-        "uk": "Редактор тайлових карт"
-      },
-      "desc": {
-        "en": "Arrange image bank images as tiles to compose maps",
-        "cn": "将图像库的图像作为瓦片排列构成地图",
-        "de": "Bildbankgrafiken als Kacheln anordnen und Karten erstellen",
-        "es": "Componer mapas colocando imágenes del banco como tiles",
-        "fr": "Composer des cartes en disposant les images de la banque comme tuiles",
-        "it": "Dispone le immagini del banco come tile per comporre le mappe",
-        "ja": "イメージバンクの画像をタイルとして並べてマップを構成する",
-        "ko": "이미지 뱅크의 이미지를 타일로 나열하여 맵을 구성",
-        "pt": "Compor mapas organizando imagens do banco de imagens como tiles",
-        "ru": "Составление карт из тайлов банка изображений",
-        "tr": "Görüntü bankası resimlerini karo olarak dizerek harita oluşturur",
-        "uk": "Складання карт із тайлів банку зображень"
-      }
-    },
-    {
-      "icon": "images/btn_sound.png",
-      "label": {
-        "en": "Sound Editor",
-        "cn": "音效编辑器",
-        "de": "Soundeditor",
-        "es": "Editor de sonido",
-        "fr": "Éditeur de sons",
-        "it": "Editor suoni",
-        "ja": "サウンドエディタ",
-        "ko": "사운드 에디터",
-        "pt": "Editor de som",
-        "ru": "Редактор звуков",
-        "tr": "Ses Düzenleyici",
-        "uk": "Редактор звуків"
-      },
-      "desc": {
-        "en": "Edit sounds used for sound effects and melodies",
-        "cn": "编辑用于音效和旋律的声音",
-        "de": "Sounds für Soundeffekte und Melodien bearbeiten",
-        "es": "Editar sonidos para efectos de sonido y melodías",
-        "fr": "Éditer les sons utilisés pour les effets sonores et les mélodies",
-        "it": "Modifica i suoni utilizzati per effetti sonori e melodie",
-        "ja": "効果音やメロディに使用するサウンドを編集する",
-        "ko": "효과음이나 멜로디에 사용하는 사운드를 편집",
-        "pt": "Editar sons usados em efeitos sonoros e melodias",
-        "ru": "Редактирование звуков для эффектов и мелодий",
-        "tr": "Efekt ve melodi için sesleri düzenler",
-        "uk": "Редагування звуків для ефектів і мелодій"
-      }
-    },
-    {
-      "icon": "images/btn_music.png",
-      "label": {
-        "en": "Music Editor",
-        "cn": "音乐编辑器",
-        "de": "Musikeditor",
-        "es": "Editor de música",
-        "fr": "Éditeur de musique",
-        "it": "Editor musica",
-        "ja": "ミュージックエディタ",
-        "ko": "뮤직 에디터",
-        "pt": "Editor de música",
-        "ru": "Редактор музыки",
-        "tr": "Müzik Düzenleyici",
-        "uk": "Редактор музики"
-      },
-      "desc": {
-        "en": "Arrange sounds in playback order to compose music such as BGM",
-        "cn": "将声音按播放顺序排列，构成 BGM 等音乐",
-        "de": "Sounds in Wiedergabereihenfolge zu Musikstücken (BGM usw.) anordnen",
-        "es": "Componer música como BGM ordenando sonidos en secuencia",
-        "fr": "Composer des pistes musicales (BGM, etc.) en ordonnant les sons",
-        "it": "Compone tracce musicali (es. BGM) disponendo i suoni in ordine di riproduzione",
-        "ja": "サウンドを再生順に並べて BGM などのミュージックを構成する",
-        "ko": "사운드를 재생 순서대로 나열하여 BGM 등의 뮤직을 구성",
-        "pt": "Compor músicas como BGM organizando sons em ordem de reprodução",
-        "ru": "Составление музыкальных треков (BGM и др.) из звуков в порядке воспроизведения",
-        "tr": "Sesleri çalma sırasına göre dizerek BGM gibi müzik parçaları oluşturur",
-        "uk": "Складання музичних треків (BGM тощо) зі звуків у порядку відтворення"
-      }
-    }
-  ],
-  "menubar_buttons": [
-    {
-      "icon": "images/btn_image.png",
-      "key": "",
-      "desc": {
-        "en": "Switch to Image Editor",
-        "cn": "切换到图像编辑器",
-        "de": "Zum Bildeditor wechseln",
-        "es": "Cambiar al editor de imágenes",
-        "fr": "Basculer vers l'éditeur d'images",
-        "it": "Passa all'editor immagini",
-        "ja": "イメージエディタに切り替える",
-        "ko": "이미지 에디터로 전환",
-        "pt": "Alternar para o editor de imagem",
-        "ru": "Переключиться на редактор изображений",
-        "tr": "Görüntü düzenleyicisine geçer",
-        "uk": "Перемкнутися на редактор зображень"
-      }
-    },
-    {
-      "icon": "images/btn_tilemap.png",
-      "key": "",
-      "desc": {
-        "en": "Switch to Tilemap Editor",
-        "cn": "切换到瓦片地图编辑器",
-        "de": "Zum Tilemap-Editor wechseln",
-        "es": "Cambiar al editor de tilemaps",
-        "fr": "Basculer vers l'éditeur de tilemap",
-        "it": "Passa all'editor tilemap",
-        "ja": "タイルマップエディタに切り替える",
-        "ko": "타일맵 에디터로 전환",
-        "pt": "Alternar para o editor de tilemap",
-        "ru": "Переключиться на редактор тайловых карт",
-        "tr": "Tilemap düzenleyicisine geçer",
-        "uk": "Перемкнутися на редактор тайлових карт"
-      }
-    },
-    {
-      "icon": "images/btn_sound.png",
-      "key": "",
-      "desc": {
-        "en": "Switch to Sound Editor",
-        "cn": "切换到音效编辑器",
-        "de": "Zum Soundeditor wechseln",
-        "es": "Cambiar al editor de sonido",
-        "fr": "Basculer vers l'éditeur de sons",
-        "it": "Passa all'editor suoni",
-        "ja": "サウンドエディタに切り替える",
-        "ko": "사운드 에디터로 전환",
-        "pt": "Alternar para o editor de som",
-        "ru": "Переключиться на редактор звуков",
-        "tr": "Ses düzenleyicisine geçer",
-        "uk": "Перемкнутися на редактор звуків"
-      }
-    },
-    {
-      "icon": "images/btn_music.png",
-      "key": "",
-      "desc": {
-        "en": "Switch to Music Editor",
-        "cn": "切换到音乐编辑器",
-        "de": "Zum Musikeditor wechseln",
-        "es": "Cambiar al editor de música",
-        "fr": "Basculer vers l'éditeur de musique",
-        "it": "Passa all'editor musica",
-        "ja": "ミュージックエディタに切り替える",
-        "ko": "뮤직 에디터로 전환",
-        "pt": "Alternar para o editor de música",
-        "ru": "Переключиться на редактор музыки",
-        "tr": "Müzik düzenleyicisine geçer",
-        "uk": "Перемкнутися на редактор музики"
-      }
-    },
-    {
-      "icon": "images/btn_undo.png",
-      "key": "Ctrl(Cmd)+Z",
-      "desc": {
-        "en": "Undo",
-        "cn": "撤销 (Undo)",
-        "de": "Undo (Rückgängig)",
-        "es": "Undo",
-        "fr": "Annuler (Undo)",
-        "it": "Annulla (Undo)",
-        "ja": "元に戻す (Undo)",
-        "ko": "되돌리기(Undo)",
-        "pt": "Desfazer (Undo)",
-        "ru": "Undo (отменить)",
-        "tr": "Undo (geri al)",
-        "uk": "Undo (скасувати)"
-      }
-    },
-    {
-      "icon": "images/btn_redo.png",
-      "key": "Ctrl(Cmd)+Y",
-      "desc": {
-        "en": "Redo",
-        "cn": "重做 (Redo)",
-        "de": "Redo (Wiederherstellen)",
-        "es": "Redo",
-        "fr": "Rétablir (Redo)",
-        "it": "Ripeti (Redo)",
-        "ja": "やり直す (Redo)",
-        "ko": "다시 실행(Redo)",
-        "pt": "Refazer (Redo)",
-        "ru": "Redo (повторить)",
-        "tr": "Redo (yinele)",
-        "uk": "Redo (повторити)"
-      }
-    },
-    {
-      "icon": "images/btn_save.png",
-      "key": "Ctrl(Cmd)+S",
-      "desc": {
-        "en": "Save",
-        "cn": "保存",
-        "de": "Speichern",
-        "es": "Guardar",
-        "fr": "Sauvegarder",
-        "it": "Salva",
-        "ja": "保存する",
-        "ko": "저장",
-        "pt": "Salvar",
-        "ru": "Сохранить",
-        "tr": "Kaydet",
-        "uk": "Зберегти"
-      }
-    }
-  ],
-  "common_extra_shortcuts": [
-    {
-      "key": "Alt(Option)+Left/Right",
-      "action": {
-        "en": "Switch between editor types",
-        "cn": "切换编辑器类型",
-        "de": "Editortyp wechseln",
-        "es": "Cambiar el tipo de editor",
-        "fr": "Changer de type d'éditeur",
-        "it": "Cambia il tipo di editor",
-        "ja": "エディタの種類を切り替える",
-        "ko": "에디터 종류를 전환",
-        "pt": "Alternar o tipo de editor",
-        "ru": "Переключить тип редактора",
-        "tr": "Düzenleyici türünü değiştirir",
-        "uk": "Перемкнути тип редактора"
-      }
-    },
-    {
-      "key": "Shift+Ctrl(Cmd)+C",
-      "action": {
-        "en": "Copy the entire editing target",
-        "cn": "复制整个编辑对象",
-        "de": "Gesamtes Bearbeitungsobjekt kopieren",
-        "es": "Copiar todo el contenido editado",
-        "fr": "Copier l'intégralité de l'objet en cours d'édition",
-        "it": "Copia l'intero oggetto in modifica",
-        "ja": "編集対象全体をコピーする",
-        "ko": "편집 대상 전체를 복사",
-        "pt": "Copiar todo o conteúdo em edição",
-        "ru": "Копировать весь объект редактирования",
-        "tr": "Düzenleme nesnesinin tamamını kopyalar",
-        "uk": "Копіювати весь об'єкт редагування"
-      }
-    },
-    {
-      "key": "Shift+Ctrl(Cmd)+X",
-      "action": {
-        "en": "Cut the entire editing target (copy and clear)",
-        "cn": "剪切整个编辑对象 (复制并清除)",
-        "de": "Gesamtes Bearbeitungsobjekt ausschneiden (Kopieren und Löschen)",
-        "es": "Cortar todo el contenido editado (copiar y borrar)",
-        "fr": "Couper l'intégralité de l'objet en cours d'édition (copier et effacer)",
-        "it": "Taglia l'intero oggetto in modifica (copia e cancella)",
-        "ja": "編集対象全体をカットする（コピー＆クリア）",
-        "ko": "편집 대상 전체를 잘라내기(복사 및 지우기)",
-        "pt": "Recortar todo o conteúdo em edição (copiar e limpar)",
-        "ru": "Вырезать весь объект редактирования (копирование и очистка)",
-        "tr": "Düzenleme nesnesinin tamamını keser (kopyala ve temizle)",
-        "uk": "Вирізати весь об'єкт редагування (копіювання та очищення)"
-      }
-    },
-    {
-      "key": "Shift+Ctrl(Cmd)+V",
-      "action": {
-        "en": "Paste the copied target",
-        "cn": "粘贴复制的对象",
-        "de": "Kopiertes Objekt einfügen",
-        "es": "Pegar el contenido copiado",
-        "fr": "Coller l'objet copié",
-        "it": "Incolla l'oggetto copiato",
-        "ja": "コピーした対象をペーストする",
-        "ko": "복사한 대상을 붙여넣기",
-        "pt": "Colar o conteúdo copiado",
-        "ru": "Вставить скопированный объект",
-        "tr": "Kopyalanan nesneyi yapıştırır",
-        "uk": "Вставити скопійований об'єкт"
-      }
-    },
-    {
-      "key": "Shift+Click ([+]/[-] buttons)",
-      "action": {
-        "en": "Change number or value in increments of ±10",
-        "cn": "以 ±10 为单位更改编号或值",
-        "de": "Werte in ±10er-Schritten ändern",
-        "es": "Cambiar número o valor en unidades de ±10",
-        "fr": "Modifier la valeur ou le numéro par pas de ±10",
-        "it": "Modifica il numero o il valore di ±10",
-        "ja": "番号や値を±10 単位で変更する",
-        "ko": "번호나 값을 ±10 단위로 변경",
-        "pt": "Alterar número ou valor em incrementos de ±10",
-        "ru": "Изменить номер или значение на ±10",
-        "tr": "Numara veya değeri ±10 birim değiştirir",
-        "uk": "Змінити номер або значення на ±10"
-      }
-    }
-  ],
   "music_sequence_shortcuts": [
     {
       "key": "Up/Down",
@@ -3476,306 +3776,6 @@
         "ru": "Уменьшить номер звука в выделении на 1",
         "tr": "Seçili aralıktaki ses numarasını 1 azaltır",
         "uk": "Зменшити номер звуку у виділенні на 1"
-      }
-    }
-  ],
-  "sound_piano_shortcuts": [
-    {
-      "key": "Up/Down",
-      "action": {
-        "en": "Switch between piano roll and property area",
-        "cn": "在钢琴卷帘和属性区域之间切换",
-        "de": "Zwischen Pianoroll und Eigenschaftsbereich wechseln",
-        "es": "Alternar entre piano roll y área de propiedades",
-        "fr": "Basculer entre le piano roll et la zone de propriétés",
-        "it": "Alterna tra piano roll e area proprietà",
-        "ja": "ピアノロールとプロパティエリアを切り替える",
-        "ko": "피아노 롤과 프로퍼티 영역을 전환",
-        "pt": "Alternar entre piano roll e área de propriedades",
-        "ru": "Переключиться между пианороллом и областью свойств",
-        "tr": "Piyano rulosu ve özellik alanı arasında geçiş yapar",
-        "uk": "Перемкнутися між піаноролом та областю властивостей"
-      }
-    },
-    {
-      "key": "Left/Right",
-      "action": {
-        "en": "Move the cursor",
-        "cn": "移动光标",
-        "de": "Cursor bewegen",
-        "es": "Mover el cursor",
-        "fr": "Déplacer le curseur",
-        "it": "Sposta il cursore",
-        "ja": "カーソルを移動する",
-        "ko": "커서를 이동",
-        "pt": "Mover o cursor",
-        "ru": "Переместить курсор",
-        "tr": "İmleci taşır",
-        "uk": "Перемістити курсор"
-      }
-    },
-    {
-      "key": "Delete(fn+delete)",
-      "action": {
-        "en": "Delete the note at the current position",
-        "cn": "删除当前位置的音符",
-        "de": "Ton an der aktuellen Position löschen",
-        "es": "Eliminar la nota en la posición actual",
-        "fr": "Supprimer la note à la position actuelle",
-        "it": "Elimina la nota alla posizione corrente",
-        "ja": "現在位置の音を削除する",
-        "ko": "현재 위치의 음을 삭제",
-        "pt": "Excluir a nota na posição atual",
-        "ru": "Удалить ноту в текущей позиции",
-        "tr": "Mevcut konumdaki notayı siler",
-        "uk": "Видалити ноту в поточній позиції"
-      }
-    },
-    {
-      "key": "Backspace(delete)",
-      "action": {
-        "en": "Delete the note before the current position",
-        "cn": "删除当前位置前一个音符",
-        "de": "Ton vor der aktuellen Position löschen",
-        "es": "Eliminar la nota anterior a la posición actual",
-        "fr": "Supprimer la note précédant la position actuelle",
-        "it": "Elimina la nota precedente alla posizione corrente",
-        "ja": "現在位置の 1 つ前の音を削除する",
-        "ko": "현재 위치의 하나 앞 음을 삭제",
-        "pt": "Excluir a nota anterior à posição atual",
-        "ru": "Удалить ноту перед текущей позицией",
-        "tr": "Mevcut konumun bir öncesindeki notayı siler",
-        "uk": "Видалити ноту перед поточною позицією"
-      }
-    },
-    {
-      "key": "Shift+Space",
-      "action": {
-        "en": "Play from the cursor position",
-        "cn": "从光标位置开始播放",
-        "de": "Ab Cursorposition wiedergeben",
-        "es": "Reproducir desde la posición del cursor",
-        "fr": "Lire à partir de la position du curseur",
-        "it": "Riproduce dalla posizione del cursore",
-        "ja": "カーソル位置から再生する",
-        "ko": "커서 위치부터 재생",
-        "pt": "Reproduzir a partir da posição do cursor",
-        "ru": "Воспроизвести от позиции курсора",
-        "tr": "İmleç konumundan çalar",
-        "uk": "Відтворити від позиції курсора"
-      }
-    },
-    {
-      "key": "Ctrl(Cmd)+A",
-      "action": {
-        "en": "Select the entire range",
-        "cn": "选择全部范围",
-        "de": "Alles auswählen",
-        "es": "Seleccionar todo",
-        "fr": "Tout sélectionner",
-        "it": "Seleziona tutto",
-        "ja": "全範囲を選択する",
-        "ko": "전체 범위를 선택",
-        "pt": "Selecionar tudo",
-        "ru": "Выделить всё",
-        "tr": "Tümünü seçer",
-        "uk": "Виділити все"
-      }
-    },
-    {
-      "key": "Shift+Left/Right",
-      "action": {
-        "en": "Start range selection",
-        "cn": "开始范围选择",
-        "de": "Bereichsauswahl starten",
-        "es": "Iniciar selección de rango",
-        "fr": "Commencer la sélection de plage",
-        "it": "Avvia la selezione intervallo",
-        "ja": "範囲選択を開始する",
-        "ko": "범위 선택을 시작",
-        "pt": "Iniciar seleção de intervalo",
-        "ru": "Начать выделение диапазона",
-        "tr": "Aralık seçimini başlatır",
-        "uk": "Почати виділення діапазону"
-      }
-    }
-  ],
-  "sound_selection_shortcuts": [
-    {
-      "key": "Ctrl(Cmd)+C",
-      "action": {
-        "en": "Copy the selection",
-        "cn": "复制选择范围",
-        "de": "Auswahl kopieren",
-        "es": "Copiar la selección",
-        "fr": "Copier la sélection",
-        "it": "Copia la selezione",
-        "ja": "選択範囲をコピーする",
-        "ko": "선택 범위를 복사",
-        "pt": "Copiar a seleção",
-        "ru": "Копировать выделенный диапазон",
-        "tr": "Seçili aralığı kopyalar",
-        "uk": "Копіювати виділений діапазон"
-      }
-    },
-    {
-      "key": "Ctrl(Cmd)+X",
-      "action": {
-        "en": "Cut the selection (copy and clear)",
-        "cn": "剪切选择范围 (复制并清除)",
-        "de": "Auswahl ausschneiden (Kopieren und Löschen)",
-        "es": "Cortar la selección (copiar y borrar)",
-        "fr": "Couper la sélection (copier et effacer)",
-        "it": "Taglia la selezione (copia e cancella)",
-        "ja": "選択範囲をカットする（コピー＆クリア）",
-        "ko": "선택 범위를 잘라내기(복사 및 지우기)",
-        "pt": "Recortar a seleção (copiar e limpar)",
-        "ru": "Вырезать выделенный диапазон (копирование и очистка)",
-        "tr": "Seçili aralığı keser (kopyala ve temizle)",
-        "uk": "Вирізати виділений діапазон (копіювання та очищення)"
-      }
-    },
-    {
-      "key": "Ctrl(Cmd)+V",
-      "action": {
-        "en": "Paste the copied area",
-        "cn": "粘贴复制的内容",
-        "de": "Kopierte Auswahl einfügen",
-        "es": "Pegar lo copiado",
-        "fr": "Coller la sélection copiée",
-        "it": "Incolla l'area copiata",
-        "ja": "コピーした範囲をペーストする",
-        "ko": "복사한 범위를 붙여넣기",
-        "pt": "Colar o conteúdo copiado",
-        "ru": "Вставить скопированный диапазон",
-        "tr": "Kopyalanan aralığı yapıştırır",
-        "uk": "Вставити скопійований діапазон"
-      }
-    },
-    {
-      "key": "Ctrl(Cmd)+U",
-      "action": {
-        "en": "Raise the pitch of the selection by a semitone",
-        "cn": "将选择范围的音高升高半音",
-        "de": "Tonhöhe der Auswahl um einen Halbton erhöhen",
-        "es": "Subir el tono de la selección un semitono",
-        "fr": "Augmenter la hauteur de la sélection d'un demi-ton",
-        "it": "Alza di un semitono l'intonazione della selezione",
-        "ja": "選択範囲の音程を半音上げる",
-        "ko": "선택 범위의 음정을 반음 올림",
-        "pt": "Subir a altura da seleção em um semitom",
-        "ru": "Повысить высоту нот в выделении на полутон",
-        "tr": "Seçili aralıktaki nota perdesini yarım ton yükseltir",
-        "uk": "Підвищити висоту нот у виділенні на півтон"
-      }
-    },
-    {
-      "key": "Ctrl(Cmd)+D",
-      "action": {
-        "en": "Lower the pitch of the selection by a semitone",
-        "cn": "将选择范围的音高降低半音",
-        "de": "Tonhöhe der Auswahl um einen Halbton verringern",
-        "es": "Bajar el tono de la selección un semitono",
-        "fr": "Diminuer la hauteur de la sélection d'un demi-ton",
-        "it": "Abbassa di un semitono l'intonazione della selezione",
-        "ja": "選択範囲の音程を半音下げる",
-        "ko": "선택 범위의 음정을 반음 내림",
-        "pt": "Descer a altura da seleção em um semitom",
-        "ru": "Понизить высоту нот в выделении на полутон",
-        "tr": "Seçili aralıktaki nota perdesini yarım ton alçaltır",
-        "uk": "Знизити висоту нот у виділенні на півтон"
-      }
-    }
-  ],
-  "playback_buttons": [
-    {
-      "icon": "images/btn_play.png",
-      "key": "Space",
-      "desc": {
-        "en": "Play",
-        "cn": "播放",
-        "de": "Wiedergabe",
-        "es": "Reproducir",
-        "fr": "Lire",
-        "it": "Riproduci",
-        "ja": "再生する",
-        "ko": "재생",
-        "pt": "Reproduzir",
-        "ru": "Воспроизвести",
-        "tr": "Çal",
-        "uk": "Відтворити"
-      }
-    },
-    {
-      "icon": "images/btn_stop.png",
-      "key": "Space",
-      "desc": {
-        "en": "Stop (press Space during playback to stop)",
-        "cn": "停止 (播放中按 Space 停止)",
-        "de": "Stopp (Space drücken während der Wiedergabe)",
-        "es": "Detener (Space durante la reproducción para detener)",
-        "fr": "Arrêter (Space pendant la lecture pour arrêter)",
-        "it": "Ferma (Space durante la riproduzione per fermare)",
-        "ja": "停止する（再生中に Space で停止）",
-        "ko": "정지(재생 중 Space로 정지)",
-        "pt": "Parar (Space durante reprodução para parar)",
-        "ru": "Остановить (Space во время воспроизведения)",
-        "tr": "Durdur (çalma sırasında Space ile durdurur)",
-        "uk": "Зупинити (Space під час відтворення)"
-      }
-    },
-    {
-      "icon": "images/btn_loop.png",
-      "key": "L",
-      "desc": {
-        "en": "Toggle loop playback",
-        "cn": "开启/关闭循环播放",
-        "de": "Schleifenwiedergabe ein/aus",
-        "es": "Activar/desactivar reproducción en bucle",
-        "fr": "Activer/désactiver la lecture en boucle",
-        "it": "Attiva/disattiva la riproduzione in loop",
-        "ja": "ループ再生のオン/オフ",
-        "ko": "루프 재생 켜기/끄기",
-        "pt": "Ativar/desativar reprodução em loop",
-        "ru": "Включить/выключить циклическое воспроизведение",
-        "tr": "Döngüsel çalmayı aç/kapat",
-        "uk": "Увімкнути/вимкнути циклічне відтворення"
-      }
-    }
-  ],
-  "sound_octave_shortcuts": [
-    {
-      "key": "PageUp(fn+Up)",
-      "action": {
-        "en": "Raise the octave by 1",
-        "cn": "将八度升高 1",
-        "de": "Oktave um 1 erhöhen",
-        "es": "Subir la octava en 1",
-        "fr": "Monter d'une octave",
-        "it": "Alza l'ottava di 1",
-        "ja": "オクターブを 1 つ上げる",
-        "ko": "옥타브를 1 올림",
-        "pt": "Subir a oitava em 1",
-        "ru": "Повысить октаву на 1",
-        "tr": "Oktavı 1 yükseltir",
-        "uk": "Підвищити октаву на 1"
-      }
-    },
-    {
-      "key": "PageDown(fn+Down)",
-      "action": {
-        "en": "Lower the octave by 1",
-        "cn": "将八度降低 1",
-        "de": "Oktave um 1 verringern",
-        "es": "Bajar la octava en 1",
-        "fr": "Descendre d'une octave",
-        "it": "Abbassa l'ottava di 1",
-        "ja": "オクターブを 1 つ下げる",
-        "ko": "옥타브를 1 내림",
-        "pt": "Descer a oitava em 1",
-        "ru": "Понизить октаву на 1",
-        "tr": "Oktavı 1 alçaltır",
-        "uk": "Знизити октаву на 1"
       }
     }
   ]

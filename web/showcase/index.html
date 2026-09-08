@@ -23,7 +23,6 @@
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
-
         app.appendChild(buildPageHeader(updateTexts));
 
         for (const cat of data.categories) {
@@ -53,12 +52,10 @@
 
             const topLine = document.createElement("div");
             topLine.className = "flex flex-wrap items-center gap-x-3 gap-y-1";
-
             const fileName = document.createElement("span");
             fileName.className = "font-mono font-semibold text-sm shrink-0";
             fileName.textContent = item.file;
             topLine.appendChild(fileName);
-
             const desc = document.createElement("span");
             desc.className = "text-gray-400 text-sm";
             desc.dataset.descKey = `${cat.id}-${i}`;
@@ -67,7 +64,6 @@
             const buttons = document.createElement("span");
             buttons.className =
               "flex items-center justify-end gap-2 ml-auto shrink-0 min-w-[9.5rem]";
-
             const demoButton = document.createElement("a");
             demoButton.href = item.demo;
             demoButton.target = "_blank";
@@ -92,19 +88,16 @@
             if (item.details && Object.keys(item.details).length > 0) {
               const details = document.createElement("details");
               details.className = "mt-1";
-
               const summary = document.createElement("summary");
               summary.className =
                 "tri text-gray-400 text-xs hover:text-gray-300";
               summary.dataset.uiKey = "details";
               details.appendChild(summary);
-
               const content = document.createElement("div");
               content.className =
                 "mt-1 pl-3 border-l-2 border-gray-700 text-gray-300 text-sm leading-relaxed";
               content.dataset.detailKey = `${cat.id}-${i}`;
               details.appendChild(content);
-
               row.appendChild(details);
             }
 
@@ -117,12 +110,10 @@
 
         const footer = document.createElement("section");
         footer.className = "mt-6 mb-2";
-
         const footerText = document.createElement("p");
         footerText.className = "text-gray-300 text-sm";
         footerText.id = "footer-text";
         footer.appendChild(footerText);
-
         app.appendChild(footer);
 
         updateTexts();

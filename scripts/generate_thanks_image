@@ -140,7 +140,6 @@ def draw_example_images(thanks_image):
             image = example_images.pop(0)
             thanks_image.paste(image, (example_x, example_y))
             example_y += image.height + EXAMPLE_MARGIN
-
         example_x += EXAMPLE_WIDTH + EXAMPLE_MARGIN
 
 
@@ -189,8 +188,8 @@ def draw_message_image(thanks_image):
         base_image.line(x, y2, x, y2 - h, 8)
 
     message_image = PIL.Image.new("RGB", (BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT))
-
     pixels = []
+
     for y in range(BASE_MESSAGE_HEIGHT):
         for x in range(BASE_MESSAGE_WIDTH):
             # Decode the packed 0xRRGGBB palette value.

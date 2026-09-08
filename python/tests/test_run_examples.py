@@ -20,7 +20,6 @@ def test_child_failure_is_returned_by_entrypoint(tmp_path):
         text=True,
         check=False,
     )
-
     assert result.returncode == 23, result.stdout + result.stderr
 
 

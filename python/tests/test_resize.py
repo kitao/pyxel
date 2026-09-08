@@ -35,6 +35,7 @@ class TestResize:
         pyxel.resize(320, 240)
         pyxel.pset(319, 239, 7)
         assert pyxel.pget(319, 239) == 7
+
         pyxel.resize(64, 48)
         pyxel.pset(63, 47, 7)
         assert pyxel.pget(63, 47) == 7
@@ -42,6 +43,7 @@ class TestResize:
     def test_clears_screen_contents(self):
         pyxel.cls(7)
         assert pyxel.pget(0, 0) == 7
+
         pyxel.resize(80, 60)
         assert pyxel.pget(0, 0) == 0
 
@@ -86,6 +88,7 @@ else:
 assert pyxel.width == 8 and pyxel.height == 8
 assert pyxel.screen.width == 8 and pyxel.screen.height == 8
 """
+
     result = subprocess.run(
         [sys.executable, "-c", code],
         capture_output=True,

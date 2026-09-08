@@ -49,7 +49,6 @@ impl Pyxel {
             .map_err(|_| format!("Failed to open file '{filename}'"))?;
         let mut archive =
             ZipArchive::new(file).map_err(|_| format!("Failed to parse file '{filename}'"))?;
-
         let mut file = archive
             .by_name(RESOURCE_ARCHIVE_NAME)
             .map_err(|_| format!("Failed to read file '{filename}'"))?;
@@ -96,7 +95,6 @@ impl Pyxel {
 
         let path = Path::new(&filename);
         let file = File::create(path).map_err(|_| format!("Failed to create file '{filename}'"))?;
-
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())
             .map_err(|_| format!("Failed to save file '{filename}'"))?;
@@ -119,13 +117,11 @@ impl Pyxel {
 
     fn read_palette(filename: &str) -> Result<Option<Vec<Rgb24>>, String> {
         let filename = Self::palette_filename(filename);
-
         let mut file = match File::open(Path::new(&filename)) {
             Ok(file) => file,
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(_) => return Err(format!("Failed to open file '{filename}'")),
         };
-
         let mut contents = String::new();
         file.read_to_string(&mut contents)
             .map_err(|_| format!("Failed to read file '{filename}'"))?;
@@ -140,6 +136,7 @@ impl Pyxel {
                     .map_err(|_| format!("Failed to parse line {} in '{filename}': '{s}'", i + 1))
             })
             .collect::<Result<_, _>>()?;
+
         Ok(Some(if colors.is_empty() {
             vec![0x00ff_ffff]
         } else {
@@ -180,8 +177,8 @@ impl Pyxel {
         );
         let filename = add_file_extension(&filename, ".png");
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
-        rc_ref!(pyxel::screen()).save(&filename, scale)?;
 
+        rc_ref!(pyxel::screen()).save(&filename, scale)?;
         platform::export_browser_file(&filename);
         Ok(())
     }
@@ -197,6 +194,7 @@ impl Pyxel {
         );
         let filename = add_file_extension(&filename, ".gif");
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
+
         if self.resource.screencast.save(&filename, scale)? {
             platform::export_browser_file(&filename);
         }
@@ -236,7 +234,6 @@ impl Pyxel {
         if !app_data_dir.ends_with(MAIN_SEPARATOR) {
             app_data_dir.push(MAIN_SEPARATOR);
         }
-
         Ok(app_data_dir)
     }
 
@@ -262,9 +259,11 @@ impl Pyxel {
         let num_colors = pyxel::colors().len();
         let rc = Image::new(num_colors as u32, 1);
         let mut image = rc_mut!(rc);
+
         for i in 0..num_colors {
             image.set_pixel(i as f32, 0.0, i as Color);
         }
+
         let result = image.save(&filename, 16);
         if let Err(e) = result {
             println!("{e}");
@@ -300,6 +299,7 @@ impl Pyxel {
                 return Ok(version);
             }
         }
+
         Err("Failed to parse resource format version".to_string())
     }
 

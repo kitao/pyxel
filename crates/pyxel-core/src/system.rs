@@ -109,6 +109,7 @@ impl Pyxel {
 
         impl PyxelCallback for App {
             fn update(&mut self) {}
+
             fn draw(&mut self) {
                 rc_mut!(pyxel::screen()).draw_image(
                     0.0,
@@ -222,6 +223,7 @@ impl Pyxel {
         if scale == 0 {
             return Err("scale must be greater than 0".to_string());
         }
+
         let colors = pyxel::colors();
         let image = rc_ref!(rc);
         let width = image.width();
@@ -303,13 +305,10 @@ impl Pyxel {
 
         *pyxel::width() = width;
         *pyxel::height() = height;
-
         rc_mut!(pyxel::screen()).canvas = Canvas::new(width, height);
-
         if let Some(graphics) = &mut self.graphics {
             graphics.invalidate_screen_texture();
         }
-
         self.reset_screencast();
 
         if !*pyxel::is_headless() {
@@ -329,6 +328,7 @@ impl Pyxel {
             }
             self.update_screen_params();
         }
+
         Ok(())
     }
 
@@ -341,7 +341,6 @@ impl Pyxel {
         }
 
         self.start_input_frame();
-
         platform::poll_events(&mut self.system.event_buf);
         let mut events = std::mem::take(&mut self.system.event_buf);
 
@@ -437,6 +436,7 @@ impl Pyxel {
                 self.set_fullscreen(!platform::is_fullscreen());
             }
         }
+
         None
     }
 
@@ -474,15 +474,12 @@ impl Pyxel {
 
     fn begin_update_frame(&mut self) -> (bool, Option<LifecycleAction>) {
         self.system.update_profiler.start(platform::ticks());
-
         if let Some(action) = self.process_events() {
             return (false, Some(action));
         }
-
         if self.system.paused {
             return (false, None);
         }
-
         if let Some(action) = self.check_special_input() {
             return (false, Some(action));
         }
@@ -542,18 +539,14 @@ impl Pyxel {
     fn draw_cursor(&self) {
         let x = *pyxel::mouse_x();
         let y = *pyxel::mouse_y();
-
         platform::set_mouse_visible(
             x < 0 || x >= *pyxel::width() as i32 || y < 0 || y >= *pyxel::height() as i32,
         );
-
         if !self.is_mouse_visible() {
             return;
         }
-
         let width = rc_ref!(pyxel::cursor_image()).width() as i32;
         let height = rc_ref!(pyxel::cursor_image()).height() as i32;
-
         if x <= -width
             || x >= *pyxel::width() as i32
             || y <= -height
@@ -592,7 +585,6 @@ impl Pyxel {
         if !self.begin_draw_frame() {
             return;
         }
-
         self.finish_draw_frame();
     }
 
@@ -609,11 +601,9 @@ impl Pyxel {
 
     fn begin_draw_frame(&mut self) -> bool {
         self.system.draw_profiler.start(platform::ticks());
-
         if self.system.paused {
             return false;
         }
-
         self.update_screen_params();
         true
     }
@@ -624,7 +614,6 @@ impl Pyxel {
         self.draw_cursor();
         self.render_screen();
         self.capture_screen();
-
         self.system.draw_profiler.end(platform::ticks());
     }
 }
@@ -642,6 +631,7 @@ mod tests {
             graphics: None,
         };
         pyxel.set_perf_monitor(true);
+
         for identity in [true, false] {
             let palette = {
                 let screen_rc = pyxel::screen();
@@ -652,6 +642,7 @@ mod tests {
                 }
                 screen.palette
             };
+
             pyxel.draw_perf_monitor();
             let screen_rc = pyxel::screen();
             let screen = rc_ref!(screen_rc);

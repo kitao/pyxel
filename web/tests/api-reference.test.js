@@ -62,11 +62,11 @@ test("API search keeps constants, descriptions and groups together", () => {
     },
   });
   vm.runInContext(apiReferenceSource, context);
+
   vm.runInContext(
     "data = fixture; Object.assign(domCache, refs); searchQuery = 'key_a'; updateVisibility();",
     context,
   );
-
   assert.equal(chips[0].style.display, "");
   assert.equal(descriptions[0].style.display, "");
   assert.equal(chips[1].style.display, "none");
@@ -135,10 +135,12 @@ test("API reference restores the Advanced preference after reload", () => {
 
   const first = loadToolbar();
   assert.equal(first.checked, false);
+
   first.checked = true;
   first.change();
   const second = loadToolbar();
   assert.equal(second.checked, true);
+
   second.checked = false;
   second.change();
   assert.equal(loadToolbar().checked, false);

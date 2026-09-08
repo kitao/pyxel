@@ -28,6 +28,7 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     contact::add_contact_class(&m)?;
     raycast_hit::add_raycast_hit_class(&m)?;
     node::add_node_class(&m)?;
+
     m.setattr(
         "__all__",
         PyList::new(
@@ -48,6 +49,7 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
             ],
         )?,
     )?;
+
     parent.add_submodule(&m)?;
     Ok(())
 }

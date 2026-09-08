@@ -10,7 +10,6 @@ def list_imported_modules(filename: str) -> dict[str, list[str]]:
     imports: dict[str, set[str]] = {_SYSTEM: set(), _LOCAL: set()}
     checked_files: set[str] = set()
     _list_imported_modules(imports, filename, checked_files)
-
     return {
         _SYSTEM: sorted(imports[_SYSTEM]),
         _LOCAL: sorted(imports[_LOCAL]),
@@ -18,6 +17,8 @@ def list_imported_modules(filename: str) -> dict[str, list[str]]:
 
 
 # Recursive import discovery
+
+
 def _list_imported_modules(
     imports: dict[str, set[str]], filename: str, checked_files: set[str]
 ) -> None:
@@ -47,6 +48,7 @@ def _list_imported_modules(
                     node.level,
                     node.module,
                 )
+
                 # Track from-import targets that resolve as modules.
                 for alias in node.names:
                     target = f"{node.module}.{alias.name}"
@@ -95,17 +97,20 @@ def _track_module(
             if init_file.is_file():
                 module_files.append(str(init_file))
         module_files.append(module_filename)
+
         for filename in module_files:
             imports[_LOCAL].add(str(Path(filename).absolute()))
             _list_imported_modules(imports, filename, checked_files)
         return True
     elif allow_system and level == 0:
-        # Only top-level imports can resolve as system modules.
+        # Only absolute imports can resolve as system modules.
         imports[_SYSTEM].add(name)
     return False
 
 
 # Module path resolution
+
+
 def _to_module_filename(module_path: str) -> str | None:
     filename = Path(f"{module_path}.py")
     if filename.is_file():

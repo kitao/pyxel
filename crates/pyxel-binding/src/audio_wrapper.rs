@@ -80,7 +80,6 @@ fn play(
                 .map_err(PyException::new_err)?;
         })
     }
-
     Ok(())
 }
 
@@ -99,7 +98,6 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) ->
     validate_sec(sec)?;
 
     validate_index!(msc, pyxel::musics().len(), "msc", "music");
-
     pyxel()
         .play_music(msc, sec, r#loop.unwrap_or(false))
         .map_err(PyException::new_err)?;
@@ -193,6 +191,5 @@ pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(channel, m)?)?;
     m.add_function(wrap_pyfunction!(sound, m)?)?;
     m.add_function(wrap_pyfunction!(music, m)?)?;
-
     Ok(())
 }

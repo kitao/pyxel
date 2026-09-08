@@ -55,7 +55,6 @@ macro_rules! parse_error {
 pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut stream = CharStream::new(mml);
     let mut commands = Vec::new();
-
     let mut octave: i32 = DEFAULT_OCTAVE;
     let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE * 4 / DEFAULT_LENGTH;
     let mut quantize: u32 = DEFAULT_QUANTIZE;
@@ -164,6 +163,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                     }
                 };
             }
+
             ensure_set!(
                 is_tempo_set,
                 MmlCommand::Tempo {
@@ -213,7 +213,6 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                     connected_note = Some(*midi_note);
                 }
             }
-
             last_note_index = Some(commands.len());
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks)? {
@@ -226,7 +225,6 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                     clocks_per_tick: bpm_to_clocks_per_tick(DEFAULT_TEMPO),
                 });
             }
-
             commands.push(command);
             last_note_index = None;
         } else if parse_string(&mut stream, "[").is_ok() {
@@ -279,6 +277,7 @@ impl DurationTransform {
                 0,
             )
         };
+
         let fixed_clocks = self
             .fixed_clocks
             .checked_add(next_fixed_clocks)?
@@ -345,6 +344,7 @@ fn duration_transform(commands: &[MmlCommand]) -> Option<DurationTransform> {
             }
             _ => DurationTransform::default(),
         };
+
         let transform = transforms.last_mut()?;
         *transform = transform.then(next)?;
     }
@@ -405,7 +405,6 @@ fn parse_number<T: TryFrom<i32>>(
             break;
         }
     }
-
     if !has_digit {
         let err_char = stream.peek().map_or(String::new(), |c| c.to_string());
         stream.pos = pos;
@@ -415,7 +414,6 @@ fn parse_number<T: TryFrom<i32>>(
     if negative {
         value = -value;
     }
-
     if value < range.0 {
         return Err(ParseNumberError::Invalid(
             stream.error(&format!("'{name}' is below minimum {}", range.0)),
@@ -467,6 +465,7 @@ fn parse_string(stream: &mut CharStream, literal: &str) -> Result<String, String
             }
         }
     }
+
     Ok(parsed_str)
 }
 
@@ -493,7 +492,6 @@ fn parse_command<T: TryFrom<i32>>(
 fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
     const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
     let mut note_ticks = note_ticks;
-
     skip_whitespace(stream);
     if stream.peek().is_some_and(|c| c.is_ascii_digit()) {
         let len: u32 = expect_number(stream, "Note length", RANGE_LENGTH)?;
@@ -513,6 +511,7 @@ fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, S
             parse_error!(stream, "Cannot apply dot to this note length");
         }
     }
+
     Ok(note_ticks)
 }
 
@@ -522,7 +521,6 @@ fn parse_note(
     note_ticks: u32,
 ) -> Result<Option<(MmlCommand, bool)>, String> {
     skip_whitespace(stream);
-
     let semitone = match stream.peek().map(|c| c.to_ascii_uppercase()) {
         Some(c) => match c {
             'C' => 0,
@@ -548,7 +546,6 @@ fn parse_note(
     };
 
     let mut duration_ticks = parse_length_ticks(stream, note_ticks)?;
-
     // Extend duration with '&<len>'
     let mut is_connected = false;
     while parse_string(stream, "&").is_ok() {
@@ -595,12 +592,13 @@ fn parse_envelope(stream: &mut CharStream) -> Result<Option<MmlCommand>, String>
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Envelope { slot }));
     }
+
     if slot == 0 {
         parse_error!(stream, "Envelope slot 0 is reserved for disable");
     }
-
     let init_vol = expect_number(stream, "init_vol", RANGE_VOLUME)?;
     let mut segments = Vec::new();
+
     while parse_string(stream, "}").is_err() {
         expect_string(stream, ",")?;
         let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE0)?;
@@ -623,10 +621,10 @@ fn parse_vibrato(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> 
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Vibrato { slot }));
     }
+
     if slot == 0 {
         parse_error!(stream, "Vibrato slot 0 is reserved for disable");
     }
-
     let delay_ticks = expect_number(stream, "delay_ticks", RANGE_GE0)?;
     expect_string(stream, ",")?;
     let period_ticks = expect_number(stream, "period_ticks", RANGE_GE0)?;
@@ -649,10 +647,10 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Glide { slot }));
     }
+
     if slot == 0 {
         parse_error!(stream, "Glide slot 0 is reserved for disable");
     }
-
     let semitone_offset = if parse_string(stream, "*").is_ok() {
         None
     } else {
@@ -1179,6 +1177,7 @@ mod tests {
                 "{mml:?}"
             );
         }
+
         assert_parse_error("C& \n", "MML:4: Tie '&' is not followed by a note");
         assert_parse_error("[V7 \n", "MML:5: Repeat start '[' has no matching ']'");
     }
@@ -1297,7 +1296,6 @@ mod tests {
         let cmds = parse("T120 C4");
         let sec = total_duration_sec(&cmds).unwrap();
         let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1308,7 +1306,6 @@ mod tests {
         let clocks = u128::from(
             (bpm_to_clocks_per_tick(120) + bpm_to_clocks_per_tick(60)) * TICKS_PER_QUARTER_NOTE,
         );
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1324,7 +1321,6 @@ mod tests {
         let cmds = parse("T120 [C4]2");
         let sec = total_duration_sec(&cmds).unwrap();
         let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE * 2);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1333,7 +1329,6 @@ mod tests {
         let cmds = parse("T120 [[C4]2]3");
         let sec = total_duration_sec(&cmds).unwrap();
         let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE * 2 * 3);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1344,7 +1339,6 @@ mod tests {
         let clocks = u128::from(TICKS_PER_QUARTER_NOTE)
             * (u128::from(bpm_to_clocks_per_tick(120))
                 + u128::from(bpm_to_clocks_per_tick(60)) * 5);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 

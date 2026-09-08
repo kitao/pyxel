@@ -242,7 +242,6 @@ def draw_gamepad_cross(x, y, color):
     x2 = x1 + CROSS_ARM_LENGTH
     x3 = x2 + CROSS_ARM_WIDTH - 1
     x4 = x3 + CROSS_ARM_LENGTH
-
     # Cross is symmetric; reuse x coordinates as y.
     y1 = x1
     y2 = x2
@@ -283,7 +282,6 @@ def draw_gamepad_menu(x, y, color):
     x2 = x1 + MENU_WIDTH - 1
     x3 = x2 + MENU_MARGIN * 2 + 1
     x4 = x3 + MENU_WIDTH - 1
-
     y1 = MENU_MARGIN
     y2 = MENU_MARGIN + MENU_HEIGHT - 1
 
@@ -291,7 +289,6 @@ def draw_gamepad_menu(x, y, color):
     pyxel.line(x1 + 2, y2, x2 - 2, y2, color)
     pyxel.line(x1, y1 + 2, x1, y2 - 2, color)
     pyxel.line(x2, y1 + 2, x2, y2 - 2, color)
-
     pyxel.pset(x1 + 1, y1 + 1, color)
     pyxel.pset(x2 - 1, y1 + 1, color)
     pyxel.pset(x1 + 1, y2 - 1, color)
@@ -301,7 +298,6 @@ def draw_gamepad_menu(x, y, color):
     pyxel.line(x3 + 2, y2, x4 - 2, y2, color)
     pyxel.line(x3, y1 + 2, x3, y2 - 2, color)
     pyxel.line(x4, y1 + 2, x4, y2 - 2, color)
-
     pyxel.pset(x3 + 1, y1 + 1, color)
     pyxel.pset(x4 - 1, y1 + 1, color)
     pyxel.pset(x3 + 1, y2 - 1, color)
@@ -316,7 +312,6 @@ def draw_gamepad_button(x, y, color):
     x1 = BUTTON_MARGIN
     x2 = BUTTON_X
     x3 = x1 + BUTTON_WIDTH + BUTTON_INNER_GAP
-
     # Button cluster is symmetric; reuse x coordinates as y.
     y1 = x1
     y2 = x2

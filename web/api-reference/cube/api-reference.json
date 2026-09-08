@@ -5502,6 +5502,7 @@
             "            if abs(parent_world.determinant()) < 1e-12",
             "            else offset.to_local_dir(parent_world)",
             "        )",
+            "",
             "    push = Mat4.from_translation(offset)",
             "    self.transform = push * self.transform",
             "    self.collider.velocity += contact.delta_velocity"
@@ -6169,49 +6170,6 @@
           "advanced": true
         },
         {
-          "name": "add_child",
-          "type": "function",
-          "signature": "add_child(node)",
-          "description": {
-            "en": "Add a node as a child. A node that already has a parent is reparented.",
-            "cn": "将节点添加为子节点。已有父节点的节点会被重新设置父节点。",
-            "de": "Fügt einen Node als Kind hinzu. Ein Node, der bereits einen Elternteil hat, wird umgehängt.",
-            "es": "Añade un nodo como hijo. Un nodo que ya tiene padre se reasigna a este padre.",
-            "fr": "Ajoute un nœud comme enfant. Un nœud qui a déjà un parent est rattaché.",
-            "it": "Aggiunge un nodo come figlio. Un nodo che ha già un genitore viene riassegnato.",
-            "ja": "ノードを子として追加する。既に親を持つノードは付け替えられる。",
-            "ko": "노드를 자식으로 추가합니다. 이미 부모가 있는 노드는 부모가 다시 설정됩니다.",
-            "pt": "Adiciona um nó como filho. Um nó que já tem pai é reparentado.",
-            "ru": "Добавляет узел как дочерний. Узел, у которого уже есть родитель, переподключается.",
-            "tr": "Bir düğümü alt öğe olarak ekler. Zaten üst öğesi olan düğüm yeniden üst öğeye bağlanır.",
-            "uk": "Додає вузол як дочірній. Вузол, який уже має батька, перепризначається."
-          },
-          "params": [
-            {
-              "name": "node",
-              "type": "Node",
-              "description": {
-                "en": "The node to add.",
-                "cn": "要添加的节点。",
-                "de": "Der hinzuzufügende Node.",
-                "es": "El nodo que se va a añadir.",
-                "fr": "Le nœud à ajouter.",
-                "it": "Il nodo da aggiungere.",
-                "ja": "追加するノード。",
-                "ko": "추가할 노드입니다.",
-                "pt": "O nó a adicionar.",
-                "ru": "Узел для добавления.",
-                "tr": "Eklenecek düğüm.",
-                "uk": "Вузол для додавання."
-              }
-            }
-          ],
-          "returns": {
-            "type": "None"
-          },
-          "advanced": false
-        },
-        {
           "name": "Node.from_mesh",
           "type": "class",
           "signature": "Node.from_mesh(mesh)",
@@ -6265,6 +6223,49 @@
               "tr": "Oluşturulan kök düğüm.",
               "uk": "Створений кореневий вузол."
             }
+          },
+          "advanced": false
+        },
+        {
+          "name": "add_child",
+          "type": "function",
+          "signature": "add_child(node)",
+          "description": {
+            "en": "Add a node as a child. A node that already has a parent is reparented.",
+            "cn": "将节点添加为子节点。已有父节点的节点会被重新设置父节点。",
+            "de": "Fügt einen Node als Kind hinzu. Ein Node, der bereits einen Elternteil hat, wird umgehängt.",
+            "es": "Añade un nodo como hijo. Un nodo que ya tiene padre se reasigna a este padre.",
+            "fr": "Ajoute un nœud comme enfant. Un nœud qui a déjà un parent est rattaché.",
+            "it": "Aggiunge un nodo come figlio. Un nodo che ha già un genitore viene riassegnato.",
+            "ja": "ノードを子として追加する。既に親を持つノードは付け替えられる。",
+            "ko": "노드를 자식으로 추가합니다. 이미 부모가 있는 노드는 부모가 다시 설정됩니다.",
+            "pt": "Adiciona um nó como filho. Um nó que já tem pai é reparentado.",
+            "ru": "Добавляет узел как дочерний. Узел, у которого уже есть родитель, переподключается.",
+            "tr": "Bir düğümü alt öğe olarak ekler. Zaten üst öğesi olan düğüm yeniden üst öğeye bağlanır.",
+            "uk": "Додає вузол як дочірній. Вузол, який уже має батька, перепризначається."
+          },
+          "params": [
+            {
+              "name": "node",
+              "type": "Node",
+              "description": {
+                "en": "The node to add.",
+                "cn": "要添加的节点。",
+                "de": "Der hinzuzufügende Node.",
+                "es": "El nodo que se va a añadir.",
+                "fr": "Le nœud à ajouter.",
+                "it": "Il nodo da aggiungere.",
+                "ja": "追加するノード。",
+                "ko": "추가할 노드입니다.",
+                "pt": "O nó a adicionar.",
+                "ru": "Узел для добавления.",
+                "tr": "Eklenecek düğüm.",
+                "uk": "Вузол для додавання."
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
           },
           "advanced": false
         },

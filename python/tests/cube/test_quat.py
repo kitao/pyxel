@@ -71,7 +71,9 @@ class TestSequence:
 
 class TestOperators:
     def test_mul_invalid_type(self):
-        with raises_exact(TypeError, "other must be Quat or Vec3"):
+        with raises_exact(
+            TypeError, "unsupported operand type(s) for *: 'pyxel.cube.Quat' and 'int'"
+        ):
             Quat() * 1
 
     def test_neg(self):

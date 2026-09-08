@@ -12,8 +12,8 @@ use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_MODES};
 const GL_VERSION: &str = include_str!("shaders/gles_version.glsl");
 #[cfg(not(target_os = "macos"))]
 const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
-
 const GLES_VERSION: &str = include_str!("shaders/gles_version.glsl");
+
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
 const SCREEN_FRAGS: [&str; NUM_SCREEN_MODES as usize] = [
@@ -75,7 +75,6 @@ impl Graphics {
             let screen_shaders = Self::create_screen_shaders(gl, is_gles);
             let screen_texture = Self::create_screen_texture(gl);
             let colors_texture = Self::create_colors_texture(gl);
-
             Self {
                 is_gles,
                 screen_shaders,
@@ -94,8 +93,8 @@ impl Graphics {
 
     unsafe fn create_screen_shaders(gl: &mut glow::Context, is_gles: bool) -> Vec<ScreenShader> {
         let glsl_version = if is_gles { GLES_VERSION } else { GL_VERSION };
-
         let mut screen_shaders = Vec::new();
+
         for &screen_frag in &SCREEN_FRAGS {
             let vertex_shader = gl
                 .create_shader(glow::VERTEX_SHADER)
@@ -133,11 +132,11 @@ impl Graphics {
                 "{}",
                 gl.get_program_info_log(program)
             );
+
             gl.detach_shader(program, vertex_shader);
             gl.delete_shader(vertex_shader);
             gl.detach_shader(program, fragment_shader);
             gl.delete_shader(fragment_shader);
-
             let uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS] =
                 std::array::from_fn(|i| gl.get_uniform_location(program, UNIFORM_NAMES[i]));
 
@@ -145,7 +144,6 @@ impl Graphics {
                 .create_vertex_array()
                 .expect("Failed to create OpenGL vertex array");
             let vertex_buffer = gl.create_buffer().expect("Failed to create OpenGL buffer");
-
             gl.bind_vertex_array(Some(vertex_array));
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
             gl.buffer_data_u8_slice(
@@ -254,11 +252,11 @@ impl Pyxel {
         rc_mut!(pyxel::screen()).set_dithering(alpha);
     }
 
+    // Drawing primitives
+
     pub fn clear(&self, color: Color) {
         rc_mut!(pyxel::screen()).clear(color);
     }
-
-    // Drawing primitives
 
     pub fn pixel(&self, x: f32, y: f32) -> Color {
         rc_ref!(pyxel::screen()).pixel(x, y)
@@ -478,7 +476,6 @@ impl Pyxel {
                     as f32,
             );
         }
-
         if let Some(location) = &uniforms[U_SCREEN_SIZE] {
             gl.uniform_2_f32(
                 Some(location),
@@ -486,7 +483,6 @@ impl Pyxel {
                 *pyxel::height() as f32 * self.system.screen_scale,
             );
         }
-
         if let Some(location) = &uniforms[U_SCREEN_SCALE] {
             gl.uniform_1_f32(Some(location), self.system.screen_scale);
         }
@@ -495,7 +491,6 @@ impl Pyxel {
         if let Some(location) = &uniforms[U_NUM_COLORS] {
             gl.uniform_1_i32(Some(location), pyxel::colors().len() as i32);
         }
-
         if let Some(location) = &uniforms[U_BACKGROUND_COLOR] {
             let (r, g, b) = rgb24_to_rgb8(BACKGROUND_COLOR);
             gl.uniform_3_f32(
@@ -505,11 +500,9 @@ impl Pyxel {
                 b as f32 / 255.0,
             );
         }
-
         if let Some(location) = &uniforms[U_SCREEN_TEXTURE] {
             gl.uniform_1_i32(Some(location), 0);
         }
-
         if let Some(location) = &uniforms[U_COLORS_TEXTURE] {
             gl.uniform_1_i32(Some(location), 1);
         }
@@ -521,6 +514,7 @@ impl Pyxel {
         let graphics = self.graphics.as_mut().unwrap();
         gl.active_texture(glow::TEXTURE0);
         gl.bind_texture(glow::TEXTURE_2D, Some(graphics.screen_texture));
+        // Indexed screen rows are tightly packed at every screen width.
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
         let (internal_format, format) = if graphics.is_gles {
@@ -528,7 +522,6 @@ impl Pyxel {
         } else {
             (glow::R8 as i32, glow::RED)
         };
-
         let screen_width = *pyxel::width() as i32;
         let screen_height = *pyxel::height() as i32;
         let screen_rc = pyxel::screen().clone();
@@ -573,15 +566,14 @@ impl Pyxel {
         let graphics = self.graphics.as_mut().unwrap();
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
-
         if graphics.cached_colors == *colors {
             return;
         }
 
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
-
         let pixels = &mut graphics.color_pixels;
         pixels.clear();
+
         // Pack RGB palette entries for the 1D color texture.
         for &c in colors.iter() {
             let (r, g, b) = rgb24_to_rgb8(c);
@@ -615,6 +607,7 @@ impl Pyxel {
                 PixelUnpackData::Slice(Some(pixels)),
             );
         }
+
         graphics.cached_colors.clone_from(&colors);
     }
 }

@@ -3,10 +3,8 @@
 set -euo pipefail
 
 cd "$(dirname "$0")"
-
 VENV_DIR="../.venv"
 REQUIREMENTS="../python/requirements.txt"
-
 python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)' || {
     echo "Python 3.11+ is required" >&2
     exit 1
@@ -20,5 +18,4 @@ if [[ -f "$VENV_DIR/Scripts/python.exe" ]]; then
 else
     VENV_PYTHON="$VENV_DIR/bin/python"
 fi
-
 "$VENV_PYTHON" -m pip install -r "$REQUIREMENTS"

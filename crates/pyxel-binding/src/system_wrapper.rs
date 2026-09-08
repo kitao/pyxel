@@ -79,12 +79,15 @@ fn init(
                 locals.set_item("orig_argv", &orig_argv)?;
                 locals.set_item("window_state", &window_state)?;
                 locals.set_item("window_state_env", pyxel::WINDOW_STATE_ENV)?;
+
                 py.run(
                     c"
 import os, subprocess, sys
+
 # 0x52 = WATCH_RESET_EXIT_CODE in settings.rs, checked by cli.py watch mode
 if os.environ.get('PYXEL_WATCH_STATE_FILE'):
     os._exit(0x52)
+
 if sys.platform == 'darwin':
     # Silence child stderr while the parent process is being replaced.
     try:
@@ -93,6 +96,7 @@ if sys.platform == 'darwin':
         f.close()
     except OSError:
         pass
+
 env = os.environ.copy()
 if window_state is not None and window_state_env in env:
     env[window_state_env] = window_state
@@ -114,13 +118,12 @@ sys.exit(0)
         });
     }));
 
-    // Register quit callback to run Python atexit handlers
+    // Platform quit bypasses Python's normal interpreter shutdown.
     *pyxel::quit_callback() = Some(Box::new(|| {
         Python::attach(|py| {
             let _ = py.run(c"import atexit; atexit._run_exitfuncs()", None, None);
         });
     }));
-
     Ok(())
 }
 

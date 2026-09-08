@@ -30,8 +30,8 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
     let (document, buffers, images) = gltf::import_slice(import_bytes.as_ref())
         .map_err(|e| format!("Failed to read GLB '{filename}': {e}"))?;
     validate_document(&document, images.len())?;
-    let (materials, resolved_colkey) = import_materials(&document, &images, colkey)?;
 
+    let (materials, resolved_colkey) = import_materials(&document, &images, colkey)?;
     let mesh = Mesh::new();
     {
         let mut m = rc_mut!(&mesh);
@@ -46,7 +46,6 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
         .default_scene()
         .or_else(|| document.scenes().next())
         .ok_or_else(|| "GLB has no scene".to_string())?;
-
     let mut node_parts = HashMap::<usize, usize>::new();
     for node in scene.nodes() {
         import_node(&mesh, &buffers, &mut node_parts, &node, -1)?;
@@ -81,7 +80,6 @@ fn rgba8_to_pyxel_image(
     let expected_len = pixel_count
         .checked_mul(4)
         .ok_or_else(|| "GLB texture dimensions overflow".to_string())?;
-
     if rgba.len() != expected_len {
         return Err("GLB texture buffer length does not match image dimensions".to_string());
     }
@@ -102,6 +100,7 @@ fn rgba8_to_pyxel_image(
                         continue;
                     }
                 }
+
                 let src_rgb = tinted_rgb(rgba, base, color_factor);
                 let color = if let Some(color) = color_table.get(&src_rgb) {
                     *color
@@ -161,7 +160,6 @@ fn mask_alpha_cutoff(material: &gltf::Material) -> Result<Option<f32>, String> {
         gltf::material::AlphaMode::Opaque | gltf::material::AlphaMode::Blend => return Ok(None),
         gltf::material::AlphaMode::Mask => {}
     }
-
     let cutoff = material.alpha_cutoff().unwrap_or(0.5);
     if !cutoff.is_finite() || !(0.0..=1.0).contains(&cutoff) {
         return Err("GLB material alphaCutoff must be between 0.0 and 1.0".to_string());
@@ -194,7 +192,6 @@ fn resolve_mask_colkey(
         }
         return select_fallback_mask_colkey(used_colors);
     };
-
     if !needs_colkey {
         return Some(colkey);
     }
@@ -241,7 +238,6 @@ fn mark_texture_palette_usage(
     let expected_len = pixel_count
         .checked_mul(4)
         .ok_or_else(|| "GLB texture dimensions overflow".to_string())?;
-
     if rgba.len() != expected_len {
         return Err("GLB texture buffer length does not match image dimensions".to_string());
     }
@@ -255,6 +251,7 @@ fn mark_texture_palette_usage(
                 continue;
             }
         }
+
         let color = rgb_to_palette_color(tinted_rgb(rgba, base, color_factor), colors)?;
         used_colors[color as usize] = true;
     }
@@ -271,9 +268,9 @@ fn color_distance_sq(a: (u8, u8, u8), b: (u8, u8, u8)) -> f32 {
 
 fn rgb_to_palette_color(rgb: (u8, u8, u8), colors: &[Rgb24]) -> Result<Color, String> {
     validate_palette(colors)?;
-
     let mut closest_color: Color = 0;
     let mut closest_dist: f32 = f32::MAX;
+
     for (i, pal_color) in colors.iter().enumerate() {
         let pal_rgb = (
             (pal_color >> 16) as u8,
@@ -286,6 +283,7 @@ fn rgb_to_palette_color(rgb: (u8, u8, u8), colors: &[Rgb24]) -> Result<Color, St
             closest_dist = dist;
         }
     }
+
     Ok(closest_color)
 }
 
@@ -306,7 +304,6 @@ fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTi
     if factor.iter().any(|component| !component.is_finite()) {
         return Err("GLB material baseColorFactor must be finite".to_string());
     }
-
     let tint = [
         factor[0].clamp(0.0, 1.0),
         factor[1].clamp(0.0, 1.0),
@@ -323,9 +320,9 @@ fn import_materials(
 ) -> Result<(Vec<Material>, Option<i32>), String> {
     let colors = crate::pyxel::colors();
     validate_palette(&colors)?;
-
     let mut used_colors = vec![false; colors.len()];
     let mut needs_mask_colkey = false;
+
     for material in document.materials() {
         let pbr = material.pbr_metallic_roughness();
         let alpha_cutoff = mask_alpha_cutoff(&material)?;
@@ -373,6 +370,7 @@ fn import_materials(
                 tint_key,
                 mask_colkey.map(|(colkey, cutoff)| (colkey, cutoff.to_bits())),
             );
+
             if let Some(img) = image_cache.get(&cache_key) {
                 ColImage::Image(img.clone())
             } else if let Some(img) = images.get(image_index) {
@@ -424,11 +422,13 @@ fn glb_json_chunk(bytes: &[u8]) -> Result<Option<&[u8]>, String> {
     if bytes.len() < 20 {
         return Ok(None);
     }
+
     let json_len = u32::from_le_bytes([bytes[12], bytes[13], bytes[14], bytes[15]]) as usize;
     let json_type = [bytes[16], bytes[17], bytes[18], bytes[19]];
     if json_type != *b"JSON" {
         return Err("GLB first chunk must be JSON".to_string());
     }
+
     let json_end = 20_usize
         .checked_add(json_len)
         .ok_or_else(|| "GLB JSON chunk length overflows".to_string())?;
@@ -444,12 +444,14 @@ fn sanitize_glb_for_import(bytes: &[u8]) -> Result<(Cow<'_, [u8]>, bool), String
     };
     let mut json: gltf::json::Value = gltf::json::deserialize::from_slice(json_bytes)
         .map_err(|e| format!("Failed to read GLB JSON: {e}"))?;
+
     let extension = "KHR_animation_pointer";
     let declared = ["extensionsUsed", "extensionsRequired"].iter().any(|key| {
         json[*key]
             .as_array()
             .is_some_and(|names| names.iter().any(|name| name.as_str() == Some(extension)))
     });
+
     let targeted = json["animations"].as_array().is_some_and(|animations| {
         animations.iter().any(|animation| {
             animation["channels"].as_array().is_some_and(|channels| {
@@ -462,6 +464,7 @@ fn sanitize_glb_for_import(bytes: &[u8]) -> Result<(Cow<'_, [u8]>, bool), String
     if !declared && !targeted {
         return Ok((Cow::Borrowed(bytes), false));
     }
+
     warn_glb("GLB animation pointer/material animation is not supported; animations are ignored");
     let object = json.as_object_mut().unwrap();
     object.remove("animations");
@@ -509,6 +512,7 @@ fn validate_document(document: &gltf::Document, image_count: usize) -> Result<()
             return Err("GLB external buffers are not supported".to_string());
         }
     }
+
     for image in document.images() {
         match image.source() {
             gltf::image::Source::View { .. } => {}
@@ -576,6 +580,7 @@ fn validate_texture_usage(document: &gltf::Document, image_count: usize) {
         if factor[3].is_finite() && (factor[3] - 1.0).abs() > f32::EPSILON {
             warn_glb("GLB material baseColorFactor alpha is not supported; alpha is ignored");
         }
+
         if material.normal_texture().is_some()
             || material.occlusion_texture().is_some()
             || material.emissive_texture().is_some()
@@ -586,6 +591,7 @@ fn validate_texture_usage(document: &gltf::Document, image_count: usize) {
         {
             warn_glb("GLB unsupported texture usage; non-base-color textures are ignored");
         }
+
         if let Some(texture) = material.pbr_metallic_roughness().base_color_texture() {
             if texture.texture().source().index() >= image_count {
                 warn_glb("GLB base color texture image is missing; using flat material color");
@@ -695,9 +701,9 @@ fn import_primitive(
         .pbr_metallic_roughness()
         .base_color_texture()
         .is_some();
-
     let reader =
         primitive.reader(|buffer| buffers.get(buffer.index()).map(|data| data.0.as_slice()));
+
     let positions = reader
         .read_positions()
         .ok_or_else(|| "GLB primitive is missing POSITION".to_string())?
@@ -719,6 +725,7 @@ fn import_primitive(
     if has_texture && uvs.len() / 2 != vertex_count {
         return Err("GLB TEXCOORD_0 and POSITION count mismatch".to_string());
     }
+
     let vertex_normals = match reader.read_normals() {
         Some(normals) => {
             let normals = normals
@@ -757,6 +764,7 @@ fn import_primitive(
         p.uvs = uvs;
         p.indices = indices;
         p.mode = MODE_TRIANGLES;
+
         p.compute_normals();
         if let Some(vertex_normals) = vertex_normals {
             p.normals = authored_normals_to_flat_normals(&vertex_normals, &p.indices, &p.normals)?;
@@ -796,7 +804,6 @@ fn authored_normals_to_flat_normals(
         let ny = vertex_normals[a * 3 + 1] + vertex_normals[b * 3 + 1] + vertex_normals[c * 3 + 1];
         let nz = vertex_normals[a * 3 + 2] + vertex_normals[b * 3 + 2] + vertex_normals[c * 3 + 2];
         let len = (nx * nx + ny * ny + nz * nz).sqrt();
-
         if len > f32::EPSILON {
             out.extend_from_slice(&[nx / len, ny / len, nz / len]);
         } else {
@@ -831,12 +838,14 @@ fn import_animations(
         );
         {
             let mut m = rc_mut!(&motion);
+
             for channel in animation.channels() {
                 let interpolation = match channel.sampler().interpolation() {
                     gltf::animation::Interpolation::CubicSpline => MotionInterpolation::CubicSpline,
                     gltf::animation::Interpolation::Step => MotionInterpolation::Step,
                     gltf::animation::Interpolation::Linear => MotionInterpolation::Linear,
                 };
+
                 let reader = channel
                     .reader(|buffer| buffers.get(buffer.index()).map(|data| data.0.as_slice()));
                 let mut inputs = reader
@@ -854,6 +863,7 @@ fn import_animations(
                             .to_string(),
                     );
                 }
+
                 for time in &mut inputs {
                     *time *= fps;
                     if !time.is_finite() {
@@ -879,6 +889,7 @@ fn import_animations(
                                         z: v[2],
                                     })
                                     .collect::<Vec<_>>();
+
                                 if interpolation == MotionInterpolation::CubicSpline {
                                     MotionValues::CubicTranslations(cubic_vec3_keys(&values, fps)?)
                                 } else {
@@ -893,6 +904,7 @@ fn import_animations(
                         };
                         (MotionTarget::Translation, values)
                     }
+
                     gltf::animation::Property::Rotation => {
                         let values = match reader.read_outputs() {
                             Some(gltf::animation::util::ReadOutputs::Rotations(values)) => {
@@ -905,6 +917,7 @@ fn import_animations(
                                         w: v[3],
                                     })
                                     .collect::<Vec<_>>();
+
                                 if interpolation == MotionInterpolation::CubicSpline {
                                     MotionValues::CubicRotations(cubic_quat_keys(&values, fps)?)
                                 } else {
@@ -917,6 +930,7 @@ fn import_animations(
                         };
                         (MotionTarget::Rotation, values)
                     }
+
                     gltf::animation::Property::Scale => {
                         let values = match reader.read_outputs() {
                             Some(gltf::animation::util::ReadOutputs::Scales(values)) => {
@@ -927,6 +941,7 @@ fn import_animations(
                                         z: v[2],
                                     })
                                     .collect::<Vec<_>>();
+
                                 if interpolation == MotionInterpolation::CubicSpline {
                                     MotionValues::CubicScales(cubic_vec3_keys(&values, fps)?)
                                 } else {
@@ -937,10 +952,12 @@ fn import_animations(
                         };
                         (MotionTarget::Scale, values)
                     }
+
                     gltf::animation::Property::MorphTargetWeights => {
                         return Err("GLB morph target animation is not supported".to_string());
                     }
                 };
+
                 let value_count = values.len();
                 if value_count != inputs.len() {
                     return Err(format!(
@@ -958,8 +975,10 @@ fn import_animations(
                 });
             }
         }
+
         rc_mut!(mesh).motions.push(motion);
     }
+
     Ok(())
 }
 
@@ -968,7 +987,6 @@ fn cubic_vec3_keys(values: &[Vec3], fps: f32) -> Result<Vec<CubicVec3Key>, Strin
     if !remainder.is_empty() {
         return Err("GLB cubic spline animation values must be tangent/value triples".to_string());
     }
-
     Ok(chunks
         .iter()
         .map(|chunk| CubicVec3Key {
@@ -984,7 +1002,6 @@ fn cubic_quat_keys(values: &[Quat], fps: f32) -> Result<Vec<CubicQuatKey>, Strin
     if !remainder.is_empty() {
         return Err("GLB cubic spline animation values must be tangent/value triples".to_string());
     }
-
     Ok(chunks
         .iter()
         .map(|chunk| CubicQuatKey {

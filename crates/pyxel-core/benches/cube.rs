@@ -168,6 +168,7 @@ fn bench_raster_textured_shaded(
         billboard: BILLBOARD_OFF,
         shading: Some(&shading_ref),
     };
+
     run_bench(name, iters_per_sample, |_| {
         ctx.depth.fill(depth_clear);
         draw::prim(
@@ -204,6 +205,7 @@ fn bench_bvh_query_ray() {
             )
         })
         .collect();
+
     run_bench("bvh_query_ray", 300_000, |i| {
         let (origin, direction) = rays[(i as usize) % rays.len()];
         let mut hits = 0_u32;
@@ -232,6 +234,7 @@ fn bench_bvh_query_aabb() {
             }
         })
         .collect();
+
     run_bench("bvh_query_aabb", 200_000, |i| {
         let query = &queries[(i as usize) % queries.len()];
         let mut hits = 0_u32;
@@ -257,6 +260,7 @@ fn bench_mesh_aabb_from_mesh() {
         z: 3.0,
     });
     let transform = rc_ref!(&translation).mul_mat_value(&rc_ref!(&rotation));
+
     run_bench("mesh_aabb_from_mesh", 20_000, |_| {
         let aabb = Aabb::from_mesh(&rc_ref!(&mesh), black_box(&transform));
         black_box(aabb.min.x + aabb.max.z);
@@ -273,6 +277,7 @@ fn bench_mesh_aabb_many_parts() {
         primitive_ref.positions = TRIANGLE_POSITIONS.to_vec();
         primitive_ref.indices = vec![0, 1, 2];
     }
+
     let mesh = Mesh::new();
     {
         let mut mesh_ref = rc_mut!(&mesh);
@@ -280,8 +285,10 @@ fn bench_mesh_aabb_many_parts() {
         mesh_ref.transforms = (0..PART_COUNT).map(|_| Mat4::identity()).collect();
         mesh_ref.parents = vec![-1; PART_COUNT];
     }
+
     let transform = Mat4::identity_value();
     Aabb::from_mesh(&rc_ref!(&mesh), &transform);
+
     run_bench("mesh_aabb_many_parts", 20_000, |_| {
         let aabb = Aabb::from_mesh(&rc_ref!(&mesh), black_box(&transform));
         black_box(aabb.min.x + aabb.max.z);
@@ -324,6 +331,7 @@ fn run_bench(name: &str, iters_per_sample: u32, mut f: impl FnMut(u32)) {
     for i in 0..iters_per_sample {
         f(i);
     }
+
     let mut samples = [0.0_f64; SAMPLE_COUNT];
     for sample in &mut samples {
         let start = Instant::now();
@@ -332,6 +340,7 @@ fn run_bench(name: &str, iters_per_sample: u32, mut f: impl FnMut(u32)) {
         }
         *sample = start.elapsed().as_nanos() as f64 / f64::from(iters_per_sample);
     }
+
     samples.sort_by(|a, b| a.partial_cmp(b).unwrap());
     let median = samples[SAMPLE_COUNT / 2];
     println!("{name}: {median:.1} ns/iter ({iters_per_sample} iters x {SAMPLE_COUNT} samples)");
@@ -346,6 +355,7 @@ fn make_draw_context(target_size: u32) -> DrawContext {
     let view = view_matrix(&camera_ref);
     let projection = projection_matrix(&camera_ref, size, size);
     drop(camera_ref);
+
     DrawContext {
         target: Image::new(target_size, target_size),
         vp: matmul(&projection, &view),
@@ -356,10 +366,12 @@ fn make_draw_context(target_size: u32) -> DrawContext {
         vp_h: size,
         clip: compute_clip_rect(0.0, 0.0, size, size, target_size, target_size),
         camera,
+
         depth: vec![f32::INFINITY; (target_size * target_size) as usize],
         depth_w: target_size,
         depth_h: target_size,
         vertex_cache: Vec::new(),
+
         dither_alpha: 1.0,
         depth_test: true,
         depth_write: true,
@@ -371,11 +383,13 @@ fn make_draw_context(target_size: u32) -> DrawContext {
 fn make_texture() -> RcImage {
     let image = Image::new(16, 16);
     let mut image_ref = rc_mut!(&image);
+
     for y in 0..16_u32 {
         for x in 0..16_u32 {
             image_ref.set_pixel(x as f32, y as f32, ((x + y * 3) % 16) as u8);
         }
     }
+
     drop(image_ref);
     image
 }
@@ -387,6 +401,7 @@ fn make_grid_geometry() -> (Vec<Vec3>, Vec<[u32; 3]>) {
     let n = GRID_DIVISIONS;
     let step = GRID_EXTENT * 2.0 / n as f32;
     let mut positions = Vec::with_capacity(((n + 1) * (n + 1)) as usize);
+
     for iz in 0..=n {
         for ix in 0..=n {
             positions.push(Vec3 {
@@ -396,6 +411,7 @@ fn make_grid_geometry() -> (Vec<Vec3>, Vec<[u32; 3]>) {
             });
         }
     }
+
     let mut triangles = Vec::with_capacity((n * n * 2) as usize);
     for iz in 0..n {
         for ix in 0..n {
@@ -407,6 +423,7 @@ fn make_grid_geometry() -> (Vec<Vec3>, Vec<[u32; 3]>) {
             triangles.push([i1, i2, i3]);
         }
     }
+
     (positions, triangles)
 }
 
@@ -430,6 +447,7 @@ fn make_grid_mesh() -> RcMesh {
             .flat_map(|t| [t[0] as i32, t[1] as i32, t[2] as i32])
             .collect();
     }
+
     let mesh = Mesh::new();
     {
         let mut mesh_ref = rc_mut!(&mesh);
@@ -452,6 +470,7 @@ fn make_motion() -> Motion {
             z: (k % 3) as f32 * 0.3,
         })
         .collect();
+
     let rotations: Vec<Quat> = (0..KEY_COUNT)
         .map(|k| {
             let half_angle = (k as f32 * 3.0).to_radians() * 0.5;
@@ -463,6 +482,7 @@ fn make_motion() -> Motion {
             }
         })
         .collect();
+
     let scales: Vec<Vec3> = (0..KEY_COUNT)
         .map(|k| Vec3 {
             x: 1.0 + k as f32 * 0.01,
@@ -470,6 +490,7 @@ fn make_motion() -> Motion {
             z: 1.0,
         })
         .collect();
+
     let channel = |part_index, target, values| MotionChannel {
         part_index,
         target,
@@ -477,6 +498,7 @@ fn make_motion() -> Motion {
         values,
         interpolation: MotionInterpolation::Linear,
     };
+
     Motion {
         name: String::from("bench"),
         length: (KEY_COUNT - 1) as f32,
@@ -511,6 +533,7 @@ fn make_scene_tree() -> RcNode {
     const LEAVES_PER_GROUP: usize = 19;
     const COLLIDERS_PER_GROUP: usize = 5;
     let root = Node::new();
+
     for g in 0..GROUP_COUNT {
         let group = Node::new();
         {
@@ -520,6 +543,7 @@ fn make_scene_tree() -> RcNode {
             group_ref.tags = vec![String::from("group")];
         }
         Node::add_child(&root, &group);
+
         for l in 0..LEAVES_PER_GROUP {
             let leaf = Node::new();
             {
@@ -547,5 +571,6 @@ fn make_scene_tree() -> RcNode {
             Node::add_child(&group, &leaf);
         }
     }
+
     root
 }

@@ -45,10 +45,12 @@ impl Quat {
         let qy = self.y;
         let qz = self.z;
         let qw = self.w;
+
         // t = 2 * (q.xyz x v)
         let tx = 2.0 * (qy * v.z - qz * v.y);
         let ty = 2.0 * (qz * v.x - qx * v.z);
         let tz = 2.0 * (qx * v.y - qy * v.x);
+
         // result = v + qw * t + q.xyz x t
         let rx = v.x + qw * tx + (qy * tz - qz * ty);
         let ry = v.y + qw * ty + (qz * tx - qx * tz);
@@ -85,6 +87,7 @@ impl Quat {
             y: 0.0,
             z: 1.0,
         };
+
         let qx = Self::from_axis_angle(&x_axis, rot.x);
         let qy = Self::from_axis_angle(&y_axis, rot.y);
         let qz = Self::from_axis_angle(&z_axis, rot.z);
@@ -104,6 +107,7 @@ impl Quat {
         if cos_theta > 0.999_999 {
             return Self::identity();
         }
+
         if cos_theta < -0.999_999 {
             // Opposite vectors: pick any perpendicular axis and rotate 180°.
             let a_len = (a.x * a.x + a.y * a.y + a.z * a.z).sqrt();
@@ -120,12 +124,14 @@ impl Quat {
                     z: 0.0,
                 }
             };
+
             let perp_x = a.y * axis.z - a.z * axis.y;
             let perp_y = a.z * axis.x - a.x * axis.z;
             let perp_z = a.x * axis.y - a.y * axis.x;
             let plen = (perp_x * perp_x + perp_y * perp_y + perp_z * perp_z).sqrt();
             return Self::new(perp_x / plen, perp_y / plen, perp_z / plen, 0.0);
         }
+
         // axis = cross(a, b), w = sqrt((|a|^2 * |b|^2)) + dot(a, b), then normalize
         let cross_x = a.y * b.z - a.z * b.y;
         let cross_y = a.z * b.x - a.x * b.z;
@@ -187,6 +193,7 @@ impl Quat {
         let fx = forward.x * inv_f;
         let fy = forward.y * inv_f;
         let fz = forward.z * inv_f;
+
         // right = forward × up (matches look_at convention, right-handed).
         let rx0 = fy * up.z - fz * up.y;
         let ry0 = fz * up.x - fx * up.z;
@@ -212,6 +219,7 @@ impl Quat {
         let rx = rx0 * inv_r;
         let ry = ry0 * inv_r;
         let rz = rz0 * inv_r;
+
         // up' = right × forward (so up' aligns with the up hint as
         // closely as the constraint allows).
         let ux = ry * fz - rz * fy;
@@ -306,6 +314,7 @@ impl Quat {
         let wx = q.w * q.x;
         let wy = q.w * q.y;
         let wz = q.w * q.z;
+
         Mat4 {
             data: [
                 [1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz), 2.0 * (xz + wy), 0.0],
@@ -326,6 +335,7 @@ impl Quat {
         let r20 = 2.0 * (q.x * q.z - q.w * q.y);
         let r21 = 2.0 * (q.y * q.z + q.w * q.x);
         let r22 = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+
         let sy = -r20;
         let sy_clamped = sy.clamp(-1.0, 1.0);
         let (rx, ry, rz);
@@ -339,6 +349,7 @@ impl Quat {
             rx = (-r12).atan2(r11);
             rz = 0.0;
         }
+
         Vec3::new(rx.to_degrees(), ry.to_degrees(), rz.to_degrees())
     }
 
@@ -365,6 +376,7 @@ impl Quat {
     pub(crate) fn slerp_value(&self, other: &Self, t: f32) -> Self {
         let mut cos_theta = self.dot(other);
         let (other_x, other_y, other_z, other_w);
+        // q and -q encode the same rotation; choose the shorter interpolation arc.
         if cos_theta < 0.0 {
             cos_theta = -cos_theta;
             other_x = -other.x;
@@ -377,6 +389,7 @@ impl Quat {
             other_z = other.z;
             other_w = other.w;
         }
+
         if cos_theta > 0.9995 {
             // Avoid division by sin(theta) near identical rotations.
             let x = self.x + t * (other_x - self.x);
@@ -391,6 +404,7 @@ impl Quat {
                 w: w / len,
             };
         }
+
         let theta = cos_theta.acos();
         let sin_theta = theta.sin();
         let a = ((1.0 - t) * theta).sin() / sin_theta;
@@ -444,6 +458,7 @@ mod tests {
             y: 0.0,
             z: 0.0,
         };
+
         let q = Quat::from_two_vectors(&a, &b);
         let r = deref_v(&rc_ref!(&q).mul_vec(&a));
         assert!(approx_eq_v(&r, &b));
@@ -461,6 +476,7 @@ mod tests {
             y: 0.0,
             z: 0.0,
         };
+
         let q = deref(&Quat::from_two_vectors(&a, &b));
         let id = deref(&Quat::identity());
         assert_eq!(q, id);
@@ -489,6 +505,7 @@ mod tests {
         let qn = deref(&rc_ref!(&q).normalize());
         let sy = -2.0 * (qn.x * qn.z - qn.w * qn.y);
         assert!(sy.abs() >= 0.999_999);
+
         let out_euler = deref_v(&rc_ref!(&q).to_euler());
         assert!(approx_eq_v(
             &out_euler,
@@ -510,9 +527,11 @@ mod tests {
         };
         let a = Quat::from_axis_angle(&axis, 10.0);
         let b = Quat::from_axis_angle(&axis, 11.0);
+
         let mid = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 0.5));
         let len = mid.x * mid.x + mid.y * mid.y + mid.z * mid.z + mid.w * mid.w;
         assert!((len - 1.0).abs() < 1e-4);
+
         let expected = Quat::from_axis_angle(&axis, 10.5);
         let probe = Vec3 {
             x: 1.0,
@@ -537,6 +556,7 @@ mod tests {
         );
         let a_val = *rc_ref!(&a);
         let neg = Quat::new(-a_val.x, -a_val.y, -a_val.z, -a_val.w);
+
         let mid = rc_ref!(&a).slerp(&rc_ref!(&neg), 0.5);
         let probe = Vec3 {
             x: 1.0,
@@ -568,6 +588,7 @@ mod tests {
             y: 1.0,
             z: 0.0,
         };
+
         let q = Quat::from_direction(&forward, &up);
         let local_forward = Vec3 {
             x: 0.0,

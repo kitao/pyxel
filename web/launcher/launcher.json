@@ -92,34 +92,6 @@
       "tr": "GitHub'daki başlangıç dosyası URL'si",
       "uk": "URL файлу запуску на GitHub"
     },
-    "label_virtual_gamepad": {
-      "en": "Enable Virtual Gamepad",
-      "cn": "启用虚拟游戏手柄",
-      "de": "Virtuelles Gamepad aktivieren",
-      "es": "Activar gamepad virtual",
-      "fr": "Activer la manette virtuelle",
-      "it": "Abilita gamepad virtuale",
-      "ja": "バーチャルゲームパッドを有効にする",
-      "ko": "가상 게임패드 활성화",
-      "pt": "Ativar gamepad virtual",
-      "ru": "Включить виртуальный геймпад",
-      "tr": "Sanal gamepad'i etkinleştir",
-      "uk": "Увімкнути віртуальний геймпад"
-    },
-    "label_launch_url": {
-      "en": "Application Launch URL",
-      "cn": "应用程序启动 URL",
-      "de": "Anwendungs-Start-URL",
-      "es": "URL de lanzamiento de la aplicación",
-      "fr": "URL de lancement de l'application",
-      "it": "URL di avvio dell'applicazione",
-      "ja": "アプリケーション起動 URL",
-      "ko": "애플리케이션 실행 URL",
-      "pt": "URL de lançamento do aplicativo",
-      "ru": "URL запуска приложения",
-      "tr": "Uygulama başlatma URL'si",
-      "uk": "URL запуску застосунку"
-    },
     "help_file_type": {
       "en": "Startup file type should be {0}, {1}, or {2}.",
       "cn": "启动文件类型应为 {0}、{1} 或 {2}。",
@@ -147,6 +119,20 @@
       "ru": "Примеры:",
       "tr": "Örnekler:",
       "uk": "Приклади:"
+    },
+    "label_virtual_gamepad": {
+      "en": "Enable Virtual Gamepad",
+      "cn": "启用虚拟游戏手柄",
+      "de": "Virtuelles Gamepad aktivieren",
+      "es": "Activar gamepad virtual",
+      "fr": "Activer la manette virtuelle",
+      "it": "Abilita gamepad virtuale",
+      "ja": "バーチャルゲームパッドを有効にする",
+      "ko": "가상 게임패드 활성화",
+      "pt": "Ativar gamepad virtual",
+      "ru": "Включить виртуальный геймпад",
+      "tr": "Sanal gamepad'i etkinleştir",
+      "uk": "Увімкнути віртуальний геймпад"
     },
     "label_editor_screen": {
       "en": "Startup Screen",
@@ -217,6 +203,20 @@
       "ru": "Редактор музыки",
       "tr": "Müzik Düzenleyici",
       "uk": "Редактор музики"
+    },
+    "label_launch_url": {
+      "en": "Application Launch URL",
+      "cn": "应用程序启动 URL",
+      "de": "Anwendungs-Start-URL",
+      "es": "URL de lanzamiento de la aplicación",
+      "fr": "URL de lancement de l'application",
+      "it": "URL di avvio dell'applicazione",
+      "ja": "アプリケーション起動 URL",
+      "ko": "애플리케이션 실행 URL",
+      "pt": "URL de lançamento do aplicativo",
+      "ru": "URL запуска приложения",
+      "tr": "Uygulama başlatma URL'si",
+      "uk": "URL запуску застосунку"
     },
     "footer": {
       "en": "For detailed instructions, see {0}.",

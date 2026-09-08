@@ -31,7 +31,6 @@ class OctaveBar(Widget):
 
         if self.field_cursor.y > 0:
             self.field_cursor.move_to(self.field_cursor.x, 0, False)
-
         self.octave_var = clamp(3 - ((y - self.y - 12) // 24), 0, 3)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
@@ -43,6 +42,5 @@ class OctaveBar(Widget):
     def __on_draw(self):
         x = self.x + 1
         y = self.y + 1 + (3 - self.octave_var) * 24
-
         pyxel.rect(self.x, self.y, self.width, self.height, OCTAVE_BAR_BACKGROUND_COLOR)
         pyxel.rect(x, y, 2, 47, OCTAVE_BAR_COLOR)

@@ -28,6 +28,7 @@
           ref: refAndPath[0],
           path: refAndPath.slice(1).join("/"),
         };
+
         if (preferredRef) {
           const preferredLength = preferredRef.split("/").length;
           if (
@@ -49,6 +50,7 @@
             throw new Error("Failed to resolve the GitHub ref");
           }
         }
+
         if (/^[0-9a-f]{40}$/i.test(refAndPath[0])) {
           return fallback;
         }
@@ -64,6 +66,7 @@
           };
         }
         if (singleSegmentRefSha === undefined) return fallback;
+
         for (let split = refAndPath.length - 1; split >= 2; split--) {
           const ref = refAndPath.slice(0, split).join("/");
           const sha = await resolveRefSha(user, repo, ref);
@@ -72,6 +75,7 @@
           }
           if (sha === undefined) return fallback;
         }
+
         return fallback;
       }
 
@@ -98,6 +102,7 @@
             return undefined;
           }
           if (!res.ok) return undefined;
+
           const sha = (await res.text()).trim();
           return /^[0-9a-f]{40}$/i.test(sha) ? sha : undefined;
         } catch {}
@@ -146,6 +151,7 @@
             name: parts.slice(2).join("/") + ext,
           };
         }
+
         if (target) {
           Promise.resolve(target)
             .then(({ root, name }) =>

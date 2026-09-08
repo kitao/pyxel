@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use crate::font_wrapper::Font;
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
-use crate::tilemap_wrapper::{validate_tilemap_imgsrc, Tilemap};
+use crate::tilemap_wrapper::Tilemap;
 
 // Drawing state
 
@@ -168,15 +168,10 @@ fn bltm(
 
         (u32, {
             validate_index!(tm, pyxel::tilemaps().len(), "tm", "tilemap");
-            {
-                let tilemaps = pyxel::tilemaps();
-                validate_tilemap_imgsrc(&tilemaps[tm as usize])?;
-            }
             pyxel().draw_tilemap(x, y, tm, u, v, w, h, colkey, rotate, scale);
         }),
 
         (Tilemap, {
-            validate_tilemap_imgsrc(&tm.inner)?;
             rc_mut!(pyxel::screen()).draw_tilemap(x, y, &tm.inner, u, v, w, h, colkey, rotate, scale);
         })
     }
@@ -229,15 +224,10 @@ fn bltm3d(
 
         (u32, {
             validate_index!(tm, pyxel::tilemaps().len(), "tm", "tilemap");
-            {
-                let tilemaps = pyxel::tilemaps();
-                validate_tilemap_imgsrc(&tilemaps[tm as usize])?;
-            }
             pyxel().draw_tilemap_3d(x, y, w, h, tm, pos, rot, fov, colkey);
         }),
 
         (Tilemap, {
-            validate_tilemap_imgsrc(&tm.inner)?;
             rc_mut!(pyxel::screen()).draw_tilemap_3d(x, y, w, h, &tm.inner, pos, rot, fov, colkey);
         })
     }
@@ -306,6 +296,5 @@ pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Deprecated functions
     m.add_function(wrap_pyfunction!(image, m)?)?;
     m.add_function(wrap_pyfunction!(tilemap, m)?)?;
-
     Ok(())
 }

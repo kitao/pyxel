@@ -82,7 +82,6 @@ def test_texture_colkey_uses_source_color(source, mapped, shaded):
     target = pyxel.Image(64, 64)
 
     scene.draw(0, 0, 64, 64, target)
-
     expected = 2 if source == 0 else mapped if shaded else source
     assert target.pget(32, 32) == expected
 
@@ -92,9 +91,11 @@ class TestBuild:
         pal = palette()
         s = Shading(pal)
         initial = [[s[col, level] for level in range(4)] for col in range(len(pal))]
+
         for col in range(len(pal)):
             for level in range(4):
                 s[col, level] = (99, 99)
+
         s.build(pal)
         assert [
             [s[col, level] for level in range(4)] for col in range(len(pal))

@@ -26,7 +26,6 @@ class ImageEditor(EditorBase):
 
     def __init__(self, parent):
         super().__init__(parent)
-
         self.new_var("canvas_var", None)
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
@@ -67,7 +66,6 @@ class ImageEditor(EditorBase):
         self._image_viewer = ImageViewer(self)
         self.copy_var("focus_x_var", self._image_viewer)
         self.copy_var("focus_y_var", self._image_viewer)
-
         self._canvas_panel = CanvasPanel(self)
 
         self.add_event_listener("undo", self.__on_undo)

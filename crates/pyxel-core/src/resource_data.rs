@@ -111,12 +111,6 @@ struct SoundData {
 }
 
 impl SoundData {
-    fn validate(&self, index: usize) -> Result<(), String> {
-        Sound::validate_speed(self.speed).map_err(|_| {
-            format!("Invalid resource data: sounds[{index}].speed must be greater than 0")
-        })
-    }
-
     fn from_sound(sound: &RcSound) -> Self {
         let sound = audio_ref!(sound);
         Self {
@@ -139,6 +133,12 @@ impl SoundData {
         drop(sound);
         rc
     }
+
+    fn validate(&self, index: usize) -> Result<(), String> {
+        Sound::validate_speed(self.speed).map_err(|_| {
+            format!("Invalid resource data: sounds[{index}].speed must be greater than 0")
+        })
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -150,7 +150,6 @@ impl MusicData {
     fn from_music(music: &RcMusic) -> Self {
         let music = audio_ref!(music);
         let seqs = trim_empty_vec(&music.seqs);
-
         Self { seqs }
     }
 
@@ -218,6 +217,7 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) -> Result<(), String> {
+        // A failure in any selected bank must leave all live banks unchanged.
         if !exclude_images {
             for (index, image) in self.images.iter().enumerate() {
                 image.validate(index)?;
@@ -234,6 +234,7 @@ impl ResourceData {
                 tilemap.validate(index, image_count)?;
             }
         }
+
         if !exclude_sounds {
             for (index, sound) in self.sounds.iter().enumerate() {
                 sound.validate(index)?;
@@ -256,6 +257,7 @@ impl ResourceData {
                 }
             };
         }
+
         restore!(images, pyxel::images);
         restore!(tilemaps, pyxel::tilemaps);
         restore!(sounds, pyxel::sounds);
@@ -290,6 +292,7 @@ fn validate_grid<T>(
         .checked_mul(values_per_cell)
         .ok_or_else(|| format!("Invalid resource data: {bank}[{index}] row width is too large"))?
         as usize;
+
     if data.is_empty() {
         return Err(format!(
             "Invalid resource data: {bank}[{index}].data must not be empty"
@@ -301,6 +304,7 @@ fn validate_grid<T>(
             data.len()
         ));
     }
+
     for (row_index, row) in data.iter().enumerate() {
         if row.is_empty() {
             return Err(format!(
@@ -314,6 +318,7 @@ fn validate_grid<T>(
             ));
         }
     }
+
     Ok(())
 }
 

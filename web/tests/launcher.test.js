@@ -28,7 +28,6 @@ test("launcher consumes launch failures through the fatal overlay", async () => 
     _displayFatalErrorOverlay: (error) => errors.push(error),
   });
   await new Promise((resolve) => setImmediate(resolve));
-
   assert.deepEqual(errors, [failure]);
 });
 
@@ -36,7 +35,6 @@ test("getFileExt ignores GitHub query strings and line fragments", () => {
   const getFileExt = loadNamedFunction(urlBuilderSource, "getFileExt", {
     URL,
   });
-
   assert.equal(
     getFileExt("https://github.com/example/game/blob/main/demo.py?plain=1"),
     "py",
@@ -55,7 +53,6 @@ test("createLaunchUrl preserves reserved path characters", () => {
   );
   const target =
     "example/game/0123456789abcdef0123456789abcdef01234567/apps/demo&debug#fragment";
-
   const result = new URL(
     createLaunchUrl(
       "https://example.test/web/launcher/",
@@ -65,7 +62,6 @@ test("createLaunchUrl preserves reserved path characters", () => {
       true,
     ),
   );
-
   assert.equal(result.searchParams.get("run"), target);
   assert.equal(result.searchParams.get("gamepad"), "enabled");
   assert.deepEqual([...result.searchParams.keys()], ["run", "gamepad"]);
@@ -78,7 +74,6 @@ test("createLaunchUrl records an explicit slash-ref boundary", () => {
     { URL },
   );
   const target = "example/game/feature/physics/apps/demo";
-
   const result = new URL(
     createLaunchUrl(
       "https://example.test/web/launcher/",
@@ -90,7 +85,6 @@ test("createLaunchUrl records an explicit slash-ref boundary", () => {
       "0123456789abcdef0123456789abcdef01234567",
     ),
   );
-
   assert.equal(result.searchParams.get("run"), target);
   assert.equal(result.searchParams.get("ref"), "feature/physics");
   assert.equal(
@@ -105,7 +99,6 @@ test("createLaunchUrl emits only editor options for resources", () => {
     "createLaunchUrl",
     { URL },
   );
-
   const result = new URL(
     createLaunchUrl(
       "https://example.test/web/launcher/",
@@ -115,7 +108,6 @@ test("createLaunchUrl emits only editor options for resources", () => {
       true,
     ),
   );
-
   assert.equal(result.searchParams.get("editor"), "tilemap");
   assert.equal(result.searchParams.has("gamepad"), false);
 });
@@ -155,6 +147,7 @@ test("URL Builder retains the newest source ref and clears stale resolutions", a
     sha: "0123456789abcdef0123456789abcdef01234567",
     path: `${name}.py`,
   });
+
   controls["startup-file"].value =
     "https://github.com/example/game/blob/main/old.py";
   const old = context.buildLaunchUrl();
@@ -168,6 +161,7 @@ test("URL Builder retains the newest source ref and clears stale resolutions", a
   assert.equal(url.searchParams.get("run"), "example/game/feature/physics/new");
   assert.equal(url.searchParams.get("ref"), "feature/physics");
   assert.equal(url.searchParams.get("sha"), target("new").sha);
+
   pending[0](target("old"));
   await old;
   assert.equal(controls["launch-url"].href, newestUrl);
@@ -175,6 +169,7 @@ test("URL Builder retains the newest source ref and clears stale resolutions", a
   const stale = context.buildLaunchUrl();
   controls["startup-file"].value = "";
   await context.buildLaunchUrl();
+
   pending[2](target("old"));
   await stale;
   assert.equal(controls["launch-url"].href, undefined);
@@ -197,7 +192,6 @@ test("launcher preserves dotted archive paths and options without a ref lookup",
     },
   });
   await new Promise((resolve) => setImmediate(resolve));
-
   assert.deepEqual(launched, [
     {
       root: "https://cdn.jsdelivr.net/gh/owner/repo",
@@ -239,7 +233,6 @@ test("resolveLaunchTarget preserves a legacy ref when a longer tag exists", asyn
     "src",
     "demo",
   ]);
-
   assert.deepEqual(
     { ...result },
     {
@@ -285,7 +278,6 @@ test("resolveLaunchTarget falls back to the longest slash-containing ref", async
     "apps",
     "demo",
   ]);
-
   assert.deepEqual(
     { ...result },
     {
@@ -324,7 +316,6 @@ test("resolveLaunchTarget honors an explicit slash-ref boundary", async () => {
     ["example", "game", "feature", "physics", "apps", "demo"],
     "feature/physics",
   );
-
   assert.deepEqual({ ...result }, { ref: sha, path: "apps/demo" });
   assert.deepEqual(requested, [
     "https://api.github.com/repos/example/game/commits/feature%2Fphysics",
@@ -347,7 +338,6 @@ test("resolveLaunchTarget uses a recorded SHA when GitHub is unavailable", async
     "feature/physics",
     "0123456789abcdef0123456789abcdef01234567",
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -404,7 +394,6 @@ test("resolveLaunchTarget stops after an unrelated validation error", async () =
     "apps",
     "demo",
   ]);
-
   assert.deepEqual(
     { ...result },
     {
@@ -438,7 +427,6 @@ test("resolveLaunchTarget stops slash probing when GitHub API is unavailable", a
       "apps",
       "demo",
     ]);
-
     assert.deepEqual(
       { ...result },
       {
@@ -472,7 +460,6 @@ test("resolveLaunchTarget stops slash probing after a network error", async () =
     "apps",
     "demo",
   ]);
-
   assert.deepEqual(
     { ...result },
     {
@@ -505,7 +492,6 @@ test("resolveLaunchTarget accepts an immutable SHA without a network request", a
     "apps",
     "demo",
   ]);
-
   assert.deepEqual(
     { ...result },
     {

@@ -86,7 +86,7 @@ pyxel.play(0, "CDEFG")
 <details>
 <summary>自作の Pyxel アプリを Web で公開するにはどうすればいいですか？</summary>
 
-Pyxel Web Launcher、app2html、HTML カスタム要素の 3 つの方法があります。詳しくは [Web 版 Pyxel の使い方](https://kitao.github.io/pyxel/web/web-usage/) を参照してください。
+Pyxel Code Maker、Pyxel Web Launcher、app2html、HTML カスタム要素の 4 つの方法があります。詳しくは [Web 版 Pyxel の使い方](https://kitao.github.io/pyxel/web/web-usage/) を参照してください。
 
 </details>
 

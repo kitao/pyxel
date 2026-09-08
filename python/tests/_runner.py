@@ -22,6 +22,7 @@ class _FlipCapture(Exception):
 def main():
     mode = sys.argv[1]
     out_dir = Path(sys.argv[-1])
+
     if mode == "example":
         _run_example(sys.argv[2], json.loads(sys.argv[3]), out_dir)
     elif mode == "flip_example":
@@ -42,11 +43,13 @@ def _run_example(script_path, plan, out_dir):
     _patch_init()
     pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
     pyxel.show = lambda: None
+
     script_dir = Path(script_path).parent
     os.chdir(script_dir)
     # Match `python script.py`, which puts the script's directory on sys.path
     # so sibling modules import.
     sys.path.insert(0, str(script_dir))
+
     runpy.run_path(str(script_path), run_name="__main__")
     _capture_frames(captured, plan, out_dir)
 
@@ -89,9 +92,11 @@ def _run_app(pyxapp_path, plan, out_dir):
     _patch_init(extra=lambda: random.seed(0))
     pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
     pyxel.show = lambda: None
+
     app_dir = str(Path(startup).parent)
     sys.path.insert(0, app_dir)
     os.chdir(app_dir)
+
     runpy.run_path(startup, run_name="__main__")
     _capture_frames(captured, plan, out_dir)
 
@@ -128,15 +133,20 @@ def _run_editor(editor, resource_file, out_dir):
     _editor_capture(captured, out_dir / "fedit.png")
 
 
+# Capture helpers
+
+
 def _patch_init(*, extra=None):
     original_init = pyxel.init
 
     def patched(*args, **kwargs):
         kwargs["headless"] = True
         kwargs["fps"] = 1_000_000
+
         cwd = os.getcwd()
         original_init(*args, **kwargs)
         os.chdir(cwd)
+
         pyxel.rseed(0)
         pyxel.nseed(0)
         if extra is not None:
@@ -147,6 +157,7 @@ def _patch_init(*, extra=None):
 
 def _capture_frames(captured, plan, out_dir):
     current_frame = 0
+
     for step in plan:
         target = step["frame"]
         if "mouse" in step:
@@ -155,12 +166,14 @@ def _capture_frames(captured, plan, out_dir):
         if "press" in step:
             for key in step["press"]:
                 pyxel.set_btn(key, True)
+
         if "update" in captured:
             while current_frame < target:
                 captured["update"]()
                 captured["draw"]()
                 pyxel.flip()
                 current_frame += 1
+
         if step.get("capture", True):
             pyxel.screenshot(str(out_dir / f"frame_{target}.png"))
         if "press" in step:
@@ -171,6 +184,7 @@ def _capture_frames(captured, plan, out_dir):
 def _extract_pyxapp(pyxapp_path, extract_dir):
     with zipfile.ZipFile(pyxapp_path) as zf:
         zf.extractall(extract_dir)
+
     for setting_file in Path(extract_dir).glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
         return str(
             setting_file.parent / setting_file.read_text(encoding="utf-8").strip()

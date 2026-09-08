@@ -92,6 +92,7 @@ class Character(Node):
                 if abs(parent_world.determinant()) < 1e-12
                 else offset.to_local_dir(parent_world)
             )
+
         push = Mat4.from_translation(offset)
         self.transform = push * self.transform
         self.collider.velocity += contact.delta_velocity
@@ -104,9 +105,11 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Character")
         pyxel.mouse(True)
+
         self.scene = Node()
         self.scene.shading = Shading(pyxel.colors)
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
+
         self.scene.add_child(Stage())
         self.scene.add_child(Wall(Vec3(-7, 1.0, 0), Vec3(0.4, 2.0, 14)))
         self.scene.add_child(Wall(Vec3(7, 1.0, 0), Vec3(0.4, 2.0, 14)))
@@ -114,14 +117,17 @@ class App:
         self.scene.add_child(Wall(Vec3(0, 1.0, 7), Vec3(14, 2.0, 0.4)))
         self.scene.add_child(MovingPlatform())
         self.scene.add_child(Character())
+
         self.orbit = OrbitCamera(target=Vec3(0, 1, 0), pitch_deg=35, radius=18)
         self.orbit.camera.clear_color = 1
         self.scene.camera = self.orbit.camera
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
         self.orbit.update()
         self.scene.update()
 

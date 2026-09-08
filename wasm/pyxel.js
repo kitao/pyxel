@@ -10,6 +10,7 @@ const GAMEPAD_MENU_PATH = "images/gamepad_menu_92x26.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
+
 const VIRTUAL_GAMEPAD_UP = 0;
 const VIRTUAL_GAMEPAD_DOWN = 1;
 const VIRTUAL_GAMEPAD_LEFT = 2;
@@ -79,6 +80,7 @@ class PyxelEditElement extends PyxelBaseElement {
 }
 
 const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
+
 const _encodeUrlPath = (path) =>
   path.split("/").map(encodeURIComponent).join("/");
 
@@ -189,6 +191,7 @@ const _CODE_TO_SCANCODE = {
   Period: 55,
   Slash: 56,
 };
+
 document.addEventListener(
   "keydown",
   (e) => {
@@ -243,7 +246,6 @@ async function resetPyxel() {
   if (!window.pyxelContext.initialized) {
     return;
   }
-
   if (window.pyxelContext.hasFatalError) {
     location.reload();
     return;
@@ -251,7 +253,6 @@ async function resetPyxel() {
 
   try {
     document.getElementById("pyxel-error-overlay")?.remove();
-
     window.pyxelContext.pyodide.runPython(`
       import pyxel
       pyxel.quit()
@@ -286,7 +287,7 @@ async function resetPyxel() {
           n
           for n, m in list(sys.modules.items())
           if getattr(m, "__file__", "")
-          and (m.__file__.startswith(work_dir) or m.__file__.startswith(temp_dir))
+          and os.path.abspath(m.__file__).startswith((work_dir + "/", temp_dir + "/"))
       ] + ["__main__"]
 
       for n in mods:
@@ -367,7 +368,6 @@ const _hookGlobalErrors = () => {
   window.addEventListener("error", (e) => {
     _displayFatalErrorOverlay(e.error || e.message || e);
   });
-
   window.addEventListener("unhandledrejection", (e) => {
     _displayFatalErrorOverlay(e.reason || e);
   });
@@ -405,7 +405,6 @@ const _setMinWidthFromRatio = (selector, screenSize) => {
   if (!elem) {
     return;
   }
-
   const minWidthRatio = parseFloat(
     getComputedStyle(elem).getPropertyValue("--min-width-ratio"),
   );
@@ -439,6 +438,7 @@ const _loadImage = (image, src) => {
       cleanup();
       reject(new Error(`Failed to load image: ${src}`));
     };
+
     image.addEventListener("load", onLoad, { once: true });
     image.addEventListener("error", onError, { once: true });
     image.src = src;
@@ -492,7 +492,6 @@ const _createScreenElements = async () => {
   await new Promise((resolve) => setTimeout(resolve, 50));
   pyxelScreen.appendChild(logoImage);
   _updateScreenElementsSize();
-
   return sdl2Canvas;
 };
 
@@ -553,7 +552,6 @@ const _loadPyodideAndPyxel = async (canvas) => {
   const response = await importHookFetch;
   const code = await response.text();
   pyodide.runPython(code);
-
   return pyodide;
 };
 
@@ -569,7 +567,6 @@ const _hookPythonError = (pyodide) => {
         if (!flushTimer && !msg.startsWith("Traceback")) {
           return;
         }
-
         pyodide._module._emscripten_cancel_main_loop();
         errorText += `${msg}\n`;
 
@@ -611,6 +608,7 @@ const _displayErrorOverlay = (message) => {
     });
     pyxelScreen.appendChild(overlay);
   }
+
   overlay.textContent = message;
   overlay.scrollTop = overlay.scrollHeight;
 };
@@ -624,8 +622,10 @@ const _formatUnknownError = (error) => {
   }
   const name = error.name || "Error";
   const message = error.message || String(error);
-  const stack = error.stack || "";
-  return `${name}: ${message}${stack ? `\n${stack}` : ""}`;
+  const stack = String(error.stack || "");
+  const summary = `${name}: ${message}`;
+  if (stack === summary || stack.startsWith(`${summary}\n`)) return stack;
+  return `${summary}${stack ? `\n${stack}` : ""}`;
 };
 
 const _displayFatalErrorOverlay = (error) => {
@@ -645,6 +645,7 @@ const _hookFileOperations = (pyodide, root) => {
     if (isFile) {
       dirs.pop();
     }
+
     let path = "";
     for (const dir of dirs) {
       path += `/${dir}`;
@@ -661,9 +662,20 @@ const _hookFileOperations = (pyodide, root) => {
     if (!path.startsWith("/")) {
       path = `${fs.cwd()}/${path}`;
     }
-    if (!path.startsWith(PYXEL_WORKING_DIRECTORY)) {
+
+    const parts = [];
+    for (const part of path.split("/")) {
+      if (part === "..") {
+        parts.pop();
+      } else if (part && part !== ".") {
+        parts.push(part);
+      }
+    }
+    path = `/${parts.join("/")}`;
+    if (!path.startsWith(`${PYXEL_WORKING_DIRECTORY}/`)) {
       return;
     }
+
     path = path.slice(PYXEL_WORKING_DIRECTORY.length + 1);
     const srcPath = `${root}/${_encodeUrlPath(path)}`;
     const dstPath = `${PYXEL_WORKING_DIRECTORY}/${path}`;
@@ -771,6 +783,7 @@ const _waitForInput = async () => {
         finish();
       }
     };
+
     window.pyxelContext.resolveInput = finish;
     document.body.addEventListener("click", finish);
     document.body.addEventListener("touchstart", finish);
@@ -845,7 +858,6 @@ const _addVirtualGamepad = (mode) => {
   if (mode !== "enabled" || !_isTouchDevice()) {
     return;
   }
-
   if (
     document.getElementById("pyxel-gamepad-cross") ||
     document.getElementById("pyxel-gamepad-button") ||
@@ -856,7 +868,6 @@ const _addVirtualGamepad = (mode) => {
 
   // Reserve vertical space for the touch controls.
   document.querySelector("canvas#canvas").style.height = "80%";
-
   const pyxelScreen = document.querySelector("div#pyxel-screen");
 
   const createGamepadElement = (id, path) => {
@@ -919,6 +930,7 @@ const _addVirtualGamepad = (mode) => {
     const button =
       cachedRects?.button ?? gamepadButtonImage.getBoundingClientRect();
     const menu = cachedRects?.menu ?? gamepadMenuImage.getBoundingClientRect();
+
     _virtualGamepadStates.fill(false);
     for (const touch of e.touches) {
       const { clientX, clientY } = touch;
@@ -1008,6 +1020,8 @@ const _executePyxelCommand = async (pyodide, params) => {
     }
   }
 };
+
+// Custom element helpers
 
 const _launchPyxelFromElement = (params) => {
   launchPyxel(params).catch(_displayFatalErrorOverlay);

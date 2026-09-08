@@ -36,9 +36,6 @@ from .glb_fixtures import (
 EXAMPLES_DIR = Path(__file__).parents[2] / "pyxel" / "examples"
 
 
-# Tests
-
-
 def test_motion_not_user_constructible():
     with raises_exact(TypeError, "cannot create 'pyxel.cube.Motion' instances"):
         Motion()
@@ -76,7 +73,6 @@ def test_from_glb_loads_blockbench_profile_textured_model(tmp_path):
     assert isinstance(mesh.col_img, Image)
 
     colors = _render_mesh_colors(mesh)
-
     assert 8 in colors
     assert 10 in colors
 
@@ -85,17 +81,15 @@ def test_from_glb_loads_blockbench_profile_motion(tmp_path):
     path = write_blockbench_profile_glb(tmp_path / "blockbench_motion.glb")
     mesh = Mesh.from_glb(str(path), colkey=0, fps=20.0)
     root = Node.from_mesh(mesh)
-
     assert len(mesh.motions) == 1
     assert mesh.motions[0].name == "idle"
     assert mesh.motions[0].length == 20.0
 
     root.apply_motion(mesh.motions[0], 10.0)
-
     body = root.children[0]
     assert root.transform.pos == Vec3(0.25, 0.0, 0.0)
     assert body.transform.scale == Vec3(1.0, 1.5, 1.0)
-    assert body.transform.rot.to_euler().z == pytest.approx(45.0)
+    assert body.transform.rot.to_euler().z == pytest.approx(45.0, abs=1e-5)
 
 
 def test_from_glb_loads_blockbench_profile_smooth_motion(tmp_path):
@@ -106,7 +100,6 @@ def test_from_glb_loads_blockbench_profile_smooth_motion(tmp_path):
     root = Node.from_mesh(mesh)
 
     root.apply_motion(mesh.motions[0], 5.0)
-
     # Asymmetric tangents put the cubic midpoint above the linear value, 0.125.
     assert root.transform.pos.x == 0.15625
 
@@ -128,8 +121,8 @@ def test_bundled_actor_cube_is_closed_and_outward_wound():
             b = _vec3(positions, ib)
             c = _vec3(positions, ic)
             normal = _cross(_sub(b, a), _sub(c, a))
-
             assert _dot(normal, _center(a, b, c)) > 0.0
+
             for edge in ((a, b), (b, c), (c, a)):
                 key = tuple(sorted(edge))
                 coord_edges[key] = coord_edges.get(key, 0) + 1
@@ -140,7 +133,6 @@ def test_bundled_actor_cube_is_closed_and_outward_wound():
 def test_from_glb_converts_rgb_texture(tmp_path):
     path = write_rgb_texture_glb(tmp_path / "rgb.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
-
     assert isinstance(mesh.col_img, Image)
     assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 8, 3]
 
@@ -148,7 +140,6 @@ def test_from_glb_converts_rgb_texture(tmp_path):
 def test_from_glb_converts_gray_texture(tmp_path):
     path = write_gray_texture_glb(tmp_path / "gray.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
-
     assert isinstance(mesh.col_img, Image)
     assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 7, 0]
 
@@ -156,7 +147,6 @@ def test_from_glb_converts_gray_texture(tmp_path):
 def test_from_glb_converts_gray_alpha_texture(tmp_path):
     path = write_gray_alpha_texture_glb(tmp_path / "gray_alpha.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
-
     assert isinstance(mesh.col_img, Image)
     assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 7, 0]
 
@@ -165,7 +155,6 @@ def test_from_glb_loads_non_indexed_primitive(tmp_path):
     path = write_non_indexed_glb(tmp_path / "non_indexed.glb")
     mesh = Mesh.from_glb(str(path))
     primitive = next(p for p in mesh.primitives if p is not None)
-
     assert len(primitive.positions) == 18
     assert len(primitive.indices) == 0
 
@@ -174,14 +163,12 @@ def test_from_glb_uses_authored_normals_when_present(tmp_path):
     path = write_authored_normals_glb(tmp_path / "authored_normals.glb")
     mesh = Mesh.from_glb(str(path))
     primitive = next(p for p in mesh.primitives if p is not None)
-
     assert tuple(primitive.normals) == (0.0, 0.0, -1.0)
 
 
 def test_from_glb_loads_motion(tmp_path):
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")
     mesh = Mesh.from_glb(str(path), fps=30.0)
-
     assert len(mesh.motions) == 1
     assert isinstance(mesh.motions[0], Motion)
     assert mesh.motions[0].name == "slide"
@@ -191,7 +178,6 @@ def test_from_glb_loads_motion(tmp_path):
 def test_from_glb_ignores_alpha_texture_without_colkey(tmp_path):
     path = write_alpha_texture_glb(tmp_path / "alpha.glb")
     mesh = Mesh.from_glb(str(path))
-
     assert isinstance(mesh.col_img, Image)
     assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 8, 3]
     assert mesh.colkey is None
@@ -208,8 +194,8 @@ def test_from_glb_converts_mask_alpha_texture_pixels_to_auto_colkey(tmp_path):
         ],
         alpha_mode="MASK",
     )
-    mesh = Mesh.from_glb(str(path))
 
+    mesh = Mesh.from_glb(str(path))
     assert isinstance(mesh.col_img, Image)
     assert mesh.col_img.pget(0, 1) == 0
     assert mesh.colkey == 0
@@ -226,8 +212,8 @@ def test_from_glb_converts_mask_alpha_texture_pixels_to_requested_colkey(tmp_pat
         ],
         alpha_mode="MASK",
     )
-    mesh = Mesh.from_glb(str(path), colkey=2)
 
+    mesh = Mesh.from_glb(str(path), colkey=2)
     assert isinstance(mesh.col_img, Image)
     assert mesh.col_img.pget(0, 1) == 2
     assert mesh.colkey == 2
@@ -245,8 +231,8 @@ def test_from_glb_uses_mask_alpha_cutoff(tmp_path):
         alpha_mode="MASK",
         alpha_cutoff=0.05,
     )
-    mesh = Mesh.from_glb(str(path))
 
+    mesh = Mesh.from_glb(str(path))
     assert isinstance(mesh.col_img, Image)
     assert mesh.col_img.pget(0, 1) != mesh.colkey
     assert mesh.col_img.pget(1, 1) == mesh.colkey
@@ -266,7 +252,6 @@ def test_from_glb_warns_and_autoselects_mask_colkey_on_collision(tmp_path, capfd
 
     mesh = Mesh.from_glb(str(path), colkey=8)
     _, err = capfd.readouterr()
-
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey == 0
     assert mesh.col_img.pget(0, 1) == mesh.colkey
@@ -295,7 +280,6 @@ def test_from_glb_warns_and_ignores_mask_when_palette_is_full(tmp_path, capfd):
 
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
-
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey is None
     assert err == (
@@ -323,7 +307,6 @@ def test_from_glb_warns_when_mask_colkey_collision_has_no_fallback(tmp_path, cap
 
     mesh = Mesh.from_glb(str(path), colkey=0)
     _, err = capfd.readouterr()
-
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey is None
     assert err == (
@@ -339,9 +322,7 @@ def test_from_glb_loads_multiple_flat_materials(tmp_path):
         tmp_path / "flat_materials.glb", textured=False
     )
     mesh = Mesh.from_glb(str(path))
-
     colors = _render_mesh_colors(mesh)
-
     assert 8 in colors
     assert 3 in colors
 
@@ -351,9 +332,7 @@ def test_from_glb_loads_multiple_base_color_textures(tmp_path):
         tmp_path / "two_textures.glb", textured=True
     )
     mesh = Mesh.from_glb(str(path), colkey=0)
-
     colors = _render_mesh_colors(mesh)
-
     assert 8 in colors
     assert 3 in colors
 
@@ -361,17 +340,14 @@ def test_from_glb_loads_multiple_base_color_textures(tmp_path):
 def test_from_glb_applies_textured_material_factor(tmp_path):
     path = write_tinted_texture_glb(tmp_path / "tinted_texture.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
-
     assert isinstance(mesh.col_img, Image)
     assert {mesh.col_img.pget(x, y) for y in range(2) for x in range(2)} == {8}
 
 
 def test_from_glb_warns_and_loads_materialless_primitive(tmp_path, capfd):
     path = write_materialless_primitive_glb(tmp_path / "materialless.glb")
-
     mesh = Mesh.from_glb(str(path), colkey=0)
     _, err = capfd.readouterr()
-
     assert len(mesh.primitives) == 3
     assert mesh.primitives[2] is not None
     assert 8 in _render_mesh_colors(mesh)
@@ -383,23 +359,19 @@ def test_from_glb_warns_and_loads_materialless_primitive(tmp_path, capfd):
 def test_from_glb_loads_unused_extra_material_and_texture(tmp_path):
     path = write_two_texture_glb(tmp_path / "two_textures.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
-
     assert isinstance(mesh.col_img, Image)
 
 
 def test_from_glb_loads_unused_extra_material(tmp_path):
     path = write_two_material_glb(tmp_path / "two_materials.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
-
     assert isinstance(mesh.col_img, Image)
 
 
 def test_from_glb_warns_for_unsupported_texture_usage(tmp_path, capfd):
     path = write_normal_texture_glb(tmp_path / "normal_texture.glb")
-
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
-
     assert isinstance(mesh.col_img, Image)
     assert err == (
         "Pyxel warning: GLB unsupported texture usage; non-base-color textures are "
@@ -409,10 +381,8 @@ def test_from_glb_warns_for_unsupported_texture_usage(tmp_path, capfd):
 
 def test_from_glb_warns_and_ignores_material_animation(tmp_path, capfd):
     path = write_material_animation_glb(tmp_path / "material_animation.glb")
-
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
-
     assert mesh.motions == []
     assert err == (
         "Pyxel warning: GLB animation pointer/material animation is not supported; "
@@ -427,10 +397,8 @@ def test_from_glb_keeps_motion_for_extension_name_in_metadata(
     path = write_single_texture_motion_glb(
         tmp_path / "metadata.glb", animation_pointer_metadata=metadata
     )
-
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
-
     assert len(mesh.motions) == 1
     assert err == ""
 
@@ -476,7 +444,6 @@ def test_from_glb_rejects_animation_frame_overflow(tmp_path):
     path = write_single_texture_motion_glb(
         tmp_path / "overflow.glb", animation_times=(0.0, 2.0)
     )
-
     with raises_exact(ValueError, "GLB animation frame times must be finite"):
         Mesh.from_glb(str(path), fps=3e38)
 
@@ -494,14 +461,12 @@ def test_from_glb_accepts_animation_times_rounded_to_same_frame(tmp_path):
     mesh = Mesh.from_glb(str(path), fps=0.25)
     node = Node.from_mesh(mesh)
     node.apply_motion(mesh.motions[0], 0.0)
-
     assert mesh.motions[0].length == 0.0
     assert node.transform.pos == Vec3.ZERO
 
 
 def test_from_glb_rejects_external_buffer(tmp_path):
     path = write_external_buffer_glb(tmp_path / "external_buffer.glb")
-
     with raises_exact(ValueError, "GLB external buffers are not supported"):
         Mesh.from_glb(str(path))
 
@@ -521,24 +486,20 @@ def test_from_glb_rejects_external_image(tmp_path):
 
 def test_from_glb_rejects_non_triangle_mode(tmp_path):
     path = write_line_mode_glb(tmp_path / "lines.glb")
-
     with raises_exact(ValueError, "GLB only triangle primitives are supported"):
         Mesh.from_glb(str(path))
 
 
 def test_from_glb_rejects_non_indexed_vertex_count_not_multiple_of_3(tmp_path):
     path = write_non_indexed_glb(tmp_path / "ragged.glb", vertex_count=4)
-
     with raises_exact(ValueError, "GLB triangle vertex count must be a multiple of 3"):
         Mesh.from_glb(str(path))
 
 
 def test_from_glb_warns_and_loads_base_mesh_for_morph_targets(tmp_path, capfd):
     path = write_morph_target_glb(tmp_path / "morph.glb")
-
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
-
     _assert_base_quad(mesh)
     assert err == (
         "Pyxel warning: GLB mesh morph targets are not supported; base mesh is used\n"
@@ -547,25 +508,22 @@ def test_from_glb_warns_and_loads_base_mesh_for_morph_targets(tmp_path, capfd):
 
 def test_from_glb_warns_and_loads_base_mesh_for_skins(tmp_path, capfd):
     path = write_skin_glb(tmp_path / "skin.glb")
-
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
-
     _assert_base_quad(mesh)
     assert err == "Pyxel warning: GLB skins are not supported; skinning is ignored\n"
 
 
 def test_from_glb_warns_and_decomposes_matrix_node_transforms(tmp_path, capfd):
     path = write_matrix_transform_glb(tmp_path / "matrix_transform.glb")
-
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
 
     transform = mesh.transforms[0]
     assert transform.pos == Vec3(1, 2, 3)
-    assert tuple(transform.scale) == pytest.approx((2, 3, 4))
+    assert tuple(transform.scale) == pytest.approx((2, 3, 4), abs=1e-6)
     assert tuple(transform.rot * Vec3.RIGHT) == pytest.approx((0, 0, -1), abs=1e-6)
-    assert tuple(transform * Vec3(1, 1, 1)) == pytest.approx((5, 5, 1))
+    assert tuple(transform * Vec3(1, 1, 1)) == pytest.approx((5, 5, 1), abs=1e-6)
     assert err == (
         "Pyxel warning: GLB matrix node transforms are not supported; transform is "
         "decomposed\n"
@@ -576,10 +534,8 @@ def test_from_glb_warns_and_loads_base_mesh_with_extra_vertex_attributes(
     tmp_path, capfd
 ):
     path = write_tangent_attribute_glb(tmp_path / "tangent_attribute.glb")
-
     mesh = Mesh.from_glb(str(path))
     _, err = capfd.readouterr()
-
     _assert_base_quad(mesh)
     assert err == (
         "Pyxel warning: GLB unsupported vertex attribute: Tangents; attribute is ignored\n"
@@ -592,7 +548,6 @@ def test_apply_motion_updates_imported_node_tree(tmp_path):
     root = Node.from_mesh(mesh)
 
     root.apply_motion(mesh.motions[0], 15.0)
-
     assert root.transform.pos == Vec3(0.5, 0.0, 0.0)
 
 
@@ -603,7 +558,6 @@ def test_play_motion_advances_during_update(tmp_path):
 
     root.play_motion(mesh.motions[0], start_frame=0.0)
     root.update()
-
     # One update advances the playhead by the default speed (1.0), so
     # the linear 0-to-1 slide over 30 frames sits at x = 1 / 30.
     assert root.transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
@@ -618,6 +572,7 @@ def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
     root.play_motion(mesh.motions[0], start_frame=float(2**24))
     root.update()
     assert root.transform.pos == Vec3(17.0 / 30.0, 0.0, 0.0)
+
     root.update()
     assert root.transform.pos == Vec3(18.0 / 30.0, 0.0, 0.0)
 
@@ -634,7 +589,6 @@ def test_nonloop_motion_advances_before_clamping_start(
 
     root.play_motion(mesh.motions[0], loop=False, speed=speed, start_frame=start_frame)
     root.update()
-
     assert root.transform.pos == Vec3(expected_frame / 30.0, 0.0, 0.0)
 
 
@@ -650,7 +604,6 @@ def test_stop_motion_leaves_current_pose(tmp_path):
     root.stop_motion()
     before = root.transform
     root.update()
-
     assert root.transform == before
 
 
@@ -726,6 +679,7 @@ def _render_mesh_colors(mesh):
     scene.camera.clear_color = 0
     scene.camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
     scene.add_child(Node.from_mesh(mesh))
+
     scene.draw(0, 0, pyxel.width, pyxel.height)
     return {pyxel.pget(x, y) for y in range(pyxel.height) for x in range(pyxel.width)}
 
@@ -743,9 +697,6 @@ def _assert_base_quad(mesh):
     ]
     assert list(primitive.indices) == [0, 1, 2, 0, 2, 3]
     assert list(primitive.normals) == [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
-
-
-# Geometry helpers
 
 
 def _vec3(values, index):

@@ -7,19 +7,21 @@ use crate::tone::{ToneMode, ToneSample};
 // System defaults
 pub const VERSION: &str = "3.0.0";
 pub const BASE_DIR: &str = ".pyxel";
-pub const WINDOW_STATE_ENV: &str = "PYXEL_WINDOW_STATE";
-pub const WATCH_STATE_FILE_ENV: &str = "PYXEL_WATCH_STATE_FILE";
-pub const WATCH_RESET_EXIT_CODE: u32 = b'R' as u32;
+
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
+
 pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
 pub const DEFAULT_CAPTURE_SEC: u32 = 10;
+
 pub const WINDOW_TO_DISPLAY_RATIO: f32 = 0.75;
 pub const BACKGROUND_COLOR: Rgb24 = 0x202224;
+pub const NUM_SCREEN_MODES: u32 = 3;
+
 pub const MAX_FRAME_DELAY_MS: u32 = 100;
 pub const NUM_MEASURE_FRAMES: u32 = 10;
-pub const NUM_SCREEN_MODES: u32 = 3;
+
 pub const ICON_SIZE: u32 = 16;
 pub const ICON_SCALE: u32 = 4;
 pub const ICON_COLKEY: Option<Color> = Some(0);
@@ -42,24 +44,34 @@ pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
     "0000000110000000",
 ];
 
+pub const WINDOW_STATE_ENV: &str = "PYXEL_WINDOW_STATE";
+pub const WATCH_STATE_FILE_ENV: &str = "PYXEL_WATCH_STATE_FILE";
+pub const WATCH_RESET_EXIT_CODE: u32 = b'R' as u32;
+
 // Resource file settings
 pub const APP_FILE_EXTENSION: &str = ".pyxapp";
 pub const APP_STARTUP_SCRIPT_FILE: &str = ".pyxapp_startup_script";
+
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
 pub const RESOURCE_ARCHIVE_NAME: &str = "pyxel_resource.toml";
 pub const RESOURCE_FORMAT_VERSION: u32 = 4;
+
 pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics constants
 pub const NUM_COLORS: u32 = 16;
 pub const MAX_COLORS: u32 = 256;
+
 pub const NUM_IMAGES: u32 = 3;
 pub const IMAGE_SIZE: u32 = 256;
+
 pub const NUM_TILEMAPS: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
+
 pub const TILE_SIZE: u32 = 8;
 pub const TILE_SHIFT: u32 = 3; // log2(TILE_SIZE)
 pub const TILE_MASK: i32 = TILE_SIZE as i32 - 1;
+
 pub const DEFAULT_COLORS: [Rgb24; NUM_COLORS as usize] = [
     // Palette indices 0-7
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee,
@@ -82,11 +94,13 @@ pub const COLOR_CYAN: Color = 12;
 pub const COLOR_GRAY: Color = 13;
 pub const COLOR_PINK: Color = 14;
 pub const COLOR_PEACH: Color = 15;
+
 pub const CURSOR_WIDTH: u32 = 8;
 pub const CURSOR_HEIGHT: u32 = 8;
 pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
     "11111100", "17776100", "17761000", "17676100", "16167610", "11016761", "00001610", "00000100",
 ];
+
 pub const MIN_FONT_CODE: char = ' ';
 pub const MAX_FONT_CODE: char = '\x7F';
 pub const NUM_FONT_COLS: u32 = 16;
@@ -111,11 +125,13 @@ pub const AUDIO_CLOCK_RATE: u32 = 1_789_773; // NTSC NES APU clock rate
 pub const AUDIO_SAMPLE_RATE: u32 = 22_050; // 22.05kHz
 pub const AUDIO_SAMPLE_BITS: u32 = 16;
 pub const AUDIO_CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
+
 #[cfg(target_os = "emscripten")]
 pub const AUDIO_BUFFER_SAMPLES: u32 = 1024; // 46.4ms at the internal sample rate
 #[cfg(not(target_os = "emscripten"))]
 pub const AUDIO_BUFFER_SAMPLES: u32 = 512; // 23.2ms at the internal sample rate
 pub const AUDIO_RENDER_STEP_SAMPLES: u32 = 64;
+
 pub const AUDIO_GAIN_SHIFT: u32 = 14;
 pub const AUDIO_GAIN_SCALE: i64 = 1_i64 << AUDIO_GAIN_SHIFT;
 

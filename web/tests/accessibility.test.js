@@ -24,12 +24,14 @@ test("Code Maker controls and dialogs expose keyboard semantics", () => {
     assert.ok(openingTag, id);
     assert.doesNotMatch(openingTag, /tabindex="-1"/, id);
   }
+
   const menuItems = [...source.matchAll(/<button[^>]+role="menuitem"[^>]*>/gs)];
   assert.ok(menuItems.length > 0);
   for (const [openingTag] of menuItems) {
     assert.match(openingTag, /tabindex="-1"/);
   }
   assert.match(source, /<input[^>]+id="load-file"[^>]+tabindex="-1"/s);
+
   const modals = [...source.matchAll(/<div[^>]+id="modal-[^"]+"[^>]*>/gs)];
   assert.ok(modals.length > 0);
   for (const [openingTag] of modals) {
@@ -39,6 +41,7 @@ test("Code Maker controls and dialogs expose keyboard semantics", () => {
     assert.ok(labelId?.trim());
     assert.match(source, new RegExp(`<h[1-6][^>]+id="${labelId}"[^>]*>`));
   }
+
   for (const id of ["input-load-gist", "input-load-github", "input-load-url"]) {
     const openingTag = source.match(
       new RegExp(`<input[^>]+id="${id}"[^>]*>`, "s"),
@@ -89,7 +92,6 @@ test("Code Maker fixes focus-line widths on a 375px mobile-first layout", () => 
   );
 
   updateFocusLineLayout();
-
   assert.deepEqual(focusLineLeft.style, {
     flex: "0 0 auto",
     width: "187.5px",
@@ -180,7 +182,6 @@ test("Code Maker restores focus before dispatching a menu action", () => {
   });
 
   activateMenuItem(item, {});
-
   assert.deepEqual(calls, ["close", "focus", "save"]);
 });
 
@@ -249,6 +250,7 @@ test("MML Studio toggles expose their state and channel names", () => {
   handleButtonPress(button);
   assert.equal(attributes["aria-pressed"], "true");
   assert.equal(context.runtimeScreen.contentWindow.js_solo1, true);
+
   handleButtonPress(button);
   assert.equal(attributes["aria-pressed"], "false");
   assert.equal(context.runtimeScreen.contentWindow.js_solo1, false);

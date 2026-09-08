@@ -13,6 +13,7 @@ impl Profiler {
             measure_frame_count >= 1,
             "measure_frame_count must be greater than 0"
         );
+
         Self {
             measure_frame_count,
             measured_frame_count: 0,
@@ -47,6 +48,7 @@ impl Profiler {
         if self.measured_frame_count >= self.measure_frame_count {
             self.average_time = self.total_time as f32 / self.measured_frame_count as f32;
             self.average_fps = 1000.0 / self.average_time;
+
             self.measured_frame_count = 0;
             self.total_time = 0;
         }
@@ -82,7 +84,6 @@ mod tests {
     #[test]
     fn test_multi_frame_average() {
         let mut p = Profiler::new(3);
-
         p.start(0);
         p.end(10);
         assert_eq!(p.average_time(), 0.0, "should not update before 3 frames");
@@ -100,7 +101,6 @@ mod tests {
     #[test]
     fn test_consecutive_cycles() {
         let mut p = Profiler::new(2);
-
         p.start(0);
         p.end(10);
         p.start(100);

@@ -61,6 +61,7 @@ impl Tone {
         if self.wavetable != self.cached_wavetable || self.sample_bits != self.cached_sample_bits {
             self.cached_wavetable.clone_from(&self.wavetable);
             self.cached_sample_bits = self.sample_bits;
+
             self.waveform.clear();
             if (1..=AUDIO_SAMPLE_BITS).contains(&self.sample_bits) && !self.wavetable.is_empty() {
                 let max_sample = (1u32 << self.sample_bits) - 1;
@@ -73,6 +74,7 @@ impl Tone {
             }
             self.waveform_revision = self.waveform_revision.wrapping_add(1);
         }
+
         (&self.waveform, self.waveform_revision)
     }
 }

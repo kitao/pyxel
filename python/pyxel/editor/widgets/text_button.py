@@ -21,7 +21,6 @@ class TextButton(Button):
             **kwargs,
         )
         self._text = text
-
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):

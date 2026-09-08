@@ -37,6 +37,7 @@ class TestMutation:
         c = Camera()
         c.ortho_size = 10.0
         assert c.ortho_size == 10.0
+
         c.ortho_size = None
         assert c.ortho_size is None
 

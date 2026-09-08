@@ -46,6 +46,15 @@ class TestImageCreation:
 
 
 class TestImageDrawing:
+    def test_bltm_camera_offset_does_not_wrap(self):
+        source = pyxel.Image(8, 8)
+        source.cls(7)
+        tilemap = pyxel.Tilemap(17, 1, source)
+        img = pyxel.Image(8, 8)
+        img.camera(-2_147_483_648, 0)
+        img.bltm(2_147_483_520, 0, tilemap, 0, 0, 136, 8)
+        assert list(img.data_ptr()) == [0] * 64
+
     def test_rect(self):
         img = pyxel.Image(16, 16)
         img.cls(0)
@@ -107,19 +116,23 @@ import pyxel
 
 rows = ["11111111", "10010001", "10010001", "10000001",
         "11111111", "10000001", "10000001", "11111111"]
+
 for alpha in (0.0, 0.25, 0.5, 1.0, float("nan")):
     actual, expected = pyxel.Image(8, 8), pyxel.Image(8, 8)
     for img in (actual, expected):
         img.set(0, 0, rows)
         img.dither(alpha)
+
     expected.rect(1, 1, 6, 3, 7)
     expected.dither(1)
     expected.rect(3, 1, 1, 2, 1)
+
     actual.clip(1, 1, 6, 6)
     actual.camera(1, 1)
     actual.fill(2, 2, 7)
     assert list(actual.data_ptr()) == list(expected.data_ptr()), alpha
 """
+
         result = subprocess.run(
             [sys.executable, "-c", code],
             capture_output=True,
@@ -160,6 +173,7 @@ class TestImageBlt:
             for y in range(16):
                 for x in range(16):
                     img.pset(x, y, (x + y * 3) % 16)
+
         original_bank = pyxel.images[0]
         try:
             for dst, src in ((expected, snapshot), (actual, actual)):
@@ -168,10 +182,12 @@ class TestImageBlt:
                     src = 0
                 if method.startswith("bltm"):
                     src = pyxel.Tilemap(2, 2, src)
+
                 dst.clip(2, 2, 12, 12)
                 dst.camera(1, 1)
                 dst.pal(7, 8)
                 dst.dither(0.5)
+
                 if method.endswith("3d"):
                     getattr(dst, method)(
                         0, 0, 16, 16, src, (8, 8, 10), (0, 30, 0), colkey=0
@@ -188,8 +204,10 @@ class TestImageBlt:
                         colkey=0 if source_pos == 0 else None,
                         rotate=rotate,
                     )
+
                 dst.clip()
                 dst.camera()
+
             assert list(expected.data_ptr()) != list(snapshot.data_ptr())
             assert list(actual.data_ptr()) == list(expected.data_ptr())
         finally:
@@ -242,6 +260,7 @@ class TestImageBlt:
         pyxel.images[0].rect(0, 0, 8, 8, 7)
         img = pyxel.Image(64, 64)
         img.cls(0)
+
         img.bltm(0, 0, 0, 0, 0, 64, 64)
         assert img.pget(0, 0) == 7
 
@@ -253,6 +272,7 @@ class TestImageBlt:
         tm.pset(0, 0, (0, 0))
         img = pyxel.Image(64, 64)
         img.cls(0)
+
         img.bltm(0, 0, tm, 0, 0, 64, 64)
         assert img.pget(0, 0) == 5
 
@@ -272,6 +292,7 @@ class TestImageBlt:
         tm.rect(0, 0, 8, 8, (0, 0))
         img = pyxel.Image(64, 64)
         img.cls(0)
+
         img.bltm3d(0, 0, 64, 64, tm, (0, 0, 10), (0, 30, 0))
         assert any(img.pget(x, y) == 12 for x in range(64) for y in range(64))
 
@@ -292,6 +313,7 @@ class TestImageState:
         img.clip(*clip_rect)
         img.rect(0, 0, 16, 16, 7)
         img.clip()
+
         left, top, right, bottom = bounds
         assert list(img.data_ptr()) == [
             7 if left <= x < right and top <= y < bottom else 0
@@ -336,6 +358,7 @@ class TestImageIO:
         img = pyxel.Image(8, 8)
         img.cls(0)
         img.rect(0, 0, 8, 8, 7)
+
         path1 = str(tmp_path / "scale1.png")
         path2 = str(tmp_path / "scale4.png")
         img.save(path1, 1)
@@ -344,12 +367,25 @@ class TestImageIO:
             assert image1.size == (8, 8)
             assert image4.size == (32, 32)
 
+    def test_save_rejects_scaled_dimension_overflow_before_overwrite(
+        self, tmp_path, panic_exception
+    ):
+        path = tmp_path / "existing.png"
+        path.write_bytes(b"original destination")
+        img = pyxel.Image(2, 2)
+        with raises_exact(
+            panic_exception, "scale is too large for the image dimensions"
+        ):
+            img.save(str(path), 2_147_483_649)
+        assert path.read_bytes() == b"original destination"
+
     def test_from_image_with_include_colors(self, assets_dir):
         path = str(assets_dir / "cat_16x16.png")
         with PIL.Image.open(path) as source:
             expected_color = int.from_bytes(
                 source.convert("RGB").getpixel((0, 0)), "big"
             )
+
         # include_colors replaces the whole global palette; restore it fully.
         original_colors = list(pyxel.colors)
         try:
@@ -366,6 +402,7 @@ class TestImageIO:
             expected_color = int.from_bytes(
                 source.convert("RGB").getpixel((0, 0)), "big"
             )
+
         original_colors = list(pyxel.colors)
         try:
             pyxel.colors[:] = [0]
@@ -388,7 +425,6 @@ class TestImageIO:
             panic_exception, "Number of colors must be between 1 and 256"
         ):
             pyxel.Image.from_image(str(path), include_colors=True)
-
         assert list(pyxel.colors) == colors_before
 
     def test_incl_colors_deprecated(self, capfd, assets_dir):
@@ -429,7 +465,6 @@ class TestImageDataPtr:
     def test_data_ptr_keeps_image_alive(self):
         img = pyxel.Image(2, 2)
         ptr = img.data_ptr()
-
         assert ptr._pyxel_owner is img
 
     def test_data_ptr_read(self):

@@ -37,6 +37,7 @@ struct ProjectedClipVertex {
     uv: (f32, f32),
 }
 
+// Clipping a triangle against one plane produces at most four vertices.
 #[derive(Clone, Copy)]
 struct ClippedTriangle {
     vertices: [ClipVertex; 4],
@@ -111,6 +112,7 @@ fn depth_offset_shift(camera: &RcCamera, offset: f32) -> Vec3 {
             z: 0.0,
         };
     }
+
     let cam = rc_ref!(camera);
     let m = rc_ref!(&cam.transform).data;
     Vec3 {
@@ -136,6 +138,7 @@ fn project_offset(
     if shift.x == 0.0 && shift.y == 0.0 && shift.z == 0.0 {
         return Some(p);
     }
+
     let shifted = Vec3 {
         x: pos.x + shift.x,
         y: pos.y + shift.y,
@@ -175,6 +178,7 @@ fn clip_triangle_to_near(vertices: [ClipVertex; 3], clip_row: &[f32; 4]) -> Clip
         vertices: [vertices[0]; 4],
         len: 0,
     };
+
     for i in 0..3 {
         let prev = vertices[(i + 2) % 3];
         let curr = vertices[i];
@@ -193,6 +197,7 @@ fn clip_triangle_to_near(vertices: [ClipVertex; 3], clip_row: &[f32; 4]) -> Clip
             clipped.len += 1;
         }
     }
+
     clipped
 }
 
@@ -209,6 +214,7 @@ fn project_clipped_vertices(
         vertices: [empty; 4],
         len: 0,
     };
+
     for i in 0..vertices.len {
         let vertex = vertices.vertices[i];
         let screen = project_offset(
@@ -227,6 +233,7 @@ fn project_clipped_vertices(
         };
         out.len += 1;
     }
+
     Some(out)
 }
 
@@ -259,6 +266,7 @@ fn draw_projected_triangle(
         if img_ref.width() == 0 || img_ref.height() == 0 {
             return;
         }
+
         if let Some(normal) = normal {
             let shading = state.shading.unwrap();
             let direction = rc_ref!(&shading.direction);
@@ -376,6 +384,7 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
     if mode == BILLBOARD_OFF {
         return *world_mat;
     }
+
     let cam = rc_ref!(&ctx.camera);
     let cam_world = *rc_ref!(&cam.transform);
     // Camera basis (columns of cam_world.rot block).
@@ -394,6 +403,7 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
         y: cam_world.data[1][2],
         z: cam_world.data[2][2],
     };
+
     // Recover translation and scale from the original world matrix; we
     // only override the rotation part for billboard alignment.
     let pos = Vec3 {
@@ -413,6 +423,7 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
         + world_mat.data[1][2].powi(2)
         + world_mat.data[2][2].powi(2))
     .sqrt();
+
     // Spherical (BILLBOARD_ON): adopt camera basis directly.
     let mut out = Mat4::identity_value();
     out.data[0][0] = cam_x.x * scale_x;
@@ -440,6 +451,7 @@ fn make_image_sampler(
     let h = img.height() as f32;
     let max_x = (img.width() as i32 - 1).max(0);
     let max_y = (img.height() as i32 - 1).max(0);
+
     move |u, v, _x, _y| {
         let xi = (u * w) as i32;
         let yi = (v * h) as i32;
@@ -460,6 +472,7 @@ fn make_shaded_sampler<'a>(
 ) -> impl Fn(f32, f32, i32, i32) -> Option<i32> + 'a {
     let sample = make_image_sampler(img, colkey);
     let palette_size = shading.palette_size();
+
     move |u, v, x, y| {
         let base = sample(u, v, x, y)?;
         if palette_size == 0 {
@@ -495,6 +508,7 @@ pub fn prim(
             return Err("uvs length must equal vertex_count * 2");
         }
     }
+
     let step_count = match indices {
         Some(idx) => idx.len(),
         None => vertex_count,
@@ -516,12 +530,15 @@ pub fn prim(
         }
         _ => {}
     }
+
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let lit = state.shaded && state.shading.is_some();
+
     // Cache shared indexed vertices. Lines are projected after clipping.
     ctx.vertex_cache.clear();
     ctx.vertex_cache.reserve(vertex_count);
+
     for i in 0..vertex_count {
         let base = i * 3;
         let local = Vec3 {
@@ -546,6 +563,7 @@ pub fn prim(
         };
         ctx.vertex_cache.push((world, screen));
     }
+
     let resolve_vertex_index = |step: usize| -> Result<usize, &'static str> {
         let raw = match indices {
             Some(idx) => idx[step],
@@ -556,6 +574,7 @@ pub fn prim(
         }
         Ok(raw as usize)
     };
+
     match mode {
         MODE_TRIANGLES => {
             let face_count = step_count / 3;
@@ -567,6 +586,13 @@ pub fn prim(
             if col_image.is_some() && uvs.is_none() {
                 return Err("textured prim requires uvs");
             }
+
+            // Preserve the original texture across every triangle of a self-textured draw.
+            let texture_snapshot = col_image
+                .filter(|image| std::rc::Rc::ptr_eq(image, &ctx.target))
+                .map(|image| new_rc_type!(rc_ref!(image).clone()));
+            let col_image = texture_snapshot.as_ref().or(col_image);
+
             // Cofactors carry oriented face normals through reflections and
             // singular scales: cross(Mu, Mv) = cofactor(M) cross(u, v).
             let normal_mat = (lit && normals.is_some()).then(|| {
@@ -595,6 +621,7 @@ pub fn prim(
                     ],
                 }
             });
+
             for f in 0..face_count {
                 let i0 = resolve_vertex_index(f * 3)?;
                 let i1 = resolve_vertex_index(f * 3 + 1)?;
@@ -602,6 +629,7 @@ pub fn prim(
                 let (v0, p0) = ctx.vertex_cache[i0];
                 let (v1, p1) = ctx.vertex_cache[i1];
                 let (v2, p2) = ctx.vertex_cache[i2];
+
                 let face_normal = || -> Vec3 {
                     match (normals, normal_mat.as_ref()) {
                         (Some(n), Some(mat)) => mat_apply_dir(
@@ -615,6 +643,7 @@ pub fn prim(
                         _ => tri_normal(&v0, &v1, &v2),
                     }
                 };
+
                 let uv0 = uvs.map_or((0.0, 0.0), |uvs| (uvs[i0 * 2], uvs[i0 * 2 + 1]));
                 let uv1 = uvs.map_or((0.0, 0.0), |uvs| (uvs[i1 * 2], uvs[i1 * 2 + 1]));
                 let uv2 = uvs.map_or((0.0, 0.0), |uvs| (uvs[i2 * 2], uvs[i2 * 2 + 1]));
@@ -659,6 +688,7 @@ pub fn prim(
                     let Some(projected) = project_clipped_vertices(&clipped, ctx, &z_shift) else {
                         continue;
                     };
+
                     for i in 1..projected.len - 1 {
                         draw_projected_triangle(
                             ctx,
@@ -678,9 +708,11 @@ pub fn prim(
                 }
             }
         }
+
         MODE_LINES => {
             let line_count = step_count / 2;
             let depth_w = ctx.depth_w;
+
             for l in 0..line_count {
                 let i0 = resolve_vertex_index(l * 2)?;
                 let i1 = resolve_vertex_index(l * 2 + 1)?;
@@ -705,10 +737,12 @@ pub fn prim(
                 }
             }
         }
+
         MODE_POINTS => {
             let mut target_mut = rc_mut!(&ctx.target);
             let depth_w = ctx.depth_w;
             let depth = ctx.depth.as_mut_slice();
+
             for s in 0..step_count {
                 let i0 = resolve_vertex_index(s)?;
                 let (_, p0) = ctx.vertex_cache[i0];
@@ -732,8 +766,10 @@ pub fn prim(
                 }
             }
         }
+
         _ => return Err("mode must be MODE_TRIANGLES, MODE_LINES, or MODE_POINTS"),
     }
+
     Ok(())
 }
 
@@ -924,6 +960,7 @@ pub fn box_solid(
     } else {
         None
     };
+
     let _ = prim(
         ctx,
         &scaled,
@@ -1018,7 +1055,6 @@ fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
     out
 }
 
-// A level-1 subdivided icosahedron has 42 vertices, 80 triangles, and 120 edges.
 pub fn sphere(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -1041,6 +1077,7 @@ pub fn sphere(
     } else {
         None
     };
+
     let _ = prim(
         ctx,
         &scaled,
@@ -1099,6 +1136,7 @@ pub fn circ(
     let world = mat_apply(&world_mat, local);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
+
     let projected = screen_circle(
         &world,
         r,
@@ -1122,6 +1160,7 @@ pub fn circ(
             &z_shift,
         )
         .map_or(sz, |p| p.2);
+
         let mut target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_filled(
@@ -1154,6 +1193,7 @@ pub fn circb(
     let world = mat_apply(&world_mat, local);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
+
     let projected = screen_circle(
         &world,
         r,
@@ -1177,6 +1217,7 @@ pub fn circb(
             &z_shift,
         )
         .map_or(sz, |p| p.2);
+
         let mut target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_border(
@@ -1214,6 +1255,7 @@ pub fn sprite(
         let camera = rc_ref!(&ctx.camera);
         sprite_corners(&world, w, h, angle, &camera)
     };
+
     let positions = [
         corners[0].x,
         corners[0].y,
@@ -1233,6 +1275,7 @@ pub fn sprite(
     ];
     let indices = [0_i32, 1, 2, 1, 3, 2];
     let identity = Mat4::identity_value();
+
     // Corners already form a world-space billboard.
     // Camera-facing sprites have no meaningful lit normal and render unshaded.
     let mut sprite_state = state;
@@ -1285,7 +1328,7 @@ pub fn plane(
     );
 }
 
-fn measure_text(font: Option<&mut Font>, text: &str) -> (i32, i32) {
+fn measure_text(font: Option<&mut Font>, text: &str) -> (i64, i64) {
     let (text_w, line_height) = if let Some(font) = font {
         let mut max_w = 0;
         for line in text.split('\n') {
@@ -1294,8 +1337,9 @@ fn measure_text(font: Option<&mut Font>, text: &str) -> (i32, i32) {
                 max_w = w;
             }
         }
+
         let (line_height, _ascent) = font.line_metrics();
-        (max_w, line_height)
+        (max_w, i64::from(line_height))
     } else {
         let max_chars = text
             .split('\n')
@@ -1306,40 +1350,48 @@ fn measure_text(font: Option<&mut Font>, text: &str) -> (i32, i32) {
             })
             .max()
             .unwrap_or(0);
-        (max_chars as i32 * FONT_WIDTH as i32, FONT_HEIGHT as i32)
+        (
+            max_chars as i64 * i64::from(FONT_WIDTH),
+            i64::from(FONT_HEIGHT),
+        )
     };
-    let line_count = text.split('\n').count() as i32;
+
+    let line_count = text.split('\n').count() as i64;
     (text_w, line_count * line_height)
 }
 
-fn for_each_builtin_text_pixel(text: &str, mut emit: impl FnMut(i32, i32)) {
+fn for_each_builtin_text_pixel(text: &str, mut emit: impl FnMut(i64, i64)) {
     let font_image = crate::pyxel::font_image();
     let img_ref = rc_ref!(&font_image);
     let font_data = &img_ref.canvas.data;
     let font_w = img_ref.canvas.width() as usize;
-    let mut cur_x = 0_i32;
-    let mut cur_y = 0_i32;
+    let mut cur_x = 0_i64;
+    let mut cur_y = 0_i64;
+
     for c in text.chars() {
         if c == '\n' {
             cur_x = 0;
-            cur_y += FONT_HEIGHT as i32;
+            cur_y += i64::from(FONT_HEIGHT);
             continue;
         }
         if !(MIN_FONT_CODE..=MAX_FONT_CODE).contains(&c) {
             continue;
         }
+
         let code = c as i32 - MIN_FONT_CODE as i32;
         let src_x = (code % NUM_FONT_COLS as i32) as usize * FONT_WIDTH as usize;
         let src_y = (code / NUM_FONT_COLS as i32) as usize * FONT_HEIGHT as usize;
+
         for fy in 0..FONT_HEIGHT as usize {
             for fx in 0..FONT_WIDTH as usize {
                 let idx = (src_y + fy) * font_w + (src_x + fx);
                 if font_data[idx] != 0 {
-                    emit(cur_x + fx as i32, cur_y + fy as i32);
+                    emit(cur_x + fx as i64, cur_y + fy as i64);
                 }
             }
         }
-        cur_x += FONT_WIDTH as i32;
+
+        cur_x += i64::from(FONT_WIDTH);
     }
 }
 
@@ -1357,6 +1409,7 @@ pub fn text(
     if text_str.is_empty() {
         return;
     }
+
     let world = mat_apply(world_mat, pos);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let projected = project_offset(
@@ -1372,6 +1425,7 @@ pub fn text(
     let Some((sx_f, sy_f, sz)) = projected else {
         return;
     };
+
     let sx = sx_f.round() as i32;
     let sy = sy_f.round() as i32;
     let mut font = font;
@@ -1379,25 +1433,32 @@ pub fn text(
     if text_w == 0 || text_h == 0 {
         return;
     }
-    let cx = sx - text_w / 2;
-    let cy = sy - text_h / 2;
+    let cx = i64::from(sx) - text_w / 2;
+    let cy = i64::from(sy) - text_h / 2;
+
     let mut target_mut = rc_mut!(&ctx.target);
     let depth_w = ctx.depth_w;
     let depth = ctx.depth.as_mut_slice();
     let clip = ctx.clip;
     let col = col as u8;
-    let mut plot_pixel = |px: i32, py: i32| {
+
+    let mut plot_pixel = |px: i64, py: i64| {
         let x = cx + px;
         let y = cy + py;
-        if x < clip.left || x > clip.right || y < clip.top || y > clip.bottom {
+        if x < i64::from(clip.left)
+            || x > i64::from(clip.right)
+            || y < i64::from(clip.top)
+            || y > i64::from(clip.bottom)
+        {
             return;
         }
+
         write_pixel(
             &mut target_mut,
             depth,
             depth_w,
-            x,
-            y,
+            x as i32,
+            y as i32,
             sz,
             col,
             state.dither_alpha,
@@ -1405,6 +1466,7 @@ pub fn text(
             state.depth_write,
         );
     };
+
     if let Some(font) = font {
         font.for_each_pixel(0, 0, text_str, &mut plot_pixel);
     } else {
@@ -1432,10 +1494,12 @@ mod tests {
             vp_h: 64.0,
             clip: compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64),
             camera: camera.clone(),
+
             depth: vec![f32::INFINITY; 64 * 64],
             depth_w: 64,
             depth_h: 64,
             vertex_cache: Vec::new(),
+
             dither_alpha: 1.0,
             depth_test: true,
             depth_write: true,
@@ -1486,6 +1550,187 @@ mod tests {
     }
 
     #[test]
+    fn test_custom_text_centers_and_clips_wide_glyph_offsets() {
+        let path = std::env::temp_dir().join(format!(
+            "pyxel_cube_text_wide_offsets_{}.bdf",
+            std::process::id()
+        ));
+        let camera = Camera::new();
+        rc_mut!(&camera).ortho_size = Some(4.0);
+
+        for (anchor_x, font_x, glyph_x, visible) in [
+            (0.0, 0, 1, true),
+            (-2_147_483_648.0, i32::MAX, 4, true),
+            (1.0, i32::MAX, i32::MAX, false),
+        ] {
+            std::fs::write(
+                &path,
+                format!(
+                    "FONTBOUNDINGBOX 2 2 {font_x} 0\nSTARTCHAR A\nENCODING 65\nDWIDTH 2 0\nBBX 1 1 {glyph_x} 0\nBITMAP\n80\nENDCHAR\n"
+                ),
+            )
+            .unwrap();
+            let font = Font::new(path.to_str().unwrap(), None).unwrap();
+            std::fs::remove_file(&path).unwrap();
+
+            let target = Image::new(4, 4);
+            let view = view_matrix(&rc_ref!(&camera));
+            let mut ctx = DrawContext {
+                vp: matmul(&projection_matrix(&rc_ref!(&camera), 4.0, 4.0), &view),
+                vp_w: 4.0,
+                vp_h: 4.0,
+                clip: compute_clip_rect(0.0, 0.0, 4.0, 4.0, 4, 4),
+
+                depth: vec![f32::INFINITY; 16],
+                depth_w: 4,
+                depth_h: 4,
+                ..draw_context_64(&target, &camera, false)
+            };
+
+            text(
+                &mut ctx,
+                &Mat4::identity_value(),
+                &Vec3 {
+                    x: anchor_x,
+                    y: 0.0,
+                    z: -2.0,
+                },
+                "A",
+                7,
+                Some(&mut rc_mut!(&font)),
+                DrawState::unshaded(),
+            );
+
+            // A large bearing can cancel the projected anchor before viewport clipping.
+            let mut expected = [0; 16];
+            if visible {
+                expected[10] = 7;
+            }
+            assert_eq!(rc_ref!(&target).canvas.data, expected);
+            for (i, depth) in ctx.depth.iter().enumerate() {
+                assert_eq!(depth.is_finite(), visible && i == 10);
+            }
+        }
+    }
+
+    #[test]
+    fn test_custom_text_centers_large_advance_and_line_height() {
+        let path = std::env::temp_dir().join(format!(
+            "pyxel_cube_text_wide_metrics_{}.bdf",
+            std::process::id()
+        ));
+        let camera = Camera::new();
+        rc_mut!(&camera).ortho_size = Some(4.0);
+
+        for (text_str, advance, height, font_x, glyph_x, expected_y) in [
+            ("AA", 2_000_000_000, 2, 1_000_000_000, 1_000_000_000, 2),
+            ("A\nA", 2, 2_000_000_000, 0, 1, 1),
+        ] {
+            std::fs::write(
+                &path,
+                format!(
+                    "FONTBOUNDINGBOX 2 {height} {font_x} 0\nSTARTCHAR A\nENCODING 65\nDWIDTH {advance} 0\nBBX 1 1 {glyph_x} 0\nBITMAP\n80\nENDCHAR\n"
+                ),
+            )
+            .unwrap();
+            let font = Font::new(path.to_str().unwrap(), None).unwrap();
+            std::fs::remove_file(&path).unwrap();
+
+            let target = Image::new(4, 4);
+            let view = view_matrix(&rc_ref!(&camera));
+            let mut ctx = DrawContext {
+                vp: matmul(&projection_matrix(&rc_ref!(&camera), 4.0, 4.0), &view),
+                vp_w: 4.0,
+                vp_h: 4.0,
+                clip: compute_clip_rect(0.0, 0.0, 4.0, 4.0, 4, 4),
+
+                depth: vec![f32::INFINITY; 16],
+                depth_w: 4,
+                depth_h: 4,
+                ..draw_context_64(&target, &camera, false)
+            };
+
+            text(
+                &mut ctx,
+                &Mat4::identity_value(),
+                &Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: -2.0,
+                },
+                text_str,
+                7,
+                Some(&mut rc_mut!(&font)),
+                DrawState::unshaded(),
+            );
+
+            // The first glyph remains visible after centering a four-billion-pixel extent.
+            let mut expected = [0; 16];
+            expected[expected_y * 4 + 2] = 7;
+            assert_eq!(rc_ref!(&target).canvas.data, expected);
+            for (i, depth) in ctx.depth.iter().enumerate() {
+                assert_eq!(depth.is_finite(), i == expected_y * 4 + 2);
+            }
+        }
+    }
+
+    #[test]
+    fn test_self_textured_plane_preserves_source_across_triangles() {
+        let original = Image::new(64, 64);
+        for y in 0..64 {
+            for x in 0..64 {
+                rc_mut!(&original)
+                    .canvas
+                    .write_data(x, y, ((x / 8 + y / 8) % 16) as u8);
+            }
+        }
+
+        let camera = Camera::new();
+        rc_mut!(&camera).ortho_size = Some(4.0);
+        let mut world = Mat4::identity_value();
+        world.data[2][3] = -2.0;
+
+        let shading = Shading::new(&[0; 16]);
+        for color in 0..16 {
+            for level in 0..crate::cube::shading::LEVEL_COUNT {
+                rc_mut!(&shading).set(
+                    color,
+                    level,
+                    ((color as i32 + 1) % 16, (color as i32 + 1) % 16),
+                );
+            }
+        }
+        let shading_ref = rc_ref!(&shading);
+
+        for shaded in [false, true] {
+            for colkey in [None, Some(0)] {
+                let target = new_rc_type!(rc_ref!(&original).clone());
+                let expected = new_rc_type!(rc_ref!(&original).clone());
+                let mut ctx = draw_context_64(&target, &camera, shaded);
+                let mut expected_ctx = draw_context_64(&expected, &camera, shaded);
+                let mut state = DrawState::unshaded();
+                state.shaded = shaded;
+                state.shading = Some(&shading_ref);
+                let uvs = ((1.0, 1.0), (0.0, 1.0), (1.0, 0.0), (0.0, 0.0));
+
+                plane(
+                    &mut expected_ctx,
+                    &world,
+                    &original,
+                    uvs,
+                    4.0,
+                    4.0,
+                    colkey,
+                    state,
+                );
+                plane(&mut ctx, &world, &target, uvs, 4.0, 4.0, colkey, state);
+                assert_eq!(rc_ref!(&target).canvas.data, rc_ref!(&expected).canvas.data);
+                assert_ne!(rc_ref!(&target).canvas.data, rc_ref!(&original).canvas.data);
+            }
+        }
+    }
+
+    #[test]
     fn test_prim_topology_errors_name_the_invalid_input() {
         let target = Image::new(64, 64);
         let camera = Camera::new();
@@ -1524,7 +1769,6 @@ mod tests {
                 &mut ctx, &identity, mode, CULL_NONE, positions, indices, None, None, 7, None,
                 None, state,
             );
-
             assert_eq!(result, Err(expected));
         }
     }
@@ -1585,8 +1829,8 @@ mod tests {
             clip_vertex(1.0, -1.0, -1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, -1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
         assert_eq!(clipped.len, 3);
         for (actual, expected) in clipped.vertices.iter().zip(vertices) {
             assert_eq!(actual.world, expected.world);
@@ -1602,8 +1846,8 @@ mod tests {
             clip_vertex(1.0, -1.0, 1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
         assert_eq!(clipped.len, 0);
     }
 
@@ -1615,8 +1859,8 @@ mod tests {
             clip_vertex(1.0, -1.0, -1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
         assert_eq!(clipped.len, 4);
         assert_clip_vertices_inside(&clipped, &clip_row);
     }
@@ -1629,8 +1873,8 @@ mod tests {
             clip_vertex(1.0, -1.0, 1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
         assert_eq!(clipped.len, 3);
         assert_clip_vertices_inside(&clipped, &clip_row);
     }
@@ -1649,11 +1893,13 @@ mod tests {
             z: -3.0,
         };
         let base = world_to_screen(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0).unwrap();
+
         let near = depth_offset_shift(&camera, -0.5);
         let near_p = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &near).unwrap();
         assert_eq!(near_p.0, base.0);
         assert_eq!(near_p.1, base.1);
         assert!(near_p.2 < base.2);
+
         let far = depth_offset_shift(&camera, 0.5);
         let far_p = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &far).unwrap();
         assert!(far_p.2 > base.2);
@@ -1672,6 +1918,7 @@ mod tests {
             z: -3.0,
         };
         let base = world_to_screen(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0).unwrap();
+
         let zero = depth_offset_shift(&camera, 0.0);
         let same = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &zero).unwrap();
         assert_eq!(base, same);
@@ -1701,7 +1948,6 @@ mod tests {
             state,
         )
         .unwrap();
-
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
     }
 
@@ -1729,7 +1975,6 @@ mod tests {
             state,
         )
         .unwrap();
-
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
     }
 
@@ -1753,7 +1998,6 @@ mod tests {
             None,
             DrawState::unshaded(),
         );
-
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 2);
     }
 
@@ -1812,6 +2056,7 @@ mod tests {
         for level in 0..4 {
             rc_mut!(&shading_rc).set(7, level, (8 + level as i32, 8 + level as i32));
         }
+
         let geom = Primitive::new();
         {
             let mut g = rc_mut!(&geom);
@@ -1840,6 +2085,7 @@ mod tests {
                 billboard: BILLBOARD_OFF,
                 shading: Some(&shading_ref),
             };
+
             prim(
                 &mut ctx,
                 world,
@@ -1858,6 +2104,7 @@ mod tests {
             let pixels = rc_ref!(&target).canvas.data.clone();
             pixels
         };
+
         let translation = Mat4::from_translation(&Vec3 {
             x: 0.0,
             y: 0.0,
@@ -1901,6 +2148,7 @@ mod tests {
                 11,
             ),
         ];
+
         for (transform, expected) in cases {
             let world = rc_ref!(&translation).mul_mat_value(&rc_ref!(&transform));
             let auto = render(&world, None);
@@ -1909,6 +2157,7 @@ mod tests {
             assert_eq!(stored[32 * 64 + 32], expected, "transform={:?}", world.data);
             assert_eq!(stored, auto);
         }
+
         let opposite: Vec<f32> = model_normals.iter().map(|n| -n).collect();
         assert_eq!(
             render(&rc_ref!(&translation), Some(&opposite))[32 * 64 + 32],

@@ -28,7 +28,6 @@
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
-
         app.appendChild(buildPageHeader(updateTexts, buildVariantSwitch()));
 
         const wrap = document.createElement("div");
@@ -112,6 +111,7 @@
         document.getElementById("s-specs").innerHTML = `
           <h2 class="section-title">${esc(t("specs_title"))}</h2>
           <ul class="list">${specs}</ul>
+
           <h3 class="sub-title">${esc(t("palette_title"))}</h3>
           <img src="../../docs/images/05_color_palette.png" alt="Color Palette" class="pix my-2 rounded border border-gray-700" loading="lazy">
           <img src="../../docs/images/pyxel_palette.png" alt="Palette" class="my-2 rounded border border-gray-700" loading="lazy">
@@ -119,12 +119,14 @@
 
         document.getElementById("s-install").innerHTML = `
           <h2 class="section-title">${esc(t("install_title"))}</h2>
+
           <h3 class="sub-title">${esc(t("install_desktop_title"))}</h3>
           <p class="body">${t("install_desktop_body").replace("{0}", link("https://www.python.org/", "Python 3"))}</p>
           ${code("pip install -U pyxel", "sh")}
           <p class="body">${t("install_desktop_note")
             .replace("{0}", chip("Add python.exe to PATH"))
             .replace("{1}", chip("pyxel"))}</p>
+
           <h3 class="sub-title">${esc(t("install_web_title"))}</h3>
           <p class="body">${esc(t("install_web_body"))}</p>
           <p class="body mt-2">${t("install_web_codemaker").replace(
@@ -135,6 +137,7 @@
             "{0}",
             link("../web-usage/", t("other_web_usage")),
           )}</p>
+
           <h3 class="sub-title">${esc(t("install_vscode_title"))}</h3>
           <p class="body">${t("install_vscode_body").replace(
             "{0}",
@@ -150,6 +153,7 @@
 
         document.getElementById("s-usage").innerHTML = `
           <h2 class="section-title">${esc(t("usage_title"))}</h2>
+
           <h3 class="sub-title">${esc(t("usage_command_title"))}</h3>
           <p class="body">${t("usage_command_body").replaceAll("{0}", chip("pyxel"))}</p>
           <p class="body mt-2">${esc(t("usage_command_noargs"))}</p>
@@ -164,6 +168,7 @@ usage:
     pyxel app2exe PYXEL_APP_FILE(.pyxapp)
     pyxel app2html PYXEL_APP_FILE(.pyxapp)
     pyxel copy_examples`)}
+
           <h3 class="sub-title">${esc(t("usage_examples_title"))}</h3>
           <p class="body">${esc(t("usage_examples_copy"))}</p>
           ${code("pyxel copy_examples", "sh")}
@@ -183,6 +188,7 @@ pyxel play 30sec_of_daylight.pyxapp`,
 
         document.getElementById("s-creating").innerHTML = `
           <h2 class="section-title">${esc(t("creating_title"))}</h2>
+
           <h3 class="sub-title">${esc(t("creating_program_title"))}</h3>
           <p class="body">${t("creating_program_body")
             .replace("{0}", chip("init"))
@@ -237,6 +243,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()`,
             "python",
           )}
+
           <h3 class="sub-title">${esc(t("creating_run_title"))}</h3>
           <p class="body">${t("creating_run_python").replace("{0}", chip("python"))}</p>
           ${code("python PYTHON_SCRIPT_FILE", "sh")}
@@ -245,12 +252,14 @@ pyxel.show()`,
           <p class="body">${t("creating_run_watch").replace("{0}", chip("pyxel watch"))}</p>
           ${code("pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE", "sh")}
           <p class="body">${t("creating_run_watch_stop").replace("{0}", chip("Ctrl+C"))}</p>
+
           <h3 class="sub-title">${esc(t("creating_keys_title"))}</h3>
           <p class="body mb-2">${esc(t("creating_keys_body"))}</p>
           ${shortcutTable(data.special_keys)}`;
 
         document.getElementById("s-resources").innerHTML = `
           <h2 class="section-title">${esc(t("resources_title"))}</h2>
+
           <h3 class="sub-title">${esc(t("resources_editor_title"))}</h3>
           <p class="body">${esc(t("resources_editor_body"))}
             ${esc(t("resources_editor_save"))}</p>
@@ -258,6 +267,7 @@ pyxel.show()`,
             "{0}",
             link("../editor-manual/", t("tool_editor_manual")),
           )}</p>
+
           <h3 class="sub-title">${esc(t("resources_other_title"))}</h3>
           <p class="body">${esc(t("resources_other_images"))}</p>
           <ul class="list mt-1">
@@ -351,25 +361,31 @@ pyxel.show()`,
           .join("");
         document.getElementById("s-links").innerHTML = `
           <h2 class="section-title">${esc(t("links_title"))}</h2>
+
           <h3 class="sub-title">${esc(t("docs_title"))}</h3>
           <ul class="link-list">${docs}</ul>
+
           <h3 class="sub-title">${esc(t("tools_title"))}</h3>
           <ul class="link-list">${tools}</ul>
+
           <h3 class="sub-title">${esc(t("other_title"))}</h3>
           <ul class="link-list">${others}</ul>`;
 
         document.getElementById("s-contrib").innerHTML = `
           <h2 class="section-title">${esc(t("contrib_title"))}</h2>
+
           <h3 class="sub-title">${esc(t("contrib_issues_title"))}</h3>
           <p class="body">${t("contrib_issues_body").replace(
             "{0}",
             link("https://github.com/kitao/pyxel/issues", "Issue Tracker"),
           )}</p>
+
           <h3 class="sub-title">${esc(t("contrib_testing_title"))}</h3>
           <p class="body">${t("contrib_testing_body").replace(
             "{0}",
             link("https://github.com/kitao/pyxel/issues", "Issue Tracker"),
           )}</p>
+
           <h3 class="sub-title">${esc(t("contrib_pr_title"))}</h3>
           <p class="body">${esc(t("contrib_pr_body"))}</p>
           <p class="body mt-2">${t("contrib_pr_license").replace(

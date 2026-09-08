@@ -1,5 +1,6 @@
 from math import isclose
 
+import pytest
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Quat, Vec3
 
@@ -77,8 +78,18 @@ class TestDecomposed:
 
 class TestOperators:
     def test_mul_invalid_type(self):
-        with raises_exact(TypeError, "other must be Mat4 or Vec3"):
+        with raises_exact(
+            TypeError, "unsupported operand type(s) for *: 'pyxel.cube.Mat4' and 'int'"
+        ):
             Mat4() * 1
+
+    @pytest.mark.parametrize("left", [Mat4.IDENTITY, Quat.IDENTITY])
+    def test_mul_defers_to_reflected_operand(self, left):
+        class ReflectedOperand:
+            def __rmul__(self, operand):
+                return operand
+
+        assert left * ReflectedOperand() is left
 
     def test_mul_identity(self):
         m = Mat4.from_translation(Vec3(1, 2, 3))
@@ -113,7 +124,7 @@ class TestFactories:
         assert m.pos == eye
 
 
-class TestMutate:
+class TestTransform:
     def test_translate(self):
         m = Mat4().translate(Vec3(1, 2, 3))
         assert m.pos == Vec3(1, 2, 3)

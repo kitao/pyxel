@@ -22,7 +22,6 @@ pub struct BvhNode {
 }
 
 const MAX_LEAF_TRIANGLES: usize = 1;
-
 // Median splits bound depth by ceil(log2(triangle count)) <= 32 for u32 indices.
 // Traversal holds at most depth + 1 entries; 64 avoids per-query allocation.
 const QUERY_STACK_CAPACITY: usize = 64;
@@ -36,9 +35,11 @@ impl Bvh {
                 positions,
             };
         }
+
         let mut tri_indices: Vec<u32> = (0..triangles.len() as u32).collect();
         let mut nodes: Vec<BvhNode> = Vec::new();
         Self::build_recursive(&positions, &triangles, &mut tri_indices, 0, &mut nodes);
+
         let mut permuted: Vec<[u32; 3]> = Vec::with_capacity(triangles.len());
         for &idx in &tri_indices {
             permuted.push(triangles[idx as usize]);
@@ -71,6 +72,7 @@ impl Bvh {
         if n <= MAX_LEAF_TRIANGLES {
             return node_index;
         }
+
         // Median split along the longest extent axis.
         let extent_x = aabb.max.x - aabb.min.x;
         let extent_y = aabb.max.y - aabb.min.y;
@@ -82,6 +84,7 @@ impl Bvh {
         } else {
             2
         };
+
         tri_indices.sort_by(|&a, &b| {
             let ca = triangle_centroid(positions, triangles, a)[axis];
             let cb = triangle_centroid(positions, triangles, b)[axis];
@@ -89,6 +92,7 @@ impl Bvh {
         });
         let mid = n / 2;
         let (left_slice, right_slice) = tri_indices.split_at_mut(mid);
+
         let left = Self::build_recursive(positions, triangles, left_slice, offset, nodes);
         let right = Self::build_recursive(positions, triangles, right_slice, offset + mid, nodes);
         nodes[node_index as usize].left = left;
@@ -101,15 +105,18 @@ impl Bvh {
         if self.nodes.is_empty() {
             return;
         }
+
         // stack[0] == 0 seeds the root.
         let mut stack = [0_i32; QUERY_STACK_CAPACITY];
         let mut top = 1_usize;
+
         while top > 0 {
             top -= 1;
             let node = self.nodes[stack[top] as usize];
             if !node.aabb.overlaps(query) {
                 continue;
             }
+
             if node.left == -1 {
                 let start = node.tri_first as usize;
                 let end = start + node.tri_count as usize;
@@ -138,6 +145,7 @@ impl Bvh {
         if self.nodes.is_empty() {
             return;
         }
+
         let inv_dir = Vec3 {
             x: 1.0 / direction.x,
             y: 1.0 / direction.y,
@@ -146,12 +154,14 @@ impl Bvh {
         // stack[0] == 0 seeds the root.
         let mut stack = [0_i32; QUERY_STACK_CAPACITY];
         let mut top = 1_usize;
+
         while top > 0 {
             top -= 1;
             let node = self.nodes[stack[top] as usize];
             if !ray_reaches_aabb(origin, inv_dir, &node.aabb, max_t) {
                 continue;
             }
+
             if node.left == -1 {
                 let start = node.tri_first as usize;
                 let end = start + node.tri_count as usize;
@@ -200,6 +210,7 @@ fn subset_aabb(positions: &[Vec3], triangles: &[[u32; 3]], indices: &[u32]) -> A
         y: f32::NEG_INFINITY,
         z: f32::NEG_INFINITY,
     };
+
     for &tri_idx in indices {
         let tri = triangles[tri_idx as usize];
         for &vi in &tri {
@@ -212,6 +223,7 @@ fn subset_aabb(positions: &[Vec3], triangles: &[[u32; 3]], indices: &[u32]) -> A
             max.z = max.z.max(p.z);
         }
     }
+
     Aabb { min, max }
 }
 
@@ -258,6 +270,7 @@ mod tests {
             },
         ];
         let triangles = vec![[0u32, 1, 2]];
+
         let bvh = Bvh::build(positions, triangles);
         assert_eq!(bvh.nodes.len(), 1);
         assert_eq!(bvh.nodes[0].tri_count, 1);
@@ -301,6 +314,7 @@ mod tests {
             },
         ];
         let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
+
         let bvh = Bvh::build(positions, triangles);
         assert_eq!(bvh.nodes.len(), 3);
         assert_ne!(bvh.nodes[0].left, -1);
@@ -343,6 +357,7 @@ mod tests {
             },
         ];
         let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
+
         let bvh = Bvh::build(positions, triangles);
         let root = bvh.nodes[0].aabb;
         assert!(root.min.x <= -5.0 && root.max.x >= 5.0);
@@ -386,6 +401,7 @@ mod tests {
         ];
         let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
         let bvh = Bvh::build(positions, triangles);
+
         let query = Aabb {
             min: Vec3 {
                 x: -1.0,
@@ -398,6 +414,7 @@ mod tests {
                 z: 1.0,
             },
         };
+
         let mut hits = Vec::new();
         bvh.query_aabb(&query, |tri| hits.push(tri));
         assert_eq!(hits, [[0, 1, 2]]);
@@ -423,6 +440,7 @@ mod tests {
             },
         ];
         let bvh = Bvh::build(positions, vec![[0u32, 1, 2]]);
+
         let query = Aabb {
             min: Vec3 {
                 x: 100.0,
@@ -435,6 +453,7 @@ mod tests {
                 z: 101.0,
             },
         };
+
         let mut hits = 0;
         bvh.query_aabb(&query, |_| hits += 1);
         assert_eq!(hits, 0);
@@ -463,6 +482,7 @@ mod tests {
     fn test_multi_triangle_build_produces_single_triangle_leaves() {
         let mut positions: Vec<Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
+
         for i in 0..4 {
             let (verts, tri) = unit_triangle(Vec3 {
                 x: i as f32 * 10.0,
@@ -473,15 +493,22 @@ mod tests {
             positions.extend_from_slice(&verts);
             triangles.push([tri[0] + base, tri[1] + base, tri[2] + base]);
         }
+
         let bvh = Bvh::build(positions, triangles);
         let leaf_count = bvh.nodes.iter().filter(|n| n.left == -1).count();
         assert_eq!(leaf_count, 4);
+        assert!(bvh
+            .nodes
+            .iter()
+            .filter(|n| n.left == -1)
+            .all(|n| n.tri_count == 1));
     }
 
     #[test]
     fn test_query_hits_every_triangle_when_aabb_contains_all() {
         let mut positions: Vec<Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
+
         for i in 0..3 {
             let (verts, tri) = unit_triangle(Vec3 {
                 x: i as f32,
@@ -493,6 +520,7 @@ mod tests {
             triangles.push([tri[0] + base, tri[1] + base, tri[2] + base]);
         }
         let bvh = Bvh::build(positions, triangles);
+
         let query = Aabb {
             min: Vec3 {
                 x: -1.0,
@@ -505,6 +533,7 @@ mod tests {
                 z: 10.0,
             },
         };
+
         let mut hits = Vec::new();
         bvh.query_aabb(&query, |tri| hits.push(tri));
         hits.sort_unstable();
@@ -544,6 +573,7 @@ mod tests {
                 z: 0.0,
             },
         ];
+
         Bvh::build(positions, vec![[0u32, 1, 2], [3, 4, 5]])
     }
 
@@ -697,6 +727,7 @@ mod tests {
             ],
             vec![[0, 1, 2]],
         );
+
         for travel_axis in 0..3 {
             for face_axis in 0..3 {
                 if travel_axis == face_axis {
@@ -719,6 +750,7 @@ mod tests {
                             y: direction[1],
                             z: direction[2],
                         };
+
                         for (max_t, expected) in [(0.5, 0), (1.0, 1), (2.0, 1)] {
                             let mut hits = 0;
                             bvh.query_ray(origin, direction, max_t, |_| hits += 1);
@@ -752,6 +784,7 @@ mod tests {
                     z: max[2],
                 };
                 let bvh = Bvh::build(vec![min, max, min], vec![[0, 1, 2]]);
+
                 for zero in [0.0, -0.0] {
                     let mut origin = [0.0; 3];
                     origin[travel_axis] = -1.0;
@@ -767,6 +800,7 @@ mod tests {
                         y: direction[1],
                         z: direction[2],
                     };
+
                     for (max_t, expected) in [(0.5, 0), (1.0, 1)] {
                         let mut hits = 0;
                         bvh.query_ray(origin, direction, max_t, |_| hits += 1);
@@ -806,12 +840,14 @@ mod tests {
         // An X split groups columns; a Y split groups rows.
         let mut positions = Vec::new();
         let mut triangles = Vec::new();
+
         for (x, y) in [(0.0, 0.0), (0.0, 100.0), (10.0, 0.0), (10.0, 100.0)] {
             let (verts, _) = unit_triangle(Vec3 { x, y, z: 0.0 });
             let base = positions.len() as u32;
             positions.extend_from_slice(&verts);
             triangles.push([base, base + 1, base + 2]);
         }
+
         let bvh = Bvh::build(positions, triangles);
         let root = bvh.nodes[0];
         let left = bvh.nodes[root.left as usize];

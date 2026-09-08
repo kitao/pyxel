@@ -40,11 +40,13 @@ class TestMusic:
             tone.gain,
         )
         original_sound_count = len(pyxel.sounds)
+
         try:
             tone.mode = 0
             tone.sample_bits = 2
             tone.wavetable[:] = [0, 3, 3, 0]
             tone.gain = 0.75
+
             first_sound = pyxel.Sound()
             second_sound = pyxel.Sound()
             first_sound.set("c2e2", "00", "75", "nf", 6)
@@ -80,8 +82,10 @@ class TestMusic:
         result = msc.snds_list  # type: ignore[attr-defined]
         assert len(result) == len(msc.seqs)
         assert list(result[0]) == [0, 1]
+
         result[0].append(2)
         assert list(msc.seqs[0]) == [0, 1, 2]
+
         out = capfd.readouterr().out
         assert out == "Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead.\n"
 
@@ -119,7 +123,6 @@ class TestMusicSeqs:
         msc.set([1, 2])
         seq = msc.seqs[0]
         msc.seqs.clear()
-
         with raises_exact(IndexError, "list index out of range"):
             getattr(seq, method)(*args)
 
@@ -224,6 +227,7 @@ music.seqs[0] = music.seqs[0]
 assert list(music.seqs[0]) == [1, 2]
 assert list(music.seqs[1]) == [3, 4]
 """
+
         result = subprocess.run(
             [sys.executable, "-B", "-c", code],
             capture_output=True,
@@ -251,9 +255,7 @@ assert list(music.seqs[1]) == [3, 4]
     def test_seqs_reversed_step_one_slice_assignment_inserts(self):
         msc = pyxel.Music()
         msc.set([0], [1], [2])
-
         msc.seqs[2:0] = [[7]]
-
         assert [list(seq) for seq in msc.seqs] == [[0], [1], [7], [2], []]
 
     def test_seqs_pop(self):
@@ -295,10 +297,63 @@ assert list(music.seqs[1]) == [3, 4]
         msc.set([0, 1])
         assert repr(msc.seqs) == "Seqs[[0, 1], [], [], []]"
 
+    @pytest.mark.parametrize(
+        ("operation", "expected"),
+        [("repr(seqs)", "Seqs[[1, 2, 3]]"), ("seqs.pop()", [1, 2, 3])],
+    )
+    def test_seqs_result_allows_garbage_collection_reentry(self, operation, expected):
+        code = """
+import gc
+
+import pyxel
+
+music = pyxel.Music()
+seqs = music.seqs
+seqs.append([1, 2, 3])
+active = False
+collected = False
+
+
+def collect(phase, info):
+    global collected
+    if active and phase == "start":
+        seqs.clear()
+        collected = True
+
+
+gc.callbacks.append(collect)
+gc.collect()
+gc.disable()
+# Exhaust the list free list and trigger collection during Python allocation.
+retained = [[] for _ in range(1000)]
+gc.set_threshold(1, 1000000, 1000000)
+active = True
+gc.enable()
+
+result = OPERATION
+active = False
+gc.callbacks.remove(collect)
+
+assert collected
+assert result == EXPECTED
+assert len(seqs) == 0
+"""
+        code = code.replace("OPERATION", operation).replace("EXPECTED", repr(expected))
+
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
     def test_seqs_bool(self):
         msc = pyxel.Music()
         msc.set([0])
         assert bool(msc.seqs)
+
         msc.seqs.clear()
         assert not bool(msc.seqs)
 

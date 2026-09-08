@@ -24,6 +24,7 @@ def test_localized_text_entries_are_complete_and_keep_placeholders():
         path = ROOT_DIR / relative_path
         document = json.loads(path.read_text(encoding="utf-8"))
         language_codes = {language["code"] for language in document["languages"]}
+
         for value in iter_json_objects(document):
             keys = set(value)
             if not keys & language_codes or not any(

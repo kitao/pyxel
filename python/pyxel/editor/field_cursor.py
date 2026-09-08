@@ -228,6 +228,7 @@ class FieldCursor:
                     )
             else:
                 self.field.append(0)
+
         self._add_post_history(self.x, self.y)
 
     # Input processing
@@ -300,6 +301,7 @@ class FieldCursor:
             self.move_up(with_select_key)
         if pyxel.btnp(pyxel.KEY_DOWN, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
             self.move_down(with_select_key)
+
         if pyxel.btnp(
             pyxel.KEY_BACKSPACE, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
         ):

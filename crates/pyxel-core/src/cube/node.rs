@@ -185,6 +185,7 @@ impl Node {
         }
     }
 
+    // Remove scale before composing ancestors so it cannot skew angular directions.
     pub(crate) fn world_rotation_value(node: &RcNode) -> Mat4 {
         let local_rc = &rc_ref!(node).transform;
         let local_rotation = rc_ref!(local_rc).rot_value().matrix_value();
@@ -260,6 +261,7 @@ mod tests {
         let leaf = Node::new();
         Node::add_child(&root, &mid);
         Node::add_child(&mid, &leaf);
+
         Node::add_child(&leaf, &root);
         assert!(Node::parent(&root).is_none());
         assert!(Rc::ptr_eq(&Node::parent(&mid).unwrap(), &root));
@@ -273,6 +275,7 @@ mod tests {
         let leaf = Node::new();
         Node::add_child(&root, &mid);
         Node::add_child(&mid, &leaf);
+
         Node::destroy(&mid);
         assert!(!rc_ref!(&root).destroyed);
         assert!(rc_ref!(&mid).destroyed);
@@ -335,6 +338,7 @@ mod tests {
         rc_mut!(&b).name = "arm".to_string();
         Node::add_child(&root, &a);
         Node::add_child(&root, &b);
+
         let found = Node::find_by_name(&root, "arm");
         assert_eq!(found.len(), 1);
         assert!(Rc::ptr_eq(&found[0], &b));
@@ -364,6 +368,7 @@ mod tests {
         rc_mut!(&b).name = "zako".to_string();
         Node::add_child(&root, &a);
         Node::add_child(&root, &b);
+
         let found = Node::find_by_name(&root, "zako");
         assert_eq!(found.len(), 2);
         assert!(found.iter().any(|node| Rc::ptr_eq(node, &a)));
@@ -379,6 +384,7 @@ mod tests {
         rc_mut!(&b).tags = vec!["player".to_string()];
         Node::add_child(&root, &a);
         Node::add_child(&root, &b);
+
         let found = Node::find_by_tags(&root, &["enemy".to_string()]);
         assert_eq!(found.len(), 1);
         assert!(Rc::ptr_eq(&found[0], &a));
@@ -390,6 +396,7 @@ mod tests {
         let a = Node::new();
         rc_mut!(&a).tags = vec!["enemy".to_string(), "boss".to_string()];
         Node::add_child(&root, &a);
+
         let found = Node::find_by_tags(&root, &["boss".to_string(), "player".to_string()]);
         assert_eq!(found.len(), 1);
         assert!(Rc::ptr_eq(&found[0], &a));
@@ -439,6 +446,7 @@ mod tests {
         rc_mut!(&p).transform = Mat4::from_translation(&rc_ref!(&Vec3::new(1.0, 0.0, 0.0)));
         rc_mut!(&c).transform = Mat4::from_translation(&rc_ref!(&Vec3::new(0.0, 2.0, 0.0)));
         Node::add_child(&p, &c);
+
         let world = Node::world_transform(&c);
         let world = rc_ref!(&world);
         let pos = world.pos();
@@ -453,6 +461,7 @@ mod tests {
         let c = Node::new();
         Node::add_child(&p, &c);
         assert!(Node::effective_active(&c));
+
         rc_mut!(&p).active = false;
         assert!(!Node::effective_active(&c));
     }
@@ -463,6 +472,7 @@ mod tests {
         let c = Node::new();
         Node::add_child(&p, &c);
         assert!(Node::effective_visible(&c));
+
         rc_mut!(&p).visible = false;
         assert!(!Node::effective_visible(&c));
     }
@@ -481,6 +491,7 @@ mod tests {
             90.0,
         );
         rc_mut!(&n).transform = rot;
+
         let f = Node::forward(&n);
         let f = rc_ref!(&f);
         assert!((f.x - (-1.0)).abs() < 1e-4);
@@ -497,6 +508,7 @@ mod tests {
             z: 4.0,
         });
         rc_mut!(&n).transform = scale;
+
         let f = Node::forward(&n);
         let f = rc_ref!(&f);
         let len = (f.x * f.x + f.y * f.y + f.z * f.z).sqrt();
@@ -513,6 +525,7 @@ mod tests {
             [0.0, 0.0, 0.0, 1.0],
         ]);
         rc_mut!(&n).transform = zero_z;
+
         let f = Node::forward(&n);
         let f = rc_ref!(&f);
         assert_eq!((f.x, f.y, f.z), (0.0, 0.0, -1.0));
@@ -521,6 +534,7 @@ mod tests {
     #[test]
     fn test_effective_shading_cascade_resolves_ancestor() {
         use crate::cube::shading::Shading;
+
         let root = Node::new();
         let mid = Node::new();
         let leaf = Node::new();
@@ -529,6 +543,7 @@ mod tests {
         rc_mut!(&root).shading = Some(shading.clone());
         Node::add_child(&root, &mid);
         Node::add_child(&mid, &leaf);
+
         let resolved = Node::effective_shading(&leaf).unwrap();
         assert!(Rc::ptr_eq(&resolved, &shading));
     }
@@ -536,6 +551,7 @@ mod tests {
     #[test]
     fn test_effective_shading_uses_self_when_set() {
         use crate::cube::shading::Shading;
+
         let root = Node::new();
         let leaf = Node::new();
         let palette = [0x000000u32 as crate::image::Rgb24; 4];
@@ -544,6 +560,7 @@ mod tests {
         rc_mut!(&root).shading = Some(root_shading);
         rc_mut!(&leaf).shading = Some(leaf_shading.clone());
         Node::add_child(&root, &leaf);
+
         let resolved = Node::effective_shading(&leaf).unwrap();
         assert!(Rc::ptr_eq(&resolved, &leaf_shading));
     }
@@ -551,11 +568,13 @@ mod tests {
     #[test]
     fn test_effective_camera_cascade_resolves_ancestor() {
         use crate::cube::camera::Camera;
+
         let root = Node::new();
         let leaf = Node::new();
         Node::add_child(&root, &leaf);
         let camera = Camera::new();
         rc_mut!(&root).camera = Some(camera.clone());
+
         let resolved = Node::effective_camera(&leaf).unwrap();
         assert!(Rc::ptr_eq(&resolved, &camera));
     }
@@ -563,6 +582,7 @@ mod tests {
     #[test]
     fn test_effective_camera_uses_self_when_set() {
         use crate::cube::camera::Camera;
+
         let root = Node::new();
         let leaf = Node::new();
         Node::add_child(&root, &leaf);
@@ -570,6 +590,7 @@ mod tests {
         let leaf_camera = Camera::new();
         rc_mut!(&root).camera = Some(root_camera);
         rc_mut!(&leaf).camera = Some(leaf_camera.clone());
+
         let resolved = Node::effective_camera(&leaf).unwrap();
         assert!(Rc::ptr_eq(&resolved, &leaf_camera));
     }
@@ -597,6 +618,7 @@ mod tests {
         });
         Node::add_child(&root, &a);
         Node::add_child(&a, &b);
+
         let world = Node::world_transform(&b);
         let pos = rc_ref!(&world).pos();
         let pos = rc_ref!(&pos);

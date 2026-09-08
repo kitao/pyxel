@@ -12,7 +12,6 @@ const domCache = {};
 function buildPage() {
   const app = document.getElementById("app");
   app.innerHTML = "";
-
   app.appendChild(
     buildPageHeader(() => {
       updateTexts();
@@ -106,7 +105,6 @@ function buildPage() {
 
         const sigLine = document.createElement("div");
         sigLine.className = "flex items-baseline gap-2";
-
         const badge = document.createElement("span");
         badge.className = "type-badge shrink-0 " + badgeColor(item.type);
         badge.textContent = item.type;
@@ -119,7 +117,6 @@ function buildPage() {
           "api-signature font-mono font-semibold text-sm text-indigo-300";
         sig.textContent = item.signature;
         sigWrap.appendChild(sig);
-
         if (item.advanced) {
           const adv = document.createElement("span");
           adv.className =
@@ -128,7 +125,6 @@ function buildPage() {
           sigWrap.appendChild(adv);
         }
         sigLine.appendChild(sigWrap);
-
         row.appendChild(sigLine);
 
         const desc = document.createElement("p");
@@ -139,16 +135,13 @@ function buildPage() {
         if (hasDetails(item)) {
           const details = document.createElement("details");
           details.className = "mt-1";
-
           const summary = document.createElement("summary");
           summary.className = "tri text-gray-400 text-xs hover:text-gray-300";
           summary.dataset.uiKey = "details";
           details.appendChild(summary);
-
           const content = document.createElement("div");
           content.dataset.detailKey = `${cat.id}-${i}`;
           details.appendChild(content);
-
           row.appendChild(details);
         }
 
@@ -276,6 +269,7 @@ function updateTexts() {
         if (detailEl) buildDetailContent(detailEl, cat.items[i]);
       }
     }
+
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];
@@ -318,8 +312,8 @@ function updateVisibility() {
 
   for (const cat of data.categories) {
     let catVisible = 0;
-
     let itemsVisible = 0;
+
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
         const key = `${cat.id}-${i}`;
@@ -329,6 +323,7 @@ function updateVisibility() {
         row.style.display = visible ? "" : "none";
         if (visible) itemsVisible++;
       }
+
       const itemsCard = cached("items-card", cat.id);
       if (itemsCard) itemsCard.style.display = itemsVisible > 0 ? "" : "none";
     }
@@ -345,6 +340,7 @@ function updateVisibility() {
             const sec = group.sections[s];
             const sid = `${gid}-s-${s}`;
             let sectionVisible = 0;
+
             for (let i = 0; i < sec.constants.length; i++) {
               const el = cached("const-key", `${sid}-${i}`);
               if (!el) continue;
@@ -360,11 +356,13 @@ function updateVisibility() {
                 groupVisible++;
               }
             }
+
             const sectionEl = cached("const-section", sid);
             if (sectionEl) {
               sectionEl.style.display = sectionVisible > 0 ? "" : "none";
             }
           }
+
           const grid = cached("const-grid", gid);
           if (grid) grid.style.display = groupVisible > 0 ? "" : "none";
         }
@@ -385,7 +383,6 @@ function updateVisibility() {
     }
 
     totalVisible += catVisible;
-
     const section = cached("cat-id", cat.id);
     if (section) {
       section.style.display = catVisible > 0 ? "" : "none";

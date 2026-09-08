@@ -76,8 +76,6 @@ impl RaycastHit {
         self.inner_ref().distance
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let h = self.inner_ref();
         let p = rc_ref!(&h.point);

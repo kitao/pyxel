@@ -15,6 +15,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
         hx = width / 2.0
         hy = height / 2.0
         hz = depth / 2.0
+
         faces = [
             (
                 [(0.0, 0.0, 1.0)] * 4,
@@ -41,6 +42,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
                 [(-hx, -hy, -hz), (hx, -hy, -hz), (hx, -hy, hz), (-hx, -hy, hz)],
             ),
         ]
+
         positions: list[float] = []
         normals: list[float] = []
         uvs: list[float] = []
@@ -53,6 +55,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
                 normals.extend(normal)
             uvs.extend([0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0])
             indices.extend([base, base + 1, base + 2, base, base + 2, base + 3])
+
         return (
             struct.pack("<" + "f" * len(positions), *positions),
             struct.pack("<" + "f" * len(normals), *normals),
@@ -63,6 +66,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
     body_positions, body_normals, body_uvs, body_indices = cuboid(1.2, 1.2, 0.8)
     face_positions, face_normals, face_uvs, face_indices = cuboid(0.55, 0.45, 0.1)
     times = struct.pack("<fff", 0.0, 0.5, 1.0)
+
     # glTF cubic samples contain an incoming tangent, value, and outgoing tangent.
     if smooth_motion:
         translation_interpolation = "CUBICSPLINE"
@@ -112,6 +116,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
             0.0,
             0.0,
         )
+
     sin_22_5 = 0.3826834323650898
     cos_22_5 = 0.9238795325112867
     sin_45 = 0.7071067811865475
@@ -142,6 +147,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
         1.0,
         1.0,
     )
+
     red_png = _png(2, 2, 6, [(255, 0, 0, 255)] * 4)
     yellow_png = _png(2, 2, 6, [(255, 255, 0, 255)] * 4)
 
@@ -348,6 +354,7 @@ def write_single_texture_motion_glb(
     finite_times = [time for time in animation_times if math.isfinite(time)]
     translations = struct.pack("<ffffff", 0.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     morph_positions = struct.pack("<ffffffffffff", *([0.0] * 12))
+
     if texture_pixels is None:
         texture_pixels = [
             (0, 0, 0, 255),
@@ -357,6 +364,7 @@ def write_single_texture_motion_glb(
         ]
     if len(texture_pixels) != texture_size[0] * texture_size[1]:
         raise ValueError("texture_pixels length must match texture_size")
+
     if png_color_type == 0:
         pixels = [(p[0],) for p in texture_pixels]
     elif png_color_type == 2:
@@ -366,10 +374,12 @@ def write_single_texture_motion_glb(
     else:
         pixels = list(texture_pixels)
     png = _png(texture_size[0], texture_size[1], png_color_type, pixels)
+
     data_chunks = [positions, uvs, indices, times, translations, morph_positions, png]
     if tangent_attribute:
         data_chunks.append(tangents)
     bin_blob, offsets = _pack_chunks(data_chunks)
+
     primitive = {
         "attributes": {"POSITION": 0, "TEXCOORD_0": 1},
         "indices": 2,
@@ -479,6 +489,7 @@ def write_single_texture_motion_glb(
             }
         ],
     }
+
     if tangent_attribute:
         gltf["bufferViews"].append(
             {"buffer": 0, "byteOffset": offsets[7], "byteLength": len(tangents)}
@@ -498,6 +509,7 @@ def write_single_texture_motion_glb(
                 "byteLength": len(bin_blob),
             }
         ]
+
     if external_image:
         gltf["images"] = [
             {"uri": "data:image/png;base64," + base64.b64encode(png).decode()}
@@ -606,6 +618,7 @@ def write_non_indexed_glb(path: Path, *, vertex_count: int = 6) -> Path:
     for i in range(vertex_count):
         coords.extend([float(i % 3), float(i // 3), 0.0])
     positions = struct.pack(f"<{len(coords)}f", *coords)
+
     gltf = {
         "asset": {"version": "2.0"},
         "scene": 0,
@@ -630,6 +643,7 @@ def write_non_indexed_glb(path: Path, *, vertex_count: int = 6) -> Path:
             }
         ],
     }
+
     return _write_glb(path, gltf, positions)
 
 
@@ -659,6 +673,7 @@ def write_authored_normals_glb(path: Path) -> Path:
         -1.0,
     )
     bin_blob, offsets = _pack_chunks([positions, normals])
+
     gltf = {
         "asset": {"version": "2.0"},
         "scene": 0,
@@ -695,6 +710,7 @@ def write_authored_normals_glb(path: Path) -> Path:
             {"bufferView": 1, "componentType": 5126, "count": 3, "type": "VEC3"},
         ],
     }
+
     return _write_glb(path, gltf, bin_blob)
 
 
@@ -764,12 +780,14 @@ def write_two_material_two_texture_glb(
         },
         {"bufferView": 3, "componentType": 5123, "count": 6, "type": "SCALAR"},
     ]
+
     buffer_views = [
         {"buffer": 0, "byteOffset": offsets[0], "byteLength": len(left_positions)},
         {"buffer": 0, "byteOffset": offsets[1], "byteLength": len(indices)},
         {"buffer": 0, "byteOffset": offsets[2], "byteLength": len(right_positions)},
         {"buffer": 0, "byteOffset": offsets[3], "byteLength": len(indices)},
     ]
+
     materials = [{"pbrMetallicRoughness": {"baseColorFactor": [1.0, 0.0, 0.0, 1.0]}}]
     if right_material:
         materials.append(
@@ -792,6 +810,7 @@ def write_two_material_two_texture_glb(
             {"bufferView": 6, "mimeType": "image/png"},
             {"bufferView": 7, "mimeType": "image/png"},
         ]
+
         buffer_views.extend(
             [
                 {"buffer": 0, "byteOffset": offsets[4], "byteLength": len(uvs)},
@@ -851,6 +870,9 @@ def write_materialless_primitive_glb(path: Path) -> Path:
     )
 
 
+# Binary container builders
+
+
 def _png(
     width: int,
     height: int,
@@ -898,6 +920,7 @@ def _write_glb(path: Path, gltf: dict, bin_blob: bytes) -> Path:
     json_chunk = _pad4(json.dumps(gltf, separators=(",", ":")).encode())
     bin_chunk = _pad4(bin_blob, b"\x00")
     total_len = 12 + 8 + len(json_chunk) + 8 + len(bin_chunk)
+
     # GLB container: 12-byte header (magic, version 2, total length),
     # then length-prefixed JSON and BIN chunks.
     path.write_bytes(
@@ -909,9 +932,6 @@ def _write_glb(path: Path, gltf: dict, bin_blob: bytes) -> Path:
         + bin_chunk
     )
     return path
-
-
-# Binary container builders
 
 
 def _pad4(data: bytes, pad: bytes = b" ") -> bytes:

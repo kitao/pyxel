@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
   </head>
+
   <body>
     <pyxel-run
       script="
@@ -22,6 +23,7 @@
                 os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, 'wb') as f:
                 f.write(base64.b64decode(b64_content))
+
         with open('main.py', 'w', encoding='utf-8') as f:
             f.write(js.parent._project.code)
         with open('my_resource.pyxres', 'wb') as f:

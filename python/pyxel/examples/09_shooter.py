@@ -144,7 +144,6 @@ class Enemy:
             self.direction = -1
 
         self.y += ENEMY_SPEED
-
         if self.y > pyxel.height - 1:
             self.is_alive = False
 

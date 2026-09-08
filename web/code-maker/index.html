@@ -385,6 +385,8 @@
       };
       window._isCopyingResource = false;
 
+      // Project operations
+
       async function loadProject(file) {
         const load = (window._projectLoad = Symbol());
         try {
@@ -394,6 +396,7 @@
           if (load !== window._projectLoad) return;
           updateShareUrl();
         } catch (e) {
+          if (load !== window._projectLoad) return;
           alert(`Load failed: ${e.message}`);
         }
       }
@@ -485,6 +488,7 @@
           // Preserve malformed escapes as a literal filename.
         }
         const name = sanitizeProjectName(decodedName.replace(/\.zip$/i, ""));
+
         const res = await fetch(url);
         if (!res.ok) {
           throw new Error(`Failed to fetch file: ${res.status}`);
@@ -510,11 +514,11 @@
           return;
         }
 
-        copyCodeToProject();
-        await copyResourceToProject();
+        try {
+          copyCodeToProject();
+          await copyResourceToProject();
 
-        if (window.showSaveFilePicker) {
-          try {
+          if (window.showSaveFilePicker) {
             const handle = await window.showSaveFilePicker({
               suggestedName: `${window._project.name}.zip`,
               types: [
@@ -531,41 +535,42 @@
             await writable.write(await buildArchiveBlob());
             await writable.close();
             return;
-          } catch (e) {
-            if (e.name === "AbortError") {
-              return;
-            }
+          }
+
+          const blob = await buildArchiveBlob();
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `${window._project.name}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+        } catch (e) {
+          if (e.name !== "AbortError") {
             alert(`Save failed: ${e.message}`);
           }
         }
-
-        const blob = await buildArchiveBlob();
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `${window._project.name}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(a.href), 3000);
       }
 
       async function saveToGist() {
         if (window._isCopyingResource) {
           return;
         }
-        copyCodeToProject();
-        await copyResourceToProject();
-        const blob = await buildArchiveBlob();
-        const buf = await blob.arrayBuffer();
-        const b64 = uint8ToBase64(new Uint8Array(buf));
+
         try {
+          copyCodeToProject();
+          await copyResourceToProject();
+          const blob = await buildArchiveBlob();
+          const buf = await blob.arrayBuffer();
+          const b64 = uint8ToBase64(new Uint8Array(buf));
           await navigator.clipboard.writeText(b64);
-        } catch {
-          alert("Copy failed");
-          return;
+          showModal("modal-save-gist");
+        } catch (e) {
+          alert(`Copy failed: ${e.message}`);
         }
-        showModal("modal-save-gist");
       }
+
+      // Initialization
 
       function initAceEditor() {
         const codeEditor = ace.edit("code-editor");
@@ -587,7 +592,6 @@
         });
 
         codeEditor.container.style.backgroundColor = "#111827";
-
         const gutter = codeEditor.renderer.$gutter;
         if (gutter?.style) {
           gutter.style.background = "#232d3b";
@@ -627,7 +631,6 @@
           e.stopPropagation();
           toggleDropdown("load-menu");
         });
-
         saveButton.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleDropdown("save-menu");
@@ -709,9 +712,12 @@
               const value = document.getElementById(inputId).value.trim();
               if (!value) return;
               closeModal(document.getElementById(buttonId));
+              const pending = loadFn(value);
+              const load = window._projectLoad;
               try {
-                await loadFn(value);
+                await pending;
               } catch (e) {
+                if (load !== window._projectLoad) return;
                 alert(`Load failed: ${e.message}`);
               }
             });
@@ -769,9 +775,13 @@
 
         runButton.addEventListener("click", async () => {
           animateButton(runButton);
-          copyCodeToProject();
-          await copyResourceToProject();
-          resetRuntimeScreen();
+          try {
+            copyCodeToProject();
+            await copyResourceToProject();
+            resetRuntimeScreen();
+          } catch (e) {
+            alert(`Run failed: ${e.message}`);
+          }
         });
       }
 
@@ -795,7 +805,6 @@
         const screenLoaded = new Promise((resolve) => {
           runtimeScreen.onload = () => resolve();
         });
-
         const editorLoaded = new Promise((resolve) => {
           resourceEditor.onload = () => resolve();
         });
@@ -827,13 +836,11 @@
 
             const runButton = document.getElementById("run-button");
             runButton.disabled = false;
-
             const resourceTabButton = document.getElementById(
               "resource-tab-button",
             );
             resourceTabButton.disabled = false;
             resourceTabButton.classList.remove("disabled");
-
             const splitterHandle = document.getElementById("splitter-handle");
             splitterHandle.style.pointerEvents = "auto";
           },
@@ -851,11 +858,9 @@
           "pointerdown",
           (e) => {
             const target = e.target;
-
             if (toolbar && toolbar.contains(target)) {
               return;
             }
-
             if (splitterHandle && splitterHandle.contains(target)) {
               return;
             }
@@ -917,16 +922,15 @@
             focusLineRight.style.width = `${paneWidth}px`;
             return;
           }
+
           const leftRect = leftPane.getBoundingClientRect();
           const handleRect = splitterHandle.getBoundingClientRect();
-
           const leftWidth = leftRect.width;
           const centerWidth = handleRect.width;
           const rightWidth = Math.max(
             containerRect.width - leftWidth - centerWidth,
             0,
           );
-
           focusLineLeft.style.width = `${leftWidth}px`;
           focusLineCenter.style.width = `${centerWidth}px`;
           focusLineRight.style.width = `${rightWidth}px`;
@@ -1029,14 +1033,12 @@
             const resourceTabButton = document.getElementById(
               "resource-tab-button",
             );
-
             const leftActive = focusLineLeft.classList.contains(
               "focus-line-segment-active",
             );
             const rightActive = focusLineRight.classList.contains(
               "focus-line-segment-active",
             );
-
             const moveToLeft = rightActive || (!leftActive && !rightActive);
 
             if (moveToLeft) {
@@ -1153,7 +1155,6 @@
           if (runtimeScreen?.contentWindow?.pyxelContext?.resolveInput) {
             runtimeScreen.contentWindow.pyxelContext.resolveInput();
           }
-
           if (resourceEditor?.contentWindow?.pyxelContext?.resolveInput) {
             resourceEditor.contentWindow.pyxelContext.resolveInput();
           }
@@ -1163,6 +1164,8 @@
           window.addEventListener(eventName, resolvePyxelInput);
         });
       }
+
+      // Project helpers
 
       async function loadProjectFromZip(buf, name, load = window._projectLoad) {
         const zip = await JSZip.loadAsync(buf);
@@ -1177,11 +1180,10 @@
         }
 
         if (load !== window._projectLoad) return;
-
-        if (!files["main.py"]) {
+        if (!Object.hasOwn(files, "main.py")) {
           throw new Error("Missing main.py");
         }
-        if (!files["my_resource.pyxres"]) {
+        if (!Object.hasOwn(files, "my_resource.pyxres")) {
           throw new Error("Missing my_resource.pyxres");
         }
 
@@ -1218,36 +1220,22 @@
       }
 
       async function copyResourceToProject() {
-        if (!resourceEditor.contentWindow?.pyxelContext?.pyodide) {
+        const pyodide = resourceEditor.contentWindow?.pyxelContext?.pyodide;
+        if (!pyodide) {
           return;
         }
 
+        // Prevent the editor's save callback from re-entering saveToFile.
         window._isCopyingResource = true;
-
         try {
-          const doc = resourceEditor.contentWindow.document;
-          doc.dispatchEvent(
-            new KeyboardEvent("keydown", {
-              key: "F13",
-              code: "F13",
-              bubbles: true,
-            }),
+          // Unwind a Python save callback before entering its runtime again.
+          await Promise.resolve();
+          const filename = PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres";
+          pyodide.runPython(
+            `import pyxel; pyxel.save(${JSON.stringify(filename)})`,
           );
-          doc.dispatchEvent(
-            new KeyboardEvent("keyup", {
-              key: "F13",
-              code: "F13",
-              bubbles: true,
-            }),
-          );
-
-          // Give the editor update loop time to process the save before reading.
-          await new Promise((resolve) => setTimeout(resolve, 100));
-
           window._project.resource = uint8ToBase64(
-            resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
-              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres",
-            ),
+            pyodide.FS.readFile(filename),
           );
         } finally {
           window._isCopyingResource = false;
@@ -1291,7 +1279,9 @@
       }
 
       function updateShareUrl(param, value, ref = null, sha = null) {
-        const base = location.href.split("?")[0];
+        const base = new URL(location.href);
+        base.search = "";
+        base.hash = "";
         if (param && value) {
           const encoded = encodeURIComponent(value)
             .replace(/%3A/g, ":")
@@ -1307,6 +1297,8 @@
           history.replaceState(null, "", base);
         }
       }
+
+      // UI helpers
 
       function handleMenuKeydown(menu, event) {
         const items = [...menu.querySelectorAll(".dropdown-item")];
@@ -1449,11 +1441,15 @@
         setupButtonHandlers();
         setupSplitter();
 
+        const initialPending = loadInitialFiles();
+        const initialLoad = window._projectLoad;
         try {
-          await loadInitialFiles();
+          await initialPending;
         } catch (e) {
-          alert(`Load failed: ${e.message}`);
-          return;
+          if (initialLoad === window._projectLoad) {
+            alert(`Load failed: ${e.message}`);
+            return;
+          }
         }
         updateFocusLine("left");
 
@@ -1463,21 +1459,27 @@
         const gistParam = params.get("gist");
         const githubParam = params.get("github");
         const urlParam = params.get("url");
-        try {
-          if (gistParam) {
-            await loadFromGist(gistParam);
-          } else if (githubParam) {
-            await loadFromGitHubShare(
-              githubParam,
-              params.get("ref"),
-              params.get("sha"),
-            );
-          } else if (urlParam) {
-            await loadFromUrl(urlParam);
-          }
-        } catch (e) {
-          alert(`Load failed: ${e.message}`);
+        let pending;
+        if (gistParam) {
+          pending = loadFromGist(gistParam);
+        } else if (githubParam) {
+          pending = loadFromGitHubShare(
+            githubParam,
+            params.get("ref"),
+            params.get("sha"),
+          );
+        } else if (urlParam) {
+          pending = loadFromUrl(urlParam);
         }
+        const load = window._projectLoad;
+        try {
+          await pending;
+        } catch (e) {
+          if (load === window._projectLoad) {
+            alert(`Load failed: ${e.message}`);
+          }
+        }
+
         setupFocusIndicator();
         setupShortcuts();
         setupPyxelInput();

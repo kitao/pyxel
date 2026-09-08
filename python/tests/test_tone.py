@@ -66,8 +66,10 @@ class TestTone:
         assert len(wf) == 2
         assert wf[0] == 64
         assert wf[1] == 128
+
         wf[0] = 32
         assert tone.wavetable[0] == 32
+
         out = capfd.readouterr().out
         assert out == "Tone.waveform is deprecated. Use Tone.wavetable instead.\n"
 

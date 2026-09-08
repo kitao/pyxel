@@ -77,7 +77,6 @@ def test_inject_html_uses_offsets_from_rewritten_document():
     )
 
     injected = module._inject_html(original)
-
     assert injected.index("navigator.serviceWorker") < injected.index("</head>")
     assert '<pyxel-run root=".">' in injected
 

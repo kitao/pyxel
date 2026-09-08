@@ -24,8 +24,6 @@ impl Shading {
         self.inner_mut().direction = v.inner.clone();
     }
 
-    // Dunder
-
     fn __repr__(&self) -> String {
         let r = self.inner_ref();
         format!("Shading({} x {})", r.palette_size(), LEVEL_COUNT)
@@ -53,8 +51,6 @@ impl Shading {
         self.inner_mut().set(col, level, value);
         Ok(())
     }
-
-    // Methods
 
     fn build(&self, colors: Vec<pyxel::Rgb24>) {
         self.inner_mut().build(&colors);

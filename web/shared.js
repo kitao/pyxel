@@ -1,4 +1,4 @@
-// Language selection
+// Page controls
 
 const PYXEL_LANG_KEY = "pyxel-lang";
 
@@ -57,12 +57,10 @@ const buildPageHeader = (updateFn, leadingControl = null) => {
 
   const titleBlock = document.createElement("div");
   titleBlock.className = "w-full sm:w-auto sm:flex-1 min-w-0 shrink-0";
-
   const h1 = document.createElement("h1");
   h1.className = "font-semibold text-2xl tracking-tight";
   h1.id = "page-title";
   titleBlock.appendChild(h1);
-
   const subtitle = document.createElement("p");
   subtitle.className = "mt-2 text-gray-300 text-sm";
   subtitle.id = "page-subtitle";
@@ -106,6 +104,8 @@ const code = (s, syntax = "plaintext") =>
 const btnChip = (s) => `<span class="btn-chip">${esc(s)}</span>`;
 
 const linkChip = (s) => `<span class="link-chip">${esc(s)}</span>`;
+
+// Data transfer
 
 const encodeUrlPath = (path) =>
   path.split("/").map(encodeURIComponent).join("/");
@@ -155,6 +155,7 @@ const resolveGitHubBlobUrl = async (
 
   const [user, repo] = parts;
   const refAndPath = parts.slice(3);
+  // null means a missing ref; undefined means probing cannot continue.
   const resolveSplit = async (split) => {
     const ref = refAndPath.slice(0, split).join("/");
     const path = refAndPath.slice(split).join("/");
@@ -220,6 +221,8 @@ const resolveGitHubBlobUrl = async (
 
   throw new Error("Failed to resolve the GitHub ref and file path");
 };
+
+// Page setup
 
 const waitForPyxelReady = (
   checkFn,

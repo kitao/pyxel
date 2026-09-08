@@ -117,7 +117,6 @@ pub fn expand_vec2<T: Clone>(
         .iter()
         .map(|inner_vec| expand_vec(inner_vec, new_inner_len))
         .collect();
-
     expand_vec(&new_vec, new_outer_len)
 }
 
@@ -128,7 +127,6 @@ pub fn trim_empty_vec<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
         .rev()
         .position(|vec| !vec.is_empty())
         .map_or(0, |i| vecs.len() - i);
-
     vecs.truncate(new_len);
     vecs
 }

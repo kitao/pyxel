@@ -16,8 +16,9 @@ automated and manual checks for native and Web development.
 
 ## Make and Check a Change
 
-Read the [Coding Policy](../docs/coding-policy.md) for design principles, coding
-standards, and verification requirements.
+Read the [Design Policy](../docs/design/design-policy.md) for governing principles
+and the [Design Audit Procedure](../docs/design/design-audit.md) for verification
+steps and relevant decision records.
 
 ## Submit a Pull Request
 
