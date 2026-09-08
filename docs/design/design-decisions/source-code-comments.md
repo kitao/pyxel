@@ -1,4 +1,4 @@
-# Comments Decisions
+# Comment Decisions
 
 [Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#comments)
 
@@ -24,15 +24,15 @@ documentation comments, Python docstrings, or JSDoc blocks. The exception is the
 generated docstrings in `python/pyxel/__init__.pyi`, whose descriptions come from
 the [documentation sources](documentation.md#sources-of-generated-guides-and-stub-docstrings).
 
+A one-line group label uses sentence case without decorative banners or a
+terminal period. Sentence comments use normal punctuation; a single sentence
+may omit its terminal period. These are presentation conventions, separate
+from deciding whether a comment supplies information the reader needs.
+
 **Reason:** English provides a shared source-comment language. Source comments
 explain local intent; public API descriptions have their own authoritative
 sources and reach editor help through generation. Maintaining another set of
 API prose inside implementation files would create competing descriptions.
-
-A one-line group label uses sentence case without decorative banners or a terminal period.
-Sentence comments use normal punctuation; a single sentence may omit its terminal
-period. These are presentation conventions, separate from deciding whether a
-comment supplies information the reader needs.
 
 ### Definition-group headings
 
@@ -104,11 +104,6 @@ and events in the [editor](../../../python/pyxel/editor/) and
 [widget framework](../../../python/pyxel/editor/widgets/), including relevant inherited
 members. Their purpose is to make the component understandable in that file.
 
-**Reason:** `Widget.new_var` creates properties dynamically, `Widget.copy_var`
-shares them, and event interfaces emerge from registration and dispatch.
-Reconstructing that interface from implementation code repeatedly sends readers
-to other files. The opening lists collect it in one place.
-
 For example, [Button](../../../python/pyxel/editor/widgets/button.py) presents
 `is_pressed_var` and `press`;
 [EditorBase](../../../python/pyxel/editor/editor_base.py) presents `help_message_var`,
@@ -130,6 +125,11 @@ The event list covers the component's integration points, not only events
 emitted by its own methods. Common mouse, visibility, update, and draw events
 remain described in `Widget` rather than repeated in every component.
 
+**Reason:** `Widget.new_var` creates properties dynamically, `Widget.copy_var`
+shares them, and event interfaces emerge from registration and dispatch.
+Reconstructing that interface from implementation code repeatedly sends readers
+to other files. The opening lists collect it in one place.
+
 ### UI interface list notation and grouping
 
 **Decision:** Put `# Variables:` before `# Events:` at the start of the class.
@@ -142,15 +142,6 @@ interface summary.
 
 The [blank-line decision](source-code-blank-lines-python.md#editor-interface-lists)
 specifies the separators within and after the summary.
-
-**Reason:** The names must match the properties and event strings used by
-callers. Arguments describe what a listener receives; the return notation
-distinguishes value transformation from notification. Explicit `none`
-distinguishes an empty category from missing documentation, so readers need
-not inspect the implementation to establish that absence. It applies to the
-component-specific summary; common inherited `Widget` facilities remain listed
-in `Widget`. The lists are an interface summary, not Python declarations or
-another API reference.
 
 Keep related coordinates together and preserve the common image-editing group
 before the tilemap-specific group in
@@ -166,6 +157,15 @@ it provides that value to the editor and other views, whereas `PianoRoll`
 receives it. This exposes the control's output before its supporting inputs.
 It does not impose an owned-before-inherited order on every widget; a viewer
 needs its image or tilemap index before the focus within that resource.
+
+**Reason:** The names must match the properties and event strings used by
+callers. Arguments describe what a listener receives; the return notation
+distinguishes value transformation from notification. Explicit `none`
+distinguishes an empty category from missing documentation, so readers need
+not inspect the implementation to establish that absence. It applies to the
+component-specific summary; common inherited `Widget` facilities remain listed
+in `Widget`. The lists are an interface summary, not Python declarations or
+another API reference.
 
 ### Method groups in the editor and widget framework
 

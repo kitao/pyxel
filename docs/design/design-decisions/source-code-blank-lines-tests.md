@@ -1,4 +1,4 @@
-# Tests Blank Line Decisions
+# Test Blank Line Decisions
 
 [Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#structure-and-formatting)
 

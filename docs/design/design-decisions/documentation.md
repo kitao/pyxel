@@ -93,6 +93,8 @@ technical vocabulary while keeping code literal. They settle recurring
 typographical choices; they do not authorize changing meaning or imposing
 Japanese loanword conventions on other languages.
 
+## Sources and Organization
+
 ### Sources of generated guides and stub docstrings
 
 **Decision:** Web source data and templates own generated guides and API

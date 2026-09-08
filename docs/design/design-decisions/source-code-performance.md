@@ -4,19 +4,6 @@
 
 ## Rust
 
-### Allocations and work inside hot loops
-
-**Decision:** Review repeated heap growth, copies, conversions, and bounds checks
-where they execute in a hot loop. Do not replace a construct merely because it
-can incur a cost in another context.
-
-**Reason:** `Vec::new()` alone does not allocate. A temporary result that grows
-for each vertex has a different cost from an empty vector or a buffer reused
-between frames. The allocation and reuse sites establish the relevant work.
-Inlining, loop unrolling, and SIMD likewise need evidence of benefit before
-their extra complexity is justified. This is the boundary between a demonstrated
-performance correction and a stylistic rewrite.
-
 ### Pixel, palette, and tile storage
 
 **Decision:** Keep the distinct storage types used by
@@ -119,17 +106,17 @@ visible samples contribute.
 use `Arc<Mutex<T>>`, as defined by the
 [resource macros](../../../crates/pyxel-core/src/utils.rs).
 
-**Reason:** Graphics resources share mutable state locally. Audio resources
-are also accessed during the
-[audio callback](../../../crates/pyxel-core/src/audio.rs), requiring shared ownership
-and synchronization across that boundary. Their `Rc`-prefixed aliases identify
-shared resources rather than promising the concrete `std::rc::Rc` type.
-
 Immutable [MML command](../../../crates/pyxel-core/src/mml_command.rs) snapshots use
 `Arc` to share command and envelope data without copying it for each playback.
 [Sound](../../../crates/pyxel-core/src/sound.rs) owns the editable source and cached
 snapshot; [Channel](../../../crates/pyxel-core/src/channel.rs) keeps its own playback
 position. Shared data does not imply shared playback state.
+
+**Reason:** Graphics resources share mutable state locally. Audio resources
+are also accessed during the
+[audio callback](../../../crates/pyxel-core/src/audio.rs), requiring shared ownership
+and synchronization across that boundary. Their `Rc`-prefixed aliases identify
+shared resources rather than promising the concrete `std::rc::Rc` type.
 
 ### Cache invalidation for editable sources
 
@@ -151,6 +138,20 @@ geometry attributes, ordinary geometry calculations, depth buffers, and motion
 values. Preserve the distinction between these values and integral indices or
 pixel coordinates.
 
+World geometry uses world units and projected coordinates use pixels. Angle
+arguments and angle results use degrees; imported animation times are converted
+from seconds to frames using `fps`; playback speed is frames per update. Mesh
+parents and BVH child links use signed indices to represent `-1` sentinels,
+while array access uses `usize`. These distinctions should survive any local
+change in width.
+
+Widen intermediates when a calculation needs it. In the
+[circle rasterizer](../../../crates/pyxel-core/src/cube/raster.rs), subtracting valid
+`i32` coordinates can exceed their range, so offsets remain `i64` until clipping.
+Circle precision follows the
+[primitive raster decision](#primitive-raster-precision-and-clipping).
+Representation choices do not add parameter restrictions.
+
 **Reason:** The [Python math bindings](../../../crates/pyxel-binding/src/cube/vec3.rs)
 convert components to `f32`, and the
 [GLB importer](../../../crates/pyxel-core/src/cube/glb_parser.rs) produces matching
@@ -159,19 +160,6 @@ representation through calculation preserves their rounding behavior and
 four-byte component storage. Widening the whole pipeline would change memory
 use and numerical results; Python's `float` annotation alone does not require
 such a change.
-
-World geometry uses world units and projected coordinates use pixels. Angle
-arguments and angle results use degrees; imported animation times are converted from seconds to frames using `fps`; playback
-speed is frames per update. Mesh parents and BVH child links use signed indices
-to represent `-1` sentinels, while array access uses `usize`. These distinctions
-should survive any local change in width.
-
-Widen intermediates when a calculation needs it. In the
-[circle rasterizer](../../../crates/pyxel-core/src/cube/raster.rs), subtracting valid
-`i32` coordinates can exceed their range, so offsets remain `i64` until clipping.
-Circle precision follows the
-[primitive raster decision](#primitive-raster-precision-and-clipping).
-Representation choices do not add parameter restrictions.
 
 ### Cube value calculations
 
