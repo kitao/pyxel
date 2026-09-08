@@ -8,20 +8,17 @@ construction. Tests and their support code also use the [test decisions](source-
 
 ## Function bodies
 
-**Decision:** Use the shared processing groups inside functions, loops, and
-branches. The same criteria apply to parsers, transformations, generators,
-callbacks, and resource lifecycles. Keep compact expressions and call chains
-together, and expose the stages of longer processing. An import, exception
-handler, delegated call, or final result does not alone decide a paragraph.
+**Decision:** Apply the shared [processing groups](source-code-blank-lines.md#processing-groups)
+inside functions, loops, and branches.
 
 Local definitions retain Python's definition spacing, including helpers that
 use captured state. Their definitions belong near the work that uses them;
 short lambdas remain part of their containing expression. Blank source lines
 and empty strings emitted into generated content have different ownership.
 
-**Reason:** Python's indentation shows nesting; paragraphs expose the steps
-within it. A shared cursor, output buffer, or lifecycle does not turn a long
-implementation into one reading unit.
+**Reason:** Python's indentation shows nesting, while definition spacing
+distinguishes a local helper from the processing around it. Captured state does
+not change that role.
 
 ## Embedded Python and reference examples
 
@@ -74,13 +71,10 @@ unrelated comments.
 
 ## State and editor construction
 
-**Decision:** Keep compact state and declaration inventories together. In
-[widget settings](../../../python/pyxel/editor/widgets/settings.py), hold time,
-repeat time, click time, and click distance form one input-timing group.
-`MouseCaptureInfo` and `FieldCursor` keep their compact stored-state inventories
-together. Different units, types, prefixes, or attached field explanations do
-not each create another group. Larger settings follow their recorded
-[settings subgroups](source-code-structure-and-formatting.md#grouping-and-order-in-settingsrs).
+**Decision:** Keep compact state and declaration inventories together, including
+`MouseCaptureInfo` and `FieldCursor`. Different units, types, prefixes, or
+attached field explanations do not each create another group. Settings follow
+the [editor and widget settings groups](source-code-structure-and-formatting.md#editor-and-widget-settings-groups).
 
 In editor constructors, group base construction, stored state, and simple
 variable/property wiring by responsibility. An assignment becoming `new_var`,

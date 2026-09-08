@@ -99,11 +99,11 @@ directly settles its placement, keep the inspection result in the audit records
 rather than duplicating it as another decision.
 Specify the required form independently of the candidate's current form or diff;
 whether a correction is needed is an application result, not the decision.
-Preserve original maintainer
-answers and historical evidence in the audit records; keep incident narratives
-and the sequence of past reversals out of the decision's explanation. Resolve
-public-contract changes or unresolved specifications with the maintainer under
-the policy before making dependent changes.
+Preserve original maintainer answers and historical evidence in the audit
+records; keep incident narratives and the sequence of past reversals out of the
+decision's explanation. Resolve public-contract changes or unresolved
+specifications with the maintainer under the policy before making dependent
+changes.
 
 ### Apply and Freeze the Candidate
 
@@ -320,6 +320,12 @@ Correct all actionable findings, regardless of severity. Apply the new-run and
 evidence invalidation rules after corrections. Without an independent reviewer,
 the audit remains pending.
 
+Checks of independent review itself remain pending until that work is done.
+Preserve the reviewed submission and record the completed review against it;
+use that evidence to resolve those checks. Independently review the resulting
+record changes before completion. This keeps the evidence chain acyclic
+without assuming a review's own result or omitting its completion checks.
+
 ## Completion
 
 Derive [`result.json`](#audit-records) from the final records. Mark the audit
@@ -342,23 +348,24 @@ evidence.
 
 Before applying a policy revision, compare the proposed and current
 requirements and assess its consequences for the procedure and the complete
-body of decisions and verification. After revising the policy, procedure, or
-decision records, review the affected obligations, choices, implementation
-families, and corresponding audit checks. A policy revision requires
-reassessing the procedure and the complete body of decisions under the revised
-criteria; do not carry their earlier verdicts into the new audit. For policy
-revisions, reread the entire policy for contradictions, gaps, and uneven
-detail, and compare analogous rules and their verification. Derive and recheck
-the affected subjects using [coverage planning](#2-plan-coverage) and
-[inspection](#3-inspect-and-verify). Compare previous and revised requirements
-and record the reason and practical effect of each change. Exercise both known
-failures and valid cases against the revised rules and procedure, including how
-omissions and conflicting verdicts are detected. For source-layout conditions,
-include valid compact cases and inspect the complete resulting source for
-readability; a clean diff or formatter result does not establish that quality.
+body of decisions and verification. Reread the entire policy for contradictions,
+gaps, and uneven detail, and compare analogous rules and their verification.
+
+For revisions to any governing document, compare previous and revised
+requirements and record the reason and practical effect of each change. Review
+the affected obligations, choices, implementation families, and audit checks
+through [coverage planning](#2-plan-coverage) and [inspection](#3-inspect-and-verify).
+A policy revision requires reassessing the procedure and the complete body of
+decisions under the revised criteria; do not carry their earlier verdicts into
+the new audit.
+
+Exercise both known failures and valid cases against the revised rules and
+procedure, including how omissions and conflicting verdicts are detected.
+For source-layout conditions, include valid compact cases and inspect the
+complete resulting source for readability; a clean diff or formatter result
+does not establish that quality.
 Preserve earlier records with the versions they evaluated; do not rewrite them
-to fit the new rules. That
-revision review does not certify the repository.
+to fit the new rules. Revision review does not certify the repository.
 
 ## Decision Records
 
@@ -372,7 +379,7 @@ their referenced dependencies.
 | [Performance](design-decisions/source-code-performance.md) | Executed cost, numeric representations, arithmetic widths, and resource ownership |
 | [Naming](design-decisions/source-code-naming.md) | Naming families and correspondence across interfaces |
 | [Structure and formatting](design-decisions/source-code-structure-and-formatting.md) | Definition order, settings and configuration groups, and file representation |
-| [Blank lines: shared](design-decisions/source-code-blank-lines.md) | Shared formatting ownership, comment boundaries, and cross-language constant catalogues |
+| [Blank lines: shared](design-decisions/source-code-blank-lines.md) | Formatting ownership, processing groups, comment boundaries, and cross-language constant catalogues |
 | [Blank lines: Python](design-decisions/source-code-blank-lines-python.md) | Python programs, embedded Python, editor construction, and tools |
 | [Blank lines: Rust](design-decisions/source-code-blank-lines-rust.md) | Rust engine and binding groups, with their directly related test cases |
 | [Blank lines: Web](design-decisions/source-code-blank-lines-web.md) | JavaScript, HTML, CSS, and Web runtime groups |
@@ -382,7 +389,7 @@ their referenced dependencies.
 | [Comments](design-decisions/source-code-comments.md) | Comment forms, concise rationale, and UI interface descriptions |
 | [Cross-file consistency](design-decisions/source-code-cross-file-consistency.md) | Message families, idiom exceptions, coordinate correspondence, examples, and Python node identity |
 | [Rust/Python boundary](design-decisions/public-contract-rust-python.md) | Exception conversion, resource access, and reentrant Python calls |
-| [Python contracts](design-decisions/public-contract-python.md) | Python APIs and stubs, CLI behavior, audio data, and editor controls |
+| [Python contracts](design-decisions/public-contract-python.md) | Python APIs and stubs, CLI, resources, audio, editors, and Cube behavior |
 | [Web contracts](design-decisions/public-contract-web.md) | User-visible behavior of the Web tools |
 | [Distribution contracts](design-decisions/public-contract-distribution.md) | Rust crate publication, Python and Web compatibility, SDL2 linkage, wheel installation, release versions, and optional dependencies |
 | [Documentation](design-decisions/documentation.md) | Reader scope, sources, translations, typography, names, and release notes |

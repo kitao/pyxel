@@ -8,14 +8,10 @@ These decisions apply to Rust engine code, bindings, macros, and native tests.
 ## Function bodies
 
 **Decision:** Apply the shared [processing groups](source-code-blank-lines.md#processing-groups)
-inside Rust bodies. Separate readable steps within loops and branches as well
-as at the outer function level. A parser, traversal, numerical calculation,
-binding call, or resource lifecycle does not acquire a different spacing rule
-because of its role.
+inside functions, loops, branches, and macros.
 
 Keep members within each argument, component, or field group together; compact
-`match` mappings do not need a blank per member. A long list remains
-a list; a long sequence of processing steps needs paragraphs. A borrow scope,
+`match` mappings do not need a blank per member. A borrow scope,
 `unsafe` block, `?`, or explicit `drop` neither requires nor prohibits a boundary.
 Macros use the same declaration and processing groups as handwritten code.
 Generated types, implementations, and methods retain ordinary item separation;
@@ -33,8 +29,8 @@ include simplicity of rules. The [standard library's I/O implementation](https:/
 contains both compact helpers and paragraphs within substantial loops;
 shared state does not prevent separation. The [Rust Book's argument-parsing examples](https://doc.rust-lang.org/book/ch12-03-improving-error-handling-and-modularity.html)
 also separate preparation and results. These demonstrate authored paragraphing,
-not a rule that every loop or return has the same surrounding space. Import
-separation distinguishes the local name environment from the code that uses it.
+not fixed spacing around every loop or return. Import separation distinguishes
+the local name environment from the code that uses it.
 
 ## State and declaration inventories
 

@@ -10,11 +10,6 @@ only when Python code needs to catch it and choose how to proceed. Otherwise,
 preserve Rust-side failure handling unless a concrete requirement justifies
 conversion and its added code and runtime cost.
 
-**Reason:** Released exceptions are part of the Python behavior callers can
-already use. Removing them because this review found no particular caller would
-itself change that behavior. For a new conversion, the possibility of imagining
-a retry is insufficient: its recovery purpose must be established.
-
 This preserves the existing distinctions between these argument boundaries:
 
 | Boundary | Treatment retained | Reason |
@@ -32,6 +27,11 @@ The relevant boundaries are owned by the
 [tone](../../../crates/pyxel-binding/src/tone_wrapper.rs) bindings.
 The image, tilemap, and graphics bindings retain their corresponding constructor,
 text-data, and resource-selection errors.
+
+**Reason:** Released exceptions are part of the Python behavior callers can
+already use. Removing them because this review found no particular caller would
+itself change that behavior. For a new conversion, the possibility of imagining
+a retry is insufficient: its recovery purpose must be established.
 
 **Boundary:** Preserving a released error does not approve every current guard,
 duplicate check, or newly added failure condition. Review such additions against
@@ -94,11 +94,6 @@ Keep Python-standard errors for Pyxel's list operations:
 extended-slice length mismatch, and the applicable Python errors for invalid
 indices and slices. Unknown module attributes raise `AttributeError`.
 
-**Reason:** These errors implement the Python operations offered by resource
-lists, Sound sequences, `Tone.wavetable`, and `Music.seqs`. They support normal
-indexing, iteration, attribute lookup, and Python conversion behavior. A Rust
-panic would not implement those protocols.
-
 The [shared sequence bindings](../../../crates/pyxel-binding/src/utils.rs) and
 [music bindings](../../../crates/pyxel-binding/src/music_wrapper.rs) own these
 operations. Pyxel-authored standard diagnostics use CPython's exact wording; PyO3's
@@ -110,6 +105,11 @@ conversion before floating-point conversion. The shared overload helpers and
 sequence comparisons likewise distinguish an unsupported candidate from a
 failure of the selected operation. Propagating every tentative extraction error
 would prevent those supported alternatives from being reached.
+
+**Reason:** These errors implement the Python operations offered by resource
+lists, Sound sequences, `Tone.wavetable`, and `Music.seqs`. They support normal
+indexing, iteration, attribute lookup, and Python conversion behavior. A Rust
+panic would not implement those protocols.
 
 **Boundary:** Ordinary list annotations alone do not decide a live view's
 lifetime contract. [Music channel views](public-contract-python.md#music-channel-views-after-removal)
@@ -168,20 +168,6 @@ and create another place for them to diverge.
 **Boundary:** Validation of the `tm` argument itself remains separate. An invalid
 image source that is actually dereferenced retains Rust-side failure handling;
 there is no established need to add a Python recovery contract for it.
-
-## Imported motion and scene placement
-
-**Decision:** Applying a motion assigns sampled local transforms to its
-matching imported nodes. Keep application placement and scale on a separate
-parent when they must remain independent of that animation.
-
-**Reason:** Imported transforms describe animated model parts; an application's
-placement describes the model's position in its scene. Composing each sampled
-frame with the node's previous transform would accumulate movement and scale.
-The [motion binding](../../../crates/pyxel-binding/src/cube/node.rs) replaces the
-sampled transforms; a parent preserves scene placement without changing the
-motion contract. The [collision sample](../../../python/pyxel/examples/c05_3d_collision.py)
-uses this separation for its chosen model scale.
 
 ## Python reentry while accessing mutable resources
 

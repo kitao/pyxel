@@ -57,16 +57,16 @@ conventions. Their internal helpers remain idiomatic Rust. The
 [SDL2 implementation](../../../crates/pyxel-core/src/platform/sdl2/) retains the
 external API's C names at its call sites.
 
-**Reason:** A binding should be recognizable from the interface it implements.
-Renaming external terms to suit an internal naming convention would make the
-mapping harder to follow. This exception belongs to the interface boundary,
-not every function in its surrounding file.
-
 Image and tilemap drawing APIs keep matching operation names. An internal
 `draw_line` may implement the public `line` API: the layers have distinct naming
 roles. Conversely, a name such as `Canvas.drawCanvas()` repeats its owner without
 adding meaning. These examples distinguish a useful correspondence from
 mechanical textual identity or redundant qualification.
+
+**Reason:** A binding should be recognizable from the interface it implements.
+Renaming external terms to suit an internal naming convention would make the
+mapping harder to follow. This exception belongs to the interface boundary,
+not every function in its surrounding file.
 
 ### Shared handles and value kernels
 

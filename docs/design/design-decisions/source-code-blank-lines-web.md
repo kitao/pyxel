@@ -51,11 +51,9 @@ Use these additional boundaries for runtime construction and callbacks:
 | A short callback performs one operation and is immediately registered | No separation between its definition and registration |
 | A callback contains its own acquisition and update groups | One blank between the complete callback setup and its subscription group |
 
-The compact-operation case includes element callbacks, string/error conversions,
-bitmask accumulation, event forwarding, asset checks, small DOM updates, and
-package/file helpers. Global-error and drag/drop subscriptions are paired
-inventories. `_setMinWidthFromRatio`'s missing-element check and width update
-are one compact operation.
+Global-error and drag/drop subscriptions are paired inventories.
+`_setMinWidthFromRatio`'s missing-element check and width update are one compact
+operation.
 
 The following table specifies the concrete stage membership for the larger
 operations. Semicolons separate groups; steps within a group are continuous,
@@ -83,14 +81,11 @@ request remain one group. Keep the catch handler attached to the complete
 reset operation. In the command switch, separate the substantial run, play,
 and edit cases; keep each case continuous outside its embedded Python.
 
-In `_loadImage` and `_waitForInput`, keep the local completion callbacks
-together, then separate their registration/start block. The callbacks cooperate
-in one promise: do not put a blank between every local function declaration.
-A short callback and its immediate registration stay together, as with
-`pinchHandler` and `invalidateRects`. The gamepad touch callback contains its
-own geometry and state-update groups, so its subscriptions follow separately
-as specified in the table. The substantial directory and mirroring
-helpers in `_hookFileOperations` remain separate implementations.
+The callback cases in the table apply to `_loadImage` and `_waitForInput`
+(cooperating callbacks), `pinchHandler` and `invalidateRects` (immediate
+registration), and the gamepad touch callback (internal processing groups).
+The substantial directory and mirroring helpers in `_hookFileOperations`
+remain separate implementations.
 
 In `_hookPythonError`, separate the captured batch state from the returned
 receiver. Within that receiver, keep the admission check, loop cancellation,

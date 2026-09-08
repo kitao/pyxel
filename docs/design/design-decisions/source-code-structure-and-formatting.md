@@ -65,18 +65,18 @@ assistant workspace material. Retain generated artifacts consumed directly
 from the repository, including the Web wheel, generated guides, and stylesheet.
 Keep the root `/examples` shortcut separate from the packaged examples.
 
+The root README and LICENSE own the package copies created by
+[make build](../../../Makefile). Ignore those copies rather than maintaining
+another editable authority. Git ignore rules neither remove tracked files nor
+define wheel contents; package exclusions and artifact checks have their own
+distribution role.
+
 **Reason:** The [ignore rules](../../../.gitignore) keep local working material
 out of source discovery. The [Web loader](../../../wasm/pyxel.js), Web pages,
 and documentation readers consume versioned generated files without building
 them first. The examples under `python/pyxel/examples/` are teaching material
 used by packaging, `copy_examples`, tests, and Web pages; a root shortcut does
 not justify ignoring that directory family.
-
-The root README and LICENSE own the package copies created by
-[make build](../../../Makefile). Ignore those copies rather than maintaining
-another editable authority. Git ignore rules neither remove tracked files nor
-define wheel contents; package exclusions and artifact checks have their own
-distribution role.
 
 ### Makefile groups
 

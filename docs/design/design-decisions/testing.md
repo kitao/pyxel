@@ -14,12 +14,6 @@ Use Rust tests for pure internal logic, Python tests for the public API,
 reference regressions for screenshots and rendered audio, and running samples
 for manual checks of look, sound, and feel.
 
-**Reason:** A numerical boundary, list operation, or resource round trip can be
-checked unattended. Whether an animation looks right, an interaction feels
-usable, or a sound is satisfactory needs observation. Passing image or audio
-reference comparisons establishes the selected output's correspondence, not the
-quality of the reference or all behavior outside the captured case.
-
 The [Makefile](../../../Makefile) provides one automated entry point, `make test`,
 for Python, Rust, and JavaScript. The current JavaScript tests run on Node.js;
 calling them `test-wasm` would imply execution of the WASM runtime they do not
@@ -35,15 +29,15 @@ exit status; routine creation and startup do not also require a manual checklist
 Visual, audible, or platform behavior outside those assertions still needs its
 own observation. A launcher screenshot does not cover playing every bundled app.
 
-Repeating cases that exercise the same failure or copying implementation steps
-into expected results does not establish extra protection. Each test needs a
-distinct failure or contract to protect. Unit/API cases are especially useful
-for numeric boundaries, degenerate inputs, rare branches, determinism, deprecated
-aliases and warnings, serialization, and errors.
-
 A Cube draw call outside an active drawing context checks the accepted call
 and no-op behavior, not rendered geometry. Keep those assertions distinct from
 renderer and reference tests.
+
+**Reason:** A numerical boundary, list operation, or resource round trip can be
+checked unattended. Whether an animation looks right, an interaction feels
+usable, or a sound is satisfactory needs observation. Passing image or audio
+reference comparisons establishes the selected output's correspondence, not the
+quality of the reference or all behavior outside the captured case.
 
 ### Screenshot capture and actual launch coverage
 

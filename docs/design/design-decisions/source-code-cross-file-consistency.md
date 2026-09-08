@@ -11,11 +11,6 @@ name. Other errors and warnings follow consistent, idiomatic phrasing within
 their failure-kind family across files and languages. Python-standard diagnostics
 follow the [Python protocol decision](public-contract-rust-python.md#python-conversion-and-sequence-errors).
 
-**Reason:** `fps must be greater than 0` and `scale must be greater than 0`
-identify the argument and its required condition in the same way. These examples
-explain the wording of an existing constraint; they do not require a new guard
-or determine the accepted values of every `fps` or `scale` argument.
-
 Repository wheel/version maintenance tools send failure diagnostics to standard
 error and successful results to standard output. The operation-specific reason
 and nonzero exit status remain useful to both a contributor and an automated
@@ -38,6 +33,11 @@ when reporting a caught loader error; that does not justify replacing the
 underlying reason or repeating it at every layer. Message consistency does not
 require added validation, a uniform exception class, or a common prefix for
 different audiences.
+
+**Reason:** `fps must be greater than 0` and `scale must be greater than 0`
+identify the argument and its required condition in the same way. These examples
+explain the wording of an existing constraint; they do not require a new guard
+or determine the accepted values of every `fps` or `scale` argument.
 
 ### Standing language-idiom exceptions
 
