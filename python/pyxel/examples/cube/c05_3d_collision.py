@@ -18,8 +18,10 @@ def pressedp(*keys):
 
 def make_quad_mesh(corners, color):
     positions = []
+
     for v in corners:
         positions += [v.x, v.y, v.z]
+
     primitive = Primitive(
         Primitive.MODE_TRIANGLES,
         positions,
@@ -27,6 +29,7 @@ def make_quad_mesh(corners, color):
         cull=Primitive.CULL_BACK,
     )
     primitive.compute_normals()
+
     return Mesh(
         primitives=[primitive],
         transforms=[Mat4.IDENTITY],
@@ -38,6 +41,7 @@ def make_quad_mesh(corners, color):
 class QuadSurface(Node):
     def __init__(self, corners, color, outline=1):
         super().__init__()
+
         self.corners = corners
         self.outline = outline
         self.mesh = make_quad_mesh(corners, color)
@@ -53,6 +57,7 @@ class QuadSurface(Node):
 class MarkerBox(Node):
     def __init__(self, pos, size, color, outline=1):
         super().__init__()
+
         self.transform = Mat4.from_translation(pos)
         self.size = size
         self.color = color
@@ -66,6 +71,7 @@ class MarkerBox(Node):
 class MovingPlatform(Node):
     def __init__(self):
         super().__init__()
+
         self.size = Vec3(2.4, 0.35, 4.4)
         self.transform = Mat4.from_translation(Vec3(0.0, 1.0 - self.size.y * 0.5, -7.3))
         self.direction = 1.0
@@ -75,6 +81,7 @@ class MovingPlatform(Node):
     def on_update(self):
         if abs(self.transform.pos.x) > 1.2:
             self.direction *= -1.0
+
         self.delta = Vec3(0.03 * self.direction, 0.0, 0.0)
         self.collider.velocity = self.delta
 
@@ -86,6 +93,7 @@ class MovingPlatform(Node):
 class Goal(Node):
     def __init__(self, pos):
         super().__init__()
+
         self.pos = pos
         self.collider = Collider(radius=0.65, trigger=True, mass=0.0)
 
@@ -101,6 +109,7 @@ class Goal(Node):
 class Player(Node):
     def __init__(self, mesh):
         super().__init__()
+
         self.transform = Mat4.from_translation(PLAYER_START)
         self.collider = Collider(size=Vec3(0.0, 0.9, 0.0), radius=0.32, mass=1.0)
         self.yaw = 0.0
@@ -132,6 +141,7 @@ class Player(Node):
     def set_walking(self, enabled):
         if self.motion is None or self.walking == enabled:
             return
+
         self.walking = enabled
         if enabled:
             self.model.play_motion(self.motion, speed=1.3)
@@ -261,6 +271,7 @@ class Scene(Node):
                 5,
             ),
         ]
+
         for corners, color in routes:
             self.add_child(QuadSurface(corners, color))
 
@@ -284,7 +295,8 @@ class App:
         pyxel.init(240, 180, title="3D Collision")
 
         pyxel.sounds[0].set("c3g3c4", "t", "654", "nnf", 4)
-        mesh = Mesh.from_glb("assets/cube_actor.glb", colkey=0, fps=30.0)
+
+        mesh = Mesh.from_glb("../assets/cube_actor.glb", colkey=0, fps=30.0)
         self.scene = Scene(mesh)
 
         pyxel.run(self.update, self.draw)
@@ -292,6 +304,7 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
         if pyxel.btnp(pyxel.KEY_R):
             self.scene.player.reset()
 

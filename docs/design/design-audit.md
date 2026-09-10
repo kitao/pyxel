@@ -10,8 +10,9 @@ It is written for AI auditors and can also be followed by human reviewers. Read
 the policy and the decisions relevant to the assigned scope. Fix the inputs,
 derive coverage before judging compliance, and resolve disagreements from
 evidence so repeated audits do not drift with the auditor's interpretation. If
-the procedure or a decision contradicts the policy, correct the subordinate
-document before applying it.
+the procedure or a decision contradicts the policy, resolve the conflict through
+[revision review](#revisions-to-governing-documents) before applying the affected
+criteria.
 
 ## Scope
 
@@ -25,7 +26,10 @@ stated scope.
 
 When revising the policy, procedure, or decision records, apply the
 [revision review](#revisions-to-governing-documents) before relying on the
-revised criteria.
+revised criteria. Also require [independent review](#4-review-independently)
+for governing-document revisions and audit corrections that apply a shared
+interpretation across multiple files, limited to the affected obligations and
+families.
 
 Cover every applicable file, rule, relation, hot path, and verification
 command. Derive what must be checked before deciding whether it passes.
@@ -77,7 +81,9 @@ run does not decide what the contract should be.
 ### Resolve and Update Decisions
 
 Consult the governing policy when a choice is missing, conflicting, or
-unsupported:
+unsupported. The following conditions justify proposing a revision, not adopting
+it; use the [revision procedure](#revisions-to-governing-documents) for any change
+to a governing document:
 
 - Correct an existing entry when its premise was mistaken, evidence was overlooked,
   its scope conflates distinct cases, or an adopted contract change makes it stale.
@@ -251,10 +257,13 @@ Applicability was settled in the plan; there is no `not applicable` verdict.
 Apply the policy to the source and comparable subjects. Never create an
 exception to close a finding or treat an unexplained difference as a defect.
 
-Each result states what was inspected and why the verdict follows. Relation
-checks identify peers and dependencies; performance checks include measurement
-or executed-path analysis. Defects identify the violated rule, affected source
-or record, and concrete correction. Evidence chains end in frozen source, the
+Each result states the expected property, what was inspected and observed,
+and why the verdict follows. A generic assurance or evidence about another
+property does not establish compliance. Record generation must preserve
+individual judgments and their evidence; missing judgments remain `pending`.
+Relation checks identify peers and dependencies; performance checks include
+measurement or executed-path analysis. Defects identify the violated rule,
+affected source or record, and concrete correction. Evidence chains end in frozen source, the
 target inventory or diff, recorded decisions or historical evidence, or current
 command logs, without cycles. Historical evidence establishes past behavior or
 intent; current compliance still requires inspection of the frozen target.
@@ -304,8 +313,13 @@ comparisons from the frozen policy, decision records, and source, without
 opening the primary plan, verdicts, or findings. Verify the inventory against
 tracked paths, intended additions, and deletions. Independently check the
 decision-entry inventory, each choice's coverage, and the reverse mapping from
-subjects to decisions or direct policy rules. Record the expected sets, then
-compare them with the primary records and review every result and its evidence.
+subjects to decisions or direct policy rules. Independently inspect each
+expected pair and record its verdict and basis before reading the primary
+judgments. For corrections under existing standards, establish both the
+violation in the previous source and compliance of the result, preserving
+justified differences. Then compare
+coverage and judgments with the primary records and review every result and
+its evidence.
 
 Validate [required fields](#audit-records), references, evidence chains,
 hashes, command outcomes, coverage balance, and exact expected sets. Check
@@ -318,7 +332,7 @@ Record a verdict and rationale for each reviewed check and coverage comparison,
 and explicit results for expected-set comparisons and record validation.
 Correct all actionable findings, regardless of severity. Apply the new-run and
 evidence invalidation rules after corrections. Without an independent reviewer,
-the audit remains pending.
+the work requiring that review remains pending.
 
 Checks of independent review itself remain pending until that work is done.
 Preserve the reviewed submission and record the completed review against it;
@@ -346,6 +360,12 @@ evidence.
 
 ## Revisions to Governing Documents
 
+Identify the defect in the governing documents, why correcting their
+application alone would not resolve it, and why the revision belongs at the
+proposed layer. Correct implementation or review failures under supported
+standards. Prepare the proposal separately from the audited candidate, keeping
+current standards in force during evaluation.
+
 Before applying a policy revision, compare the proposed and current
 requirements and assess its consequences for the procedure and the complete
 body of decisions and verification. Reread the entire policy for contradictions,
@@ -366,6 +386,14 @@ complete resulting source for readability; a clean diff or formatter result
 does not establish that quality.
 Preserve earlier records with the versions they evaluated; do not rewrite them
 to fit the new rules. Revision review does not certify the repository.
+
+Present the complete reviewed diff, its rationale, impact assessment, and
+verification evidence for explicit maintainer approval before adoption.
+Authorization to investigate or prepare a revision does not approve the
+resulting changes. A changed proposal needs renewed review and approval;
+apply only the approved diff, then follow the candidate-invalidation rules.
+Keep unresolved dependent work pending while continuing work that the current
+standards already settle.
 
 ## Decision Records
 
@@ -416,7 +444,7 @@ Earlier formats remain historical records.
 | `plan.json` | Target hash, criteria, decision inventory and mappings, scope decisions, subjects, commands, and expected criterion/subject pairs. |
 | `checks.jsonl` | One result per expected pair: criterion, subject, verdict, rationale, evidence references, defect, and proposed correction. |
 | `commands.jsonl` | Identifier, target and plan hashes, exact invocation, working directory, tool/environment details, exit status, and raw-log reference. |
-| `review.json` | Reviewer identity, input hashes, independently derived expected sets, comparisons, review of every check, coverage balance, and record validation. |
+| `review.json` | Reviewer identity, input hashes, independently derived expected sets and judgments, comparisons, review of every check, coverage balance, and record validation. |
 | `result.json` | Input hashes, derived counts, unresolved defects and blockers, validation results, preceding runs, and completion status. |
 
 Hash file bytes with SHA-256. The target hash is the hash of `target.json`,

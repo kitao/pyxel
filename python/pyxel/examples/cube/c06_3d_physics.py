@@ -6,8 +6,10 @@ GRAVITY = Vec3(0.0, -0.025, 0.0)
 
 def make_quad_mesh(corners, color):
     positions = []
+
     for v in corners:
         positions += [v.x, v.y, v.z]
+
     primitive = Primitive(
         Primitive.MODE_TRIANGLES,
         positions,
@@ -15,6 +17,7 @@ def make_quad_mesh(corners, color):
         cull=Primitive.CULL_BACK,
     )
     primitive.compute_normals()
+
     return Mesh(
         primitives=[primitive],
         transforms=[Mat4.IDENTITY],
@@ -43,6 +46,7 @@ def apply_contact(node, contact):
 class QuadSurface(Node):
     def __init__(self, corners, color):
         super().__init__()
+
         self.corners = corners
         self.mesh = make_quad_mesh(corners, color)
         self.collider = Collider(mesh=self.mesh, friction=0.65)
@@ -57,6 +61,7 @@ class QuadSurface(Node):
 class Floor(Node):
     def __init__(self):
         super().__init__()
+
         self.size = Vec3(7.0, 0.3, 7.4)
         self.transform = Mat4.from_translation(Vec3(0.0, -0.15, -3.2))
         self.collider = Collider(size=self.size, mass=0.0, friction=0.7)
@@ -69,6 +74,7 @@ class Floor(Node):
 class Barrel(Node):
     def __init__(self, pos, color):
         super().__init__()
+
         self.transform = Mat4.from_translation(pos)
         self.size = Vec3(0.74, 0.88, 0.74)
         self.collider = Collider(
@@ -92,6 +98,7 @@ class Barrel(Node):
     def on_draw(self):
         self.box(Mat4.IDENTITY, self.size, self.color)
         self.boxb(Mat4.IDENTITY, self.size, 1)
+
         self.box(Mat4.from_translation(Vec3(0.0, -0.26, 0.0)), Vec3(0.8, 0.05, 0.8), 10)
         self.box(Mat4.from_translation(Vec3(0.0, 0.26, 0.0)), Vec3(0.8, 0.05, 0.8), 10)
 
@@ -99,6 +106,7 @@ class Barrel(Node):
 class CapsuleBall(Node):
     def __init__(self):
         super().__init__()
+
         tilt = Mat4.from_axis_angle(Vec3(0.0, 0.0, 1.0), -90.0)
         self.transform = Mat4.from_translation(Vec3(0.0, 2.75, 4.6)) * tilt
         self.collider = Collider(
@@ -154,6 +162,7 @@ class Scene(Node):
     def add_barrels(self):
         spacing = 0.82
         base_y = 0.44
+
         for row, count in enumerate([4, 3, 2, 1]):
             y = base_y + row * 0.78
             for i in range(count):
@@ -165,12 +174,15 @@ class Scene(Node):
 class App:
     def __init__(self):
         pyxel.init(240, 180, title="3D Physics")
+
         self.scene = Scene()
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
         if pyxel.btnp(pyxel.KEY_R) or pyxel.btnp(pyxel.KEY_SPACE):
             self.scene = Scene()
 

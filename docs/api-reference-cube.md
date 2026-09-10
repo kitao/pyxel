@@ -777,7 +777,7 @@ scene.shading = Shading(pyxel.colors)
 scene.shading.direction = Vec3(0.4, -0.8, -0.4)
 ```
 
-**Note:** shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.
+**Note:** Automatically generated tables keep the original color at level 2 and may repeat colors across levels to avoid unsuitable color changes or high-contrast dithering. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.
 
 ### `direction` — variable
 

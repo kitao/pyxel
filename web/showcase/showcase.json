@@ -1383,7 +1383,7 @@
         {
           "file": "c01_hello_cube.py",
           "demo": "examples/c01-hello-cube.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c01_hello_cube.py",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c01_hello_cube.py",
           "description": {
             "en": "Hello, Pyxel Cube",
             "cn": "你好，Pyxel Cube",
@@ -1416,7 +1416,7 @@
         {
           "file": "c02_basic_shapes.py",
           "demo": "examples/c02-basic-shapes.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c02_basic_shapes.py",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py",
           "description": {
             "en": "Basic 3D shapes",
             "cn": "基本 3D 形状",
@@ -1449,7 +1449,7 @@
         {
           "file": "c03_custom_shapes.py",
           "demo": "examples/c03-custom-shapes.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c03_custom_shapes.py",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c03_custom_shapes.py",
           "description": {
             "en": "Custom 3D shapes",
             "cn": "自定义 3D 形状",
@@ -1482,7 +1482,7 @@
         {
           "file": "c04_mesh_and_motion.py",
           "demo": "examples/c04-mesh-and-motion.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c04_mesh_and_motion.py",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py",
           "description": {
             "en": "Animated GLB models",
             "cn": "GLB 模型动画",
@@ -1498,24 +1498,24 @@
             "uk": "Анімовані GLB-моделі"
           },
           "details": {
-            "en": "Loads a binary glTF (.glb) model with Mesh.from_glb and plays its imported motions at different speeds with play_motion.",
-            "cn": "使用 Mesh.from_glb 加载二进制 glTF (.glb) 模型，并通过 play_motion 以不同速度播放导入的动画。",
-            "de": "Lädt ein binäres glTF-Modell (.glb) mit Mesh.from_glb und spielt die importierten Animationen mit play_motion in unterschiedlichen Geschwindigkeiten ab.",
-            "es": "Carga un modelo glTF binario (.glb) con Mesh.from_glb y reproduce sus animaciones importadas a distintas velocidades con play_motion.",
-            "fr": "Charge un modèle glTF binaire (.glb) avec Mesh.from_glb et lit ses animations importées à différentes vitesses avec play_motion.",
-            "it": "Carica un modello glTF binario (.glb) con Mesh.from_glb e riproduce le animazioni importate a velocità diverse con play_motion.",
-            "ja": "Mesh.from_glb でバイナリ glTF (.glb) モデルを読み込み、play_motion で読み込んだモーションを異なる速度で再生します。",
-            "ko": "Mesh.from_glb로 바이너리 glTF(.glb) 모델을 로드하고, play_motion으로 가져온 모션을 서로 다른 속도로 재생합니다.",
-            "pt": "Carrega um modelo glTF binário (.glb) com Mesh.from_glb e reproduz as animações importadas em velocidades diferentes com play_motion.",
-            "ru": "Загружает бинарную модель glTF (.glb) с помощью Mesh.from_glb и воспроизводит импортированные анимации с разной скоростью через play_motion.",
-            "tr": "Mesh.from_glb ile ikili glTF (.glb) modelini yükler ve içe aktarılan animasyonları play_motion ile farklı hızlarda oynatır.",
-            "uk": "Завантажує бінарну модель glTF (.glb) за допомогою Mesh.from_glb і відтворює імпортовані анімації з різною швидкістю через play_motion."
+            "en": "A low-poly cat with a pixel-art texture, editable in Blockbench. Mesh.from_glb loads the model and play_motion plays its walk cycle. Rotate the view or pause to inspect it.",
+            "cn": "带有像素画纹理的低多边形猫，可在 Blockbench 中编辑。Mesh.from_glb 加载模型，play_motion 播放行走循环。可旋转视角或暂停观察。",
+            "de": "Eine Low-Poly-Katze mit Pixel-Art-Textur, die sich in Blockbench bearbeiten lässt. Mesh.from_glb lädt das Modell und play_motion spielt den Laufzyklus ab. Die Ansicht lässt sich drehen und die Animation pausieren.",
+            "es": "Un gato de pocos polígonos con textura pixel art, editable en Blockbench. Mesh.from_glb carga el modelo y play_motion reproduce su ciclo de caminata. Gira la vista o pausa para observarlo.",
+            "fr": "Un chat low-poly avec une texture en pixel art, modifiable dans Blockbench. Mesh.from_glb charge le modèle et play_motion anime sa marche. Faites tourner la vue ou mettez en pause pour l’observer.",
+            "it": "Un gatto low-poly con texture pixel art, modificabile in Blockbench. Mesh.from_glb carica il modello e play_motion riproduce il ciclo di camminata. Ruota la vista o metti in pausa per osservarlo.",
+            "ja": "Blockbench で編集できる、ドット絵テクスチャのローポリ猫です。Mesh.from_glb でモデルを読み込み、play_motion で歩行モーションを再生します。回転や一時停止で形と動きを観察できます。",
+            "ko": "Blockbench에서 편집할 수 있는 픽셀 아트 텍스처의 로우폴리 고양이입니다. Mesh.from_glb로 모델을 불러오고 play_motion으로 걷기 모션을 재생합니다. 회전하거나 일시 정지해 관찰할 수 있습니다.",
+            "pt": "Um gato low-poly com textura de pixel art, editável no Blockbench. Mesh.from_glb carrega o modelo e play_motion reproduz seu ciclo de caminhada. Gire a vista ou pause para observá-lo.",
+            "ru": "Низкополигональный кот с пиксельной текстурой, редактируемый в Blockbench. Mesh.from_glb загружает модель, а play_motion воспроизводит цикл ходьбы. Модель можно вращать и ставить анимацию на паузу.",
+            "tr": "Blockbench ile düzenlenebilen, piksel çizim dokulu düşük poligonlu bir kedi. Mesh.from_glb modeli yükler, play_motion ise yürüme döngüsünü oynatır. İncelemek için görünümü döndürebilir veya duraklatabilirsiniz.",
+            "uk": "Низькополігональний кіт із піксельною текстурою, який можна редагувати в Blockbench. Mesh.from_glb завантажує модель, а play_motion відтворює цикл ходьби. Модель можна обертати й ставити анімацію на паузу."
           }
         },
         {
           "file": "c05_3d_collision.py",
           "demo": "examples/c05-3d-collision.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c05_3d_collision.py",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py",
           "description": {
             "en": "Platform game with 3D collision",
             "cn": "使用 3D 碰撞的平台游戏",
@@ -1548,7 +1548,7 @@
         {
           "file": "c06_3d_physics.py",
           "demo": "examples/c06-3d-physics.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c06_3d_physics.py",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py",
           "description": {
             "en": "3D physics simulation",
             "cn": "3D 物理模拟",
