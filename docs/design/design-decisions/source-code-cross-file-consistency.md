@@ -72,14 +72,14 @@ physical pointer behavior on every window system.
 **Decision:** Keep screen dimensions directly in `pyxel.init` in examples such
 as [Hello Pyxel](../../../python/pyxel/examples/01_hello_pyxel.py), rather than creating
 constants merely to name the arguments. Use named values where they expose
-something the learner is expected to change and play with, such as `ACTOR_COUNT`
-in [Mesh and Motion](../../../python/pyxel/examples/c04_mesh_and_motion.py).
+something the learner is expected to change and play with, such as `MOTION_SPEED`
+in [Mesh and Motion](../../../python/pyxel/examples/cube/c04_mesh_and_motion.py).
 
 **Reason:** Beginners should be able to follow the short program and try a
 change without navigating layers of constants and helpers. The screen size is
-already clear at the call site. The actor count, by contrast, exposes a value
-used together by scene creation and actor placement, making that experiment
-available through one edit.
+already clear at the call site. The motion speed exposes a value the learner
+can change to compare animation playback, making that experiment available
+through one edit.
 
 Applying production abstraction habits mechanically would obscure the lesson.
 Direct control flow and local names and values are deliberate choices here.

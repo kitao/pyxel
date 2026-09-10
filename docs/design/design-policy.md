@@ -96,6 +96,7 @@ Test code follows the source standards above. Match verification to the behavior
 ## Maintaining This Policy
 
 - Keep this policy limited to governing principles and standards. Do not amend it to accommodate a local implementation or accumulate case-specific decisions and incident histories.
-- Preserve agreed requirements when shortening or reorganizing them. Changes to requirements need the maintainer's decision. A policy revision changes the basis of the audit procedure and the complete body of decisions and verification; its consequences must be assessed as a whole.
+- Changes to this policy, the audit procedure, and decision records require explicit maintainer approval of the reviewed revision. A review finding or general improvement request does not authorize changes to the governing documents.
+- Preserve agreed requirements when shortening or reorganizing them. A policy revision changes the basis of the audit procedure and the complete body of decisions and verification; its consequences must be assessed as a whole.
 - Keep authoritative requirements at their owning layer. Examples clarify a boundary; they do not create separate requirements.
 - Judge amendments by the coherence and completeness of the policy as a whole. Preserve necessary conditions and rationale; neither word count nor a local improvement establishes that a revision is sound.

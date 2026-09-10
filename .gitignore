@@ -22,8 +22,6 @@ node_modules/
 
 # AI tools
 .claude/
-.superpowers/
-docs/superpowers/
 
 # Local shortcuts
 /examples

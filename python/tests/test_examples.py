@@ -66,7 +66,16 @@ CAPTURE_PLANS = {
         {"frame": 40},
         {"frame": 48},
     ],
-    "c04_mesh_and_motion": [{"frame": 1}, {"frame": 45}],
+    "c04_mesh_and_motion": [
+        {"frame": 1},
+        {"frame": 45},
+        {"frame": 46, "press": [pyxel.KEY_SPACE], "capture": False},
+        {"frame": 91, "press": [pyxel.KEY_RIGHT]},
+        {"frame": 92, "press": [pyxel.KEY_3, pyxel.KEY_S]},
+        {"frame": 93, "press": [pyxel.KEY_SPACE], "capture": False},
+        {"frame": 123},
+        {"frame": 124, "press": [pyxel.KEY_R]},
+    ],
     "c05_3d_collision": [
         {"frame": 1},
         {"frame": 70, "press": [pyxel.KEY_UP]},
@@ -94,8 +103,8 @@ CAPTURE_PLANS = {
     "99_flip_animation": [{"frame": 1}, {"frame": 30}],
 }
 
-# Examples living in the examples/cube subdirectory rather than the top level
-CUBE_DIR_EXAMPLES = {
+# Temporary Cube experiments, outside the numbered sample set.
+SCRATCH_EXAMPLES = {
     "cube_physics_character",
     "cube_physics_shoot",
     "cube_physics_stack",
@@ -157,22 +166,23 @@ assert list(wave) == expected, list(wave)
         )
         assert result.returncode == 0, result.stderr
 
-    def test_top_level_examples_have_capture_plans(self):
-        planned = set(CAPTURE_PLANS) - CUBE_DIR_EXAMPLES
+    def test_numbered_examples_have_capture_plans(self):
+        planned = set(CAPTURE_PLANS) - SCRATCH_EXAMPLES
         examples = {
             script.stem
             for script in EXAMPLES_DIR.glob("*.py")
             if not script.name.startswith("__")
         }
+        examples.update(
+            script.stem for script in (EXAMPLES_DIR / "cube").glob("c[0-9][0-9]_*.py")
+        )
         assert planned == examples
 
     @pytest.mark.parametrize(
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())
     )
     def test_example(self, name, tmp_path, compare_screenshots):
-        script_dir = (
-            EXAMPLES_DIR / "cube" if name in CUBE_DIR_EXAMPLES else EXAMPLES_DIR
-        )
+        script_dir = EXAMPLES_DIR / "cube" if name.startswith("c") else EXAMPLES_DIR
         script = script_dir / f"{name}.py"
         assert script.exists(), f"Example not found: {script}"
 

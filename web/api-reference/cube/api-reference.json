@@ -3791,18 +3791,18 @@
             "scene.shading.direction = Vec3(0.4, -0.8, -0.4)"
           ],
           "notes": {
-            "en": "shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.",
-            "cn": "shading[(col, level)] 读取或设置表格单元的 (主色、次色) 颜色对。",
-            "de": "shading[(col, level)] liest oder setzt das Farbpaar (primär, sekundär) einer Tabellenzelle.",
-            "es": "shading[(col, level)] lee o asigna el par de colores (principal, secundario) de una celda de la tabla.",
-            "fr": "shading[(col, level)] lit ou assigne la paire de couleurs (primaire, secondaire) d’une cellule de table.",
-            "it": "shading[(col, level)] legge o assegna la coppia di colori (primario, secondario) di una cella della tabella.",
-            "ja": "shading[(col, level)] でテーブルセルの (primary, secondary) 色ペアを読み書きできる。",
-            "ko": "shading[(col, level)]은 테이블 셀의 (primary, secondary) 색상 쌍을 읽거나 할당합니다.",
-            "pt": "shading[(col, level)] lê ou atribui o par de cores (primária, secundária) de uma célula da tabela.",
-            "ru": "shading[(col, level)] читает или назначает пару цветов (primary, secondary) ячейки таблицы.",
-            "tr": "shading[(col, level)] bir tablo hücresinin (primary, secondary) renk çiftini okur veya atar.",
-            "uk": "shading[(col, level)] читає або призначає пару кольорів (primary, secondary) клітинки таблиці."
+            "en": "Automatically generated tables keep the original color at level 2 and may repeat colors across levels to avoid unsuitable color changes or high-contrast dithering. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.",
+            "cn": "自动生成的表在第 2 级保留原色，并可能在多个级别重复使用颜色，以避免不合适的颜色变化或高对比度抖动。 shading[(col, level)] 读取或设置表格单元的 (主色、次色) 颜色对。",
+            "de": "Automatisch erzeugte Tabellen behalten auf Stufe 2 die Originalfarbe bei und können Farben auf mehreren Stufen wiederholen, um unpassende Farbwechsel oder kontrastreiches Dithering zu vermeiden. shading[(col, level)] liest oder setzt das Farbpaar (primär, sekundär) einer Tabellenzelle.",
+            "es": "Las tablas generadas automáticamente conservan el color original en el nivel 2 y pueden repetir colores entre niveles para evitar cambios de color inadecuados o tramados de alto contraste. shading[(col, level)] lee o asigna el par de colores (principal, secundario) de una celda de la tabla.",
+            "fr": "Les tables générées automatiquement conservent la couleur d’origine au niveau 2 et peuvent répéter des couleurs entre les niveaux pour éviter des changements de couleur inadaptés ou un tramage trop contrasté. shading[(col, level)] lit ou assigne la paire de couleurs (primaire, secondaire) d’une cellule de table.",
+            "it": "Le tabelle generate automaticamente mantengono il colore originale al livello 2 e possono ripetere i colori tra i livelli per evitare cambiamenti di colore inappropriati o dithering ad alto contrasto. shading[(col, level)] legge o assegna la coppia di colori (primario, secondario) di una cella della tabella.",
+            "ja": "自動生成ではレベル 2 に元色を保持する。不自然な色の変化やコントラストの強いディザを避けるため、複数のレベルで同じ色を使う場合がある。 shading[(col, level)] でテーブルセルの (primary, secondary) 色ペアを読み書きできる。",
+            "ko": "자동 생성된 테이블은 레벨 2에서 원래 색상을 유지하며, 부자연스러운 색상 변화나 대비가 강한 디더링을 피하기 위해 여러 레벨에서 같은 색상을 사용할 수 있습니다. shading[(col, level)]은 테이블 셀의 (primary, secondary) 색상 쌍을 읽거나 할당합니다.",
+            "pt": "As tabelas geradas automaticamente mantêm a cor original no nível 2 e podem repetir cores entre níveis para evitar mudanças de cor inadequadas ou dithering de alto contraste. shading[(col, level)] lê ou atribui o par de cores (primária, secundária) de uma célula da tabela.",
+            "ru": "Автоматически созданные таблицы сохраняют исходный цвет на уровне 2 и могут повторять цвета на разных уровнях, чтобы избежать неподходящих изменений цвета или слишком контрастного дизеринга. shading[(col, level)] читает или назначает пару цветов (primary, secondary) ячейки таблицы.",
+            "tr": "Otomatik oluşturulan tablolar 2. seviyede özgün rengi korur ve uygunsuz renk değişimlerini veya yüksek kontrastlı dither desenlerini önlemek için seviyeler arasında renkleri tekrarlayabilir. shading[(col, level)] bir tablo hücresinin (primary, secondary) renk çiftini okur veya atar.",
+            "uk": "Автоматично створені таблиці зберігають початковий колір на рівні 2 і можуть повторювати кольори на різних рівнях, щоб уникнути недоречних змін кольору або надто контрастного дизерингу. shading[(col, level)] читає або призначає пару кольорів (primary, secondary) клітинки таблиці."
           },
           "advanced": false
         },

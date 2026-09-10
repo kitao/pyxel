@@ -174,7 +174,7 @@ class App:
         pyxel.init(240, 240, title="Basic Shapes")
 
         global cat_image
-        cat_image = pyxel.Image.from_image("assets/cat_16x16.png")
+        cat_image = pyxel.Image.from_image("../assets/cat_16x16.png")
 
         self.scene = Scene()
 

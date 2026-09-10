@@ -19,6 +19,7 @@ AIM_POINT = Vec3(0.0, 1.0, 0.0)
 class Enemy(Node):
     def __init__(self, index):
         super().__init__()
+
         self.phase = index * 1.3
         self.orbit = index * math.tau / len(ENEMY_COLORS)
         self.color = ENEMY_COLORS[index]
@@ -67,6 +68,7 @@ class Enemy(Node):
 class Laser(Node):
     def __init__(self, enemies):
         super().__init__()
+
         self.enemies = enemies
         self.locked_enemies = []
         self.firing_enemies = []
@@ -78,6 +80,7 @@ class Laser(Node):
 
     def make_beam(self):
         beam_indices = []
+
         for point_index in range(LASER_POINTS - 1):
             base_index = point_index * 2
             beam_indices += [
@@ -88,6 +91,7 @@ class Laser(Node):
                 base_index + 3,
                 base_index + 2,
             ]
+
         return Primitive(
             Primitive.MODE_TRIANGLES,
             [0.0] * (LASER_POINTS * 2 * 3),
@@ -98,6 +102,7 @@ class Laser(Node):
     def clear_locks(self):
         for enemy in self.enemies:
             enemy.is_locked = False
+
         self.locked_enemies = []
 
     def lock_enemy(self, enemy):
@@ -254,6 +259,7 @@ class Laser(Node):
     def hit_enemies(self):
         if not self.firing_enemies:
             return
+
         pyxel.play(2, 2)
         for enemy in self.firing_enemies:
             enemy.flash_timer = 12
@@ -262,8 +268,10 @@ class Laser(Node):
     def finish_fire(self):
         if self.fire_frame < LASER_DURATION:
             self.hit_enemies()
+
         for enemy in self.firing_enemies:
             enemy.is_locked = False
+
         self.firing_enemies = []
         self.launch_directions = []
         self.fire_frame = 0
@@ -291,6 +299,7 @@ class Laser(Node):
                 if side_vector.length() > 1e-6
                 else right * width
             )
+
             for vertex in (point - side_vector, point + side_vector):
                 beam_positions += [vertex.x, vertex.y, vertex.z]
 
@@ -351,9 +360,11 @@ class App:
         for enemy in self.scene.enemies:
             if not enemy.is_locked:
                 continue
+
             screen_pos = self.scene.laser.project_to_screen(enemy.center)
             if screen_pos is None:
                 continue
+
             screen_x, screen_y = round(screen_pos[0]), round(screen_pos[1])
             pyxel.rectb(screen_x - 4, screen_y - 4, 9, 9, 8)
             pyxel.rectb(screen_x - 5, screen_y - 5, 11, 11, 7)
