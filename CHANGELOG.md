@@ -29,7 +29,6 @@
 - Improved web layouts, accessibility, and API reference search
 - Improved blit and primitive drawing performance and reduced audio allocations
 - Fixed OpenGL cleanup on application shutdown
-- Used the desktop OpenGL shader version on macOS
 - Improved wheel builds and SDL2 download verification
 - Improved documentation and translations
 
