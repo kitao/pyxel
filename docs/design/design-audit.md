@@ -103,6 +103,7 @@ These requirements apply to every mode:
 | Changes affecting lint inputs or configuration, or an exhaustive audit | Run `make lint` and `make lint-wasm` warning-free. Clippy warnings fail the check; each suppression needs a specific justification. |
 | Code changes | Run `make test` before claiming completion; when it stops at an earlier suite, run the remaining recipe lines of `make test` before claiming their result. |
 | Changes to the GL context, shaders, or platform window or input code | Run `make run` on each affected platform; its startup check reports the installed build it exercised, and the record includes that line. |
+| Changes to the web runtime (`wasm/`) or the launcher, showcase, or tool pages | Serve the pages locally (`make run-wasm`, or `scripts/start_showcase` with the tracked wheel) and start an example in a browser; the record names the served runtime origin and the console state. |
 | Documentation or structured-data changes | Run applicable parsers, generators, consistency checks, and `git diff --check`. Verify generation at its source; do not hand-edit output. |
 | Base-stub docstring changes | Edit the source data and regenerate with `scripts/generate_pyi_docstrings`. |
 | Changes affecting generated or distributed artifacts | Regenerate them and verify their required correspondence with the source. |
