@@ -13,7 +13,7 @@ third-party assets, separate from Pyxel's MIT-licensed sample code.
 
 Changes from the original: texture colors mapped to the nearest RGB colors in
 Pyxel's palette, project/texture renamed, and exported transparent materials
-changed from glTF `BLEND` to `MASK` with an alpha cutoff of 0.5. Geometry and
+changed from glTF `BLEND` to `MASK` with an alpha cutoff of 0.05. Geometry and
 animation tracks are unchanged. The sample scales and centers the model at
 runtime, and presents the `move`, `run`, and `eat` animations.
 

@@ -1,0 +1,4076 @@
+{
+  "run": "pyxel-quality-20260911-run15",
+  "created": "2026-09-11T14:42:45.912572+00:00",
+  "branch": "develop",
+  "base": "e0a4d5015b7a51770d242d38cf0ccf235940fdd2",
+  "head": "e0a4d5015b7a51770d242d38cf0ccf235940fdd2",
+  "base_selection": "Requested ongoing repository audit; HEAD remains original non-release review base. Release-note relation independently uses v2.9.9.",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c9f14c3c50d52d341ec91666b47f82a2b3326a9c5d0e493765fe2a61c2284e42",
+      "bytes": 431
+    },
+    {
+      "path": ".github/CONTRIBUTING.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6aa37234553447b234dec840fe48ad9bcdeb3dfac3f18906b15fe2b6e7f9baa9",
+      "bytes": 1162
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/user-examples.yml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4844fc24a2505937ba573ac02ed785337d32534ac2cab3adfb68e7a9abb4e16e",
+      "bytes": 2321
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f2e0ab11070789c3726f5f1243eada80e1743a99ed414e2c474b49a1ee8cd38d",
+      "bytes": 27
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d2615798b498182f74df814383e689a523bf2fa22254172bab2f1bcc4cf9f668",
+      "bytes": 1832
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6401d953129cd250ca63cec1190ac029965377b989408f9fcde24efaba8764b0",
+      "bytes": 417
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e14f9747a7f0eeb11d63bd02aa29206e18fb38df46a3c0317372ac8af20c4b6c",
+      "bytes": 1306
+    },
+    {
+      "path": ".github/workflows/build.yml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fb887f9e63e80a3a0fb7bb97f4a9928fb99258627cb984b41fc3e026b2f4050a",
+      "bytes": 13160
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "309f393addbfcbbbf771489f9620f71b235612a48a069de5ea23b83962c1c510",
+      "bytes": 1619
+    },
+    {
+      "path": ".gitignore",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f245da3fdfb946c8756e5ca21546c8488443e38b435b5de8ce9fb61b9a5ff5e2",
+      "bytes": 285
+    },
+    {
+      "path": ".nojekyll",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".vscode/settings.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "85e6cdc6a83cdf4d98981f8194f62e37e779d1108d491ced78924e7decec49c5",
+      "bytes": 296
+    },
+    {
+      "path": "CHANGELOG.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d179c3e244e8d141e4b855c3d2b2fd12cd2d0dd7e37e825d2dd70b33956b0047",
+      "bytes": 17538
+    },
+    {
+      "path": "LICENSE",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d9f301d8f64dfbba5e7c3301daad34a1b66eb5240ad42e3ddc8e1d0a17b3d0db",
+      "bytes": 1139
+    },
+    {
+      "path": "Makefile",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7d875fdab2fe388c58d2f296ff26ecb839b8303929c9f1d5e88aa6e6a3959884",
+      "bytes": 5571
+    },
+    {
+      "path": "README.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d6727f4cf4b810aba8e588f8fbd6eec85711214c5ed49ddddb714ab58d67542f",
+      "bytes": 4249
+    },
+    {
+      "path": "crates/Cargo.lock",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "95c0e4bf0401422cf3455850be9e054cc9261b62e517f4e99d16be85a856809b",
+      "bytes": 63461
+    },
+    {
+      "path": "crates/Cargo.toml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0ed74e019376a070b3d56624705bac64de9c9547e39449b1334d3a23576683a5",
+      "bytes": 245
+    },
+    {
+      "path": "crates/pyxel-binding/Cargo.toml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "601f461cff87e70f472e80edd63d400016101441c5c73ba5022e37512222553f",
+      "bytes": 763
+    },
+    {
+      "path": "crates/pyxel-binding/build.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "21f8af450f861f2c66d2e2bbc9a1f7c2f760bfef32a15cf993b70cfb5785f678",
+      "bytes": 1092
+    },
+    {
+      "path": "crates/pyxel-binding/src/audio_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2ba98e65f59cd94238e3393a3037c66a2061c1d66cd37de51b9f131ee61f3cd2",
+      "bytes": 5759
+    },
+    {
+      "path": "crates/pyxel-binding/src/channel_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a3fc4144552777bb19d29090b23338d8ea204622682524e4c75e1f6ff0af8006",
+      "bytes": 3721
+    },
+    {
+      "path": "crates/pyxel-binding/src/constant_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "151d8294a0dd8119fd0f959a04ae02718b8becc364f804d6739deef9e3cf15de",
+      "bytes": 9014
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/camera.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9d4e007ce55c1aed6712a1116ea5e9f1194f6096fa74ec89828388f9f6a836fe",
+      "bytes": 1834
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/collider.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "11cdb6d3f0130f16943fd0075efc53f6da26752bb77e775e236019f5b56b3f34",
+      "bytes": 4375
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/contact.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1dfe24aba0945dad2e13f6ab8b36e4174fc3cf091bd287e08762cddc8fe7444a",
+      "bytes": 1395
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/mat4.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e4ee0df488bd5fd5a22f4f60c8864fd65acafed8ac751c74e47110485cea8a98",
+      "bytes": 6064
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/mesh.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ee8a65c212ff9bf65bbe41f1fe7ae951c85aa21bed27d09239301f41ee919040",
+      "bytes": 6449
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/mod.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c6b5afa9d4c02301c91e61ff9c5a178100d80df530759ba49d761f35688e66e8",
+      "bytes": 1230
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/motion.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c3f29e284ae5ef6a67479791cd13cc9a3cdfa1fa9f6a3ff6580f3e969fb4bfa8",
+      "bytes": 1236
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/node.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "26392a1c348b36ab5c20474feb91b432d5cd8338eab7d74fda35ff726d86aca6",
+      "bytes": 45560
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/primitive.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e613c57413827e9142ff7393a2e4602915684bf1e35916d29ce6b694a8110300",
+      "bytes": 5788
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/quat.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "369b40d4a340dbe366cd3253a52d32c969401fb75b9cad890987c74f08a6e19e",
+      "bytes": 5354
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/raycast_hit.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3091a8c414df6bbf15cc404fa490616dbddb2d7d60e3242972b4eae85e6906dd",
+      "bytes": 2753
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/shading.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b3c8c9a7ff5d89450c6959b84798258288de066f59e8c441bf260f379661e557",
+      "bytes": 1706
+    },
+    {
+      "path": "crates/pyxel-binding/src/cube/vec3.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9da1d40758137b5e318f32562a264a8803a4cf37c928232a999744973edce6e5",
+      "bytes": 5863
+    },
+    {
+      "path": "crates/pyxel-binding/src/font_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fedd1932b03119b5bc3c2cc465c93b223007a13be699d438a9467fe888eb66da",
+      "bytes": 559
+    },
+    {
+      "path": "crates/pyxel-binding/src/graphics_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b8a3df45205711c7c6fc22f08330a0f0dba8559ac3259f6bb121b8ef634e5184",
+      "bytes": 8024
+    },
+    {
+      "path": "crates/pyxel-binding/src/image_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "85473a863826d31b985adc76825ae16701297392bcf1d50fcfb5841511547153",
+      "bytes": 9919
+    },
+    {
+      "path": "crates/pyxel-binding/src/input_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "61cb0412ccd58e2a0c77d551bd06a37dc9d6faf94442b9ec5e4f83e8060ac5ad",
+      "bytes": 1748
+    },
+    {
+      "path": "crates/pyxel-binding/src/lib.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "25d831b5533a6bca0b37cbd3afdaf6681dd712dcfd989240cad5bf710f73dd7e",
+      "bytes": 1914
+    },
+    {
+      "path": "crates/pyxel-binding/src/math_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "61895deed96b786c75357550c793f995e73f3b32e8b206c2d4c2d64c8e5f7c66",
+      "bytes": 3066
+    },
+    {
+      "path": "crates/pyxel-binding/src/music_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "025aa46c116066bdd9427f7e068771c0bdd47ff1d3b1e046e2f9b707b7d60781",
+      "bytes": 9554
+    },
+    {
+      "path": "crates/pyxel-binding/src/pyxel_singleton.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "32dcfe38ff1e891e06acb42b55c855317e31dc7d0de41b2a45f5acff05e82e07",
+      "bytes": 92
+    },
+    {
+      "path": "crates/pyxel-binding/src/resource_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7a4486eae7195ae24576e147e7f46321ad230c1d9ef5ece14a533d6ec0f7ad05",
+      "bytes": 3723
+    },
+    {
+      "path": "crates/pyxel-binding/src/sound_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "617f3e2de92bbba69f5ca3b4e9b0ac097b235a2f8bbd91b09f68829c15eac2dc",
+      "bytes": 5352
+    },
+    {
+      "path": "crates/pyxel-binding/src/system_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c4242e40c21c0c968bdff5870f6634cbb112fd3aa941bcfa831be4f55f73f760",
+      "bytes": 6810
+    },
+    {
+      "path": "crates/pyxel-binding/src/tilemap_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "933c5ecb9df897a1677826efd4c5f2cff9df4ac757935c2e47c5ee4b620c2523",
+      "bytes": 8030
+    },
+    {
+      "path": "crates/pyxel-binding/src/tone_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7a6905d83d6315336f5493984b88b15f4b4e8c68a1695144f5976ae82139784e",
+      "bytes": 2966
+    },
+    {
+      "path": "crates/pyxel-binding/src/utils.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3f73a3cd1228f614c18da9c731c501e40318eab5950bd29fb90265bb7908def7",
+      "bytes": 25053
+    },
+    {
+      "path": "crates/pyxel-binding/src/variable_wrapper.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ea11ffb144f739945bea955d4d9f34dfe9664fa13333afd89d0138ec8717e136",
+      "bytes": 4167
+    },
+    {
+      "path": "crates/pyxel-core/Cargo.toml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6266fc0d703ce65fb157bdb6dff42799497838e91fb1c048e951c25ae3f3ee5b",
+      "bytes": 1068
+    },
+    {
+      "path": "crates/pyxel-core/benches/cube.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0d9ecf219afae0d7bb74717b1afb172b873d2bfd3e722c0775ab4b235fafd135",
+      "bytes": 17706
+    },
+    {
+      "path": "crates/pyxel-core/build.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dbd5473f36a5c3034b2666b7a4c9353f05678cd4454cc715a2cc5170c27cebf7",
+      "bytes": 9138
+    },
+    {
+      "path": "crates/pyxel-core/src/assets/pyxel_logo_152x64.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1f7f3980806cc84b2e0ff006e2f2e25b99d3df45ddfa9d68836ec7aec9e65f79",
+      "bytes": 747
+    },
+    {
+      "path": "crates/pyxel-core/src/audio.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "09381290240dd3aaf54604823ee263abb06afd1d010dd93d5f9cd538f51aeed5",
+      "bytes": 17692
+    },
+    {
+      "path": "crates/pyxel-core/src/bgm_generator.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5ff2f927ba3acb28a78456faf73dd40a9ac5c821ed59bcc9e5d318e0b4d8fdff",
+      "bytes": 77047
+    },
+    {
+      "path": "crates/pyxel-core/src/canvas.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b74b9740da08c8085ce18b963576cc4ce838bd43cf9150b09b5350f46588dedd",
+      "bytes": 64895
+    },
+    {
+      "path": "crates/pyxel-core/src/channel.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "40e5b8949344f55042ef506be00152f68dd4187ce646c8e2d37989628e6de80d",
+      "bytes": 36355
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/bvh.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "09700fae458b8efdf1f8670c3d9b08222ed129c3c0d1239bd9c5ffe664f70152",
+      "bytes": 24613
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/camera.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e9564a565531af0d22d56c244613032c77986b5944424c20423167ba2c5b5f55",
+      "bytes": 2272
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/collider.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0198cea9647696260fe0ccf14680aa494c0e620ad4f9178f525a464a9d90ccf7",
+      "bytes": 1217
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/collision.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0b61dc331eeb76ac03392cba828fc6b19c476f7efa76228c4a9c61003aa907ae",
+      "bytes": 100723
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/contact.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5be243ed642cfad4573a6ac48a4ead3fbec2328601388c0f359bb1cc2e584bff",
+      "bytes": 1296
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/draw.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "26f778f5fa3ad5722a700c367c1b4cf3c32145950afbb0e65c0a3cf4cb7c199f",
+      "bytes": 78066
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/glb_parser.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1961b0a900fd7c28a06ade740a1bd2d248e3850e576927e11098e7e394917b67",
+      "bytes": 40868
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/mat4.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d7b2a97d05bb53742d132e06483dbf9102a25100e346c3afdb524841797b0a34",
+      "bytes": 26992
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/mesh.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "68d30d39b3b5b945c8927e780af313ae5628139847c713dc193a8efa1e69a869",
+      "bytes": 28058
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/mod.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "162765e8cf4147025f9d3dc1789d6af0a23c72fdbfe6870a80c9f613d66f5a7c",
+      "bytes": 756
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/motion.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "433f1cda2b37c73475685c3e81734c68157ca78f6a4b8e2fac5066d57f17b11a",
+      "bytes": 19463
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/node.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "43bd4fea1b9187ecfa5daa3a04d9b2057022dc9a6f72f1863f93f0b1d4216464",
+      "bytes": 19234
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/primitive.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d66fbcbc950fbf36d74943f6b78c7eb86d5c91acf15653b44c18caa34f962e32",
+      "bytes": 20113
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/quat.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "8217cb40d86ced2b967588efbc5443ee6f35dfcb644257f55af70ee5dcd45d9c",
+      "bytes": 18315
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/raster.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4880212dab423040a834964a906123f05f053b903845046adb50cbcbf120ee93",
+      "bytes": 79441
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/raycast_hit.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6e6bee4e8fdfac4312c5ae21d928db32a410c4aa9c828940df44d3541fc99f5b",
+      "bytes": 533
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/scene.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6aa5694d1a18b185c83a8d3e8d89d8f898ee0d4c3ec0d1951b52027083730fbe",
+      "bytes": 168039
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/shading.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0a4091c92e8cee211e8f6f862be6124043999b0d9ad1856b1851cc29454ef8b6",
+      "bytes": 10708
+    },
+    {
+      "path": "crates/pyxel-core/src/cube/vec3.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "69e0987bdd23f5cf1c1a389a21fdb22f6859638019382322e01d6cfa8a13cacd",
+      "bytes": 12044
+    },
+    {
+      "path": "crates/pyxel-core/src/font.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d6cdca920e941a147387efc522ef780e07e10d4bac1bef88d0b713f731a97089",
+      "bytes": 12256
+    },
+    {
+      "path": "crates/pyxel-core/src/graphics.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "067b2491c86c47db11299ee61f9c21499b43f4887643fdfc0442d83b2bc865a4",
+      "bytes": 19298
+    },
+    {
+      "path": "crates/pyxel-core/src/image.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dcb62e28e98f692858cd91fe505f15ace8f52fd9eb1e6aed5e8bacb3a01f8ea4",
+      "bytes": 32486
+    },
+    {
+      "path": "crates/pyxel-core/src/input.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ed5ebf41324006dd9b8d763f0783a3b0c126ed46ed5f6e400d34b34dbc48c335",
+      "bytes": 9730
+    },
+    {
+      "path": "crates/pyxel-core/src/lib.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f83ff5c08bec3a288a59a2275486f6fc590243e1ab86050a80436f7d80d84746",
+      "bytes": 2848
+    },
+    {
+      "path": "crates/pyxel-core/src/math.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "67e69fdcc4883cfc26ef1e3f4389cb62f6a26a770108056d4f45f185809de171",
+      "bytes": 3001
+    },
+    {
+      "path": "crates/pyxel-core/src/mml_command.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fb1db23375f3e7c96a504ce8c3ef81b205ad2a3b60e4f02c48b10661eb0d3363",
+      "bytes": 1908
+    },
+    {
+      "path": "crates/pyxel-core/src/mml_parser.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5769e48f54b10a3cb7cfe196752ebd470fdde1e96269eff5f14bacc1bac061bf",
+      "bytes": 44135
+    },
+    {
+      "path": "crates/pyxel-core/src/music.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "87e38a899c7afe0211e225f39ce196209291d51340b9860a779a691236e2eb92",
+      "bytes": 2145
+    },
+    {
+      "path": "crates/pyxel-core/src/pcm_decoder.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "699509669010cda420beffe40e9620898779cc5dbc9b373b07538a416515d426",
+      "bytes": 4830
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/event.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6e7c809162117959d27867807aba80c874c69d06b14b90fcbac4a5af9f66c760",
+      "bytes": 391
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/facade.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3d15e2aa05b203e5812f23b93c55a72c023fa6ae25ff22c6dec7280a1a600ae8",
+      "bytes": 5461
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/key.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a3ce57971182366827f28ad09c857669ebbad2966c2e09613a85dbcbdf751428",
+      "bytes": 11423
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/mod.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3d4cdc870f31936f44a5a78c5e9fcad36bcf5df8b2861304687d6a74221ffd14",
+      "bytes": 619
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/sdl2/mod.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f3287fd1b53bbe0fb1d1a34aa8f941d0cb4b949d14ef885c496606ce4670df95",
+      "bytes": 55
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/sdl2/platform_sdl2.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d32fe0a5d63303a6c3c9bf6239f2320fdd81adda1f2168bac5d13991e33c86f6",
+      "bytes": 27487
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/sdl2/poll_events.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fb4865cf5ca6cf198fa361a6315e01f69b6258dbd0c641f15ad98eb4464f3415",
+      "bytes": 19008
+    },
+    {
+      "path": "crates/pyxel-core/src/platform/sdl2/sdl2_sys.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bc982499dc50e5f8801bbbdbc8611c9f2b431842564af7373e8046200d032179",
+      "bytes": 308
+    },
+    {
+      "path": "crates/pyxel-core/src/profiler.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "04360b1d1ce1dfc4acb5841789060f42cca2783a6d7656fd1c9da3cd11dd4c65",
+      "bytes": 3383
+    },
+    {
+      "path": "crates/pyxel-core/src/pyxel.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "336699595c78ffdca0ceffc27fc6ad3c6ef6992a4fad672c54c6bcf58c4c94c1",
+      "bytes": 15527
+    },
+    {
+      "path": "crates/pyxel-core/src/rect_area.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3097561d30f0b6cb9d53affe5bba7fa7d029c9a8fe9c64ce0070f4dc59a7ae12",
+      "bytes": 8182
+    },
+    {
+      "path": "crates/pyxel-core/src/resource.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3e73858e451568a7b0c4ab3fe917429908cf4a925dbab2444019a2499222a9b5",
+      "bytes": 10924
+    },
+    {
+      "path": "crates/pyxel-core/src/resource_data.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7e5da614a5599d43006b8bd388f666a0d215f3f591f44e1d9afbf3df0c0b4c0f",
+      "bytes": 10234
+    },
+    {
+      "path": "crates/pyxel-core/src/screencast.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b3b8938ac1fd6dd76b85619929b91aa8dbe8b2ffbabb7b7770d1682e9f4c46b3",
+      "bytes": 21773
+    },
+    {
+      "path": "crates/pyxel-core/src/settings.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "10f38a2e426a3a5ef1bc3aa72370a7a851c6b0ddbf35db9886bf630df2c3c853",
+      "bytes": 6971
+    },
+    {
+      "path": "crates/pyxel-core/src/shaders/common.frag",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dce2eee8ba2f1b66a62776b3fd3293dca9915f01fd2d2aebe0856ddbb1ac1f81",
+      "bytes": 934
+    },
+    {
+      "path": "crates/pyxel-core/src/shaders/common.vert",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bd397d075b8c6f1d1a5861830206e025e295d0c6c204e173bd423199ce07ba8f",
+      "bytes": 86
+    },
+    {
+      "path": "crates/pyxel-core/src/shaders/crisp.frag",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b73f45d295d108b7e9c1c977f5130af16ab9c6d41c2b641b5c24b22c353554d6",
+      "bytes": 288
+    },
+    {
+      "path": "crates/pyxel-core/src/shaders/gl_version.glsl",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a699eae144d1f7b72fff7ccfcb7a2400cc8594048639dad248ff5b70b3b5cb01",
+      "bytes": 13
+    },
+    {
+      "path": "crates/pyxel-core/src/shaders/gles_version.glsl",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "64532c47687dbc44624c9677e60c5a769ab3f072064f00093cb75747e6724e1d",
+      "bytes": 36
+    },
+    {
+      "path": "crates/pyxel-core/src/shaders/retro.frag",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "eedb7c0649c65ce769212775fe4d02314772f57c614e120240fd03feddc8306e",
+      "bytes": 2341
+    },
+    {
+      "path": "crates/pyxel-core/src/shaders/smooth.frag",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "03aae1d608b0fca7a656d1013ff6f952a7b57b3cde64a79c301418e34c336f13",
+      "bytes": 11479
+    },
+    {
+      "path": "crates/pyxel-core/src/sound.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b7a74624a44c7c97dcf8c65e3f767b92fb280c388a0790addf79f1f5a4161cf2",
+      "bytes": 17845
+    },
+    {
+      "path": "crates/pyxel-core/src/system.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e3a71326dc455659b0345fdd982453f87343c313bf39e17a980f6855f84085e2",
+      "bytes": 21994
+    },
+    {
+      "path": "crates/pyxel-core/src/tilemap.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ca33a5443d1fe270c40864f9c5b7962864404d9c0ebff896d01f8e0e5c6a260a",
+      "bytes": 12874
+    },
+    {
+      "path": "crates/pyxel-core/src/tmx_parser.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7dd25091b97eb1f55031b78c3c9764653d8a7e439fa3d2a05e34eb835a44d614",
+      "bytes": 3581
+    },
+    {
+      "path": "crates/pyxel-core/src/tone.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "57bdad24a1d018133f9921fe3829b850d2121060727175df60ff99070916fddb",
+      "bytes": 2296
+    },
+    {
+      "path": "crates/pyxel-core/src/utils.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6b0ccbb26388483fbea825e16924da667d1152050e961ddd9b84f3245b11729b",
+      "bytes": 7177
+    },
+    {
+      "path": "crates/pyxel-core/src/voice.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "57b1251a5a5fff5307f31e37d0e5d21435899bf5bc6b75a8b25ba65445ddc0eb",
+      "bytes": 55717
+    },
+    {
+      "path": "crates/pyxel-core/src/window_watcher.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6ee2cfb27bd09724c94949821f673cd3cbc54f0a4c0c962cb277aaff36a8e0b1",
+      "bytes": 3970
+    },
+    {
+      "path": "crates/pyxel-core/tests/build_checksum.rs",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ee5fc001372e345166bb30b54d0a8f1c4962d7c7490861145dfd8da416fefc2b",
+      "bytes": 736
+    },
+    {
+      "path": "crates/pyxel-core/wrapper.h",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a42ccd8deca50d025ea4a6b0cf8e9027b015f50593d5aed951f79df961c6258f",
+      "bytes": 17
+    },
+    {
+      "path": "crates/rustfmt.toml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2cbf5a87013f9ae3dd8a50c7b79cedfae0db125bff8cc39fbac6ad992a82ea07",
+      "bytes": 66
+    },
+    {
+      "path": "docs/api-reference-cube.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "983b2be032288c4b18b6032667c10ff04c734927d9ef0bf18a19fd822f8aefa3",
+      "bytes": 47401
+    },
+    {
+      "path": "docs/api-reference.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "19aa26d8b209582362be558ee9a79c9ccf5614dd84f6ee712d9aa3f17f091152",
+      "bytes": 43877
+    },
+    {
+      "path": "docs/design/design-audit.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7c9df6681d62a51528a1ed91404b51faa20cfd5981bfb55cc15f35108dd3e637",
+      "bytes": 25279
+    },
+    {
+      "path": "docs/design/design-decisions/documentation.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1f1b25a73d3d6205fd13c45d9b83d9e99aaad96c59ea0aa803ab4a91b7842522",
+      "bytes": 17149
+    },
+    {
+      "path": "docs/design/design-decisions/public-contract-distribution.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d931d9af4699163499336f0c283d1bbbbaa3b236802018d44c3de884794307e6",
+      "bytes": 7238
+    },
+    {
+      "path": "docs/design/design-decisions/public-contract-python.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b509d05a637fb2a860cecaf724a6fb28118f944186939f82333b96fce80ab0ec",
+      "bytes": 22793
+    },
+    {
+      "path": "docs/design/design-decisions/public-contract-rust-python.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "445dd73ef97a6d514317103cc31ab57495b1119d99e1c26b201b9f31287cbaaf",
+      "bytes": 12538
+    },
+    {
+      "path": "docs/design/design-decisions/public-contract-web.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "133b5cf496c53ca708823fc53094c6c0e0b12a60cd8058d5cf42ebea798d8497",
+      "bytes": 6981
+    },
+    {
+      "path": "docs/design/design-decisions/source-code-blank-lines.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "68fd241d1233497cbaf01172787f4d35e1789a03538f404498e072312f09d93e",
+      "bytes": 24994
+    },
+    {
+      "path": "docs/design/design-decisions/source-code-comments.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0aae62e49e81674df945848c35f14329f23d2b94e2d69060719c0be98a3289d8",
+      "bytes": 11352
+    },
+    {
+      "path": "docs/design/design-decisions/source-code-cross-file-consistency.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "03b1b20733147c21a82e6ce735513b911485256aaa18ccdb84290617f8f8b100",
+      "bytes": 6020
+    },
+    {
+      "path": "docs/design/design-decisions/source-code-naming.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7dcbbd9915318202914b13dc84ad06bb57e677679d4b7b5a22d4a22301fba129",
+      "bytes": 7327
+    },
+    {
+      "path": "docs/design/design-decisions/source-code-performance.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "853fbc108521a9f053dee04feee551fe4aa3e43e0f9bf8e550f9e9406eda379f",
+      "bytes": 11226
+    },
+    {
+      "path": "docs/design/design-decisions/source-code-structure-and-formatting.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ecfbacfc051244b15db9de9126f39f3ce88419ac732948c1596cb7d3433302c4",
+      "bytes": 16004
+    },
+    {
+      "path": "docs/design/design-decisions/testing.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7321ccae4c26804aa7b8859e654add911810c3c53822e97101d8cbcff7cf4464",
+      "bytes": 9132
+    },
+    {
+      "path": "docs/design/design-policy.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a2265959e77e4fbef397dbd560c484cdd87894527f5455a2956fcfb8de3dc138",
+      "bytes": 10311
+    },
+    {
+      "path": "docs/editor-manual.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f3029490264d2372952b159cb0d0dc8c617180ba486c06153b1f821ab8a93f60",
+      "bytes": 19224
+    },
+    {
+      "path": "docs/faq-ja.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "79e4acaa4a98c2a3cdfbab56094d938fa67f9916307912845702fbb78ff396c9",
+      "bytes": 6519
+    },
+    {
+      "path": "docs/faq.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e130e8ee5bdacca48a71d8bca4bbbfbbb9725a83828746f187199d62f260a3c1",
+      "bytes": 5326
+    },
+    {
+      "path": "docs/images/01_hello_pyxel.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "df44dbbe2f8bd0822499299accaacd4bb820d692e7f8f6f39f3d68d15623196b",
+      "bytes": 5593
+    },
+    {
+      "path": "docs/images/02_jump_game.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ee645d68111116f86eddc4230ba2d1d7b345bd54d67b7c61724cf1d3fdd2ee6d",
+      "bytes": 831593
+    },
+    {
+      "path": "docs/images/03_draw_api.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "579930b1885916a1b3576462f6b05c91c51e3829d1322d200cbf8b3a62a0c287",
+      "bytes": 149442
+    },
+    {
+      "path": "docs/images/04_sound_api.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4c5b0988a27204a55a8b74cc7ce0b48a52ff10d293effd13ff5a0c2ce3832efc",
+      "bytes": 18683
+    },
+    {
+      "path": "docs/images/05_color_palette.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f87376130b11b9a0528b737f3b6b103a20679c6c9426d0b21827d99b79f97611",
+      "bytes": 3460
+    },
+    {
+      "path": "docs/images/06_click_game.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "8536bff89e91d17b8dc28313463ce5944d13ebe65ba8b5b28cd3e32bd2107e19",
+      "bytes": 443409
+    },
+    {
+      "path": "docs/images/07_snake.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a14e49bdb09166dd044467b15121dddae931eb47e6a30aaa6f6e5d437cc69e4d",
+      "bytes": 15942
+    },
+    {
+      "path": "docs/images/08_triangle_api.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b877bfec4b6449347426600c02026a9c70489676b030a05511ea20d73a05d73f",
+      "bytes": 22158
+    },
+    {
+      "path": "docs/images/09_shooter.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a1d2b98f932d9aefc392f141627f75cfbf2c6b733d7aadfdc79f71fde0f5f8b1",
+      "bytes": 491482
+    },
+    {
+      "path": "docs/images/10_platformer.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "305a92bbe152c0b6f2278510af7613cd1752c5ff0b0f46fbd9d8fc2014a28a2b",
+      "bytes": 1519238
+    },
+    {
+      "path": "docs/images/11_offscreen.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b2e10272c68d6769f29c6fc66b772f868fbb9ae6c58459338746426cd876c9b4",
+      "bytes": 20538
+    },
+    {
+      "path": "docs/images/12_perlin_noise.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7e680d51226bde013576a6b1aee08e14c401479880add12b5326bfdfa2e55688",
+      "bytes": 469742
+    },
+    {
+      "path": "docs/images/13_custom_font.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ebbe08f84af50033e40f467b564bcb400ca90d5ccb78a21f89d02f4bda665438",
+      "bytes": 24335
+    },
+    {
+      "path": "docs/images/14_synthesizer.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7508aa796c8b4e88496d38b186f71317edb48f07ce050f1f0be4062e72235b49",
+      "bytes": 28067
+    },
+    {
+      "path": "docs/images/15_tiled_map_file.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6b1c6a2feb657ef630d8d4bc62221ef527678ea5553f57d39c045cf2546ff400",
+      "bytes": 828392
+    },
+    {
+      "path": "docs/images/16_transform.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4a8536d29297376d3770e5fc9aa5c89fa8c996da0dd32f878aa0cb637411553f",
+      "bytes": 1190234
+    },
+    {
+      "path": "docs/images/17_app_launcher.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "11e3083117bd917b1519647fd93a07815ada00b53a63559204bd81fe7cb57196",
+      "bytes": 91680
+    },
+    {
+      "path": "docs/images/18_audio_playback.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "38bc3001b5eae3a0facc846ac6e2bd903620eb93607e03cc08dcaa8f39f755da",
+      "bytes": 173555
+    },
+    {
+      "path": "docs/images/19_perspective.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cbcbf7630fe9dbdee25672a460ffa3860ada40708b821f33d269250356ac7b29",
+      "bytes": 1396033
+    },
+    {
+      "path": "docs/images/30sec_of_daylight.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7d70b715e6c141d9222399d29cbb4def453f9a96fba12a35d359a544a2173e29",
+      "bytes": 126974
+    },
+    {
+      "path": "docs/images/99_flip_animation.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ec7725b4574d3294682ea0361b65e746fa5dcb9b833079cb9d58dba03baf77f8",
+      "bytes": 128132
+    },
+    {
+      "path": "docs/images/blt_figure.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "01d16eb09acc82f5d14e8a405c912f2fccd9dfd1e8e85fd2daa31c9a52d25339",
+      "bytes": 2889
+    },
+    {
+      "path": "docs/images/bltm_figure.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1b8c2c174c749c86083a9b3924f6aca8edb5e3fa3f56f4821b0ecc2502f0527a",
+      "bytes": 11862
+    },
+    {
+      "path": "docs/images/image_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7cbd322aa7e5cdabb6388127515fd60b2a476363933c3a8f9712557962d3b2e0",
+      "bytes": 29215
+    },
+    {
+      "path": "docs/images/image_tilemap_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b47f39341312b5f3622125b2541fdb66cac2ad7c55d24744485d84c450d403f0",
+      "bytes": 50904
+    },
+    {
+      "path": "docs/images/megaball.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "36d9e1c88b36e5a6db2e1f28569efa48ed469acd47881205decece13c9f75450",
+      "bytes": 316315
+    },
+    {
+      "path": "docs/images/music_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dccc7708e242b1af801b8aa8264cf320ed46b9fcb03949a7f7ddc82d4d26eb5a",
+      "bytes": 20342
+    },
+    {
+      "path": "docs/images/pyxel_book.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6202afa7bb63a5ba0927f3b5c71f82e13786166ca29c8c374f8ca59bfd62c4ba",
+      "bytes": 799465
+    },
+    {
+      "path": "docs/images/pyxel_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3406f23dfbe4fe3cd1a5537618d0c6b4214e3d53bda8444668231370b5d5e3ce",
+      "bytes": 97312
+    },
+    {
+      "path": "docs/images/pyxel_icon_64x64.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f4dd3566f7b2bc96dc417b15e0f2dc6438ebef8dcce137136c5fb1a6efa56a7e",
+      "bytes": 687
+    },
+    {
+      "path": "docs/images/pyxel_logo_152x64.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1f7f3980806cc84b2e0ff006e2f2e25b99d3df45ddfa9d68836ec7aec9e65f79",
+      "bytes": 747
+    },
+    {
+      "path": "docs/images/pyxel_palette.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f3618db569302829c13293e5db0ca0e816d55db2644596a39eb3c5ad8101037f",
+      "bytes": 199
+    },
+    {
+      "path": "docs/images/pyxel_testing_scene.jpeg",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9545f5ecd83c0d39d0de686e8cfdfe4a31811f3be7c38c7bec64a49bcfd59c89",
+      "bytes": 100741
+    },
+    {
+      "path": "docs/images/pyxel_thanks.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e61a8237f759984fb6d79ef4ace8632e3af6e26776581b59d041614b2236c7e7",
+      "bytes": 1272671
+    },
+    {
+      "path": "docs/images/sound_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "364d9b3b82b0c7f25161591829e46df6a86c1afc290a932232c308a708023e56",
+      "bytes": 29731
+    },
+    {
+      "path": "docs/images/sound_music_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b9dffe3ec02f1ba19680992551e69b94802a85e583f87c6db6e22eb7709d17c4",
+      "bytes": 46468
+    },
+    {
+      "path": "docs/images/tilemap_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "39e2d0b82fb8c5e5c1d26432881a01567040a1fa657411a2cf8b04466dbf84e1",
+      "bytes": 25142
+    },
+    {
+      "path": "docs/mml-commands.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "145048e676d7a121adecc7fc984447311b4d80b9b75f39c05c97f8b91d4fd9ec",
+      "bytes": 3695
+    },
+    {
+      "path": "docs/pyxel.gpl",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1e3003bd81d5b20796fc55ef3cb379056d23598cbbc03697d3efaf6b7a04183c",
+      "bytes": 332
+    },
+    {
+      "path": "docs/pyxres-format.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2f87263e3d90b9ff5a7e7ce61b2dc34b1bb25d880c880304cd4e3a945c5ece15",
+      "bytes": 5725
+    },
+    {
+      "path": "docs/user-guide-cube.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "01427d00758b8002e2172281e99e067729d379bea0091865ad7942604047359f",
+      "bytes": 980
+    },
+    {
+      "path": "docs/user-guide.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9abe2d4d35726b544c7a420456d1c42edc63fe991b101fdb357a4fb032b24bae",
+      "bytes": 10889
+    },
+    {
+      "path": "docs/web-usage.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d196a96e7515f4c45e4e94a2b922f7cabcbdd8499bd0319ea0605556156a3996",
+      "bytes": 6319
+    },
+    {
+      "path": "python/pyproject.toml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3224087aadcc770855879e2670ec922e8ab46a71fa97bc859312b8cd256c3c2f",
+      "bytes": 1788
+    },
+    {
+      "path": "python/pyxel/__init__.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a7ea3cb92b0acb569ca097b8297ccfcab29874059dfbdb575d941d2408ab84a2",
+      "bytes": 703
+    },
+    {
+      "path": "python/pyxel/__init__.pyi",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b5c3f8c4da689489fae4e0cf507d7d55880f6c96daa5cff0ec9289eb6f7b9f8b",
+      "bytes": 58256
+    },
+    {
+      "path": "python/pyxel/__main__.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "81da6d93c8ce7d6b8cf821ef7390d76a1e2eca2c0bcfef071d51cf1421e81417",
+      "bytes": 29
+    },
+    {
+      "path": "python/pyxel/cli.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "85a0c50c0b011de60b47e4467308dd67aa4b08c50ca67c059c3d9912f6b04ad5",
+      "bytes": 17829
+    },
+    {
+      "path": "python/pyxel/cube/__init__.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3ba8931648e0db7b24c69e31601bb1f33d2f4ade29ad4e0485d15211cdfb0071",
+      "bytes": 746
+    },
+    {
+      "path": "python/pyxel/cube/__init__.pyi",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b374f1ccf7c61a7421bbb30339fff3df5476f2d63d3f441b3442ee0c3b91bfbf",
+      "bytes": 14550
+    },
+    {
+      "path": "python/pyxel/editor/__init__.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "608374ea04b3bad6d1997482493f6b3d3b3eed31b2a4f427c62355c0684fbc64",
+      "bytes": 79
+    },
+    {
+      "path": "python/pyxel/editor/app.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5d42c590b6ee60aa3b03b1c7579ff749f59ac5362fa6261588f1fa0ec40dd9d5",
+      "bytes": 7921
+    },
+    {
+      "path": "python/pyxel/editor/assets/editor_220x160.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "eea5c5925d83a4279dae340eade1aa2e092e94294b196391b0b9d708ea8524c8",
+      "bytes": 1237
+    },
+    {
+      "path": "python/pyxel/editor/canvas_panel.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1b79606c36181ba264297f2402eadd13bd7ea196ed6bd9677574ae5c4bf07778",
+      "bytes": 19636
+    },
+    {
+      "path": "python/pyxel/editor/editor_base.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a75c1fc80b69a5f358ec6028c54a70db6471c132484b1c3969395eccf89ad7c5",
+      "bytes": 3249
+    },
+    {
+      "path": "python/pyxel/editor/extensions.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "57c72e318ea83afd397faa79c68e80daf97865ff92b0ca2492fdf5c350e99f96",
+      "bytes": 1535
+    },
+    {
+      "path": "python/pyxel/editor/field_cursor.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "48fd534ab02e38c4174b17a488d66b31ea520854cfec08fc6103cd54d5163d29",
+      "bytes": 10185
+    },
+    {
+      "path": "python/pyxel/editor/image_editor.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3ebb5b3a55d5db560b52867235c576b022cc78687b657e083db8ac6bc44a6874",
+      "bytes": 4442
+    },
+    {
+      "path": "python/pyxel/editor/image_viewer.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d5bf436c8452febfaf329535dd64f38d776c6a91889db5b3219f728bc721e79f",
+      "bytes": 6435
+    },
+    {
+      "path": "python/pyxel/editor/music_editor.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1ba7a7d0840162150be84c4f22ba62941ce0e5a58d5962f364a97895aa9edc6c",
+      "bytes": 7085
+    },
+    {
+      "path": "python/pyxel/editor/music_field.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c6d2a00225cd92b04f39763988ca3bdd8e7d4aac41c52d452e2ea8b0fc8edb84",
+      "bytes": 3789
+    },
+    {
+      "path": "python/pyxel/editor/octave_bar.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bb44edfe212cf5fdeb779522c7ff203344779175a774e43a732e36722e8f8bf1",
+      "bytes": 1458
+    },
+    {
+      "path": "python/pyxel/editor/piano_keyboard.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e258da722dcdfad31ea290bdcab5307ee18fb86b0c3b2318b14dc38cb4e2cfab",
+      "bytes": 5463
+    },
+    {
+      "path": "python/pyxel/editor/piano_roll.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fe5b5e893ae40d89f1521dbbce415289fc973e2824848cbe4fa214adf9dd30c5",
+      "bytes": 5449
+    },
+    {
+      "path": "python/pyxel/editor/settings.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "df21ed57b3db813b890beb6bdbbaca532dc31ce0db7e11b06cbf96639d9d3fe3",
+      "bytes": 1656
+    },
+    {
+      "path": "python/pyxel/editor/sound_editor.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a425802e8c58dbc4465801bdcdf5c1e236895a4d1f615cc38dc913df52307e50",
+      "bytes": 8984
+    },
+    {
+      "path": "python/pyxel/editor/sound_field.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5f47bd27cf3b54e700cce40b0f4a6b8c28b9a2a08f3be6d6f89f429dd74f8b86",
+      "bytes": 4123
+    },
+    {
+      "path": "python/pyxel/editor/sound_selector.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "624df9e0bf016c115005b18e55fc644d5f77742635cbae43cf9e8c305cc983f2",
+      "bytes": 3211
+    },
+    {
+      "path": "python/pyxel/editor/tilemap_editor.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "04b16ab8c5b619d21c62d2dd64181c67749bee571dcd33ecfa686b84563b0928",
+      "bytes": 4967
+    },
+    {
+      "path": "python/pyxel/editor/tilemap_viewer.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0544b7bce2a9900f4e96c28d7721077f83d64787af1098569d7ab69913bdd407",
+      "bytes": 3069
+    },
+    {
+      "path": "python/pyxel/editor/widgets/__init__.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0bc69f36c8b2f6e193c6563dac97027c0d0e23b8853393dc5a4672d9f922760d",
+      "bytes": 569
+    },
+    {
+      "path": "python/pyxel/editor/widgets/button.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6a1c2922e8d800d4f511ef32cede0fbfc1d44e86bb89cbc8e9931f2f757e0699",
+      "bytes": 1893
+    },
+    {
+      "path": "python/pyxel/editor/widgets/color_picker.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b01049feebdfc3bf47de66f39da1eea531af02af2cc14d657b8a50019087d93c",
+      "bytes": 3605
+    },
+    {
+      "path": "python/pyxel/editor/widgets/image_button.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cc997c6b96897eb1c35a6ff8275450f476cb0b61f09d8f21ffd1670044c07efd",
+      "bytes": 728
+    },
+    {
+      "path": "python/pyxel/editor/widgets/image_toggle_button.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d2b556e1b1092b49f727ddcfcada544d6ecc87b5445b939da1625249a96ffbdd",
+      "bytes": 808
+    },
+    {
+      "path": "python/pyxel/editor/widgets/number_picker.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9b34902e24200d4d305160a814814316515a7e29e91eabd90a382cf871b918c9",
+      "bytes": 2623
+    },
+    {
+      "path": "python/pyxel/editor/widgets/radio_button.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "401bc1c46ac8225c870d4312368b9877b5d0ea77940920e997b276c672ef2264",
+      "bytes": 1959
+    },
+    {
+      "path": "python/pyxel/editor/widgets/scroll_bar.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dc292f48f94ba40db30f55ca9db87c11f9ad969d486b58a155b580ff6bfb609c",
+      "bytes": 5921
+    },
+    {
+      "path": "python/pyxel/editor/widgets/settings.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "47a507aee75cca0e641884e3d44caaaaa357da6eb4e88797a521049368c92c57",
+      "bytes": 337
+    },
+    {
+      "path": "python/pyxel/editor/widgets/text_button.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "55eb47130e91af01c17014e8147a966a7b539557e869679fe611fba325775c14",
+      "bytes": 876
+    },
+    {
+      "path": "python/pyxel/editor/widgets/toggle_button.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3bc84277c7d0b224a2df59dc73dba06a188ece32d2c2a9f55c6e5957580bc803",
+      "bytes": 1154
+    },
+    {
+      "path": "python/pyxel/editor/widgets/widget.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c58c1098bf2d9e3fd20eac7ab6e4e685a282269152fb75d60e3b9b2be6f99bd7",
+      "bytes": 9227
+    },
+    {
+      "path": "python/pyxel/editor/widgets/widget_var.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "697dd0b68fee423b24aa3ca12baa4f2e7372bf829cdcf3b5216bb0c15fdbf359",
+      "bytes": 934
+    },
+    {
+      "path": "python/pyxel/examples/01_hello_pyxel.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "eed4b78b0f703a37a549673b0ec81bf0becfadab60dbe89df87048c0ddeba37e",
+      "bytes": 453
+    },
+    {
+      "path": "python/pyxel/examples/02_jump_game.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cb101788974d892251188a7d13d94d1f65e7a757b3b9e3b4d765ba401a88e75d",
+      "bytes": 4386
+    },
+    {
+      "path": "python/pyxel/examples/03_draw_api.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ef65cf650a30267795a5bb19152dcd8a7c8d70e217c6e9ab4edf8e5edde9e382",
+      "bytes": 4388
+    },
+    {
+      "path": "python/pyxel/examples/04_sound_api.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a4a51a7790a954c52eff6b140a4b73641e3584f19433361821542cdc882d7b2b",
+      "bytes": 3814
+    },
+    {
+      "path": "python/pyxel/examples/05_color_palette.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4fe9bbb6f780f1a4078978b53fdda0aee4ea717c58bacb7f699b58d78474ed5e",
+      "bytes": 571
+    },
+    {
+      "path": "python/pyxel/examples/06_click_game.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b87c20489a0ce52f6d7afd7b8c0c251b543419547b51f06c9d723efbec0ec966",
+      "bytes": 3788
+    },
+    {
+      "path": "python/pyxel/examples/07_snake.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "79af29ffb3b6a56524984c3b354d1f8e740f21285ee8617182998bd6d680dfe3",
+      "bytes": 5499
+    },
+    {
+      "path": "python/pyxel/examples/08_triangle_api.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d75e0f1758717319c907e46bc5544ae45b616a755332498ab357b7847dfb393c",
+      "bytes": 1204
+    },
+    {
+      "path": "python/pyxel/examples/09_shooter.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d9ebc17063fbddb381e525f42b715e74e46853abbd31898997127629e3bfa252",
+      "bytes": 10653
+    },
+    {
+      "path": "python/pyxel/examples/10_platformer.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e78ee6159b9a4d5cd90188c55d77e846a808ba2340ce26cd92913b0b89c3ee67",
+      "bytes": 6993
+    },
+    {
+      "path": "python/pyxel/examples/11_offscreen.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a6a9ee1049d02dc05cb977727420afd7f5cda424c448ce5a12d7089fc41edb66",
+      "bytes": 3850
+    },
+    {
+      "path": "python/pyxel/examples/12_perlin_noise.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c60d6fcb627c49d12c5ddc86fcec3f862f8835622576d790709f38c6543c6b96",
+      "bytes": 622
+    },
+    {
+      "path": "python/pyxel/examples/13_custom_font.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b3c3570d7148981229a7d4b8c34cf9c92f298c0d7610a5bc6598d1d9894892af",
+      "bytes": 896
+    },
+    {
+      "path": "python/pyxel/examples/14_synthesizer.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "54d6ad5713a05bbb4e1db41507d5ef2cb28adf01a0970406af7851bddca4f0b1",
+      "bytes": 6659
+    },
+    {
+      "path": "python/pyxel/examples/15_tiled_map_file.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c6cc0f26c678f16eaae426b425379d8376a7bf4a1039534918cfcebc658960d6",
+      "bytes": 3197
+    },
+    {
+      "path": "python/pyxel/examples/16_transform.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7148fed5b2ec60fa826d21f6a26d9758b414ff7d1560532e00cbd568cb299504",
+      "bytes": 1213
+    },
+    {
+      "path": "python/pyxel/examples/17_app_launcher.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "23f858b5be60853306426cdd8086c703fd1179efea81fc7cbddea72aee1b16fa",
+      "bytes": 4102
+    },
+    {
+      "path": "python/pyxel/examples/18_audio_playback.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0a1029744bfbe793bdac4d09fee9d5230ad0a70ff570ce32aeb63868afa5d9bf",
+      "bytes": 1427
+    },
+    {
+      "path": "python/pyxel/examples/19_perspective.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "92a33cfe25572563b9d6def0df243095dc47b1c86d2b4e82f810bd855b0e9a60",
+      "bytes": 2747
+    },
+    {
+      "path": "python/pyxel/examples/99_flip_animation.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "73da29989d08cc17e76a0015b1cea3777d394dd05fd1b36b33ed8479998a15ce",
+      "bytes": 594
+    },
+    {
+      "path": "python/pyxel/examples/apps/30sec_of_daylight.pyxapp",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cd04d0138891d9695602dcf2b409068b9623e309b6e885b73ee1eb463bc2f95a",
+      "bytes": 19824
+    },
+    {
+      "path": "python/pyxel/examples/apps/cursed_caverns.pyxapp",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c36f0f7496e88e013ba86fb2ea7ca6eacd34feff51658421754c0a2854a7fda4",
+      "bytes": 19644
+    },
+    {
+      "path": "python/pyxel/examples/apps/laser-jetman.pyxapp",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "8c34802cc0ccf0fe35ff3ca6086cdf00da4d27068eceba4ca784cf333fc71885",
+      "bytes": 32706
+    },
+    {
+      "path": "python/pyxel/examples/apps/mega_wing.pyxapp",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cb6cae3b8df4526cae6b23100247296bd78e6c8d8ac49939648b28fc939f3324",
+      "bytes": 12035
+    },
+    {
+      "path": "python/pyxel/examples/apps/megaball.pyxapp",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "89c1199e1ea52bf3493039515be052aeaee5d549fc7b92512ea31d2445f24df0",
+      "bytes": 30057
+    },
+    {
+      "path": "python/pyxel/examples/apps/space_rescue.pyxapp",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "250ababacc8f8b50a0e12c30e966b81e6aea1d8559e065a9a734baf59ba82be9",
+      "bytes": 4207
+    },
+    {
+      "path": "python/pyxel/examples/apps/vortexion.pyxapp",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2cc7d3192a0b272b42046b05bdefc2a62034d8dd161a63a50f10461bf0af28c9",
+      "bytes": 47960
+    },
+    {
+      "path": "python/pyxel/examples/assets/PixelMplus10-Regular.ttf",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "01b5e4aea5a3bbe80463c178e7868d5a34cd75e8ed7bc4d97097ebb1a71af7c7",
+      "bytes": 1133216
+    },
+    {
+      "path": "python/pyxel/examples/assets/PixelMplus12-Regular.ttf",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "02f19467ea7cc235cc06c570b7f6c3b0a12a6f682bc8d74c43f2d323d97bcd12",
+      "bytes": 1274396
+    },
+    {
+      "path": "python/pyxel/examples/assets/audio_bgm.pyxpal",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "8a1cd4e101cc53097890c05b8abff4ac365c74f83fef79145325d6cc97309900",
+      "bytes": 224
+    },
+    {
+      "path": "python/pyxel/examples/assets/audio_bgm1.ogg",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a3d949c00f8570512471ccf959d33c70ae18d1c3eb714593c31d8e4ff9af7bb4",
+      "bytes": 356191
+    },
+    {
+      "path": "python/pyxel/examples/assets/audio_bgm1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "debf6e6697fa129566d9795f2c135bad2e6d2b47a7d08baff2e0cb21466c99ad",
+      "bytes": 9411
+    },
+    {
+      "path": "python/pyxel/examples/assets/audio_bgm2.ogg",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e920c4cd92a9310e88861159e0d38421a82da32046bb3bb41ac7e317c04bfbaa",
+      "bytes": 375740
+    },
+    {
+      "path": "python/pyxel/examples/assets/audio_bgm2.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "8a49a43c24db77726374d2ad901e6ee5e76ba27e9d8f97eaa79a6b0b43127628",
+      "bytes": 21883
+    },
+    {
+      "path": "python/pyxel/examples/assets/cat_16x16.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ad06a8ac0bb5446e0e2d9010459e47cad68b77c701f158e33a8a57f433663a0f",
+      "bytes": 181
+    },
+    {
+      "path": "python/pyxel/examples/assets/cube_actor.glb",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c29b47aecafe0e4ce134da63fbacb59aeec6d071209e93fe18267465363e3e2e",
+      "bytes": 3192
+    },
+    {
+      "path": "python/pyxel/examples/assets/cube_gazelle.bbmodel",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2e987d1091673b18242666eb6f00969d68842ce7b174e245da5d7aed1bf67ead",
+      "bytes": 183344
+    },
+    {
+      "path": "python/pyxel/examples/assets/cube_gazelle.glb",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fdb2748a635e79223a5ede64db56ceb0bb619d993322313a1080fa222084ae95",
+      "bytes": 166064
+    },
+    {
+      "path": "python/pyxel/examples/assets/cube_gazelle.md",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "016f79ea20c6a4c398331802f86ad7e851e4c21f5ba53c6ae04b17531e34f7c4",
+      "bytes": 1370
+    },
+    {
+      "path": "python/pyxel/examples/assets/cube_gazelle.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "54fd58257d3ea0d1ad5d793b515f84a4f3df390503046dddbb36af2fff040061",
+      "bytes": 1017
+    },
+    {
+      "path": "python/pyxel/examples/assets/jump_game.pyxres",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "aa97a53590c4443283e261821b55adbaa6d9190a1adc972c580a2bd78e268367",
+      "bytes": 1868
+    },
+    {
+      "path": "python/pyxel/examples/assets/noguchi_128x128.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f5d572be84ef713939cde783c291de72bac3498f012641beafddaec9fcc72a80",
+      "bytes": 13941
+    },
+    {
+      "path": "python/pyxel/examples/assets/offscreen.pyxres",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "acad9054c98b2d40b11b4a1560f0bb2333a6ffc9e384e5d4b832cdd81189770a",
+      "bytes": 1966
+    },
+    {
+      "path": "python/pyxel/examples/assets/platformer.pyxres",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0812e282065fba8bbfb3357c7912caf3b9040af5343a02b1e333e6f3e5cdad35",
+      "bytes": 3035
+    },
+    {
+      "path": "python/pyxel/examples/assets/pyxel_logo_38x16.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4e64d75914d174f1fe650432d07fba7ffc612c7ef86da22249b5e2ff58b1565b",
+      "bytes": 248
+    },
+    {
+      "path": "python/pyxel/examples/assets/sample.pyxres",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "76a2a543211d12dd0bf40da83d900a2bc936cc393070a519f35c798b164841fa",
+      "bytes": 10886
+    },
+    {
+      "path": "python/pyxel/examples/assets/tileset_24x32.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4ab962f489cf75d025d23d95e9b53321a3c46f9fdf85c0bc574cdb8913e0a3ff",
+      "bytes": 310
+    },
+    {
+      "path": "python/pyxel/examples/assets/umplus_j10r.bdf",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e0172aed90f8768dd10d74ab3b3a9a14c86c5fb4b36b92c03b73c978971bd69d",
+      "bytes": 1017044
+    },
+    {
+      "path": "python/pyxel/examples/assets/umplus_j12r.bdf",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "41ecb8e016acf69476a4cbf82fc100dc66a0259607bc12245ae7dcdf41349ab7",
+      "bytes": 1086726
+    },
+    {
+      "path": "python/pyxel/examples/assets/urban_rpg.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "463bbd8e80899f44b2ef864f613e385d9a9182892b022fd13ed7fa37c7dcb619",
+      "bytes": 39715
+    },
+    {
+      "path": "python/pyxel/examples/assets/urban_rpg.tmx",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5b59896ab4f1f47240a7374960c7e152b7e210a06f904284f55b78ccda049441",
+      "bytes": 17251
+    },
+    {
+      "path": "python/pyxel/examples/cube/c01_hello_cube.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "94e54a9e8466a5a07be3ff03cfc6ad239909830286234fda194d6a1a800e4379",
+      "bytes": 1659
+    },
+    {
+      "path": "python/pyxel/examples/cube/c02_basic_shapes.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3ba41c74dc493ef8377eb90f237f090367a06be3dcbd944095c6c10367316206",
+      "bytes": 5096
+    },
+    {
+      "path": "python/pyxel/examples/cube/c03_custom_shapes.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cee0b75a945219427afeffcc1c7f8170a614b0eaa5450f1be5d5278ca73d0a9b",
+      "bytes": 12629
+    },
+    {
+      "path": "python/pyxel/examples/cube/c04_mesh_and_motion.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ead927036c76af28493358122870d380e856a72e5fa2e5588fb4feec60b5284b",
+      "bytes": 7272
+    },
+    {
+      "path": "python/pyxel/examples/cube/c05_3d_collision.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f57389561fb8eef5e20279d916f3cef7c14f2153db8fc8fdf57f87acdd626fb5",
+      "bytes": 9200
+    },
+    {
+      "path": "python/pyxel/examples/cube/c06_3d_physics.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "898b95170d1e5e9cc40c90abd8c3d7b3e9f0a210f147c2bfac9542abe1b78043",
+      "bytes": 5264
+    },
+    {
+      "path": "python/pyxel/py.typed",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "python/pyxel/utils.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c63f944fe98a24963cb4d078db6e26bf945f27112018d41ee62ea889477a8acc",
+      "bytes": 5022
+    },
+    {
+      "path": "python/requirements.txt",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f5424833e4e5322c3afabf65f392e79f1f1ef13624eea6a3551018825e642376",
+      "bytes": 121
+    },
+    {
+      "path": "python/tests/_assertions.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6a6c6a214a89f3b0d330950c329904a54d3ace12560ae52d3255b192a66dd9f7",
+      "bytes": 353
+    },
+    {
+      "path": "python/tests/_capture.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "862929a07dfca26aab4428a97d40a52dce2258b5ee4b4a8441c39c8b4c9165bd",
+      "bytes": 2453
+    },
+    {
+      "path": "python/tests/_runner.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9d93ed6c6ebcc5f50043b9324e71388e13807f60cbe0945812aef88c118f4ee8",
+      "bytes": 5918
+    },
+    {
+      "path": "python/tests/conftest.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "73bfc2aa764811effb8807cb123e7da0e5039cb128a8861b0556fb3baf28ee0b",
+      "bytes": 1909
+    },
+    {
+      "path": "python/tests/cube/__init__.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "python/tests/cube/_glb_fixtures.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f38bfd56232b6fffdee52b138bf261774ac6584355bb53c6699f5d1624f5abc6",
+      "bytes": 29713
+    },
+    {
+      "path": "python/tests/cube/test_camera.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2f2feb2e9e15a4da07b6c21e98f32ab976ad34ef5f9e31e2dfe48243add83e67",
+      "bytes": 1473
+    },
+    {
+      "path": "python/tests/cube/test_destroy.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dca903d283d8849f3188dfbf922f79c00887d23ca1f30aaaa2effe908135c2ee",
+      "bytes": 1893
+    },
+    {
+      "path": "python/tests/cube/test_glb_motion.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c01e353e89096ae30556184e219494e503e8b31bf50cbba539988db42dd91e60",
+      "bytes": 23535
+    },
+    {
+      "path": "python/tests/cube/test_mat4.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dce4ed1252bb1d039a06f4e554d393fd7f5e5d68df45b1c1389dba4bac4ef1da",
+      "bytes": 6165
+    },
+    {
+      "path": "python/tests/cube/test_mesh.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "584447085bd7ce3a961e20f3160222f983e3c1f8362267101f2d6b02a04c3e20",
+      "bytes": 6498
+    },
+    {
+      "path": "python/tests/cube/test_module_metadata.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7e3bd0985dd648a905dd4e41f840f6b22fb3e8429d6cec7c341c02e9b4f3b508",
+      "bytes": 2331
+    },
+    {
+      "path": "python/tests/cube/test_node.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "49cb1c5eb4efb85ad2fe24ab8886196db0433ac109133953db36c2d05601769a",
+      "bytes": 17158
+    },
+    {
+      "path": "python/tests/cube/test_primitive.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "47f1ee702559835f1b223cca834af82cb6a183a2e9c476e3cfbb358228aa11cb",
+      "bytes": 2790
+    },
+    {
+      "path": "python/tests/cube/test_quat.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "81a58fc1176e1a5fc29fbbb29fe4d55a3435fb3aa455fdd4ff76b59480b799da",
+      "bytes": 6034
+    },
+    {
+      "path": "python/tests/cube/test_scene.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "47e67508d6434b4e73b614035553e1860c0167ed18124073731fb10130c3d6ba",
+      "bytes": 18632
+    },
+    {
+      "path": "python/tests/cube/test_shading.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "71a8b26cfe63b6928023dca8b25ab1f2ea1e0e07c7d38e84eb65af660f20d462",
+      "bytes": 5531
+    },
+    {
+      "path": "python/tests/cube/test_vec3.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "977cc006022c46fcc36359581f82b9a3ae19d3715664277c8dc8ecd7cae592c8",
+      "bytes": 6598
+    },
+    {
+      "path": "python/tests/references/apps/30sec_of_daylight_f30.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d2814305cbe3206fae17068d7b4df3783d47857a99288ec6e51a0acf1c99683e",
+      "bytes": 6477
+    },
+    {
+      "path": "python/tests/references/apps/30sec_of_daylight_f60.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "34400247a2786fe1f5c0bddac5897e5b19b9c1c6c7bfc26ad03eb59feb7eaa0b",
+      "bytes": 11408
+    },
+    {
+      "path": "python/tests/references/apps/cursed_caverns_f100.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e9fc0ca0ef8efbe581ad8d32b908c37fe857f7abeccb25d5a7c6442979207741",
+      "bytes": 17576
+    },
+    {
+      "path": "python/tests/references/apps/cursed_caverns_f70.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "65355da18b46076e1c3f6003046cfb9799c03e4abbd3cd1469f15a545a93d589",
+      "bytes": 34049
+    },
+    {
+      "path": "python/tests/references/apps/laser-jetman_f210.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "742dbb4d200476fc7ef6196ef1b44947d2123c2b39123c8856651441aea59a9f",
+      "bytes": 2728
+    },
+    {
+      "path": "python/tests/references/apps/laser-jetman_f270.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a917fe1afcd41347f54447a2e4485e278c5c50a57662a5557bb839cc9cc5880f",
+      "bytes": 4286
+    },
+    {
+      "path": "python/tests/references/apps/mega_wing_f150.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "64d32653eefd47fd78aaaaaae059be6864641bf45c33d610fec7f24ac8a1ceab",
+      "bytes": 26939
+    },
+    {
+      "path": "python/tests/references/apps/mega_wing_f30.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ff23ce5796361825a7e0bda0d5d01132c3c28ba8f7238318b65bca7d6175edfe",
+      "bytes": 9906
+    },
+    {
+      "path": "python/tests/references/apps/megaball_f30.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5f3824ff4e7954f59c18f2a69a5f7e15a3d08949e1f228e6737f0363c4321cba",
+      "bytes": 13367
+    },
+    {
+      "path": "python/tests/references/apps/megaball_f90.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4cf6769b217bcfb346b47f32c7fd8d2ff19aec154b6c50cd5d90d914e4ec10fc",
+      "bytes": 16686
+    },
+    {
+      "path": "python/tests/references/apps/space_rescue_f30.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "69bee6947256b8885ca046cfbc44366e544f30ae6781adfda5a60d05ace1ce30",
+      "bytes": 13671
+    },
+    {
+      "path": "python/tests/references/apps/space_rescue_f60.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "470acddd06ac65a60b9ff60163d97bf6aa08e22aa453590d32677873cc21275e",
+      "bytes": 12816
+    },
+    {
+      "path": "python/tests/references/apps/vortexion_f200.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4b1bb6eb45ca044cc4ce4ffe6b21def42d810898e78528336046edcf7aa9ee97",
+      "bytes": 32044
+    },
+    {
+      "path": "python/tests/references/apps/vortexion_f30.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f38410a3343743ed7f4f544542bf2d090afd748d3170514433946a549dfffc26",
+      "bytes": 14880
+    },
+    {
+      "path": "python/tests/references/audio/classic_effects.wav",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "82f2935a0842a8ff4d1cae7b5f67bad4aac92aa6f192feb41c5046798216d63f",
+      "bytes": 22094
+    },
+    {
+      "path": "python/tests/references/audio/classic_music.wav",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e64f66cc3e08e09a0271888eed20843c9e5e8859cbe30e9849d8bb6d04bbc3ca",
+      "bytes": 88244
+    },
+    {
+      "path": "python/tests/references/audio/classic_sound.wav",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e4e0fe7749ada3991ba2d626ef5270365cb10c91a3b2642c2dc302f099defe7d",
+      "bytes": 66194
+    },
+    {
+      "path": "python/tests/references/audio/mml_modulation.wav",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7a5271a985d7e8d6456eb189021660d62e044340c8e719e2e06d01c1e9cf9557",
+      "bytes": 88244
+    },
+    {
+      "path": "python/tests/references/audio/mml_music.wav",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4bdb8a146ac33be2f79c869f32e36f2143e7f2b80e6cf0e9a64969c8a1b13291",
+      "bytes": 88244
+    },
+    {
+      "path": "python/tests/references/audio/mml_sound.wav",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0de830d9f74adeca71061b14894d9a1cf0e7fe80cc0ade0e0056f73d3815cb15",
+      "bytes": 66194
+    },
+    {
+      "path": "python/tests/references/audio/pcm_sound.wav",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "970c80515b65a849bde648e78414458a827aa9d06a6fd28bffbb120d9d4ae211",
+      "bytes": 22094
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_16colors_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9432d0e267fd24fb72f248468d5da6726b8a64f0f66d8f9fee61eb899357c774",
+      "bytes": 23822
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_16colors_fedit.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4973be084e5148f3f10be5009663e999af3ed003d4a883393258372dc47f020c",
+      "bytes": 25095
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_32colors_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0ff8abae1617c75b342801d6b262f55f8126866135d161da8109413b41232384",
+      "bytes": 21733
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_32colors_fedit.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0eeeb2fac3abd928799ae970fe67eb00ebccb6fc50e385d4b697fc5d6280cf56",
+      "bytes": 22980
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_64colors_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4ddd644ab1e5efaac22220e0d8fe7f6d64a8765cf7906378ba65cf42a0e645de",
+      "bytes": 19096
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_64colors_fedit.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f31fe105c91cab45aca521a40cc44042463e1c20bba42279195eaa12802ef6e7",
+      "bytes": 20339
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f66c36cf759f076740581ebfb819923e3b7f34e363945d76bd0057b3bb0a4650",
+      "bytes": 25279
+    },
+    {
+      "path": "python/tests/references/editor/editor_image_fedit.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "37a5fa7a5af6a28da8c87bc02f8c79b59b550b180601c3de39f4af6108e81ad5",
+      "bytes": 26547
+    },
+    {
+      "path": "python/tests/references/editor/editor_music_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b79129a590c136bb2a4252ae1986e2c6983cf314234262c1e9e1f51e778c21cb",
+      "bytes": 17564
+    },
+    {
+      "path": "python/tests/references/editor/editor_music_fedit.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9f252eb4024e41ac2cb7c7b8b2a4a011ddf18fa1f44e5d6861d6ae3d5a892202",
+      "bytes": 18959
+    },
+    {
+      "path": "python/tests/references/editor/editor_sound_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "67b75e644562cf475a2897b2238ec4973cbbb153299c1a11ddd08c1c75310fcf",
+      "bytes": 10687
+    },
+    {
+      "path": "python/tests/references/editor/editor_sound_fedit.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d10b2b8fb78d75cce3e2b4acd4cb3f70d3cc5b6ed4ef4705e2711ee2d37cd685",
+      "bytes": 10874
+    },
+    {
+      "path": "python/tests/references/editor/editor_tilemap_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "00adcee79cb2992129f08d484df05d97e4814766e7b072310e37824f05a5e4ec",
+      "bytes": 32878
+    },
+    {
+      "path": "python/tests/references/editor/editor_tilemap_fedit.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7fc3e5456de7b5d283f3d96d627d9122212ce2bd823102a476fca62e97f6c365",
+      "bytes": 34144
+    },
+    {
+      "path": "python/tests/references/examples/01_hello_pyxel_f8.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "730201f25b90158376688652f52a4005d9478b6a7e9f21399d79dab436d42634",
+      "bytes": 3011
+    },
+    {
+      "path": "python/tests/references/examples/02_jump_game_f10.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fe4236a9d9a57af17f2715d02a2ca00b83b255e82bf2a7142461724da7c92aa4",
+      "bytes": 12459
+    },
+    {
+      "path": "python/tests/references/examples/03_draw_api_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ec905600f6a91bcc30e36ccd2a7d3a61a349ccc5736253be34dc31b144c73ec1",
+      "bytes": 20688
+    },
+    {
+      "path": "python/tests/references/examples/03_draw_api_f155.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "90d013959ea8767cd35dfb5c2254b9496e0417d11429d3ed551d8631f0670072",
+      "bytes": 7887
+    },
+    {
+      "path": "python/tests/references/examples/04_sound_api_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f35bd0501d0556eecbb69761391340e7fcf1c6e53083e8f603bc369ea9eb381a",
+      "bytes": 19467
+    },
+    {
+      "path": "python/tests/references/examples/05_color_palette_f0.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "70cf968064ff70a4514964caf96c02a66af3eb6d707301b864107183faee2a1b",
+      "bytes": 13952
+    },
+    {
+      "path": "python/tests/references/examples/06_click_game_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "af7ac68dd8ad23be26e20b9181fa09f43d7586ba29acb8abfadad689ddb67b28",
+      "bytes": 7428
+    },
+    {
+      "path": "python/tests/references/examples/06_click_game_f10.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6469b1e2c892181a217611f3fb9092b924f13ff11783a79314874bd6e3f3da06",
+      "bytes": 6946
+    },
+    {
+      "path": "python/tests/references/examples/07_snake_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2c76cc399493a01399ad05db72e7d7a58ab0788bffe2c18fc381c136d2af55e5",
+      "bytes": 2067
+    },
+    {
+      "path": "python/tests/references/examples/08_triangle_api_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6bff75fd603ef52d3762959e3edd175cc3762c2558c0b15d5017f359ba0d9064",
+      "bytes": 7060
+    },
+    {
+      "path": "python/tests/references/examples/08_triangle_api_f200.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "95fd707b53f095d420d8cb6d276eee30332a71fb33064b2c8464d8477c57d4a3",
+      "bytes": 15181
+    },
+    {
+      "path": "python/tests/references/examples/09_shooter_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "42ae54d060586a5ead77a0e5c0bec427c751313270334a0b645d859979e6b8f2",
+      "bytes": 3568
+    },
+    {
+      "path": "python/tests/references/examples/09_shooter_f120.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dcc1665babbdde9c8f8d619937a60d36acef36f43348d73d386ace6b078119da",
+      "bytes": 6356
+    },
+    {
+      "path": "python/tests/references/examples/10_platformer_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "84043b3cada3ab1b7c4b925a8ee48f872abd3c8d47e4e2664258262fdaa96bf0",
+      "bytes": 19443
+    },
+    {
+      "path": "python/tests/references/examples/10_platformer_f80.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b0be45e4b579221a911e344ddf7cc26a0fe5d09a2a1a2abbda91886e34762b66",
+      "bytes": 21657
+    },
+    {
+      "path": "python/tests/references/examples/11_offscreen_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ffefa2083ceb7c82336117ce67ce66be49527837e0951d568ec9eb794bc8c7da",
+      "bytes": 7382
+    },
+    {
+      "path": "python/tests/references/examples/11_offscreen_f121.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4cf39776bdcc4adc2dcc75dc5f335edc156791ec3832bf4741937fe54863718c",
+      "bytes": 11744
+    },
+    {
+      "path": "python/tests/references/examples/12_perlin_noise_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c0e6ce08a1331309d906ea605535295e78b784b3b25fbd5adad7c6971bace417",
+      "bytes": 5088
+    },
+    {
+      "path": "python/tests/references/examples/12_perlin_noise_f40.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6afd6bb5b54f48f2fafded0bcc6fcbaa081b6b94b9eef7090d8e30f2431ea4b2",
+      "bytes": 5165
+    },
+    {
+      "path": "python/tests/references/examples/13_custom_font_f0.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0976c8f99737100b32dd8e1ab396f017a53f9b217e8ad5b39031d7fb835fafd8",
+      "bytes": 24319
+    },
+    {
+      "path": "python/tests/references/examples/14_synthesizer_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "95a215d42f955fac8e3d62b09629e348450cc702fb3970876fcb5a0af96204b4",
+      "bytes": 20356
+    },
+    {
+      "path": "python/tests/references/examples/15_tiled_map_file_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a47b602142545d356ecf2ecbca7a0491d9b60a5c303a481e88341c6662e3fb62",
+      "bytes": 77122
+    },
+    {
+      "path": "python/tests/references/examples/16_transform_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b42f7b6e7cd6739552b248aa099ae4b237a27421bd839561ebcec1cf9e74dcab",
+      "bytes": 35122
+    },
+    {
+      "path": "python/tests/references/examples/16_transform_f45.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7900f44846a6ef093072262041ea110d363454c35994d11559876860c36a6529",
+      "bytes": 47578
+    },
+    {
+      "path": "python/tests/references/examples/17_app_launcher_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "80cce037b7a9c3cacfbb9b9a46f0e6eb1ddf4e9b0e9ccda2b6c9965b9b5ea4cc",
+      "bytes": 19707
+    },
+    {
+      "path": "python/tests/references/examples/18_audio_playback_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e46fe2b07ba5818eed21974fe674fbf59da7c92988780f2bf2631b84a0e21642",
+      "bytes": 79161
+    },
+    {
+      "path": "python/tests/references/examples/18_audio_playback_f3.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1089c5da36c4b508b1e8cabdea0c09f7e8f0e78c5a75139e59f1f5c478c6dc6e",
+      "bytes": 72493
+    },
+    {
+      "path": "python/tests/references/examples/19_perspective_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "236d808e34ac032b3661ffa11317e48c26d8860de69fa2051a6e45e441e4a71e",
+      "bytes": 18043
+    },
+    {
+      "path": "python/tests/references/examples/19_perspective_f20.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "24f8fc48c39544c25133707d53c3d1764638008ee9e4fd999dc2cdc6d6c7cb55",
+      "bytes": 23933
+    },
+    {
+      "path": "python/tests/references/examples/99_flip_animation_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bbdbc9b41a0b4a22c44354353a061fcfe3b89754fb59b631d85a268b76965c25",
+      "bytes": 28954
+    },
+    {
+      "path": "python/tests/references/examples/99_flip_animation_f30.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f324dc55bda71e7686201a53155fef4e4abc6d810921727db0b84c74cfe58609",
+      "bytes": 28896
+    },
+    {
+      "path": "python/tests/references/examples/c01_hello_cube_f8.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "524a2656b73d6c80b8606e913ef550d4f57ba44b29eeb5715d9c1dbaaa454be3",
+      "bytes": 9122
+    },
+    {
+      "path": "python/tests/references/examples/c02_basic_shapes_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dfca5d48bf2af69df64967fb1a3f7d9d39817228aef919214ca937a86b09b9c7",
+      "bytes": 12782
+    },
+    {
+      "path": "python/tests/references/examples/c02_basic_shapes_f30.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "15f209ca8f8017f7b874ac80d40c085c189f7fb75807eed1c1f39fd38f83c0c4",
+      "bytes": 13368
+    },
+    {
+      "path": "python/tests/references/examples/c03_custom_shapes_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "36103d01f1122a5a0fe87bf4939c90642e4bfc53a46ffe09fea49e9625337121",
+      "bytes": 13045
+    },
+    {
+      "path": "python/tests/references/examples/c03_custom_shapes_f32.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ca1bccef64e7f0b21150fffc81d0d98cdcfb1042c420ae03b18ead866cfb39f3",
+      "bytes": 15619
+    },
+    {
+      "path": "python/tests/references/examples/c03_custom_shapes_f40.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "66c8f28d08607c7e3a963ceea314e62eec94061fec7226b3da50b775152aa3e6",
+      "bytes": 15145
+    },
+    {
+      "path": "python/tests/references/examples/c03_custom_shapes_f48.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d599ef1165906f526bfd6a6b5d6fe22bedc9bb54b540daa5fcc3ce5d308fd539",
+      "bytes": 15100
+    },
+    {
+      "path": "python/tests/references/examples/c04_mesh_and_motion_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5eee6dbfbcbbe3c23f56acc655c526a62deec0ad3753233d311778a4392adcf2",
+      "bytes": 16566
+    },
+    {
+      "path": "python/tests/references/examples/c04_mesh_and_motion_f123.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "92f30f0b29db0a9872e3ebad4c5c2fd1f2d500be566bd6c9a006fe26081f67f6",
+      "bytes": 17900
+    },
+    {
+      "path": "python/tests/references/examples/c04_mesh_and_motion_f124.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "34f7cb2f41c5e41f3d05da51be63182663d0854da1491f6dfc461c70c56490e6",
+      "bytes": 16383
+    },
+    {
+      "path": "python/tests/references/examples/c04_mesh_and_motion_f45.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9adb32b00edea1e6a72340abd97964a2242558c411c9afd6f498c8b68f2dc08c",
+      "bytes": 16326
+    },
+    {
+      "path": "python/tests/references/examples/c04_mesh_and_motion_f91.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7ba055a89d5182df033bd380ddcce6702e0fe7c10e14a52e356e54b1a6aa08ca",
+      "bytes": 16315
+    },
+    {
+      "path": "python/tests/references/examples/c04_mesh_and_motion_f92.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a0e228e776d7ab1604ee2ff0e22b42585ca083301cfef4a6142eb80f1c64d402",
+      "bytes": 17989
+    },
+    {
+      "path": "python/tests/references/examples/c05_3d_collision_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "edd4706829b63ee78a9a5cad60a5b3a57172fd703d3a3e0d99c151f4cfa9daac",
+      "bytes": 7646
+    },
+    {
+      "path": "python/tests/references/examples/c05_3d_collision_f100.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "975ec38f95aeb89e2a51c137e1408045491b43bb52c34b9b378180501cb85c81",
+      "bytes": 6560
+    },
+    {
+      "path": "python/tests/references/examples/c05_3d_collision_f70.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c6780a8eb2339236b64d456c9b54a219f1ba958025cdc69a0acc7b9653051937",
+      "bytes": 6547
+    },
+    {
+      "path": "python/tests/references/examples/c06_3d_physics_f1.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d20b0ac2f9f616ee2854a2959d39bb6e3a7a7b44551b255373a87d8071a28ccc",
+      "bytes": 7891
+    },
+    {
+      "path": "python/tests/references/examples/c06_3d_physics_f140.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "58985edae98bf9332b4dd7c8f31d45edd79ae91469f41295f4ae18410723ec34",
+      "bytes": 8748
+    },
+    {
+      "path": "python/tests/references/examples/c06_3d_physics_f70.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1cc5efd262e0eb7ddc17ff3e8b1b6dfffa3d1a0e950734312745d33882469a02",
+      "bytes": 9062
+    },
+    {
+      "path": "python/tests/test_api_reference.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5f2f7b28c5748ecda7749619cf616720236c008f4bab3493e98079fe6f172682",
+      "bytes": 5110
+    },
+    {
+      "path": "python/tests/test_apps.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "981e6c4006506595d661d475e278a5daf230097cf56949ec4f2627775b505cee",
+      "bytes": 2283
+    },
+    {
+      "path": "python/tests/test_audio.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a0f257d7a2de7b196a71a8f225ab1b9aaa921a0e85487dc8ed7046a135de035a",
+      "bytes": 8807
+    },
+    {
+      "path": "python/tests/test_audio_render.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "17cf1c1a42023bf018dfe6dba229b2d1a5cedb4971307116e53ad4fd023f8334",
+      "bytes": 4740
+    },
+    {
+      "path": "python/tests/test_audio_semantics.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fec74277dd8b204c35d2a6daf3eed361fde2bfd931ecbe0c1ba56cbd7b5d6d58",
+      "bytes": 10116
+    },
+    {
+      "path": "python/tests/test_channel.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "79c218e7d0918430d74f6f220d9afcadccb6fed137511e77fbd354b5b565737a",
+      "bytes": 3110
+    },
+    {
+      "path": "python/tests/test_cli.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "8dd7b6928b04c0f29ee30e867987ac21d59c018cddb76192a742f3ebbe952a2c",
+      "bytes": 49345
+    },
+    {
+      "path": "python/tests/test_code_maker.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ae4bbd32d106780c72466e0c65f71953a64e4db7849b8469e0e02692da3dd9dd",
+      "bytes": 1726
+    },
+    {
+      "path": "python/tests/test_editor.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "75d138f1b437cfddaa329490faf4f15274e5d325ec020bbbdd78a9d12d901479",
+      "bytes": 24496
+    },
+    {
+      "path": "python/tests/test_errors.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "99334adcfa633404e507a50f8dd7bd904c30b4370fd9d1bff3db5fd3820fa470",
+      "bytes": 17994
+    },
+    {
+      "path": "python/tests/test_examples.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "45b9c771455fe7f1da24de5e7208573dd274ab92e7936458b7a0f7c574ab26e6",
+      "bytes": 6773
+    },
+    {
+      "path": "python/tests/test_font.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5f93aec8172117bd822957bef6335e3e9020fc00c9ac673050f81abca4a74516",
+      "bytes": 3732
+    },
+    {
+      "path": "python/tests/test_format_prose.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "50c0b24253069343bd73d15708240bf467961fa534de787e153959043e1c9736",
+      "bytes": 7638
+    },
+    {
+      "path": "python/tests/test_generate_docs.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "be1729840cf83f2eefed20fe53ab8bbb798269aaa7ece6e68fec53d09e39344c",
+      "bytes": 2892
+    },
+    {
+      "path": "python/tests/test_generate_pyi_docstrings.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4cbf577afe36afb393cbb557631abb97e52b93fa83b6217c95bf434035562877",
+      "bytes": 2475
+    },
+    {
+      "path": "python/tests/test_graphics.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c782e6feed9d267dfdf9b07c9bada20b3bf4f70ffc524cbba7a41066fd03b73d",
+      "bytes": 8578
+    },
+    {
+      "path": "python/tests/test_image.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c71adb7749f0375004149862d96d4dc9f43b2ef4d56ada9e9452247cc2bd7683",
+      "bytes": 15955
+    },
+    {
+      "path": "python/tests/test_import_hook.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6970917a80e788a9fb664e52607ccc0da024e4f051089a9ba3574600a882d106",
+      "bytes": 8636
+    },
+    {
+      "path": "python/tests/test_input.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3d252a59ada3a577a25584e44b4d9405145346ba235ecbe661e74f7a388dd09a",
+      "bytes": 7403
+    },
+    {
+      "path": "python/tests/test_localization.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5fcfd78cc94382583f1a8a9192086d53375d1a90e51bef914a4e7a439991fe7b",
+      "bytes": 1742
+    },
+    {
+      "path": "python/tests/test_math.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "14f8c80cba30f5733b70724a0f868a837dad5d1a8c2394afb1f35ac147985251",
+      "bytes": 6555
+    },
+    {
+      "path": "python/tests/test_music.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "510c225b0d629fbf8fe21be19b8fd10e7dbe34866952f258a1cf6b4b8d0391ba",
+      "bytes": 11726
+    },
+    {
+      "path": "python/tests/test_pyxapp_execution.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e8b617ac7318e0c952b5889ae5484c133c8b08b4d80d0f822cda6ed6bcb84801",
+      "bytes": 5193
+    },
+    {
+      "path": "python/tests/test_resize.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "218687d5ef48cc7678a02ebe0a0a6310bb114d63d8d7e747005032586c0b8dc8",
+      "bytes": 2800
+    },
+    {
+      "path": "python/tests/test_resource_io.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4aea9c850e4bac6e10f2e36c772fb109f85982d02a8a4a39f6a005c4303bf6ec",
+      "bytes": 14419
+    },
+    {
+      "path": "python/tests/test_run_examples.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a295127753599687b304449510206a027b6c3b01e9ddc0f7866bd21b213601f7",
+      "bytes": 777
+    },
+    {
+      "path": "python/tests/test_sequences.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e389401dc3b3616bfb4c8d1163257c6c64dd77d707ee8abf333c82dc2812fb6d",
+      "bytes": 19671
+    },
+    {
+      "path": "python/tests/test_sound.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0471460733f25afda9e6d5165608b5d0214e28e726d904158ab6ccbeeb07084c",
+      "bytes": 7394
+    },
+    {
+      "path": "python/tests/test_start_showcase.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b9174be2045c58ac42cefc80f3d6d964fdade84a62d7920e8593857868073899",
+      "bytes": 4431
+    },
+    {
+      "path": "python/tests/test_stub_compatibility.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "18429dfcb8e9bc51c917c98935e04440a4f9763221f6c1fe127c304ff1b0eac6",
+      "bytes": 6494
+    },
+    {
+      "path": "python/tests/test_system.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2e9c0d1a6e31daffe87adc99cf8df6e2f50a7972e0450d6d6a52b9e43000bcab",
+      "bytes": 13776
+    },
+    {
+      "path": "python/tests/test_tilemap.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1729085c9036fa4b2d2b705c04dda10d7e9dcca3a861e5b97a3a7cd69e9bfeda",
+      "bytes": 17146
+    },
+    {
+      "path": "python/tests/test_tone.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "846191469b5fedc9540198f41e88933b9203ec080b48a771bf48183d6ba0a372",
+      "bytes": 2698
+    },
+    {
+      "path": "python/tests/test_update_version.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3d98d1d13ac8b9133b67a9235c5b6a1b25fec552257d2a3cc175fe438f1a41fa",
+      "bytes": 6502
+    },
+    {
+      "path": "python/tests/test_utils.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9d6891865c7b591d0fa542f9837fa5119d36cf44f9acf0465c70fa5dc54771f1",
+      "bytes": 11081
+    },
+    {
+      "path": "python/tests/test_wasm_build_tools.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "70fc5f604db307141e3eb36eb40357818562cc038b8dcdea8bbdbfc57d0c0463",
+      "bytes": 13283
+    },
+    {
+      "path": "python/tests/test_web_data.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2adaf7f7aa5132df3602682f23b1dd25dbf90f44929c64e9788ccd5cf02b342a",
+      "bytes": 2155
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "610468e62c54bbae3baa9b592d72d71b7441641b8f889e170e3ebfe07763916b",
+      "bytes": 132
+    },
+    {
+      "path": "scripts/check_wasm_wheel",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "ebdada72f41e949c0c6ecdbba4bf2a5bf2b1e4d817c1f252249815ef58f0a393",
+      "bytes": 9195
+    },
+    {
+      "path": "scripts/check_window_startup",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "65f429c082599492ce0f08b639ae00c2621bfe3db1c52c8f0fc4d27fe30b18a4",
+      "bytes": 2763
+    },
+    {
+      "path": "scripts/format_prose",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "a9cc08517a6f3facb193bba470261ec66120a6dac4ce5aa46471685abbca9cd6",
+      "bytes": 6565
+    },
+    {
+      "path": "scripts/generate_docs",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "2d06e3409141bd6f8a932c499d99441c620523b9d0765573a005294c3a3395e0",
+      "bytes": 35108
+    },
+    {
+      "path": "scripts/generate_gamepad_images",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "e37153b2a33fe06c924a909fe98f3142058f31c22e7138806e62f06e706045dc",
+      "bytes": 9913
+    },
+    {
+      "path": "scripts/generate_pyi_docstrings",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "137aa4d46e94cc5aa297244ae844cebefb7de82cfb28b3cfd8fcee36c81d1dd4",
+      "bytes": 10638
+    },
+    {
+      "path": "scripts/generate_thanks_image",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "015bc7fc5ca58fce08fc104a1beb37605f16a1b69d32d58984daa9681ac6238e",
+      "bytes": 6030
+    },
+    {
+      "path": "scripts/install_wasm_wheel",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "a1afb55ce19ef62ee9890192f06233b5e218cad467502b22e16edc52006530b7",
+      "bytes": 3849
+    },
+    {
+      "path": "scripts/run_examples",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "ae74b496b0f3e6b44881310c1b0aefa22f296e9393f1ce09feba5c950fafead4",
+      "bytes": 1114
+    },
+    {
+      "path": "scripts/setup_venv",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "4dd6e01bb4f1615ccdfb38ef3ded53214a4cee6a6a79f0af98cff8a504877280",
+      "bytes": 512
+    },
+    {
+      "path": "scripts/start_showcase",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "2eea4f040462b1f02d57dd5a2e4e1b3e020508c9dadaf4f09aabd052434c8153",
+      "bytes": 5116
+    },
+    {
+      "path": "scripts/update_version",
+      "origin": "tracked",
+      "mode": "100755",
+      "sha256": "1c47ce226a7513cfda16fd953537e919d930f55f3e425aea6b7c5092bad90b4e",
+      "bytes": 6661
+    },
+    {
+      "path": "wasm/api-reference/cube/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "574c2ebdd681f4fb557678aa0a56609c04b5fe66ae690caf726b287e52cd1e02",
+      "bytes": 348
+    },
+    {
+      "path": "wasm/api-reference/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d52b8458287d53775bf10796732d3fcad5c432a27a28ad4cea26dbdea31fe877",
+      "bytes": 335
+    },
+    {
+      "path": "wasm/code-maker/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fd03e92d52b8c840ede14c59909c8057045bc386fcff035e57a166888c09f3df",
+      "bytes": 329
+    },
+    {
+      "path": "wasm/editor-manual/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9768e022bdd229fc50ed6d5e9e121e935f01fba848d8cdb4347e2c4777439ecf",
+      "bytes": 335
+    },
+    {
+      "path": "wasm/images/click_to_start_114x14.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "05eaccb3b2d44225b3b8b90657d664c07abfe495336c7a8af50049886383f48c",
+      "bytes": 641
+    },
+    {
+      "path": "wasm/images/gamepad_button_98x98.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d5e3a83196ec9c5cdf953825c6b7b416f9a9c54921554578e2de3d1d5bb6d9d5",
+      "bytes": 879
+    },
+    {
+      "path": "wasm/images/gamepad_cross_98x98.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cf97365abfe0a9d4221e4300c21040fb0640fd4e18c4a5ef5a40bcb2e02a9b7e",
+      "bytes": 510
+    },
+    {
+      "path": "wasm/images/gamepad_menu_92x26.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "33a576bf3e6e4f0ca3dba491d86ed66c8e983dabc43a59a4e3338ba33f354309",
+      "bytes": 319
+    },
+    {
+      "path": "wasm/images/pyxel_icon_64x64.ico",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "62280f322d64fc702441b5216477c5b5b3f3045916eb3936e88ddd37d8dda02c",
+      "bytes": 2686
+    },
+    {
+      "path": "wasm/images/pyxel_logo_76x32.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4272ab5584a292162215b4db039ac028b362a05c8d53077e315ff3e3409786d3",
+      "bytes": 692
+    },
+    {
+      "path": "wasm/images/touch_to_start_114x14.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fb7b2c53cb9cb72ef1921094cd375723e64feed3a1b8d4d12c96694847d7305a",
+      "bytes": 629
+    },
+    {
+      "path": "wasm/import_hook.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bbb4646f4cdc9e51b18a76381f97de6141f01ecaad788b984230c435cebaeacf",
+      "bytes": 2750
+    },
+    {
+      "path": "wasm/launcher/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "749abc304ce659ab8b4f85469c346bfe09f814d335219316c98a483b128889a2",
+      "bytes": 312
+    },
+    {
+      "path": "wasm/mml-studio/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "135acb78652d3832f7d01c0ea47f9b2dfffa0406eb00aca4d01ea1df63624d2e",
+      "bytes": 329
+    },
+    {
+      "path": "wasm/pyxel-3.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b858be184db25e84ff45b32ec19a18e2d0bdc33a19b29e329ffef9da8e75746a",
+      "bytes": 5364380
+    },
+    {
+      "path": "wasm/pyxel.css",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1383b187b64d4eadbb218db30f3c57c72454a2293ca121debcaf721ec894803f",
+      "bytes": 2144
+    },
+    {
+      "path": "wasm/pyxel.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e1d3139a3bd87b3152e652144f40042d6fa25f1a297014c46bfae0a5b0cb1421",
+      "bytes": 29782
+    },
+    {
+      "path": "wasm/showcase/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0bb33ad16f0c6bc6085ce5b484e2f98cc3d2be445287dcfa0376d24f8b3ad519",
+      "bytes": 308
+    },
+    {
+      "path": "wasm/user-guide/cube/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "31fabd826d7341c0ea521a282df790458fd2439b68c201e9ad3e0ec46bdfa863",
+      "bytes": 342
+    },
+    {
+      "path": "wasm/user-guide/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "024c88c729d249cfa67e8a59517faa79e1029746803392ae6a64774388c6c763",
+      "bytes": 329
+    },
+    {
+      "path": "web/api-reference/api-reference.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "087a29f85243197769190be97e1e3a9df44cdf36f34ccdfedd940e6518501388",
+      "bytes": 18675
+    },
+    {
+      "path": "web/api-reference/api-reference.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fc4cc025f517ae2adfa0ea7c59477d6e35dc45f7b85cf1caf2e73115cf41f3f8",
+      "bytes": 547289
+    },
+    {
+      "path": "web/api-reference/cube/api-reference.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1c81f6cac652188e9c64bb0bcb7336d5c67c6a98e05b8bb4e05372da89004f78",
+      "bytes": 613819
+    },
+    {
+      "path": "web/api-reference/cube/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1ae1aa97e8c3246339363d20d010e10fb82ff3bb7f321b9cb0d7793ed4b61a27",
+      "bytes": 733
+    },
+    {
+      "path": "web/api-reference/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "42108d1588287c96080cf4186b5a1a0e2b0ec0f9540b9e570b47b60936da4982",
+      "bytes": 716
+    },
+    {
+      "path": "web/code-maker/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "104efa26b7352d0213657bf91755a5131751d8defca523e2be1040b1f2d6ada0",
+      "bytes": 49586
+    },
+    {
+      "path": "web/code-maker/manual.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "aed863caecdca7fcd5d2f2b5ae5aff3c603f405ac1eb9972fab60e0b1e50dff8",
+      "bytes": 9613
+    },
+    {
+      "path": "web/code-maker/manual.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cde7166aea5fb9715c9cbedb010a2e7b599f2ce81b7ccc30f366a81ac4a0f887",
+      "bytes": 54167
+    },
+    {
+      "path": "web/code-maker/pyxel-editor.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5de6abd33323299f9b054147a2356598f552a84a7b4bd4e9f61f0bdc7def643b",
+      "bytes": 570
+    },
+    {
+      "path": "web/code-maker/pyxel-project.zip",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9a6067939a069e9bd1c50e7b338dbbee1529ce5d52c0fe904e5c76dd4ec4ab69",
+      "bytes": 1329
+    },
+    {
+      "path": "web/code-maker/pyxel-screen.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d868787232cc76b4a4dec5737b04b57ad26864cf7718fcdce32c61bb20c131c9",
+      "bytes": 1046
+    },
+    {
+      "path": "web/editor-manual/editor-manual.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "cb35bea4ee6aa517f4ae784bef6394b7d5ecfe2cd67654ebf902feb0413c6500",
+      "bytes": 206735
+    },
+    {
+      "path": "web/editor-manual/images/btn_image.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "eb8a78a47f0518c42a3579ad7fcd5cddb425ecd40b7c3b56069e7dd8ac4e520b",
+      "bytes": 136
+    },
+    {
+      "path": "web/editor-manual/images/btn_loop.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6ba58a41e4d6f38c480703186e56ba1ff11db178c124cfa476265be537da41bb",
+      "bytes": 140
+    },
+    {
+      "path": "web/editor-manual/images/btn_music.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3376a7abebe058090ce8cef4c5c30eb8b107f5e7f763f3bbb6c2a2b9a964a9e1",
+      "bytes": 131
+    },
+    {
+      "path": "web/editor-manual/images/btn_play.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "03bbf23770f96a6481e135132b8c4d67ef2e061081e41ccd539591b24df3e293",
+      "bytes": 142
+    },
+    {
+      "path": "web/editor-manual/images/btn_redo.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d5e62f6b002652855f3a427ca7f9b3f21dd0cc287282978d288fc9584cce544c",
+      "bytes": 133
+    },
+    {
+      "path": "web/editor-manual/images/btn_save.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0bd3ac09086c14441bd4d69c19fc7ede0cf6f7ec87a7f3edd2c06a6265888fec",
+      "bytes": 136
+    },
+    {
+      "path": "web/editor-manual/images/btn_sound.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5eab6cdbbc14a36bb47020784bf62b558e44a5e7799bf608ac0b51945f33dc95",
+      "bytes": 134
+    },
+    {
+      "path": "web/editor-manual/images/btn_stop.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1ea9544bc885f6e6af413ad80e1ba01a0c90c7e6817e1ed8d4f5100fb28538fe",
+      "bytes": 137
+    },
+    {
+      "path": "web/editor-manual/images/btn_tilemap.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "58fc2d03ef2ecd29d70df21da5a6a95c859694199d728f6baac7c0f2ae4ba23f",
+      "bytes": 130
+    },
+    {
+      "path": "web/editor-manual/images/btn_undo.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0b31a68b2ce7a931989529319da9b7dd5c17db5e1bfde1303403d9b3e3038cb0",
+      "bytes": 134
+    },
+    {
+      "path": "web/editor-manual/images/image_banknum.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d385d1624acd28064b6a6432b2dcacfce3cd4723ad3d823280d174622fbdd21c",
+      "bytes": 415
+    },
+    {
+      "path": "web/editor-manual/images/image_bankview.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "15def23347391d459e9889e0a8ca875d9ff23fef26853da691754e28e4ba2194",
+      "bytes": 8212
+    },
+    {
+      "path": "web/editor-manual/images/image_canvas.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b8dafd8064f5aa392c4f27ac85fc76ee7dc7b4fd331c6b8adec27181ae025d99",
+      "bytes": 1729
+    },
+    {
+      "path": "web/editor-manual/images/image_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7cbd322aa7e5cdabb6388127515fd60b2a476363933c3a8f9712557962d3b2e0",
+      "bytes": 29215
+    },
+    {
+      "path": "web/editor-manual/images/image_palette.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5b0df95a37300e92c7952942e6f30398ea92038112cd43c138d09f08bd5aa525",
+      "bytes": 438
+    },
+    {
+      "path": "web/editor-manual/images/image_tools.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5957c7c020be6f4c1d57e4f9f39ecfd3a4e963c34cba72d83a96249aeace1e64",
+      "bytes": 384
+    },
+    {
+      "path": "web/editor-manual/images/music_buttons.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "492a481716109d2bcded3af930247a65c31df45beba757330a795f6fd41e2aa0",
+      "bytes": 1722
+    },
+    {
+      "path": "web/editor-manual/images/music_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "dccc7708e242b1af801b8aa8264cf320ed46b9fcb03949a7f7ddc82d4d26eb5a",
+      "bytes": 20342
+    },
+    {
+      "path": "web/editor-manual/images/music_mscnum.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6318e981bccc35776f784a36584e0aab6903a810d1f1f1942e61cfc2e9e7dc10",
+      "bytes": 213
+    },
+    {
+      "path": "web/editor-manual/images/music_playback.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "21f032d18c370b7738986524750e2bac500e8a41541896a7e2643c5a5283800d",
+      "bytes": 220
+    },
+    {
+      "path": "web/editor-manual/images/music_sequence.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5ccd8c47e79163892ee5602d17205d50885fc25d2af6e5926113b6734de24781",
+      "bytes": 1853
+    },
+    {
+      "path": "web/editor-manual/images/sound_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "364d9b3b82b0c7f25161591829e46df6a86c1afc290a932232c308a708023e56",
+      "bytes": 29731
+    },
+    {
+      "path": "web/editor-manual/images/sound_octave_l.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "236dd41d62ca357fcfaa1dd0282cd8a1cf505c3d315606cba33dc1254826ed69",
+      "bytes": 259
+    },
+    {
+      "path": "web/editor-manual/images/sound_piano.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "459e8ff87d796c507f3ed7a3e44b8cd47978b7902d741da667ec5213873505d2",
+      "bytes": 1980
+    },
+    {
+      "path": "web/editor-manual/images/sound_playback.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "21f032d18c370b7738986524750e2bac500e8a41541896a7e2643c5a5283800d",
+      "bytes": 220
+    },
+    {
+      "path": "web/editor-manual/images/sound_property.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a3a856fd45952ac7c9ba474638347ff617fea7e9689835aafafd7760ce6f816f",
+      "bytes": 658
+    },
+    {
+      "path": "web/editor-manual/images/sound_sndnum.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "42f27ea67e4d72208bdfa7ae3e0234b6e008612704edb9ef6ae2be099fcb125d",
+      "bytes": 217
+    },
+    {
+      "path": "web/editor-manual/images/sound_speed.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f836f7028bc40b7b214a9775e080e108aeb4b65e68fdbe8e94fe80a99c19d0d3",
+      "bytes": 223
+    },
+    {
+      "path": "web/editor-manual/images/tilemap_canvas.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a1884bf3e0c4e757cc41594f80a332f16e706b6f13acdaae9bb25a3bd4d112f7",
+      "bytes": 5072
+    },
+    {
+      "path": "web/editor-manual/images/tilemap_editor.gif",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "39e2d0b82fb8c5e5c1d26432881a01567040a1fa657411a2cf8b04466dbf84e1",
+      "bytes": 25142
+    },
+    {
+      "path": "web/editor-manual/images/tilemap_imgnum.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d385d1624acd28064b6a6432b2dcacfce3cd4723ad3d823280d174622fbdd21c",
+      "bytes": 415
+    },
+    {
+      "path": "web/editor-manual/images/tilemap_mapview.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a2e8be7261ae4feccd3836be7927c8ab622f22594d28b56513096718faab0134",
+      "bytes": 510
+    },
+    {
+      "path": "web/editor-manual/images/tilemap_tileview.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "608b016f83051ad5409f501a7e4351a3047a68ab97df9233cd4294929372c725",
+      "bytes": 4438
+    },
+    {
+      "path": "web/editor-manual/images/tilemap_tmnum.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4ae1715b6d5da7a43769286804e1dec0c39697dc578494708ca2285e08526e7e",
+      "bytes": 388
+    },
+    {
+      "path": "web/editor-manual/images/tilemap_tools.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e820383f0c894d76327aab1252cd617b8e07d2d84a5e4a2a1a66bc762bd72ca9",
+      "bytes": 390
+    },
+    {
+      "path": "web/editor-manual/images/tool_bucket.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "319f2f0c735205668e3f79ca5b079c7033e2dac1820abf81185716a8da87d968",
+      "bytes": 134
+    },
+    {
+      "path": "web/editor-manual/images/tool_circ.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6c2f219bc798a5fca4bf7d56e0e6c190cc019f7c460a22c66c9aa21bd88c6e0b",
+      "bytes": 132
+    },
+    {
+      "path": "web/editor-manual/images/tool_circb.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "653b4ef22e7c3a3539d4a67b3655549b92f44522d15855b8c66014fde31ab898",
+      "bytes": 127
+    },
+    {
+      "path": "web/editor-manual/images/tool_pencil.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "55d5e7ea90c027701a8ed4b8595ad00a0413cf4ab848250506f58229d513cd73",
+      "bytes": 136
+    },
+    {
+      "path": "web/editor-manual/images/tool_rect.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ada12bdc6a95d394f06abcf55e398136448b45f9ef8a77a648d81d7a8f53a837",
+      "bytes": 107
+    },
+    {
+      "path": "web/editor-manual/images/tool_rectb.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "d5db2bbf41901eedd055b12a073127eca06b7527e1106cbcb76857cc937e2c38",
+      "bytes": 117
+    },
+    {
+      "path": "web/editor-manual/images/tool_select.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4809f5b2be15fdd4a0bb4ef151775c6fc8ffd8d5c5c1788a5a96204ac61a3fd4",
+      "bytes": 113
+    },
+    {
+      "path": "web/editor-manual/images/ui_menubar.png",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "eaf102300c89d23b08870cf556f5d3af7800356924e7a28289b74fc9ffbc10db",
+      "bytes": 640
+    },
+    {
+      "path": "web/editor-manual/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ce9432e3a3f2c1548a9092e785a61a103474999b2095c8afedfd298dbe941d5b",
+      "bytes": 20044
+    },
+    {
+      "path": "web/launcher/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9990e500c9e28a18933539d73bfc5d5fe9c5322441683ce7ce521307683c0c87",
+      "bytes": 5601
+    },
+    {
+      "path": "web/launcher/launcher.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a5e96d3ba1d5f19bc13d695f0a3a1970622188ff73fb664108971df46208aa53",
+      "bytes": 8812
+    },
+    {
+      "path": "web/launcher/url-builder.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ac9dce3f65e575dcf131cb84cafbea32e572ee18bc44abcf055f37fabd8e120b",
+      "bytes": 10192
+    },
+    {
+      "path": "web/mml-studio/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9a1e1245c2bf650257bac44e5e8eb682c2c9eccf02064235f317fb66f9b6316c",
+      "bytes": 16872
+    },
+    {
+      "path": "web/mml-studio/manual.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "62726886a72f099aac7b287741dfe5c4d063b1270a3fd80db31c4ab673216a28",
+      "bytes": 8208
+    },
+    {
+      "path": "web/mml-studio/manual.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f78115c9f38f77f6364b78231748e6a720d005e20a6d819ff9a7c2ebf9dd80ed",
+      "bytes": 33651
+    },
+    {
+      "path": "web/mml-studio/mml-commands.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "423a7afbc92ab0b94ca55e4869493fe3bc225bf650d659517d235d0425c83f65",
+      "bytes": 3861
+    },
+    {
+      "path": "web/mml-studio/mml-commands.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a96f3931d7fe1638af41d266e1a6fca83d7f81f5d3784bb93e4df4aaa485dc7c",
+      "bytes": 49965
+    },
+    {
+      "path": "web/mml-studio/mml_studio.py",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c3ee3fbe1248a02102fcfd42ef554cca1480092b33abdf16bc659ffbb8c0fb84",
+      "bytes": 2387
+    },
+    {
+      "path": "web/mml-studio/pyxel-screen.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "68a82264f500a28f22ffc032c65aa6f21c7f33facbc22cd4b76e618bd7a5bba2",
+      "bytes": 326
+    },
+    {
+      "path": "web/package-lock.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "76c8a13bdb3c6cfa0abf1bc55771dbbdd4a28d1fcba16e53ff04a7255d6f3a39",
+      "bytes": 36430
+    },
+    {
+      "path": "web/package.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "deac9553428e778ab46d0505370963b95e693fb9c4e23b2565d41cdd57a33f9e",
+      "bytes": 167
+    },
+    {
+      "path": "web/shared.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "eb16532c42f127f1097cf6a8647046b417789ce83976e65332e5ff6f53c393dd",
+      "bytes": 7518
+    },
+    {
+      "path": "web/showcase/apps/30sec-of-daylight.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4a5bf5b6869ebeaaced90d74fa499d0e7da81d78fdc873b22b27741ef7847078",
+      "bytes": 298
+    },
+    {
+      "path": "web/showcase/apps/cursed-caverns.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "71bf71f5269e89fcad5f833ad1fd38186e28b7dc70a6b730d8872f688e41c0d9",
+      "bytes": 295
+    },
+    {
+      "path": "web/showcase/apps/laser-jetman.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0f4d0b5d2af1d92e4a384c9a2c81f94a31f0d104ee0cbbfde1ab42a3f27d3962",
+      "bytes": 293
+    },
+    {
+      "path": "web/showcase/apps/mega-wing.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "612de9a8d61da64a3655bd4fd957b8536b7cdf8bd77f1770ecf7516876f0166c",
+      "bytes": 290
+    },
+    {
+      "path": "web/showcase/apps/megaball.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7bf7cf0f4d2d26d8c531dd45a2e628982be9e776e66cd0356c6921f82cbe3c3b",
+      "bytes": 289
+    },
+    {
+      "path": "web/showcase/apps/space-rescue.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c8406398129834a2437fa43b9b578869f0679dcd7896690159bb0fbefecaeaee",
+      "bytes": 293
+    },
+    {
+      "path": "web/showcase/apps/vortexion.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "7b966524e6d28e61f81fc51b1119c0451f9ea0b077efcc7cc3aeb17f960dddc6",
+      "bytes": 290
+    },
+    {
+      "path": "web/showcase/examples/01-hello-pyxel.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "970d89fad0c33cad4b4b03548509a0b5c0268b9a44c1c59b96d44155c411cad1",
+      "bytes": 260
+    },
+    {
+      "path": "web/showcase/examples/02-jump-game.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2093f938cda73777546e6edd112c5001c493ff1266ae1744c82e8a337db009c7",
+      "bytes": 282
+    },
+    {
+      "path": "web/showcase/examples/03-draw-api.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b1228e66c7583ec5e2903a08ad4bb0fbaccf40661b0fdcc8a856ea61ee618190",
+      "bytes": 257
+    },
+    {
+      "path": "web/showcase/examples/04-sound-api.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1f969ba8910f5a68a0a7b2909a12febfce9b82dcd1e0862fc3cf911f2a9f1b09",
+      "bytes": 258
+    },
+    {
+      "path": "web/showcase/examples/05-color-palette.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "203979c14327597301632efc5873c2e34cbeba7ddd10e907ffba14ce469f90ea",
+      "bytes": 262
+    },
+    {
+      "path": "web/showcase/examples/06-click-game.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "295fc468c76d284e2e828a4fbbd5b119737576542336fb8e5eff87862774e5bc",
+      "bytes": 259
+    },
+    {
+      "path": "web/showcase/examples/07-snake.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "733f831fa8a481577a6295f8c4ecef039e41a56b587c0fd2d85e290c94d6552c",
+      "bytes": 278
+    },
+    {
+      "path": "web/showcase/examples/08-triangle-api.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6dcd838e5cf923a9e91e95d8c8c725e695be0b59b08183696682393eb71af593",
+      "bytes": 261
+    },
+    {
+      "path": "web/showcase/examples/09-shooter.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "731772d8a427ce608be1f8352412b774f5db2e7360437d3528ed8fbbde61cb68",
+      "bytes": 280
+    },
+    {
+      "path": "web/showcase/examples/10-platformer.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1c6b1cd2f5c16c07380ed3ad2ae6e06d8a4fcb38ad79e1d3fad3103d482ec1cf",
+      "bytes": 283
+    },
+    {
+      "path": "web/showcase/examples/11-offscreen.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e5c9ec7069ab3cdc3d363357bd6c81bdd950654118fa287a481a31208e38e7d8",
+      "bytes": 258
+    },
+    {
+      "path": "web/showcase/examples/12-perlin-noise.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "2ae87fd85501e37e943198ab23769bd6dffe91f4d16a3a31b6ba0708e2afd10a",
+      "bytes": 261
+    },
+    {
+      "path": "web/showcase/examples/13-custom-font.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "e59ae99b88a70df3e39ee2fd509752778c8da124480da430750055b40463a218",
+      "bytes": 260
+    },
+    {
+      "path": "web/showcase/examples/14-synthesizer.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "964ad5c14dfd01fc30c5d175f81b7ca8ca3d6295d91b86e1a377a4729d47583e",
+      "bytes": 260
+    },
+    {
+      "path": "web/showcase/examples/15-tiled-map-file.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "93d488edcc8959bb309cc6e3780cf938e62b869265c7875ad1b42b05170fdb87",
+      "bytes": 287
+    },
+    {
+      "path": "web/showcase/examples/16-transform.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bc042f10621ea9faa425c16a1c945fdb4ceeddeef0277f9ae3992198d695a7e5",
+      "bytes": 258
+    },
+    {
+      "path": "web/showcase/examples/17-app-launcher.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bf45c010fac8f0c3e261399c564693c708e48edcce69f4f99e5fb1e790d1ec57",
+      "bytes": 285
+    },
+    {
+      "path": "web/showcase/examples/18-audio-playback.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "1a5c60c6644af5d854f7d7a4b033531bd0456f51378299e25c6f48c26eb0f1fd",
+      "bytes": 287
+    },
+    {
+      "path": "web/showcase/examples/19-perspective.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "da8aff5cb7401d54c342ed6d88d2afc701f250fcdbd61dddc735e217fccd69f1",
+      "bytes": 260
+    },
+    {
+      "path": "web/showcase/examples/c01-hello-cube.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "921be86ffd66527f575ffa17b600638d8aee914faf939dcb4e956d9464f1c3db",
+      "bytes": 265
+    },
+    {
+      "path": "web/showcase/examples/c02-basic-shapes.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "ba49dccbccb0199d91b84421269d190ec906f3cdc30d5830dd2ea788baf244eb",
+      "bytes": 267
+    },
+    {
+      "path": "web/showcase/examples/c03-custom-shapes.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "6c280686dc691cbffe92fa2f7e06f5952c1094d672f04430cbdcc4d9851932fc",
+      "bytes": 268
+    },
+    {
+      "path": "web/showcase/examples/c04-mesh-and-motion.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9baf1548c07d725450934036db4af55ddbc20f75df88e8c039a40be2ff97711e",
+      "bytes": 270
+    },
+    {
+      "path": "web/showcase/examples/c05-3d-collision.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "63a4b040851ca62018e5106a395e311ddf596e4c33ea884b0325bab35353ca85",
+      "bytes": 267
+    },
+    {
+      "path": "web/showcase/examples/c06-3d-physics.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "3d889597077449c802c7a7b6cc1c5fbef834a5fe7ad13bd14830e1ab0aa2d3ae",
+      "bytes": 265
+    },
+    {
+      "path": "web/showcase/examples/script-test.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "37240228d56d3064dfdb91d4825160e7c09f4a864bdaa04c3be75a006925d694",
+      "bytes": 1340
+    },
+    {
+      "path": "web/showcase/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "fd8c1d9043c7fce0cb1663dd7c0fab4e4a094552927ee9131301a4bd6a7ada7a",
+      "bytes": 6307
+    },
+    {
+      "path": "web/showcase/showcase.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "0a41c342906ba3408838ce7b9136d24563d04eb700539ed81648769dd861fcb5",
+      "bytes": 150640
+    },
+    {
+      "path": "web/showcase/tools/image-editor.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "acab44d1b6ce414c05bfb2b6d16bc99200116e0be02b12b74ddf993102242d8d",
+      "bytes": 286
+    },
+    {
+      "path": "web/showcase/tools/music-editor.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f2db5326a5e66a7ea360388d7b683b083c39af70856abd6e03c4127978067a9f",
+      "bytes": 286
+    },
+    {
+      "path": "web/showcase/tools/sound-editor.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "9308a4bea90bdaf80eaecea645c27e4c025fa8c794a8cbe6b67b0badc14bf3c3",
+      "bytes": 286
+    },
+    {
+      "path": "web/showcase/tools/tilemap-editor.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "b3e125827c0e067eb23a1e818476221c282d0934b34d3efae05a497470973392",
+      "bytes": 288
+    },
+    {
+      "path": "web/styles.css",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a576cf9e87675d5293e6fd641bcbec97b9f1dbb28dd5e5dd3d5b3891e8b030a9",
+      "bytes": 48527
+    },
+    {
+      "path": "web/styles/input.css",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "546802a8660eabf87074c3f4afd17378a35f8f8f8f6dc5d9dccccee2c4491a9e",
+      "bytes": 9193
+    },
+    {
+      "path": "web/tests/accessibility.test.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "29a24cb764d4b6fdafd2d6c6c4f6b2fff750f9ce4deddb5453f82c7b1c339942",
+      "bytes": 7397
+    },
+    {
+      "path": "web/tests/api-reference.test.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4abfbd82327b12f6465f9f33fb6d22f89a90e957732720c6098c29394c60dc76",
+      "bytes": 4369
+    },
+    {
+      "path": "web/tests/code-maker.test.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "251dfc0b1987673870a23bb930f5084fa5fc758254d0fc7e5910d6dda555af5b",
+      "bytes": 12455
+    },
+    {
+      "path": "web/tests/fetch-failures.test.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "bb0ead63410f86eef6c6d192810286d3815809493b7decfd889997a4f3be06e7",
+      "bytes": 21494
+    },
+    {
+      "path": "web/tests/launcher.test.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c261937e58d6c4f08d3fb47ab81903dc40f2cb38598c152cb835268951d8294d",
+      "bytes": 14208
+    },
+    {
+      "path": "web/tests/shared.test.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "defa7abc5d80474a094b2acb593c1d0874791aeb754ef8dda800abad2f1e2693",
+      "bytes": 11262
+    },
+    {
+      "path": "web/tests/source-loader.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "4d729259c9391c99231d2256728cc5b6e8aa742d4fd697a7bd1792f2400ac57f",
+      "bytes": 1651
+    },
+    {
+      "path": "web/tests/wasm.test.js",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "a060f14961e7c43cece56faf7b237c4d959454e046414743c78c9f5d958985a0",
+      "bytes": 29189
+    },
+    {
+      "path": "web/user-guide/cube/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "f8cb6ecf3c0362f761bcddf805123700b7240b73590f38cb0f176a7c1ef00c3f",
+      "bytes": 2936
+    },
+    {
+      "path": "web/user-guide/cube/user-guide.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "68deb8aa590f171d4df493cf2af3e1610e3cec79e612643afc537df5d749fd12",
+      "bytes": 6603
+    },
+    {
+      "path": "web/user-guide/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "c107c7deb92b244c6de1f7601e1939c78c804f6096213c0fac5addd4e5e969b0",
+      "bytes": 18894
+    },
+    {
+      "path": "web/user-guide/user-guide.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "93e9d5a982b22de00a87aa872fda741afb7ceb1841827cd8e11c3dee29a31c5a",
+      "bytes": 129042
+    },
+    {
+      "path": "web/web-usage/index.html",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "905eaa76818c944afb54865736a6e685d627dda7438d91d1fe5ae817d89e84ef",
+      "bytes": 11528
+    },
+    {
+      "path": "web/web-usage/web-usage.json",
+      "origin": "tracked",
+      "mode": "100644",
+      "sha256": "5f4e0387a9e88c378d5cef90e56ca2baa709b6ead641c2c72e84f3d4cb4c40f6",
+      "bytes": 77488
+    }
+  ],
+  "patch_sha256": "7af5634bb2262aabec4c06c8e38a9750bb330c55906c2310ae6c62e1cadb0003",
+  "intended_additions": [],
+  "sparse_checkout": false,
+  "skip_worktree": [],
+  "assume_unchanged": [],
+  "predecessor": "pyxel-quality-20260911-run13"
+}

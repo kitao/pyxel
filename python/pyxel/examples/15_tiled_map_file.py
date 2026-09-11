@@ -76,10 +76,12 @@ class App:
         for i, car in enumerate(self.cars):
             x, y, dx, image = car
             x += dx
+
             if x <= -32:
                 x = pyxel.tilemaps[0].width * 8
             elif x >= pyxel.tilemaps[0].width * 8:
                 x = -32
+
             self.cars[i] = (x, y, dx, image)
 
     def draw(self):

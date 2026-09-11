@@ -214,9 +214,9 @@
       "ja": "詳しい使い方は {0} を参照してください。",
       "ko": "자세한 사용법은 {0}을 참조하세요.",
       "pt": "Para uso detalhado, consulte o {0}.",
-      "ru": "Подробное описание использования см. в {0}.",
+      "ru": "Подробнее об использовании: {0}.",
       "tr": "Ayrıntılı kullanım için {0} bölümüne bakın.",
-      "uk": "Детальний опис використання див. у {0}."
+      "uk": "Докладніше про використання: {0}."
     },
     "code_maker_manual_label": {
       "en": "Pyxel Code Maker Manual",
@@ -593,7 +593,7 @@
       "ko": "여러 Python 파일로 구성된 앱은 {0}로 {1} 파일로 묶은 후 {2}로 실행하면 로딩이 빨라집니다.",
       "pt": "Para aplicativos compostos por vários arquivos Python, empacotá-los em um arquivo {1} com {0} e executar com {2} carregará mais rápido.",
       "ru": "Для приложений, состоящих из нескольких Python-файлов, объединение их в файл {1} с помощью {0} и запуск через {2} ускорит загрузку.",
-      "tr": "Birden fazla Python dosyasından oluşan uygulamalar için, {0} ile {1} dosyasına paketleyip {2} ile çalıştırmak daha hızlı yüklenir.",
+      "tr": "Birden fazla Python dosyasından oluşan uygulamalar, {0} ile bir {1} dosyasında paketlenip {2} ile çalıştırıldığında daha hızlı yüklenir.",
       "uk": "Для застосунків з кількох Python-файлів об'єднання їх у файл {1} за допомогою {0} та запуск через {2} прискорить завантаження."
     },
     "app2html_title": {
@@ -772,7 +772,7 @@
       "fr": "Pour exécuter du code Python directement, écrivez le code dans l'attribut {0}.",
       "it": "Per eseguire direttamente codice Python, scrivere il codice nell'attributo {0}.",
       "ja": "Python コードを直接実行するには {0} 属性にコードを記述します。",
-      "ko": "Python 코드를 직접 실행하려면 {0} 속성에 코드를 작성합니다.",
+      "ko": "Python 코드를 직접 실행하려면 {0} 속성에 코드를 작성하세요.",
       "pt": "Para executar código Python diretamente, escreva o código no atributo {0}.",
       "ru": "Для непосредственного выполнения Python-кода запишите код в атрибут {0}.",
       "tr": "Python kodunu doğrudan çalıştırmak için kodu {0} özniteliğine yazın.",
@@ -786,7 +786,7 @@
       "fr": "Pour charger un fichier externe, spécifiez {0} et {1}. {2} est le répertoire de base pour la recherche de fichiers et {3} est le chemin du fichier.",
       "it": "Per caricare un file esterno, specificare {0} e {1}. {2} è la directory base per la ricerca dei file e {3} è il percorso del file.",
       "ja": "外部ファイルを読み込む場合は {0} と {1} を指定します。{2} はファイル検索の起点となるディレクトリ、{3} はファイルパスです。",
-      "ko": "외부 파일을 로드하려면 {0}와 {1}을 지정합니다. {2}는 파일 검색의 기준 디렉터리이고, {3}은 파일 경로입니다.",
+      "ko": "외부 파일을 로드하려면 {0}와 {1}을 지정하세요. {2}는 파일 검색의 기준 디렉터리이고, {3}은 파일 경로입니다.",
       "pt": "Para carregar um arquivo externo, especifique {0} e {1}. {2} é o diretório base para a busca de arquivos e {3} é o caminho do arquivo.",
       "ru": "Для загрузки внешнего файла укажите {0} и {1}. {2} — базовый каталог для поиска файлов, {3} — путь к файлу.",
       "tr": "Harici bir dosya yüklemek için {0} ve {1} belirtin. {2} dosya arama için temel dizindir ve {3} dosya yoludur.",
@@ -1010,7 +1010,7 @@
       "fr": "Après avoir démarré le serveur, accédez à {0} dans votre navigateur.",
       "it": "Dopo aver avviato il server, accedere a {0} nel browser.",
       "ja": "サーバー起動後、ブラウザで {0} にアクセスします。",
-      "ko": "서버를 시작한 후 브라우저에서 {0}에 접속합니다.",
+      "ko": "서버를 시작한 후 브라우저에서 {0}에 접속하세요.",
       "pt": "Após iniciar o servidor, acesse {0} no seu navegador.",
       "ru": "После запуска сервера откройте {0} в браузере.",
       "tr": "Sunucuyu başlattıktan sonra tarayıcınızda {0} adresine erişin.",

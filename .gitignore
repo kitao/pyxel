@@ -19,6 +19,7 @@ node_modules/
 
 # Environment
 .env
+.venv/
 
 # AI tools
 .claude/

@@ -60,14 +60,14 @@ contracts.
 **Decision:** Keep the storage type separate from the width needed to combine
 values or accumulate time.
 
-| Calculation | Representation and reason |
-| --- | --- |
-| [Canvas coordinates](../../../crates/pyxel-core/src/canvas.rs) | Signed `i32` camera positions allow offscreen coordinates; nonnegative dimensions use `u32`. Differences and clipping intermediates use `i64` where two valid coordinates can exceed `i32`. Buffer indices become `usize` after clipping. Ordinary transformed coordinates remain `f32`. |
-| [Rectangle intersections](../../../crates/pyxel-core/src/rect_area.rs) | Stored bounds remain `i32` with `u32` extents. Logical endpoints are computed in `i64`; a saturated stored endpoint cannot recover the original extent. |
-| [Font metrics](../../../crates/pyxel-core/src/font.rs) | Individual glyph advances and offsets remain `i32`; text widths and positioned pixels use `i64` because several valid metrics can sum beyond `i32`. One BDF bitmap row remains `u32`, independently of text width. |
-| [Playback time](../../../crates/pyxel-core/src/channel.rs) | Short clock intervals use `u32`; accumulated playback uses `u64`. [Repeat-duration arithmetic](../../../crates/pyxel-core/src/mml_parser.rs) uses checked `u128` intermediates to combine durations without expanding every repeat. |
-| [Audio mixing](../../../crates/pyxel-core/src/voice.rs) | Quantized waveform storage uses `i16`, amplitude and fixed-point gain use `i32`, and their products use `i64` before shifting. Fractional modulation and long-running phase calculations remain separate from this integer mixer. |
-| [Native scheduling](../../../crates/pyxel-core/src/platform/sdl2/platform_sdl2.rs) | `u64` clock readings feed `f64` scheduling times to retain timing precision over long uptimes. This does not require widening public frame counters or every short elapsed-time value. |
+| Calculation | Representation | Reason |
+| --- | --- | --- |
+| [Canvas coordinates](../../../crates/pyxel-core/src/canvas.rs) | Camera positions: `i32`; dimensions: `u32`; differences and clipping intermediates: `i64` where needed; buffer indices after clipping: `usize`; ordinary transformed coordinates: `f32` | Positions can be offscreen, dimensions are nonnegative, and differences between two valid coordinates can exceed `i32`. |
+| [Rectangle intersections](../../../crates/pyxel-core/src/rect_area.rs) | Stored bounds: `i32`; extents: `u32`; logical endpoints: `i64` | A saturated stored endpoint cannot recover the original extent. |
+| [Font metrics](../../../crates/pyxel-core/src/font.rs) | Glyph advances and offsets: `i32`; text widths and positioned pixels: `i64`; one BDF bitmap row: `u32` | Several valid metrics can sum beyond `i32`; the bitmap row's width is independent of text width. |
+| [Playback time](../../../crates/pyxel-core/src/channel.rs) | Short clock intervals: `u32`; accumulated playback: `u64`; [repeat-duration arithmetic](../../../crates/pyxel-core/src/mml_parser.rs): checked `u128` intermediates | Accumulated time needs a wider range; repeat durations are combined without expanding every repeat. |
+| [Audio mixing](../../../crates/pyxel-core/src/voice.rs) | Quantized waveform: `i16`; amplitude and fixed-point gain: `i32`; products before shifting: `i64` | Products need a wider intermediate. Fractional modulation and long-running phase calculations remain separate from the integer mixer. |
+| [Native scheduling](../../../crates/pyxel-core/src/platform/sdl2/platform_sdl2.rs) | Clock readings: `u64`; scheduling times: `f64` | Retain timing precision over long uptimes without widening public frame counters or every short elapsed-time value. |
 
 **Reason:** Each wider calculation follows from the operation performed on its
 inputs, not a preference for large types. Promoting every stored field would
@@ -111,8 +111,7 @@ Immutable [MML command](../../../crates/pyxel-core/src/mml_command.rs) snapshots
 use `Arc` to share command and envelope data without copying it for each
 playback. [Sound](../../../crates/pyxel-core/src/sound.rs) owns the editable
 source and cached snapshot; [Channel](../../../crates/pyxel-core/src/channel.rs)
-keeps its own playback position. Shared data does not imply shared playback
-state.
+keeps its own playback position.
 
 **Reason:** Graphics resources share mutable state locally. Audio resources are
 also accessed during the [audio
@@ -148,10 +147,8 @@ parents and BVH child links use signed indices to represent `-1` sentinels,
 while array access uses `usize`. These distinctions should survive any local
 change in width.
 
-Widen intermediates when a calculation needs it. In the [circle
-rasterizer](../../../crates/pyxel-core/src/cube/raster.rs), subtracting valid
-`i32` coordinates can exceed their range, so offsets remain `i64` until
-clipping. Circle precision follows the [primitive raster
+Widen intermediates when the calculation needs it. Circle precision and `i64`
+offsets until clipping follow the [primitive raster
 decision](#primitive-raster-precision-and-clipping). Representation choices do
 not add parameter restrictions.
 

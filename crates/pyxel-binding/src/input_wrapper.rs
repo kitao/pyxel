@@ -25,9 +25,9 @@ fn btnv(key: pyxel::Key) -> pyxel::KeyValue {
     pyxel().button_value(key)
 }
 
-#[pyfunction]
 // Mouse cursor
 
+#[pyfunction]
 fn mouse(visible: bool) {
     pyxel().set_mouse_visible(visible);
 }

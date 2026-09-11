@@ -283,7 +283,9 @@ class App:
         for enemy in enemies:
             for bullet in bullets:
                 if (
-                    enemy.x + enemy.w > bullet.x
+                    enemy.is_alive
+                    and bullet.is_alive
+                    and enemy.x + enemy.w > bullet.x
                     and bullet.x + bullet.w > enemy.x
                     and enemy.y + enemy.h > bullet.y
                     and bullet.y + bullet.h > enemy.y
@@ -297,7 +299,8 @@ class App:
         # Resolve player-enemy collisions
         for enemy in enemies:
             if (
-                self.player.x + self.player.w > enemy.x
+                enemy.is_alive
+                and self.player.x + self.player.w > enemy.x
                 and enemy.x + enemy.w > self.player.x
                 and self.player.y + self.player.h > enemy.y
                 and enemy.y + enemy.h > self.player.y

@@ -473,8 +473,8 @@ pub fn capsule_vs_capsule(
 // Capsule vs rounded OBB: take the capsule segment into the box-local
 // frame, find the closest segment/box point pair, then resolve as
 // sphere (capsule radius) vs rounded surface (box radius). The normal
-// points from the box toward the capsule. Segments whose closest point
-// lies inside the core box fall back to the sphere interior path.
+// points from the box toward the capsule. A core-crossing segment needs
+// enough separation to clear its full extent, not only the closest point.
 pub fn capsule_vs_rounded_obb(
     cap_world: &Mat4,
     half_h: f32,
@@ -498,19 +498,185 @@ pub fn capsule_vs_rounded_obb(
     });
     let bot = to_local(&bot_world);
 
-    let (on_seg, _) = closest_points_segment_aabb(top, bot, half);
+    let (on_seg, on_box) = closest_points_segment_aabb(top, bot, half);
     let on_seg_world = box_world.mul_vec_value(&on_seg);
+    if on_seg == on_box {
+        let dx = top.x - bot.x;
+        let dy = top.y - bot.y;
+        let dz = top.z - bot.z;
+        // Faces of the box swept by the segment have box-face normals or
+        // segment/box-edge cross normals. The cores already intersect, so
+        // the shortest full projection clearance plus radii is a pushout.
+        let axes = [
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
+            [0.0, dz, -dy],
+            [-dz, 0.0, dx],
+            [dy, -dx, 0.0],
+        ];
+        let reach = cap_r.max(0.0) + box_r.max(0.0);
+        let mut depth = f32::INFINITY;
+        let mut normal = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+
+        for [nx, ny, nz] in axes {
+            let len = (nx * nx + ny * ny + nz * nz).sqrt();
+            if len <= f32::EPSILON {
+                continue;
+            }
+            let (nx, ny, nz) = (nx / len, ny / len, nz / len);
+            let extent = half.x * nx.abs() + half.y * ny.abs() + half.z * nz.abs();
+            let top_distance = top.x * nx + top.y * ny + top.z * nz;
+            let bot_distance = bot.x * nx + bot.y * ny + bot.z * nz;
+            let forward = extent - top_distance.min(bot_distance) + reach;
+            let backward = extent + top_distance.max(bot_distance) + reach;
+            let (candidate, sign) = if backward < forward {
+                (backward, -1.0)
+            } else {
+                (forward, 1.0)
+            };
+            if candidate < depth {
+                depth = candidate;
+                normal = Vec3 {
+                    x: nx * sign,
+                    y: ny * sign,
+                    z: nz * sign,
+                };
+            }
+        }
+
+        if !depth.is_finite() || depth <= CONTACT_EPSILON {
+            return None;
+        }
+        return Some(ContactGeom {
+            point: on_seg_world,
+            normal: box_world.mul_dir_value(&normal),
+            depth,
+        });
+    }
+
     // sphere_vs_rounded_obb's normal points box → "sphere" = box → capsule.
     sphere_vs_rounded_obb(on_seg_world, cap_r.max(0.0), box_world, half, box_r)
 }
 
-// Rounded OBB vs rounded OBB via 15-axis SAT (3 + 3 face axes, 9 edge
-// cross products). The rounding radius is a sphere sweep, so it adds
-// to the projection radius on every axis. Near-parallel edge pairs
-// produce near-zero cross products and are skipped. Normal points from
-// b toward a; the contact point sits on b's swept surface along the
-// normal, pulled back by half the overlap. The tangential placement
-// uses b's center, a practical proxy for rotated boxes.
+// Exact core distance from edge/box closest points in both directions.
+// These cover vertex/face and edge/edge minima without an iterative solver.
+// Cache the rigid relative frames for repeated translations during a sweep.
+pub(crate) struct ObbPairDistance {
+    world_a: Mat4,
+    world_b: Mat4,
+    inv_a: Mat4,
+    inv_b: Mat4,
+    a_in_b: [Vec3; 8],
+    b_in_a: [Vec3; 8],
+    half_a: Vec3,
+    half_b: Vec3,
+}
+
+impl ObbPairDistance {
+    pub(crate) fn new(world_a: &Mat4, half_a: Vec3, world_b: &Mat4, half_b: Vec3) -> Self {
+        let inv_a = world_a.inverse_value();
+        let inv_b = world_b.inverse_value();
+        let vertices = |world: &Mat4, inverse: &Mat4, half: Vec3| {
+            std::array::from_fn(|i| {
+                let point = Vec3 {
+                    x: if i & 1 == 0 { -half.x } else { half.x },
+                    y: if i & 2 == 0 { -half.y } else { half.y },
+                    z: if i & 4 == 0 { -half.z } else { half.z },
+                };
+                inverse.mul_vec_value(&world.mul_vec_value(&point))
+            })
+        };
+        Self {
+            world_a: *world_a,
+            world_b: *world_b,
+            inv_a,
+            inv_b,
+            a_in_b: vertices(world_a, &inv_b, half_a),
+            b_in_a: vertices(world_b, &inv_a, half_b),
+            half_a,
+            half_b,
+        }
+    }
+
+    // Offset translates A in world space; B stays fixed.
+    pub(crate) fn closest_points(&self, offset: Vec3) -> (Vec3, Vec3) {
+        let offset_b = self.inv_b.mul_dir_value(&offset);
+        let offset_a = self.inv_a.mul_dir_value(&offset);
+        let mut best = (self.world_a.pos_value(), self.world_b.pos_value());
+        let mut best_dist2 = f32::INFINITY;
+        for (vertices, half, shift, world, reverse) in [
+            (&self.a_in_b, self.half_b, offset_b, &self.world_b, false),
+            (
+                &self.b_in_a,
+                self.half_a,
+                Vec3 {
+                    x: -offset_a.x,
+                    y: -offset_a.y,
+                    z: -offset_a.z,
+                },
+                &self.world_a,
+                true,
+            ),
+        ] {
+            for bit in [1, 2, 4] {
+                for i in 0..8 {
+                    if i & bit != 0 {
+                        continue;
+                    }
+                    let shifted = |p: Vec3| Vec3 {
+                        x: p.x + shift.x,
+                        y: p.y + shift.y,
+                        z: p.z + shift.z,
+                    };
+                    let (on_edge, on_box) = closest_points_segment_aabb(
+                        shifted(vertices[i]),
+                        shifted(vertices[i | bit]),
+                        half,
+                    );
+                    let dx = on_edge.x - on_box.x;
+                    let dy = on_edge.y - on_box.y;
+                    let dz = on_edge.z - on_box.z;
+                    let dist2 = dx * dx + dy * dy + dz * dz;
+                    if dist2 < best_dist2 {
+                        best_dist2 = dist2;
+                        let mut edge = world.mul_vec_value(&on_edge);
+                        let mut point = world.mul_vec_value(&on_box);
+                        if reverse {
+                            edge = Vec3 {
+                                x: edge.x + offset.x,
+                                y: edge.y + offset.y,
+                                z: edge.z + offset.z,
+                            };
+                            point = Vec3 {
+                                x: point.x + offset.x,
+                                y: point.y + offset.y,
+                                z: point.z + offset.z,
+                            };
+                            best = (point, edge);
+                        } else {
+                            best = (edge, point);
+                        }
+                        if dist2 == 0.0 {
+                            return best;
+                        }
+                    }
+                }
+            }
+        }
+        best
+    }
+}
+
+// SAT rejects separated projections and handles overlapping sharp cores.
+// Separated rounded cores need their Euclidean distance: expanding only
+// the 15 SAT projections would fill in the rounded edges and corners.
+// Normal points from b toward a. For intersecting cores, the contact
+// point retains b's center as a practical tangential placement proxy.
 pub fn rounded_obb_vs_rounded_obb(
     world_a: &Mat4,
     half_a: Vec3,
@@ -657,6 +823,41 @@ pub fn rounded_obb_vs_rounded_obb(
     if !min_overlap.is_finite() || min_overlap <= 0.0 {
         return None;
     }
+    if min_overlap < r_sum {
+        let pair = ObbPairDistance::new(world_a, half_a, world_b, half_b);
+        let (on_a, on_b) = pair.closest_points(Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let delta = Vec3 {
+            x: on_a.x - on_b.x,
+            y: on_a.y - on_b.y,
+            z: on_a.z - on_b.z,
+        };
+        let distance = dot(&delta, &delta).sqrt();
+        if distance >= r_sum {
+            return None;
+        }
+        if distance > 0.0 {
+            let normal = Vec3 {
+                x: delta.x / distance,
+                y: delta.y / distance,
+                z: delta.z / distance,
+            };
+            let depth = r_sum - distance;
+            let reach = r_b.max(0.0) - depth * 0.5;
+            return Some(ContactGeom {
+                point: Vec3 {
+                    x: on_b.x + normal.x * reach,
+                    y: on_b.y + normal.y * reach,
+                    z: on_b.z + normal.z * reach,
+                },
+                normal,
+                depth,
+            });
+        }
+    }
     let support_b: f32 = (0..3)
         .map(|i| (dot(&bx[i], &min_axis) * hb[i]).abs())
         .sum::<f32>()
@@ -684,6 +885,18 @@ pub fn ray_vs_sphere(
     radius: f32,
     max_distance: f32,
 ) -> Option<(f32, Vec3, Vec3)> {
+    ray_vs_sphere_filtered(origin, dir, center, radius, max_distance, |_| true)
+}
+
+// A composed surface may hide the near root while exposing the far root.
+pub(crate) fn ray_vs_sphere_filtered(
+    origin: Vec3,
+    dir: Vec3,
+    center: Vec3,
+    radius: f32,
+    max_distance: f32,
+    accepts: impl Fn(Vec3) -> bool,
+) -> Option<(f32, Vec3, Vec3)> {
     let oc = Vec3 {
         x: origin.x - center.x,
         y: origin.y - center.y,
@@ -704,41 +917,41 @@ pub fn ray_vs_sphere(
     let sqrt_disc = disc.sqrt();
     let t1 = (-b - sqrt_disc) / (2.0 * a);
     let t2 = (-b + sqrt_disc) / (2.0 * a);
-    let t = if t1 >= 0.0 {
-        t1
-    } else if t2 >= 0.0 {
-        t2
-    } else {
-        return None;
-    };
-    if t > max_distance {
-        return None;
+    for t in [t1, t2].into_iter().filter(|t| *t >= 0.0) {
+        if t > max_distance {
+            return None;
+        }
+
+        let point = Vec3 {
+            x: origin.x + dir.x * t,
+            y: origin.y + dir.y * t,
+            z: origin.z + dir.z * t,
+        };
+
+        if !accepts(point) {
+            continue;
+        }
+
+        let nx = point.x - center.x;
+        let ny = point.y - center.y;
+        let nz = point.z - center.z;
+        let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
+        let normal = if nlen > 1e-12 {
+            Vec3 {
+                x: nx / nlen,
+                y: ny / nlen,
+                z: nz / nlen,
+            }
+        } else {
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            }
+        };
+        return Some((t, point, normal));
     }
-
-    let point = Vec3 {
-        x: origin.x + dir.x * t,
-        y: origin.y + dir.y * t,
-        z: origin.z + dir.z * t,
-    };
-
-    let nx = point.x - center.x;
-    let ny = point.y - center.y;
-    let nz = point.z - center.z;
-    let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
-    let normal = if nlen > 1e-12 {
-        Vec3 {
-            x: nx / nlen,
-            y: ny / nlen,
-            z: nz / nlen,
-        }
-    } else {
-        Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        }
-    };
-    Some((t, point, normal))
+    None
 }
 
 // Ray-AABB intersection via the slab method. Returns (t, point, normal)
@@ -2950,6 +3163,67 @@ mod tests {
     }
 
     #[test]
+    fn test_capsule_crossing_box_clears_full_segment() {
+        let half = vec3(10.0, 0.1, 10.0);
+        let rotation = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 0.0, 35.0)));
+        let lying = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 0.0, 90.0)));
+
+        for box_world in [Mat4::identity_value(), rotation] {
+            for (local_rotation, center_y, depth) in [
+                (Mat4::identity_value(), -0.95, 0.25),
+                (Mat4::identity_value(), -0.25, 0.95),
+                (Mat4::identity_value(), 0.0, 1.2),
+                (Mat4::identity_value(), 0.25, 0.95),
+                (Mat4::identity_value(), 0.95, 0.25),
+                (lying, 0.02, 0.18),
+            ] {
+                let local = translation(vec3(0.0, center_y, 0.0)).mul_mat_value(&local_rotation);
+                let capsule = box_world.mul_mat_value(&local);
+                let geom =
+                    capsule_vs_rounded_obb(&capsule, 1.0, 0.1, &box_world, half, 0.0).unwrap();
+                let sign = if center_y < 0.0 { -1.0 } else { 1.0 };
+                assert_vec3_close(geom.normal, box_world.mul_dir_value(&vec3(0.0, sign, 0.0)));
+                assert!(approx_eq(geom.depth, depth), "depth={}", geom.depth);
+
+                let shift = vec3(
+                    geom.normal.x * geom.depth,
+                    geom.normal.y * geom.depth,
+                    geom.normal.z * geom.depth,
+                );
+                let resolved = translation(shift).mul_mat_value(&capsule);
+                assert!(
+                    capsule_vs_rounded_obb(&resolved, 1.0, 0.1, &box_world, half, 0.0).is_none()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_capsule_crossing_box_uses_edge_separation_axis() {
+        // A diagonal segment through the box exits perpendicular to its axis,
+        // past the (1,-1) edge, rather than pushing either endpoint past a face.
+        let half = vec3(1.0, 1.0, 10.0);
+        let box_world = Mat4::identity_value();
+        let capsule = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 0.0, -45.0)));
+        let geom = capsule_vs_rounded_obb(&capsule, 3.0, 0.1, &box_world, half, 0.2).unwrap();
+        let axis = std::f32::consts::FRAC_1_SQRT_2;
+        assert_vec3_close(geom.normal, vec3(axis, -axis, 0.0));
+        assert!(approx_eq(geom.depth, std::f32::consts::SQRT_2 + 0.3));
+
+        let shift = vec3(
+            geom.normal.x * geom.depth,
+            geom.normal.y * geom.depth,
+            geom.normal.z * geom.depth,
+        );
+        let resolved = translation(shift).mul_mat_value(&capsule);
+        let top = resolved.mul_vec_value(&vec3(0.0, 3.0, 0.0));
+        let bot = resolved.mul_vec_value(&vec3(0.0, -3.0, 0.0));
+        let (on_seg, on_box) = closest_points_segment_aabb(top, bot, half);
+        assert!(approx_eq(point_dist2(on_seg, on_box).sqrt(), 0.3));
+        assert!(capsule_vs_rounded_obb(&resolved, 3.0, 0.1, &box_world, half, 0.2).is_none());
+    }
+
+    #[test]
     fn test_capsule_vs_wall_side_pushout_is_horizontal_and_resolves() {
         let wall = Mat4::identity_value();
         let wall_half = vec3(0.2, 0.8, 6.0);
@@ -3090,6 +3364,87 @@ mod tests {
         };
         let geom = rounded_obb_vs_rounded_obb(&m_a, one, 0.15, &m_b, one, 0.15).unwrap();
         assert!(approx_eq(geom.depth, 0.1));
+    }
+
+    #[test]
+    fn test_rounded_obb_separated_core_features() {
+        let identity = Mat4::identity_value();
+        let half = vec3(1.0, 1.0, 1.0);
+        for (center, distance, normal) in [
+            (vec3(2.1, 0.0, 0.0), 0.1, vec3(-1.0, 0.0, 0.0)),
+            (
+                vec3(2.1, 2.1, 0.0),
+                0.1 * 2.0_f32.sqrt(),
+                vec3(-1.0, -1.0, 0.0),
+            ),
+            (
+                vec3(2.1, 2.1, 2.1),
+                0.1 * 3.0_f32.sqrt(),
+                vec3(-1.0, -1.0, -1.0),
+            ),
+        ] {
+            let target = translation(center);
+            let contact =
+                rounded_obb_vs_rounded_obb(&identity, half, 0.1, &target, half, 0.1).unwrap();
+            assert!(approx_eq(contact.depth, 0.2 - distance));
+            let length = (normal.x * normal.x + normal.y * normal.y + normal.z * normal.z).sqrt();
+            assert_vec3_close(
+                contact.normal,
+                vec3(normal.x / length, normal.y / length, normal.z / length),
+            );
+            let reverse =
+                rounded_obb_vs_rounded_obb(&target, half, 0.1, &identity, half, 0.1).unwrap();
+            assert!(approx_eq(reverse.depth, contact.depth));
+            assert_vec3_close(
+                reverse.normal,
+                vec3(-contact.normal.x, -contact.normal.y, -contact.normal.z),
+            );
+        }
+        for center in [vec3(2.15, 2.15, 0.0), vec3(2.12, 2.12, 2.12)] {
+            assert!(rounded_obb_vs_rounded_obb(
+                &identity,
+                half,
+                0.1,
+                &translation(center),
+                half,
+                0.1
+            )
+            .is_none());
+        }
+        // Exact face touching stays excluded from discrete overlap.
+        assert!(rounded_obb_vs_rounded_obb(
+            &identity,
+            half,
+            0.125,
+            &translation(vec3(2.25, 0.0, 0.0)),
+            half,
+            0.125
+        )
+        .is_none());
+    }
+
+    #[test]
+    fn test_rounded_obb_rotated_vertex_distance() {
+        let identity = Mat4::identity_value();
+        let half = vec3(1.0, 1.0, 1.0);
+        let rotation = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 0.0, 45.0)));
+        // B's leftmost vertex is beyond A's upper-right corner. Both
+        // adjacent B edges recede from that corner, so its distance is
+        // hypot(dx, dy), including when all 15 expanded axes overlap.
+        for (dx, dy) in [(0.15, 0.1), (0.19, 0.07)] {
+            let mut target = rotation;
+            target.data[0][3] = 1.0 + 2.0_f32.sqrt() + dx;
+            target.data[1][3] = 1.0 + dy;
+            let contact = rounded_obb_vs_rounded_obb(&identity, half, 0.1, &target, half, 0.1);
+            let distance = (dx * dx + dy * dy).sqrt();
+            if distance < 0.2 {
+                let contact = contact.unwrap();
+                assert!(approx_eq(contact.depth, 0.2 - distance));
+                assert_vec3_close(contact.normal, vec3(-dx / distance, -dy / distance, 0.0));
+            } else {
+                assert!(contact.is_none());
+            }
+        }
     }
 
     #[test]

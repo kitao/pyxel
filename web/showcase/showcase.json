@@ -307,15 +307,15 @@
             "en": "Color palette list",
             "cn": "颜色调色板列表",
             "de": "Farbpalettenliste",
-            "es": "Lista de paletas de colores",
-            "fr": "Liste de palettes de couleurs",
-            "it": "Elenco delle palette di colori",
+            "es": "Paleta de colores",
+            "fr": "Palette de couleurs",
+            "it": "Palette di colori",
             "ja": "カラーパレット一覧",
             "ko": "색상 팔레트 목록",
-            "pt": "Lista de paletas de cores",
-            "ru": "Список цветовых палитр",
-            "tr": "Renk paletleri listesi",
-            "uk": "Список кольорових палітр"
+            "pt": "Paleta de cores",
+            "ru": "Цветовая палитра",
+            "tr": "Renk paleti",
+            "uk": "Кольорова палітра"
           },
           "details": {
             "en": "Displays Pyxel's built-in 16-color palette with color codes. Check each color's index and RGB value for reference when choosing colors for your games.",
@@ -1090,7 +1090,7 @@
             "it": "Platformer con trappole e raccolta di gemme (esempio del Libro Ufficiale Pyxel)",
             "ja": "罠を避けて宝石を集めるプラットフォーマー（Pyxel 公式書籍サンプル）",
             "ko": "함정을 피하고 보석을 모으는 플랫포머 (Pyxel 공식 서적 샘플)",
-            "pt": "Platformer de desviar armadilhas e coletar gemas (exemplo do Livro Oficial Pyxel)",
+            "pt": "Platformer de desviar de armadilhas e coletar gemas (exemplo do Livro Oficial Pyxel)",
             "ru": "Платформер: избегай ловушек, собирай самоцветы (пример из официальной книги Pyxel)",
             "tr": "Tuzaklardan kaçıp mücevher toplama platformer (Pyxel Resmi Kitabı örneği)",
             "uk": "Платформер: уникай пасток, збирай самоцвіти (приклад з офіційної книги Pyxel)"
@@ -1531,18 +1531,18 @@
             "uk": "Платформна гра з 3D-зіткненнями"
           },
           "details": {
-            "en": "A mini 3D platformer where a capsule-collider player jumps across slopes, a moving platform, and a trigger goal.",
-            "cn": "拥有胶囊碰撞体的玩家跳过坡道、移动平台和触发器终点的迷你 3D 平台游戏。",
-            "de": "Ein Mini-3D-Plattformspiel, in dem eine Spielfigur mit Kapsel-Collider über Rampen, eine bewegliche Plattform und ein Trigger-Ziel springt.",
-            "es": "Un mini juego de plataformas 3D en el que un jugador con collider de cápsula salta entre rampas, una plataforma móvil y una meta trigger.",
-            "fr": "Un mini jeu de plateforme 3D où un joueur à collider capsule saute entre des pentes, une plateforme mobile et un objectif trigger.",
-            "it": "Un mini gioco di piattaforma 3D in cui un giocatore con collider a capsula salta tra rampe, una piattaforma mobile e un traguardo trigger.",
+            "en": "A mini 3D platformer where a capsule-collider player jumps across slopes and a moving platform toward a trigger goal.",
+            "cn": "拥有胶囊碰撞体的玩家在坡道和移动平台之间跳跃，向触发器终点前进的迷你 3D 平台游戏。",
+            "de": "Ein Mini-3D-Plattformspiel, in dem eine Spielfigur mit Kapsel-Collider über Rampen und eine bewegliche Plattform zu einem Trigger-Ziel springt.",
+            "es": "Un mini juego de plataformas 3D en el que un jugador con collider de cápsula salta entre rampas y una plataforma móvil hacia una meta trigger.",
+            "fr": "Un mini jeu de plateforme 3D où un joueur à collider capsule saute entre des pentes et une plateforme mobile vers un objectif trigger.",
+            "it": "Un mini gioco di piattaforma 3D in cui un giocatore con collider a capsula salta tra rampe e una piattaforma mobile verso un traguardo trigger.",
             "ja": "カプセル形状のコライダーを持つプレイヤーが坂道や動く足場を跳び移り、トリガーのゴールを目指すミニ 3D アクションゲームです。",
             "ko": "캡슐 콜라이더를 가진 플레이어가 경사면과 움직이는 발판을 뛰어넘어 트리거 골에 도달하는 미니 3D 플랫포머입니다.",
-            "pt": "Um mini jogo de plataforma 3D em que um jogador com collider de cápsula salta por rampas, uma plataforma móvel e uma meta trigger.",
-            "ru": "Мини-платформер в 3D, где игрок с капсульным коллайдером прыгает по склонам, движущейся платформе и триггерной цели.",
-            "tr": "Kapsül collider'a sahip oyuncunun rampalar, hareketli bir platform ve trigger hedef arasında zıpladığı mini bir 3D platform oyunu.",
-            "uk": "Міні-платформер у 3D, де гравець із капсульним колайдером стрибає по схилах, рухомій платформі та тригерній цілі."
+            "pt": "Um mini jogo de plataforma 3D em que um jogador com collider de cápsula salta por rampas e uma plataforma móvel em direção a uma meta trigger.",
+            "ru": "Мини-платформер в 3D, где игрок с капсульным коллайдером прыгает по склонам и движущейся платформе к триггерной цели.",
+            "tr": "Kapsül collider'a sahip oyuncunun rampalar ve hareketli bir platform arasında zıplayarak trigger hedefe ilerlediği mini bir 3D platform oyunu.",
+            "uk": "Міні-платформер у 3D, де гравець із капсульним колайдером стрибає по схилах і рухомій платформі до тригерної цілі."
           }
         },
         {

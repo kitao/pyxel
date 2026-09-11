@@ -387,6 +387,12 @@ tilemap = pyxel.Tilemap(8, 8, 0)
 for position, delta in [(2.0**40, 1.0), (-(2.0**40), -1.0)]:
     assert tilemap.collide(position, 0, 8, 8, delta, 0, [(0, 0)]) == (delta, 0)
     assert tilemap.collide(0, position, 8, 8, 0, delta, [(0, 0)]) == (0, delta)
+
+for delta in [2.0**40, -(2.0**40)]:
+    assert tilemap.collide(0, 4096, 8, 8, delta, 0, [(0, 0)]) == (delta, 0)
+    assert tilemap.collide(4096, 0, 8, 8, 0, delta, [(0, 0)]) == (0, delta)
+    assert tilemap.collide(0, 0, 8, 8, delta, 0, [(1, 0)]) == (delta, 0)
+    assert tilemap.collide(0, 0, 8, 8, 0, delta, [(1, 0)]) == (0, delta)
         """
         result = subprocess.run(
             [sys.executable, "-B", "-c", code],
@@ -396,6 +402,25 @@ for position, delta in [(2.0**40, 1.0), (-(2.0**40), -1.0)]:
             check=False,
         )
         assert result.returncode == 0, result.stdout + result.stderr
+
+    @pytest.mark.parametrize(
+        ("x", "y", "width", "height", "dx", "dy", "expected"),
+        [
+            (-16, -8, 8, 24, 64, 0, (16, 0)),
+            (32, -8, 8, 24, -64, 0, (-16, 0)),
+            (-8, -16, 24, 8, 0, 64, (0, 16)),
+            (-8, 32, 24, 8, 0, -64, (0, -16)),
+        ],
+    )
+    def test_collide_entering_map(self, x, y, width, height, dx, dy, expected):
+        tm = pyxel.Tilemap(3, 3, 0)
+        tm.cls((0, 0))
+        tm.pset(1, 1, (1, 0))
+        assert tm.collide(x, y, width, height, dx, dy, [(1, 0)]) == expected
+
+    def test_collide_empty_map(self):
+        tm = pyxel.Tilemap(0, 0, 0)
+        assert tm.collide(-16, -16, 8, 8, 64, 64, [(0, 0)]) == (64, 64)
 
     def test_collide_horizontal_wall(self):
         tm = pyxel.Tilemap(8, 8, 0)

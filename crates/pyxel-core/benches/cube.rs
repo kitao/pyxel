@@ -502,7 +502,27 @@ fn make_motion() -> Motion {
     Motion {
         name: String::from("bench"),
         length: (KEY_COUNT - 1) as f32,
-        base_transforms: vec![Mat4::identity_value(), Mat4::identity_value()],
+        base_components: vec![
+            (
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0
+                },
+                Quat {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                    w: 1.0
+                },
+                Vec3 {
+                    x: 1.0,
+                    y: 1.0,
+                    z: 1.0
+                },
+            );
+            2
+        ],
         channels: vec![
             channel(
                 0,

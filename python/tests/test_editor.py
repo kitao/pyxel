@@ -16,7 +16,9 @@ from pyxel.editor.field_cursor import FieldCursor
 from pyxel.editor.image_editor import ImageEditor
 from pyxel.editor.image_viewer import ImageViewer
 from pyxel.editor.music_field import MusicField
+from pyxel.editor.piano_roll import PianoRoll
 from pyxel.editor.sound_editor import SoundEditor
+from pyxel.editor.sound_field import SoundField
 from pyxel.editor.tilemap_editor import TilemapEditor
 from pyxel.editor.widgets import NumberPicker, ScrollBar, Widget
 
@@ -42,6 +44,88 @@ def _param_id(editor, palette_count):
 
 
 class TestEditor:
+    @pytest.mark.parametrize("component", ["piano", "music", "sound"])
+    def test_audio_fields_draw_only_visible_data(self, component, monkeypatch):
+        monkeypatch.setattr(pyxel, "play_pos", lambda _ch: None)
+
+        limit = 32 if component == "music" else 48
+        draw = {
+            "piano": PianoRoll._PianoRoll__on_draw,
+            "music": MusicField._MusicField__on_draw,
+            "sound": SoundField._SoundField__on_draw,
+        }[component]
+        sound = pyxel.Sound()
+        sound.notes[:] = [i % 60 for i in range(1000)]
+        sound.tones[:] = [i % 6 for i in range(1000)]
+        sound.volumes[:] = [i % 10 for i in range(1000)]
+        sound.effects[:] = [i % 8 for i in range(1000)]
+        music = pyxel.Music()
+        music.seqs[:] = [[i % 64 for i in range(1000)]]
+        fields = [sound.notes, sound.tones, sound.volumes, sound.effects]
+        data = music.seqs[0]
+        saved = [list(field) for field in fields] + [list(data)]
+
+        class VisibleReads:
+            def __init__(self, values):
+                self.values = values
+
+            def __len__(self):
+                return len(self.values)
+
+            def __getitem__(self, index):
+                if isinstance(index, slice):
+                    indices = range(*index.indices(len(self.values)))
+                    assert all(i < limit for i in indices)
+                else:
+                    assert 0 <= index < limit
+                return self.values[index]
+
+            def __iter__(self):
+                for index in range(len(self.values)):
+                    yield self[index]
+
+        dimensions = pyxel.width, pyxel.height
+        try:
+            pyxel.resize(240, 180)
+            for cursor_x, cursor_width, selecting in [
+                (0, 1, False),
+                (limit - 1, 3, True),
+                (limit, 1, False),
+            ]:
+                cursor = SimpleNamespace(
+                    x=cursor_x,
+                    y=1 if component == "sound" else 0,
+                    width=cursor_width,
+                    is_selecting=selecting,
+                )
+                widget = SimpleNamespace(
+                    x=11 if component == "music" else 30,
+                    y={"piano": 25, "music": 29, "sound": 149}[component],
+                    width=218 if component == "music" else 193,
+                    height={"piano": 123, "music": 21, "sound": 23}[component],
+                    field_cursor=cursor,
+                    is_playing_var=False,
+                    _ch=0,
+                    draw_panel=lambda *args: None,
+                )
+
+                widget.data = data[:limit]
+                widget.get_field = lambda i: fields[i][:limit]
+                pyxel.clip()
+                pyxel.cls(0)
+                draw(widget)
+                visible_pixels = bytes(pyxel.screen.data_ptr())
+
+                widget.data = VisibleReads(data)
+                widget.get_field = lambda i: VisibleReads(fields[i])
+                pyxel.cls(0)
+                draw(widget)
+                assert bytes(pyxel.screen.data_ptr()) == visible_pixels
+                assert [list(field) for field in fields] + [list(data)] == saved
+        finally:
+            pyxel.clip()
+            pyxel.resize(*dimensions)
+
     def test_music_view_and_save_preserve_extra_channels(self, tmp_path):
         path = str(tmp_path / "six-channels.pyxres")
         music = pyxel.musics[0]

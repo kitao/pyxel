@@ -1,0 +1,136 @@
+name: Validate frozen run15 Windows build
+
+on:
+  push:
+    branches:
+      - codex/windows-run15-audit
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.14"
+  SDL2_VERSION: "2.32.10"
+  SDL2_SHA256: "5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165"
+
+jobs:
+  windows-build-import:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            bits: 64
+            target: x86_64-pc-windows-msvc
+          - arch: x86
+            bits: 32
+            target: i686-pc-windows-msvc
+    steps:
+      - name: Preserve frozen line endings
+        shell: bash
+        run: git config --global core.autocrlf false
+
+      - name: Check out the temporary verification branch
+        uses: actions/checkout@v7
+
+      - name: Install Python
+        uses: actions/setup-python@v6
+        with:
+          architecture: ${{ matrix.arch }}
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Verify all frozen inputs and prepare the repeated source check
+        shell: bash
+        run: |
+          mkdir evidence
+          cat > "$RUNNER_TEMP/verify-audit-source.py" <<'PY'
+          import hashlib, json, pathlib, subprocess, sys
+          manifest = pathlib.Path('.github/audit-run15-target.json')
+          assert hashlib.sha256(manifest.read_bytes()).hexdigest() == '0dc5fb3405eaab97d13962d59364f14290338fd74cd2c843be3ddf9b9a9258ee'
+          target = json.loads(manifest.read_text())
+          assert len(target['files']) == 580
+          errors = []
+          generated_line_endings = []
+          generated = {'python/pyxel/__init__.pyi', 'docs/user-guide.md', 'docs/user-guide-cube.md', 'docs/editor-manual.md', 'docs/web-usage.md', 'docs/api-reference.md', 'docs/api-reference-cube.md', 'docs/mml-commands.md'}
+          for item in target['files']:
+              path = pathlib.Path(item['path'])
+              data = path.read_bytes() if path.is_file() else None
+              actual = hashlib.sha256(data).hexdigest() if data is not None else None
+              if actual != item['sha256']:
+                  normalized = hashlib.sha256(data.replace(b'\r\n', b'\n')).hexdigest() if data is not None else None
+                  if sys.argv[1] == 'after' and item['path'] in generated and normalized == item['sha256']:
+                      generated_line_endings.append({'path': item['path'], 'actual_sha256': actual, 'normalized_lf_sha256': normalized})
+                  else:
+                      errors.append({'path': item['path'], 'actual': actual, 'expected': item['sha256']})
+          actual_paths = set(subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')) - {''}
+          expected_paths = {item['path'] for item in target['files']}
+          assert actual_paths == expected_paths | {'.github/audit-run15-target.json', '.github/workflows/audit-windows-run15.yml'}
+          print(json.dumps({'phase': sys.argv[1], 'checked_files': 580, 'generated_line_ending_differences': generated_line_endings, 'errors': errors}, indent=2))
+          assert not errors
+          PY
+          python "$RUNNER_TEMP/verify-audit-source.py" before > evidence/source-before.json
+          python -c "import sys,struct; print(sys.executable,sys.version); assert struct.calcsize('P')*8 == ${{ matrix.bits }}"
+          python3 -c "import sys,struct; print(sys.executable,sys.version); assert struct.calcsize('P')*8 == ${{ matrix.bits }}"
+
+      - name: Resolve the frozen Rust version
+        shell: bash
+        run: |
+          RUST_VERSION="$(awk -F'"' '/^channel = / { print $2; exit }' rust-toolchain.toml)"
+          test -n "$RUST_VERSION"
+          echo "RUST_VERSION=$RUST_VERSION" >> "$GITHUB_ENV"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rust-src, rustfmt, clippy
+          toolchain: ${{ env.RUST_VERSION }}
+
+      - name: Install the existing build dependencies
+        shell: bash
+        run: pip install -r python/requirements.txt 2>&1 | tee evidence/dependencies.log
+
+      - name: Record toolchain and header discovery inputs
+        shell: bash
+        run: |
+          (rustc -vV; cargo -V; rustup show; clang --version; cmake --version; python -VV; python -m pip freeze) > evidence/environment.txt 2>&1
+          printf '%s\n' "INCLUDE=${INCLUDE-}" "WindowsSdkDir=${WindowsSdkDir-}" "WindowsSDKVersion=${WindowsSDKVersion-}" "VCToolsInstallDir=${VCToolsInstallDir-}" "LIBCLANG_PATH=${LIBCLANG_PATH-}" "BINDGENFLAGS=${BINDGENFLAGS-}" > evidence/header-environment.txt
+          test -z "${BINDGENFLAGS-}"
+          test -z "${BINDGEN_EXTRA_CLANG_ARGS-}"
+
+      - name: Build the selected Windows wheel
+        shell: bash
+        run: make TARGET=${{ matrix.target }} 2>&1 | tee evidence/build.log
+
+      - name: Verify generated source correspondence
+        shell: bash
+        run: |
+          python "$RUNNER_TEMP/verify-audit-source.py" after > evidence/source-after.json
+          sha256sum dist/*.whl > evidence/wheel-sha256.txt
+
+      - name: Install and import in a fresh matching Python environment
+        shell: bash
+        run: |
+          python -m venv "$RUNNER_TEMP/pyxel-import"
+          source "$RUNNER_TEMP/pyxel-import/Scripts/activate"
+          python -m pip install --no-deps dist/*.whl 2>&1 | tee evidence/install.log
+          python - <<'PY' > evidence/import.json
+          import hashlib, importlib, json, pathlib, platform, struct, sys
+          import pyxel
+          module = importlib.import_module('pyxel.pyxel_binding')
+          path = pathlib.Path(module.__file__)
+          assert struct.calcsize('P') * 8 == ${{ matrix.bits }}
+          assert pyxel.VERSION == '3.0.0'
+          assert path.suffix.lower() == '.pyd'
+          print(json.dumps({'version': pyxel.VERSION, 'python': sys.executable, 'python_version': sys.version, 'bits': struct.calcsize('P')*8, 'platform': platform.platform(), 'extension': str(path), 'extension_sha256': hashlib.sha256(path.read_bytes()).hexdigest()}, indent=2))
+          PY
+
+      - name: Retain this target's evidence and wheel
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: run15-${{ matrix.target }}-evidence
+          path: |
+            evidence/
+            dist/*.whl

@@ -1,7 +1,7 @@
 // Drawing formulas use conventional x/y/z/u/v component names.
 #![allow(clippy::many_single_char_names)]
 
-// World-space geometry shares the `prim` path; circles and text rasterize in screen space.
+// World-space geometry shares projection and clipping; circles and text rasterize in screen space.
 
 use std::sync::OnceLock;
 
@@ -11,9 +11,9 @@ use crate::cube::primitive::{
     self, Primitive, CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
 use crate::cube::raster::{
-    dither_pick, face_shade_level, lookup_ramp, rasterize_circle_border, rasterize_circle_filled,
-    rasterize_line, rasterize_textured_triangle, rasterize_triangle, screen_circle, sprite_corners,
-    tri_normal, world_to_screen, write_pixel,
+    dither_pick, face_shade_level, lookup_ramp, rasterize_border_line, rasterize_circle_border,
+    rasterize_circle_filled, rasterize_line, rasterize_textured_triangle, rasterize_triangle,
+    screen_circle, sprite_corners, tri_normal, world_to_screen, write_pixel, ScreenPlane,
 };
 use crate::cube::scene::DrawContext;
 use crate::cube::shading::Shading;
@@ -770,7 +770,160 @@ pub fn prim(
     Ok(())
 }
 
-// Shortcut commands fabricate buffers and route through prim
+// Fixed primitive borders retain their incident faces. Build adjacency once,
+// then inspect only those faces when drawing each edge.
+struct BorderEdge {
+    vertices: [usize; 2],
+    faces: [Option<[usize; 3]>; 2],
+}
+
+fn border_edges(triangles: &[i32], edges: &[i32]) -> Vec<BorderEdge> {
+    edges
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .map(|edge| {
+            let mut faces = [None; 2];
+            let mut count = 0;
+            for triangle in triangles.as_chunks::<3>().0 {
+                if triangle.contains(&edge[0]) && triangle.contains(&edge[1]) {
+                    faces[count] = Some([
+                        triangle[0] as usize,
+                        triangle[1] as usize,
+                        triangle[2] as usize,
+                    ]);
+                    count += 1;
+                }
+            }
+            BorderEdge {
+                vertices: [edge[0] as usize, edge[1] as usize],
+                faces,
+            }
+        })
+        .collect()
+}
+
+fn border_face_plane(
+    ctx: &DrawContext,
+    indices: [usize; 3],
+    z_shift: &Vec3,
+) -> Option<(ScreenPlane, bool)> {
+    let make_plane = |[a, b, c]: [ScreenPoint; 3]| {
+        let plane = ScreenPlane::from_triangle(a, b, c)?;
+        Some((plane, !should_cull(signed_screen_area(a, b, c), CULL_BACK)))
+    };
+    let vertices = indices.map(|i| ctx.vertex_cache[i]);
+    if let [Some(a), Some(b), Some(c)] = vertices.map(|(_, screen)| screen) {
+        return make_plane([a, b, c]);
+    }
+    let clipped = clip_triangle_to_near(
+        vertices.map(|(world, _)| ClipVertex {
+            world,
+            uv: (0.0, 0.0),
+        }),
+        &ctx.clip_row,
+    );
+    if clipped.len < 3 {
+        return None;
+    }
+    let polygon = project_clipped_vertices(&clipped, ctx, z_shift)?;
+    (1..polygon.len - 1).find_map(|i| {
+        make_plane([
+            polygon.vertices[0].screen,
+            polygon.vertices[i].screen,
+            polygon.vertices[i + 1].screen,
+        ])
+    })
+}
+
+fn border_planes(faces: [Option<(ScreenPlane, bool)>; 2]) -> Option<([ScreenPlane; 2], usize)> {
+    match faces {
+        [Some((a, true)), Some((b, true))] => Some(([a, b], 2)),
+        [Some((a, true)), _] | [_, Some((a, true))] => Some(([a, a], 1)),
+        [Some((a, false)), Some((b, false))] => {
+            // Keep back edges for wire-only draws. Prefer the less sloped
+            // incident plane over an almost edge-on face's extrapolation.
+            let plane = if a.slope_squared() <= b.slope_squared() {
+                a
+            } else {
+                b
+            };
+            Some(([plane, plane], 1))
+        }
+        [Some((plane, _)), None] | [None, Some((plane, _))] => Some(([plane, plane], 1)),
+        [None, None] => None,
+    }
+}
+
+fn draw_border(
+    ctx: &mut DrawContext,
+    world_mat: &Mat4,
+    positions: &[f32],
+    edges: &[BorderEdge],
+    col: i32,
+    state: DrawState,
+) {
+    let world_mat = prepare_draw(ctx, world_mat, &state);
+    let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
+    ctx.vertex_cache.clear();
+    ctx.vertex_cache.reserve(positions.len() / 3);
+    for point in positions.as_chunks::<3>().0 {
+        let world = world_mat.mul_vec_value(&Vec3 {
+            x: point[0],
+            y: point[1],
+            z: point[2],
+        });
+        let screen = project_offset(
+            &world,
+            &ctx.vp,
+            &ctx.clip_row,
+            ctx.vp_x,
+            ctx.vp_y,
+            ctx.vp_w,
+            ctx.vp_h,
+            &z_shift,
+        );
+        ctx.vertex_cache.push((world, screen));
+    }
+
+    for edge in edges {
+        let (a, screen_a) = ctx.vertex_cache[edge.vertices[0]];
+        let (b, screen_b) = ctx.vertex_cache[edge.vertices[1]];
+        let projected = match (screen_a, screen_b) {
+            (Some(a_screen), Some(b_screen))
+                if clip_front(&a, &ctx.clip_row) > CLIP_FRONT_EPSILON
+                    && clip_front(&b, &ctx.clip_row) > CLIP_FRONT_EPSILON =>
+            {
+                Some((a_screen, b_screen))
+            }
+            _ => project_line_segment(&a, &b, ctx, &z_shift),
+        };
+        let Some((p0, p1)) = projected else {
+            continue;
+        };
+        let planes = border_planes(
+            edge.faces
+                .map(|face| face.and_then(|indices| border_face_plane(ctx, indices, &z_shift))),
+        );
+        let planes = planes
+            .as_ref()
+            .map_or(&[][..], |(planes, len)| &planes[..*len]);
+        rasterize_border_line(
+            &mut rc_mut!(&ctx.target),
+            &mut ctx.depth,
+            ctx.depth_w,
+            p0,
+            p1,
+            col as u8,
+            col as u8,
+            ctx.clip,
+            ctx.dither_alpha,
+            ctx.depth_test,
+            ctx.depth_write,
+            planes,
+        );
+    }
+}
 
 pub fn pset(ctx: &mut DrawContext, world_mat: &Mat4, local: &Vec3, col: i32, state: DrawState) {
     let positions = [local.x, local.y, local.z];
@@ -839,13 +992,11 @@ pub fn trib(
     col: i32,
     state: DrawState,
 ) {
-    let positions = [
-        p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, p2.x, p2.y, p2.z, p3.x, p3.y, p3.z, p3.x, p3.y, p3.z,
-        p1.x, p1.y, p1.z,
-    ];
-    let _ = prim(
-        ctx, world_mat, MODE_LINES, CULL_NONE, &positions, None, None, None, col, None, None, state,
-    );
+    static EDGES: OnceLock<Vec<BorderEdge>> = OnceLock::new();
+
+    let positions = [p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, p3.x, p3.y, p3.z];
+    let edges = EDGES.get_or_init(|| border_edges(&[0, 1, 2], &[0, 1, 1, 2, 2, 0]));
+    draw_border(ctx, world_mat, &positions, edges, col, state);
 }
 
 // rect / rectb lay out the rectangle in world_mat's local XY plane.
@@ -868,21 +1019,11 @@ pub fn rect(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, s
 }
 
 pub fn rectb(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, state: DrawState) {
+    static EDGES: OnceLock<Vec<BorderEdge>> = OnceLock::new();
+
     let scaled = scale_axes(world_mat, w * 0.5, h * 0.5, 1.0);
-    let _ = prim(
-        ctx,
-        &scaled,
-        MODE_LINES,
-        CULL_NONE,
-        &UNIT_RECT_POSITIONS,
-        Some(&RECT_EDGE_INDICES),
-        None,
-        None,
-        col,
-        None,
-        None,
-        state,
-    );
+    let edges = EDGES.get_or_init(|| border_edges(&RECT_TRI_INDICES, &RECT_EDGE_INDICES));
+    draw_border(ctx, &scaled, &UNIT_RECT_POSITIONS, edges, col, state);
 }
 
 pub fn elli(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, state: DrawState) {
@@ -904,21 +1045,11 @@ pub fn elli(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, s
 }
 
 pub fn ellib(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, state: DrawState) {
+    static EDGES: OnceLock<Vec<BorderEdge>> = OnceLock::new();
+
     let scaled = scale_axes(world_mat, w * 0.5, h * 0.5, 1.0);
-    let _ = prim(
-        ctx,
-        &scaled,
-        MODE_LINES,
-        CULL_NONE,
-        unit_ellipse_positions(),
-        Some(&ELLIPSE_EDGE_INDICES),
-        None,
-        None,
-        col,
-        None,
-        None,
-        state,
-    );
+    let edges = EDGES.get_or_init(|| border_edges(&ELLIPSE_TRI_INDICES, &ELLIPSE_EDGE_INDICES));
+    draw_border(ctx, &scaled, unit_ellipse_positions(), edges, col, state);
 }
 
 fn primitive_normals(g: &Primitive) -> Option<&[f32]> {
@@ -975,22 +1106,12 @@ pub fn box_solid(
 }
 
 pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, state: DrawState) {
+    static EDGES: OnceLock<Vec<BorderEdge>> = OnceLock::new();
+
     let scaled = scale_axes(world_mat, size.x, size.y, size.z);
     let g = primitive::unit_box_solid();
-    let _ = prim(
-        ctx,
-        &scaled,
-        MODE_LINES,
-        CULL_NONE,
-        g.positions.as_slice(),
-        Some(&primitive::BOX_EDGE_INDICES),
-        None,
-        None,
-        col,
-        None,
-        None,
-        state,
-    );
+    let edges = EDGES.get_or_init(|| border_edges(&g.indices, &primitive::BOX_EDGE_INDICES));
+    draw_border(ctx, &scaled, &g.positions, edges, col, state);
 }
 
 // Cached unit geometry
@@ -1055,8 +1176,6 @@ fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
     out
 }
 
-// Shortcut commands fabricate buffers and route through prim
-
 pub fn sphere(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -1104,23 +1223,14 @@ pub fn sphereb(
     col: i32,
     state: DrawState,
 ) {
+    static EDGES: OnceLock<Vec<BorderEdge>> = OnceLock::new();
+
     let translated = translate_local(world_mat, local);
     let scaled = scale_axes(&translated, r, r, r);
     let g = primitive::unit_sphere_wire();
-    let _ = prim(
-        ctx,
-        &scaled,
-        g.mode,
-        g.cull,
-        g.positions.as_slice(),
-        Some(g.indices.as_slice()),
-        None,
-        None,
-        col,
-        None,
-        None,
-        state,
-    );
+    let edges =
+        EDGES.get_or_init(|| border_edges(&primitive::unit_sphere_solid().indices, &g.indices));
+    draw_border(ctx, &scaled, &g.positions, edges, col, state);
 }
 
 // circ / circb are screen-aligned: their projected geometry depends on
@@ -1507,6 +1617,211 @@ mod tests {
             depth_write: true,
             depth_offset: 0.0,
             shaded,
+        }
+    }
+
+    #[test]
+    fn test_fixed_border_topology_matches_shape_boundaries() {
+        // Open planar boundaries have one incident face per edge. Their
+        // fill diagonals and ellipse fan spokes must not become borders.
+        for (triangles, edges, count) in [
+            (&[0, 1, 2][..], &[0, 1, 1, 2, 2, 0][..], 3),
+            (&RECT_TRI_INDICES[..], &RECT_EDGE_INDICES[..], 4),
+            (&ELLIPSE_TRI_INDICES[..], &ELLIPSE_EDGE_INDICES[..], 24),
+        ] {
+            let topology = border_edges(triangles, edges);
+            assert_eq!(topology.len(), count);
+            assert!(topology
+                .iter()
+                .all(|edge| edge.faces.iter().flatten().count() == 1));
+        }
+
+        let box_mesh = primitive::unit_box_solid();
+        let sphere_mesh = primitive::unit_sphere_solid();
+        for (mesh, edges, vertex_count, edge_count) in [
+            (box_mesh, &primitive::BOX_EDGE_INDICES[..], 8, 12),
+            (
+                sphere_mesh,
+                &primitive::unit_sphere_wire().indices[..],
+                42,
+                120,
+            ),
+        ] {
+            let topology = border_edges(&mesh.indices, edges);
+            assert_eq!(topology.len(), edge_count);
+            let mut degree = vec![0; vertex_count];
+            let mut unique_edges = std::collections::HashSet::new();
+            for edge in topology {
+                let [a, b] = edge.vertices;
+                assert_ne!(a, b);
+                assert!(unique_edges.insert((a.min(b), a.max(b))));
+                degree[a] += 1;
+                degree[b] += 1;
+                let [Some(left), Some(right)] = edge.faces else {
+                    panic!("closed solid edge needs two incident faces");
+                };
+                let orientation =
+                    |face: [usize; 3]| (0..3).any(|i| face[i] == a && face[(i + 1) % 3] == b);
+                // The two outward face windings traverse a shared edge in
+                // opposite directions, preserving the front-face decision.
+                assert_ne!(orientation(left), orientation(right));
+            }
+            if vertex_count == 8 {
+                assert!(degree.iter().all(|&n| n == 3));
+            } else {
+                // Once-subdivided icosahedron: 12 original degree-5 vertices
+                // and 30 edge-midpoint degree-6 vertices.
+                assert_eq!(degree.iter().filter(|&&n| n == 5).count(), 12);
+                assert_eq!(degree.iter().filter(|&&n| n == 6).count(), 30);
+            }
+        }
+    }
+
+    #[test]
+    fn test_box_fill_and_outline_follow_one_projected_hull() {
+        for shift in [0.25_f32, 0.75] {
+            let camera = Camera::new();
+            rc_mut!(&camera).ortho_size = Some(8.0);
+            // The identity camera gives screen=(32+8*x, 32-8*y).
+            // For local u/v/w in [-1,1], this affine box projects to
+            // screen x=5+shift+2*u+w, y=4+shift-2*v-w.
+            let placement = Mat4 {
+                data: [
+                    [0.25, 0.0, 0.125, (-27.0 + shift) / 8.0],
+                    [0.0, 0.25, 0.125, (28.0 - shift) / 8.0],
+                    [0.0, 0.0, 0.125, -4.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ],
+            };
+            let size = Vec3 {
+                x: 2.0,
+                y: 2.0,
+                z: 2.0,
+            };
+            let hull = [
+                (4.0, 1.0),
+                (8.0, 1.0),
+                (8.0, 5.0),
+                (6.0, 7.0),
+                (2.0, 7.0),
+                (2.0, 3.0),
+            ];
+            let inside = |x: usize, y: usize| {
+                let px = x as f64 + 0.5 - f64::from(shift);
+                let py = y as f64 + 0.5 - f64::from(shift);
+                (0..hull.len()).all(|i| {
+                    let (ax, ay) = hull[i];
+                    let (bx, by) = hull[(i + 1) % hull.len()];
+                    (bx - ax) * (py - ay) - (by - ay) * (px - ax) > 0.0
+                })
+            };
+            let fill_target = Image::new(64, 64);
+            rc_mut!(&fill_target).clear(2);
+            let mut fill_ctx = draw_context_64(&fill_target, &camera, false);
+            box_solid(
+                &mut fill_ctx,
+                &placement,
+                &size,
+                3,
+                None,
+                None,
+                DrawState::unshaded(),
+            );
+            for y in 0..64 {
+                for x in 0..64 {
+                    // Quarter-pixel shifts keep every pixel center off the hull
+                    // boundary. This is a polygon oracle, not a captured image.
+                    assert_eq!(
+                        rc_ref!(&fill_target).canvas.read_data(x, y),
+                        if inside(x, y) { 3 } else { 2 },
+                        "shift={shift} fill ({x},{y})"
+                    );
+                }
+            }
+
+            let mut previous = None;
+            for outline_first in [false, true] {
+                let target = Image::new(64, 64);
+                rc_mut!(&target).clear(2);
+                let mut ctx = draw_context_64(&target, &camera, false);
+                for outline in [outline_first, !outline_first] {
+                    if outline {
+                        boxb(&mut ctx, &placement, &size, 7, DrawState::unshaded());
+                    } else {
+                        box_solid(
+                            &mut ctx,
+                            &placement,
+                            &size,
+                            3,
+                            None,
+                            None,
+                            DrawState::unshaded(),
+                        );
+                    }
+                }
+                let image = rc_ref!(&target);
+                // A filled convex box and its touching outline occupy a single
+                // interval in every row and column, including outside edge pixels.
+                for transpose in [false, true] {
+                    for line in 0..64 {
+                        let pixel = |i| {
+                            if transpose {
+                                image.canvas.read_data(line, i)
+                            } else {
+                                image.canvas.read_data(i, line)
+                            }
+                        };
+                        let mut occupied = (0..64).filter(|&i| pixel(i) != 2);
+                        if let (Some(first), Some(last)) = (occupied.next(), occupied.next_back()) {
+                            assert!((first..=last).all(|i| pixel(i) != 2),
+                            "shift={shift} outline_first={outline_first} gap axis={transpose} line={line}");
+                        }
+                    }
+                }
+                for y in 0..64 {
+                    for x in 0..64 {
+                        let color = image.canvas.read_data(x, y);
+                        if inside(x, y) {
+                            assert_ne!(
+                                color, 2,
+                                "shift={shift} outline_first={outline_first} hole ({x},{y})"
+                            );
+                        }
+                        if color == 7 {
+                            // A one-pixel border can touch the polygon externally;
+                            // a complete blank pixel strip between it and the fill
+                            // would put it farther than one Chebyshev pixel away.
+                            let adjacent = (y.saturating_sub(1)..=(y + 1).min(63)).any(|ny| {
+                                (x.saturating_sub(1)..=(x + 1).min(63)).any(|nx| inside(nx, ny))
+                            });
+                            assert!(adjacent, "shift={shift} detached border ({x},{y})");
+                        }
+                    }
+                }
+                // Every silhouette edge has a visible witness near its midpoint.
+                for (x, y) in [
+                    (6.0, 1.0),
+                    (8.0, 3.0),
+                    (7.0, 6.0),
+                    (4.0, 7.0),
+                    (2.0, 5.0),
+                    (3.0, 2.0),
+                ] {
+                    let x = (x + shift).floor() as usize;
+                    let y = (y + shift).floor() as usize;
+                    assert!(
+                        (y - 1..=y + 1).any(|ny| {
+                            (x - 1..=x + 1).any(|nx| image.canvas.read_data(nx, ny) == 7)
+                        }),
+                        "shift={shift} missing silhouette edge near ({x},{y})"
+                    );
+                }
+                if let Some(ref expected) = previous {
+                    assert_eq!(&image.canvas.data, expected, "shift={shift} drawing order");
+                } else {
+                    previous = Some(image.canvas.data.clone());
+                }
+            }
         }
     }
 
