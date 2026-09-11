@@ -28,12 +28,14 @@ jobs:
             bits: 32
             target: i686-pc-windows-msvc
     steps:
-      - name: Preserve frozen line endings
-        shell: bash
-        run: git config --global core.autocrlf false
-
       - name: Check out the temporary verification branch
         uses: actions/checkout@v7
+        env:
+          GIT_CONFIG_COUNT: "2"
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: "false"
+          GIT_CONFIG_KEY_1: core.eol
+          GIT_CONFIG_VALUE_1: lf
 
       - name: Install Python
         uses: actions/setup-python@v6
@@ -48,6 +50,7 @@ jobs:
           cat > "$RUNNER_TEMP/verify-audit-source.py" <<'PY'
           import hashlib, json, pathlib, subprocess, sys
           manifest = pathlib.Path('.github/audit-run15-target.json')
+          print('manifest_sha256', hashlib.sha256(manifest.read_bytes()).hexdigest(), file=sys.stderr)
           assert hashlib.sha256(manifest.read_bytes()).hexdigest() == '0dc5fb3405eaab97d13962d59364f14290338fd74cd2c843be3ddf9b9a9258ee'
           target = json.loads(manifest.read_text())
           assert len(target['files']) == 580
