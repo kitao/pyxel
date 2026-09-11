@@ -318,18 +318,18 @@
     {
       "cmd": "O <oct>",
       "desc": {
-        "en": "Sets the octave. Range: -1-9. `O4`'s A is 440 Hz. Default is 4.",
-        "cn": "设置八度。范围：-1～9。`O4` 的 A 音为 440 Hz。默认值为 4。",
-        "de": "Setzt die Oktave. Bereich: -1–9. Das A von `O4` ist 440 Hz. Standard ist 4.",
-        "es": "Establece la octava. Rango: -1-9. El La de `O4` es 440 Hz. Por defecto es 4.",
-        "fr": "Définit l'octave. Plage : -1-9. Le La de `O4` est à 440 Hz. Par défaut : 4.",
-        "it": "Imposta l'ottava. Intervallo: -1-9. Il La di `O4` è 440 Hz. Predefinito: 4.",
+        "en": "Sets the octave. Range: -1 to 9. `O4`'s A is 440 Hz. Default is 4.",
+        "cn": "设置八度。范围：-1 到 9。`O4` 的 A 音为 440 Hz。默认值为 4。",
+        "de": "Setzt die Oktave. Bereich: -1 bis 9. Das A von `O4` ist 440 Hz. Standard ist 4.",
+        "es": "Establece la octava. Rango: -1 a 9. El La de `O4` es 440 Hz. Por defecto es 4.",
+        "fr": "Définit l'octave. Plage : -1 à 9. Le La de `O4` est à 440 Hz. Par défaut : 4.",
+        "it": "Imposta l'ottava. Intervallo: da -1 a 9. Il La di `O4` è 440 Hz. Predefinito: 4.",
         "ja": "オクターブを指定する。範囲は -1〜9。`O4` の A の音が 440 Hz になる。デフォルトは 4。",
         "ko": "옥타브를 설정합니다. 범위: -1~9. `O4`의 A 음이 440 Hz입니다. 기본값은 4.",
-        "pt": "Define a oitava. Intervalo: -1-9. O Lá de `O4` é 440 Hz. Padrão: 4.",
-        "ru": "Устанавливает октаву. Диапазон: -1–9. Ля `O4` — 440 Гц. По умолчанию: 4.",
-        "tr": "Oktavı ayarlar. Aralık: -1-9. `O4`'ün La'sı 440 Hz'dir. Varsayılan: 4.",
-        "uk": "Встановлює октаву. Діапазон: -1–9. Ля `O4` — 440 Гц. За замовчуванням: 4."
+        "pt": "Define a oitava. Intervalo: -1 a 9. O Lá de `O4` é 440 Hz. Padrão: 4.",
+        "ru": "Устанавливает октаву. Диапазон: от -1 до 9. Ля `O4` — 440 Гц. По умолчанию: 4.",
+        "tr": "Oktavı ayarlar. Aralık: -1 ile 9. `O4`'ün La'sı 440 Hz'dir. Varsayılan: 4.",
+        "uk": "Встановлює октаву. Діапазон: від -1 до 9. Ля `O4` — 440 Гц. За замовчуванням: 4."
       }
     },
     {

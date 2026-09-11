@@ -1396,7 +1396,7 @@
     },
     "contrib_issues_body": {
       "en": "Use the {0} to submit bug reports and feature or enhancement requests. Before submitting a new issue, please check for similar open issues.",
-      "cn": "使用 {0} 提交 bug 报告和功能或增强请求。在提交新问题之前，请先查找类似的未解决问题。",
+      "cn": "请使用 {0} 提交 bug 报告和功能或增强请求。在提交新问题之前，请先查找类似的未解决问题。",
       "de": "Verwenden Sie den {0}, um Fehlerberichte und Funktions- oder Verbesserungsanfragen einzureichen. Prüfen Sie vor dem Einreichen eines neuen Issues bitte, ob es ähnliche offene Issues gibt.",
       "es": "Utilice el {0} para enviar informes de errores y solicitudes de funciones o mejoras. Antes de abrir una nueva incidencia, compruebe si hay incidencias abiertas similares.",
       "fr": "Utilisez l'{0} pour soumettre des rapports de bugs et des demandes de fonctionnalités ou d'améliorations. Avant d'ouvrir un nouveau ticket, veuillez rechercher les tickets ouverts similaires.",

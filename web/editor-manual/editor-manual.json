@@ -332,7 +332,7 @@
     },
     "image_ui_title": {
       "en": "Screen Layout",
-      "cn": "屏幕布局",
+      "cn": "画面布局",
       "de": "Bildschirmlayout",
       "es": "Diseño de pantalla",
       "fr": "Disposition de l'écran",
@@ -514,7 +514,7 @@
     },
     "tilemap_ui_title": {
       "en": "Screen Layout",
-      "cn": "屏幕布局",
+      "cn": "画面布局",
       "de": "Bildschirmlayout",
       "es": "Diseño de pantalla",
       "fr": "Disposition de l'écran",
@@ -696,7 +696,7 @@
     },
     "sound_ui_title": {
       "en": "Screen Layout",
-      "cn": "屏幕布局",
+      "cn": "画面布局",
       "de": "Bildschirmlayout",
       "es": "Diseño de pantalla",
       "fr": "Disposition de l'écran",
@@ -948,7 +948,7 @@
     },
     "music_ui_title": {
       "en": "Screen Layout",
-      "cn": "屏幕布局",
+      "cn": "画面布局",
       "de": "Bildschirmlayout",
       "es": "Diseño de pantalla",
       "fr": "Disposition de l'écran",
@@ -2302,7 +2302,7 @@
   ],
   "image_colors": [
     {
-      "key": "1–8",
+      "key": "1-8",
       "action": {
         "en": "Select colors 0-7",
         "cn": "选择颜色编号 0～7",
@@ -2319,7 +2319,7 @@
       }
     },
     {
-      "key": "Shift+1–8",
+      "key": "Shift+1-8",
       "action": {
         "en": "Select colors 8-15",
         "cn": "选择颜色编号 8～15",

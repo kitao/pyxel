@@ -9833,7 +9833,7 @@
           "signature": "Sound.mml(code)",
           "description": {
             "en": "Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page.",
-            "cn": "使用给定的 MML 字符串切换到 MML 模式。MML 模式下，音符和速度等普通参数将被忽略。有关可用的 MML 命令，参阅 Pyxel MML 命令页面。",
+            "cn": "使用给定的 MML 字符串切换到 MML 模式。MML 模式下，音符和速度等普通参数将被忽略。有关可用的 MML 命令，请参阅 Pyxel MML 命令页面。",
             "de": "Wechselt mit der angegebenen MML-Zeichenkette in den MML-Modus. Im MML-Modus werden normale Parameter wie Noten und Geschwindigkeit ignoriert. Verfügbare MML-Befehle finden Sie auf der Seite Pyxel MML-Befehle.",
             "es": "Cambia al modo MML con la cadena MML dada. En modo MML, los parámetros normales como notas y velocidad se ignoran. Para los comandos MML disponibles, consulte la página Comandos MML de Pyxel.",
             "fr": "Passe en mode MML avec la chaîne MML donnée. En mode MML, les paramètres normaux tels que les notes et la vitesse sont ignorés. Pour les commandes MML disponibles, consultez la page Commandes MML de Pyxel.",

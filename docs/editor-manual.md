@@ -131,8 +131,8 @@ Select a drawing color from the palette, which initially has 16 colors.
 
 | Shortcut | Action |
 | --- | --- |
-| 1–8 | Select colors 0-7 |
-| Shift+1–8 | Select colors 8-15 |
+| 1-8 | Select colors 0-7 |
+| Shift+1-8 | Select colors 8-15 |
 
 #### Bank Number
 

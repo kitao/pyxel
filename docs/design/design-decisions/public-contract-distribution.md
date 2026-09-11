@@ -29,8 +29,8 @@ selects `abi3-py311`, matching
 [Python metadata](../../../python/pyproject.toml). The interpreter used by
 [wheel CI](../../../.github/workflows/build.yml) can be newer without raising
 the package minimum. Web compatibility also depends on the
-[build flags](../../../Makefile), the runtime selected by
-[the loader](../../../wasm/pyxel.js), and the tags checked by the
+[build flags](../../../Makefile), the Pyodide version selected by the
+[web runtime](../../../wasm/pyxel.js), and the tags checked by the
 [wheel tools](../../../scripts/check_wasm_wheel).
 Matching version strings alone does not establish that the toolchain works;
 build and runtime verification still apply to the selected targets.
@@ -55,8 +55,8 @@ behavior nor audio and graphics quality.
 
 **Decision:** Validate the selected web wheel before installing it into `wasm/`.
 Check its identity and platform tag, packaged Python sources and metadata, and
-unwanted caches and build-host paths. Install the wheel and update its loader
-reference before removing obsolete wheels.
+unwanted caches and build-host paths. Install the wheel and update the web
+runtime's wheel reference before removing obsolete wheels.
 
 **Reason:** A successful import can still load stale Python sources.
 [check_wasm_wheel](../../../scripts/check_wasm_wheel) compares the package with
@@ -65,12 +65,12 @@ updates the artifact and its consumer. The
 [build target](../../../Makefile) runs them in that order. Packaging exclusions
 prevent cache inclusion; inspecting the built artifact verifies that boundary.
 
-The installer uses separate replacements, not a transaction covering both
-files. A failure can leave an unreferenced new wheel, or replace a same-version
-wheel before the loader write fails. Source and metadata comparisons do not
-establish compiled Rust/source equivalence. Path remapping and
-`SOURCE_DATE_EPOCH` control build-host paths and timestamps; they do not by
-themselves promise byte-identical builds on every platform.
+The installer uses separate replacements, not a transaction covering both files.
+A failure can leave an unreferenced new wheel, or replace a same-version wheel
+before the update of the web runtime's wheel reference fails. Source and
+metadata comparisons do not establish compiled Rust/source equivalence. Path
+remapping and `SOURCE_DATE_EPOCH` control build-host paths and timestamps; they
+do not by themselves promise byte-identical builds on every platform.
 
 ## Release version correspondence
 
@@ -85,7 +85,7 @@ maintains that correspondence across the
 [workspace manifest](../../../crates/Cargo.toml),
 [runtime settings](../../../crates/pyxel-core/src/settings.rs),
 [Python metadata](../../../python/pyproject.toml), and
-[Web loader](../../../wasm/pyxel.js).
+[web runtime](../../../wasm/pyxel.js).
 [Release automation](../../../.github/workflows/release.yml) uses the
 `v`-prefixed tag. Literal equality across the two version syntaxes would reject
 valid prereleases. The mapping does not promise every PEP 440 form, and editing

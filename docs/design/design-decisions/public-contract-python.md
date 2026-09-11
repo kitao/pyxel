@@ -132,7 +132,7 @@ metadata or with either field missing.
 
 **Reason:** The [distribution guide](../../../web/user-guide/user-guide.json)
 describes what an author should provide. Making that documentation requirement
-a new startup check would prevent existing apps from running. The
+a check at app startup would prevent existing apps from running. The
 [metadata reader and launcher](../../../python/pyxel/cli.py) therefore keep
 execution independent of metadata completeness.
 

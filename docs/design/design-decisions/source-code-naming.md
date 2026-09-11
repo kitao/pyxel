@@ -126,7 +126,7 @@ groups or adding assertions solely for a class-name correction.
 camelCase; custom-element classes use PascalCase. Configuration constants such
 as `PYXEL_WORKING_DIRECTORY` use UPPER_SNAKE_CASE; a `const` binding alone does
 not select that form. The private helpers in the
-[Web runtime](../../../wasm/pyxel.js) retain their leading underscore, while its
+[web runtime](../../../wasm/pyxel.js) retain their leading underscore, while its
 host entry points and [shared page helpers](../../../web/shared.js) keep their
 callable names. Cross-frame and Python bridge identifiers retain their shared
 spelling; an underscore does not make such a connection safe to rename locally.

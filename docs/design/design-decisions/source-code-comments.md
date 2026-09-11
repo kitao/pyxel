@@ -39,12 +39,13 @@ API prose inside implementation files would create competing descriptions.
 **Decision:** Use a heading to name a consecutive group of definitions by its
 shared responsibility. Put it before the group's first member, including that
 member's attributes, decorators, or explanatory comment. A comment that explains
-the whole group follows the heading line directly, and the blank line follows
-that block. Keep supporting constants and helpers with the group they serve. A
-class, trait implementation, module, or single clearly named operation does not
-need another label merely to repeat its declaration, and an operation with its
-private helpers needs no heading when the enclosing structure already identifies
-that responsibility.
+the whole group follows the heading directly; the
+[blank lines after the heading](source-code-blank-lines.md#comments-at-group-boundaries)
+follow that block. Keep supporting constants and helpers with the group they
+serve. A class, trait implementation, module, or single clearly named operation
+does not need another label merely to repeat its declaration, and an operation
+with its private helpers needs no heading when the enclosing structure already
+identifies that responsibility.
 
 Headings provide navigation, not lexical scope. A standalone constructor,
 protocol method, registration function, or startup block does not need a closing

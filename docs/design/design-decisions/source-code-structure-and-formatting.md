@@ -75,7 +75,7 @@ define wheel contents; package exclusions and artifact checks have their own
 distribution role.
 
 **Reason:** The [ignore rules](../../../.gitignore) keep local working material
-out of source discovery. The [Web loader](../../../wasm/pyxel.js), web pages,
+out of source discovery. The [web runtime](../../../wasm/pyxel.js), web pages,
 and documentation readers consume versioned generated files without building
 them first. The examples under `python/pyxel/examples/` are teaching material
 used by packaging, `copy_examples`, tests, and web pages; a root shortcut does
