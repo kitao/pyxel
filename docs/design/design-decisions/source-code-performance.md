@@ -1,7 +1,6 @@
 # Performance Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code
-policy](../design-policy.md#performance)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#performance)
 
 ## Rust
 

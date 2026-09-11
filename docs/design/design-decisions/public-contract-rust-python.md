@@ -1,7 +1,6 @@
 # Rust/Python Boundary Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Public
-Contract policy](../design-policy.md#public-contract)
+[Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
 
 ## Errors and Failures
 

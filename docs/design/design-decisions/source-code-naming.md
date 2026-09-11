@@ -1,7 +1,6 @@
 # Naming Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code
-policy](../design-policy.md#naming)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#naming)
 
 ## Across Languages
 

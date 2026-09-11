@@ -1,7 +1,6 @@
 # Cross-file Consistency Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code
-policy](../design-policy.md#cross-file-consistency)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#cross-file-consistency)
 
 ## Across Languages
 

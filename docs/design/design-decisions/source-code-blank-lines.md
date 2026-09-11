@@ -1,7 +1,6 @@
 # Blank Line Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code
-policy](../design-policy.md#structure-and-formatting)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#structure-and-formatting)
 
 These decisions specify where a blank line belongs and where it does not, from
 the role and relationship of the surrounding code. The same conditions apply
