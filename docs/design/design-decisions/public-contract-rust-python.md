@@ -52,7 +52,7 @@ catchable at these existing boundaries.
 | `Font(...)` | `Exception` | [Font](../../../crates/pyxel-binding/src/font_wrapper.rs) |
 | `Image.from_image`, `Image.load`, `Image.save` | `Exception` | [Image](../../../crates/pyxel-binding/src/image_wrapper.rs) |
 | `Tilemap.from_tmx`, `Tilemap.load` | `Exception` | [Tilemap](../../../crates/pyxel-binding/src/tilemap_wrapper.rs) |
-| `Sound.pcm(filename)`, `Sound.save`, `Music.save` | `Exception` | [Sound](../../../crates/pyxel-binding/src/sound_wrapper.rs), [music](../../../crates/pyxel-binding/src/music_wrapper.rs) |
+| `Sound.pcm(filename)`, `Sound.save`, `Music.save` | `Exception` | [Sound](../../../crates/pyxel-binding/src/sound_wrapper.rs), [Music](../../../crates/pyxel-binding/src/music_wrapper.rs) |
 | `Mesh.from_glb` | `ValueError` | [Mesh](../../../crates/pyxel-binding/src/cube/mesh.rs) |
 
 **Reason:** An application needs to report an unavailable or unusable file and
@@ -96,13 +96,13 @@ Keep Python-standard errors for Pyxel's list operations:
 extended-slice length mismatch, and the applicable Python errors for invalid
 indices and slices. Unknown module attributes raise `AttributeError`.
 
-The [shared sequence bindings](../../../crates/pyxel-binding/src/utils.rs) and
-[music bindings](../../../crates/pyxel-binding/src/music_wrapper.rs) own these
+The [sequence binding](../../../crates/pyxel-binding/src/utils.rs) and
+[music binding](../../../crates/pyxel-binding/src/music_wrapper.rs) own these
 operations. Pyxel-authored standard diagnostics use CPython's exact wording; PyO3's
 own diagnostics remain owned by PyO3. Do not intercept its errors solely to
 rewrite their presentation.
 
-The [math bindings](../../../crates/pyxel-binding/src/math_wrapper.rs) try integer
+The [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) try integer
 conversion before floating-point conversion. The shared overload helpers and
 sequence comparisons likewise distinguish an unsupported candidate from a
 failure of the selected operation. Propagating every tentative extraction error
@@ -199,9 +199,9 @@ source bank before a lazy iterator reads its next index. Collecting the native
 result first prevents that invalid access; wrapped resources retain their
 shared identity rather than becoming deep copies.
 
-The [sequence helpers](../../../crates/pyxel-binding/src/utils.rs),
-[music bindings](../../../crates/pyxel-binding/src/music_wrapper.rs), and
-[playback bindings](../../../crates/pyxel-binding/src/audio_wrapper.rs) apply
+The [sequence binding](../../../crates/pyxel-binding/src/utils.rs),
+[music binding](../../../crates/pyxel-binding/src/music_wrapper.rs), and
+[audio binding](../../../crates/pyxel-binding/src/audio_wrapper.rs) apply
 this ordering alongside the
 [ownership decision](source-code-performance.md#shared-graphics-and-audio-ownership).
 

@@ -69,7 +69,7 @@ from the repository, including the web wheel, generated guides, and stylesheet.
 Keep the root `/examples` shortcut separate from the packaged examples.
 
 The root README and LICENSE own the package copies created by
-[make build](../../../Makefile). Ignore those copies rather than maintaining
+[`make build`](../../../Makefile). Ignore those copies rather than maintaining
 another editable authority. Git ignore rules neither remove tracked files nor
 define wheel contents; package exclusions and artifact checks have their own
 distribution role.
