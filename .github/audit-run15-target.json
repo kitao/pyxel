@@ -1,6 +1,6 @@
 {
-  "run": "pyxel-quality-20260911-run15",
-  "created": "2026-09-11T14:42:45.912572+00:00",
+  "run": "pyxel-quality-20260911-run15-windows-portable-header",
+  "created": "2026-09-11T17:49:25.757547+00:00",
   "branch": "develop",
   "base": "e0a4d5015b7a51770d242d38cf0ccf235940fdd2",
   "head": "e0a4d5015b7a51770d242d38cf0ccf235940fdd2",
@@ -2803,8 +2803,8 @@
       "path": "python/tests/test_generate_docs.py",
       "origin": "tracked",
       "mode": "100644",
-      "sha256": "be1729840cf83f2eefed20fe53ab8bbb798269aaa7ece6e68fec53d09e39344c",
-      "bytes": 2892
+      "sha256": "1d4522cac466b8c608583f0fc9c35f84fb6458e7d71d3786d305ac90a3a4d391",
+      "bytes": 3493
     },
     {
       "path": "python/tests/test_generate_pyi_docstrings.py",
@@ -2999,8 +2999,8 @@
       "path": "scripts/generate_docs",
       "origin": "tracked",
       "mode": "100755",
-      "sha256": "2d06e3409141bd6f8a932c499d99441c620523b9d0765573a005294c3a3395e0",
-      "bytes": 35108
+      "sha256": "be8a56f7da318ba6093763cb8d31198ac1ed167f0ccc76b9c772b52a8fb2adc2",
+      "bytes": 35114
     },
     {
       "path": "scripts/generate_gamepad_images",
@@ -4067,10 +4067,10 @@
       "bytes": 77488
     }
   ],
-  "patch_sha256": "7af5634bb2262aabec4c06c8e38a9750bb330c55906c2310ae6c62e1cadb0003",
+  "patch_sha256": "82ed9d441962dc21635e2634bcd12a07c370fa9bcf298991867cd577ca737ba0",
   "intended_additions": [],
   "sparse_checkout": false,
   "skip_worktree": [],
   "assume_unchanged": [],
-  "predecessor": "pyxel-quality-20260911-run13"
+  "predecessor": "pyxel-quality-20260911-run15"
 }

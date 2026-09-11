@@ -51,7 +51,7 @@ jobs:
           import hashlib, json, pathlib, subprocess, sys
           manifest = pathlib.Path('.github/audit-run15-target.json')
           print('manifest_sha256', hashlib.sha256(manifest.read_bytes()).hexdigest(), file=sys.stderr)
-          assert hashlib.sha256(manifest.read_bytes()).hexdigest() == '0dc5fb3405eaab97d13962d59364f14290338fd74cd2c843be3ddf9b9a9258ee'
+          assert hashlib.sha256(manifest.read_bytes()).hexdigest() == 'b75be0a1bb7fe951529e354edceebb4224d0d57ca71e5f95ed161fd15de6b0aa'
           target = json.loads(manifest.read_text())
           assert len(target['files']) == 580
           errors = []
