@@ -1,6 +1,7 @@
 # Cross-file Consistency Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#cross-file-consistency)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code
+policy](../design-policy.md#cross-file-consistency)
 
 ## Across Languages
 
@@ -8,8 +9,9 @@
 
 **Decision:** Parameter-constraint messages start with the parameter's public
 name. Other errors and warnings follow consistent, idiomatic phrasing within
-their failure-kind family across files and languages. Python-standard diagnostics
-follow the [Python protocol decision](public-contract-rust-python.md#python-conversion-and-sequence-errors).
+their failure-kind family across files and languages. Python-standard
+diagnostics follow the [Python protocol
+decision](public-contract-rust-python.md#python-conversion-and-sequence-errors).
 
 Repository wheel/version maintenance tools send failure diagnostics prefixed
 `error: ` (usage text excepted) to standard error and successful results to
@@ -42,11 +44,13 @@ or determine the accepted values of every `fps` or `scale` argument.
 
 ### Standing language-idiom exceptions
 
-**Decision:** The standing exceptions are limited to
-[Python API conventions at exposed bindings and SDL2 names at external call sites](source-code-naming.md#names-at-python-and-sdl2-boundaries),
-and [direct example code when abstraction would obscure the lesson](#inline-dimensions-and-editable-constants-in-examples).
-Internal binding helpers remain idiomatic Rust. Performance-related departures
-require the cost evidence specified by the policy.
+**Decision:** The standing exceptions are limited to [Python API conventions at
+exposed bindings and SDL2 names at external call
+sites](source-code-naming.md#names-at-python-and-sdl2-boundaries), and [direct
+example code when abstraction would obscure the
+lesson](#inline-dimensions-and-editable-constants-in-examples). Internal binding
+helpers remain idiomatic Rust. Performance-related departures require the cost
+evidence specified by the policy.
 
 **Reason:** These scopes preserve a recognizable external interface or a short
 learning path. They do not permit every surrounding implementation to abandon
@@ -74,10 +78,11 @@ supplies a scale of at least one.
 ### Inline dimensions and editable constants in examples
 
 **Decision:** Keep screen dimensions directly in `pyxel.init` in examples such
-as [Hello Pyxel](../../../python/pyxel/examples/01_hello_pyxel.py), rather than creating
-constants merely to name the arguments. Use named values where they expose
-something the learner is expected to change and play with, such as `MOTION_SPEED`
-in [Mesh and Motion](../../../python/pyxel/examples/cube/c04_mesh_and_motion.py).
+as [Hello Pyxel](../../../python/pyxel/examples/01_hello_pyxel.py), rather than
+creating constants merely to name the arguments. Use named values where they
+expose something the learner is expected to change and play with, such as
+`MOTION_SPEED` in [Mesh and
+Motion](../../../python/pyxel/examples/cube/c04_mesh_and_motion.py).
 
 **Reason:** Beginners should be able to follow the short program and try a
 change without navigating layers of constants and helpers. The screen size is
@@ -96,11 +101,11 @@ extraction.
 callbacks, and query results. Handle reference cycles at the layer that owns
 the references.
 
-**Reason:** The [Rust tree](../../../crates/pyxel-core/src/cube/node.rs) owns children
-and holds weak parent links to avoid an `Rc` cycle. The
-[Python wrapper](../../../crates/pyxel-binding/src/cube/node.rs) retains the original
+**Reason:** The [Rust tree](../../../crates/pyxel-core/src/cube/node.rs) owns
+children and holds weak parent links to avoid an `Rc` cycle. The [Python
+wrapper](../../../crates/pyxel-binding/src/cube/node.rs) retains the original
 objects so subclass state, callbacks, and parent identity survive tree
 operations. Its strong Python links participate in cyclic garbage collection.
-[Raycast results](../../../crates/pyxel-binding/src/cube/raycast_hit.rs) likewise
-retain the original node and expose that reference to the collector. Rust's
-weak parent link cannot replace this Python responsibility.
+[Raycast results](../../../crates/pyxel-binding/src/cube/raycast_hit.rs)
+likewise retain the original node and expose that reference to the collector.
+Rust's weak parent link cannot replace this Python responsibility.

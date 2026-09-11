@@ -1,6 +1,7 @@
 # Distribution Contract Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
+[Audit and decision records](../design-audit.md#decision-records) · [Public
+Contract policy](../design-policy.md#public-contract)
 
 ## Crates and Wheels
 
@@ -8,8 +9,8 @@
 
 **Decision:** Keep `publish = false` in the
 [core](../../../crates/pyxel-core/Cargo.toml) and
-[binding](../../../crates/pyxel-binding/Cargo.toml) manifests. These crates are not
-distributed through crates.io.
+[binding](../../../crates/pyxel-binding/Cargo.toml) manifests. These crates are
+not distributed through crates.io.
 
 **Reason:** The core and binding are built together for Pyxel; maintaining a
 separately published Rust package is outside the intended distribution scope.
@@ -27,15 +28,15 @@ platform tag as a separate compatibility unit whose producers and consumers
 change together.
 
 **Reason:** The [binding manifest](../../../crates/pyxel-binding/Cargo.toml)
-selects `abi3-py311`, matching
-[project metadata](../../../python/pyproject.toml). The interpreter used by
-[wheel builds](../../../.github/workflows/build.yml) can be newer without raising
-the package minimum. Web compatibility also depends on the
-[build flags](../../../Makefile), the Pyodide version selected by the
-[web runtime](../../../wasm/pyxel.js), and the tags checked by the
-[wheel tools](../../../scripts/check_wasm_wheel).
-Matching version strings alone does not establish that the toolchain works;
-build and runtime verification still apply to the selected targets.
+selects `abi3-py311`, matching [project
+metadata](../../../python/pyproject.toml). The interpreter used by [wheel
+builds](../../../.github/workflows/build.yml) can be newer without raising the
+package minimum. Web compatibility also depends on the [build
+flags](../../../Makefile), the Pyodide version selected by the [web
+runtime](../../../wasm/pyxel.js), and the tags checked by the [wheel
+tools](../../../scripts/check_wasm_wheel). Matching version strings alone does
+not establish that the toolchain works; build and runtime verification still
+apply to the selected targets.
 
 ### SDL2 linkage and Linux fallback
 
@@ -62,10 +63,11 @@ runtime's wheel reference before removing obsolete wheels.
 
 **Reason:** A successful import can still load stale Python sources.
 [check_wasm_wheel](../../../scripts/check_wasm_wheel) compares the package with
-its source owners, while [install_wasm_wheel](../../../scripts/install_wasm_wheel)
-updates the artifact and its consumer. The
-[build target](../../../Makefile) runs them in that order. Packaging exclusions
-prevent cache inclusion; inspecting the built artifact verifies that boundary.
+its source owners, while
+[install_wasm_wheel](../../../scripts/install_wasm_wheel) updates the artifact
+and its consumer. The [build target](../../../Makefile) runs them in that order.
+Packaging exclusions prevent cache inclusion; inspecting the built artifact
+verifies that boundary.
 
 The installer uses separate replacements, not a transaction covering both files.
 A failure can leave an unreferenced new wheel, or replace a same-version wheel
@@ -115,8 +117,8 @@ the bootstrap script and PyInstaller build/spec files. Clean up that workspace,
 leaving unrelated user files and the requested distribution output intact.
 
 **Reason:** A shared work directory or deleting `build/` and a same-named spec
-file in the caller's directory can affect another export or the user's work.
-The [export command](../../../python/pyxel/cli.py) owns only its temporary files.
+file in the caller's directory can affect another export or the user's work. The
+[export command](../../../python/pyxel/cli.py) owns only its temporary files.
 Preserve the requested app's filename in the bootstrap and data mapping;
 resolving a symlink for filesystem access must not silently rename that packaged
 input.
@@ -135,5 +137,6 @@ cause unrelated side effects. Parent initializers have their own imports even
 when the source names only a leaf module. A `from` target can also be an
 attribute, so it is not automatically another system module. Static discovery
 does not promise to find arbitrary dynamically constructed imports. Its
-visited-file identity serves a different purpose from
-[preserving directory aliases during packaging](public-contract-python.md#directory-links-in-packaging-and-watching).
+visited-file identity serves a different purpose from [preserving directory
+aliases during
+packaging](public-contract-python.md#directory-links-in-packaging-and-watching).

@@ -1,6 +1,7 @@
 # Comment Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#comments)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code
+policy](../design-policy.md#comments)
 
 ## Across Languages
 
@@ -21,8 +22,9 @@ or preserve an external notice.
 
 **Decision:** Write comments in English. Use ordinary comments rather than Rust
 documentation comments, Python docstrings, or JSDoc blocks. The exception is the
-generated docstrings in `python/pyxel/__init__.pyi`, whose descriptions come from
-the [documentation sources](documentation.md#sources-of-generated-guides-and-stub-docstrings).
+generated docstrings in `python/pyxel/__init__.pyi`, whose descriptions come
+from the [documentation
+sources](documentation.md#sources-of-generated-guides-and-stub-docstrings).
 
 A one-line group label uses sentence case without decorative banners or a
 terminal period. Sentence comments use normal punctuation; a single sentence
@@ -39,13 +41,13 @@ API prose inside implementation files would create competing descriptions.
 **Decision:** Use a heading to name a consecutive group of definitions by its
 shared responsibility. Put it before the group's first member, including that
 member's attributes, decorators, or explanatory comment. A comment that explains
-the whole group follows the heading directly; the
-[blank lines after the heading](source-code-blank-lines.md#comments-at-group-boundaries)
-follow that block. Keep supporting constants and helpers with the group they
-serve. A class, trait implementation, module, or single clearly named operation
-does not need another label merely to repeat its declaration, and an operation
-with its private helpers needs no heading when the enclosing structure already
-identifies that responsibility.
+the whole group follows the heading directly; the [blank lines after the
+heading](source-code-blank-lines.md#comments-at-group-boundaries) follow that
+block. Keep supporting constants and helpers with the group they serve. A class,
+trait implementation, module, or single clearly named operation does not need
+another label merely to repeat its declaration, and an operation with its
+private helpers needs no heading when the enclosing structure already identifies
+that responsibility.
 
 Headings provide navigation, not lexical scope. A standalone constructor,
 protocol method, registration function, or startup block does not need a closing
@@ -74,13 +76,14 @@ statement.
 
 ### Python conversion and lifetime boundaries
 
-**Decision:** Keep the [Python reentry](public-contract-rust-python.md#python-reentry-while-accessing-mutable-resources)
-explanation at the shared conversion and sequence helpers in
-[binding utils](../../../crates/pyxel-binding/src/utils.rs). Their comments identify
-when Python can invalidate a resource index or access a borrowed resource;
-individual forwarding methods do not repeat the general explanation.
-Describe the `_pyxel_owner` reference where the ctypes view is created: it
-retains the owner, without promising protection against buffer reallocation.
+**Decision:** Keep the [Python
+reentry](public-contract-rust-python.md#python-reentry-while-accessing-mutable-resources)
+explanation at the shared conversion and sequence helpers in [binding
+utils](../../../crates/pyxel-binding/src/utils.rs). Their comments identify when
+Python can invalidate a resource index or access a borrowed resource; individual
+forwarding methods do not repeat the general explanation. Describe the
+`_pyxel_owner` reference where the ctypes view is created: it retains the owner,
+without promising protection against buffer reallocation.
 
 **Reason:** Conversion and allocation can execute Python code despite looking
 like ordinary Rust operations. A ctypes view made from an address likewise
@@ -105,13 +108,15 @@ chosen values exercise the tested property.
 
 ### UI interface list notation and grouping
 
-**Decision:** Each component class in the [editor](../../../python/pyxel/editor/)
-and [widget framework](../../../python/pyxel/editor/widgets/) opens with a compact
-summary of its interface: `# Variables:` followed by `# Events:`, with each
-listed name indented after the comment marker. Retain the `_var` suffix, write
-event arguments as `change (value)`, and use `-> value` for the transforming
-`get` and `set` listeners of [WidgetVar](../../../python/pyxel/editor/widgets/widget_var.py).
-Keep both categories and write `none` when a category has no entries.
+**Decision:** Each component class in the
+[editor](../../../python/pyxel/editor/) and [widget
+framework](../../../python/pyxel/editor/widgets/) opens with a compact summary
+of its interface: `# Variables:` followed by `# Events:`, with each listed name
+indented after the comment marker. Retain the `_var` suffix, write event
+arguments as `change (value)`, and use `-> value` for the transforming `get` and
+`set` listeners of
+[WidgetVar](../../../python/pyxel/editor/widgets/widget_var.py). Keep both
+categories and write `none` when a category has no entries.
 
 List the members relevant to using the component in that file, including
 inherited members that form its interface, such as `is_pressed_var` and `press`
