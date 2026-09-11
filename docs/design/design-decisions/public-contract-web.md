@@ -116,10 +116,11 @@ the local runtime; preserve instructional examples in page bodies.
 **Reason:** [make run-wasm](../../../Makefile) builds a local runtime for
 inspection. Loading an unrelated CDN build would defeat that purpose.
 [start_showcase](../../../scripts/start_showcase) limits resolved file paths to
-the asset roots, rewrites page headers, and supplies a service worker where
-the browser supports it. Its network-accessible listener does not make it a
-general repository file server. These choices concern the showcase server; they neither prescribe public hosting nor guarantee service-worker
-support on every HTTP origin.
+the asset roots, rewrites page headers, and supplies a service worker where the
+browser supports it. Its network-accessible listener does not make it a general
+repository file server. These choices concern the showcase server; they neither
+prescribe public hosting nor guarantee service-worker support on every HTTP
+origin.
 
 Service-worker registration is optional. Its existing warning handles both a
 synchronous throw and a rejected registration promise; neither should reach the
