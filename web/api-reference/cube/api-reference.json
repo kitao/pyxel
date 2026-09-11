@@ -6654,7 +6654,7 @@
           "signature": "on_update()",
           "description": {
             "en": "Per-frame update hook, called by update() in tree order. Override it in a subclass.",
-            "cn": "逐帧更新钩子，由 update() 按树顺序调用。请在子类中重写它。",
+            "cn": "逐帧更新钩子，由 update() 按树顺序调用。在子类中重写它。",
             "de": "Update-Hook pro Frame, von update() in Baumreihenfolge aufgerufen. Überschreiben Sie ihn in einer Unterklasse.",
             "es": "Hook de actualización por fotograma, llamado por update() en orden de árbol. Sobrescríbalo en una subclase.",
             "fr": "Méthode de rappel de mise à jour par image, appelée par update() dans l'ordre de l'arbre. Redéfinissez-la dans une sous-classe.",
@@ -6677,7 +6677,7 @@
           "signature": "on_draw()",
           "description": {
             "en": "Per-frame draw hook, called by draw() in tree order. Call draw commands from here.",
-            "cn": "逐帧绘制钩子，由 draw() 按树顺序调用。请从这里调用绘制命令。",
+            "cn": "逐帧绘制钩子，由 draw() 按树顺序调用。从这里调用绘制命令。",
             "de": "Zeichen-Hook pro Frame, von draw() in Baumreihenfolge aufgerufen. Rufen Sie Zeichenbefehle von hier aus auf.",
             "es": "Hook de dibujo por fotograma, llamado por draw() en orden de árbol. Llame los comandos de dibujo desde aquí.",
             "fr": "Méthode de rappel de dessin par image, appelée par draw() dans l'ordre de l'arbre. Appelez les commandes de dessin depuis ici.",
