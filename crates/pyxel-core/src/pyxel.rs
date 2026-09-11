@@ -36,6 +36,7 @@ pub struct Pyxel {
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 // Singleton
+
 thread_local! {
     static PYXEL: &'static RefCell<Option<Pyxel>> =
         Box::leak(Box::new(RefCell::new(None)));
@@ -85,6 +86,7 @@ pub fn quit_callback() -> RefMut<'static, Option<Box<dyn FnMut() + Send>>> {
 }
 
 // Macros for global variables
+
 macro_rules! define_static {
     ($func:ident, $static:ident, $type:ty, $default:expr) => {
         thread_local! {
@@ -364,7 +366,7 @@ pub fn reset_statics() {
     *quit_callback() = None;
 }
 
-// Init functions for define_global!
+// Init functions for the global definitions
 
 fn init_images() -> Vec<RcImage> {
     (0..NUM_IMAGES)

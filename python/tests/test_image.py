@@ -379,6 +379,23 @@ class TestImageIO:
             img.save(str(path), 2_147_483_649)
         assert path.read_bytes() == b"original destination"
 
+    def test_save_uses_last_color_beyond_palette(self, tmp_path):
+        img = pyxel.Image(2, 1)
+        img.pset(0, 0, 1)
+        img.pset(1, 0, 15)
+        path = str(tmp_path / "beyond_palette.png")
+
+        original_colors = list(pyxel.colors)
+        try:
+            pyxel.colors[:] = [0x102030, 0x405060]
+            img.save(path, 1)
+        finally:
+            pyxel.colors[:] = original_colors
+        with PIL.Image.open(path) as image:
+            rgb = image.convert("RGB")
+            assert rgb.getpixel((0, 0)) == (0x40, 0x50, 0x60)
+            assert rgb.getpixel((1, 0)) == (0x40, 0x50, 0x60)
+
     def test_from_image_with_include_colors(self, assets_dir):
         path = str(assets_dir / "cat_16x16.png")
         with PIL.Image.open(path) as source:

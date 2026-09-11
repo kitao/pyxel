@@ -79,10 +79,17 @@ class PyxelEditElement extends PyxelBaseElement {
   }
 }
 
-const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
+const _launchPyxelFromElement = (params) => {
+  launchPyxel(params).catch(_displayFatalErrorOverlay);
+};
 
-const _encodeUrlPath = (path) =>
-  path.split("/").map(encodeURIComponent).join("/");
+const _registerCustomElements = () => {
+  window.customElements.define("pyxel-run", PyxelRunElement);
+  window.customElements.define("pyxel-play", PyxelPlayElement);
+  window.customElements.define("pyxel-edit", PyxelEditElement);
+};
+
+// Shared runtime state and input workarounds
 
 window.pyxelContext = {
   resolveInput: null,
@@ -635,6 +642,9 @@ const _displayFatalErrorOverlay = (error) => {
 
 // File operations
 
+const _encodeUrlPath = (path) =>
+  path.split("/").map(encodeURIComponent).join("/");
+
 // Mirror requested files from the hosting page into Pyodide's filesystem.
 const _hookFileOperations = (pyodide, root) => {
   const fs = pyodide.FS;
@@ -948,6 +958,8 @@ const _addVirtualGamepad = (mode) => {
 
 // Command execution
 
+const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
+
 const _installBuiltinPackages = async (pyodide, packages) => {
   if (!packages) {
     return;
@@ -1019,18 +1031,6 @@ const _executePyxelCommand = async (pyodide, params) => {
       _displayFatalErrorOverlay(error);
     }
   }
-};
-
-// Custom element helpers
-
-const _launchPyxelFromElement = (params) => {
-  launchPyxel(params).catch(_displayFatalErrorOverlay);
-};
-
-const _registerCustomElements = () => {
-  window.customElements.define("pyxel-run", PyxelRunElement);
-  window.customElements.define("pyxel-play", PyxelPlayElement);
-  window.customElements.define("pyxel-edit", PyxelEditElement);
 };
 
 _initialize();

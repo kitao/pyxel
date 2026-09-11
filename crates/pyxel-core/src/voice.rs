@@ -828,6 +828,7 @@ mod tests {
     use super::*;
     use crate::tone::{Tone, ToneSample};
 
+    // Above the f32 rounding of unit-range level math, below the smallest expected step
     const APPROX_EPSILON: f32 = 1e-4;
 
     fn approx_eq(a: f32, b: f32) -> bool {

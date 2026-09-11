@@ -244,7 +244,7 @@ impl Image {
 
         for y in 0..height {
             for x in 0..width {
-                let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
+                let rgb = color_to_rgb24(&colors, self.canvas.read_data(x as usize, y as usize));
                 let (r, g, b) = rgb24_to_rgb8(rgb);
                 image.put_pixel(x, y, image::Rgb([r, g, b]));
             }
@@ -698,15 +698,10 @@ impl Image {
 
             let image_x = tile.0 as i32 * tile_size + (source_x & TILE_MASK);
             let image_y = tile.1 as i32 * tile_size + (source_y & TILE_MASK);
-            let pixel = if image_x >= 0
-                && image_x < image_width
-                && image_y >= 0
-                && image_y < image_height
-            {
-                image_canvas.read_data(image_x as usize, image_y as usize)
-            } else {
-                0
-            };
+            if image_x < 0 || image_x >= image_width || image_y < 0 || image_y >= image_height {
+                return None;
+            }
+            let pixel = image_canvas.read_data(image_x as usize, image_y as usize);
             if transparent.is_some_and(|value| value == pixel) {
                 return None;
             }
@@ -953,6 +948,15 @@ impl Image {
         let db = b1 as f32 - b2 as f32;
         dr * dr + dg * dg + db * db
     }
+}
+
+// Saving follows the display, whose palette texture samples with CLAMP_TO_EDGE:
+// a pixel value past the palette resolves to its last color.
+pub(crate) fn color_to_rgb24(colors: &[Rgb24], color: Color) -> Rgb24 {
+    let Some(last_index) = colors.len().checked_sub(1) else {
+        panic!("Number of colors must be between 1 and {MAX_COLORS}");
+    };
+    colors[(color as usize).min(last_index)]
 }
 
 pub fn rgb24_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {

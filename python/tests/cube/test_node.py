@@ -317,6 +317,27 @@ class TestImmediateDrawSafety:
         uvs = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
         Node().sprite(Vec3.ZERO, pyxel.images[0], uvs, 1.0, 1.0, colkey=0)
 
+    def test_prim_with_primitive(self):
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
+            cull=Primitive.CULL_BACK,
+        )
+        Node().prim(Mat4.IDENTITY, primitive=prim, col_img=7)
+
+    def test_prim_col_img_accepts_image(self):
+        img = pyxel.images[0]
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
+            uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
+        )
+        Node().prim(Mat4.IDENTITY, prim, col_img=img, colkey=0)
+
+
+class TestFromMesh:
     def test_from_mesh_builds_named_node_tree(self):
         prim = Primitive(
             Primitive.MODE_TRIANGLES,
@@ -386,29 +407,6 @@ assert all(child.parent is root for child in root.children)
         assert result.returncode == 0, result.stdout + result.stderr
         assert result.stderr == ""
 
-    def test_prim_with_primitive(self):
-        prim = Primitive(
-            Primitive.MODE_TRIANGLES,
-            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-            [0, 1, 2],
-            cull=Primitive.CULL_BACK,
-        )
-        Node().prim(Mat4.IDENTITY, primitive=prim, col_img=7)
-
-    def test_prim_col_img_accepts_image(self):
-        img = pyxel.images[0]
-        prim = Primitive(
-            Primitive.MODE_TRIANGLES,
-            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-            [0, 1, 2],
-            uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
-        )
-        Node().prim(Mat4.IDENTITY, prim, col_img=img, colkey=0)
-
-    def test_mesh_col_img_rejects_other_types(self):
-        with raises_exact(TypeError, "col_img must be int or Image"):
-            Mesh(col_img="7")
-
     def test_mesh_col_img_accepts_image(self):
         img = pyxel.images[0]
         prim = Primitive(
@@ -448,6 +446,7 @@ class TestStateSetters:
         n.dither(0.5)
         n.depth_test(False)
         n.depth_write(False)
+        n.depth_offset(1.0)
         n.shaded(False)
 
     def test_dither_inside_on_draw_affects_subsequent_draws(self):
@@ -473,6 +472,15 @@ class TestStateSetters:
                 self.depth_write(False)
                 self.pset(Vec3.ZERO, 7)
                 self.depth_write(True)
+                self.pset(Vec3(0, 0, -1), 8)
+
+        assert self._draw(Probe()) == 8
+
+    def test_depth_offset_inside_on_draw_affects_subsequent_draws(self):
+        class Probe(Node):
+            def on_draw(self):
+                self.pset(Vec3.ZERO, 7)
+                self.depth_offset(-2.0)
                 self.pset(Vec3(0, 0, -1), 8)
 
         assert self._draw(Probe()) == 8

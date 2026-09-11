@@ -36,6 +36,10 @@ def run_editor_subprocess(editor, resource_file, out_dir):
     _run_subprocess("editor", editor, str(resource_file), str(out_dir))
 
 
+def _run_subprocess(*args):
+    subprocess.run([sys.executable, str(_RUNNER), *args], check=True, timeout=60)
+
+
 # Captured-result collection
 
 
@@ -84,7 +88,3 @@ def compare_or_update_all(name, results, refs_dir, update_references):
         pytest.skip(f"References updated: {', '.join(updated)}")
     if failures:
         pytest.fail("\n".join(failures))
-
-
-def _run_subprocess(*args):
-    subprocess.run([sys.executable, str(_RUNNER), *args], check=True, timeout=60)

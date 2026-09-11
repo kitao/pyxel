@@ -138,9 +138,7 @@ def test_stub_exposes_resource_lists(tmp_path):
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_stub_rejects_resource_property_assignment(
-    tmp_path,
-):
+def test_stub_rejects_resource_property_assignment(tmp_path):
     source = tmp_path / "invalid_resource_operations.py"
     source.write_text(
         "import pyxel\n"

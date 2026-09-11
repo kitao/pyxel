@@ -13,7 +13,7 @@ use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::RcMesh;
 use crate::cube::node::{Node, RcNode};
-use crate::cube::raster::{mat_apply, ClipRect, Mat4x4};
+use crate::cube::raster::{ClipRect, Mat4x4};
 use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
 
@@ -950,9 +950,9 @@ impl Scene {
 
         m.with_collision_bvh(|bvh| {
             bvh.query_aabb(&query_local, |tri| {
-                let v0 = mat_apply(world_mesh, &bvh.positions[tri[0] as usize]);
-                let v1 = mat_apply(world_mesh, &bvh.positions[tri[1] as usize]);
-                let v2 = mat_apply(world_mesh, &bvh.positions[tri[2] as usize]);
+                let v0 = world_mesh.mul_vec_value(&bvh.positions[tri[0] as usize]);
+                let v1 = world_mesh.mul_vec_value(&bvh.positions[tri[1] as usize]);
+                let v2 = world_mesh.mul_vec_value(&bvh.positions[tri[2] as usize]);
 
                 let Some((toi, geom)) = swept_sphere_vs_triangle(previous, rel_vel, r, v0, v1, v2)
                 else {
@@ -1027,9 +1027,9 @@ impl Scene {
 
         m.with_collision_bvh(|bvh| {
             bvh.query_aabb(&query_local, |tri| {
-                let v0 = mat_apply(world_mesh, &bvh.positions[tri[0] as usize]);
-                let v1 = mat_apply(world_mesh, &bvh.positions[tri[1] as usize]);
-                let v2 = mat_apply(world_mesh, &bvh.positions[tri[2] as usize]);
+                let v0 = world_mesh.mul_vec_value(&bvh.positions[tri[0] as usize]);
+                let v1 = world_mesh.mul_vec_value(&bvh.positions[tri[1] as usize]);
+                let v2 = world_mesh.mul_vec_value(&bvh.positions[tri[2] as usize]);
 
                 let Some((toi, geom)) =
                     swept_segment_vs_triangle(prev_top, prev_bot, rel_vel, r, v0, v1, v2)
@@ -1073,9 +1073,9 @@ impl Scene {
 
         m.with_collision_bvh(|bvh| {
             bvh.query_aabb(&query_local, |tri| {
-                let v0 = mat_apply(world_mesh, &bvh.positions[tri[0] as usize]);
-                let v1 = mat_apply(world_mesh, &bvh.positions[tri[1] as usize]);
-                let v2 = mat_apply(world_mesh, &bvh.positions[tri[2] as usize]);
+                let v0 = world_mesh.mul_vec_value(&bvh.positions[tri[0] as usize]);
+                let v1 = world_mesh.mul_vec_value(&bvh.positions[tri[1] as usize]);
+                let v2 = world_mesh.mul_vec_value(&bvh.positions[tri[2] as usize]);
 
                 let Some((toi, geom)) =
                     swept_obb_vs_triangle(world_box, half, r, rel_vel, v0, v1, v2)
@@ -1865,9 +1865,9 @@ fn narrow_phase_mesh_vs_dynamic(
             let v2_local = bvh.positions[tri[2] as usize];
             // Lift the triangle into world space for the actual hit
             // test.
-            let v0 = mat_apply(world_mesh, &v0_local);
-            let v1 = mat_apply(world_mesh, &v1_local);
-            let v2 = mat_apply(world_mesh, &v2_local);
+            let v0 = world_mesh.mul_vec_value(&v0_local);
+            let v1 = world_mesh.mul_vec_value(&v1_local);
+            let v2 = world_mesh.mul_vec_value(&v2_local);
 
             let hit = match shape_dyn {
                 ColliderShape::Sphere { r } => sphere_vs_triangle(dyn_center, r, v0, v1, v2),
@@ -1879,11 +1879,11 @@ fn narrow_phase_mesh_vs_dynamic(
                     // Solve in the body-local frame where the box is
                     // axis-aligned, then map the contact back to world
                     // (rotation + translation only, so depth carries).
-                    let l0 = mat_apply(&dyn_inv, &v0);
-                    let l1 = mat_apply(&dyn_inv, &v1);
-                    let l2 = mat_apply(&dyn_inv, &v2);
+                    let l0 = dyn_inv.mul_vec_value(&v0);
+                    let l1 = dyn_inv.mul_vec_value(&v1);
+                    let l2 = dyn_inv.mul_vec_value(&v2);
                     local_box_vs_triangle(half, r, l0, l1, l2).map(|g| ContactGeom {
-                        point: mat_apply(world_dyn, &g.point),
+                        point: world_dyn.mul_vec_value(&g.point),
                         normal: world_dyn.mul_dir_value(&g.normal),
                         depth: g.depth,
                     })
@@ -1959,7 +1959,7 @@ fn transform_aabb_to_local(inv: &Mat4, aabb: &Aabb) -> Aabb {
     };
 
     for c in &corners {
-        let local = mat_apply(inv, c);
+        let local = inv.mul_vec_value(c);
         min.x = min.x.min(local.x);
         min.y = min.y.min(local.y);
         min.z = min.z.min(local.z);
@@ -2245,6 +2245,7 @@ fn swept_segment_vs_triangle(
     let mut lower = 0.0;
     let mut t = 0.0;
 
+    // Conservatively advance to the segment/triangle first contact
     for _ in 0..24 {
         let a0 = vec_add(prev_a0, vec_mul(velocity, t));
         let a1 = vec_add(prev_a1, vec_mul(velocity, t));
@@ -3053,6 +3054,7 @@ mod tests {
         Vec3 { x, y, z }
     }
 
+    // 1e-4 exceeds the f32 rounding of these unit-scale values and stays below any expected difference
     fn assert_vec3_close(actual: Vec3, expected: Vec3) {
         assert!(
             (actual.x - expected.x).abs() < 1e-4
@@ -4024,7 +4026,7 @@ mod tests {
         assert_eq!((delta.x, delta.y, delta.z), (0.0, 0.0, 0.0));
     }
 
-    // Two-triangle floor fixture for mesh raycast tests
+    // Two-triangle floor fixture for mesh contact and raycast tests
     fn mesh_floor_root() -> RcNode {
         use crate::cube::collider::Collider;
         use crate::cube::mesh::Mesh;

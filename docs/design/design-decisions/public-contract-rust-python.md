@@ -142,7 +142,10 @@ Core parsers and validators own their failure conditions and messages; the
 bindings convert the returned failure at the established Python boundary.
 Do not repeat those checks at each call site. Internal borrow, initialization,
 built-in shader, and trusted-data invariants retain native failure handling;
-they do not gain a blanket Python exception conversion.
+they do not gain a blanket Python exception conversion. The palette's 1 to 256
+color range is such an invariant, checked natively when rendering;
+[saving](public-contract-python.md#palette-lookups-when-saving-images) reports
+an empty palette the same way.
 
 **Reason:** Rendering and playback repeatedly encounter empty or inactive
 state. Reporting it would interrupt normal use and add work to hot paths.

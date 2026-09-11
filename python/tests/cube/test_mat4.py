@@ -185,6 +185,7 @@ class TestCoordinateConversions:
         assert local.to_world(outer) == inner
 
 
+# 1e-4 exceeds the f32 rounding of unit-scale values and stays below any expected difference
 def approx_v(a, b, tol=1e-4):
     return (
         isclose(a.x, b.x, abs_tol=tol)

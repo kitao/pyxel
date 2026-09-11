@@ -82,14 +82,6 @@ CAPTURE_PLANS = {
         {"frame": 100, "press": [pyxel.KEY_UP, pyxel.KEY_SPACE]},
     ],
     "c06_3d_physics": [{"frame": 1}, {"frame": 70}, {"frame": 140}],
-    "cube_physics_character": [{"frame": 1}, {"frame": 60}],
-    "cube_physics_shoot": [
-        {"frame": 1},
-        {"frame": 2, "press": [pyxel.KEY_SPACE], "capture": False},
-        {"frame": 60},
-    ],
-    "cube_physics_stack": [{"frame": 1}, {"frame": 60}],
-    "cube_physics_terrain": [{"frame": 1}, {"frame": 60}],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
@@ -101,14 +93,6 @@ CAPTURE_PLANS = {
     ],
     # while+flip() loop
     "99_flip_animation": [{"frame": 1}, {"frame": 30}],
-}
-
-# Temporary Cube experiments, outside the numbered sample set.
-SCRATCH_EXAMPLES = {
-    "cube_physics_character",
-    "cube_physics_shoot",
-    "cube_physics_stack",
-    "cube_physics_terrain",
 }
 
 FLIP_EXAMPLES = {"99_flip_animation"}
@@ -167,15 +151,13 @@ assert list(wave) == expected, list(wave)
         assert result.returncode == 0, result.stderr
 
     def test_numbered_examples_have_capture_plans(self):
-        planned = set(CAPTURE_PLANS) - SCRATCH_EXAMPLES
+        planned = set(CAPTURE_PLANS)
         examples = {
             script.stem
             for script in EXAMPLES_DIR.glob("*.py")
             if not script.name.startswith("__")
         }
-        examples.update(
-            script.stem for script in (EXAMPLES_DIR / "cube").glob("c[0-9][0-9]_*.py")
-        )
+        examples.update(script.stem for script in (EXAMPLES_DIR / "cube").glob("*.py"))
         assert planned == examples
 
     @pytest.mark.parametrize(

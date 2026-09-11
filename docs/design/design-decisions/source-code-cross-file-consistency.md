@@ -11,12 +11,13 @@ name. Other errors and warnings follow consistent, idiomatic phrasing within
 their failure-kind family across files and languages. Python-standard diagnostics
 follow the [Python protocol decision](public-contract-rust-python.md#python-conversion-and-sequence-errors).
 
-Repository wheel/version maintenance tools send failure diagnostics to standard
-error and successful results to standard output. The operation-specific reason
-and nonzero exit status remain useful to both a contributor and an automated
-caller. This applies to `check_wasm_wheel`, `install_wasm_wheel`, and
-`update_version`; it does not require wrapping every possible failure or
-standardizing unrelated runtime output.
+Repository wheel/version maintenance tools send failure diagnostics prefixed
+`error: ` (usage text excepted) to standard error and successful results to
+standard output. The operation-specific reason and nonzero exit status remain
+useful to both a contributor and an automated caller. This applies to
+`check_wasm_wheel`, `install_wasm_wheel`, and `update_version`; it does not
+require wrapping every possible failure or standardizing unrelated runtime
+output.
 
 For native file operations, keep the operation and quoted filename in
 `Failed to open/read/parse/create/save file '{filename}'` messages. Use the
@@ -56,14 +57,17 @@ language conventions. The linked entries explain the concrete correspondences.
 ### Mouse positioning and input readback
 
 **Decision:** Keep logical-to-window mouse positioning consistent with the
-inverse [input mapping](../../../crates/pyxel-core/src/input.rs), including fractional
-screen scale and screen offsets. The inverse truncates toward zero, so the
-forward conversion rounds the scaled displacement away from zero. Its `f64`
-product avoids premature rounding below the requested logical pixel; truncating
-the scale first would lose fractional scaling altogether. The
-[display calculation](../../../crates/pyxel-core/src/system.rs) supplies a scale of
-at least one. This records the coordinate conversion, not a guarantee about
-physical pointer behavior on every window system.
+inverse [input mapping](../../../crates/pyxel-core/src/input.rs), including
+fractional screen scale and screen offsets: the forward conversion rounds the
+scaled displacement away from zero and computes it as an `f64` product. This
+records the coordinate conversion, not a guarantee about physical pointer
+behavior on every window system.
+
+**Reason:** The inverse truncates toward zero, so rounding away from zero lands
+on the requested logical pixel; the `f64` product avoids premature rounding
+below it, and truncating the scale first would lose fractional scaling
+altogether. The [display calculation](../../../crates/pyxel-core/src/system.rs)
+supplies a scale of at least one.
 
 ## Python
 

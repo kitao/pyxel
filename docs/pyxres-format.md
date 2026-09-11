@@ -45,7 +45,7 @@ Pyxel writes `format_version = 1` and accepts format versions up to **4** when l
 
 ## Images
 
-By default, **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette; 0–255 for the extended palette of up to 256 colors).
+By default, **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0-15 for the default palette; 0-255 for the extended palette of up to 256 colors).
 
 ```toml
 [[images]]
@@ -111,7 +111,7 @@ All fields are required. Empty sounds use empty arrays (e.g., `notes = []`).
 | Field | Type | Description |
 | --- | --- | --- |
 | `notes` | array of i8 | Note values. -1 = rest, 0 (C0) to 59 (B4) |
-| `tones` | array of u8 | 0 = Triangle, 1 = Square, 2 = Pulse, 3 = Noise |
+| `tones` | array of u8 | Index into the tone bank. Default tones: 0 = Triangle, 1 = Square, 2 = Pulse, 3 = Noise |
 | `volumes` | array of u8 | 0 (silent) to 7 (max) |
 | `effects` | array of u8 | 0 = None, 1 = Slide, 2 = Vibrato, 3 = FadeOut, 4 = Half-FadeOut, 5 = Quarter-FadeOut |
 | `speed` | u16 | Playback speed in ticks per note (1 tick = 1/120 second). Default: 30 |

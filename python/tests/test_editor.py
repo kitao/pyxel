@@ -275,6 +275,40 @@ assert pyxel.num_user_colors == len(expected)
             f"Failed to load resource: Failed to open file '{missing}'"
         )
 
+    def test_resource_drop_keeps_title_on_save_destination(self, tmp_path):
+        code = """
+import sys
+from pathlib import Path
+
+import pyxel
+from pyxel.editor.app import App
+
+folder = Path(sys.argv[1])
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+titles = []
+title = pyxel.title
+pyxel.title = lambda text: (titles.append(text), title(text))
+
+resource = str(folder / "edited.pyxres")
+dropped = str(folder / "dropped.pyxres")
+app = App(resource, "image")
+pyxel.save(dropped)
+pyxel._dropped_files = [dropped]
+app.update_all()
+assert titles == [f"Pyxel Editor - {resource}"], titles
+"""
+
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(tmp_path)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
     @pytest.mark.parametrize("editor_type", [ImageEditor, TilemapEditor])
     def test_failed_drop_reports_load_error(self, editor_type, tmp_path, capsys):
         state = SimpleNamespace(
@@ -472,6 +506,31 @@ class TestImageViewer:
         assert viewer.viewport_x_var == 0
         assert viewer.viewport_y_var == 0
 
+    def test_tile_drag_selection_keeps_the_pressed_tile(self):
+        parent = Widget(None, 0, 0, 256, 192)
+        parent.new_var("image_index_var", 0)
+        parent.new_var("help_message_var", "")
+        parent.new_var("tilemap_index_var", 0)
+        viewer = ImageViewer(parent)
+        viewer.viewport_x_var = 8
+        viewer.viewport_y_var = 8
+        press_x = viewer.x + 1 + 7 * 8
+        press_y = viewer.y + 1 + 7 * 8
+        viewer.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, press_x, press_y)
+        assert (viewer.focus_x_var, viewer.focus_y_var) == (15, 15)
+
+        viewer.trigger_event(
+            "mouse_drag", pyxel.MOUSE_BUTTON_LEFT, press_x - 1000, press_y - 1000, 0, 0
+        )
+        assert (viewer.focus_x_var, viewer.focus_y_var) == (8, 8)
+        assert (viewer.focus_w_var, viewer.focus_h_var) == (8, 8)
+
+        viewer.trigger_event(
+            "mouse_drag", pyxel.MOUSE_BUTTON_LEFT, press_x + 1000, press_y + 1000, 0, 0
+        )
+        assert (viewer.focus_x_var, viewer.focus_y_var) == (15, 15)
+        assert (viewer.focus_w_var, viewer.focus_h_var) == (8, 8)
+
 
 class TestFieldCursor:
     @pytest.fixture
@@ -501,6 +560,19 @@ class TestFieldCursor:
         cursor.move_to(x, destination, with_select_key)
         assert (cursor.x, cursor.y) == (expected_x, destination)
         assert not cursor.is_selecting
+
+    def test_shift_only_changes_existing_values(self, cursor_fields):
+        cursor, fields = cursor_fields
+        cursor.move_to(6, 1, False)
+        cursor.shift(1)
+        cursor.move_to(0, 0, False)
+        cursor.shift(1)
+        assert fields == [[], [10, 11, 12, 13, 14, 15], [3]]
+
+        cursor.move_to(4, 1, False)
+        cursor.move_to(5, 1, True)
+        cursor.shift(1)
+        assert fields[1] == [10, 11, 12, 13, 15, 16]
 
     def test_first_music_field_click_inserts_at_clicked_position(
         self, cursor_fields, monkeypatch

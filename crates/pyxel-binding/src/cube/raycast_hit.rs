@@ -7,7 +7,6 @@ use super::vec3::Vec3;
 
 // Hand-rolled so engine-built hits can retain the scene tree's Py<Node>
 // instance; fallback wrapping is reserved for hits without that identity.
-
 #[pyclass(module = "pyxel.cube", unsendable, from_py_object)]
 pub struct RaycastHit {
     pub(crate) inner: pyxel::cube::RcRaycastHit,

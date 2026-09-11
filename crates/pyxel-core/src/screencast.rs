@@ -4,7 +4,7 @@ use std::fs::File;
 use gif::{DisposalMethod, Encoder, Frame, Repeat};
 use indexmap::IndexMap;
 
-use crate::image::{Color, Rgb24};
+use crate::image::{color_to_rgb24, Color, Rgb24};
 use crate::rect_area::RectArea;
 use crate::utils::add_file_extension;
 
@@ -23,7 +23,7 @@ struct Screen {
 impl Screen {
     fn write_rgb(&self, out: &mut [Rgb24]) {
         for (i, &color) in self.image.iter().enumerate() {
-            out[i] = self.colors[color as usize] & 0x00ff_ffff;
+            out[i] = color_to_rgb24(&self.colors, color) & 0x00ff_ffff;
         }
     }
 }
@@ -405,6 +405,8 @@ mod tests {
         screencast.capture(2, 2, &[0, 0, 0, 0], &[rgb], frame_count);
     }
 
+    // Capture
+
     #[test]
     fn test_capacity_does_not_overflow_u32() {
         let screencast = Screencast::new(1 << 31, 2);
@@ -426,6 +428,24 @@ mod tests {
         let mut rgb = [0; 3];
         screencast.screen_at(0).write_rgb(&mut rgb);
         assert_eq!(rgb, [0x0012_3456, 0x0012_3456, 0x00ff_ffff]);
+    }
+
+    #[test]
+    fn test_write_rgb_clamps_to_last_color() {
+        let mut screencast = Screencast::new(1, 1);
+        screencast.capture(3, 1, &[0, 1, 2], &[0x111111, 0x222222], 0);
+
+        let mut rgb = [0; 3];
+        screencast.screen_at(0).write_rgb(&mut rgb);
+        assert_eq!(rgb, [0x111111, 0x222222, 0x222222]);
+    }
+
+    #[test]
+    #[should_panic(expected = "Number of colors must be between 1 and 256")]
+    fn test_write_rgb_rejects_empty_palette() {
+        let mut screencast = Screencast::new(1, 1);
+        screencast.capture(1, 1, &[0], &[], 0);
+        screencast.screen_at(0).write_rgb(&mut [0]);
     }
 
     #[test]
@@ -486,6 +506,8 @@ mod tests {
         assert!(rect.is_empty());
         assert_eq!(diff, [TRANSPARENT; 4]);
     }
+
+    // Region encoding
 
     #[test]
     fn test_encode_region_color_overflow() {

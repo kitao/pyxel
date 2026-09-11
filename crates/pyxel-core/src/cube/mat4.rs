@@ -115,8 +115,6 @@ impl Mat4 {
         Self::from_rows(self.mul_mat_value(other).data)
     }
 
-    // Rc operators delegate to these allocation-free value kernels.
-
     #[must_use]
     pub fn mul_mat_value(&self, other: &Self) -> Self {
         let mut result = [[0.0; 4]; 4];
@@ -571,6 +569,7 @@ mod tests {
         *rc_ref!(rc)
     }
 
+    // 1e-4 exceeds the f32 rounding of these unit-scale values and stays below any expected difference
     fn approx_eq_mat(a: &Mat4, b: &Mat4) -> bool {
         a.data
             .iter()
@@ -626,6 +625,32 @@ mod tests {
 
         let result = deref(&m_ref.mul_mat(&rc_ref!(&i)));
         assert_eq!(result, *m_ref);
+    }
+
+    #[test]
+    fn test_mul_vec_value_applies_translation() {
+        let t = Mat4::from_translation(&Vec3 {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        });
+        let r = rc_ref!(&t).mul_vec_value(&Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        assert_eq!((r.x, r.y, r.z), (1.0, 2.0, 3.0));
+    }
+
+    #[test]
+    fn test_mul_vec_value_identity_preserves_vec3() {
+        let m = Mat4::identity();
+        let r = rc_ref!(&m).mul_vec_value(&Vec3 {
+            x: 4.0,
+            y: 5.0,
+            z: 6.0,
+        });
+        assert_eq!((r.x, r.y, r.z), (4.0, 5.0, 6.0));
     }
 
     #[test]

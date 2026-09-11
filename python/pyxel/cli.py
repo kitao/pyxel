@@ -390,7 +390,7 @@ def _check_file_under_dir(filename, dirname):
         _exit_with_error("specified file is not under the directory")
 
 
-def _resolve_pyxapp_startup_path(
+def _resolve_pyxel_app_startup_path(
     application_dir: Path, startup_path: str
 ) -> Path | None:
     if not startup_path:
@@ -491,7 +491,9 @@ def _extract_pyxel_app(pyxel_app_file):
 
     for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
         startup_path = setting_file.read_text(encoding="utf-8").strip()
-        startup_file = _resolve_pyxapp_startup_path(setting_file.parent, startup_path)
+        startup_file = _resolve_pyxel_app_startup_path(
+            setting_file.parent, startup_path
+        )
         if startup_file is None:
             _exit_with_error(
                 f"invalid startup script path in Pyxel app: {startup_path!r}"

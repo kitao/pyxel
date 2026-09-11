@@ -1625,6 +1625,7 @@ fn vec_is_finite(v: Vec3) -> bool {
 mod tests {
     use super::*;
 
+    // 1e-4 exceeds the f32 rounding of these unit-scale values and stays below any expected difference
     fn approx_eq(a: f32, b: f32) -> bool {
         (a - b).abs() < 1e-4
     }

@@ -171,15 +171,6 @@ impl Sdl2BindingsBuilder {
             .clang_args(self.bindgen_flags())
             .clang_args(self.include_flags());
 
-        if self.target_os == "windows-msvc" {
-            builder = builder
-                .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared")
-                .clang_arg("-IC:/Program Files/LLVM/lib/clang/5.0.0/include")
-                .clang_arg("-IC:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt")
-                .clang_arg("-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include")
-                .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/um");
-        }
-
         if self.target_os == "linux-gnu" {
             builder = builder
                 .clang_arg("-DSDL_VIDEO_DRIVER_X11")

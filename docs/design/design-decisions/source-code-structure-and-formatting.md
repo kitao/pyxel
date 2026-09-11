@@ -31,12 +31,10 @@ required sequence. A dependency-sorted list of every function is not the reading
 order: shared helpers can serve several entry points.
 
 **Reason:** Readers compare corresponding operations and follow one task at a
-time. Visibility and spelling do not identify that task. The
-[drawing implementations](../../../crates/pyxel-core/src/image.rs) and
-[binding properties](../../../crates/pyxel-binding/src/cube/) expose these
-operation pairs without separating their implementation support. A reorder
-needs a specific misplaced relationship; either order being legal is not such
-a reason.
+time. Visibility and spelling do not identify that task. The [drawing
+implementations](../../../crates/pyxel-core/src/image.rs) expose these operation
+pairs without separating their implementation support. A reorder needs a
+specific misplaced relationship; either order being legal is not such a reason.
 
 ### Configuration groups and ordering
 
@@ -45,24 +43,29 @@ tool-setting groups. Cargo manifests introduce the workspace or package, then
 library/benchmark targets, dependency kinds, and features where present. Python
 packaging introduces the build system, project metadata, optional dependencies,
 URLs and scripts, then Maturin settings and target specializations. Web package
-metadata precedes scripts and development dependencies.
+metadata precedes scripts and development dependencies. Ignore and attribute
+files group entries by the kind of product or asset they cover, with the group
+label identifying a distinct source ownership and each explanation attached to
+the affected entry.
 
-Sort independent metadata and dependency entries alphabetically within each
-group. Schema records, ordered arrays, command arguments, and workflow steps
-keep their meaningful order. GitHub workflows introduce name, triggers,
-permissions, environment, then jobs; shared anchor definitions precede their
-uses. Form fields follow the submission task.
+Sort independent metadata, dependency, ignore, and attribute entries
+alphabetically within each group; an attribute file puts the default text
+treatment first and orders its asset groups alphabetically by kind. Schema
+records, ordered arrays, command arguments, and workflow steps keep their
+meaningful order. GitHub workflows introduce name, triggers, permissions,
+environment, then jobs; shared anchor definitions precede their uses. Form
+fields follow the submission task.
 
 **Reason:** Alphabetical order makes independent entries predictable. It must
-not hide dependencies or the intended sequence. The
-[settings groups](#grouping-and-order-in-settingsrs) preserve those distinctions;
-a shared prefix alone does not establish one sortable group.
+not hide dependencies or the intended sequence; a shared prefix alone does not
+establish one sortable group, and one broad alphabetical list would hide the
+distinction between project build products and local environment material.
 
 ### Local outputs and versioned deliverables
 
 **Decision:** Ignore local caches, build outputs, environment files, and
 assistant workspace material. Retain generated artifacts consumed directly
-from the repository, including the Web wheel, generated guides, and stylesheet.
+from the repository, including the web wheel, generated guides, and stylesheet.
 Keep the root `/examples` shortcut separate from the packaged examples.
 
 The root README and LICENSE own the package copies created by
@@ -72,55 +75,29 @@ define wheel contents; package exclusions and artifact checks have their own
 distribution role.
 
 **Reason:** The [ignore rules](../../../.gitignore) keep local working material
-out of source discovery. The [Web loader](../../../wasm/pyxel.js), Web pages,
+out of source discovery. The [Web loader](../../../wasm/pyxel.js), web pages,
 and documentation readers consume versioned generated files without building
 them first. The examples under `python/pyxel/examples/` are teaching material
-used by packaging, `copy_examples`, tests, and Web pages; a root shortcut does
+used by packaging, `copy_examples`, tests, and web pages; a root shortcut does
 not justify ignoring that directory family.
 
 ### Makefile groups
 
-**Decision:** Keep the [Makefile](../../../Makefile) definitions in these groups:
-project directories; extensionless Python script discovery; build targets and
-reproducibility settings; WASM path remapping; build options; tool options;
-PyO3 environment; declared targets. Within build options, keep common options,
-WASM-specific additions, and native-platform SDL2 selection as separate groups.
-Within the PyO3 conditional, separate computing the Python environment from
-exporting it to the applicable targets.
-
-Keep the target sequence: default build; cleaning; dependency updates;
-formatting; native lint/build/install/test/run; WASM clean/lint/build/run;
-Web-page generation. The `.PHONY` list uses the same target groups.
+**Decision:** In the [Makefile](../../../Makefile), definitions precede the
+targets that use them, inputs precede the options and environment derived from
+them, and common build options stay apart from target-specific additions.
+Targets keep each workflow together: the default build and the maintenance
+targets (cleaning, dependency updates, formatting) come first, then the native,
+WASM, and web-page workflows. The `.PHONY` list uses the same target groups.
 
 **Reason:** Definitions introduce paths and build inputs before the flags and
 environment derived from them, then expose the commands that use them. Native
-commands own the shared build process; WASM commands specialize it through
-recursive Make calls. Keeping each workflow together makes that correspondence
-visible. Alphabetizing variables across these groups would separate inputs from
+commands own the shared build process and WASM commands specialize it through
+recursive Make calls, so keeping each workflow together makes that
+correspondence visible. Alphabetizing variables would separate inputs from
 their derivations; alphabetizing targets would scatter the workflow. The
 [opening instructions](documentation.md#contributor-workflow-and-command-instructions)
 have a separate reader-oriented sequence.
-
-### Ignore and attribute groups
-
-**Decision:** Keep [.gitignore](../../../.gitignore) in this sequence: Python
-outputs; package copies; Rust outputs; Node outputs; environment files;
-AI-tool workspace files; local shortcuts; OS files. Keep entries within each
-group together and alphabetically ordered. Package copies follow Python outputs
-because they are produced for the Python package, with their distinct source
-ownership identified by the group label.
-
-In [.gitattributes](../../../.gitattributes), keep the default text treatment
-first, then asset groups in this order: archives, audio, fonts, images, models,
-Pyxel assets. Keep each group's extensions alphabetical and its explanation
-attached to the affected entry. BDF and palette explanations do not split their
-font and Pyxel-asset groups.
-
-**Reason:** Ignore groups distinguish project build products from local
-environment and workspace material; one broad alphabetical list would hide
-that distinction. Attribute groups let readers find a file's treatment by asset
-kind. Text exceptions belong beside their related formats, where readers can
-see why they differ, without turning each exception into another section.
 
 ### Text and binary asset representation
 
@@ -178,34 +155,22 @@ record layout on the aggregate loader.
 
 ### Grouping and order in settings.rs
 
-**Decision:** Keep the main sections of
-[`settings.rs`](../../../crates/pyxel-core/src/settings.rs) in this order:
-system defaults, resource files, graphics, audio. Use the subgroup sequences
-below, with one blank line between subgroups.
+**Decision:** Group [`settings.rs`](../../../crates/pyxel-core/src/settings.rs)
+by subsystem section, with one blank line between a section's subgroups, each
+covering one nameable subject under the [inventory
+decision](source-code-blank-lines.md#declaration-inventories). System defaults
+put public startup behavior before internal coordination, resource files keep
+each format's metadata together, graphics puts capacities before built-in
+payloads, and audio puts timing before the data it drives. Within a subgroup,
+inputs precede derived values, dimensions precede their payload, identifiers
+follow their encoded numeric order, startup and capture defaults follow their
+public parameter order, and bank counts and limits follow the object or
+parameter family they describe.
 
-| Section | Subgroups, in reading order |
-| --- | --- |
-| System | Version and base directory; startup title/FPS/quit key; capture scale/duration; window sizing/background/screen modes; frame-delay measurement; icon dimensions/options/data; window/watch/reset coordination |
-| Resource files | App extension and startup marker; resource extension/archive name/format version; palette extension |
-| Graphics | Color counts; image count/size; tilemap count/size; tile size/shift/mask; palette data and color identifiers; cursor dimensions/data; font character range/layout/data |
-| Audio | Clock/sample format and derived clocks per sample; buffering/render step; gain representation; control/interpolation and musical timing; vibrato; bank counts; channel/sound defaults; tone identifiers; effect identifiers; volume/effect limits; default tone data |
-
-Within these groups, inputs precede derived values, dimensions precede their
-payload, and identifiers follow their encoded numeric order. Startup and capture
-defaults follow their public parameter order. Audio bank counts follow the object
-family `Channel`, `Tone`, `Sound`, `Music`, as do the
-[resource initializers](../../../crates/pyxel-core/src/pyxel.rs).
-Control timing presents voice rate, note interpolation, ticks per quarter note,
-then ticks per second; vibrato presents period then depth. Volume precedes effect
-in the limits, matching `Sound.set`'s field order.
-
-**Reason:** Readers first find the subsystem, then the setting's role. Public
-startup behavior precedes internal coordination; each resource format keeps its
-metadata together; graphics capacities precede built-in payloads; audio timing
-precedes the sound data it drives. Parameter, representation, and object-family
-orders make related declarations recognizable without reinterpreting importance
-or alphabetizing their names at each review. These are selected reading orders,
-not a claim that every other order is inherently unreadable.
+**Reason:** Readers first find the subsystem, then the setting's role. These
+orders make related declarations recognizable without reinterpreting
+importance or alphabetizing their names at each review. They are selected
+reading orders, not a claim that every other order is inherently unreadable.
 
 ## Python
 
@@ -215,9 +180,11 @@ not a claim that every other order is inherently unreadable.
 ordinary operations and support, registered event handlers, then drawing, where
 those groups exist. Keep visual-part helpers with drawing. The broader Widget
 and FieldCursor facilities instead keep their responsibility groups together:
-geometry, events, and variable binding; or movement, editing, and input handling.
-Use the [comment group vocabulary](source-code-comments.md) for groups that need
-labels, without creating empty groups or moving methods to consolidate labels.
+geometry, events, and variable binding; or movement, editing, and input
+handling. Use the [comment group
+vocabulary](source-code-comments.md#method-groups-in-the-editor-and-widget-framework)
+for groups that need labels, without creating empty groups or moving methods to
+consolidate labels.
 
 **Reason:** A control reader learns its interface, interaction, and appearance.
 A framework reader needs the entry points and support for one facility together.
@@ -244,36 +211,22 @@ recognizable when the same contract needs another case.
 
 ### Editor and widget settings groups
 
-**Decision:** In [widget settings](../../../python/pyxel/editor/widgets/settings.py),
-use this sequence: hold/repeat timing and click time/distance;
-panel/background/shadow colors; button press duration;
-enabled/disabled/pressed button colors and text color; input text/field colors.
-Separate each group with one blank line.
+**Decision:** In the [widget
+settings](../../../python/pyxel/editor/widgets/settings.py), group settings by
+component, shared widget settings first and then those of the button and input
+controls, keeping a component's input behavior apart from its colors. In the
+[editor settings](../../../python/pyxel/editor/settings.py), keep editor-wide
+assets, dimensions, identifiers, limits, and text before component colors, with
+one section per component. Within a state family, put its primary fill or frame
+before its boundary, normal data before selected data, and a live playback
+cursor before editing and selection cursors; components without a playback
+cursor omit it. Separate each group with one blank line.
 
-In [editor settings](../../../python/pyxel/editor/settings.py), keep the section
-sequence: editor image, app dimensions, tool identifiers, sound/music field
-lengths, text colors, panel focus/selection, piano keyboard, piano roll, octave
-bar, sound field, music field. Use these member groups within the color sections:
-
-| Section | Groups and member order |
-| --- | --- |
-| Text | Label, then help message |
-| Panel | Focus fill/border; selection frame/border |
-| Piano keyboard | Rest, then playback |
-| Piano roll | Playback/edit/selection cursors; background; note/rest data |
-| Octave bar | Background, then bar |
-| Sound field | Normal/selected data; edit/selection cursors |
-| Music field | Background; normal/selected sound data; playback/edit/selection cursors |
-
-**Reason:** Widget input behavior and appearance are separate editing tasks.
-Editor-wide assets, dimensions, identifiers, limits, and text precede component
-colors. The component order follows the editor's keyboard/roll/octave controls
-and sound/music fields. Within a state family, put its primary fill or frame
-before its boundary, and normal data before selected data. Cursor groups expose
-live playback first, then editing and selection; components without a playback
-cursor omit it. The piano roll emphasizes its moving cursors, whereas the compact
-sound and music fields present their data first. These distinct reading tasks
-settle the order; a shared prefix or alphabetical sort does not.
+**Reason:** Input behavior and appearance are separate editing tasks, and a
+component's colors are read together rather than by a shared prefix or an
+alphabetical sort. These distinct reading tasks settle the groups; the subgroups
+themselves follow the [inventory
+decision](source-code-blank-lines.md#declaration-inventories).
 
 ### Utility functions and classes in examples
 
@@ -287,9 +240,6 @@ Required declarations and order-dependent behavior still take precedence.
 used by the classes. Keeping that utility group before the class group avoids
 hiding shared operations after several hundred lines of game behavior. The
 classes then form a continuous account of the program leading to its startup.
-Larger groups, such as the figure-building functions in
-[Offscreen](../../../python/pyxel/examples/11_offscreen.py), remain together and
-can be read separately from the application loop.
 
 This is the selected layout for teaching examples, not a claim that Python
 requires one universal definition order. It does not require extracting new
@@ -309,11 +259,8 @@ change still needs a carefully limited scope.
 ### Page definitions and ordered execution
 
 **Decision:** Keep the runtime's host classes and public entry points before
-their support groups. Shared page helpers use page controls, HTML helpers,
-data transfer, then page setup. Code Maker uses project operations,
-initialization, project helpers, then UI helpers. Smaller pages present page
-construction and text updates before their local rendering helpers. Startup
-calls follow the bindings they need.
+their support groups, and a page's operations and construction before its local
+helpers. Startup calls follow the bindings they need.
 
 Keep HTML controls in their visual and keyboard-navigation order. Preserve
 script dependencies, class inheritance, state initialization, and listener
@@ -321,30 +268,25 @@ registration. Keep CSS base, variant, state, and override relationships;
 shader fragments retain the host's concatenation and declaration order.
 
 **Reason:** These groups expose what the page does before its supporting
-details, using the [selected group labels](source-code-comments.md). Function
-hoisting permits some definition moves but does not protect initialization
-or subscriptions. CSS cascade, shader availability, and DOM focus order affect
-the result, so an alphabetical sort is not a layout-only operation.
+details, using the [selected group labels](source-code-comments.md#groups-in-shared-helpers-and-applications).
+Function hoisting permits some definition moves but does not protect
+initialization or subscriptions. CSS cascade, shader availability, and DOM focus
+order affect the result, so an alphabetical sort is not a layout-only operation.
 
 ### Localized page data
 
 **Decision:** Put language declarations and shared UI metadata before page
 collections. Group section-owned text, controls, and tables in the owning
-page's section and subsection order. Keep shared labels and cross-section
-tables together once. The editor manual's shared tables precede image,
-tilemap, sound, then music data; a renderer helper's declaration position does
-not change the section that owns its data.
+page's section and subsection order, keeping shared labels and cross-section
+tables together once; a renderer helper's declaration position does not change
+the section that owns its data. Keep the language selector's English fallback
+first, followed by the other established data codes in code order, and use the
+same sequence for translation alternatives. Content arrays retain their
+selected display, parameter, or encoded order; they are not independent
+dictionary keys to alphabetize.
 
-Keep the language selector's English fallback first, followed by the other
-established data codes in code order. Translation alternatives use that same
-sequence. Content arrays retain their selected display, parameter, or encoded
-order; they are not independent dictionary keys to alphabetize.
-
-**Reason:** A maintainer adding a piano-roll instruction should find its text
-and table in the sound-editor group, beside the surrounding instructions.
-Grouping all headings first and appending their bodies elsewhere separates
-one editing task. The [editor manual](../../../web/editor-manual/index.html),
-[Code Maker manual](../../../web/code-maker/manual.html), and
-[launcher form](../../../web/launcher/url-builder.html) own their presentation
-order. Source-map layout follows it without changing the rendered text or
-reordering shared translation alternatives.
+**Reason:** A maintainer adding an instruction should find its text and table in
+the group of the page section that shows it, beside the surrounding
+instructions. Grouping all headings first and appending their bodies elsewhere
+separates one editing task. The pages own their presentation order; source
+layout follows it without changing the rendered text.

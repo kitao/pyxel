@@ -137,6 +137,7 @@ impl Pyxel {
             })
             .collect::<Result<_, _>>()?;
 
+        // An empty palette file still yields one color so the palette stays non-empty.
         Ok(Some(if colors.is_empty() {
             vec![0x00ff_ffff]
         } else {

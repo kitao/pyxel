@@ -1085,7 +1085,7 @@ Collision shape, physical coefficients, and motion state for a Node. It represen
 - `restitution` (*float*) — Bounciness. The larger of the two contacting values is used. Defaults to 0.0.
 - `friction` (*float*) — Friction. The average of the two contacting values is used. Defaults to 0.5.
 - `velocity` (*Vec3*) — World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. Defaults to Vec3.ZERO.
-- `angular_velocity` (*Vec3*) — Axis times angle (in degrees), applied every update as a spin in the node’s local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular. Defaults to Vec3.ZERO.
+- `angular_velocity` (*Vec3*) — Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular. Defaults to Vec3.ZERO.
 
 **Example:**
 
@@ -1152,7 +1152,7 @@ World-space displacement applied to a non-mesh collider every update. If the par
 
 ### `angular_velocity` — variable
 
-Axis times angle (in degrees), applied every update as a spin in the node’s local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular.
+Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular.
 
 - **Type:** `Vec3`
 
@@ -1212,7 +1212,7 @@ Suggested additive velocity correction for the receiving node, in world coordina
 
 ### `delta_angular_velocity` — variable
 
-Suggested additive angular velocity correction in the receiving node’s local coordinates. Non-zero only when that node’s collider has rolls=True.
+Suggested additive angular velocity correction in the receiving node's local coordinates. Non-zero only when that node's collider has rolls=True.
 
 - **Type:** `Vec3`
 

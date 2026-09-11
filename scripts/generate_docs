@@ -22,6 +22,8 @@ EDITOR_MANUAL_JSON = WEB_DIR / "editor-manual" / "editor-manual.json"
 DOCS_DIR = ROOT_DIR / "docs"
 PYXEL_WEB = "https://kitao.github.io/pyxel/web"
 BLOCK_MARKER = "\x00BLK{idx}\x00"
+# Page illustrations left out of the generated Markdown, which is read as plain
+# text; the logo and palette images stay.
 MARKDOWN_IMAGE_EXCLUDE_URLS = {
     "user-guide": {
         "images/pyxel_thanks.png",
@@ -361,9 +363,53 @@ class JsEval:
 
         if isinstance(val, dict):
             return localize(val)
-        if isinstance(val, str):
-            return val
         return val
+
+    def _map_join(self, expr):
+        arr_end = expr.index(".map(")
+        arr_str = expr[:arr_end].strip()
+        # Handle destructured map callbacks such as ([u, n]) => `...`.
+        m = re.search(
+            r"\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)"
+            r'\s*\.join\((["\'].*?["\'])\)',
+            expr,
+            re.DOTALL,
+        )
+        if m:
+            pairs_inner = arr_str[1:-1]
+            items = []
+            while pairs_inner.strip():
+                pairs_inner = pairs_inner.strip()
+                if pairs_inner.startswith("["):
+                    pair_s, pairs_inner = _parse_arg(pairs_inner)
+                    pair = self._parse_array(pair_s)
+                    if len(pair) >= 2:
+                        saved = dict(self._vars)
+                        self._vars[m.group(1)] = pair[0]
+                        self._vars[m.group(2)] = pair[1]
+                        items.append(self.eval_template(m.group(3)))
+                        self._vars = saved
+                    pairs_inner = _skip_comma(pairs_inner)
+                else:
+                    break
+            return self.eval(m.group(4)).join(items)
+        # Handle single-argument map callbacks such as k => `...` or (k) => `...`.
+        m = re.search(
+            r"\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)"
+            r'\s*\.join\((["\'].*?["\'])\)',
+            expr,
+            re.DOTALL,
+        )
+        if m:
+            keys = self._parse_array(arr_str)
+            items = []
+            for key in keys:
+                saved = dict(self._vars)
+                self._vars[m.group(1)] = key
+                items.append(self.eval_template(m.group(2)))
+                self._vars = saved
+            return self.eval(m.group(3)).join(items)
+        return expr
 
     # Markdown render helpers
 
@@ -425,23 +471,6 @@ class JsEval:
                 rows.append(f"- {img}{desc}")
         return "\n" + "\n".join(rows) + "\n"
 
-    # Data lookup helpers
-
-    def _resolve_data_ref(self, inner):
-        inner = inner.strip()
-        m = re.match(r"data\.(\w+)$", inner)
-        if m:
-            return self._data.get(m.group(1), [])
-        return self.eval(inner)
-
-    def _resolve_icon_table_arg(self, inner):
-        inner = inner.strip()
-        # data.xxx.map(b => ({icon: b.icon, key: b.key || <fallback>, desc: b.desc}))
-        m = re.match(r"data\.(\w+)\.map\(", inner)
-        if m:
-            return self._data.get(m.group(1), [])
-        return self._resolve_data_ref(inner)
-
     def _table(self, inner):
         headers_s, rest = _parse_arg(inner.strip())
         rest = _skip_comma(rest)
@@ -469,51 +498,22 @@ class JsEval:
             md += "| " + " | ".join(row) + " |\n"
         return md
 
-    def _map_join(self, expr):
-        arr_end = expr.index(".map(")
-        arr_str = expr[:arr_end].strip()
-        # Handle destructured map callbacks such as ([u, n]) => `...`.
-        m = re.search(
-            r"\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)"
-            r'\s*\.join\((["\'].*?["\'])\)',
-            expr,
-            re.DOTALL,
-        )
+    # Data lookup helpers
+
+    def _resolve_data_ref(self, inner):
+        inner = inner.strip()
+        m = re.match(r"data\.(\w+)$", inner)
         if m:
-            pairs_inner = arr_str[1:-1]
-            items = []
-            while pairs_inner.strip():
-                pairs_inner = pairs_inner.strip()
-                if pairs_inner.startswith("["):
-                    pair_s, pairs_inner = _parse_arg(pairs_inner)
-                    pair = self._parse_array(pair_s)
-                    if len(pair) >= 2:
-                        saved = dict(self._vars)
-                        self._vars[m.group(1)] = pair[0]
-                        self._vars[m.group(2)] = pair[1]
-                        items.append(self.eval_template(m.group(3)))
-                        self._vars = saved
-                    pairs_inner = _skip_comma(pairs_inner)
-                else:
-                    break
-            return self.eval(m.group(4)).join(items)
-        # Handle single-argument map callbacks such as k => `...` or (k) => `...`.
-        m = re.search(
-            r"\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)"
-            r'\s*\.join\((["\'].*?["\'])\)',
-            expr,
-            re.DOTALL,
-        )
+            return self._data.get(m.group(1), [])
+        return self.eval(inner)
+
+    def _resolve_icon_table_arg(self, inner):
+        inner = inner.strip()
+        # data.xxx.map(b => ({icon: b.icon, key: b.key || <fallback>, desc: b.desc}))
+        m = re.match(r"data\.(\w+)\.map\(", inner)
         if m:
-            keys = self._parse_array(arr_str)
-            items = []
-            for key in keys:
-                saved = dict(self._vars)
-                self._vars[m.group(1)] = key
-                items.append(self.eval_template(m.group(2)))
-                self._vars = saved
-            return self.eval(m.group(3)).join(items)
-        return expr
+            return self._data.get(m.group(1), [])
+        return self._resolve_data_ref(inner)
 
     # Extract JavaScript variables and simple template loops from updateTexts().
     def extract_variables(self, body):

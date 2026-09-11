@@ -11,9 +11,9 @@ use crate::cube::primitive::{
     self, Primitive, CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
 use crate::cube::raster::{
-    dither_pick, face_shade_level, lookup_ramp, mat_apply, mat_apply_dir, rasterize_circle_border,
-    rasterize_circle_filled, rasterize_line, rasterize_textured_triangle, rasterize_triangle,
-    screen_circle, sprite_corners, tri_normal, world_to_screen, write_pixel, ELLIPSE_SEGMENTS,
+    dither_pick, face_shade_level, lookup_ramp, rasterize_circle_border, rasterize_circle_filled,
+    rasterize_line, rasterize_textured_triangle, rasterize_triangle, screen_circle, sprite_corners,
+    tri_normal, world_to_screen, write_pixel,
 };
 use crate::cube::scene::DrawContext;
 use crate::cube::shading::Shading;
@@ -546,7 +546,7 @@ pub fn prim(
             y: positions[base + 1],
             z: positions[base + 2],
         };
-        let world = mat_apply(&world_mat, &local);
+        let world = world_mat.mul_vec_value(&local);
         let screen = if mode == MODE_LINES {
             None
         } else {
@@ -584,7 +584,7 @@ pub fn prim(
                 }
             }
             if col_image.is_some() && uvs.is_none() {
-                return Err("textured prim requires uvs");
+                return Err("uvs must be set when col_img is an Image");
             }
 
             // Preserve the original texture across every triangle of a self-textured draw.
@@ -632,14 +632,11 @@ pub fn prim(
 
                 let face_normal = || -> Vec3 {
                     match (normals, normal_mat.as_ref()) {
-                        (Some(n), Some(mat)) => mat_apply_dir(
-                            mat,
-                            &Vec3 {
-                                x: n[f * 3],
-                                y: n[f * 3 + 1],
-                                z: n[f * 3 + 2],
-                            },
-                        ),
+                        (Some(n), Some(mat)) => mat.mul_dir_value(&Vec3 {
+                            x: n[f * 3],
+                            y: n[f * 3 + 1],
+                            z: n[f * 3 + 2],
+                        }),
                         _ => tri_normal(&v0, &v1, &v2),
                     }
                 };
@@ -996,7 +993,8 @@ pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, stat
     );
 }
 
-// Scale the world matrix to reuse cached unit geometry without allocating
+// Cached unit geometry
+// Scaling the world matrix reuses cached unit geometry without allocating
 // vertex arrays for each draw.
 
 // Unit rectangle winding matches the plane primitive.
@@ -1009,21 +1007,23 @@ const UNIT_RECT_POSITIONS: [f32; 12] = [
 const RECT_TRI_INDICES: [i32; 6] = [0, 1, 2, 1, 3, 2];
 const RECT_EDGE_INDICES: [i32; 8] = [0, 1, 1, 3, 3, 2, 2, 0];
 
+// Enough segments for smooth ellipses at SD resolution.
+const ELLIPSE_SEGMENTS: usize = 24;
 // Vertex 0 is the center; vertices 1..=ELLIPSE_SEGMENTS form the perimeter.
-const ELLIPSE_TRI_INDICES: [i32; 72] = [
+const ELLIPSE_TRI_INDICES: [i32; ELLIPSE_SEGMENTS * 3] = [
     0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 9, 0, 9, 10, 0, 10, 11, 0,
     11, 12, 0, 12, 13, 0, 13, 14, 0, 14, 15, 0, 15, 16, 0, 16, 17, 0, 17, 18, 0, 18, 19, 0, 19, 20,
     0, 20, 21, 0, 21, 22, 0, 22, 23, 0, 23, 24, 0, 24, 1,
 ];
-const ELLIPSE_EDGE_INDICES: [i32; 48] = [
+const ELLIPSE_EDGE_INDICES: [i32; ELLIPSE_SEGMENTS * 2] = [
     1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15,
     15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 1,
 ];
 
-fn unit_ellipse_positions() -> &'static [f32; 75] {
-    static POSITIONS: OnceLock<[f32; 75]> = OnceLock::new();
+fn unit_ellipse_positions() -> &'static [f32; (ELLIPSE_SEGMENTS + 1) * 3] {
+    static POSITIONS: OnceLock<[f32; (ELLIPSE_SEGMENTS + 1) * 3]> = OnceLock::new();
     POSITIONS.get_or_init(|| {
-        let mut p = [0.0_f32; 75];
+        let mut p = [0.0_f32; (ELLIPSE_SEGMENTS + 1) * 3];
         for i in 0..ELLIPSE_SEGMENTS {
             let theta = 2.0 * std::f32::consts::PI * (i as f32) / (ELLIPSE_SEGMENTS as f32);
             let base = (i + 1) * 3;
@@ -1047,13 +1047,15 @@ fn scale_axes(world_mat: &Mat4, sx: f32, sy: f32, sz: f32) -> Mat4 {
 
 // Translate in local coordinates while preserving the linear part.
 fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
-    let translated = mat_apply(world_mat, local);
+    let translated = world_mat.mul_vec_value(local);
     let mut out = *world_mat;
     out.data[0][3] = translated.x;
     out.data[1][3] = translated.y;
     out.data[2][3] = translated.z;
     out
 }
+
+// Shortcut commands fabricate buffers and route through prim
 
 pub fn sphere(
     ctx: &mut DrawContext,
@@ -1133,7 +1135,7 @@ pub fn circ(
     state: DrawState,
 ) {
     let world_mat = prepare_draw(ctx, world_mat, &state);
-    let world = mat_apply(&world_mat, local);
+    let world = world_mat.mul_vec_value(local);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
 
@@ -1190,7 +1192,7 @@ pub fn circb(
     state: DrawState,
 ) {
     let world_mat = prepare_draw(ctx, world_mat, &state);
-    let world = mat_apply(&world_mat, local);
+    let world = world_mat.mul_vec_value(local);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
 
@@ -1250,7 +1252,7 @@ pub fn sprite(
     angle: f32,
     state: DrawState,
 ) {
-    let world = mat_apply(world_mat, local);
+    let world = world_mat.mul_vec_value(local);
     let corners = {
         let camera = rc_ref!(&ctx.camera);
         sprite_corners(&world, w, h, angle, &camera)
@@ -1410,7 +1412,7 @@ pub fn text(
         return;
     }
 
-    let world = mat_apply(world_mat, pos);
+    let world = world_mat.mul_vec_value(pos);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let projected = project_offset(
         &world,
@@ -1811,6 +1813,7 @@ mod tests {
         }
     }
 
+    // Interpolated vertices land on the epsilon plane up to the f32 rounding of unit-scale coordinates, well inside 1e-6
     fn assert_clip_vertices_inside(vertices: &ClippedTriangle, clip_row: &[f32; 4]) {
         for i in 0..vertices.len {
             let front = clip_front(&vertices.vertices[i].world, clip_row);

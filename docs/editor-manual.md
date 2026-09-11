@@ -65,7 +65,7 @@ A mode for editing images in each image bank. You can create pixel art for sprit
 
 ### Specifications
 
-- **Image Banks:** 0–2 (3 banks)
+- **Image Banks:** 0-2 (3 banks)
 - **Size:** 256×256 pixels each
 - **Coordinate System:** Origin (0,0) at top-left, X+ rightward, Y+ downward
 
@@ -93,7 +93,7 @@ A thumbnail view of the entire image bank. The white frame indicates the current
 | Shortcut | Action |
 | --- | --- |
 | Arrow Keys | Move the editing area (white frame) |
-| Click | Move the editing area to the clicked position |
+| Click/Drag | Move the editing area to the clicked position |
 | Right Drag | Pan the view |
 
 #### Tool Buttons
@@ -131,14 +131,14 @@ Select a drawing color from the palette, which initially has 16 colors.
 
 | Shortcut | Action |
 | --- | --- |
-| 1–8 | Select colors 0–7 |
-| Shift+1–8 | Select colors 8–15 |
+| 1–8 | Select colors 0-7 |
+| Shift+1–8 | Select colors 8-15 |
 
 #### Bank Number
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/image_banknum.png](https://kitao.github.io/pyxel/web/editor-manual/images/image_banknum.png)
 
-Switch the target image bank (0–2).
+Switch the target image bank (0-2).
 
 ### Loading External Files
 
@@ -150,7 +150,7 @@ A mode for arranging image bank images as tile patterns and editing tilemaps.
 
 ### Specifications
 
-- **Tilemaps:** 0–7 (8 maps)
+- **Tilemaps:** 0-7 (8 maps)
 - **Size:** 256×256 tiles each
 - **Tile Image:** 8×8 pixel region of the image bank
 - **Reference Image Bank:** One per tilemap
@@ -197,13 +197,13 @@ Displays the referenced image bank. Select tile images with the white frame.
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tmnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tmnum.png)
 
-Switch the target tilemap (0–7).
+Switch the target tilemap (0-7).
 
 #### Ref. Image Bank Number
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_imgnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_imgnum.png)
 
-Switch the image bank (0–2) referenced for tile images.
+Switch the image bank (0-2) referenced for tile images.
 
 #### Tool Buttons
 
@@ -233,7 +233,7 @@ A mode for editing sounds used for melodies and sound effects.
 
 ### Specifications
 
-- **Sounds:** 0–63 (64 sounds)
+- **Sounds:** 0-63 (64 sounds)
 - **Pitch Range:** C0–B4
 - **Max Length:** 48 notes
 - **Polyphony:** 1 note (or rest)
@@ -247,13 +247,13 @@ A mode for editing sounds used for melodies and sound effects.
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/sound_sndnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_sndnum.png)
 
-Switch the target sound (0–63).
+Switch the target sound (0-63).
 
 #### Playback Speed
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/sound_speed.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_speed.png)
 
-Sets the playback duration per note. This is a common setting for all notes, specified in the range 1–99. Smaller values result in faster playback (1 speed unit = 1/120 second; e.g., speed 60 = 0.5 seconds per note). For sound effects, 1–9 is typical; for melodies, 10 or higher is recommended.
+Sets the playback duration per note. This is a common setting for all notes, specified in the range 1-99. Smaller values result in faster playback (1 speed unit = 1/120 second; e.g., speed 60 = 0.5 seconds per note). For sound effects, 1-9 is typical; for melodies, 10 or higher is recommended.
 
 #### Play / Stop / Loop
 
@@ -293,7 +293,7 @@ Click to input note pitch. Red squares represent notes, blue squares represent r
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/sound_octave_l.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_octave_l.png)
 
-Displays the starting octave (0–3) for keyboard input. The keyboard covers two octaves from the selected octave.
+Displays the starting octave (0-3) for keyboard input. The keyboard covers two octaves from the selected octave.
 
 | Shortcut | Action |
 | --- | --- |
@@ -302,7 +302,7 @@ Displays the starting octave (0–3) for keyboard input. The keyboard covers two
 
 ### Keyboard Input
 
-You can input notes using the PC keyboard. The upper row (QWE row + number row) and the lower row (ZXC row + ASD row) each correspond to one octave of piano keys, covering two octaves simultaneously. White keys are assigned to natural notes and gray keys to sharps. Select the starting octave (0–3) with the octave bar.
+You can input notes using the PC keyboard. The upper row (QWE row + number row) and the lower row (ZXC row + ASD row) each correspond to one octave of piano keys, covering two octaves simultaneously. White keys are assigned to natural notes and gray keys to sharps. Select the starting octave (0-3) with the octave bar.
 
 **Upper Octave (QWE row + number row)**
 
@@ -364,7 +364,7 @@ With the cursor on the TON row, press the following keys to set the tone. The de
 
 #### Volume
 
-With the cursor on the VOL row, press number keys 0–7 to set the volume (0 = silent, 7 = maximum). The default when not set is 7. Using maximum volume on multiple channels simultaneously may result in excessive loudness.
+With the cursor on the VOL row, press number keys 0-7 to set the volume (0 = silent, 7 = maximum). The default when not set is 7. Using maximum volume on multiple channels simultaneously may result in excessive loudness.
 
 #### Effect
 
@@ -385,7 +385,7 @@ A mode for arranging sounds in playback order to compose music tracks.
 
 ### Specifications
 
-- **Music Tracks:** 0–7 (8 tracks)
+- **Music Tracks:** 0-7 (8 tracks)
 - **Channels:** 4
 - **Sounds per Channel:** Max 32
 
@@ -397,7 +397,7 @@ A mode for arranging sounds in playback order to compose music tracks.
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/music_mscnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/music_mscnum.png)
 
-Switch the target music (0–7).
+Switch the target music (0-7).
 
 #### Play / Stop / Loop
 
@@ -407,11 +407,11 @@ Switch the target music (0–7).
 - ![images/btn_stop.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_stop.png) Space — Stop (press Space during playback to stop)
 - ![images/btn_loop.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_loop.png) L — Toggle loop playback
 
-#### Sequence Editor (CH0–CH3)
+#### Sequence Editor (CH0-CH3)
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/music_sequence.png](https://kitao.github.io/pyxel/web/editor-manual/images/music_sequence.png)
 
-Place sound numbers in playback order across four channels (CH0–CH3). Copy and paste between channels is also supported.
+Place sound numbers in playback order across four channels (CH0-CH3). Copy and paste between channels is also supported.
 
 | Shortcut | Action |
 | --- | --- |
@@ -428,8 +428,8 @@ Place sound numbers in playback order across four channels (CH0–CH3). Copy and
 | Ctrl(Cmd)+U | Increment the sound number of the selection by 1 |
 | Ctrl(Cmd)+D | Decrement the sound number of the selection by 1 |
 
-#### Sound Buttons (0–63)
+#### Sound Buttons (0-63)
 
 ![https://kitao.github.io/pyxel/web/editor-manual/images/music_buttons.png](https://kitao.github.io/pyxel/web/editor-manual/images/music_buttons.png)
 
-Buttons for inserting sound numbers (0–63). Pressing a button inserts the sound number at the editing cursor position. Created sounds are shown in blue, uncreated ones in gray. Hovering over a button previews the sound.
+Buttons for inserting sound numbers (0-63). Pressing a button inserts the sound number at the editing cursor position. Created sounds are shown in blue, uncreated ones in gray. Hovering over a button previews the sound.

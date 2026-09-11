@@ -82,7 +82,7 @@ impl PlatformSdl2 {
             // SAFETY: a successful SDL_PollEvent initializes type_; each match
             // arm reads only the union member selected by that SDL event tag.
             match unsafe { sdl_event.type_ as SDL_EventType } {
-                // Window
+                // Window, file drop, and quit
                 SDL_WINDOWEVENT => match unsafe { sdl_event.window.event } as SDL_WindowEventID {
                     SDL_WINDOWEVENT_SHOWN
                     | SDL_WINDOWEVENT_MAXIMIZED
@@ -142,7 +142,7 @@ impl PlatformSdl2 {
                     }
                 },
 
-                // Mouse button
+                // Mouse
                 SDL_MOUSEBUTTONDOWN => {
                     let key = mouse_button_to_key(unsafe { sdl_event.button.button } as u32);
                     if key != KEY_UNKNOWN {

@@ -28,7 +28,7 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
     let (import_bytes, skip_animations) = sanitize_glb_for_import(&bytes)?;
 
     let (document, buffers, images) = gltf::import_slice(import_bytes.as_ref())
-        .map_err(|e| format!("Failed to read GLB '{filename}': {e}"))?;
+        .map_err(|e| format!("Failed to parse file '{filename}': {e}"))?;
     validate_document(&document, images.len())?;
 
     let (materials, resolved_colkey) = import_materials(&document, &images, colkey)?;
@@ -173,10 +173,14 @@ fn is_masked_alpha(alpha: u8, cutoff: f32) -> bool {
 
 fn validate_palette(colors: &[Rgb24]) -> Result<(), String> {
     if colors.is_empty() {
-        return Err("Palette must contain at least one color".to_string());
+        return Err(format!(
+            "Number of colors must be between 1 and {MAX_COLORS}"
+        ));
     }
     if colors.len() > MAX_COLORS as usize {
-        return Err(format!("Palette must contain at most {MAX_COLORS} colors"));
+        return Err(format!(
+            "Number of colors must be between 1 and {MAX_COLORS}"
+        ));
     }
     Ok(())
 }
@@ -341,7 +345,6 @@ fn import_materials(
                     &mut used_colors,
                 )?;
             } else {
-                warn_glb("GLB base color texture image is missing; using flat material color");
                 let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
                 let color = rgb_to_palette_color(rgb, &colors)?;
                 used_colors[color as usize] = true;
@@ -386,7 +389,6 @@ fn import_materials(
                 image_cache.insert(cache_key, image.clone());
                 ColImage::Image(image)
             } else {
-                warn_glb("GLB base color texture image is missing; using flat material color");
                 let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
                 ColImage::Color(i32::from(rgb_to_palette_color(rgb, &colors)?))
             }
@@ -443,7 +445,7 @@ fn sanitize_glb_for_import(bytes: &[u8]) -> Result<(Cow<'_, [u8]>, bool), String
         return Ok((Cow::Borrowed(bytes), false));
     };
     let mut json: gltf::json::Value = gltf::json::deserialize::from_slice(json_bytes)
-        .map_err(|e| format!("Failed to read GLB JSON: {e}"))?;
+        .map_err(|e| format!("Failed to parse GLB JSON: {e}"))?;
 
     let extension = "KHR_animation_pointer";
     let declared = ["extensionsUsed", "extensionsRequired"].iter().any(|key| {

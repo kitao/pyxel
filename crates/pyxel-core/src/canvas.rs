@@ -1535,6 +1535,14 @@ mod tests {
         assert_eq!((area.sign_x, area.offset_x), (-1, 4));
     }
 
+    #[test]
+    fn test_copy_area_handles_minimum_signed_width() {
+        let rect = RectArea::new(0, 0, 8, 8);
+        let area = CopyArea::new(0, 0, rect, i32::MIN + 1, 0, rect, i32::MIN, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (0, 0, 1));
+        assert_eq!((area.sign_x, area.offset_x), (-1, 0));
+    }
+
     // Degenerate draw inputs
 
     #[test]
@@ -1555,6 +1563,8 @@ mod tests {
         }
         assert_eq!(canvas.read_data(21, 3), 0);
     }
+
+    // Large coordinates, camera offsets, and clipping
 
     #[test]
     fn test_large_line_half_ties_are_relative_to_start() {
@@ -1661,14 +1671,6 @@ mod tests {
         canvas.set_camera(2_000_000_000.0, 0.0);
         canvas.draw_rect(-2_000_000_000.0, 0.0, 4_294_967_296.0, 8.0, 3);
         assert_eq!(canvas.data, vec![3; 64]);
-    }
-
-    #[test]
-    fn test_copy_area_handles_minimum_signed_width() {
-        let rect = RectArea::new(0, 0, 8, 8);
-        let area = CopyArea::new(0, 0, rect, i32::MIN + 1, 0, rect, i32::MIN, 1);
-        assert_eq!((area.dst_x, area.src_x, area.width), (0, 0, 1));
-        assert_eq!((area.sign_x, area.offset_x), (-1, 0));
     }
 
     #[test]

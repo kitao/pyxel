@@ -86,9 +86,7 @@
         const codeMakerLink = link("../code-maker/", "Pyxel Code Maker");
         const codeMakerManualLink = link(
           "../code-maker/manual.html",
-          lang === "ja"
-            ? "Pyxel Code Maker マニュアル"
-            : "Pyxel Code Maker Manual",
+          t("code_maker_manual_label"),
         );
         document.getElementById("s-code-maker").innerHTML = `
           <h2 class="section-title">${esc(t("code_maker_title"))}</h2>
@@ -101,11 +99,7 @@
           <p class="body mt-2">${t("launcher_body2").replace("{0}", launcherLink)}</p>
 
           <h3 class="sub-title">${esc(t("launcher_url_title"))}</h3>
-          ${code(
-            lang === "ja"
-              ? "https://kitao.github.io/pyxel/web/launcher/?<コマンド>=<ユーザー名>/<リポジトリ名>/<ブランチ名>/<パス>/<ファイル名（拡張子なし）>"
-              : "https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>",
-          )}
+          ${code(t("launcher_url_format"))}
           <p class="body mt-2">${esc(t("launcher_url_note"))}</p>
 
           <h3 class="sub-title">${esc(t("launcher_commands_title"))}</h3>

@@ -18,6 +18,7 @@ jobs:
   release:
     runs-on: macos-15
     needs: build
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v7

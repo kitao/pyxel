@@ -135,7 +135,7 @@
           )}</p>
           <p class="body mt-2">${t("install_web_other").replace(
             "{0}",
-            link("../web-usage/", t("other_web_usage")),
+            link("../web-usage/", t("doc_web_usage")),
           )}</p>
 
           <h3 class="sub-title">${esc(t("install_vscode_title"))}</h3>
@@ -265,7 +265,7 @@ pyxel.show()`,
             ${esc(t("resources_editor_save"))}</p>
           <p class="body mt-2">${t("resources_editor_link").replace(
             "{0}",
-            link("../editor-manual/", t("tool_editor_manual")),
+            link("../editor-manual/", t("doc_editor_manual")),
           )}</p>
 
           <h3 class="sub-title">${esc(t("resources_other_title"))}</h3>
@@ -314,7 +314,7 @@ pyxel.show()`,
           <h2 class="section-title">${esc(t("apiref_title"))}</h2>
           <p class="body">${t("apiref_body").replace(
             "{0}",
-            link("../api-reference/", t("tool_api_reference")),
+            link("../api-reference/", t("doc_api_reference")),
           )}</p>
           <p class="body mt-2">${esc(t("apiref_advanced"))}</p>
           <p class="body mt-2">${esc(t("apiref_challenge"))}</p>`;
@@ -324,15 +324,15 @@ pyxel.show()`,
             ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
             : "https://github.com/kitao/pyxel/blob/main/docs/faq.md";
         const docs = [
-          ["../api-reference/", t("tool_api_reference")],
-          ["../mml-studio/mml-commands.html", t("tool_mml_commands")],
-          ["../editor-manual/", t("tool_editor_manual")],
-          ["../web-usage/", t("other_web_usage")],
+          ["../api-reference/", t("doc_api_reference")],
+          ["../mml-studio/mml-commands.html", t("doc_mml_commands")],
+          ["../editor-manual/", t("doc_editor_manual")],
+          ["../web-usage/", t("doc_web_usage")],
           [
             "https://github.com/kitao/pyxel/blob/main/docs/pyxres-format.md",
-            t("other_pyxres_format"),
+            t("doc_pyxres_format"),
           ],
-          [faqUrl, t("other_faq")],
+          [faqUrl, t("doc_faq")],
         ]
           .map(([u, n]) => `<li>${link(u, n)}</li>`)
           .join("");

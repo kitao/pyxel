@@ -45,7 +45,7 @@ class QuadSurface(Node):
         self.corners = corners
         self.outline = outline
         self.mesh = make_quad_mesh(corners, color)
-        self.collider = Collider(mesh=self.mesh, mass=0.0)
+        self.collider = Collider(mesh=self.mesh)
         self.add_child(Node.from_mesh(self.mesh))
 
     def on_draw(self):

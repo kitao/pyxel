@@ -68,8 +68,10 @@ the engine's ordinary `f32` math and from native failure conversion.
 ### Effective defaults in references and stubs
 
 **Decision:** API references and `.pyi` signatures show effective parameter
-defaults. Do not replace them with internal `None` sentinels. Use `None` only for
-actual default behavior such as automatic selection or absence of a value.
+defaults. Do not replace them with internal `None` sentinels. Use `None` only
+for actual default behavior such as automatic selection or absence of a value.
+Reference type labels name the public type in Python union notation (`int |
+None`) and do not expose an internal sentinel either.
 
 The reference and stub for `pyxel.init` therefore show the values selected when
 fixed-default arguments are omitted: `fps=30`, `capture_scale=2`, and
@@ -148,18 +150,19 @@ have separate responsibilities. Rewriting arguments to imitate a direct script
 invocation would change what existing apps observe. Restarting a relative
 `pyxel play` command from its extracted directory would lose the original app
 path. [Execution tests](../../../python/tests/test_pyxapp_execution.py) check
-those relationships through the actual command; Web runtime reset has its own
+those relationships through the actual command; web runtime reset has its own
 lifecycle.
 
 ### Directory links in packaging and watching
 
-**Decision:** Follow directory links in the shared
-[CLI traversal](../../../python/pyxel/cli.py), retaining each app-relative alias
-and stopping when a resolved directory is already an ancestor. Packaging and
-watching then discover linked files the program can use, while ancestor checks
-prevent cycles. A global visited-directory set would incorrectly omit a second
-alias of the same directory. Package exclusion filters and startup-script path
-requirements remain separate from traversal.
+**Decision:** Follow directory links in the shared [CLI
+traversal](../../../python/pyxel/cli.py), retaining each app-relative alias and
+stopping when a resolved directory is already an ancestor. Package exclusion
+filters and startup-script path requirements remain separate from traversal.
+
+**Reason:** Packaging and watching then discover linked files the program can
+use, while ancestor checks prevent cycles. A global visited-directory set would
+incorrectly omit a second alias of the same directory.
 
 ### Command errors and application failures
 
@@ -223,12 +226,37 @@ and configured defaults.
 ### GIF dimensions before opening the output
 
 **Decision:** Check scaled GIF dimensions before opening the output file in
-[screencast saving](../../../crates/pyxel-core/src/screencast.rs). GIF dimensions
-must fit `u16`; narrowing an oversized value would change the dimensions, and
-opening the file first would truncate an existing destination. Rejecting that
-case first preserves both the destination and captured frames so the caller can
-retry with a smaller scale. This guarantee concerns unsupported dimensions;
-it does not make every later I/O failure transactional.
+[screencast saving](../../../crates/pyxel-core/src/screencast.rs). This
+guarantee concerns unsupported dimensions; it does not make every later I/O
+failure transactional.
+
+**Reason:** GIF dimensions must fit `u16`; narrowing an oversized value would
+change the dimensions, and opening the file first would truncate an existing
+destination. Rejecting that case first preserves both the destination and the
+captured frames so the caller can retry with a smaller scale.
+
+### Palette lookups when saving images
+
+**Decision:** `screenshot`, `screencast`, and `Image.save` write a pixel value
+beyond the current palette as the palette's last color, matching the display. An
+empty palette remains a native failure with the renderer's `Number of colors
+must be between 1 and 256` diagnostic; the list operations of `colors` do not
+gain an emptiness check.
+
+**Reason:** A capture records what the screen shows, and the
+[renderer](../../../crates/pyxel-core/src/graphics.rs) samples the palette
+texture with `CLAMP_TO_EDGE`, so out-of-range pixels display as the last color.
+Drawing accepts any pixel value as data, so the
+[image](../../../crates/pyxel-core/src/image.rs) and
+[screencast](../../../crates/pyxel-core/src/screencast.rs) writers follow the
+display rather than validating stored pixels. `set_icon` validates its input
+because it converts string data to RGBA at construction; that is an input
+boundary, not a save. Palette size is a runtime invariant: rendering checks the
+1 to 256 range, and saving reports an empty palette with the same diagnostic.
+Refusing `clear()` or an empty assignment would give `colors` a check no Python
+list has, guarding a state a program only passes through while rebuilding the
+palette; the [sequence proxies](../../../crates/pyxel-binding/src/utils.rs) keep
+list behavior instead.
 
 ### Excluded resource banks during saving
 
@@ -307,15 +335,19 @@ locks before Python allocation remain separate requirements.
 ### Same-pitch MML ties
 
 **Decision:** Preserve the parser's merging of tied notes at the same pitch into
-one note with their combined duration. Keep the released command ordering rather
-than introducing control changes inside the combined note.
+one note with their combined duration. A note followed by `&` sounds at full
+gate; the merged note ends with the gate ratio of the Q in effect at its final
+tied note, so `Q50 C4& C4` sounds like `Q50 C4&4`. Keep the released command
+ordering rather than introducing control changes inside the combined note.
 
-**Reason:** The Japanese and English
-[MML reference](../../../web/mml-studio/mml-commands.json) describe same-pitch
-ties as one note. The [parser](../../../crates/pyxel-core/src/mml_parser.rs)
-extends the earlier note's duration. For example, in `C4& T140 C4`, the tempo
-command remains after that combined note; it does not divide the note into two
-tempo sections. This is existing behavior from v2.9.9.
+**Reason:** The Japanese and English [MML
+reference](../../../web/mml-studio/mml-commands.json) describe same-pitch ties
+as one note. The [parser](../../../crates/pyxel-core/src/mml_parser.rs) extends
+the earlier note's duration. For example, in `C4& T140 C4`, the tempo command
+remains after that combined note; it does not divide the note into two tempo
+sections. Merging and command ordering are the v2.9.9 behavior. A tie only
+suppresses the key-off between the joined notes, not the articulation of the
+note that ends them, so the merged note's gate matches the length-only tie.
 
 **Boundary:** The reference does not specify scheduling a control command at
 its written position within a tied note. Adding that capability would require

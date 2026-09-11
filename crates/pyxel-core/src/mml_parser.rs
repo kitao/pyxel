@@ -70,6 +70,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut is_glide_set = false;
 
     let mut connected_note: Option<u32> = None;
+    let mut connected_gate_index: Option<usize> = None;
     let mut last_note_index: Option<usize> = None;
     let mut repeat_depth: u32 = 0;
 
@@ -148,6 +149,18 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                         }
                         if is_connected {
                             connected_note = Some(prev_note);
+                        } else {
+                            // A same-pitch tie plays as one note, so its gate follows
+                            // the Q in effect where the tie ends.
+                            let gate_ratio = gate_time_to_gate_ratio(quantize);
+                            if let Some(index) = connected_gate_index.take() {
+                                commands[index] = MmlCommand::Quantize { gate_ratio };
+                            } else if quantize != 100 {
+                                if let Some(index) = last_note_index {
+                                    commands.insert(index, MmlCommand::Quantize { gate_ratio });
+                                    last_note_index = Some(index + 1);
+                                }
+                            }
                         }
                         continue;
                     }
@@ -199,13 +212,16 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             ensure_set!(is_vibrato_set, MmlCommand::Vibrato { slot: 0 });
             ensure_set!(is_glide_set, MmlCommand::Glide { slot: 0 });
 
+            connected_gate_index = None;
             if quantize != 100 {
-                let gate_ratio = if is_connected {
-                    1.0
+                if is_connected {
+                    connected_gate_index = Some(commands.len());
+                    commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
                 } else {
-                    gate_time_to_gate_ratio(quantize)
-                };
-                commands.push(MmlCommand::Quantize { gate_ratio });
+                    commands.push(MmlCommand::Quantize {
+                        gate_ratio: gate_time_to_gate_ratio(quantize),
+                    });
+                }
             }
 
             if is_connected {
@@ -997,6 +1013,46 @@ mod tests {
         let cmds = parse("Q50 C& D");
         let qvals = quantize_commands(&cmds);
         assert_eq!(qvals, [0.5, 1.0, 0.5]);
+    }
+
+    #[test]
+    fn test_tied_same_note_ends_with_current_quantize() {
+        // C4& C4 merges into one note that ends with the same gate as C4&4
+        let tied = parse("Q50 C4& C4");
+        let lengthened = parse("Q50 C4&4");
+        assert_eq!(quantize_commands(&tied), [0.5, 0.5]);
+        assert_eq!(quantize_commands(&tied), quantize_commands(&lengthened));
+        assert_eq!(note_commands(&tied), note_commands(&lengthened));
+    }
+
+    #[test]
+    fn test_tied_same_note_uses_quantize_at_tie_end() {
+        let cmds = parse("Q50 C4& Q80 C4");
+        assert_eq!(quantize_commands(&cmds), [0.5, 0.8, 0.8]);
+        assert_eq!(note_commands(&cmds), [(60, 96)]);
+    }
+
+    #[test]
+    fn test_tie_chain_into_slur_keeps_full_gate() {
+        let cmds = parse("Q50 C4& C4& D4");
+        assert_eq!(quantize_commands(&cmds), [0.5, 1.0, 0.5]);
+        assert_eq!(note_commands(&cmds), [(60, 96), (62, 48)]);
+    }
+
+    #[test]
+    fn test_tied_note_gate_inserted_after_full_gate() {
+        // Q100 emits no per-note gate, so a tie ending under Q50 inserts one before the note
+        let cmds = parse("Q100 C4& Q50 C4");
+        let note_index = cmds
+            .iter()
+            .position(|cmd| matches!(cmd, MmlCommand::Note { .. }))
+            .unwrap();
+        assert!(matches!(
+            cmds[note_index - 1],
+            MmlCommand::Quantize { gate_ratio } if gate_ratio == 0.5
+        ));
+        assert_eq!(quantize_commands(&cmds), [1.0, 0.5, 0.5]);
+        assert_eq!(note_commands(&cmds), [(60, 96)]);
     }
 
     // Parameter commands: Tone, Transpose, Detune

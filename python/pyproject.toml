@@ -42,7 +42,7 @@ Repository = "https://github.com/kitao/pyxel.git"
 pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
-exclude = ["**/__pycache__", "**/.ruff_cache", "**/*.pyc", "**/*.pyo", "**/.DS_Store"]
+exclude = ["**/*.pyc", "**/*.pyo", "**/.DS_Store", "**/.ruff_cache", "**/__pycache__"]
 manifest-path = "../crates/pyxel-binding/Cargo.toml"
 module-name = "pyxel.pyxel_binding"
 

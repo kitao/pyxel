@@ -210,6 +210,7 @@ class TestCoordinateConversions:
         assert Vec3(1, 0, 0).to_local_dir(local_origin) == Vec3(1, 0, 0)
 
 
+# 1e-5 exceeds the f32 rounding of unit-scale values and stays below any expected difference
 def approx_v(a, b, tol=1e-5):
     return (
         isclose(a.x, b.x, abs_tol=tol)

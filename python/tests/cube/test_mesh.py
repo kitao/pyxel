@@ -99,6 +99,10 @@ class TestConstruction:
                 names=["root"],
             )
 
+    def test_col_img_rejects_other_types(self):
+        with raises_exact(TypeError, "col_img must be int or Image"):
+            Mesh(col_img="7")
+
 
 class TestAttributes:
     def test_set_col_img_int(self):

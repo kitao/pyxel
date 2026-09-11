@@ -35,7 +35,7 @@ Initialize the Pyxel application with the screen size (width, height).
 - `title` (*str*) — Window title. Defaults to "Pyxel".
 - `fps` (*int*) — Frame rate. Defaults to 30.
 - `quit_key` (*int*) — Key to quit the application. Defaults to KEY_ESCAPE.
-- `display_scale` (*int/None*) — Display scale factor. If omitted, automatically determined.
+- `display_scale` (*int | None*) — Display scale factor. If omitted, automatically determined.
 - `capture_scale` (*int*) — Screen capture scale factor. Defaults to 2.
 - `capture_sec` (*int*) — Maximum recording time for screen capture video. Defaults to 10.
 - `headless` (*bool*) — Run without a window. Defaults to False.
@@ -95,7 +95,7 @@ Set the application icon. Specify the icon image as a list of strings.
 
 - `data` (*list[str]*) — Icon image as a list of strings
 - `scale` (*int*) — Scale factor
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
 ### `fullscreen(enabled)` — function *(Advanced)*
 
@@ -189,8 +189,8 @@ Take a screenshot.
 
 **Parameters:**
 
-- `filename` (*str/None*) — File name. If omitted, saved to desktop.
-- `scale` (*int/None*) — Scale factor. Defaults to capture_scale.
+- `filename` (*str | None*) — File name. If omitted, saved to desktop.
+- `scale` (*int*) — Scale factor. Defaults to capture_scale.
 
 ### `screencast(filename=None, scale=2)` — function *(Advanced)*
 
@@ -198,8 +198,8 @@ Save the screen recording as a GIF file.
 
 **Parameters:**
 
-- `filename` (*str/None*) — File name. If omitted, saved to desktop.
-- `scale` (*int/None*) — Scale factor. Defaults to capture_scale.
+- `filename` (*str | None*) — File name. If omitted, saved to desktop.
+- `scale` (*int*) — Scale factor. Defaults to capture_scale.
 
 ### `reset_screencast()` — function *(Advanced)*
 
@@ -675,12 +675,12 @@ Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image insta
 
 - `x` (*float*) — Destination X
 - `y` (*float*) — Destination Y
-- `img` (*int/Image*) — Image bank number (0-2) or Image instance
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 - `u` (*float*) — Source X in the image bank
 - `v` (*float*) — Source Y in the image bank
 - `w` (*float*) — Width (negative to flip)
 - `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
@@ -692,12 +692,12 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instanc
 
 - `x` (*float*) — Destination X
 - `y` (*float*) — Destination Y
-- `tm` (*int/Tilemap*) — Tilemap number (0-7) or Tilemap instance
+- `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
 - `u` (*float*) — Source X in the tilemap
 - `v` (*float*) — Source Y in the tilemap
 - `w` (*float*) — Width (negative to flip)
 - `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
@@ -711,11 +711,11 @@ Draw the image bank img (0-2 or Image instance) with perspective projection onto
 - `y` (*float*) — Destination Y
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
-- `img` (*int/Image*) — Image bank number (0-2) or Image instance
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 - `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
 ### `bltm3d(x, y, w, h, tm, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
@@ -727,11 +727,11 @@ Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto t
 - `y` (*float*) — Destination Y
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
-- `tm` (*int/Tilemap*) — Tilemap number (0-7) or Tilemap instance
+- `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
 - `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
 ### `text(x, y, s, col, font=None)` — function
 
@@ -743,7 +743,7 @@ Draw a string s in color col at (x, y).
 - `y` (*float*) — Y coordinate
 - `s` (*str*) — String to draw
 - `col` (*int*) — Color
-- `font` (*Font/None*) — Custom font. If omitted, the standard font is used.
+- `font` (*Font | None*) — Custom font. If omitted, the standard font is used.
 
 ### Color Constants
 
@@ -814,7 +814,7 @@ Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list
 **Parameters:**
 
 - `ch` (*int*) — Channel number (0-3)
-- `snd` (*int/list/Sound/str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
+- `snd` (*int | list | Sound | str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
 - `sec` (*float*) — Playback start position in seconds. Defaults to 0.
 - `loop` (*bool*) — Loop playback. Defaults to False.
 - `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.
@@ -849,7 +849,7 @@ Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, 
 
 - `ch` (*int*) — Channel number (0-3)
 
-**Returns:** `tuple[int, float]/None` — (sound_index, sec) or None
+**Returns:** `tuple[int, float] | None` — (sound_index, sec) or None
 
 ### `gen_bgm(preset, transp, instr, seed, play=False)` — function
 
@@ -918,11 +918,11 @@ Return x clamped between lower and upper.
 
 **Parameters:**
 
-- `x` (*float*) — Value to clamp
-- `lower` (*float*) — Minimum value
-- `upper` (*float*) — Maximum value
+- `x` (*int | float*) — Value to clamp
+- `lower` (*int | float*) — Minimum value
+- `upper` (*int | float*) — Maximum value
 
-**Returns:** `int/float` — Clamped value
+**Returns:** `int | float` — Clamped value
 
 ### `sgn(x)` — function
 
@@ -930,9 +930,9 @@ Return 1 when x is positive, 0 when it is 0, and -1 when it is negative.
 
 **Parameters:**
 
-- `x` (*int/float*) — Value
+- `x` (*int | float*) — Value
 
-**Returns:** `int/float` — Sign of the value (1, 0, or -1)
+**Returns:** `int | float` — Sign of the value (1, 0, or -1)
 
 ### `sqrt(x)` — function
 
@@ -1161,7 +1161,7 @@ Create a new Tilemap instance.
 
 - `width` (*int*) — Tilemap width
 - `height` (*int*) — Tilemap height
-- `img` (*int/Image*) — Image bank number (0-2) or Image instance
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 
 **Returns:** `Tilemap` — New Tilemap instance
 
@@ -1192,7 +1192,7 @@ The height of the tilemap.
 
 The image bank (0-2) or Image instance referenced by the tilemap.
 
-- **Type:** `int/Image`
+- **Type:** `int | Image`
 
 ### `Tilemap.set(x, y, data)` — function
 
@@ -1244,7 +1244,7 @@ Set a tile at (x, y). A tile is a tuple of (image_tx, image_ty).
 
 ### `Tilemap.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, clip, camera}` — function
 
-Tilemap instances support drawing functions from the Graphics section. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value.
+Tilemap instances support drawing functions from the Graphics section. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value. For blt, the source is a Tilemap and tilekey replaces colkey.
 
 ### `Tilemap.collide(x, y, w, h, dx, dy, walls)` — function
 
@@ -1424,7 +1424,7 @@ Create a WAV file from the sound with the specified duration in seconds.
 
 Return the playback time in seconds. Return None for infinite loops.
 
-**Returns:** `float/None` — Playback time in seconds, or None for infinite loops
+**Returns:** `float | None` — Playback time in seconds, or None for infinite loops
 
 ## Music Class
 
@@ -1490,7 +1490,7 @@ Play the sound snd on this channel. snd can be a sound number, a list, a Sound i
 
 **Parameters:**
 
-- `snd` (*int/list/Sound/str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
+- `snd` (*int | list | Sound | str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
 - `sec` (*float*) — Playback start position in seconds. Defaults to 0.
 - `loop` (*bool*) — Loop playback. Defaults to False.
 - `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.
@@ -1503,7 +1503,7 @@ Stop playback on this channel.
 
 Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
-**Returns:** `tuple[int, float]/None` — (sound_index, sec) or None
+**Returns:** `tuple[int, float] | None` — (sound_index, sec) or None
 
 ## Tone Class
 
