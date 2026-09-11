@@ -144,12 +144,12 @@ interface summary, not Python declarations or another API reference.
 
 ### Method groups in the editor and widget framework
 
-**Decision:** In editor components, use `# Public methods`, `# Helpers`, `#
-Event handlers`, and `# Drawing` where they identify distinct method groups.
-Broader framework classes use their functional responsibilities instead, such as
-`Geometry`, `Event listeners`, and `Var binding` in
-[Widget](../../../python/pyxel/editor/widgets/widget.py), or `Movement`,
-`Editing`, and `Input processing` in
+**Decision:** In editor components, use `# Public methods`,
+`# Helpers`, `# Event handlers`, and `# Drawing` where they
+identify distinct method groups. Broader framework classes use their functional
+responsibilities instead, such as `Geometry`, `Event listeners`, and
+`Var binding` in [Widget](../../../python/pyxel/editor/widgets/widget.py),
+or `Movement`, `Editing`, and `Input processing` in
 [FieldCursor](../../../python/pyxel/editor/field_cursor.py). Do not add a label
 before a constructor, every property, or a lone draw callback in a small
 subclass merely to give every method a heading.
@@ -193,8 +193,8 @@ group names.
 ### Groups in shared helpers and applications
 
 **Decision:** Where a web source contains several facilities at the same
-declaration level, use responsibility headings such as `Page controls`, `HTML
-helpers`, `Data transfer`, and `Page setup` in
+declaration level, use responsibility headings such as `Page controls`,
+`HTML helpers`, `Data transfer`, and `Page setup` in
 [shared.js](../../../web/shared.js), and keep markup localization with the HTML
 helpers that use it. In the web runtime, keep the public API apart from its
 internal facilities, and keep the custom-element classes together with their
