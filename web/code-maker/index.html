@@ -1220,7 +1220,14 @@
       }
 
       async function copyResourceToProject() {
-        const pyodide = resourceEditor.contentWindow?.pyxelContext?.pyodide;
+        // Unwind a Python save callback before entering its runtime again.
+        await Promise.resolve();
+        const context = resourceEditor.contentWindow?.pyxelContext;
+        // Project loading replaces the resource editor asynchronously.
+        while (context?.resetPromise) {
+          await context.resetPromise;
+        }
+        const pyodide = context?.pyodide;
         if (!pyodide) {
           return;
         }
@@ -1228,8 +1235,6 @@
         // Prevent the editor's save callback from re-entering saveToFile.
         window._isCopyingResource = true;
         try {
-          // Unwind a Python save callback before entering its runtime again.
-          await Promise.resolve();
           const filename = PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres";
           pyodide.runPython(
             `import pyxel; pyxel.save(${JSON.stringify(filename)})`,

@@ -1,4 +1,4 @@
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 
 use blip_buf::BlipBuf;
 
@@ -429,9 +429,15 @@ impl Voice {
     // Tone controls
 
     pub fn set_tone(&mut self, tone: RcTone) {
-        self.current_tone = Some(tone);
-        self.current_tone_mode = None;
-        self.current_tone_revision = None;
+        if self
+            .current_tone
+            .as_ref()
+            .is_none_or(|current| !Arc::ptr_eq(current, &tone))
+        {
+            self.current_tone = Some(tone);
+            self.current_tone_mode = None;
+            self.current_tone_revision = None;
+        }
         self.refresh_tone_state();
     }
 
@@ -1498,11 +1504,51 @@ mod tests {
 
         let control_clocks = voice.control_interval_clocks + 1;
         voice.process(None, 0, control_clocks);
+        voice.set_tone(tone.clone());
         assert_eq!(voice.oscillator.waveform_set_count, 1);
 
         audio_mut!(&tone).wavetable[0] = 8;
         voice.process(None, 0, control_clocks);
         assert_eq!(voice.oscillator.waveform_set_count, 2);
+    }
+
+    #[test]
+    fn test_tone_selection_observes_live_edits_and_distinct_resources() {
+        let mut voice = Voice::new(44100, 60, 512);
+        let tone = make_tone(1, vec![1, 0]);
+        voice.set_tone(tone.clone());
+        voice.play_note(60.0, 1.0, 44100);
+
+        {
+            let mut tone_ref = audio_mut!(&tone);
+            tone_ref.wavetable = vec![0, 1];
+            tone_ref.gain = 0.25;
+        }
+        voice.set_tone(tone.clone());
+        assert_eq!(voice.oscillator.waveform_samples, [-32767, 32767]);
+        assert_eq!(voice.current_velocity_cache, 0.25);
+
+        for mode in [ToneMode::ShortPeriodNoise, ToneMode::LongPeriodNoise] {
+            audio_mut!(&tone).mode = mode;
+            voice.set_tone(tone.clone());
+            assert_eq!(voice.oscillator.samples_per_cycle(), 1);
+            voice.oscillator.advance_sample();
+            let phase = voice.oscillator.lfsr;
+            let sample = voice.oscillator.sample();
+            voice.set_tone(tone.clone());
+            assert_eq!(voice.oscillator.lfsr, phase);
+            assert_eq!(voice.oscillator.sample(), sample);
+        }
+        audio_mut!(&tone).mode = ToneMode::Wavetable;
+        voice.set_tone(tone);
+        assert_eq!(voice.oscillator.samples_per_cycle(), 2);
+
+        let first = make_tone(1, vec![1, 0]);
+        let second = make_tone(1, vec![0, 1]);
+        voice.set_tone(first);
+        assert_eq!(voice.oscillator.waveform_samples, [32767, -32767]);
+        voice.set_tone(second);
+        assert_eq!(voice.oscillator.waveform_samples, [-32767, 32767]);
     }
 
     fn collect_gain_per_sample(voice: &mut Voice, samples: usize) -> Vec<i32> {

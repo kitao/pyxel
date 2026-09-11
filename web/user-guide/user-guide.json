@@ -424,9 +424,9 @@
       "ja": "自分のサイトに Pyxel アプリを埋め込むなど、その他の利用方法については {0} を参照してください。",
       "ko": "자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 방법에 대해서는 {0}을 참조하세요.",
       "pt": "Para outros usos, como incorporar aplicativos Pyxel em seu próprio site, consulte {0}.",
-      "ru": "Для других вариантов использования, таких как встраивание приложений Pyxel на ваш собственный сайт, обратитесь к {0}.",
+      "ru": "Другие варианты использования, например встраивание приложений Pyxel на собственный сайт, описаны в руководстве «{0}».",
       "tr": "Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanımlar için lütfen {0} sayfasına bakın.",
-      "uk": "Для інших варіантів використання, таких як вбудовування застосунків Pyxel на ваш власний сайт, зверніться до {0}."
+      "uk": "Інші варіанти використання, зокрема вбудовування застосунків Pyxel на власний сайт, описано в посібнику «{0}»."
     },
     "install_vscode_title": {
       "en": "VS Code",
@@ -506,7 +506,7 @@
       "fr": "L'installation de Pyxel ajoute la commande {0}. Faites-la suivre du nom de l'opération.",
       "it": "L'installazione di Pyxel aggiunge il comando {0}. Farlo seguire dal nome dell'operazione.",
       "ja": "Pyxel をインストールすると {0} コマンドが使えます。操作名を続けて指定します。",
-      "ko": "Pyxel을 설치하면 {0} 명령어를 사용할 수 있습니다. 그 뒤에 작업 이름을 지정합니다.",
+      "ko": "Pyxel을 설치하면 {0} 명령어를 사용할 수 있습니다. 그 뒤에 작업 이름을 지정하세요.",
       "pt": "A instalação do Pyxel adiciona o comando {0}. Em seguida, informe o nome da operação.",
       "ru": "При установке Pyxel добавляется команда {0}. После неё укажите название операции.",
       "tr": "Pyxel kurulumu {0} komutunu ekler. Ardından işlem adını yazın.",
@@ -618,7 +618,7 @@
       "fr": "Dans votre script Python, importez Pyxel, spécifiez la taille de la fenêtre avec {0} et démarrez l'application avec {1}.",
       "it": "Nel proprio script Python, importare Pyxel, specificare le dimensioni della finestra con {0} e avviare l'applicazione con {1}.",
       "ja": "Python スクリプト内で Pyxel モジュールをインポートし、{0} 関数でウィンドウサイズを指定した後、{1} 関数で Pyxel アプリケーションを開始します。",
-      "ko": "Python 스크립트에서 Pyxel을 가져온 뒤 {0} 함수로 창 크기를 지정하고 {1} 함수로 애플리케이션을 시작합니다.",
+      "ko": "Python 스크립트에서 Pyxel을 가져온 뒤 {0} 함수로 창 크기를 지정하고 {1} 함수로 애플리케이션을 시작하세요.",
       "pt": "No seu script Python, importe o Pyxel, especifique o tamanho da janela com {0} e inicie o aplicativo com {1}.",
       "ru": "В вашем Python-скрипте импортируйте Pyxel, укажите размер окна с помощью {0} и запустите приложение с помощью {1}.",
       "tr": "Python betiğinizde Pyxel'i içe aktarın, pencere boyutunu {0} ile belirtin ve uygulamayı {1} ile başlatın.",
@@ -632,7 +632,7 @@
       "fr": "Passez à {0} les fonctions {1}, qui met à jour l'état à chaque image, et {2}, qui dessine à l'écran.",
       "it": "Passare a {0} le funzioni {1}, che aggiorna lo stato a ogni frame, e {2}, che disegna sullo schermo.",
       "ja": "{0} には、毎フレームの状態を更新する {1} 関数と、画面を描く {2} 関数を渡します。",
-      "ko": "{0}에 매 프레임 상태를 업데이트하는 {1} 함수와 화면을 그리는 {2} 함수를 전달합니다.",
+      "ko": "{0}에 매 프레임 상태를 업데이트하는 {1} 함수와 화면을 그리는 {2} 함수를 전달하세요.",
       "pt": "Passe a {0} as funções {1}, que atualiza o estado a cada quadro, e {2}, que desenha na tela.",
       "ru": "Передайте в {0} функции {1}, которая обновляет состояние каждый кадр, и {2}, которая рисует на экране.",
       "tr": "{0} fonksiyonuna her karede durumu güncelleyen {1} ve ekranı çizen {2} fonksiyonlarını geçirin.",
@@ -730,7 +730,7 @@
       "fr": "Interrompez la surveillance du répertoire en appuyant sur {0}.",
       "it": "Interrompere il monitoraggio della directory premendo {0}.",
       "ja": "ディレクトリの監視は、{0} で終了します。",
-      "ko": "디렉터리 모니터링은 {0}를 눌러 중지합니다.",
+      "ko": "디렉터리 모니터링은 {0}를 눌러 중지하세요.",
       "pt": "Interrompa o monitoramento do diretório pressionando {0}.",
       "ru": "Остановите наблюдение за каталогом, нажав {0}.",
       "tr": "Dizin izlemeyi {0} tuşlarına basarak durdurun.",
@@ -860,7 +860,7 @@
       "pt": "Para instruções detalhadas, consulte o {0}.",
       "ru": "Подробные инструкции см. на странице {0}.",
       "tr": "Ayrıntılı kullanım talimatları için {0} sayfasına bakın.",
-      "uk": "Детальні інструкції див. у {0}."
+      "uk": "Детальні інструкції: {0}."
     },
     "resources_other_title": {
       "en": "Other Creation Methods",
@@ -996,7 +996,7 @@
       "fr": "Créez un fichier d'application Pyxel (.pyxapp) avec la commande {0} :",
       "it": "Creare un file dell'applicazione Pyxel (.pyxapp) con il comando {0}:",
       "ja": "Pyxel アプリケーションファイル (.pyxapp) は、{0} コマンドで作成します。",
-      "ko": "Pyxel 애플리케이션 파일(.pyxapp)은 {0} 명령어로 생성합니다.",
+      "ko": "Pyxel 애플리케이션 파일(.pyxapp)은 {0} 명령어로 생성하세요.",
       "pt": "Crie um arquivo de aplicativo Pyxel (.pyxapp) com o comando {0}.",
       "ru": "Создайте файл приложения Pyxel (.pyxapp) с помощью команды {0}.",
       "tr": "Bir Pyxel uygulama dosyası (.pyxapp) {0} komutu kullanılarak oluşturulur.",
@@ -1424,7 +1424,7 @@
     },
     "contrib_testing_body": {
       "en": "Anyone who manually tests the code and reports bugs or suggestions for enhancements in the {0} is very welcome!",
-      "cn": "任何手动测试代码并在 {0} 中报告 bug 或增强建议的人都非常欢迎！",
+      "cn": "欢迎大家手动测试代码，并在 {0} 中报告 bug 或提出改进建议！",
       "de": "Jeder, der den Code manuell testet und Fehler oder Verbesserungsvorschläge im {0} meldet, ist sehr willkommen!",
       "es": "¡Cualquier persona que pruebe manualmente el código y reporte errores o sugerencias de mejoras en el {0} es muy bienvenida!",
       "fr": "Toute personne qui teste manuellement le code et signale des bugs ou des suggestions d'améliorations dans l'{0} est la bienvenue !",
@@ -1493,18 +1493,18 @@
       "uk": "Ліцензія"
     },
     "license_body": {
-      "en": "Pyxel is licensed under the {0}. It can be reused in proprietary software, provided that all copies of the software or its substantial portions include a copy of the MIT License terms and a copyright notice.",
-      "cn": "Pyxel 采用 {0}。它可以在专有软件中重复使用，前提是所有软件或其重要部分的副本都包含 MIT 许可证条款和版权声明的副本。",
-      "de": "Pyxel ist lizenziert unter der {0}. Es kann in proprietärer Software wiederverwendet werden, vorausgesetzt, dass alle Kopien der Software oder wesentliche Teile davon eine Kopie der MIT-Lizenzbedingungen und einen Copyright-Hinweis enthalten.",
-      "es": "Pyxel está licenciado bajo la {0}. Se puede reutilizar en software propietario, siempre que todas las copias del software o sus partes sustanciales incluyan una copia de los términos de la Licencia MIT y un aviso de copyright.",
-      "fr": "Pyxel est sous la {0}. Il peut être réutilisé dans des logiciels propriétaires, à condition que toutes les copies du logiciel ou de ses parties substantielles incluent une copie des termes de la Licence MIT et un avis de droit d'auteur.",
-      "it": "Pyxel è concesso in licenza sotto la {0}. Può essere riutilizzato in software proprietari, a condizione che tutte le copie del software o delle sue parti sostanziali includano una copia dei termini della Licenza MIT e un avviso di copyright.",
+      "en": "Pyxel is licensed under the {0}. You may freely sell or distribute it as long as you include the copyright notice and the full license text in the source code, a file for license notices, or a similar place.",
+      "cn": "Pyxel 采用 {0}。只要在源代码、许可证说明文件等处包含版权声明和完整的许可证文本，就可以自由销售或分发它。",
+      "de": "Pyxel steht unter der {0}. Wenn Sie den Urheberrechtshinweis und den vollständigen Lizenztext im Quellcode, in einer Datei für Lizenzhinweise oder an vergleichbarer Stelle angeben, dürfen Sie Pyxel frei verkaufen oder weitergeben.",
+      "es": "Pyxel está licenciado bajo la {0}. Puede venderlo o distribuirlo libremente siempre que incluya el aviso de copyright y el texto completo de la licencia en el código fuente, en un archivo de información de licencia o en un lugar similar.",
+      "fr": "Pyxel est sous la {0}. Vous pouvez le vendre ou le distribuer librement à condition d'inclure la mention de droit d'auteur et le texte intégral de la licence dans le code source, un fichier de mentions de licence ou un emplacement similaire.",
+      "it": "Pyxel è concesso in licenza sotto la {0}. È possibile venderlo o distribuirlo liberamente purché l'avviso di copyright e il testo completo della licenza siano inclusi nel codice sorgente, in un file con le informazioni sulla licenza o in un luogo simile.",
       "ja": "Pyxel は {0} です。ソースコードやライセンス表示用のファイル等で、著作権とライセンス全文の表示をすれば、自由に販売や配布できます。",
-      "ko": "Pyxel은 {0} 하에 라이선스가 부여됩니다. 소프트웨어 또는 그 상당 부분의 모든 사본에 MIT 라이선스 조항 사본과 저작권 고지를 포함하면 독점 소프트웨어에서도 재사용할 수 있습니다.",
-      "pt": "O Pyxel é licenciado sob a {0}. Pode ser reutilizado em software proprietário, desde que todas as cópias do software ou suas partes substanciais incluam uma cópia dos termos da Licença MIT e um aviso de copyright.",
-      "ru": "Pyxel лицензируется по {0}. Его можно использовать в проприетарном программном обеспечении, при условии, что все копии программного обеспечения или его значительные части содержат копию условий лицензии MIT и уведомление об авторских правах.",
-      "tr": "Pyxel, {0} ile lisanslanmıştır. Yazılımın tüm kopyalarının veya önemli bölümlerinin MIT Lisansı koşullarının bir kopyasını ve telif hakkı bildirimini içermesi koşuluyla tescilli yazılımlarda yeniden kullanılabilir.",
-      "uk": "Pyxel ліцензовано під {0}. Його можна використовувати у власному програмному забезпеченні за умови, що всі копії програмного забезпечення або його істотні частини містять копію умов ліцензії MIT та повідомлення про авторські права."
+      "ko": "Pyxel은 {0} 하에 라이선스가 부여됩니다. 소스 코드나 라이선스 표시용 파일 등에 저작권 고지와 라이선스 전문을 포함하면 자유롭게 판매하거나 배포할 수 있습니다.",
+      "pt": "O Pyxel é licenciado sob a {0}. Você pode vendê-lo ou distribuí-lo livremente, desde que inclua o aviso de copyright e o texto completo da licença no código-fonte, em um arquivo de informações de licença ou em um local semelhante.",
+      "ru": "Pyxel лицензируется по {0}. Его можно свободно продавать или распространять при условии, что уведомление об авторских правах и полный текст лицензии указаны в исходном коде, файле с лицензионной информацией или аналогичном месте.",
+      "tr": "Pyxel, {0} ile lisanslanmıştır. Kaynak kodunda, lisans bilgilerinin yer aldığı bir dosyada veya benzeri bir yerde telif hakkı bildirimine ve lisans metninin tamamına yer verilmesi koşuluyla Pyxel serbestçe satılabilir veya dağıtılabilir.",
+      "uk": "Pyxel ліцензовано під {0}. Його можна вільно продавати або розповсюджувати за умови, що повідомлення про авторські права та повний текст ліцензії наведено у вихідному коді, файлі з ліцензійною інформацією або аналогічному місці."
     },
     "sponsors_title": {
       "en": "Recruiting Sponsors",
@@ -1528,7 +1528,7 @@
       "fr": "Pyxel recherche des sponsors sur GitHub Sponsors. Veuillez envisager de soutenir Pyxel pour soutenir sa maintenance continue et le développement de fonctionnalités. En tant qu'avantage, les sponsors peuvent consulter directement le développeur de Pyxel. Pour plus de détails, veuillez visiter {0}.",
       "it": "Pyxel sta cercando sponsor su GitHub Sponsors. Si prega di considerare l'idea di sponsorizzare Pyxel per supportarne la manutenzione continua e lo sviluppo di nuove funzionalità. Come beneficio, gli sponsor possono consultare direttamente lo sviluppatore di Pyxel. Per ulteriori dettagli, visitare {0}.",
       "ja": "Pyxel は GitHub Sponsors でスポンサーを募っています。Pyxel のメンテナンスと機能追加の継続のために、スポンサーになることをご検討ください。スポンサーは特典として Pyxel についての相談が可能です。詳細は {0} をご覧ください。",
-      "ko": "Pyxel은 GitHub Sponsors에서 스폰서를 모집하고 있습니다. Pyxel의 지속적인 유지 관리 및 기능 개발을 지원하기 위해 스폰서를 고려해 주세요. 스폰서에게는 Pyxel 개발자와 직접 상담할 수 있는 혜택이 제공됩니다. 자세한 내용은 {0}를 참조하세요.",
+      "ko": "Pyxel은 GitHub Sponsors에서 스폰서를 모집하고 있습니다. Pyxel의 지속적인 유지 관리 및 기능 개발을 지원하기 위해 후원을 고려해 주세요. 스폰서에게는 Pyxel 개발자와 직접 상담할 수 있는 혜택이 제공됩니다. 자세한 내용은 {0}를 참조하세요.",
       "pt": "O Pyxel está buscando patrocinadores no GitHub Sponsors. Considere patrocinar o Pyxel para apoiar sua manutenção contínua e desenvolvimento de recursos. Como benefício, os patrocinadores podem consultar diretamente o desenvolvedor do Pyxel. Para mais detalhes, por favor, visite {0}.",
       "ru": "Pyxel ищет спонсоров на GitHub Sponsors. Пожалуйста, подумайте о том, чтобы стать спонсором Pyxel и поддержать его дальнейшее сопровождение и развитие функций. В качестве преимущества спонсоры могут консультироваться непосредственно с разработчиком Pyxel. Для получения дополнительной информации см. {0}.",
       "tr": "Pyxel, GitHub Sponsors üzerinde sponsorlar arıyor. Pyxel'in sürdürülebilir bakımı ve özellik geliştirmesi için sponsor olmayı düşünün. Bir avantaj olarak, sponsorlar Pyxel geliştiricisiyle doğrudan danışma imkânına sahip olabilirler. Daha fazla bilgi için {0} ziyaret edin.",

@@ -62,23 +62,24 @@ pub struct MotionChannel {
     pub interpolation: MotionInterpolation,
 }
 
-// Channels override the per-part base transforms while the clip plays.
+// Retain authored TRS components: matrices lose scale signs and zero-scale rotation.
+// Channels override these per-part components while the clip plays.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Motion {
     pub name: String,
     pub length: f32,
-    pub base_transforms: Vec<Mat4>,
+    pub base_components: Vec<(Vec3, Quat, Vec3)>,
     pub channels: Vec<MotionChannel>,
 }
 
 define_rc_type!(RcMotion, Motion);
 
 impl Motion {
-    pub fn new(name: String, length: f32, base_transforms: Vec<Mat4>) -> RcMotion {
+    pub fn new(name: String, length: f32, base_components: Vec<(Vec3, Quat, Vec3)>) -> RcMotion {
         new_rc_type!(Self {
             name,
             length,
-            base_transforms,
+            base_components,
             channels: Vec::new(),
         })
     }
@@ -86,19 +87,17 @@ impl Motion {
     pub fn sample(&self, frame: f32, looping: bool) -> Vec<(usize, Mat4)> {
         let frame = self.resolve_frame(frame, looping);
         let mut sampled_parts: Vec<Option<(Vec3, Quat, Vec3)>> =
-            vec![None; self.base_transforms.len()];
+            vec![None; self.base_components.len()];
 
         for channel in &self.channels {
             if !channel.is_usable() {
                 continue;
             }
-            let Some(base) = self.base_transforms.get(channel.part_index) else {
+            let Some(base) = self.base_components.get(channel.part_index) else {
                 continue;
             };
 
-            let (pos, rot, scale) = sampled_parts[channel.part_index].get_or_insert_with(|| {
-                (base.pos_value(), base.rot_value(), base.scale_vec_value())
-            });
+            let (pos, rot, scale) = sampled_parts[channel.part_index].get_or_insert(*base);
             match channel.target {
                 MotionTarget::Translation => *pos = channel.sample_vec3(frame),
                 MotionTarget::Rotation => *rot = channel.sample_quat(frame),
@@ -348,6 +347,18 @@ fn identity_quat() -> Quat {
 mod tests {
     use super::*;
 
+    fn identity_components() -> (Vec3, Quat, Vec3) {
+        (
+            zero_vec3(),
+            identity_quat(),
+            Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+        )
+    }
+
     fn translation_channel(interpolation: MotionInterpolation) -> MotionChannel {
         MotionChannel {
             part_index: 0,
@@ -471,15 +482,12 @@ mod tests {
 
     #[test]
     fn test_mismatched_channel_value_type_is_skipped() {
-        let base = *rc_ref!(&Mat4::from_translation(&Vec3 {
-            x: 2.0,
-            y: 0.0,
-            z: 0.0,
-        }));
+        let mut base = identity_components();
+        base.0.x = 2.0;
         let motion = Motion {
             name: String::from("malformed"),
             length: 30.0,
-            base_transforms: vec![base],
+            base_components: vec![base],
             channels: vec![MotionChannel {
                 part_index: 0,
                 target: MotionTarget::Translation,
@@ -497,7 +505,7 @@ mod tests {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
-            base_transforms: vec![Mat4::identity_value()],
+            base_components: vec![identity_components()],
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
         assert_eq!(sampled_x(&motion, 15.0, false), 0.5);
@@ -508,7 +516,7 @@ mod tests {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
-            base_transforms: vec![Mat4::identity_value()],
+            base_components: vec![identity_components()],
             channels: vec![translation_channel(MotionInterpolation::Step)],
         };
         assert_eq!(sampled_x(&motion, 15.0, false), 0.0);
@@ -519,7 +527,7 @@ mod tests {
         let motion = Motion {
             name: String::from("smooth_move"),
             length: 30.0,
-            base_transforms: vec![Mat4::identity_value()],
+            base_components: vec![identity_components()],
             channels: vec![cubic_translation_channel()],
         };
         assert!((sampled_x(&motion, 7.5, false) - 0.25).abs() < 1e-6);
@@ -530,7 +538,7 @@ mod tests {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
-            base_transforms: vec![Mat4::identity_value()],
+            base_components: vec![identity_components()],
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
         assert_eq!(sampled_x(&motion, 99.0, false), 1.0);
@@ -541,7 +549,7 @@ mod tests {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
-            base_transforms: vec![Mat4::identity_value()],
+            base_components: vec![identity_components()],
             channels: vec![translation_channel(MotionInterpolation::Linear)],
         };
         assert_eq!(sampled_x(&motion, 45.0, true), 0.5);
@@ -552,7 +560,7 @@ mod tests {
         let motion = Motion {
             name: String::from("scale"),
             length: 30.0,
-            base_transforms: vec![Mat4::identity_value()],
+            base_components: vec![identity_components()],
             channels: vec![MotionChannel {
                 part_index: 0,
                 target: MotionTarget::Scale,
@@ -589,7 +597,7 @@ mod tests {
         let motion = Motion {
             name: String::from("rotate"),
             length: 30.0,
-            base_transforms: vec![Mat4::identity_value()],
+            base_components: vec![identity_components()],
             channels: vec![MotionChannel {
                 part_index: 0,
                 target: MotionTarget::Rotation,

@@ -71,10 +71,16 @@ def main(argv: list[str] | None = None) -> int:
 
 def update_version(version: str, root_dir: Path = ROOT_DIR) -> None:
     cargo_version = pep440_to_semver(version)
+    updates = []
     for relative_path, pattern in PYTHON_VERSION_REPLACEMENTS:
-        replace_file(root_dir / relative_path, pattern, version)
+        path = root_dir / relative_path
+        updates.append((path, replaced_text(path, pattern, version)))
     for relative_path, pattern in CARGO_VERSION_REPLACEMENTS:
-        replace_file(root_dir / relative_path, pattern, cargo_version)
+        path = root_dir / relative_path
+        updates.append((path, replaced_text(path, pattern, cargo_version)))
+
+    for path, text in updates:
+        path.write_text(text, encoding="utf-8")
 
 
 def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[str]:
@@ -142,7 +148,7 @@ def pep440_to_semver(version: str) -> str:
     return version
 
 
-def replace_file(path: Path, pattern: str, version: str) -> None:
+def replaced_text(path: Path, pattern: str, version: str) -> str:
     text = path.read_text(encoding="utf-8")
     new_text, count = re.subn(
         pattern,
@@ -152,7 +158,7 @@ def replace_file(path: Path, pattern: str, version: str) -> None:
     )
     if count != 1:
         raise ValueError(f"version pattern not found in {path}")
-    path.write_text(new_text, encoding="utf-8")
+    return new_text
 
 
 def _read_version(root_dir: Path, relative_path: str, pattern: str) -> str:

@@ -356,7 +356,7 @@ def test_from_glb_warns_and_loads_materialless_primitive(tmp_path, capfd):
     )
 
 
-def test_from_glb_loads_unused_extra_material_and_texture(tmp_path):
+def test_from_glb_loads_unused_extra_texture(tmp_path):
     path = write_two_texture_glb(tmp_path / "two_textures.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
     assert isinstance(mesh.col_img, Image)

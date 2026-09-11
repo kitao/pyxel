@@ -1,12 +1,27 @@
 import importlib.util
 import json
 from importlib.machinery import SourceFileLoader
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import pytest
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "generate_docs"
+
+
+@pytest.mark.parametrize("path_type", [PurePosixPath, PureWindowsPath])
+def test_generated_header_uses_portable_source_paths(path_type):
+    generate_docs = _load_generate_docs()
+    generate_docs.ROOT_DIR = path_type("/pyxel")
+    sources = [
+        generate_docs.ROOT_DIR / "web/user-guide/index.html",
+        generate_docs.ROOT_DIR / "web/user-guide/user-guide.json",
+    ]
+
+    assert generate_docs.generated_header(*sources) == (
+        "<!-- This file is generated from web/user-guide/index.html and "
+        "web/user-guide/user-guide.json. -->\n\n"
+    )
 
 
 def test_generate_from_html_rejects_missing_update_texts(tmp_path):

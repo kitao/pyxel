@@ -243,6 +243,11 @@ test("Code Maker reads resources only after Python saving completes", async () =
   assert.equal(window._isCopyingResource, false);
 
   calls.length = 0;
+  await Promise.all([copy(), copy()]);
+  assert.deepEqual(calls, ["save", "read", "save", "read"]);
+  assert.equal(window._isCopyingResource, false);
+
+  calls.length = 0;
   fail = true;
   await assert.rejects(copy(), { message: "disk full" });
   assert.deepEqual(calls, ["save"]);
@@ -338,4 +343,53 @@ test("Code Maker does not fall back to downloading after a file write fails", as
   });
   await save();
   assert.deepEqual(calls, ["archive", "Save failed: disk full"]);
+});
+
+test("Code Maker waits for every pending editor reset before saving resources", async () => {
+  const calls = [];
+  let finishFirst;
+  let finishLast;
+  const first = new Promise((resolve) => {
+    finishFirst = resolve;
+  });
+  const last = new Promise((resolve) => {
+    finishLast = resolve;
+  });
+  let currentBytes = new Uint8Array([1]);
+  const runtimeContext = {
+    resetPromise: first,
+    pyodide: {
+      runPython() {
+        calls.push("save");
+      },
+      FS: {
+        readFile() {
+          return currentBytes;
+        },
+      },
+    },
+  };
+  const window = { _project: { resource: "Ag==" } };
+  const copy = loadNamedFunction(source, "copyResourceToProject", {
+    window,
+    resourceEditor: { contentWindow: { pyxelContext: runtimeContext } },
+    PYXEL_WORKING_DIRECTORY: "/work",
+    uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
+  });
+  const pending = copy();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(calls, []);
+  assert.equal(window._project.resource, "Ag==");
+
+  runtimeContext.resetPromise = last;
+  finishFirst();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(calls, [], "a later project reset must also complete");
+  currentBytes = new Uint8Array([2]);
+  runtimeContext.resetPromise = null;
+  finishLast();
+  await pending;
+  assert.deepEqual(calls, ["save"]);
+  assert.equal(window._project.resource, "Ag==");
+  assert.equal(window._isCopyingResource, false);
 });

@@ -845,3 +845,117 @@ test("MML share updates keep the newest content when compression finishes out of
   assert.equal(qrCodeImage.src, emptyQr);
   assert.deepEqual(replacedUrls, [newestUrl, emptyUrl]);
 });
+
+test("runtime resets serialize command execution and await each request", async () => {
+  const tasks = [];
+  const events = [];
+  const errors = [];
+  let initialized = true;
+  let finishSuspend;
+  const suspended = new Promise((resolve) => {
+    finishSuspend = resolve;
+  });
+  const audioContext = {
+    state: "running",
+    async suspend() {
+      events.push("suspend");
+      await suspended;
+      this.state = "suspended";
+    },
+    resume() {
+      this.state = "running";
+    },
+  };
+  const pyodide = {
+    _module: {
+      SDL2: { audioContext },
+      _emscripten_cancel_main_loop() {},
+    },
+    runPython(code) {
+      if (code.includes("pyxel._reset_statics()")) {
+        initialized = false;
+        events.push("reset");
+      } else if (code === "start application") {
+        // init requires reset_statics between two application launches.
+        assert.equal(initialized, false);
+        initialized = true;
+        events.push("start");
+      }
+    },
+  };
+  const context = {
+    window: {
+      pyxelContext: {
+        initialized: true,
+        pyodide,
+        params: { command: "run", script: "start application" },
+        resetPromise: null,
+      },
+    },
+    document: { getElementById: () => null },
+    setTimeout: (callback) => tasks.push(callback),
+    PYXEL_WORKING_DIRECTORY: "/work",
+    _displayFatalErrorOverlay: (error) => errors.push(error),
+    _displayErrorOverlay: (error) => errors.push(error),
+    _addVirtualGamepad() {},
+  };
+  for (const name of [
+    "_copyFileFromBase64",
+    "_installBuiltinPackages",
+    "_executePyxelCommand",
+    "_resetPyxel",
+  ]) {
+    context[name] = loadArrowFunction(pyxelSource, name, context);
+  }
+  const reset = loadNamedFunction(pyxelSource, "resetPyxel", context);
+  let firstDone = false;
+  let secondDone = false;
+  const first = reset().then(() => {
+    firstDone = true;
+  });
+  const second = reset().then(() => {
+    secondDone = true;
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(
+    tasks.length,
+    1,
+    "the second reset must not enter audio teardown",
+  );
+  assert.equal(firstDone, false);
+  assert.equal(secondDone, false);
+
+  tasks.shift()();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(events, ["suspend"]);
+  finishSuspend();
+  await Promise.all([first, second]);
+  assert.deepEqual(events, ["suspend", "reset", "start", "reset", "start"]);
+  assert.deepEqual(errors, []);
+  assert.equal(firstDone, true);
+  assert.equal(secondDone, true);
+  assert.equal(context.window.pyxelContext.resetPromise, null);
+});
+
+test("a queued reset preserves fatal reload recovery", async () => {
+  const context = {
+    window: { pyxelContext: { initialized: true, hasFatalError: false } },
+    document: { getElementById: () => null },
+    location: { reload: () => calls.push("reload") },
+    _displayFatalErrorOverlay(error) {
+      calls.push(error.message);
+      context.window.pyxelContext.hasFatalError = true;
+    },
+  };
+  const calls = [];
+  context.window.pyxelContext.pyodide = {
+    runPython() {
+      throw new Error("reset failed");
+    },
+  };
+  context._resetPyxel = loadArrowFunction(pyxelSource, "_resetPyxel", context);
+  const reset = loadNamedFunction(pyxelSource, "resetPyxel", context);
+  await Promise.all([reset(), reset()]);
+  assert.deepEqual(calls, ["reset failed", "reload"]);
+  assert.equal(context.window.pyxelContext.resetPromise, null);
+});

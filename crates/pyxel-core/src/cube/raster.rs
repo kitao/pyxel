@@ -12,6 +12,39 @@ pub type Mat4x4 = [[f32; 4]; 4];
 
 type ScreenPoint = (f32, f32, f32);
 
+// A geometric border uses its own face depth at the same pixel center as
+// the fill. Keeping a single depth value preserves ordering across primitives.
+#[derive(Clone, Copy)]
+pub(crate) struct ScreenPlane {
+    origin: ScreenPoint,
+    dx: f32,
+    dy: f32,
+}
+
+impl ScreenPlane {
+    pub(crate) fn from_triangle(p0: ScreenPoint, p1: ScreenPoint, p2: ScreenPoint) -> Option<Self> {
+        let area = edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1));
+        if area.abs() < 1e-6 {
+            return None;
+        }
+        let dz1 = p1.2 - p0.2;
+        let dz2 = p2.2 - p0.2;
+        Some(Self {
+            origin: p0,
+            dx: (dz1 * (p2.1 - p0.1) - dz2 * (p1.1 - p0.1)) / area,
+            dy: ((p1.0 - p0.0) * dz2 - (p2.0 - p0.0) * dz1) / area,
+        })
+    }
+
+    pub(crate) fn slope_squared(self) -> f32 {
+        self.dx * self.dx + self.dy * self.dy
+    }
+
+    fn z_at(self, x: f32, y: f32) -> f32 {
+        self.origin.2 + self.dx * (x - self.origin.0) + self.dy * (y - self.origin.1)
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct ClipRect {
     pub left: i32,
@@ -253,7 +286,7 @@ pub fn screen_circle(
 pub const BAYER4: [[u8; 4]; 4] = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
 // Match Canvas circle boundary rounding.
 const CIRCLE_ROUNDING_BIAS: f32 = 0.01;
-// Resolve floating-point ties after the slope-scaled surface offset.
+// Resolve floating-point ties between a border and its own surface.
 const LINE_DEPTH_BIAS: f32 = 1.0e-5;
 
 // Pick between primary and secondary for the LUT cell at pixel (x, y).
@@ -270,7 +303,7 @@ pub fn dither_pick(primary: i32, secondary: i32, x: i32, y: i32) -> u8 {
     }
 }
 
-// Broad base-color band, with shadow and highlight bands at oblique angles.
+// Quantize positive Lambert brightness into the palette's four shade levels.
 pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
     let dot_factor = match normal {
         Some(n) => {
@@ -286,15 +319,7 @@ pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
         None => return 0,
     };
 
-    if dot_factor < -0.5 {
-        0
-    } else if dot_factor < 0.4 {
-        1
-    } else if dot_factor < 0.85 {
-        2
-    } else {
-        LEVEL_COUNT - 1
-    }
+    (dot_factor.clamp(0.0, 1.0) * (LEVEL_COUNT - 1) as f32).round() as usize
 }
 
 // Resolve the shade once per face, then reuse the pair with dither_pick.
@@ -325,8 +350,7 @@ pub fn write_pixel(
     depth_test: bool,
     depth_write: bool,
 ) {
-    let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, 0.0, dither_alpha, depth_test)
-    else {
+    let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test) else {
         return;
     };
     write_visible_pixel(target, depth, i, x, y, z, col, depth_write);
@@ -339,7 +363,6 @@ fn visible_pixel_index(
     x: i32,
     y: i32,
     z: f32,
-    depth_bias: f32,
     dither_alpha: f32,
     depth_test: bool,
 ) -> Option<usize> {
@@ -355,7 +378,7 @@ fn visible_pixel_index(
     }
 
     let i = (y as usize) * depth_w as usize + x as usize;
-    if depth_test && z + depth_bias >= depth[i] {
+    if depth_test && z >= depth[i] {
         return None;
     }
     Some(i)
@@ -391,17 +414,6 @@ fn write_visible_pixel(
 #[inline]
 fn edge_function(a: (f32, f32), b: (f32, f32), c: (f32, f32)) -> f32 {
     (b.0 - a.0) * (c.1 - a.1) - (b.1 - a.1) * (c.0 - a.0)
-}
-
-fn triangle_depth_bias(p0: ScreenPoint, p1: ScreenPoint, p2: ScreenPoint, inv_area: f32) -> f32 {
-    let dz1 = p1.2 - p0.2;
-    let dz2 = p2.2 - p0.2;
-    let dz_dx = (dz1 * (p2.1 - p0.1) - dz2 * (p1.1 - p0.1)) * inv_area;
-    let dz_dy = ((p1.0 - p0.0) * dz2 - (p2.0 - p0.0) * dz1) * inv_area;
-    // Line endpoint rounding, DDA rounding, and the surface's half-pixel
-    // sample shift can differ by up to 1.5 pixels per axis. Offset the whole
-    // face so visibility remains independent of which primitive draws first.
-    1.5 * (dz_dx.abs() + dz_dy.abs())
 }
 
 #[inline]
@@ -449,7 +461,6 @@ pub fn rasterize_triangle(
         return;
     }
     let inv_area = 1.0 / area;
-    let depth_bias = triangle_depth_bias(p0, p1, p2, inv_area);
 
     let min_x = p0.0.min(p1.0).min(p2.0).floor() as i32;
     let max_x = p0.0.max(p1.0).max(p2.0).ceil() as i32;
@@ -509,17 +520,9 @@ pub fn rasterize_triangle(
             let bary2 = w2 * inv_area;
             let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
             let col = dither_pick(primary as i32, secondary as i32, x, y);
-            if let Some(i) = visible_pixel_index(
-                depth,
-                depth_w,
-                x,
-                y,
-                z,
-                depth_bias,
-                dither_alpha,
-                depth_test,
-            ) {
-                write_visible_pixel(target, depth, i, x, y, z + depth_bias, col, depth_write);
+            if let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test)
+            {
+                write_visible_pixel(target, depth, i, x, y, z, col, depth_write);
             }
         }
     }
@@ -550,7 +553,6 @@ pub fn rasterize_textured_triangle<F>(
         return;
     }
     let inv_area = 1.0 / area;
-    let depth_bias = triangle_depth_bias(p0, p1, p2, inv_area);
 
     let min_x = p0.0.min(p1.0).min(p2.0).floor() as i32;
     let max_x = p0.0.max(p1.0).max(p2.0).ceil() as i32;
@@ -605,29 +607,12 @@ pub fn rasterize_textured_triangle<F>(
             let bary1 = w1 * inv_area;
             let bary2 = w2 * inv_area;
             let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
-            if let Some(i) = visible_pixel_index(
-                depth,
-                depth_w,
-                x,
-                y,
-                z,
-                depth_bias,
-                dither_alpha,
-                depth_test,
-            ) {
+            if let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test)
+            {
                 let u = bary0 * uv0.0 + bary1 * uv1.0 + bary2 * uv2.0;
                 let v = bary0 * uv0.1 + bary1 * uv1.1 + bary2 * uv2.1;
                 if let Some(col) = sampler(u, v, x, y) {
-                    write_visible_pixel(
-                        target,
-                        depth,
-                        i,
-                        x,
-                        y,
-                        z + depth_bias,
-                        col as u8,
-                        depth_write,
-                    );
+                    write_visible_pixel(target, depth, i, x, y, z, col as u8, depth_write);
                 }
             }
         }
@@ -1093,9 +1078,9 @@ fn clip_screen_line_to_rect(
     clip: ClipRect,
 ) -> Option<(ScreenPoint, ScreenPoint)> {
     let min_x = clip.left as f32;
-    let max_x = clip.right as f32;
+    let max_x = clip.right as f32 + 1.0;
     let min_y = clip.top as f32;
-    let max_y = clip.bottom as f32;
+    let max_y = clip.bottom as f32 + 1.0;
     let dx = p1.0 - p0.0;
     let dy = p1.1 - p0.1;
     let mut t0 = 0.0;
@@ -1121,8 +1106,8 @@ fn line_depth(z: f32) -> f32 {
     }
 }
 
-// Floating-point DDA line with linear z interpolation and fixed 1-pixel width.
-// Clip before stepping so near-plane clipped edges do not traverse off-screen pixels.
+// Select one pixel per major-axis cell on the original projected segment.
+// Pixel centers and cell boundaries agree with triangle coverage.
 pub fn rasterize_line(
     target: &mut Image,
     depth: &mut [f32],
@@ -1136,67 +1121,91 @@ pub fn rasterize_line(
     depth_test: bool,
     depth_write: bool,
 ) {
+    rasterize_border_line(
+        target,
+        depth,
+        depth_w,
+        p0,
+        p1,
+        primary,
+        secondary,
+        clip,
+        dither_alpha,
+        depth_test,
+        depth_write,
+        &[],
+    );
+}
+
+pub(crate) fn rasterize_border_line(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    p0: (f32, f32, f32),
+    p1: (f32, f32, f32),
+    primary: u8,
+    secondary: u8,
+    clip: ClipRect,
+    dither_alpha: f32,
+    depth_test: bool,
+    depth_write: bool,
+    planes: &[ScreenPlane],
+) {
     let Some((p0, p1)) = clip_screen_line_to_rect(p0, p1, clip) else {
         return;
     };
 
-    let x1 = p0.0.round() as i32;
-    let y1 = p0.1.round() as i32;
-    let x2 = p1.0.round() as i32;
-    let y2 = p1.1.round() as i32;
-    let dx = (x2 - x1).abs();
-    let dy = (y2 - y1).abs();
-
-    if dx == 0 && dy == 0 {
-        if clip.contains(x1, y1) {
-            let col = dither_pick(primary as i32, secondary as i32, x1, y1);
+    let dx = p1.0 - p0.0;
+    let dy = p1.1 - p0.1;
+    let horizontal = dx.abs() >= dy.abs();
+    let (a, b) = if horizontal {
+        (p0.0, p1.0)
+    } else {
+        (p0.1, p1.1)
+    };
+    let first = a.min(b).floor() as i32;
+    let last = a.max(b).floor() as i32;
+    for coordinate in first..=last {
+        let t = if a == b {
+            0.0
+        } else {
+            ((coordinate as f32 + 0.5 - a) / (b - a)).clamp(0.0, 1.0)
+        };
+        let point = lerp_screen_point(p0, p1, t);
+        let (x, y) = if horizontal {
+            (coordinate, point.1.floor() as i32)
+        } else {
+            (point.0.floor() as i32, coordinate)
+        };
+        if clip.contains(x, y) {
+            let col = dither_pick(primary as i32, secondary as i32, x, y);
+            // For convex borders, the frontmost solid begins at the greatest
+            // entry depth among its incident faces. Generic lines retain their
+            // own interpolated depth; it never depends on previous pixels.
+            let z = if planes.is_empty() {
+                point.2
+            } else {
+                planes
+                    .iter()
+                    .map(|plane| plane.z_at(x as f32 + 0.5, y as f32 + 0.5))
+                    .fold(f32::NEG_INFINITY, f32::max)
+            };
+            if !depth_in_clip_range(point.2) {
+                continue;
+            }
             write_pixel(
                 target,
                 depth,
                 depth_w,
-                x1,
-                y1,
-                line_depth(p0.2),
+                x,
+                y,
+                line_depth(z),
                 col,
                 dither_alpha,
                 depth_test,
                 depth_write,
             );
         }
-        return;
-    }
-
-    let steps = dx.max(dy);
-    let inv = 1.0 / steps as f32;
-    let dx_f = (x2 - x1) as f32 * inv;
-    let dy_f = (y2 - y1) as f32 * inv;
-    let dz_f = (p1.2 - p0.2) * inv;
-    let mut fx = x1 as f32;
-    let mut fy = y1 as f32;
-    let mut fz = p0.2;
-
-    for _ in 0..=steps {
-        let xi = fx.round() as i32;
-        let yi = fy.round() as i32;
-        if clip.contains(xi, yi) {
-            let col = dither_pick(primary as i32, secondary as i32, xi, yi);
-            write_pixel(
-                target,
-                depth,
-                depth_w,
-                xi,
-                yi,
-                line_depth(fz),
-                col,
-                dither_alpha,
-                depth_test,
-                depth_write,
-            );
-        }
-
-        fx += dx_f;
-        fy += dy_f;
-        fz += dz_f;
     }
 }
 
@@ -1211,12 +1220,12 @@ mod tests {
     }
 
     #[test]
-    fn test_shading_preserves_base_color_on_obliquely_lit_faces() {
+    fn test_shading_quantizes_lambert_brightness() {
         let light = vec3(0.0, -1.0, 0.0);
-        assert_eq!(face_shade_level(&light, Some(&vec3(1.0, 0.0, 0.0))), 1);
+        assert_eq!(face_shade_level(&light, Some(&vec3(1.0, 0.0, 0.0))), 0);
         assert_eq!(face_shade_level(&light, Some(&vec3(1.0, 1.0, 0.0))), 2);
         assert_eq!(face_shade_level(&light, Some(&vec3(0.0, 1.0, 0.0))), 3);
-        assert_eq!(face_shade_level(&light, Some(&vec3(1.0, -0.25, 0.0))), 1);
+        assert_eq!(face_shade_level(&light, Some(&vec3(1.0, -0.25, 0.0))), 0);
         assert_eq!(face_shade_level(&light, Some(&vec3(0.0, -1.0, 0.0))), 0);
     }
 
@@ -1779,96 +1788,65 @@ mod tests {
     }
 
     #[test]
-    fn test_rasterize_line_on_sloped_surface() {
+    fn test_geometric_border_on_sloped_surface() {
         for textured in [false, true] {
             for line_first in [false, true] {
-                // The hidden line is separated by more than a pixel's depth span.
-                for gap in [0.0, 0.2] {
-                    for (dz_dx, dz_dy) in [(0.04, 0.0), (-0.04, 0.0), (0.0, 0.04), (0.0, -0.04)] {
-                        for shift in [0.0, 0.25, 0.75] {
-                            let point = |x: f32, y: f32| (x, y, 0.5 + dz_dx * x + dz_dy * y);
-                            let mut a = point(2.0 + shift, 2.0 + shift);
-                            let mut b = point(5.0 + shift, 4.0 + shift);
-                            a.2 += gap;
-                            b.2 += gap;
-                            let (expected, mut expected_depth, clip) = make_target_and_depth(8, 8);
-                            rasterize_line(
-                                &mut rc_mut!(&expected),
-                                &mut expected_depth,
-                                8,
-                                a,
-                                b,
-                                7,
-                                7,
-                                clip,
-                                1.0,
-                                true,
-                                true,
-                            );
-
-                            let (image, mut depth, _) = make_target_and_depth(8, 8);
-                            let mut target = rc_mut!(&image);
-                            for draw_line in [line_first, !line_first] {
-                                if draw_line {
-                                    rasterize_line(
-                                        &mut target,
-                                        &mut depth,
-                                        8,
-                                        a,
-                                        b,
-                                        7,
-                                        7,
-                                        clip,
-                                        1.0,
-                                        true,
-                                        true,
-                                    );
-                                } else {
-                                    for points in [
-                                        [point(0.0, 0.0), point(8.0, 0.0), point(0.0, 8.0)],
-                                        [point(8.0, 0.0), point(8.0, 8.0), point(0.0, 8.0)],
-                                    ] {
-                                        if textured {
-                                            rasterize_textured_triangle(
-                                                &mut target,
-                                                &mut depth,
-                                                8,
-                                                points[0],
-                                                points[1],
-                                                points[2],
-                                                (0.0, 0.0),
-                                                (0.0, 0.0),
-                                                (0.0, 0.0),
-                                                |_, _, _, _| Some(3),
-                                                clip,
-                                                1.0,
-                                                true,
-                                                true,
-                                            );
-                                        } else {
-                                            rasterize_triangle(
-                                                &mut target,
-                                                &mut depth,
-                                                8,
-                                                points[0],
-                                                points[1],
-                                                points[2],
-                                                3,
-                                                3,
-                                                clip,
-                                                1.0,
-                                                true,
-                                                true,
-                                            );
-                                        }
-                                    }
-                                }
+                for gap in [-0.01, 0.0, 0.01] {
+                    for (origin_z, dz_dx, dz_dy) in [(0.35, 0.04, 0.02), (0.65, -0.04, -0.02)] {
+                        let point = |x: f32, y: f32| (x, y, origin_z + dz_dx * x + dz_dy * y + gap);
+                        let planes = [ScreenPlane::from_triangle(
+                            point(0.0, 0.0),
+                            point(8.0, 0.0),
+                            point(0.0, 8.0),
+                        )
+                        .unwrap()];
+                        let (image, mut depth, clip) = make_target_and_depth(8, 8);
+                        let mut target = rc_mut!(&image);
+                        for draw_line in [line_first, !line_first] {
+                            if draw_line {
+                                rasterize_border_line(
+                                    &mut target,
+                                    &mut depth,
+                                    8,
+                                    point(2.25, 2.25),
+                                    point(5.25, 4.25),
+                                    7,
+                                    7,
+                                    clip,
+                                    1.0,
+                                    true,
+                                    true,
+                                    &planes,
+                                );
+                            } else {
+                                draw_oracle_plane(
+                                    &mut target,
+                                    &mut depth,
+                                    clip,
+                                    origin_z,
+                                    dz_dx,
+                                    dz_dy,
+                                    textured,
+                                    3,
+                                );
                             }
-                            for (i, color) in image_data(&expected).into_iter().enumerate() {
-                                if color == 7 {
-                                    assert_eq!(target.canvas.data[i], if gap == 0.0 { 7 } else { 3 },
-                                        "textured={textured} line_first={line_first} gap={gap} slope=({dz_dx}, {dz_dy}) shift={shift} pixel={i}");
-                                }
+                        }
+
+                        if gap > 0.0 {
+                            // The whole line is behind the same covering plane.
+                            // A 0.01 separation is much larger than f32 roundoff.
+                            assert!(
+                            target.canvas.data.iter().all(|&color| color != 7),
+                            "textured={textured} line_first={line_first} slope={dz_dx} hidden line"
+                        );
+                        } else {
+                            // The segment spans strict interior columns 3 and 4.
+                            // The line crosses this corridor regardless of rounding.
+                            for x in 3..=4 {
+                                assert!(
+                                (1..=6).any(|y| target.canvas.read_data(x, y) == 7),
+                                "textured={textured} line_first={line_first} gap={gap} slope={dz_dx} visible column={x}"
+                            );
                             }
                         }
                     }
@@ -2170,11 +2148,12 @@ mod tests {
             clip_screen_line_to_rect((-1_000_000.0, 16.0, 0.0), (1_000_000.0, 16.0, 1.0), clip)
                 .unwrap();
         assert!(p0.0 >= 0.0);
-        assert!(p1.0 <= 31.0);
+        // Pixel 31 occupies the continuous interval [31, 32).
+        assert!(p1.0 <= 32.0);
         assert_eq!(p0.1, 16.0);
         assert_eq!(p1.1, 16.0);
         assert_eq!(p0.2, 0.5);
-        assert!((p1.2 - 0.5000155).abs() < 1e-6);
+        assert!((p1.2 - 0.500016).abs() < 1e-6);
     }
 
     #[test]
@@ -2189,17 +2168,53 @@ mod tests {
     }
 
     #[test]
-    fn test_rasterize_line_matches_2d_line_pixels() {
-        let expected = Image::new(32, 32);
-        rc_mut!(&expected).draw_line(4.0, 5.0, 27.0, 16.0, 7);
+    fn test_rasterize_line_samples_projected_pixel_cells() {
+        for transpose in [false, true] {
+            for reverse in [false, true] {
+                let point = |x, y, z| if transpose { (y, x, z) } else { (x, y, z) };
+                let (image, mut depth, clip) = make_target_and_depth(8, 8);
+                let mut ends = [point(2.75, 2.75, 0.1), point(5.75, 4.75, 0.4)];
+                if reverse {
+                    ends.reverse();
+                }
+                rasterize_line(
+                    &mut rc_mut!(&image),
+                    &mut depth,
+                    8,
+                    ends[0],
+                    ends[1],
+                    7,
+                    7,
+                    clip,
+                    1.0,
+                    true,
+                    true,
+                );
 
-        let (actual, mut depth, clip) = make_target_and_depth(32, 32);
+                // The segment crosses columns 2..5. At their centers (clamped
+                // to the segment) its y is 2.75, 3.25, 3.9167, and 4.5833.
+                let cells = [(2, 2, 0.1), (3, 3, 0.175), (4, 3, 0.275), (5, 4, 0.375)];
+                let mut expected = vec![0; 64];
+                for (x, y, z) in cells {
+                    let (x, y) = if transpose { (y, x) } else { (x, y) };
+                    expected[y * 8 + x] = 7;
+                    // Unit-scale interpolation differs by at most a few f32 ULPs.
+                    assert!((depth[y * 8 + x] - line_depth(z)).abs() < 1e-6);
+                }
+                assert_eq!(image_data(&image), expected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_rasterize_line_keeps_the_last_viewport_cell() {
+        let (image, mut depth, clip) = make_target_and_depth(8, 8);
         rasterize_line(
-            &mut rc_mut!(&actual),
+            &mut rc_mut!(&image),
             &mut depth,
-            32,
-            (4.0, 5.0, 0.0),
-            (27.0, 16.0, 0.5),
+            8,
+            (7.25, 2.25, 0.5),
+            (7.75, 2.25, 0.5),
             7,
             7,
             clip,
@@ -2207,7 +2222,11 @@ mod tests {
             true,
             true,
         );
-        assert_eq!(image_data(&actual), image_data(&expected));
+        assert_eq!(rc_ref!(&image).canvas.read_data(7, 2), 7);
+        assert!(image_data(&image)
+            .iter()
+            .enumerate()
+            .all(|(i, &color)| color == if i == 2 * 8 + 7 { 7 } else { 0 }));
     }
 
     #[test]
@@ -2228,9 +2247,9 @@ mod tests {
             true,
             true,
         );
-        // Depth varies by 0.1 per diagonal pixel; the face offset is 0.15.
-        assert!((depth[0] - 0.2).abs() < 1e-6);
-        assert!((depth[4 * 16 + 4] - 0.6).abs() < 1e-6);
+        // z = x / 30 + y / 15, sampled at pixel centers.
+        assert!((depth[0] - 0.05).abs() < 1e-6);
+        assert!((depth[4 * 16 + 4] - 0.45).abs() < 1e-6);
     }
 
     #[test]
@@ -2636,6 +2655,95 @@ mod tests {
             );
             assert_eq!(img_mut.canvas.read_data(3, 3), 5);
             assert_eq!(img_mut.canvas.read_data(10, 3), outside_color);
+        }
+    }
+    fn draw_oracle_plane(
+        target: &mut Image,
+        depth: &mut [f32],
+        clip: ClipRect,
+        origin_z: f32,
+        dz_dx: f32,
+        dz_dy: f32,
+        textured: bool,
+        color: u8,
+    ) {
+        let point = |x: f32, y: f32| (x, y, origin_z + dz_dx * x + dz_dy * y);
+        for points in [
+            [point(0.0, 0.0), point(8.0, 0.0), point(0.0, 8.0)],
+            [point(8.0, 0.0), point(8.0, 8.0), point(0.0, 8.0)],
+        ] {
+            if textured {
+                rasterize_textured_triangle(
+                    target,
+                    depth,
+                    8,
+                    points[0],
+                    points[1],
+                    points[2],
+                    (0.0, 0.0),
+                    (0.0, 0.0),
+                    (0.0, 0.0),
+                    |_, _, _, _| Some(i32::from(color)),
+                    clip,
+                    1.0,
+                    true,
+                    true,
+                );
+            } else {
+                rasterize_triangle(
+                    target, depth, 8, points[0], points[1], points[2], color, color, clip, 1.0,
+                    true, true,
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_sloped_surface_keeps_geometric_depth_order() {
+        for textured in [false, true] {
+            for sloped_first in [false, true] {
+                let (image, mut depth, clip) = make_target_and_depth(8, 8);
+                let mut target = rc_mut!(&image);
+                for sloped in [sloped_first, !sloped_first] {
+                    if sloped {
+                        draw_oracle_plane(
+                            &mut target,
+                            &mut depth,
+                            clip,
+                            0.4,
+                            0.04,
+                            0.0,
+                            textured,
+                            3,
+                        );
+                    } else {
+                        draw_oracle_plane(
+                            &mut target,
+                            &mut depth,
+                            clip,
+                            0.5,
+                            0.0,
+                            0.0,
+                            textured,
+                            4,
+                        );
+                    }
+                }
+
+                // At pixel centers x=1.5 and x=3.5 the sloped plane has depths
+                // 0.46 and 0.54. The flat plane is 0.5, so the nearest one changes.
+                // No outline or golden image contributes to this depth oracle.
+                assert_eq!(
+                    target.canvas.read_data(1, 2),
+                    3,
+                    "textured={textured} sloped_first={sloped_first} near sloped face"
+                );
+                assert_eq!(
+                    target.canvas.read_data(3, 2),
+                    4,
+                    "textured={textured} sloped_first={sloped_first} near flat face"
+                );
+            }
         }
     }
 }

@@ -30,10 +30,10 @@ The relevant boundaries are owned by the
 tilemap, and graphics bindings retain their corresponding constructor,
 text-data, and resource-selection errors.
 
-**Reason:** Released exceptions are part of the Python behavior callers can
-already use. Removing them because this review found no particular caller would
-itself change that behavior. For a new conversion, the possibility of imagining
-a retry is insufficient: its recovery purpose must be established.
+**Reason:** Released exceptions are part of the behavior Python callers can
+rely on. Removing one because no current caller has been identified would
+change that contract. A new conversion needs an established recovery purpose;
+an imaginable retry is insufficient.
 
 **Boundary:** Preserving a released error does not approve every current guard,
 duplicate check, or newly added failure condition. Review such additions against

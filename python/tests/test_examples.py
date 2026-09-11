@@ -99,6 +99,52 @@ FLIP_EXAMPLES = {"99_flip_animation"}
 
 
 class TestExamples:
+    def test_shooter_consumes_each_collision_once(self):
+        code = """
+import runpy
+import sys
+
+import pyxel
+
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+
+namespace = runpy.run_path(sys.argv[1])
+pyxel.flip()
+app = namespace["App"].__new__(namespace["App"])
+
+# A destroyed enemy cannot score twice or kill the overlapping player.
+# A consumed bullet cannot destroy a second overlapping enemy.
+for enemy_count, bullet_count, player_x in [(1, 2, 30), (2, 1, 90)]:
+    for name in ("enemies", "bullets", "blasts"):
+        namespace[name].clear()
+    app.player = namespace["Player"](player_x, 30)
+    app.score = 0
+    app.scene = namespace["SCENE_PLAY"]
+    for _ in range(enemy_count):
+        namespace["Enemy"](30, 30)
+    for _ in range(bullet_count):
+        namespace["Bullet"](30, 30)
+
+    app.update_play_scene()
+
+    assert app.score == 10, app.score
+    assert app.scene == namespace["SCENE_PLAY"], app.scene
+    assert len(namespace["enemies"]) == enemy_count - 1
+    assert len(namespace["bullets"]) == bullet_count - 1
+    assert len(namespace["blasts"]) == 1
+"""
+
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(EXAMPLES_DIR / "09_shooter.py")],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
     def test_wavetable_strokes_start_at_click_and_fill_dragged_columns(self):
         code = """
 import runpy

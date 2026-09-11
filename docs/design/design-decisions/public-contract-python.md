@@ -304,7 +304,7 @@ replacement and existing error diagnostics retain their meanings.
 
 **Decision:** [Music.set](../../../crates/pyxel-core/src/music.rs) retains every
 supplied sequence, including sequences beyond the current playback-channel
-count. It pads shorter input with empty sequences. Real-time
+count. It pads input shorter than that count with empty sequences. Real-time
 [playm](../../../crates/pyxel-core/src/audio.rs) uses the available channels;
 their count does not limit how much music data can be stored.
 
@@ -340,19 +340,19 @@ allocation remain separate requirements.
 ### Same-pitch MML ties
 
 **Decision:** Preserve the parser's merging of tied notes at the same pitch into
-one note with their combined duration. A note followed by `&` sounds at full
-gate; the merged note ends with the gate ratio of the Q in effect at its final
-tied note, so `Q50 C4& C4` sounds like `Q50 C4&4`. Keep the released command
-ordering rather than introducing control changes inside the combined note.
+one note with their combined duration. A merged note that continues into a
+different-pitch slur uses full gate. Otherwise, it uses the gate ratio of the Q
+in effect at its final tied note, so `Q50 C4& C4` sounds like `Q50 C4&4`. Keep
+the released command ordering rather than introducing control changes inside
+the combined note.
 
 **Reason:** The Japanese and English [MML
 reference](../../../web/mml-studio/mml-commands.json) describe same-pitch ties
 as one note. The [parser](../../../crates/pyxel-core/src/mml_parser.rs) extends
 the earlier note's duration. For example, in `C4& T140 C4`, the tempo command
 remains after that combined note; it does not divide the note into two tempo
-sections. Merging and command ordering are the v2.9.9 behavior. A tie only
-suppresses the key-off between the joined notes, not the articulation of the
-note that ends them, so the merged note's gate matches the length-only tie.
+sections. Merging and command ordering are the v2.9.9 behavior. Using the final
+gate ratio makes equivalent same-pitch and length-only ties agree.
 
 **Boundary:** The reference does not specify scheduling a control command at
 its written position within a tied note. Adding that capability would require
@@ -385,23 +385,24 @@ Python function does not accept.
 
 ### Editor save failures
 
-**Decision:** A failed editor save leaves the editing session, resource data,
-and undo history available for a retry. Report the save operation and its reason
-once, and retain a visible failure notice until saving succeeds.
+**Decision:** When an editor save raises an ordinary Python exception, keep the
+editing session, resource data, and undo history available for a retry. Report
+the save operation and its reason once, and retain a visible failure notice
+until saving succeeds.
 
 **Reason:** An unavailable destination must not discard work held in memory.
 The [editor](../../../python/pyxel/editor/app.py) owns that recovery;
 `pyxel.save` keeps its existing exception contract for other callers. Catch the
-save call's ordinary exception at the action handler, without suppressing
+save failure at the action handler, without suppressing
 unrelated update errors or changing the loader's behavior. This does not promise
 that every failed file write preserves the previous on-disk file.
 
 ### Sound editor display and speed limits
 
-**Decision:** The sound editor shows the standard four tone symbols and uses `?`
-for tones outside that set. Unsupported tone, volume, effect, and speed values
-are displayed as `?` without rewriting their data or expanding the input keys.
-The speed control accepts 1–99 when the user edits it; viewing or switching
+**Decision:** The sound editor keeps the standard four tone symbols and existing
+input keys. Unsupported tone, volume, effect, and speed values are displayed as
+`?` without rewriting their data.
+The speed control accepts 1-99 when the user edits it; viewing or switching
 banks preserves speeds outside that range.
 
 **Reason:** The editor offers a deliberately small set of controls. Preserving
@@ -433,8 +434,7 @@ separation for its chosen model scale.
 ### Zero-mass Cube bodies
 
 **Decision:** A Cube collider with `mass=0` is not pushed by other bodies, but
-an assigned velocity can move it. Zero mass does not mean that the scene must
-ignore its velocity.
+an assigned velocity can move it.
 
 **Reason:** Moving platforms need prescribed movement without being displaced
 by the bodies they carry. The

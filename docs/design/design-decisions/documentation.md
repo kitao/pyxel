@@ -58,8 +58,8 @@ similarly named operations across them.
 **Reason:** The [reference source](../../../web/api-reference/) serves someone
 learning or finding an operation. A writable directory prepares for saving;
 whole-image export differs from loading pixels into an editing region. Such
-reader relationships can differ from implementation or stub order. Moving a
-factory out of the middle of tree editing restores a continuous task without
+reader relationships can differ from implementation or stub order. Keeping the
+factory before tree editing preserves a continuous task without
 rearranging the class's properties. Generated references use this same source
 order; their text, signatures, and advanced labels have separate ownership.
 
@@ -76,7 +76,7 @@ to make it resemble the surrounding documentation pages.
 page scaffolding adds material to copy without explaining that operation.
 Ordinary tool and documentation pages retain their own language metadata.
 The compact [app2html output](../../../python/pyxel/cli.py) and embedded
-[Web usage snippets](../../../web/web-usage/index.html) serve the same purpose
+[web usage snippets](../../../web/web-usage/index.html) serve the same purpose
 without requiring identical page scaffolding.
 
 ### Japanese spacing, punctuation, and technical spellings
@@ -169,11 +169,10 @@ without reading unrelated decisions. Shared choices stay in one place, with
 links from dependent entries. The audit indexes files and their
 responsibilities; individual entries remain owned by those files. Additions
 within a file therefore do not require another entry list in the audit. Adjust
-physical file boundaries when related reading tasks or volume justify it, while
-preserving the owning policy area and keeping names meaningful in file searches.
+file boundaries when related reading tasks or volume justify it; preserve the
+owning policy area and meaningful names rather than targeting a file size.
 
-File boundaries follow the decisions a reviewer needs together, not a target
-file size. Cross-file applicability belongs in a decision's scope; it does not
+Cross-file applicability belongs in a decision's scope; it does not
 by itself identify the subject that owns the decision. Crate publication, for
 example, belongs with distribution even though its implementation uses Rust.
 
@@ -208,9 +207,20 @@ notes, and source comments, and extend the table when an inconsistency in a
 language is settled. Quotation rows concern prose quotes; a string literal such
 as `"Pyxel"` keeps its straight quotes in every language.
 
+The following conventions are maintainer choices shared across languages:
+
+- Numeric and identifier ranges inside half-width parentheses with ASCII-only
+  content use the ASCII hyphen (`(0-2)`, `(CH0-CH3)`).
+- Ranges in running text use the language's range mark below.
+- A range containing a signed value, in either position, uses the language's
+  word for "to" (`-5 to +5`), while Japanese and Korean keep their range marks
+  (`-5〜+5`, `-5~+5`).
+- Apostrophes are ASCII (`'`).
+- The platform label `Web`, standing alone as a heading, tab label, or entry in
+  a platform list, stays in Latin letters.
+
 | Language | Convention | Basis |
 | --- | --- | --- |
-| All | A range of numeric or identifier values inside half-width parentheses with ASCII-only content uses the ASCII hyphen (`(0-2)`, `(CH0-CH3)`); a range in running text uses the language's range mark below; a range with a signed value, in either position, is written with the language's word for "to" (`-5 to +5`), while Japanese and Korean keep their range marks (`-5〜+5`, `-5~+5`); apostrophes are ASCII (`'`); the platform label `Web`, standing alone as a heading, tab label, or entry in a platform list, stays in Latin letters | Maintainer choice |
 | English | Generic `web` is lowercase in running text and capitalized in product names; range mark `-`; entries of published release notes keep their wording | AP Stylebook, Chicago Manual of Style, and Microsoft Writing Style Guide for `web`; range mark is a maintainer choice |
 | Japanese | The [typography decision](#japanese-spacing-punctuation-and-technical-spellings); range mark 〜 | Maintainer choice within common Japanese technical writing |
 | Chinese | Half-width parentheses with a half-width space against adjacent Chinese text, as `scripts/format_prose` applies; range mark ～; instructions to the reader take the bare imperative for operating steps and 请 + verb for requests, including conditional instructions (要…，请…); 屏幕 for the Pyxel screen (the drawing target and its size, including the `pyxel-screen` element) and for the device display, 画面 for a page, panel, or scene of a tool or game, including the Pyxel Editor window; 瓦片 for a tile | Parentheses and spacing are the maintainer's tool-applied choice; GB/T 15834 for the range mark; terms are maintainer choices |

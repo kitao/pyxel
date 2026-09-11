@@ -1,9 +1,7 @@
 #[cfg(pyxel_core)]
-use std::env::temp_dir;
+use std::io::Write;
 #[cfg(pyxel_core)]
-use std::fs::{remove_file, write};
-#[cfg(pyxel_core)]
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 use blip_buf::BlipBuf;
 #[cfg(pyxel_core)]
@@ -250,20 +248,15 @@ impl Audio {
         }
 
         let image_data = include_bytes!("assets/pyxel_logo_152x64.png");
-        let image_path = temp_dir().join("pyxel_mp4_image.png");
-        let png_file = image_path
-            .to_str()
-            .ok_or_else(|| "Failed to create temporary file path".to_string())?;
         let wav_file = &filename;
         let mp4_file = Self::mp4_filename(&filename);
-        write(&image_path, image_data).map_err(|_| "Failed to save temporary file".to_string())?;
 
-        let output = Command::new("ffmpeg")
+        let mut child = Command::new("ffmpeg")
             .args([
-                "-loop",
-                "1",
+                "-f",
+                "image2pipe",
                 "-i",
-                png_file,
+                "pipe:0",
                 "-f",
                 "lavfi",
                 "-i",
@@ -282,11 +275,18 @@ impl Audio {
                 &mp4_file,
                 "-y",
             ])
-            .output();
-        let _ = remove_file(png_file);
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .map_err(|_| "Failed to execute FFmpeg".to_string())?;
 
-        let output = output.map_err(|_| "Failed to execute FFmpeg".to_string())?;
-        if !output.status.success() {
+        // Close the image stream before waiting; overlay repeats its last frame.
+        let image_result = child.stdin.take().unwrap().write_all(image_data);
+        let output = child
+            .wait_with_output()
+            .map_err(|_| "Failed to execute FFmpeg".to_string())?;
+        if image_result.is_err() || !output.status.success() {
             return Err("Failed to convert file with FFmpeg".to_string());
         }
 

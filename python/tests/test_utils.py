@@ -75,6 +75,34 @@ class TestListImportedModules:
             "local": [str(pkg / "__init__.py"), str(pkg / "helper.py")],
         }
 
+    @pytest.mark.parametrize("source", ["import helper", "from helper import VALUE"])
+    def test_nested_absolute_import_uses_startup_directory(self, tmp_path, source):
+        script = tmp_path / "main.py"
+        script.write_text("import pkg.module\n", encoding="utf-8")
+        helper = tmp_path / "helper.py"
+        helper.write_text("import decimal\nVALUE = 1\n", encoding="utf-8")
+        pkg = tmp_path / "pkg"
+        pkg.mkdir()
+        (pkg / "__init__.py").write_text("", encoding="utf-8")
+        (pkg / "helper.py").write_text("import fractions\n", encoding="utf-8")
+        (pkg / "module.py").write_text(
+            f"{source}\nfrom . import helper as relative_helper\n", encoding="utf-8"
+        )
+
+        result = pyxel.utils.list_imported_modules(str(script))
+        assert result == {
+            "system": ["decimal", "fractions"],
+            "local": sorted(
+                str(path)
+                for path in (
+                    helper,
+                    pkg / "__init__.py",
+                    pkg / "helper.py",
+                    pkg / "module.py",
+                )
+            ),
+        }
+
     @pytest.mark.parametrize(
         "source",
         [

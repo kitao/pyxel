@@ -64,7 +64,7 @@ class App:
 
         # Split a clicked bubble into smaller moving bubbles.
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-            for i, b in enumerate(self.bubbles[:num_bubbles]):
+            for i, b in enumerate(self.bubbles):
                 dx = b.x - pyxel.mouse_x
                 dy = b.y - pyxel.mouse_y
 

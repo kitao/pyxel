@@ -9,7 +9,8 @@ _LOCAL = "local"
 def list_imported_modules(filename: str) -> dict[str, list[str]]:
     imports: dict[str, set[str]] = {_SYSTEM: set(), _LOCAL: set()}
     checked_files: set[str] = set()
-    _list_imported_modules(imports, filename, checked_files)
+    root_dir = str(Path(filename).parent)
+    _list_imported_modules(imports, filename, checked_files, root_dir)
     return {
         _SYSTEM: sorted(imports[_SYSTEM]),
         _LOCAL: sorted(imports[_LOCAL]),
@@ -20,7 +21,10 @@ def list_imported_modules(filename: str) -> dict[str, list[str]]:
 
 
 def _list_imported_modules(
-    imports: dict[str, set[str]], filename: str, checked_files: set[str]
+    imports: dict[str, set[str]],
+    filename: str,
+    checked_files: set[str],
+    root_dir: str,
 ) -> None:
     # Keep import paths lexical; resolve only the visitation identity.
     resolved_filename = str(Path(filename).resolve())
@@ -37,7 +41,9 @@ def _list_imported_modules(
     for node in ast.walk(root):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                _track_module(imports, checked_files, dir_path, 0, alias.name)
+                _track_module(
+                    imports, checked_files, dir_path, 0, alias.name, root_dir=root_dir
+                )
 
         elif isinstance(node, ast.ImportFrom):
             if node.module:
@@ -47,6 +53,7 @@ def _list_imported_modules(
                     dir_path,
                     node.level,
                     node.module,
+                    root_dir=root_dir,
                 )
 
                 # Track from-import targets that resolve as modules.
@@ -58,6 +65,7 @@ def _list_imported_modules(
                         dir_path,
                         node.level,
                         target,
+                        root_dir=root_dir,
                         allow_system=(
                             node.level == 0
                             and not is_local
@@ -73,6 +81,7 @@ def _list_imported_modules(
                         dir_path,
                         node.level,
                         alias.name,
+                        root_dir=root_dir,
                     )
 
 
@@ -83,8 +92,12 @@ def _track_module(
     level: int,
     name: str,
     *,
+    root_dir: str,
     allow_system: bool = True,
 ) -> bool:
+    # Absolute imports use the startup directory throughout package recursion.
+    if level == 0:
+        dir_path = root_dir
     module_path = _resolve_module_path(dir_path, level, name)
     module_filename = _to_module_filename(module_path)
 
@@ -100,7 +113,7 @@ def _track_module(
 
         for filename in module_files:
             imports[_LOCAL].add(str(Path(filename).absolute()))
-            _list_imported_modules(imports, filename, checked_files)
+            _list_imported_modules(imports, filename, checked_files, root_dir)
         return True
     elif allow_system and level == 0:
         # Only absolute imports can resolve as system modules.

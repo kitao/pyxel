@@ -170,8 +170,7 @@ parameter family they describe.
 
 **Reason:** Readers first find the subsystem, then the setting's role. These
 orders make related declarations recognizable without reinterpreting
-importance or alphabetizing their names at each review. They are selected
-reading orders, not a claim that every other order is inherently unreadable.
+importance or alphabetizing their names at each review.
 
 ## Python
 

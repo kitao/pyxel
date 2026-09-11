@@ -122,7 +122,7 @@
     },
     "layout_body": {
       "en": "The screen consists of the control area at the top, channel input fields in the middle, and the URL/QR code output at the bottom.",
-      "cn": "屏幕由顶部的控制区域、中间的通道输入栏和底部的 URL/二维码输出组成。",
+      "cn": "画面由顶部的控制区域、中间的通道输入栏和底部的 URL/二维码输出组成。",
       "de": "Der Bildschirm besteht aus dem Steuerungsbereich oben, den Kanaleingabefeldern in der Mitte und der URL-/QR-Code-Ausgabe unten.",
       "es": "La pantalla consta del área de control en la parte superior, los campos de entrada de canales en el medio y la salida de URL/código QR en la parte inferior.",
       "fr": "L'écran se compose de la zone de contrôle en haut, des champs de saisie des canaux au milieu et de la sortie URL/code QR en bas.",
@@ -282,7 +282,7 @@
       "fr": "Entrez la notation MML dans les champs texte CH1-CH4. Par exemple, saisir {0} joue les notes Do-Ré-Mi. Les majuscules et minuscules sont acceptées. Chaque canal a des boutons SOLO et MUTE :",
       "it": "Inserire la notazione MML nei campi di testo CH1-CH4. Ad esempio, inserendo {0} si riproducono le note Do-Re-Mi. Sono accettate sia maiuscole che minuscole. Ogni canale ha pulsanti SOLO e MUTE:",
       "ja": "CH1〜CH4 のテキスト欄に MML 記法を入力します。例えば {0} と入力するとド・レ・ミが再生されます。大文字・小文字のどちらでも入力可能です。各チャンネルには SOLO と MUTE ボタンがあります：",
-      "ko": "CH1~CH4 텍스트 필드에 MML 기보법을 입력합니다. 예를 들어 {0}를 입력하면 도-레-미가 재생됩니다. 대소문자 모두 사용 가능합니다. 각 채널에는 SOLO와 MUTE 버튼이 있습니다:",
+      "ko": "CH1~CH4 텍스트 필드에 MML 기보법을 입력하세요. 예를 들어 {0}를 입력하면 도-레-미가 재생됩니다. 대소문자 모두 사용 가능합니다. 각 채널에는 SOLO와 MUTE 버튼이 있습니다:",
       "pt": "Insira notação MML nos campos de texto CH1-CH4. Por exemplo, inserir {0} reproduz as notas Dó-Ré-Mi. Letras maiúsculas e minúsculas são aceitas. Cada canal tem botões SOLO e MUTE:",
       "ru": "Вводите MML-нотацию в текстовые поля CH1–CH4. Например, ввод {0} воспроизводит ноты До-Ре-Ми. Принимаются как заглавные, так и строчные буквы. Каждый канал имеет кнопки SOLO и MUTE:",
       "tr": "CH1-CH4 metin alanlarına MML notasyonu girin. Örneğin {0} girişi Do-Re-Mi notalarını çalar. Büyük ve küçük harfler kabul edilir. Her kanalda SOLO ve MUTE düğmeleri vardır:",
@@ -338,7 +338,7 @@
       "fr": "Sur macOS, utilisez Cmd au lieu de Ctrl.",
       "it": "Su macOS, usare Cmd al posto di Ctrl.",
       "ja": "macOS では Ctrl の代わりに Cmd を使用します。",
-      "ko": "macOS에서는 Ctrl 대신 Cmd를 사용합니다.",
+      "ko": "macOS에서는 Ctrl 대신 Cmd를 사용하세요.",
       "pt": "No macOS, use Cmd em vez de Ctrl.",
       "ru": "На macOS используйте Cmd вместо Ctrl.",
       "tr": "macOS'ta Ctrl yerine Cmd kullanın.",
@@ -398,7 +398,7 @@
       "pt": "Para a lista completa de comandos MML suportados pelo Pyxel, consulte {0}.",
       "ru": "Полный список MML-команд, поддерживаемых Pyxel, см. на странице {0}.",
       "tr": "Pyxel tarafından desteklenen MML komutlarının tam listesi için {0} sayfasına bakın.",
-      "uk": "Повний список MML-команд, підтримуваних Pyxel, див. у {0}."
+      "uk": "Повний список MML-команд, підтримуваних Pyxel: {0}."
     },
     "mml_ref_link": {
       "en": "Pyxel MML Commands",

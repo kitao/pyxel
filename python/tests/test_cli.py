@@ -692,7 +692,13 @@ class TestApp2exe:
             "    VALUE = connection.execute('select 42').fetchone()[0]\n",
             encoding="utf-8",
         )
-        (pkg / "sub" / "__init__.py").write_text("VALUE = 42\n", encoding="utf-8")
+        (app_dir / "helper.py").write_text(
+            "from fractions import Fraction\nVALUE = Fraction(84, 2)\n",
+            encoding="utf-8",
+        )
+        (pkg / "sub" / "__init__.py").write_text(
+            "import helper\nVALUE = helper.VALUE\n", encoding="utf-8"
+        )
         (app_dir / "main.py").write_text(
             "import os\n"
             "from pathlib import Path\n"
@@ -872,19 +878,36 @@ class TestCopyExamples:
         assert (dst / "01_hello_pyxel.py").is_file()
         assert (dst / "assets").is_dir()
 
-    def test_excludes_pycache(self, tmp_path, monkeypatch):
-        package_dir = tmp_path / "package"
+    @pytest.mark.parametrize(
+        "parent_name", ["package", "__pycache__", "build__pycache__data"]
+    )
+    def test_excludes_only_pycache_path_components(
+        self, tmp_path, monkeypatch, parent_name
+    ):
+        package_dir = tmp_path / parent_name
         examples_dir = package_dir / "examples"
         cache_dir = examples_dir / "__pycache__"
         cache_dir.mkdir(parents=True)
         (cache_dir / "main.pyc").write_bytes(b"cache")
         (examples_dir / "main.py").write_text("import pyxel\n", encoding="utf-8")
+        (examples_dir / "module__pycache__.py").write_text(
+            "VALUE = 1\n", encoding="utf-8"
+        )
+        named_dir = examples_dir / "build__pycache__data"
+        named_dir.mkdir()
+        (named_dir / "data.txt").write_text("data", encoding="utf-8")
         monkeypatch.setattr(pyxel.cli, "__file__", str(package_dir / "cli.py"))
         monkeypatch.chdir(tmp_path)
 
         pyxel.cli.copy_pyxel_examples()
         dst = tmp_path / "pyxel_examples"
         assert (dst / "main.py").read_text(encoding="utf-8") == "import pyxel\n"
+        assert (dst / "module__pycache__.py").read_text(
+            encoding="utf-8"
+        ) == "VALUE = 1\n"
+        assert (dst / "build__pycache__data" / "data.txt").read_text(
+            encoding="utf-8"
+        ) == "data"
         assert list(dst.rglob("__pycache__")) == []
 
     def test_prints_copied_paths(self, capsys, tmp_path, monkeypatch):

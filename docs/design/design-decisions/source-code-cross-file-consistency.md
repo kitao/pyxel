@@ -47,7 +47,7 @@ or determine the accepted values of every `fps` or `scale` argument.
 exposed bindings and SDL2 names at external call
 sites](source-code-naming.md#names-at-python-and-sdl2-boundaries), and [direct
 example code when abstraction would obscure the
-lesson](#inline-dimensions-and-editable-constants-in-examples). Internal binding
+lesson](#teaching-scope-and-direct-code-in-examples). Internal binding
 helpers remain idiomatic Rust. Performance-related departures require the cost
 evidence specified by the policy.
 
@@ -74,9 +74,15 @@ supplies a scale of at least one.
 
 ## Python
 
-### Inline dimensions and editable constants in examples
+### Teaching scope and direct code in examples
 
-**Decision:** Keep screen dimensions directly in `pyxel.init` in examples such
+**Decision:** Keep teaching examples focused on what the reader is meant to
+learn and try. Do not require them to cover every game sequence or exceptional
+state. Fix defects that break the demonstrated behavior or normal interaction;
+a possible edge case alone does not justify adding gameplay or defensive
+branches.
+
+Keep screen dimensions directly in `pyxel.init` in examples such
 as [Hello Pyxel](../../../python/pyxel/examples/01_hello_pyxel.py), rather than
 creating constants merely to name the arguments. Use named values where they
 expose something the learner is expected to change and play with, such as

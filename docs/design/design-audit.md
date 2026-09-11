@@ -7,12 +7,12 @@ how to select and verify those decisions, update them when warranted, and check
 a candidate against them and the policy without omissions.
 
 It is written for AI auditors and can also be followed by human reviewers. Read
-the policy and the decisions relevant to the assigned scope, fix the inputs,
-derive coverage before judging compliance, and resolve disagreements from
-evidence, so repeated audits do not drift with the auditor's interpretation. If
-the procedure or a decision contradicts the policy, resolve the conflict through
-[revision review](#revisions-to-governing-documents) before applying the
-affected criteria.
+the policy and the decisions relevant to the assigned scope, establish the
+inputs, derive coverage before judging compliance, and resolve disagreements
+from evidence, so repeated audits do not drift with the auditor's
+interpretation. If the procedure or a decision contradicts the policy, resolve
+the conflict through [revision review](#revisions-to-governing-documents) before
+applying the affected criteria.
 
 ## Modes
 
@@ -62,10 +62,10 @@ policy. These conditions justify proposing a revision through the
 - Add an entry when a concrete choice needs rationale beyond a direct
   application of the policy and recording it will prevent repeated
   interpretation or keep an affected family consistent. Do not record every
-  mechanical correction, and do not record the groups or stages of one file or
-  function; those belong to the code and its headings. When a source comment
-  already states the local rationale and the policy settles the case, keep the
-  inspection result in the audit records instead of adding an entry.
+  mechanical correction or merely transcribe the current groups or stages of a
+  file or function; those belong to the code and its headings. When a source
+  comment already states the local rationale and the policy settles the case,
+  keep the inspection result in the audit records instead of adding an entry.
 - Consolidate duplicate or conflicting entries at their owning policy section,
   preserving meaningful distinctions and updating affected references.
 - Keep a supported decision when the candidate violates it; correct the
@@ -109,12 +109,14 @@ These requirements apply to every mode:
 | Base-stub docstring changes | Edit the source data and regenerate with `scripts/generate_pyi_docstrings`. |
 | Changes affecting generated or distributed artifacts | Regenerate them and verify their required correspondence with the source. |
 
-Every automated test must be included in `make test`. Investigate failures, and
-fix or remove tests that do not establish their claimed protection. In a
-targeted review or exhaustive audit, record each command with its trigger,
-governing rule, invocation, working directory, exit status, and log. A failed
-command and an unrun command both fail their check, and an environment blocker
-is recorded as such. A successful command proves only its specific obligation.
+Include every automated test in `make test` except the [windowed startup
+check](design-decisions/testing.md#division-between-make-test-and-make-run),
+which runs under `make run`. Investigate failures, and fix or remove tests that
+do not establish their claimed protection. In a targeted review or exhaustive
+audit, record each command with its trigger, governing rule, invocation, working
+directory, exit status, and log. A failed command and an unrun command both fail
+their check, and an environment blocker is recorded as such. A successful
+command proves only its specific obligation.
 
 ### Freezing an exhaustive audit target
 
@@ -337,9 +339,9 @@ review under the policy.
 
 ## Audit Records
 
-Keep each run outside the target file set, identify it by a portable run name in
-the final report, and use UTF-8 JSON or JSONL with ordinary escaping and unique
-identifiers.
+Keep each run outside the target file set and identify it by a portable run name
+in the final report. Use UTF-8 for text records and ordinary escaping and unique
+identifiers in JSON and JSONL records.
 
 | Record | Used in | Required content |
 | --- | --- | --- |

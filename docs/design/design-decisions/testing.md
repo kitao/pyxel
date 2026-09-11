@@ -6,9 +6,9 @@
 
 ### Division between `make test` and `make run`
 
-**Decision:** Use the automated suites under `make test` for behavior with
-mechanically checkable expectations, and running examples under `make run` for
-appearance, sound, and interaction that require human judgment.
+**Decision:** Use the automated suites under `make test` for headless behavior
+checks. Use `make run` for the automatic windowed startup check and running
+examples whose appearance, sound, and interaction require human judgment.
 
 Use Rust tests for pure internal logic, Python tests for the public API,
 reference regressions for screenshots and rendered audio, and running samples
@@ -17,17 +17,16 @@ for manual checks of look, sound, and feel.
 The [Makefile](../../../Makefile) provides one automated entry point,
 `make test`, for Python, Rust, and JavaScript. The current JavaScript tests
 run on Node.js; calling them `test-wasm` would imply execution of the web
-runtime they do not perform. `make run` installs the current native
-package, then runs the
-[startup check](../../../scripts/check_window_startup), which opens a
+runtime they do not perform. `make run` installs the current native package,
+then runs the [startup check](../../../scripts/check_window_startup), which opens a
 window in every screen mode, draws, exits, and reports the installed build; the
 automated suites run headless and never create a GL context. It then uses the
 [example runner](../../../scripts/run_examples) for native examples,
 bundled apps, and the editor. `make run-wasm` builds the web wheel and
 serves the web runtime locally through
-[start_showcase](../../../scripts/start_showcase), which also serves the working
-tree with the tracked wheel for page checks. Those two commands distinguish
-execution environments, not programming languages.
+[start_showcase](../../../scripts/start_showcase), which can also serve the
+working tree for page checks without rebuilding the wheel. `make run` and
+`make run-wasm` distinguish execution environments, not programming languages.
 
 Archive creation, startup paths, watcher restarts, and executable export have
 automated coverage in the [CLI tests](../../../python/tests/test_cli.py). The
@@ -69,8 +68,9 @@ not establish that the new image is correct.
 ### Current native package and target-specific checks
 
 **Decision:** Build and install the current native package before running the
-Python, Rust, and web suites through `make test`. Keep native and Emscripten
-checks separate, using the selected development environment consistently.
+Python, Rust, and JavaScript suites through `make test`. Keep native and
+Emscripten checks separate and use the selected development environment
+consistently.
 
 **Reason:** Editing Rust source does not update the extension imported by Python
 tests. The [build/install/test dependencies](../../../Makefile) prevent those
@@ -139,9 +139,9 @@ the test or assertion helper that accepts alternative outcomes. An envelope test
 must not accept either endpoint merely to pass.
 
 **Reason:** Accepting either envelope endpoint would hide an unresolved
-expectation. In
-contrast, `play_pos()` queried during live audio playback can depend on callback
-timing, so alternative results may be valid when that timing is the reason.
+expectation. In contrast, `play_pos()` queried during live audio playback can
+depend on callback timing, so alternative results may be valid when that timing
+is the reason.
 A headless calculation does not gain the same allowance merely because it
 belongs to the audio subsystem.
 

@@ -5,6 +5,7 @@ use crate::cube::vec3::{RcVec3, Vec3};
 use crate::image::{rgb24_to_rgb8, Rgb24};
 
 pub const LEVEL_COUNT: usize = 4;
+const ACHROMATIC_THRESHOLD: f32 = 0.03;
 
 type Entry = (i32, i32);
 
@@ -54,16 +55,22 @@ impl Shading {
                 let highlight = pick_neighbor(&colors, source, 0.15, 0.23);
                 let base = (source as i32, source as i32);
                 let dark = (shadow as i32, shadow as i32);
-                // A rejected midpoint must not become the full shadow: that
-                // merges painted details before the face reaches deep shadow.
+                // An unsuitable checker uses a flat shade, preserving the
+                // brightness change without a distracting pixel contrast.
                 let middle = if color.can_dither(&colors[shadow]) {
                     (source as i32, shadow as i32)
                 } else {
-                    base
+                    dark
                 };
                 let bright = if color.can_dither(&colors[highlight]) {
                     (source as i32, highlight as i32)
+                } else if color.lab[1].hypot(color.lab[2]) < ACHROMATIC_THRESHOLD
+                    || colors[highlight].lab[1].hypot(colors[highlight].lab[2])
+                        >= ACHROMATIC_THRESHOLD
+                {
+                    (highlight as i32, highlight as i32)
                 } else {
+                    // A flat neutral highlight would erase the surface's hue.
                     base
                 };
                 [dark, middle, base, bright]
@@ -97,7 +104,7 @@ impl PaletteColor {
         if other_chroma > chroma + 0.015 {
             return false;
         }
-        if chroma < 0.03 || other_chroma < 0.03 {
+        if chroma < ACHROMATIC_THRESHOLD || other_chroma < ACHROMATIC_THRESHOLD {
             return true;
         }
 
@@ -224,16 +231,22 @@ mod tests {
     }
 
     #[test]
-    fn test_midtones_preserve_painted_details_when_the_shadow_pair_is_unsuitable() {
+    fn test_default_colored_ramps_retain_shadow_and_highlight() {
         let shading = Shading::compute(&DEFAULT_COLORS);
-        // Orange and brown occur next to each other in painted textures. They
-        // may merge in deep shadow, but must remain distinct in the midtones.
-        assert_eq!(shading[9][0], shading[4][0]);
-        assert_eq!(shading[9][1], (9, 9));
-        assert_eq!(shading[4][1], (4, 4));
-
-        // Compatible pairs still provide an intermediate shade.
+        // These colors have suitable darker or lighter palette neighbors.
+        // Rejecting a checker must not erase their visible shade differences.
+        for source in [8, 9, 10, 12, 14] {
+            let base = (source as i32, source as i32);
+            assert_eq!(shading[source][2], base);
+            assert_ne!(shading[source][1], base);
+        }
+        assert_eq!(shading[8][3], (14, 14));
+        assert_eq!(shading[14][3], (15, 15));
         assert_eq!(shading[10][1], (10, 9));
+        for source in [4, 6, 10, 11] {
+            assert_eq!(shading[source][3], (source as i32, source as i32));
+        }
+        assert_eq!(shading[12][3], (12, 6));
     }
 
     #[test]

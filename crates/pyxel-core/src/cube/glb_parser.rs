@@ -668,6 +668,11 @@ fn add_part(
 }
 
 fn node_transform(node: &gltf::Node) -> RcMat4 {
+    let (pos, rot, scale) = node_transform_components(node);
+    Mat4::compose(&pos, &rot, &scale)
+}
+
+fn node_transform_components(node: &gltf::Node) -> (Vec3, Quat, Vec3) {
     let (translation, rotation, scale) = node.transform().decomposed();
     let pos = Vec3 {
         x: translation[0],
@@ -685,7 +690,7 @@ fn node_transform(node: &gltf::Node) -> RcMat4 {
         y: scale[1],
         z: scale[2],
     };
-    Mat4::compose(&pos, &rot, &scale)
+    (pos, rot, scale)
 }
 
 // Primitive import
@@ -826,17 +831,36 @@ fn import_animations(
     document: &gltf::Document,
     fps: f32,
 ) -> Result<(), String> {
-    let base_transforms = rc_ref!(mesh)
-        .transforms
-        .iter()
-        .map(|transform| *rc_ref!(transform))
-        .collect::<Vec<_>>();
+    let identity_components = (
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+        Quat {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+        },
+        Vec3 {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+        },
+    );
+    let mut base_components = vec![identity_components; rc_ref!(mesh).transforms.len()];
+    for node in document.nodes() {
+        if let Some(&part_index) = node_parts.get(&node.index()) {
+            base_components[part_index] = node_transform_components(&node);
+        }
+    }
 
     for animation in document.animations() {
         let motion = Motion::new(
             animation.name().unwrap_or("").to_string(),
             0.0,
-            base_transforms.clone(),
+            base_components.clone(),
         );
         {
             let mut m = rc_mut!(&motion);
@@ -1028,5 +1052,86 @@ fn quat_per_frame(q: &Quat, fps: f32) -> Quat {
         y: q.y / fps,
         z: q.z / fps,
         w: q.w / fps,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_partial_animation_preserves_authored_signed_and_zero_scale_components() {
+        // A half-turn about Z negates X/Y exactly. Expected matrices retain
+        // the unkeyed authored components, including signs and zero-axis rotation.
+        let cases = [
+            (
+                "translation",
+                [-1.0, 2.0, 3.0],
+                vec![5.0_f32, 6.0, 7.0],
+                [1.0, -2.0, 3.0],
+                [5.0, 6.0, 7.0],
+            ),
+            (
+                "rotation",
+                [-1.0, -2.0, 3.0],
+                vec![0.0, 0.0, 0.0, 1.0],
+                [-1.0, -2.0, 3.0],
+                [1.0, 2.0, 3.0],
+            ),
+            (
+                "scale",
+                [0.0, 2.0, 3.0],
+                vec![1.0, 2.0, 3.0],
+                [-1.0, -2.0, 3.0],
+                [1.0, 2.0, 3.0],
+            ),
+        ];
+
+        for (target, scale, values, diagonal, translation) in cases {
+            let mut bytes = 0.0_f32.to_le_bytes().to_vec();
+            for value in &values {
+                bytes.extend_from_slice(&value.to_le_bytes());
+            }
+            let document = serde_json::json!({
+                "asset": {"version": "2.0"},
+                "buffers": [{"byteLength": bytes.len()}],
+                "bufferViews": [
+                    {"buffer": 0, "byteOffset": 0, "byteLength": 4},
+                    {"buffer": 0, "byteOffset": 4, "byteLength": values.len() * 4}
+                ],
+                "accessors": [
+                    {"bufferView": 0, "componentType": 5126, "count": 1, "type": "SCALAR", "min": [0.0], "max": [0.0]},
+                    {"bufferView": 1, "componentType": 5126, "count": 1, "type": if target == "rotation" { "VEC4" } else { "VEC3" }}
+                ],
+                "nodes": [{"translation": [1.0, 2.0, 3.0], "rotation": [0.0, 0.0, 1.0, 0.0], "scale": scale}],
+                "animations": [{
+                    "samplers": [{"input": 0, "output": 1, "interpolation": "LINEAR"}],
+                    "channels": [{"sampler": 0, "target": {"node": 0, "path": target}}]
+                }]
+            });
+            let gltf = gltf::Gltf::from_slice(&serde_json::to_vec(&document).unwrap()).unwrap();
+            let buffers = vec![gltf::buffer::Data(bytes)];
+            let mesh = Mesh::new();
+            let mut node_parts = HashMap::new();
+            let node = gltf.document.nodes().next().unwrap();
+            import_node(&mesh, &buffers, &mut node_parts, &node, -1).unwrap();
+            import_animations(&mesh, &buffers, &node_parts, &gltf.document, 30.0).unwrap();
+
+            let mesh_ref = rc_ref!(&mesh);
+            let motion = rc_ref!(&mesh_ref.motions[0]);
+            let sampled = motion.sample(0.0, false);
+            assert_eq!(sampled.len(), 1);
+            assert_eq!(sampled[0].0, node_parts[&0]);
+            assert_eq!(
+                sampled[0].1.data,
+                [
+                    [diagonal[0], 0.0, 0.0, translation[0]],
+                    [0.0, diagonal[1], 0.0, translation[1]],
+                    [0.0, 0.0, diagonal[2], translation[2]],
+                    [0.0, 0.0, 0.0, 1.0],
+                ],
+                "target={target}"
+            );
+        }
     }
 }

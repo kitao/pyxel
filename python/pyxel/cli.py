@@ -326,7 +326,7 @@ def copy_pyxel_examples() -> None:
     shutil.rmtree(dst_dir, ignore_errors=True)
 
     for src_file in _files_in_dir(src_dir):
-        if "__pycache__" in src_file:
+        if "__pycache__" in Path(src_file).relative_to(src_dir).parts:
             continue
         dst_file = dst_dir / Path(src_file).relative_to(src_dir)
         dst_file.parent.mkdir(parents=True, exist_ok=True)

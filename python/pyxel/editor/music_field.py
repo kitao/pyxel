@@ -2,6 +2,7 @@ import pyxel
 
 from .settings import (
     EDITOR_IMAGE,
+    MAX_MUSIC_LENGTH,
     MUSIC_FIELD_BACKGROUND_COLOR,
     MUSIC_FIELD_CURSOR_EDIT_COLOR,
     MUSIC_FIELD_CURSOR_PLAY_COLOR,
@@ -98,14 +99,14 @@ class MusicField(Widget):
         # Draw cursor highlight
         if cursor_y == self._ch:
             data_len = len(self.data)
-            for i in range(data_len + 1):
+            for i in range(min(data_len + 1, MAX_MUSIC_LENGTH)):
                 if cursor_x <= i < cursor_x + cursor_width:
                     x = self.x + (i % 16) * 12 + 21
                     y = self.y + (i // 16) * 10 + 2
                     pyxel.rect(x, y, 9, 7, cursor_col)
 
         # Draw sound indices
-        for i, snd in enumerate(self.data):
+        for i, snd in enumerate(self.data[:MAX_MUSIC_LENGTH]):
             x = self.x + 22 + (i % 16) * 12
             y = self.y + (i // 16) * 10 + 3
             is_selected = (
