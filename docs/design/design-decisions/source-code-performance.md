@@ -16,7 +16,7 @@
 | Packed RGB (`Rgb24`) | `u32` | Three color components need 24 bits |
 | Image-tile coordinate (`ImageTileCoord`) | `u16` | Each tile stores two coordinates, distinct from a pixel's palette index |
 
-These widths also reach Python through `data_ptr`: the
+**Reason:** These widths also reach Python through `data_ptr`: the
 [image binding](../../../crates/pyxel-binding/src/image_wrapper.rs) exposes
 `c_uint8` elements, while the
 [tilemap binding](../../../crates/pyxel-binding/src/tilemap_wrapper.rs) exposes two
@@ -42,7 +42,7 @@ and the values used for synthesis.
 | Channel detune | `i32` cents | A signed integral control, converted to fractional semitones for synthesis |
 | Tone/channel gain and MML modulation controls | `f32` | Fractional multipliers and pitch offsets before fixed-point mixing |
 
-The [sound](../../../crates/pyxel-core/src/sound.rs),
+**Reason:** The [sound](../../../crates/pyxel-core/src/sound.rs),
 [tone](../../../crates/pyxel-core/src/tone.rs), and
 [channel](../../../crates/pyxel-core/src/channel.rs) implementations establish these
 units and conversions. In contrast to legacy notes, an
@@ -69,7 +69,7 @@ values or accumulate time.
 | [Audio mixing](../../../crates/pyxel-core/src/voice.rs) | Quantized waveform storage uses `i16`, amplitude and fixed-point gain use `i32`, and their products use `i64` before shifting. Fractional modulation and long-running phase calculations remain separate from this integer mixer. |
 | [Native scheduling](../../../crates/pyxel-core/src/platform/sdl2/platform_sdl2.rs) | `u64` clock readings feed `f64` scheduling times to retain timing precision over long uptimes. This does not require widening public frame counters or every short elapsed-time value. |
 
-The reason for each wider calculation is the operation performed on its inputs,
+**Reason:** Each wider calculation follows from the operation performed on its inputs,
 not a preference for large types. Promoting every stored field would change
 memory use and conversions without addressing the same problem. Conversely,
 narrowing an intermediate to match its inputs can lose a valid result.

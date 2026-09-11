@@ -123,6 +123,6 @@ prescribe public hosting nor guarantee service-worker support on every HTTP
 origin.
 
 Service-worker registration is optional. Its existing warning handles both a
-synchronous throw and a rejected registration promise; neither should reach the
+synchronous throw and a rejected registration promise; neither reaches the
 runtime's fatal-error handler. The rewritten page can still use the local
 runtime without successful registration.
