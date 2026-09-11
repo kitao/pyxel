@@ -58,11 +58,6 @@ impl Shading {
         const REJECT_THRESHOLD: f32 = 1.0;
         // Permit a slightly weaker flat lv 1 when it enables a better lv 0 pair.
         const PATTERN_C_LV1_SLACK: f32 = 1.1;
-        const MAX_WEIGHTED_HUE_GAP: f32 = 1.0 / 12.0;
-        const CONTRAST_WEIGHT: f32 = 0.1;
-        const MAX_COLOR_LIGHTNESS_GAP: f32 = 0.25;
-        const MAX_NEUTRAL_LIGHTNESS_GAP: f32 = 0.45;
-        const MAX_HIGHLIGHT_SATURATION_GAIN: f32 = 0.1;
 
         let n = palette.len();
         if n == 0 {
@@ -128,25 +123,6 @@ impl Shading {
             raw + crossing
         };
 
-        // Cube-root luminance approximates visible lightness. Compare the
-        // displayed endpoints, not just the optical blend used for scoring.
-        let lightness: Vec<f32> = luma.iter().map(|value| value.cbrt()).collect();
-        // Apply the same limits to flat steps: rejecting a checker must not
-        // replace it with an equally abrupt change of the entire face.
-        let compatible = |a: usize, b: usize| -> bool {
-            let both_chromatic =
-                hsv[a].1 >= ACHROMATIC_THRESHOLD && hsv[b].1 >= ACHROMATIC_THRESHOLD;
-            let hue_gap = (hsv[a].0 - hsv[b].0).abs();
-            // Hue competes less as either endpoint approaches a neutral color.
-            (hue_gap.min(1.0 - hue_gap) * hsv[a].1.min(hsv[b].1) <= MAX_WEIGHTED_HUE_GAP)
-                && (lightness[a] - lightness[b]).abs()
-                    <= if both_chromatic {
-                        MAX_COLOR_LIGHTNESS_GAP
-                    } else {
-                        MAX_NEUTRAL_LIGHTNESS_GAP
-                    }
-        };
-
         // Score a dither by its optical blend in linear RGB, not by either
         // constituent in isolation.
         let entry_hsv = |entry: Entry| -> (f32, f32, f32) {
@@ -161,16 +137,6 @@ impl Shading {
                 let b = linear_to_srgb((bp + bs) * 0.5);
                 rgb_to_hsv(r, g, b)
             }
-        };
-
-        // Prefer softer contrast when blend scores are close. Charge flats
-        // and dithers equally for the farthest color from the source, so a
-        // checker cannot lose to a full-face change to that same color.
-        let entry_score = |source: usize, ideal: (f32, f32, f32), entry: Entry| -> f32 {
-            let contrast = (lightness[source] - lightness[entry.0 as usize])
-                .abs()
-                .max((lightness[source] - lightness[entry.1 as usize]).abs());
-            distance(ideal, entry_hsv(entry)) + CONTRAST_WEIGHT * contrast
         };
 
         // Pick the lowest-total-distance connected pattern for lv 1 and lv 0.
@@ -192,14 +158,14 @@ impl Shading {
             // Use the best independent flat as Pattern C's lv 1 quality gate.
             let mut lv1_solo_best = f32::INFINITY;
             for t in 0..n {
-                if t == source || !compatible(source, t) {
+                if t == source {
                     continue;
                 }
                 let lv1: Entry = (t as i32, t as i32);
                 if !darker_than_source(lv1) {
                     continue;
                 }
-                let s = entry_score(source, ideal_1, lv1);
+                let s = distance(ideal_1, entry_hsv(lv1));
                 if s < lv1_solo_best {
                     lv1_solo_best = s;
                 }
@@ -209,7 +175,7 @@ impl Shading {
             // Pattern A: two independent flats with monotone luminance
             let mut best_a: (f32, Entry, Entry) = (f32::INFINITY, base_entry, base_entry);
             for t1 in 0..n {
-                if t1 == source || !compatible(source, t1) {
+                if t1 == source {
                     continue;
                 }
                 let lv1: Entry = (t1 as i32, t1 as i32);
@@ -218,13 +184,13 @@ impl Shading {
                 }
 
                 let l1 = entry_luma(lv1);
-                let s1 = entry_score(source, ideal_1, lv1);
+                let s1 = distance(ideal_1, entry_hsv(lv1));
                 for (t0, &t0_luma) in luma.iter().enumerate() {
-                    if t0 == source || t0_luma >= l1 || !compatible(t1, t0) {
+                    if t0 == source || t0_luma >= l1 {
                         continue;
                     }
                     let lv0: Entry = (t0 as i32, t0 as i32);
-                    let s = s1 + entry_score(source, ideal_0, lv0);
+                    let s = s1 + distance(ideal_0, entry_hsv(lv0));
                     if s < best_a.0 {
                         best_a = (s, lv1, lv0);
                     }
@@ -234,7 +200,10 @@ impl Shading {
             // Pattern B: lv 1 = (source, X), lv 0 = X
             let mut best_b: (f32, Entry, Entry) = (f32::INFINITY, base_entry, base_entry);
             for x in 0..n {
-                if x == source || !compatible(source, x) {
+                if x == source {
+                    continue;
+                }
+                if distance(hsv[source], hsv[x]) > REJECT_THRESHOLD {
                     continue;
                 }
                 let lv1: Entry = (source as i32, x as i32);
@@ -243,7 +212,7 @@ impl Shading {
                     continue;
                 }
 
-                let s = entry_score(source, ideal_1, lv1) + entry_score(source, ideal_0, lv0);
+                let s = distance(ideal_1, entry_hsv(lv1)) + distance(ideal_0, entry_hsv(lv0));
                 if s < best_b.0 {
                     best_b = (s, lv1, lv0);
                 }
@@ -252,29 +221,32 @@ impl Shading {
             // Pattern C: lv 1 = X, lv 0 = (X, Y), with compatible colors
             let mut best_c: (f32, Entry, Entry) = (f32::INFINITY, base_entry, base_entry);
             for x in 0..n {
-                if x == source || !compatible(source, x) {
+                if x == source {
                     continue;
                 }
                 let lv1: Entry = (x as i32, x as i32);
                 if !darker_than_source(lv1) {
                     continue;
                 }
-                let s1 = entry_score(source, ideal_1, lv1);
+                let s1 = distance(ideal_1, entry_hsv(lv1));
                 if s1 > lv1_gate {
                     continue;
                 }
 
                 let lx = luma[x];
-                for (y, &ly) in luma.iter().enumerate() {
-                    if y == source || y == x || !compatible(x, y) {
+                for y in 0..n {
+                    if y == source || y == x {
                         continue;
                     }
-                    if ly >= lx {
+                    if luma[y] >= lx {
+                        continue;
+                    }
+                    if distance(hsv[x], hsv[y]) > REJECT_THRESHOLD {
                         continue;
                     }
 
                     let lv0: Entry = (x as i32, y as i32);
-                    let s = s1 + entry_score(source, ideal_0, lv0);
+                    let s = s1 + distance(ideal_0, entry_hsv(lv0));
                     if s < best_c.0 {
                         best_c = (s, lv1, lv0);
                     }
@@ -296,7 +268,6 @@ impl Shading {
         };
 
         // Pick lv 3 independently from a flat or source/candidate dither.
-        // A highlight should not turn muted paint into a saturated accent.
         let pick_one_pattern = |source: usize, ideal: (f32, f32, f32)| -> Option<Entry> {
             let base_entry: Entry = (source as i32, source as i32);
             let mut best_score = f32::INFINITY;
@@ -305,16 +276,12 @@ impl Shading {
             let brighter_than_source = |entry: Entry| -> bool { entry_luma(entry) > source_luma };
 
             for t in 0..n {
-                if t == source
-                    || !compatible(source, t)
-                    || (hsv[source].1 >= ACHROMATIC_THRESHOLD
-                        && hsv[t].1 > hsv[source].1 + MAX_HIGHLIGHT_SATURATION_GAIN)
-                {
+                if t == source {
                     continue;
                 }
                 let f: Entry = (t as i32, t as i32);
                 if brighter_than_source(f) {
-                    let s_f = entry_score(source, ideal, f);
+                    let s_f = distance(ideal, entry_hsv(f));
                     if s_f < best_score {
                         best_score = s_f;
                         best_entry = f;
@@ -322,8 +289,8 @@ impl Shading {
                 }
 
                 let d: Entry = (source as i32, t as i32);
-                if brighter_than_source(d) {
-                    let s_d = entry_score(source, ideal, d);
+                if brighter_than_source(d) && distance(hsv[source], hsv[t]) <= REJECT_THRESHOLD {
+                    let s_d = distance(ideal, entry_hsv(d));
                     if s_d < best_score {
                         best_score = s_d;
                         best_entry = d;
@@ -453,22 +420,22 @@ mod tests {
     fn test_default_palette_shading_matches_reviewed_ramps() {
         // Preserve the palette ramps used by the visually reviewed Cube examples.
         let expected = [
-            [(0, 0), (0, 0), (0, 0), (0, 1)],
-            [(0, 0), (1, 0), (1, 1), (1, 5)],
-            [(0, 0), (2, 0), (2, 2), (2, 4)],
+            [(0, 0), (0, 0), (0, 0), (0, 13)],
+            [(1, 1), (1, 1), (1, 1), (1, 5)],
+            [(1, 1), (2, 1), (2, 2), (2, 4)],
             [(5, 5), (3, 5), (3, 3), (3, 11)],
-            [(2, 2), (4, 2), (4, 4), (4, 13)],
+            [(2, 2), (4, 2), (4, 4), (4, 14)],
             [(1, 1), (5, 1), (5, 5), (5, 12)],
-            [(12, 12), (6, 12), (6, 6), (6, 7)],
+            [(12, 12), (6, 12), (6, 6), (6, 15)],
             [(13, 13), (7, 13), (7, 7), (7, 7)],
             [(2, 2), (8, 2), (8, 8), (8, 14)],
             [(4, 4), (9, 4), (9, 9), (9, 10)],
             [(9, 9), (10, 9), (10, 10), (10, 15)],
             [(3, 3), (11, 3), (11, 11), (11, 6)],
             [(5, 5), (12, 5), (12, 12), (12, 6)],
-            [(4, 4), (13, 4), (13, 13), (13, 7)],
+            [(0, 0), (13, 0), (13, 13), (13, 7)],
             [(9, 9), (14, 9), (14, 14), (14, 15)],
-            [(14, 14), (15, 14), (15, 15), (15, 7)],
+            [(14, 14), (15, 14), (15, 15), (15, 15)],
         ];
         assert_eq!(Shading::compute(&DEFAULT_COLORS), expected);
     }
@@ -489,37 +456,6 @@ mod tests {
                 assert_eq!(DEFAULT_COLORS[s as usize], palette[rs as usize]);
             }
         }
-    }
-
-    #[test]
-    fn test_default_ramps_share_a_color_between_adjacent_levels() {
-        for row in Shading::compute(&DEFAULT_COLORS) {
-            for pair in row.windows(2) {
-                let (a, b) = pair[0];
-                let (c, d) = pair[1];
-                assert!(a == c || a == d || b == c || b == d, "{row:?}");
-            }
-        }
-    }
-
-    #[test]
-    fn test_neutral_highlight_avoids_a_competing_hue() {
-        let palette = [DEFAULT_COLORS[6], DEFAULT_COLORS[15], DEFAULT_COLORS[7]];
-        let shading = Shading::compute(&palette);
-
-        // Pale blue and peach have similar lightness but visibly distinct hues.
-        // White can brighten the blue without introducing the peach's hue.
-        assert_eq!(shading[0][3], (0, 2));
-        for &(primary, secondary) in &shading[0] {
-            assert_ne!(primary, 1);
-            assert_ne!(secondary, 1);
-        }
-    }
-
-    #[test]
-    fn test_neutral_pair_still_requires_moderate_contrast() {
-        let shading = Shading::compute(&[DEFAULT_COLORS[0], DEFAULT_COLORS[13]]);
-        assert_eq!(shading, [[(0, 0); LEVEL_COUNT], [(1, 1); LEVEL_COUNT]]);
     }
 
     fn reference_srgb_to_linear(c: f32) -> f32 {
