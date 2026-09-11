@@ -8,7 +8,7 @@ from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel import Image
 from pyxel.cube import Camera, Mat4, Mesh, Motion, Node, Vec3
 
-from .glb_fixtures import (
+from ._glb_fixtures import (
     write_alpha_texture_glb,
     write_authored_normals_glb,
     write_blockbench_profile_glb,
@@ -419,7 +419,7 @@ def test_from_glb_preserves_other_required_extensions(
 
     with raises_exact(
         ValueError,
-        f"Failed to read GLB '{path}': invalid glTF: "
+        f"Failed to parse file '{path}': invalid glTF: "
         f'extensionsRequired[0] = "{extension}": Unsupported extension;',
     ):
         Mesh.from_glb(str(path))
@@ -479,7 +479,7 @@ def test_from_glb_rejects_external_image(tmp_path):
     # own external-image message.
     with raises_exact(
         ValueError,
-        f"Failed to read GLB '{path}': external reference in slice only import",
+        f"Failed to parse file '{path}': external reference in slice only import",
     ):
         Mesh.from_glb(str(path))
 

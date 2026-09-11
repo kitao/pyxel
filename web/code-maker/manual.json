@@ -97,13 +97,13 @@
       "cn": "Pyxel Code Maker 让你在浏览器中编辑 Python 代码和游戏资源 (图像、瓦片地图、声音、音乐)，并运行 Pyxel 应用，无需安装。",
       "de": "Mit Pyxel Code Maker bearbeiten Sie Python-Code und Spielressourcen (Bilder, Tilemaps, Sounds, Musik) und führen Pyxel-Apps im Browser aus. Eine Installation ist nicht nötig.",
       "es": "Pyxel Code Maker permite editar código Python y recursos de juego (imágenes, tilemaps, sonidos, música) y ejecutar aplicaciones Pyxel en el navegador. No requiere instalación.",
-      "fr": "Pyxel Code Maker permet de modifier du code Python et des ressources de jeu (images, tilemaps, sons, musique), puis d’exécuter des applications Pyxel dans le navigateur. Aucune installation n’est nécessaire.",
+      "fr": "Pyxel Code Maker permet de modifier du code Python et des ressources de jeu (images, tilemaps, sons, musique), puis d'exécuter des applications Pyxel dans le navigateur. Aucune installation n'est nécessaire.",
       "it": "Pyxel Code Maker permette di modificare codice Python e risorse di gioco (immagini, tilemap, suoni, musica) ed eseguire app Pyxel nel browser. Non richiede installazione.",
       "ja": "Pyxel Code Maker は、ブラウザで Python コードとゲームリソース（画像・タイルマップ・サウンド・ミュージック）を編集し、Pyxel アプリを実行できる開発環境です。インストールは不要です。",
       "ko": "Pyxel Code Maker로 브라우저에서 Python 코드와 게임 리소스(이미지, 타일맵, 사운드, 음악)를 편집하고 Pyxel 앱을 실행할 수 있습니다. 설치는 필요 없습니다.",
       "pt": "O Pyxel Code Maker permite editar código Python e recursos de jogo (imagens, tilemaps, sons, música) e executar aplicativos Pyxel no navegador. Não é preciso instalar nada.",
       "ru": "Pyxel Code Maker позволяет редактировать код Python и игровые ресурсы (изображения, тайловые карты, звуки, музыку) и запускать приложения Pyxel в браузере. Установка не требуется.",
-      "tr": "Pyxel Code Maker ile tarayıcıda Python kodunu ve oyun kaynaklarını (görüntüler, tilemap’ler, sesler, müzik) düzenleyebilir, Pyxel uygulamalarını çalıştırabilirsiniz. Kurulum gerekmez.",
+      "tr": "Pyxel Code Maker ile tarayıcıda Python kodunu ve oyun kaynaklarını (görüntüler, tilemap'ler, sesler, müzik) düzenleyebilir, Pyxel uygulamalarını çalıştırabilirsiniz. Kurulum gerekmez.",
       "uk": "Pyxel Code Maker дозволяє редагувати код Python та ігрові ресурси (зображення, тайлові карти, звуки, музику) й запускати застосунки Pyxel у браузері. Встановлення не потрібне."
     },
     "layout_title": {
@@ -157,7 +157,7 @@
       "it": "Contiene pulsanti per la gestione del progetto e il controllo dell'applicazione.",
       "ja": "プロジェクト管理とアプリケーション制御のボタンを含みます。",
       "ko": "프로젝트 관리 및 애플리케이션 제어 버튼을 포함합니다.",
-      "pt": "Contém botões para gerenciamento de projetos e controle de aplicação.",
+      "pt": "Contém botões para gerenciamento de projetos e controle do aplicativo.",
       "ru": "Содержит кнопки для управления проектом и приложением.",
       "tr": "Proje yönetimi ve uygulama kontrolü için düğmeler içerir.",
       "uk": "Містить кнопки для керування проєктом та застосунком."
@@ -283,7 +283,7 @@
       "it": "Visualizza l'applicazione in esecuzione.",
       "ja": "実行中のアプリケーションを表示します。",
       "ko": "실행 중인 애플리케이션을 표시합니다.",
-      "pt": "Exibe a aplicação em execução.",
+      "pt": "Exibe o aplicativo em execução.",
       "ru": "Отображает запущенное приложение.",
       "tr": "Çalışan uygulamayı görüntüler.",
       "uk": "Відображає запущений застосунок."
@@ -336,7 +336,7 @@
       "de": "Schreiben Sie Python-Code in {0}, mit Syntaxhervorhebung und Autovervollständigung.",
       "es": "Escriba código Python en {0}, con resaltado de sintaxis y autocompletado.",
       "fr": "Écrivez du code Python dans {0}, avec coloration syntaxique et autocomplétion.",
-      "it": "Scrivi codice Python in {0}, con evidenziazione della sintassi e completamento automatico.",
+      "it": "Scrivere codice Python in {0}, con evidenziazione della sintassi e completamento automatico.",
       "ja": "{0} に Python コードを記述します。構文ハイライトと入力補完に対応しています。",
       "ko": "{0}에 Python 코드를 작성합니다. 구문 강조와 자동 완성을 지원합니다.",
       "pt": "Escreva código Python em {0}, com destaque de sintaxe e preenchimento automático.",
@@ -364,13 +364,13 @@
       "de": "Bearbeiten Sie Bilder, Tilemaps, Sounds und Musik mit Pyxel Editor. Der Name der Ressourcendatei ist auf {0} festgelegt.",
       "es": "Use Pyxel Editor para editar imágenes, tilemaps, sonidos y música. El nombre del archivo de recursos es fijo: {0}.",
       "fr": "Utilisez Pyxel Editor pour modifier les images, les tilemaps, les sons et la musique. Le nom du fichier de ressources est fixé à {0}.",
-      "it": "Usa Pyxel Editor per modificare immagini, tilemap, suoni e musica. Il nome del file di risorse è fisso: {0}.",
+      "it": "Usare Pyxel Editor per modificare immagini, tilemap, suoni e musica. Il nome del file di risorse è fisso: {0}.",
       "ja": "Pyxel Editor で画像・タイルマップ・サウンド・ミュージックを編集します。リソースファイル名は {0} に固定されています。",
       "ko": "Pyxel Editor로 이미지, 타일맵, 사운드, 음악을 편집합니다. 리소스 파일 이름은 {0}로 고정되어 있습니다.",
       "pt": "Use o Pyxel Editor para editar imagens, tilemaps, sons e música. O nome do arquivo de recursos é fixo: {0}.",
       "ru": "Используйте Pyxel Editor для редактирования изображений, тайловых карт, звуков и музыки. Имя файла ресурсов фиксировано: {0}.",
-      "tr": "Görüntüleri, tilemap’leri, sesleri ve müziği düzenlemek için Pyxel Editor kullanın. Kaynak dosyasının adı {0} olarak sabittir.",
-      "uk": "Використовуйте Pyxel Editor для редагування зображень, тайлових карт, звуків і музики. Ім’я файлу ресурсів фіксоване: {0}."
+      "tr": "Görüntüleri, tilemap'leri, sesleri ve müziği düzenlemek için Pyxel Editor kullanın. Kaynak dosyasının adı {0} olarak sabittir.",
+      "uk": "Використовуйте Pyxel Editor для редагування зображень, тайлових карт, звуків і музики. Ім'я файлу ресурсів фіксоване: {0}."
     },
     "runtime_title": {
       "en": "Runtime Screen",
@@ -457,18 +457,18 @@
       "uk": "Перетягування"
     },
     "drag_drop_body": {
-      "en": "Drop files anywhere on the page. A {0} file replaces the code; a {1} file replaces the resources.",
-      "cn": "可将文件拖放到页面任意位置。{0} 文件替换代码，{1} 文件替换资源。",
-      "de": "Dateien können überall auf der Seite abgelegt werden. Eine {0}-Datei ersetzt den Code, eine {1}-Datei die Ressourcen.",
-      "es": "Suelte archivos en cualquier parte de la página. Un archivo {0} reemplaza el código; un archivo {1} reemplaza los recursos.",
-      "fr": "Déposez les fichiers n’importe où sur la page. Un fichier {0} remplace le code ; un fichier {1} remplace les ressources.",
-      "it": "Trascina i file in qualsiasi punto della pagina. Un file {0} sostituisce il codice; un file {1} sostituisce le risorse.",
-      "ja": "画面のどこにでもファイルをドロップできます。{0} ファイルはコードを、{1} ファイルはリソースを置き換えます。",
-      "ko": "페이지 어디에나 파일을 드롭할 수 있습니다. {0} 파일은 코드를, {1} 파일은 리소스를 교체합니다.",
-      "pt": "Solte arquivos em qualquer lugar da página. Um arquivo {0} substitui o código; um arquivo {1} substitui os recursos.",
-      "ru": "Перетащите файлы в любое место страницы. Файл {0} заменяет код, а файл {1} — ресурсы.",
-      "tr": "Dosyaları sayfanın herhangi bir yerine bırakabilirsiniz. {0} dosyası kodu, {1} dosyası kaynakları değiştirir.",
-      "uk": "Перетягніть файли в будь-яке місце сторінки. Файл {0} замінює код, а файл {1} — ресурси."
+      "en": "Drop files anywhere on the page. A {0} file replaces the code; a {1} file replaces the resources. In the dropped code, the .pyxres file name passed to load() is replaced with my_resource.pyxres.",
+      "cn": "可将文件拖放到页面任意位置。{0} 文件替换代码，{1} 文件替换资源。在拖入的代码中，传给 load() 的 .pyxres 文件名会被替换为 my_resource.pyxres。",
+      "de": "Dateien können überall auf der Seite abgelegt werden. Eine {0}-Datei ersetzt den Code, eine {1}-Datei die Ressourcen. Im abgelegten Code wird der an load() übergebene .pyxres-Dateiname durch my_resource.pyxres ersetzt.",
+      "es": "Suelte archivos en cualquier parte de la página. Un archivo {0} reemplaza el código; un archivo {1} reemplaza los recursos. En el código soltado, el nombre de archivo .pyxres pasado a load() se sustituye por my_resource.pyxres.",
+      "fr": "Déposez les fichiers n'importe où sur la page. Un fichier {0} remplace le code ; un fichier {1} remplace les ressources. Dans le code déposé, le nom de fichier .pyxres passé à load() est remplacé par my_resource.pyxres.",
+      "it": "Trascinare i file in qualsiasi punto della pagina. Un file {0} sostituisce il codice; un file {1} sostituisce le risorse. Nel codice rilasciato, il nome del file .pyxres passato a load() viene sostituito con my_resource.pyxres.",
+      "ja": "画面のどこにでもファイルをドロップできます。{0} ファイルはコードを、{1} ファイルはリソースを置き換えます。ドロップしたコードでは、load() に渡す .pyxres ファイル名が my_resource.pyxres に置き換えられます。",
+      "ko": "페이지 어디에나 파일을 드롭할 수 있습니다. {0} 파일은 코드를, {1} 파일은 리소스를 교체합니다. 드롭한 코드에서는 load()에 전달하는 .pyxres 파일 이름이 my_resource.pyxres로 바뀝니다.",
+      "pt": "Solte arquivos em qualquer lugar da página. Um arquivo {0} substitui o código; um arquivo {1} substitui os recursos. No código solto, o nome de arquivo .pyxres passado para load() é substituído por my_resource.pyxres.",
+      "ru": "Перетащите файлы в любое место страницы. Файл {0} заменяет код, а файл {1} — ресурсы. В перетащенном коде имя файла .pyxres, переданное в load(), заменяется на my_resource.pyxres.",
+      "tr": "Dosyaları sayfanın herhangi bir yerine bırakabilirsiniz. {0} dosyası kodu, {1} dosyası kaynakları değiştirir. Bırakılan kodda load() işlevine verilen .pyxres dosya adı my_resource.pyxres ile değiştirilir.",
+      "uk": "Перетягніть файли в будь-яке місце сторінки. Файл {0} замінює код, а файл {1} — ресурси. У перетягнутому коді ім'я файлу .pyxres, передане в load(), замінюється на my_resource.pyxres."
     },
     "sharing_title": {
       "en": "Sharing via URL",
@@ -482,21 +482,21 @@
       "pt": "Compartilhamento via URL",
       "ru": "Обмен через URL",
       "tr": "URL ile Paylaşım",
-      "uk": "Обмін через URL"
+      "uk": "Поширення через URL"
     },
     "sharing_body": {
       "en": "Loading a project from Gist, GitHub, or a URL updates the address bar with a shareable URL. This URL opens the same project in Pyxel Code Maker.",
       "cn": "从 Gist、GitHub 或 URL 加载项目后，地址栏会显示可分享的 URL。通过此 URL 可在 Pyxel Code Maker 中打开同一项目。",
       "de": "Beim Laden eines Projekts von Gist, GitHub oder einer URL erscheint in der Adresszeile eine teilbare URL. Sie öffnet dasselbe Projekt in Pyxel Code Maker.",
       "es": "Al cargar un proyecto desde Gist, GitHub o una URL, la barra de direcciones muestra una URL para compartir. Esta URL abre el mismo proyecto en Pyxel Code Maker.",
-      "fr": "Charger un projet depuis Gist, GitHub ou une URL affiche une URL partageable dans la barre d’adresse. Cette URL ouvre le même projet dans Pyxel Code Maker.",
+      "fr": "Charger un projet depuis Gist, GitHub ou une URL affiche une URL partageable dans la barre d'adresse. Cette URL ouvre le même projet dans Pyxel Code Maker.",
       "it": "Caricando un progetto da Gist, GitHub o un URL, nella barra degli indirizzi compare un URL condivisibile. Questo URL apre lo stesso progetto in Pyxel Code Maker.",
       "ja": "Gist、GitHub、または URL からプロジェクトを読み込むと、アドレスバーに共有用 URL が表示されます。この URL で同じプロジェクトを Pyxel Code Maker で開けます。",
       "ko": "Gist, GitHub 또는 URL에서 프로젝트를 불러오면 주소 표시줄에 공유 URL이 표시됩니다. 이 URL로 같은 프로젝트를 Pyxel Code Maker에서 열 수 있습니다.",
       "pt": "Ao carregar um projeto do Gist, do GitHub ou de uma URL, a barra de endereço exibe uma URL para compartilhar. Essa URL abre o mesmo projeto no Pyxel Code Maker.",
       "ru": "При загрузке проекта из Gist, GitHub или по URL в адресной строке появляется ссылка для обмена. Она открывает тот же проект в Pyxel Code Maker.",
-      "tr": "Gist, GitHub veya bir URL’den proje yüklediğinizde adres çubuğunda paylaşılabilir bir URL görünür. Bu URL aynı projeyi Pyxel Code Maker’da açar.",
-      "uk": "Після завантаження проєкту з Gist, GitHub або за URL в адресному рядку з’являється посилання для поширення. Воно відкриває той самий проєкт у Pyxel Code Maker."
+      "tr": "Gist, GitHub veya bir URL'den proje yüklediğinizde adres çubuğunda paylaşılabilir bir URL görünür. Bu URL aynı projeyi Pyxel Code Maker'da açar.",
+      "uk": "Після завантаження проєкту з Gist, GitHub або за URL в адресному рядку з'являється посилання для поширення. Воно відкриває той самий проєкт у Pyxel Code Maker."
     },
     "shortcuts_title": {
       "en": "Keyboard Shortcuts",
@@ -518,12 +518,12 @@
       "de": "Unter macOS verwenden Sie Cmd statt Ctrl.",
       "es": "En macOS, use Cmd en lugar de Ctrl.",
       "fr": "Sur macOS, utilisez Cmd au lieu de Ctrl.",
-      "it": "Su macOS, usa Cmd al posto di Ctrl.",
+      "it": "Su macOS, usare Cmd al posto di Ctrl.",
       "ja": "macOS では Ctrl の代わりに Cmd を使用します。",
       "ko": "macOS에서는 Ctrl 대신 Cmd를 사용합니다.",
       "pt": "No macOS, use Cmd em vez de Ctrl.",
       "ru": "На macOS используйте Cmd вместо Ctrl.",
-      "tr": "macOS’ta Ctrl yerine Cmd kullanın.",
+      "tr": "macOS'ta Ctrl yerine Cmd kullanın.",
       "uk": "На macOS використовуйте Cmd замість Ctrl."
     },
     "th_shortcut": {
@@ -691,7 +691,7 @@
             "pt": "Copiar os dados do projeto para a área de transferência para compartilhar via GitHub Gist.",
             "ru": "Скопировать данные проекта в буфер обмена для обмена через GitHub Gist.",
             "tr": "GitHub Gist ile paylaşmak için proje verilerini panoya kopyalayın.",
-            "uk": "Скопіювати дані проєкту до буфера обміну для обміну через GitHub Gist."
+            "uk": "Скопіювати дані проєкту до буфера обміну для поширення через GitHub Gist."
           }
         }
       ]
@@ -720,8 +720,8 @@
         "cn": "使用当前代码和资源运行应用程序。",
         "de": "Die Anwendung mit dem aktuellen Code und den aktuellen Ressourcen ausführen.",
         "es": "Ejecutar la aplicación con el código y los recursos actuales.",
-        "fr": "Exécuter l’application avec le code et les ressources actuels.",
-        "it": "Esegui l’applicazione con il codice e le risorse attuali.",
+        "fr": "Exécuter l'application avec le code et les ressources actuels.",
+        "it": "Eseguire l'applicazione con il codice e le risorse attuali.",
         "ja": "現在のコードとリソースでアプリケーションを実行します。",
         "ko": "현재 코드와 리소스로 애플리케이션을 실행합니다.",
         "pt": "Executar o aplicativo com o código e os recursos atuais.",
@@ -740,7 +740,7 @@
         "de": "Datei laden",
         "es": "Cargar archivo",
         "fr": "Charger le fichier",
-        "it": "Carica file",
+        "it": "Caricare file",
         "ja": "ファイルを読み込む",
         "ko": "파일 불러오기",
         "pt": "Carregar arquivo",
@@ -757,7 +757,7 @@
         "de": "Datei speichern",
         "es": "Guardar archivo",
         "fr": "Enregistrer le fichier",
-        "it": "Salva file",
+        "it": "Salvare file",
         "ja": "ファイルを保存する",
         "ko": "파일 저장",
         "pt": "Salvar arquivo",
@@ -774,7 +774,7 @@
         "de": "Code/Res-Editor umschalten",
         "es": "Alternar editor Code/Res",
         "fr": "Basculer l'éditeur Code/Res",
-        "it": "Commuta editor Code/Res",
+        "it": "Commutare editor Code/Res",
         "ja": "Code/Res エディタを切り替える",
         "ko": "Code/Res 에디터 전환",
         "pt": "Alternar editor Code/Res",
@@ -791,10 +791,10 @@
         "de": "Anwendung ausführen",
         "es": "Ejecutar aplicación",
         "fr": "Exécuter l'application",
-        "it": "Esegui applicazione",
+        "it": "Eseguire applicazione",
         "ja": "アプリケーションを実行する",
         "ko": "애플리케이션 실행",
-        "pt": "Executar aplicação",
+        "pt": "Executar aplicativo",
         "ru": "Запустить приложение",
         "tr": "Uygulamayı çalıştır",
         "uk": "Запустити застосунок"
@@ -808,7 +808,7 @@
         "de": "Fokus zwischen Bearbeitungsbereich und Ausführungsbildschirm wechseln",
         "es": "Alternar el enfoque entre el área de edición y la pantalla de ejecución",
         "fr": "Basculer le focus entre la zone d'édition et l'écran d'exécution",
-        "it": "Sposta il focus tra l'area di modifica e lo schermo di esecuzione",
+        "it": "Spostare il focus tra l'area di modifica e lo schermo di esecuzione",
         "ja": "編集エリアと実行画面のフォーカスを切り替える",
         "ko": "편집 영역과 실행 화면 간 포커스 전환",
         "pt": "Alternar o foco entre a área de edição e a tela de execução",

@@ -53,6 +53,11 @@ CAPTURE_PLANS = {
 
 
 class TestApps:
+    def test_bundled_apps_have_capture_plans(self):
+        planned = set(CAPTURE_PLANS)
+        apps = {app.stem for app in APPS_DIR.glob("*.pyxapp")}
+        assert planned == apps
+
     @pytest.mark.parametrize(
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())
     )

@@ -186,6 +186,7 @@ class TestInterpolation:
         assert approx_v(mid * Vec3(1, 0, 0), Vec3(s, 0, -s))
 
 
+# 1e-4 exceeds the f32 rounding of unit-scale values and stays below any expected difference
 def approx_v(a, b, tol=1e-4):
     return (
         isclose(a.x, b.x, abs_tol=tol)

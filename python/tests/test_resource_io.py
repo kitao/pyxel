@@ -327,6 +327,19 @@ class TestScreenshot:
             assert image1.size == (pyxel.width, pyxel.height)
             assert image2.size == (pyxel.width * 2, pyxel.height * 2)
 
+    def test_screenshot_uses_last_color_beyond_palette(self, tmp_path):
+        path = str(tmp_path / "beyond_palette.png")
+        original_colors = list(pyxel.colors)
+        try:
+            pyxel.colors[:] = [0x102030, 0x405060]
+            pyxel.cls(7)
+            pyxel.flip()
+            pyxel.screenshot(path, scale=1)
+        finally:
+            pyxel.colors[:] = original_colors
+        with PIL.Image.open(path) as image:
+            assert image.convert("RGB").getpixel((0, 0)) == (0x40, 0x50, 0x60)
+
     def test_screencast(self, tmp_path):
         pyxel.reset_screencast()
         pyxel.cls(5)
@@ -337,6 +350,20 @@ class TestScreenshot:
             assert image.format == "GIF"
             assert image.size == (pyxel.width * 2, pyxel.height * 2)
             assert image.n_frames == 1
+
+    def test_screencast_uses_last_color_beyond_palette(self, tmp_path):
+        path = str(tmp_path / "beyond_palette.gif")
+        original_colors = list(pyxel.colors)
+        try:
+            pyxel.colors[:] = [0x102030, 0x405060]
+            pyxel.reset_screencast()
+            pyxel.cls(7)
+            pyxel.flip()
+            pyxel.screencast(path, scale=1)
+        finally:
+            pyxel.colors[:] = original_colors
+        with PIL.Image.open(path) as image:
+            assert image.convert("RGB").getpixel((0, 0)) == (0x40, 0x50, 0x60)
 
 
 class TestUserDataDir:

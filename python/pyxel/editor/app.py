@@ -180,7 +180,6 @@ class App(Widget):
                     self._editors[0].color_var = self._editors[0].color_var
                     for editor in self._editors:
                         editor.reset_history()
-                    self._set_title(dropped_file)
                 finally:
                     pyxel.colors[:] = colors[: pyxel.NUM_COLORS] + list(pyxel.colors)
             else:

@@ -59,7 +59,6 @@ impl Channel {
 
         let should_loop = r#loop.unwrap_or(false);
         let resume = resume.unwrap_or(false);
-        let _lock = pyxel::AudioLock::lock();
 
         cast_pyany! {
             snd,
@@ -68,6 +67,7 @@ impl Channel {
             (u32, {
                 let sound = pyxel::sounds().get(snd as usize).cloned()
                     .ok_or_else(|| invalid_index_error!("snd", "sound"))?;
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play_sound(sound, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
@@ -79,12 +79,14 @@ impl Channel {
                     validate_index!(i, all_sounds.len(), "snd", "sound", list);
                 }
                 let sounds = snd.iter().map(|&i| all_sounds[i as usize].clone()).collect();
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play(sounds, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
             }),
 
             (Sound, {
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play_sound(snd.inner, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
@@ -92,12 +94,14 @@ impl Channel {
 
             (Vec<Sound>, {
                 let sounds = snd.into_iter().map(|sound| sound.inner).collect();
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play(sounds, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
             }),
 
             (String, {
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play_mml(&snd, sec, should_loop, resume)
                     .map_err(PyException::new_err)?;

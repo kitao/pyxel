@@ -78,7 +78,7 @@
     overflow-wrap: anywhere;
   }
 
-  /* User guide code blocks and link lists */
+  /* Shared code blocks and guide link styles */
   .code-block {
     @apply bg-[#0d1117] rounded-lg font-mono text-sm leading-5 text-indigo-300 overflow-x-auto whitespace-pre;
     padding: 0.625rem 1rem;
@@ -86,6 +86,10 @@
   }
   .link-list {
     @apply text-sm leading-relaxed space-y-1.5;
+  }
+  .link-strong {
+    @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+    overflow-wrap: anywhere;
   }
 
   /* Editor manual annotated screenshot headings */
@@ -102,10 +106,6 @@
   }
 
   /* Launcher form controls and generated-link display */
-  .link-strong {
-    @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
-    overflow-wrap: anywhere;
-  }
   .label {
     @apply font-medium text-sm;
   }
@@ -226,13 +226,7 @@
     @apply inline-flex items-center text-indigo-400 text-xs font-medium;
   }
 
-  /* MML command reference headings, rows, and responsive tables */
-  .heading {
-    @apply font-semibold text-2xl tracking-tight;
-  }
-  .subheading {
-    @apply text-gray-300 text-sm;
-  }
+  /* MML command reference rows and responsive tables */
   .mono {
     @apply font-mono text-sm;
   }

@@ -62,12 +62,12 @@ not establish that the new image is correct.
 ### Current native package and target-specific checks
 
 **Decision:** Build and install the current native package before running the
-Python, Rust, and Web suites through `make test`. Keep native and Emscripten
+Python, Rust, and web suites through `make test`. Keep native and Emscripten
 checks separate, using the selected development environment consistently.
 
 **Reason:** Editing Rust source does not update the extension imported by Python
 tests. The [build/install/test dependencies](../../../Makefile) prevent those
-tests from ordinarily exercising an older installed extension. Native and Web
+tests from ordinarily exercising an older installed extension. Native and web
 builds select different code, dependencies, and linking options; checking one
 target does not establish the other. These routes do not replace browser
 interaction or device checks.
@@ -102,14 +102,16 @@ because it exists, nor should it be split into helpers only to enable mocking.
 
 ### Interface and documentation expectations
 
-**Decision:** Use executable Python API cases and
-[type-checker cases](../../../python/tests/test_stub_compatibility.py) to verify
-the behavior and type help callers use. Keep
-[generator tests](../../../python/tests/test_generate_docs.py) focused on
-meaningful conversion results, such as preserved link pairs and literal text.
-Do not freeze the entire API as a generated inventory or pin editorial wording,
-document counts, workflow text, or promotional image layout as substitutes for
-checking their meaning or actual output.
+**Decision:** Use executable Python API cases and [type-checker
+cases](../../../python/tests/test_stub_compatibility.py) to verify the behavior
+and type help callers use. Check that the signatures in the API reference data
+agree with the stub signatures through an automated comparison; a mismatch is a
+data defect, not a wording question for reviewers. Keep [generator
+tests](../../../python/tests/test_generate_docs.py) focused on meaningful
+conversion results, such as preserved link pairs and literal text. Do not freeze
+the entire API as a generated inventory or pin editorial wording, document
+counts, workflow text, or promotional image layout as substitutes for checking
+their meaning or actual output.
 
 **Reason:** A large source snapshot can reject a harmless representation change
 while missing a broken setter or accepted call. Conversely, exact exception
@@ -118,19 +120,20 @@ choice does not weaken those comparisons. Assertions derived from extracted
 source can be useful when they execute that source against independent expected
 behavior, but source text alone does not establish another platform's execution.
 
-### Exact results, numerical tolerances, and audio timing
+### Numerical tolerances and audio timing
 
-**Decision:** Pin deterministic discrete results and exact-output contracts
-exactly. Use tolerances for floating-point geometry when the calculation's
-precision justifies them. An envelope test must not accept either endpoint
-merely to pass.
+**Decision:** Use tolerances for floating-point geometry when the calculation's
+precision or algorithm justifies them. State the numerical basis where a
+tolerance is defined for reuse, at a helper or a constant; an inline tolerance
+beside the compared quantities needs no separate statement. Record the source
+of nondeterminism at a test that accepts alternative results. An envelope test
+must not accept either endpoint merely to pass.
 
 **Reason:** Those alternatives would hide an unresolved expectation. In
 contrast, `play_pos()` queried during live audio playback can depend on callback
 timing, so alternative results may be valid when that timing is the reason.
 A headless calculation does not gain the same allowance merely because it
-belongs to the audio subsystem. Record the source of nondeterminism or the
-numerical basis of a tolerance at the test that needs it.
+belongs to the audio subsystem.
 
 Live playback range checks establish that playback remains active within its
 loop after seeking. They do not establish the exact seek offset; detached

@@ -41,7 +41,6 @@ struct MotionPlayer {
 
 // Cache child wrappers so user-defined Node subclasses retain their Python
 // identity and on_update/on_draw overrides throughout the scene tree.
-
 #[pyclass(module = "pyxel.cube", unsendable, from_py_object, subclass)]
 pub struct Node {
     pub(crate) inner: pyxel::cube::RcNode,
@@ -686,8 +685,8 @@ impl Node {
     fn on_destroy(&self) {}
 
     // Drawing state
-
     // PyO3 requires instance receivers; these setters use the active draw context.
+
     #[allow(clippy::unused_self)]
     fn dither(&self, alpha: f32) {
         with_draw_context(|ctx| {

@@ -70,7 +70,7 @@ test("loadFromGist rejects a missing truncated file before reading its body", as
 
 test("loadFromGitHub fetches a commit but keeps the source ref in share URLs", async () => {
   let requestedUrl;
-  let sharedSource;
+  let sharedUpdate;
   const context = {
     encodeUrlPath,
     fetch: async (url) => {
@@ -87,7 +87,7 @@ test("loadFromGitHub fetches a commit but keeps the source ref in share URLs", a
       path: "apps/demo#preview?.zip",
     }),
     updateShareUrl: (param, value, ref, sha) => {
-      sharedSource = { param, value, ref, sha };
+      sharedUpdate = { param, value, ref, sha };
     },
   };
   const loadFromGitHub = loadNamedFunction(
@@ -101,7 +101,7 @@ test("loadFromGitHub fetches a commit but keeps the source ref in share URLs", a
     requestedUrl,
     "https://raw.githubusercontent.com/example/game/0123456789abcdef0123456789abcdef01234567/apps/demo%23preview%3F.zip",
   );
-  assert.deepEqual(sharedSource, {
+  assert.deepEqual(sharedUpdate, {
     param: "github",
     value: "example/game/main/apps/demo#preview?",
     ref: "main",
@@ -112,7 +112,7 @@ test("loadFromGitHub fetches a commit but keeps the source ref in share URLs", a
 test("loadFromGitHub keeps a compact ref when SHA lookup is unavailable", async () => {
   let preferredRef;
   let requestedUrl;
-  let sharedSource;
+  let sharedUpdate;
   const context = {
     encodeUrlPath,
     fetch: async (url) => {
@@ -135,7 +135,7 @@ test("loadFromGitHub keeps a compact ref when SHA lookup is unavailable", async 
       };
     },
     updateShareUrl: (param, value, ref, sha) => {
-      sharedSource = { param, value, ref, sha };
+      sharedUpdate = { param, value, ref, sha };
     },
   };
   const loadFromGitHub = loadNamedFunction(
@@ -153,7 +153,7 @@ test("loadFromGitHub keeps a compact ref when SHA lookup is unavailable", async 
     requestedUrl,
     "https://raw.githubusercontent.com/example/game/main/apps/demo.zip",
   );
-  assert.deepEqual(sharedSource, {
+  assert.deepEqual(sharedUpdate, {
     param: "github",
     value: "example/game/main/apps/demo",
     ref: "main",

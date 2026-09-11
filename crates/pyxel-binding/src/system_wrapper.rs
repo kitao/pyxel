@@ -79,14 +79,15 @@ fn init(
                 locals.set_item("orig_argv", &orig_argv)?;
                 locals.set_item("window_state", &window_state)?;
                 locals.set_item("window_state_env", pyxel::WINDOW_STATE_ENV)?;
+                locals.set_item("watch_state_file_env", pyxel::WATCH_STATE_FILE_ENV)?;
+                locals.set_item("watch_reset_exit_code", pyxel::WATCH_RESET_EXIT_CODE)?;
 
                 py.run(
                     c"
 import os, subprocess, sys
 
-# 0x52 = WATCH_RESET_EXIT_CODE in settings.rs, checked by cli.py watch mode
-if os.environ.get('PYXEL_WATCH_STATE_FILE'):
-    os._exit(0x52)
+if os.environ.get(watch_state_file_env):
+    os._exit(watch_reset_exit_code)
 
 if sys.platform == 'darwin':
     # Silence child stderr while the parent process is being replaced.

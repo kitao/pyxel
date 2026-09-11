@@ -95,6 +95,13 @@ class TestBltm:
         drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
         assert drawn == 4
 
+    def test_bltm_scale_skips_tiles_outside_the_image(self):
+        pyxel.cls(3)
+        pyxel.tilemaps[0].cls((255, 255))
+
+        pyxel.bltm(0, 0, 0, 0, 0, 8, 8, scale=2)
+        assert pyxel.pget(4, 4) == 3
+
 
 class TestBlt3d:
     def test_blt3d_with_image_instance(self):

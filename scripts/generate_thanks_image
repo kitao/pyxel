@@ -207,10 +207,7 @@ def draw_message_image(thanks_image):
 
     message_pad_image = PIL.Image.new(
         "RGB",
-        (
-            MESSAGE_PAD_WIDTH,
-            MESSAGE_PAD_HEIGHT,
-        ),
+        (MESSAGE_PAD_WIDTH, MESSAGE_PAD_HEIGHT),
         (0, 0, 0),
     )
     thanks_image.paste(message_pad_image, (MESSAGE_PAD_X, MESSAGE_PAD_Y))

@@ -137,14 +137,12 @@ impl BgmData {
 }
 
 // Structural constants
-
 const BARS: usize = 8;
 const STEPS_PER_BAR: usize = 16;
 const TOTAL_STEPS: usize = BARS * STEPS_PER_BAR;
 const PRESET_COUNT: usize = 8;
 
 // Preset parameter table
-
 const PRESETS: [GeneratorParams; PRESET_COUNT] = [
     GeneratorParams {
         transpose: 0,
@@ -269,7 +267,6 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
 ];
 
 // Tone and drum tables
-
 const TONE_CANDIDATES: [usize; 6] = [11, 8, 2, 10, 6, 4];
 const BASS_TONE_IDX: usize = 7;
 const DRUM_TONE_IDX: usize = 15;
@@ -309,7 +306,6 @@ const DRUM_NOTES_6: [i32; 9] = [27, 25, 24, 23, 22, 21, 20, 19, 18];
 const DRUM_NOTES_7: [i32; 9] = [33, 31, 30, 29, 28, 27, 26, 25, 24];
 
 // Pattern tables
-
 // 16-step bass patterns:
 // '.' = Hold previous note, '0' = Rest/stop, '1'..'4' = Degree selector
 const BASS_PATTERNS: [(&str, &str); 8] = [

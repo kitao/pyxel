@@ -4,359 +4,276 @@ The [Design Policy](design-policy.md) defines the governing standards.
 [Decision records](#decision-records) specify concrete choices under those
 standards, with their rationale and affected subjects. This procedure defines
 how to select and verify those decisions, update them when warranted, and check
-the candidate against them and the policy without omissions.
+a candidate against them and the policy without omissions.
 
 It is written for AI auditors and can also be followed by human reviewers. Read
-the policy and the decisions relevant to the assigned scope. Fix the inputs,
+the policy and the decisions relevant to the assigned scope, fix the inputs,
 derive coverage before judging compliance, and resolve disagreements from
-evidence so repeated audits do not drift with the auditor's interpretation. If
+evidence, so repeated audits do not drift with the auditor's interpretation. If
 the procedure or a decision contradicts the policy, resolve the conflict through
 [revision review](#revisions-to-governing-documents) before applying the affected
 criteria.
 
-## Scope
+## Modes
 
-Run an exhaustive audit when explicitly requested and before a release tag. The
-[command requirements](#commands-and-expected-pairs) apply to ordinary changes
-as well as exhaustive audits, according to their triggers. The complete
-coverage, version-2 records, independent review, and completion procedure are
-required for an exhaustive audit. Call narrower work a targeted review, fix
-pass, or gate check; use the decision-selection and evidence steps for its
-stated scope.
+| Mode | When | Required |
+| --- | --- | --- |
+| Gate check | Every change | The [triggered commands](#commands) |
+| Targeted review | Every change other than formatter output or regenerated artifacts | Gate check; decision selection for the changed files and their relations; a [findings record](#audit-records) |
+| Exhaustive audit | Before a release tag, or when explicitly requested | Complete coverage, the full record set, and independent review |
 
-When revising the policy, procedure, or decision records, apply the
-[revision review](#revisions-to-governing-documents) before relying on the
-revised criteria. Also require [independent review](#4-review-independently)
-for governing-document revisions and audit corrections that apply a shared
-interpretation across multiple files, limited to the affected obligations and
-families.
+Call narrower work by its mode. Work without its record is not a completed
+review of that mode. Previous reviews can suggest probes, but their verdicts do
+not establish current compliance.
 
-Cover every applicable file, rule, relation, hot path, and verification
-command. Derive what must be checked before deciding whether it passes.
-Previous reviews can suggest probes, but their verdicts do not establish
-current compliance.
-
-## 1. Prepare and Freeze
-
-### Select and Review Decisions
+## 1. Select and Resolve Decisions
 
 Derive the review topics and their complete affected families from the policy
-and the requested source scope, including unchanged files and embedded content.
-Existing decisions do not define the universe of choices that need review.
+and the requested scope, including unchanged files, generated outputs,
+translations, tests, and embedded content. Existing decisions do not define the
+universe of choices that need review.
 
-Then use the [decision index](#decision-records) to locate relevant records and
-inventory the entries in `design-decisions/` by file and section. Read their
-scope to select the entries relevant to the requested audit, including shared
-interfaces and dependencies. Account for every entry as selected or outside the
-scope with a reason; an exhaustive repository audit selects them all. Check
-that every decision file is present in the file index; derive its entries from
-the file itself so an unlisted entry cannot disappear.
-
-Preserve the evidence gathered here using the
-[audit record conventions](#audit-records).
-
-For each selected entry, identify its concrete choices and boundaries,
-governing policy rules, evidence, and complete affected family. In the primary
-review, review the rationale once for that family, then verify its application
-across all members. Assign shared entries explicitly and share their evidence;
-each auditor need only read the decisions and policy sections governing the
-assigned scope.
-
-Work through each source-derived topic across its family, using the reviewed
-records and resolving missing or conflicting choices under the policy. Settle
-the topic's distinctions and uncovered cases together rather than accumulating
-unrelated local edits.
+Use the [decision index](#decision-records) to locate relevant records and read
+the applicable entries with their referenced dependencies. Account for every
+entry as selected or outside the scope with a reason; an exhaustive audit
+selects them all. Check that every decision file appears in the index, and
+derive the entries from the files themselves so an unlisted entry cannot
+disappear. Review an entry's rationale once for its family, then verify its
+application to every member; settle a topic's distinctions and uncovered cases
+across the family rather than accumulating unrelated local edits.
 
 Check in both directions: from decisions to all affected subjects, and from
 candidate files and relationships to the decisions or policy rules that govern
-them. This finds stale or incomplete decision scopes as well as choices missing
-from the records. Inspect source, released contracts, and original maintainer
-decisions; neither the current implementation nor an earlier verdict proves the
-choice correct. When inspection cannot settle a premise, use a bounded
-reproduction or provisional implementation to compare concrete alternatives.
-Treat that work as evidence, not an adopted decision. Resolve the choice and
-its affected family before including the change in the candidate; a full test
-run does not decide what the contract should be.
+them. Inspect source, released contracts, and original maintainer decisions;
+neither the current implementation nor an earlier verdict proves a choice
+correct. When inspection cannot settle a premise, use a bounded reproduction to
+compare concrete alternatives, and treat it as evidence rather than an adopted
+decision. Resolve the choice and its affected family before including the change
+in the candidate; a passing test run does not decide what the contract should
+be.
 
-### Resolve and Update Decisions
+When a choice is missing, conflicting, or unsupported, consult the governing
+policy. These conditions justify proposing a revision through the
+[revision procedure](#revisions-to-governing-documents), not adopting it:
 
-Consult the governing policy when a choice is missing, conflicting, or
-unsupported. The following conditions justify proposing a revision, not adopting
-it; use the [revision procedure](#revisions-to-governing-documents) for any change
-to a governing document:
+- Correct an entry when its premise was mistaken, evidence was overlooked, its
+  scope conflates distinct cases, or an adopted contract change makes it stale.
+  Correcting a misreading needs no accompanying source change.
+- Add an entry when a concrete choice needs rationale beyond a direct
+  application of the policy and recording it will prevent repeated
+  interpretation or keep an affected family consistent. Do not record every
+  mechanical correction, and do not record the groups or stages of one file or
+  function; those belong to the code and its headings. When a source comment
+  already states the local rationale and the policy settles the case, keep the
+  inspection result in the audit records instead of adding an entry.
+- Consolidate duplicate or conflicting entries at their owning policy section,
+  preserving meaningful distinctions and updating affected references.
+- Keep a supported decision when the candidate violates it; correct the
+  candidate. Preference alone justifies neither a finding nor a new decision.
 
-- Correct an existing entry when its premise was mistaken, evidence was overlooked,
-  its scope conflates distinct cases, or an adopted contract change makes it stale.
-  No new source change is needed to correct an earlier misreading.
-- Add an entry when a concrete choice needs rationale beyond a direct application
-  of the policy, and recording it will prevent repeated interpretation or keep an
-  affected family consistent. Do not record every mechanical correction.
-- Consolidate duplicate or conflicting entries at their owning policy section
-  and language. Preserve meaningful distinctions and update affected references.
-- Keep a supported decision when the candidate violates it; correct the candidate.
-  Preference alone justifies neither a finding nor a new decision. Do not change
-  the policy or invent an exception to accommodate a local implementation.
-
-Each entry states the applicable scope and conditions, the resulting choice,
-and sufficient rationale, with references that let a reviewer inspect its basis.
-Use examples to clarify those conditions, not to substitute for them. If the
-source comment already states the complete local rationale and the policy
-directly settles its placement, keep the inspection result in the audit records
-rather than duplicating it as another decision.
+Each entry states the applicable scope and conditions, the resulting choice, and
+sufficient rationale with references that let a reviewer inspect its basis,
+using examples to clarify those conditions rather than to substitute for them.
 Specify the required form independently of the candidate's current form or diff;
-whether a correction is needed is an application result, not the decision.
-Preserve original maintainer answers and historical evidence in the audit
-records; keep incident narratives and the sequence of past reversals out of the
-decision's explanation. Resolve public-contract changes or unresolved
-specifications with the maintainer under the policy before making dependent
-changes.
+whether a correction is needed is an application result, not the decision. For
+terminology and orthography, the required form comes from the language's
+standard or a recorded convention; how often a form already occurs is not
+evidence.
+Preserve original maintainer answers in the audit records; keep incident
+narratives out of the decision's explanation. Resolve public-contract changes or
+unresolved specifications with the maintainer under the policy before making
+dependent changes.
 
-### Apply and Freeze the Candidate
+## 2. Prepare the Candidate
 
-Before adopting a correction into the candidate, establish why it follows from
-the reviewed decisions and policy, including intended distinctions between
-comparable sites. During candidate preparation, use targeted checks that can
-establish the property being changed. Run the complete triggered gates on the
-settled candidate; repeat them when changed inputs or unresolved failures
-require it, rather than after every intermediate formatting adjustment.
+Before adopting a correction, establish why it follows from the reviewed
+decisions and policy, including intended distinctions between comparable sites.
+Use targeted checks that can establish the property being changed, then run the
+complete triggered gates on the settled candidate; repeat them when changed
+inputs or unresolved failures require it, rather than after every intermediate
+adjustment.
 
-Apply supported corrections, complete the required
-[formatting and generation](#commands-and-expected-pairs), then freeze the
-candidate using the [audit record format](#audit-records):
+### Commands
 
-- Start with `git ls-files` and intended additions. Inventory every present path with
-  origin (`tracked` or `intended`), Git mode, and content hash, including files
-  later excluded from direct review. Hash symlink target bytes and gitlink commit
-  IDs. Missing sparse-checkout or skip-worktree files block the freeze.
-- Use the previous release commit as the base for a release audit. Otherwise use
-  the requested base, the merge base with the configured upstream, or `HEAD` if
-  no upstream exists. Record full commit IDs and every candidate change.
-- Capture the policy, procedure, and decision files with the
-  candidate. Write the target and complete diff before planning checks.
-
-The target is immutable within a run. Any change to its files, intended file
-set, policy, procedure, or decision records starts a new run; preserve the
-previous run and findings. Evidence-only changes may stay in the run, but
-invalidate every dependent result and review. Recheck those inputs rather than
-carrying stale verdicts forward.
-
-## 2. Plan Coverage
-
-Build and validate [`plan.json`](#audit-records) from the policy and
-inventories before recording results. Give each criterion and subject a stable
-identifier within the plan.
-
-### Criteria and Subjects
-
-- Extract every top-level policy rule and normative introductory paragraph as a
-  criterion with its source span and full obligation. Nested authoritative lists
-  belong to their parent. Account for all normative text; examples and headings
-  neither add criteria nor limit their applicability.
-  Decision records supply concrete requirements and rationale under those
-  criteria. Include their applicable choices in the checks; they cannot override
-  the governing policy.
-- Map every non-blank policy line in the plan to its criterion, an example of a
-  criterion, or non-normative structure. Explain structural classifications so
-  an omitted requirement cannot disappear from the coverage check.
-- Bind the decision inventory to the frozen files. Map every selected choice and
-  boundary to its policy criteria, affected subjects, and expected checks. Include
-  requirements expressed in tables or explanatory paragraphs, not just text
-  labeled `Decision`. An unmapped choice remains pending.
-- Assign applicable subject types: file, relation, hot path, process, or command.
-  Use a process subject for obligations without a narrower subject, including
-  maintenance of the standards and verification process.
-- Inventory every git-tracked file and intended addition. Files marked `binary`
-  by `.gitattributes` receive no direct text-style review. Exclude the following
-  generated or tool-maintained files from direct style review as well:
-  - `*.tmx` and `*.bdf`;
-  - `Cargo.lock` and `*-lock.json`;
-  - `web/styles.css`;
-  - Markdown whose first line begins with `<!-- This file is generated`.
-  These exclusions do not remove the policy's dependency checks. Record each
-  classification and preserve the complete target inventory.
-- Included files have a path role and all applicable content roles: source, test, prose,
-  translation, release notes, policy, configuration, and structured data.
-  Derive overlapping roles from contents, not file extensions.
-- For each file criterion, define its selector over those roles and apply it to
-  the complete inventory. Add a routing check to prove selection completeness.
-  Selection does not establish compliance. Keep excluded files in the dependency
-  checks required by the policy.
-
-Inventory relations by kind, family, full membership, governing criteria, and
-source evidence for their selection. Cover all policy-governed relationships:
-sibling conventions; public interfaces and their implementations; translations;
-exception groups; changes and dependent tests, documentation, release notes,
-generated outputs, and distributed artifacts; and the standards and their
-verification. Derive sibling groups from directory, naming pattern, and shared
-role; a file may belong to several families. Map applicable decision records to
-these subjects using the reviewed scope and implementation references,
-including affected interfaces and dependencies. For a subject with no decision
-entry, identify its direct policy basis or the unresolved choice; absence is
-neither an exemption nor evidence of compliance.
-
-Inventory every implementation surface of these performance-sensitive families,
-with entry points and concrete cost risks:
-
-- per-pixel blits and primitive drawing;
-- per-pixel 3D rasterization and shading;
-- per-sample voice synthesis;
-- per-frame MML and BGM voice updates;
-- per-frame 3D collision and BVH queries;
-- PyO3 argument marshaling and return paths;
-- SIMD and multi-threaded sections.
-
-An absent family needs repository-wide evidence of its absence. Extend this
-inventory when measurements establish another performance-critical family; the
-list does not limit the policy's performance-review obligation.
-
-### Commands and Expected Pairs
-
-Use mechanical checks where possible. List each required or targeted command
-with its identifier, governing policy rule, invocation, working directory, and
-trigger. These requirements also apply outside an exhaustive audit:
+These requirements apply to every mode:
 
 | Trigger | Required action |
 | --- | --- |
 | Code or formatter-managed document changes | Run `make format` after the changes and before committing them. |
 | Changes affecting lint inputs or configuration, or an exhaustive audit | Run `make lint` and `make lint-wasm` warning-free. Clippy warnings fail the check; each suppression needs a specific justification. |
-| Code changes | Run `make test` before claiming completion. |
+| Code changes | Run `make test` before claiming completion; when it stops at an earlier suite, run the remaining recipe lines of `make test` before claiming their result. |
 | Documentation or structured-data changes | Run applicable parsers, generators, consistency checks, and `git diff --check`. Verify generation at its source; do not hand-edit output. |
 | Base-stub docstring changes | Edit the source data and regenerate with `scripts/generate_pyi_docstrings`. |
 | Changes affecting generated or distributed artifacts | Regenerate them and verify their required correspondence with the source. |
 
-Every automated test must be included in `make test`.
+Every automated test must be included in `make test`. Investigate failures, and
+fix or remove tests that do not establish their claimed protection. In a
+targeted review or exhaustive audit, record each command with its trigger,
+governing rule, invocation, working directory, exit status, and log. A failed
+command and an unrun command both fail their check, and an environment blocker
+is recorded as such. A successful command proves only its specific obligation.
 
-Derive additional targeted checks from the frozen diff and decision mappings.
-Record manual cases and expected observations as process subjects. Investigate
-failures, fix or remove tests that do not establish their claimed protection,
-and report unrun checks with their blockers rather than treating them as
-passing.
+### Freezing an exhaustive audit target
 
-Derive exactly one expected pair for each applicable criterion and subject,
-including routing, relation, process, hot-path, and command checks. A declared
-subject type with no instance requires an absence check; it passes only when
-absence satisfies the rule. Missing selection or membership evidence remains
-pending. A local file check never replaces a relation check.
+For an exhaustive audit, freeze the target before planning: inventory every
+tracked path and intended addition with its origin, Git mode, and content hash
+(symlink target bytes, gitlink commit IDs); a sparse or skip-worktree checkout
+blocks the freeze. Record the full base and head commits and the complete
+base-to-candidate diff, and capture the policy, procedure, and decision files
+with the candidate. Use the previous release commit as the base for a release
+audit; otherwise the requested base, the merge base with the configured
+upstream, or `HEAD`. The target is immutable within a run; any change to its
+files, intended file set, or governing documents starts a new run and preserves
+the previous records. Evidence-only additions may stay in the run but invalidate
+every dependent result, which is rechecked rather than carried forward.
+
+## 3. Plan Coverage
+
+Build the plan from the policy and the inventories before recording results,
+giving each criterion and subject a stable identifier.
+
+- Criteria are the policy sections: each top-level rule and normative
+  introductory paragraph belongs to its section's criterion with its source
+  span. Account for every non-blank policy line as a criterion, an example of
+  one, or non-normative structure, so an omitted requirement cannot disappear;
+  an example does not limit the applicability of its rule.
+  Decision entries supply concrete requirements under those criteria, including
+  requirements expressed in tables and explanatory paragraphs, and cannot
+  override the policy.
+- Subjects are files, relations, hot paths, processes, and commands. Inventory
+  every tracked file and intended addition with its path role and all applicable
+  content roles: source, test, prose, translation, release notes, policy,
+  configuration, and structured data, derived from contents rather than
+  extensions. Files marked `binary` by `.gitattributes`, `*.tmx`, `*.bdf`,
+  `Cargo.lock`, `*-lock.json`, `web/styles.css`, and Markdown beginning `<!--
+  This file is generated` receive no direct text-style review; they keep their
+  dependency checks. Define each criterion's selector over those roles, apply it
+  to the complete inventory, and record the routing; a routing check verifies
+  that every file received every applicable criterion; selection does not
+  establish compliance. Use a process subject for obligations without a narrower
+  subject, including manual cases with their expected observations and
+  maintenance of the standards themselves.
+- Relations cover every policy-governed relationship: sibling conventions;
+  public interfaces and their implementations, stubs, reference data, and
+  generated descriptions; translations; error families; changes and their
+  dependent tests, documentation, release notes, generated outputs, and
+  distributed artifacts; and the standards and their verification. Derive
+  sibling families from directory, naming pattern, and shared role; a file may
+  belong to several families. A subject with no decision entry needs its direct
+  policy basis or its unresolved choice identified; absence is neither an
+  exemption nor evidence of compliance. Prefer a mechanical relation check where
+  one exists or can be added to `make test`.
+- Hot paths are the performance-sensitive families, inventoried with their entry
+  points and concrete cost risks: per-pixel blits and primitive drawing;
+  per-pixel 3D rasterization and shading; per-sample voice synthesis; per-frame
+  MML and BGM voice updates; per-frame 3D collision and BVH queries; PyO3
+  argument marshaling and return paths; SIMD and multi-threaded sections. An
+  absent family needs repository-wide evidence of its absence, and measurements
+  can extend the list.
+- Expected pairs: one check for each applicable criterion and file, the routing
+  check, one for each relation and its governing criteria, one for each hot
+  path, one for each process obligation, and one for each command. Map the
+  selected decision entries onto those pairs; an entry mapped to no pair remains
+  pending. A declared subject type with no instance requires an absence check,
+  and a file check never replaces a relation check.
+
+For a targeted review, the plan is the list of changed files, their relations,
+and the decision entries selected for them; record it in the findings record.
 
 For delegated work, supply the policy, procedure, relevant decision records,
-the frozen target, complete inventories, assigned pairs, and dependencies. The
-lead validates every returned result and its evidence and resolves
-disagreements from the source. Delegated summaries replace neither records nor
-independent review.
+the frozen target, inventories, assigned pairs, and dependencies. The lead
+validates every returned result and its evidence and resolves disagreements
+from the source; delegated summaries replace neither records nor independent
+review.
 
-## 3. Inspect and Verify
+## 4. Inspect and Verify
 
-Inspect every selected source and relation directly. Record
-[one result](#audit-records) for each expected pair:
+Inspect every selected subject and relation directly, and record one result per
+expected pair: `pass` when evidence establishes the obligation, `fix` when a
+specific obligation is violated, or `pending` when evidence, execution, or a
+required decision is unresolved. Applicability was settled in the plan; there is
+no `not applicable` verdict. Generated records preserve individual judgments and
+their evidence; a missing judgment remains `pending`.
 
-- `pass`: evidence establishes the obligation;
-- `fix`: a specific obligation is violated;
-- `pending`: evidence, execution, or a required decision is unresolved.
-
-Applicability was settled in the plan; there is no `not applicable` verdict.
-Apply the policy to the source and comparable subjects. Never create an
-exception to close a finding or treat an unexplained difference as a defect.
-
-Each result states the expected property, what was inspected and observed,
-and why the verdict follows. A generic assurance or evidence about another
-property does not establish compliance. Record generation must preserve
-individual judgments and their evidence; missing judgments remain `pending`.
-Relation checks identify peers and dependencies; performance checks include
-measurement or executed-path analysis. Defects identify the violated rule,
-affected source or record, and concrete correction. Evidence chains end in frozen source, the
-target inventory or diff, recorded decisions or historical evidence, or current
-command logs, without cycles. Historical evidence establishes past behavior or
-intent; current compliance still requires inspection of the frozen target.
+Each result states the expected property, what was inspected and observed, and
+why the verdict follows, identifying the decision choices and boundaries
+applied. A generic assurance, evidence about another property, a count, or a
+search result does not establish compliance. Relation checks identify peers and
+dependencies; performance checks include measurement or executed-path analysis;
+manual cases record what was exercised and observed, separately from automated
+results. Defects identify the violated rule, the affected source or record, and
+the concrete correction. Evidence chains end in frozen source, the target
+inventory or diff, recorded decisions or historical evidence, or current command
+logs, without cycles. Historical evidence establishes past behavior or intent;
+current compliance still requires inspection of the frozen target.
 
 Check changed implementation, documentation, and tests against the contract
 under the policy, including defaults, accepted inputs, and intended differences
-between surfaces. Agreement among edited files does not establish correctness.
-Each result identifies the applicable decision choices and boundaries and
-states whether they are satisfied, violated, or unresolved, and why. If
-inspection undermines a decision, return to
-[Resolve and Update Decisions](#resolve-and-update-decisions) and apply the
-run-invalidation rules. When judgments differ, record the interpretations and
-resolve them from the governing policy and evidence; repeating the audit or
-taking a majority vote does not resolve the disagreement.
+between surfaces; agreement among edited files does not establish correctness.
+If inspection undermines a decision, return to [decision
+resolution](#1-select-and-resolve-decisions) and apply the new-run rules.
 
-For comments, inspect interface summaries, definition-group headings, and local
-explanations separately. Check the members a heading actually describes, its
-position, and its vocabulary against the complete peer family. Distinguish a
-missing responsibility group from a self-contained declaration that needs no
-extra label. Reviewing only edited comments does not establish these properties.
+Read one file once for all of its criteria rather than once per criterion, and
+record the verdicts together; a result names the rules of its section that it
+applied, and a `fix` names the violated rule. For comments, inspect interface
+summaries, definition-group headings, and local explanations against the
+complete peer family, checking the members a heading describes, its position,
+and its vocabulary; reviewing only edited comments does not establish these
+properties. For release notes, verify each independent change against the code
+diff from the previous release under the adopted entry scope and presentation.
+For layout-only corrections, compare non-blank source, comments, and literal
+contents, and check whitespace inside embedded programs, markup, or data
+according to its consuming language; blanket whitespace removal is not evidence
+of equivalent behavior, and these preservation checks stay distinct from the
+review of readability and grouping.
 
-For release notes, verify each independent change against the code diff from
-the previous release and apply the adopted entry scope and presentation.
+Never create an exception to close a finding or treat an unexplained difference
+as a defect. When judgments differ, record the interpretations and resolve them
+from the governing policy and evidence; a non-deterministic rule is escalated to
+the maintainer, not settled by repetition or majority. Compare inspection depth
+across subject families: finding counts need not match, but a family with no
+findings still needs evidence of comparable inspection, and unexplained
+imbalance remains pending.
 
-For layout-only corrections, compare non-blank source, comments and literal
-contents, and use applicable parsed or structural checks. Check whitespace
-inside embedded programs, markup or data according to its consuming language;
-blanket whitespace removal is not evidence of equivalent behavior. Keep these
-preservation checks distinct from the review of readability and grouping.
+## 5. Review Independently
 
-Run every triggered command and preserve its output. Record failed commands
-with exit status and unrun commands with their blockers; neither passes. Record
-what manual cases actually exercised and observed, separately from automated
-results. A successful command proves only its specific obligation. Counts,
-search results, and summaries do not substitute for direct inspection.
+An exhaustive audit, any governing-document revision, and a correction that
+applies one shared interpretation across several files require a reviewer who
+did not produce the primary records; for a revision or such a correction, the
+review is limited to the affected obligations and families, and a correction's
+review is appended to the findings record. The reviewer first derives criteria,
+subjects, expected pairs, and coverage comparisons from the frozen policy,
+decision records, and source without opening the primary plan or verdicts;
+verifies the inventory against tracked paths, intended additions, and deletions;
+checks the decision-entry inventory and the mapping in both directions; inspects
+each expected pair and records a verdict with its basis; and only then compares
+coverage and judgments with the primary records. For corrections under existing
+standards, establish both the violation in the previous source and the
+compliance of the result.
 
-Compare inspection depth across every criterion and subject family and their
-applicable peers; identify the comparisons and evidence, or justify the absence
-of peers. Finding counts need not match. A family with no findings still needs
-evidence of comparable inspection. Unexplained imbalance remains pending.
-
-## 4. Review Independently
-
-A reviewer who did not produce the primary records first derives
-[criteria, scope](#2-plan-coverage), subjects, expected pairs, and coverage
-comparisons from the frozen policy, decision records, and source, without
-opening the primary plan, verdicts, or findings. Verify the inventory against
-tracked paths, intended additions, and deletions. Independently check the
-decision-entry inventory, each choice's coverage, and the reverse mapping from
-subjects to decisions or direct policy rules. Independently inspect each
-expected pair and record its verdict and basis before reading the primary
-judgments. For corrections under existing standards, establish both the
-violation in the previous source and compliance of the result, preserving
-justified differences. Then compare
-coverage and judgments with the primary records and review every result and
-its evidence.
-
-Validate [required fields](#audit-records), references, evidence chains,
-hashes, command outcomes, coverage balance, and exact expected sets. Check
-logical keys as well as IDs: rule spans for criteria; paths for files; kind and
-family for other subjects; working directory, invocation, and trigger for
-commands; criterion/subject pairs for checks. Renaming an ID cannot conceal
-duplication or omission.
-
-Record a verdict and rationale for each reviewed check and coverage comparison,
-and explicit results for expected-set comparisons and record validation.
-Correct all actionable findings, regardless of severity. Apply the new-run and
-evidence invalidation rules after corrections. Without an independent reviewer,
-the work requiring that review remains pending.
-
-Checks of independent review itself remain pending until that work is done.
-Preserve the reviewed submission and record the completed review against it;
-use that evidence to resolve those checks. Independently review the resulting
-record changes before completion. This keeps the evidence chain acyclic
-without assuming a review's own result or omitting its completion checks.
+Validate required fields, references, evidence chains, hashes, command outcomes,
+coverage balance, and exact expected sets, checking logical keys as well as
+identifiers (rule spans for criteria, paths for files, kind and family for other
+subjects, trigger, invocation, and working directory for commands, and the
+criterion and subject of each check) so that renaming an identifier cannot
+conceal duplication or omission. Correct all actionable findings regardless of
+severity, apply the new-run rules after corrections, and record the completed
+review against the reviewed submission; the review's own checks remain pending
+until that work is done, and the resulting record changes are reviewed before
+completion. Without an independent reviewer, the work requiring that review
+remains pending.
 
 ## Completion
 
-Derive [`result.json`](#audit-records) from the final records. Mark the audit
-`complete` only when:
-
-- A fresh live inventory and diff exactly match the frozen target.
-- Independently derived criteria, scope, subjects, pairs, and coverage comparisons
-  match the final records, and every expected check and review passes.
-- Every decision entry is accounted for, every selected choice and boundary has
-  passing evidence, and every subject has a decision or direct policy basis.
-- Every required command and manual case has current passing evidence, with no
-  unresolved defect, decision, or blocker.
-- All required records and logs exist; references, evidence chains, and hashes
-  validate; derived counts match the records; and validation reports no errors.
-
-Otherwise report `pending`, identify the remaining work, and preserve the
-evidence.
+Mark an exhaustive audit `complete` only when a fresh inventory and diff match
+the frozen target; every decision entry is accounted for, every selected choice
+has passing evidence, and every subject has a decision or direct policy basis;
+every expected check, command, and manual case has current passing evidence with
+no unresolved defect, decision, or blocker; the independent review passes; and
+all records validate. Otherwise report `pending` and identify the remaining
+work. A targeted review is complete when its gate check passes, its findings
+record lists every selected decision with a verdict and every finding with its
+resolution, and any independent review it requires passes.
 
 ## Revisions to Governing Documents
 
@@ -366,103 +283,78 @@ proposed layer. Correct implementation or review failures under supported
 standards. Prepare the proposal separately from the audited candidate, keeping
 current standards in force during evaluation.
 
-Before applying a policy revision, compare the proposed and current
-requirements and assess its consequences for the procedure and the complete
-body of decisions and verification. Reread the entire policy for contradictions,
-gaps, and uneven detail, and compare analogous rules and their verification.
-
-For revisions to any governing document, compare previous and revised
-requirements and record the reason and practical effect of each change. Review
-the affected obligations, choices, implementation families, and audit checks
-through [coverage planning](#2-plan-coverage) and [inspection](#3-inspect-and-verify).
-A policy revision requires reassessing the procedure and the complete body of
-decisions under the revised criteria; do not carry their earlier verdicts into
-the new audit.
-
-Exercise both known failures and valid cases against the revised rules and
-procedure, including how omissions and conflicting verdicts are detected.
-For source-layout conditions, include valid compact cases and inspect the
-complete resulting source for readability; a clean diff or formatter result
-does not establish that quality.
-Preserve earlier records with the versions they evaluated; do not rewrite them
-to fit the new rules. Revision review does not certify the repository.
+Compare the proposed and current requirements, record the reason and practical
+effect of each change, and assess the consequences for the procedure and the
+complete body of decisions and verification, reviewing the affected
+obligations, choices, implementation families, and checks through
+[coverage planning](#3-plan-coverage) and [inspection](#4-inspect-and-verify).
+Reread the entire policy for contradictions, gaps, and uneven detail, comparing
+analogous rules and their verification. Exercise both known failures and valid
+cases against the revised rules, including how omissions and conflicting
+verdicts are detected; for source-layout conditions, include valid compact cases
+and inspect the complete resulting source for readability, which a clean diff or
+formatter result does not establish. Preserve earlier records with the versions
+they evaluated; do not rewrite them to fit the new rules.
 
 Present the complete reviewed diff, its rationale, impact assessment, and
 verification evidence for explicit maintainer approval before adoption.
 Authorization to investigate or prepare a revision does not approve the
-resulting changes. A changed proposal needs renewed review and approval;
-apply only the approved diff, then follow the candidate-invalidation rules.
-Keep unresolved dependent work pending while continuing work that the current
-standards already settle.
+resulting changes; a changed proposal needs renewed review and approval. Apply
+only the approved diff, then follow the new-run rules. Keep dependent work
+pending while continuing work that the current standards already settle.
 
 ## Decision Records
 
 Use these files to locate decisions for the assigned scope. The files group
-judgments by policy area and review subject, then by the interface or language
-where that separates the work. Within a file, read the applicable entries and
-their referenced dependencies.
+judgments by policy area and review subject, then by the interface where that
+separates the work. Within a file, read the applicable entries and their
+referenced dependencies.
 
 | File | Read for |
 | --- | --- |
 | [Performance](design-decisions/source-code-performance.md) | Executed cost, numeric representations, arithmetic widths, and resource ownership |
 | [Naming](design-decisions/source-code-naming.md) | Naming families and correspondence across interfaces |
 | [Structure and formatting](design-decisions/source-code-structure-and-formatting.md) | Definition order, settings and configuration groups, and file representation |
-| [Blank lines: shared](design-decisions/source-code-blank-lines.md) | Formatting ownership, processing groups, comment boundaries, and cross-language constant catalogues |
-| [Blank lines: Python](design-decisions/source-code-blank-lines-python.md) | Python programs, embedded Python, editor construction, and tools |
-| [Blank lines: Rust](design-decisions/source-code-blank-lines-rust.md) | Rust engine and binding groups, with their directly related test cases |
-| [Blank lines: Web](design-decisions/source-code-blank-lines-web.md) | JavaScript, HTML, CSS, and Web runtime groups |
-| [Blank lines: GLSL](design-decisions/source-code-blank-lines-glsl.md) | GLSL shader declarations and calculations |
-| [Blank lines: configuration](design-decisions/source-code-blank-lines-configuration.md) | Configuration records, shell stages, and Makefile content |
-| [Blank lines: tests](design-decisions/source-code-blank-lines-tests.md) | Rust, Python, and Web test fixtures, cases, and state lifecycles |
-| [Comments](design-decisions/source-code-comments.md) | Comment forms, concise rationale, and UI interface descriptions |
+| [Blank lines](design-decisions/source-code-blank-lines.md) | Formatting ownership, processing groups, declaration inventories, comment boundaries, and the language-specific boundaries of Rust, Python, Web, GLSL, configuration, and tests |
+| [Comments](design-decisions/source-code-comments.md) | Comment forms, concise rationale, group headings, and UI interface summaries |
 | [Cross-file consistency](design-decisions/source-code-cross-file-consistency.md) | Message families, idiom exceptions, coordinate correspondence, examples, and Python node identity |
-| [Rust/Python boundary](design-decisions/public-contract-rust-python.md) | Exception conversion, resource access, and reentrant Python calls |
-| [Python contracts](design-decisions/public-contract-python.md) | Python APIs and stubs, CLI, resources, audio, editors, and Cube behavior |
-| [Web contracts](design-decisions/public-contract-web.md) | User-visible behavior of the Web tools |
-| [Distribution contracts](design-decisions/public-contract-distribution.md) | Rust crate publication, Python and Web compatibility, SDL2 linkage, wheel installation, release versions, and optional dependencies |
-| [Documentation](design-decisions/documentation.md) | Reader scope, sources, translations, typography, names, and release notes |
-| [Testing](design-decisions/testing.md) | Automated/manual coverage, numerical expectations, and audio concurrency |
+| [Rust/Python boundary](design-decisions/public-contract-rust-python.md) | Exception conversion, resource access, native failures, and reentrant Python calls |
+| [Python contracts](design-decisions/public-contract-python.md) | Python APIs and stubs, CLI, resources and capture, audio, editors, and Cube behavior |
+| [Web contracts](design-decisions/public-contract-web.md) | User-visible behavior of the web tools and compatibility routes |
+| [Distribution contracts](design-decisions/public-contract-distribution.md) | Rust crate publication, Python and web compatibility, SDL2 linkage, wheel installation, release versions, optional dependencies, and executable export |
+| [Documentation](design-decisions/documentation.md) | Reader scope, sources of generated text, organization of design documents, translations and per-language conventions, typography, names, and release notes |
+| [Testing](design-decisions/testing.md) | Automated/manual coverage, mechanical correspondence checks, numerical expectations, and audio concurrency |
 
-This is a file index, not the coverage inventory or a list of supported
-languages. Shared source choices also apply to JavaScript, HTML, CSS, shaders,
-and other source or configuration formats where relevant. A file containing
-markup, scripts, and user-facing prose can require several decision files.
-Unrecorded choices still require review under the policy; derive entry coverage
-from the actual decision files through [coverage planning](#2-plan-coverage).
+This is a file index, not the coverage inventory. Shared source choices also
+apply to JavaScript, HTML, CSS, shaders, and other source or configuration
+formats where relevant, and a file containing markup, scripts, and user-facing
+prose can require several decision files. Unrecorded choices still require
+review under the policy.
 
 ## Audit Records
 
-Keep each run outside the target file set and identify it by a portable run
-name or relative reference in the final report. Use UTF-8 JSON or JSONL,
-ordinary JSON escaping, unique identifiers, and record format version 2.
-Earlier formats remain historical records.
+Keep each run outside the target file set, identify it by a portable run name in
+the final report, and use UTF-8 JSON or JSONL with ordinary escaping and unique
+identifiers.
 
-| Record | Required content |
-| --- | --- |
-| `target.json` | Format version, branch, base and head commits, file inventory, and hash of `changes.patch`. |
-| `changes.patch` | Complete base-to-candidate diff, including intended additions, deletions, modes, and binary changes. |
-| `plan.json` | Target hash, criteria, decision inventory and mappings, scope decisions, subjects, commands, and expected criterion/subject pairs. |
-| `checks.jsonl` | One result per expected pair: criterion, subject, verdict, rationale, evidence references, defect, and proposed correction. |
-| `commands.jsonl` | Identifier, target and plan hashes, exact invocation, working directory, tool/environment details, exit status, and raw-log reference. |
-| `review.json` | Reviewer identity, input hashes, independently derived expected sets and judgments, comparisons, review of every check, coverage balance, and record validation. |
-| `result.json` | Input hashes, derived counts, unresolved defects and blockers, validation results, preceding runs, and completion status. |
+| Record | Used in | Required content |
+| --- | --- | --- |
+| `findings.md` | Targeted review | Changed files and relations, the selected decision entries with verdicts, each finding with its correction or pending reason, each gate command with its trigger, governing rule, invocation, working directory, exit status, and log, and any required independent review |
+| `target.json` | Exhaustive audit | Branch, base and head commits, file inventory with origins, modes, and hashes, and the hash of `changes.patch` |
+| `changes.patch` | Exhaustive audit | Complete base-to-candidate diff, including intended additions, deletions, modes, and binary changes |
+| `plan.json` | Exhaustive audit | Target hash, criteria with source spans, decision inventory and mappings, subject inventory with roles, routing, and exclusions, commands, and expected pairs |
+| `checks.jsonl` | Exhaustive audit | One result per expected pair: criterion, subject, verdict, rationale, evidence references, defect, and correction, identifying the target and plan hashes |
+| `commands.jsonl` | Exhaustive audit | Identifier, trigger, governing rule, invocation, working directory, environment details, exit status, log reference, and the target and plan hashes |
+| `review.json` | Exhaustive audit and revision review | Reviewer identity, hashes of every inspected input including logs, independently derived expected sets and verdicts, comparison with the primary records, and validation results |
+| `result.json` | Exhaustive audit | Hashes of all final records and logs except itself, derived counts, unresolved defects and blockers, preceding runs, and completion status |
 
-Hash file bytes with SHA-256. The target hash is the hash of `target.json`,
-binding the inventory and diff. Checks and command results identify the target
-and plan hashes. Review records hash all inspected inputs, including logs; the
-result hashes all final records and logs except itself. No record hashes
-itself.
-
-Repository paths and working directories are relative to the repository root;
-record and log paths are relative to the run directory. Keep exact invocations
-and original logs for independent verification. Follow the policy's publication
-rules when preparing reports; identify any redactions and retain the original
-evidence for review. A report prepared for publication does not replace that
-evidence.
-
-References identify source paths and line ranges or inspected whole files;
-deleted content uses the frozen diff. Record references name the record and
-identifier; log references name the log and relevant lines. Every reference
-must resolve unambiguously. Preserve the source, date or version, and relevant
-content of maintainer decisions and historical evidence used to establish the
-contract; include these records in the evidence hashes.
+Hash file bytes with SHA-256; the target hash is the hash of `target.json` and
+binds the inventory and diff, and no record hashes itself. Repository paths are
+relative to the repository root and record paths to the run directory.
+References identify source paths and line ranges or inspected whole files
+(deleted content through the frozen diff), record identifiers, or log lines, and
+must resolve unambiguously. Preserve the source, date, and content of maintainer
+decisions and historical evidence used to establish a contract, and include them
+in the evidence hashes. Follow the policy's publication rules when preparing a
+report, identifying any redactions and retaining the original evidence; a report
+does not replace the records.

@@ -118,11 +118,11 @@
           <h3 class="sub-title">${esc(t("other_shortcuts_title"))}</h3>
           ${shortcutTable(data.common_extra_shortcuts)}
 
-          <h3 class="sub-title">${esc(t("starting_usage_title"))}</h3>
-          <p class="body">${esc(t("starting_usage_body")).replace("{0}", chip("pyxel.load()"))}</p>
+          <h3 class="sub-title">${esc(t("common_usage_title"))}</h3>
+          <p class="body">${esc(t("common_usage_body")).replace("{0}", chip("pyxel.load()"))}</p>
 
-          <h3 class="sub-title">${esc(t("starting_load_title"))}</h3>
-          <p class="body">${esc(t("starting_load_body"))}</p>`;
+          <h3 class="sub-title">${esc(t("common_load_title"))}</h3>
+          <p class="body">${esc(t("common_load_body"))}</p>`;
 
         document.getElementById("s-image-title").textContent = t("image_title");
         document.getElementById("s-image-body").innerHTML = `

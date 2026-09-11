@@ -12,7 +12,7 @@ discuss the approach in an issue first.
 
 Clone the repository and work from its root directory. Follow the instructions
 at the top of the [Makefile](../Makefile) for environment setup, builds, and
-automated and manual checks for native and Web development.
+automated and manual checks for native and web development.
 
 ## Make and Check a Change
 

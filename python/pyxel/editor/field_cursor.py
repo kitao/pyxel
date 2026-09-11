@@ -218,17 +218,14 @@ class FieldCursor:
         self.insert(field)
 
     def shift(self, offset):
+        if self.x >= len(self.field):
+            return
+
         self._add_pre_history(self.x, self.y)
         for i in range(self.x, self.x + self.width):
-            if i < len(self.field):
-                value = self.field[i]
-                if value >= 0:
-                    self.field[i] = clamp(
-                        value + offset, 0, self._max_field_values[self.y]
-                    )
-            else:
-                self.field.append(0)
-
+            value = self.field[i]
+            if value >= 0:
+                self.field[i] = clamp(value + offset, 0, self._max_field_values[self.y])
         self._add_post_history(self.x, self.y)
 
     # Input processing

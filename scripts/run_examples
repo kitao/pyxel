@@ -45,7 +45,7 @@ run_bg() {
     return "$status"
 }
 
-for f in "$EXAMPLES_DIR"/*.py "$EXAMPLES_DIR"/cube/c[0-9][0-9]_*.py; do
+for f in "$EXAMPLES_DIR"/*.py "$EXAMPLES_DIR"/cube/*.py; do
     run_bg pyxel run "$f"
 done
 

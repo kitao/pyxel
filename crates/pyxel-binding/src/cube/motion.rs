@@ -2,7 +2,6 @@ use pyo3::prelude::*;
 
 // Hand-rolled because engine-built motions retain their source Mesh;
 // node.rs uses it to reject applying a motion to a different Mesh.
-
 #[pyclass(module = "pyxel.cube", unsendable, from_py_object)]
 #[derive(Clone)]
 pub struct Motion {

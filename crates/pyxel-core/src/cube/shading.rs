@@ -254,7 +254,7 @@ mod tests {
         }
     }
 
-    fn srgb_to_linear(c: f32) -> f32 {
+    fn reference_srgb_to_linear(c: f32) -> f32 {
         if c <= 0.04045 {
             c / 12.92
         } else {
@@ -266,9 +266,9 @@ mod tests {
         let component =
             |idx: i32, shift: u32| ((palette[idx as usize] >> shift) & 0xFF) as f32 / 255.0;
         let pixel_luma = |idx: i32| {
-            let r = srgb_to_linear(component(idx, 16));
-            let g = srgb_to_linear(component(idx, 8));
-            let b = srgb_to_linear(component(idx, 0));
+            let r = reference_srgb_to_linear(component(idx, 16));
+            let g = reference_srgb_to_linear(component(idx, 8));
+            let b = reference_srgb_to_linear(component(idx, 0));
             0.2126 * r + 0.7152 * g + 0.0722 * b
         };
 

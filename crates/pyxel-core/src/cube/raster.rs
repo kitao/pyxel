@@ -2,7 +2,6 @@
 #![allow(clippy::many_single_char_names)]
 
 use crate::cube::camera::Camera;
-use crate::cube::mat4::Mat4;
 use crate::cube::shading::{Shading, LEVEL_COUNT};
 use crate::cube::vec3::Vec3;
 use crate::image::Image;
@@ -105,15 +104,6 @@ pub fn camera_clip_row(view: &Mat4x4) -> [f32; 4] {
     [-view[2][0], -view[2][1], -view[2][2], -view[2][3]]
 }
 
-// Return a value to avoid RcVec3 allocation per vertex.
-pub fn mat_apply(mat: &Mat4, v: &Vec3) -> Vec3 {
-    mat.mul_vec_value(v)
-}
-
-pub fn mat_apply_dir(mat: &Mat4, v: &Vec3) -> Vec3 {
-    mat.mul_dir_value(v)
-}
-
 // Reject points at or behind the camera. Keep off-screen and far-plane
 // overshoot vertices so partially visible primitives can still rasterize.
 pub fn world_to_screen(
@@ -181,9 +171,6 @@ pub fn camera_right_up(camera: &Camera) -> (Vec3, Vec3) {
         },
     )
 }
-
-// Enough segments for smooth ellipses at SD resolution.
-pub const ELLIPSE_SEGMENTS: usize = 24;
 
 // Billboard sprite corners: a quad facing the camera, rotated by
 // `angle_deg` in screen space (around view-z). Corners are returned in
@@ -1216,6 +1203,7 @@ pub fn rasterize_line(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cube::mat4::Mat4;
     use crate::image::RcImage;
 
     fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
@@ -1449,24 +1437,6 @@ mod tests {
         assert!((p[1][1] - 1.0 / half_h).abs() < 1e-6);
         // Orthographic last row stays affine.
         assert_eq!(p[3][3], 1.0);
-    }
-
-    #[test]
-    fn test_mat_apply_translation() {
-        let mat = Mat4::from_translation(&rc_ref!(&Vec3::new(1.0, 2.0, 3.0)));
-        let result = mat_apply(&rc_ref!(&mat), &vec3(0.0, 0.0, 0.0));
-        assert_eq!(result.x, 1.0);
-        assert_eq!(result.y, 2.0);
-        assert_eq!(result.z, 3.0);
-    }
-
-    #[test]
-    fn test_mat_apply_identity_preserves_vec3() {
-        let mat = Mat4::identity();
-        let result = mat_apply(&rc_ref!(&mat), &vec3(4.0, 5.0, 6.0));
-        assert_eq!(result.x, 4.0);
-        assert_eq!(result.y, 5.0);
-        assert_eq!(result.z, 6.0);
     }
 
     #[test]

@@ -341,7 +341,7 @@ class Node:
     def right(self) -> Vec3: ...
     @property
     def up(self) -> Vec3: ...
-    # Resolved values, including inheritance.
+    # Resolved values, including inheritance
     @property
     def effective_camera(self) -> Camera | None: ...
     @property
@@ -454,6 +454,7 @@ class Node:
         colkey: int | None = None,
         angle: float = 0.0,
     ) -> None: ...
+    # Asset-based
     def prim(
         self,
         mat: Mat4,

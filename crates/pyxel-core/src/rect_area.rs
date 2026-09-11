@@ -91,6 +91,8 @@ impl RectArea {
 mod tests {
     use super::*;
 
+    // Construction and extent
+
     #[test]
     fn test_new() {
         let rect1 = RectArea::new(1, 2, 3, 4);

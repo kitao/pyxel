@@ -1,16 +1,18 @@
 # Documentation Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Documentation policy](../design-policy.md#documentation)
+[Audit and decision records](../design-audit.md#decision-records) · [Documentation policy](../design-policy.md#documentation) · [Release Notes policy](../design-policy.md#release-notes)
 
 ## Reader and Prose
 
 ### The introductory description of 16 colors
 
-**Decision:** Keep the concise basic-specification description in the
-[project introduction](../../../README.md) and
-[user guide](../../../web/user-guide/user-guide.json): Pyxel provides a 16-color
+**Decision:** Keep the concise basic-specification description in the [project
+introduction](../../../README.md) and [user
+guide](../../../web/user-guide/user-guide.json): Pyxel provides a 16-color
 environment. Do not append palette-extension details at every introductory
-mention of the color count.
+mention of the color count. The same scope applies to other introductory tables
+of the basic configuration, such as the image-bank range of the special key
+table.
 
 **Reason:** The basic specifications give newcomers a small, comprehensible
 starting point. Pyxel deliberately separates that initial experience from
@@ -86,7 +88,7 @@ by spaces except next to punctuation:
 「イメージバンク（Image クラスのインスタンス）のリスト (0-2)」.
 
 Use 「ブラウザ」「エディタ」「パラメータ」「バッファ」「コンストラクタ」
-「ユーザー」「サーバー」「コンピュータ」 as the adopted spellings.
+「ユーザー」「サーバー」「コンピュータ」「ディレクトリ」 as the adopted spellings.
 
 **Reason:** These choices give Japanese prose consistent word boundaries and
 technical vocabulary while keeping code literal. They settle recurring
@@ -101,10 +103,10 @@ Japanese loanword conventions on other languages.
 descriptions. Their Markdown outputs come from
 [generate_docs](../../../scripts/generate_docs), and the base stub's docstrings
 from [generate_pyi_docstrings](../../../scripts/generate_pyi_docstrings).
-Generated Markdown uses English and links to the multilingual Web pages.
+Generated Markdown uses English and links to the multilingual web pages.
 The docstring generator covers the base stub; it does not rewrite the Cube stub.
 
-**Reason:** The Web pages, generated reference files, and editor type help
+**Reason:** The web pages, generated reference files, and editor type help
 present the same descriptions. Editing each output independently creates
 competing copies that the next generation overwrites. Stub signatures still
 need their own correspondence with the bindings; regenerating docstrings alone
@@ -132,7 +134,7 @@ prose.
 **Decision:** The [Makefile](../../../Makefile) owns development commands and
 their setup instructions. Its opening comments follow the working sequence:
 prerequisites, one-time setup, per-shell setup, common checks, then native,
-WASM, and Web-page commands. Keep these instructions brief and usable from the
+WASM, and web-page commands. Keep these instructions brief and usable from the
 repository root.
 
 [CONTRIBUTING](../../../.github/CONTRIBUTING.md) owns the path from reporting or
@@ -146,11 +148,19 @@ putting the PR workflow into the Makefile obscures its command reference.
 ### Organization of design documents
 
 **Decision:** Keep contributor design documents under `docs/design/`, separate
-from user guides. Retain the `design-` prefix on the policy, audit, and decisions
-directory. Group decisions by policy area and the subject being reviewed, with
-further separation where a language or interface boundary gives the work a
-distinct scope. Use descriptive
-file names such as `source-code-comments.md` and `public-contract-rust-python.md`.
+from user guides. Retain the `design-` prefix on the policy, audit, and
+decisions directory. Group decisions by policy area and the subject being
+reviewed, with further separation where an interface boundary gives the work a
+distinct scope; the blank-line decisions of every language share one file so
+that the shared criteria and their language-specific boundaries are read
+together. Use descriptive file names such as `source-code-comments.md` and
+`public-contract-rust-python.md`.
+
+Entries record reusable rules with their conditions and reasons; the
+[audit procedure](../design-audit.md#1-select-and-resolve-decisions) states what
+qualifies as an entry. A record that transcribes the groups or field order of
+one file becomes stale with the next change and turns the audit into a
+comparison against an old shape.
 
 **Reason:** A reviewer should find the judgments needed for the assigned work
 without reading unrelated decisions. Shared choices stay in one place, with
@@ -188,18 +198,48 @@ English version provides a consistent comparison point across translations.
 This does not impose Japanese sentence structure or loanword conventions on
 other languages.
 
+### Per-language conventions
+
+**Decision:** Apply these conventions to every text of the language in the
+repository (localized data, handwritten documents, release notes, and source
+comments), and extend the table when an inconsistency in another language is
+settled. Quotation rows concern prose quotes; a string literal such as
+`"Pyxel"` keeps its straight quotes in every language. The platform label `Web`
+in headings, tab labels, and platform lists stays in Latin letters in every
+language.
+
+| Language | Convention | Basis |
+| --- | --- | --- |
+| All | A range of numeric or identifier values inside half-width parentheses with ASCII-only content uses the ASCII hyphen (`(0-2)`, `(CH0-CH3)`); a range in running text, and a range with a signed value anywhere, uses the language's range mark below; apostrophes are ASCII (`'`) | Maintainer choice |
+| English | Generic `web` is lowercase in running text and capitalized in product names and in the platform label; range mark `-`; entries of published release notes keep their wording | AP Stylebook, Chicago Manual of Style, and Microsoft Writing Style Guide for `web`; range mark is a maintainer choice |
+| Japanese | The [typography decision](#japanese-spacing-punctuation-and-technical-spellings); range mark 〜 | Maintainer choice within common Japanese technical writing |
+| Chinese | Half-width parentheses with a half-width space against adjacent Chinese text, as `scripts/format_prose` applies; range mark ～; instructions to the reader take the bare imperative without 请; 屏幕 for the Pyxel screen (the drawing target and its size, including the `pyxel-screen` element), 画面 for a page or panel of a tool, including the Pyxel Editor window; 瓦片 for a tile | Parentheses and spacing are the maintainer's tool-applied choice; GB/T 15834 for the range mark; terms are maintainer choices |
+| Korean | 웹 for the web (`웹 버전`); range mark ~; quotation with “ ”; polite register (`…합니다` for statements, `…하세요` for instructions to the reader); 화면 for the Pyxel screen while established loanwords and compounds such as 풀스크린, 스크린샷, 오프스크린, and 스크린 공간 stay; 리스트 for a Python list; 명령어 for a command-line command (drawing commands are 그리기 명령); 레트로 for retro | 외래어 표기법 for 웹; 문장 부호 규정 for ~ and “ ”; register and terms are maintainer choices |
+| Spanish | Quotation with « »; the reader is addressed as usted; `banco de imágenes` for an image bank; range mark `-` | RAE Ortografía for « » and `-`; register and term are maintainer choices |
+| Italian | Quotation with « »; instructions to the reader use the infinitive, UI labels the imperative (`Esegui`); `banco immagini` for an image bank; range mark `-` | Maintainer choices among standard Italian forms; the imperative UI label follows the Microsoft Italian Style Guide |
+| Portuguese | Quotation with “ ”; `aplicativo` for an application; `pixels` for pixels; range mark `-` | Maintainer choices among standard Brazilian Portuguese forms |
+| French | Quotation with « »; instructions to the reader use the vous-imperative; `image` for an animation frame; range mark `-` | Lexique des règles typographiques for « »; Microsoft French Style Guide for the imperative; term and range mark are maintainer choices |
+| German | Quotation with „ “; range mark –; instructions to the reader use the Sie-imperative; `Web-Version` for the web version | Duden for „ “, the Bis-Strich, and the hyphenated compound; Microsoft German Style Guide for the imperative |
+| Russian and Ukrainian | Quotation with « »; range mark – | Правила русской орфографии и пунктуации; Український правопис |
+| Turkish | Quotation with “ ”; range mark `-` | TDK Yazım Kılavuzu |
+
+**Reason:** Each language keeps its own technical conventions, and a reader of
+one language meets the same term and the same voice on every page. Where a
+language offers more than one acceptable form, the recorded form is the one its
+technical writing uses; recording it settles the question so that later edits do
+not reopen it. The [translation chain](#translation-source-and-comparison-chain)
+still decides meaning.
+
 ### Product names and author titles
 
-**Decision:** Use these product names unchanged across languages:
-Pyxel, Pyxel Cube, Pyxel Editor, Pyxel Showcase, Pyxel Code Maker,
-Pyxel MML Studio, Pyxel Web Launcher, Pyxel User Examples, and Pyxel Composer.
-Pyxel Web, Pyxel MML, and Pyxel API may identify the web version, MML variant,
-and public API respectively.
+**Decision:** Use these product names unchanged across languages: Pyxel, Pyxel
+Cube, Pyxel Editor, Pyxel Showcase, Pyxel Code Maker, Pyxel MML Studio, Pyxel
+Web Launcher, Pyxel User Examples, and Pyxel Composer. Pyxel Web or Pyxel for
+Web, Pyxel MML, and Pyxel API may identify the web version, MML variant, and
+public API respectively.
 
-Write `Pyxel Editor`, not `Pyxel-Editor` or `ピクセルエディタ`.
-Keep author-titled assets such as `laser-jetman` in their author's spelling.
-A descriptive label may replace a product name when the context makes its
-reference clear.
+Write `Pyxel Editor`, not `Pyxel-Editor` or `ピクセルエディタ`. Keep author-titled
+assets such as `laser-jetman` in their author's spelling.
 
 **Reason:** Product names identify the same tools across translations and
 links. An author's title is a separate proper noun, not a spelling defect to

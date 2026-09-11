@@ -68,9 +68,9 @@ impl AudioStreamRenderer {
     }
 }
 
-// Audio output
-
 impl Audio {
+    // Audio output
+
     pub fn start() {
         let mut stream_renderer = AudioStreamRenderer::new();
         platform::start_audio(
@@ -83,13 +83,8 @@ impl Audio {
     }
 
     pub fn render_samples(channels: &[RcChannel], blip_buf: &mut BlipBuf, out: &mut [i16]) {
-        if channels.len() <= NUM_CHANNELS as usize {
-            let mut pcm_mix_starts = [usize::MAX; NUM_CHANNELS as usize];
-            Self::render_samples_with_mix_starts(channels, blip_buf, out, &mut pcm_mix_starts);
-        } else {
-            let mut pcm_mix_starts = vec![usize::MAX; channels.len()];
-            Self::render_samples_with_mix_starts(channels, blip_buf, out, &mut pcm_mix_starts);
-        }
+        let mut pcm_mix_starts = vec![usize::MAX; channels.len()];
+        Self::render_samples_with_mix_starts(channels, blip_buf, out, &mut pcm_mix_starts);
     }
 
     fn render_samples_with_mix_starts(
@@ -423,6 +418,8 @@ impl Pyxel {
             audio_mut!(ch).stop();
         }
     }
+
+    // Playback position
 
     pub fn play_position(&self, channel_index: u32) -> Option<(u32, f32)> {
         let _lock = AudioLock::lock();

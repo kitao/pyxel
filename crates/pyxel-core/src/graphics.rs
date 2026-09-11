@@ -8,9 +8,6 @@ use crate::platform::{self, GlProfile};
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_MODES};
 
-#[cfg(target_os = "macos")]
-const GL_VERSION: &str = include_str!("shaders/gles_version.glsl");
-#[cfg(not(target_os = "macos"))]
 const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
 const GLES_VERSION: &str = include_str!("shaders/gles_version.glsl");
 

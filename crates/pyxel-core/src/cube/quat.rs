@@ -430,6 +430,7 @@ mod tests {
         *rc_ref!(rc)
     }
 
+    // 1e-4 exceeds the f32 rounding of these unit-scale values and stays below any expected difference
     fn approx_eq_v(a: &Vec3, b: &Vec3) -> bool {
         (a.x - b.x).abs() < 1e-4 && (a.y - b.y).abs() < 1e-4 && (a.z - b.z).abs() < 1e-4
     }

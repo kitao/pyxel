@@ -26,7 +26,7 @@ def main() -> int:
         wheel_path, version = _find_wheel(DIST_DIR, PYPROJECT_PATH)
         _validate_wheel_tag(wheel_path, version)
     except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
-        print(f"invalid WebAssembly wheel: {error}", file=sys.stderr)
+        print(f"error: invalid WebAssembly wheel: {error}", file=sys.stderr)
         return 1
 
     WASM_DIR.mkdir(parents=True, exist_ok=True)
@@ -38,7 +38,7 @@ def main() -> int:
         count=1,
     )
     if count != 1:
-        print(f"wheel path pattern not found in {script_path}", file=sys.stderr)
+        print(f"error: wheel path pattern not found in {script_path}", file=sys.stderr)
         return 1
 
     installed_wheel_path = WASM_DIR / wheel_path.name

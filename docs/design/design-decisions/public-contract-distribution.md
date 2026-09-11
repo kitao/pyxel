@@ -17,10 +17,10 @@ A `pub` Rust item does not by itself establish a supported crates.io API.
 or repository callers. Rust signature changes still affect source callers and
 must be assessed on that basis, without inventing a separate package promise.
 
-## Python ABI and Web runtime compatibility
+## Python ABI and web runtime compatibility
 
 **Decision:** Keep Python 3.11 as the minimum runtime and build the extension
-against its stable ABI. Treat the Web runtime, Emscripten build, and Web wheel
+against its stable ABI. Treat the web runtime, Emscripten build, and web wheel
 platform tag as a separate compatibility unit whose producers and consumers
 change together.
 
@@ -53,7 +53,7 @@ behavior nor audio and graphics quality.
 
 ## Web wheel validation and installation
 
-**Decision:** Validate the selected Web wheel before installing it into `wasm/`.
+**Decision:** Validate the selected web wheel before installing it into `wasm/`.
 Check its identity and platform tag, packaged Python sources and metadata, and
 unwanted caches and build-host paths. Install the wheel and update its loader
 reference before removing obsolete wheels.
@@ -75,7 +75,7 @@ themselves promise byte-identical builds on every platform.
 ## Release version correspondence
 
 **Decision:** Use Python release spelling in the runtime version, Python
-metadata, Web wheel filename, and release tag. Map `a`, `b`, and `rc`
+metadata, web wheel filename, and release tag. Map `a`, `b`, and `rc`
 prereleases to Cargo's SemVer spelling. Version updates and wheel generation
 remain separate operations.
 

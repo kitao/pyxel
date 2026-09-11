@@ -83,7 +83,7 @@ restoration. These operations have distinct responsibilities.
 
 ## Published page redirects
 
-**Decision:** Retain the legacy pages under `wasm/` as redirects to their Web
+**Decision:** Retain the legacy pages under `wasm/` as redirects to their web
 counterparts, carrying the query string and fragment.
 
 **Reason:** Published links can contain launch options or a reference location.
@@ -91,9 +91,24 @@ The [redirect pages](../../../wasm/launcher/index.html) preserve that state whil
 keeping content at one owner. A directory reorganization does not invalidate
 those links or justify dropping their options.
 
+## Undocumented packages option
+
+**Decision:** The [Web launcher](../../../web/launcher/index.html) forwards a
+`packages` URL parameter, and the `pyxel-run` and `pyxel-play` custom elements
+in the [Web runtime](../../../wasm/pyxel.js) accept a `packages` attribute that
+loads the named Pyodide packages before the command runs. Keep these paths as an
+undocumented compatibility route: the URL builder, guides, and reference do not
+describe them, and neither their presence in the runtime nor their absence from
+the documentation is a defect.
+
+**Reason:** The option was removed from the documented launcher interface in
+2.8.7, while published pages and links can still carry it. Removing the runtime
+support would break those pages for a feature Pyxel no longer promotes, and
+documenting it again would reverse that removal.
+
 ## Local Showcase runtime and served files
 
-**Decision:** Serve the public Web, documentation, runtime, and example assets
+**Decision:** Serve the public web, documentation, runtime, and example assets
 needed by the local Showcase. Keep repository-internal paths outside those
 served roots. Replace executable CDN runtime references in page headers with
 the local runtime; preserve instructional examples in page bodies.
