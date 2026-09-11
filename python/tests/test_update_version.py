@@ -3,6 +3,8 @@ import zipfile
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
+import pytest
+
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "update_version"
 EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
 WHEEL_SUFFIX = f"-{EXPECTED_WHEEL_TAG}.whl"
@@ -32,6 +34,21 @@ def test_update_version_updates_and_verifies_every_runtime_surface(tmp_path):
     assert "pyxel-3.0.0a1-cp311" in (tmp_path / "wasm/pyxel.js").read_text(
         encoding="utf-8"
     )
+
+
+def test_update_version_leaves_files_unchanged_when_last_pattern_is_missing(tmp_path):
+    update_version = _load_update_version()
+    _write_version_files(tmp_path)
+    cargo_path = tmp_path / "crates/Cargo.toml"
+    cargo_path.write_text("[workspace.package]\n", encoding="utf-8")
+    original_files = {
+        path: path.read_bytes() for path in tmp_path.rglob("*") if path.is_file()
+    }
+
+    with pytest.raises(ValueError, match="version pattern not found"):
+        update_version.update_version("3.0.0a1", tmp_path)
+
+    assert {path: path.read_bytes() for path in original_files} == original_files
 
 
 def test_version_errors_names_the_mismatched_surface(tmp_path):

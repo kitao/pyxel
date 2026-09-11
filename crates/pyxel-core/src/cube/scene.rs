@@ -6,8 +6,9 @@ use crate::cube::collision::{
     capsule_vs_capsule, capsule_vs_rounded_obb, capsule_vs_sphere, capsule_vs_triangle,
     classify_shape, closest_points_segment_aabb, closest_points_segment_segment,
     closest_points_segment_triangle, collider_aabb, local_box_vs_triangle, ray_vs_aabb,
-    ray_vs_sphere, ray_vs_triangle, rounded_obb_vs_rounded_obb, sphere_vs_rounded_obb,
-    sphere_vs_sphere, sphere_vs_triangle, Aabb, ColliderShape, ContactGeom,
+    ray_vs_sphere, ray_vs_sphere_filtered, ray_vs_triangle, rounded_obb_vs_rounded_obb,
+    sphere_vs_rounded_obb, sphere_vs_sphere, sphere_vs_triangle, Aabb, ColliderShape, ContactGeom,
+    ObbPairDistance,
 };
 use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
@@ -657,7 +658,19 @@ impl Scene {
             },
         };
 
-        let (toi, _, normal_local) = ray_vs_aabb(previous_local, rel_local, &expanded, 1.0)?;
+        ray_vs_aabb(previous_local, rel_local, &expanded, 1.0)?;
+        // The expanded AABB is only a broad filter; its corners extend beyond
+        // the box's rounded boundary. Leave initial overlaps to discrete contact.
+        let offset = Vec3 {
+            x: (previous_local.x.abs() - half.x).max(0.0),
+            y: (previous_local.y.abs() - half.y).max(0.0),
+            z: (previous_local.z.abs() - half.z).max(0.0),
+        };
+        if vec_len_sq(offset) <= reach * reach {
+            return None;
+        }
+        let (toi, _, normal_local) =
+            ray_vs_rounded_box(previous_local, rel_local, half, reach, 1.0)?;
         if toi <= 0.0 {
             return None;
         }
@@ -1588,9 +1601,20 @@ impl Scene {
                 z: 0.0,
             },
         ] {
-            if let Some((t, point, normal)) =
-                ray_vs_sphere(local_origin, local_direction, center, r, max_distance)
-            {
+            if let Some((t, point, normal)) = ray_vs_sphere_filtered(
+                local_origin,
+                local_direction,
+                center,
+                r,
+                max_distance,
+                |point| {
+                    if center.y > 0.0 {
+                        point.y >= half_h
+                    } else {
+                        point.y <= -half_h
+                    }
+                },
+            ) {
                 let hit = (t, world.mul_vec_value(&point), world.mul_dir_value(&normal));
                 if best.as_ref().is_none_or(|(best_t, _, _)| t < *best_t) {
                     best = Some(hit);
@@ -1703,7 +1727,8 @@ fn ray_vs_rounded_box(
         }
     }
 
-    // Edge capsules include the rounded corners at their endpoints.
+    // Only each edge capsule's outward quarter belongs to the box surface;
+    // its endpoint hemispheres supply the rounded corners.
     for axis in 0..3 {
         let other0 = (axis + 1) % 3;
         let other1 = (axis + 2) % 3;
@@ -1722,7 +1747,11 @@ fn ray_vs_rounded_box(
                 set_axis(&mut a, other1, sign1 * component(half, other1));
                 set_axis(&mut b, other1, sign1 * component(half, other1));
 
-                if let Some(hit) = ray_vs_segment_capsule(origin, direction, a, b, r, max_distance)
+                if let Some(hit) =
+                    ray_vs_segment_capsule(origin, direction, a, b, r, max_distance, |point| {
+                        component(point, other0) * sign0 >= component(half, other0)
+                            && component(point, other1) * sign1 >= component(half, other1)
+                    })
                 {
                     set_nearer_hit(&mut best, hit);
                 }
@@ -1768,16 +1797,20 @@ fn ray_vs_segment_capsule(
     b: Vec3,
     radius: f32,
     max_distance: f32,
+    accepts: impl Fn(Vec3) -> bool,
 ) -> Option<(f32, Vec3, Vec3)> {
+    let axis = vec_sub(b, a);
     let mut best: Option<(f32, Vec3, Vec3)> = None;
-    if let Some(hit) = ray_vs_sphere(origin, direction, a, radius, max_distance) {
-        set_nearer_hit(&mut best, hit);
-    }
-    if let Some(hit) = ray_vs_sphere(origin, direction, b, radius, max_distance) {
-        set_nearer_hit(&mut best, hit);
+    for (center, sign) in [(a, -1.0), (b, 1.0)] {
+        if let Some(hit) =
+            ray_vs_sphere_filtered(origin, direction, center, radius, max_distance, |point| {
+                vec_dot(vec_sub(point, center), axis) * sign >= 0.0 && accepts(point)
+            })
+        {
+            set_nearer_hit(&mut best, hit);
+        }
     }
 
-    let axis = vec_sub(b, a);
     let len_sq = vec_len_sq(axis);
     if len_sq < 1e-12 {
         return best;
@@ -1815,6 +1848,9 @@ fn ray_vs_segment_capsule(
         }
 
         let point = vec_add(origin, vec_mul(direction, t));
+        if !accepts(point) {
+            continue;
+        }
         let axis_point = vec_add(a, vec_mul(u, s.clamp(0.0, len)));
         let Some(normal) = normalize_axis(vec_sub(point, axis_point)) else {
             continue;
@@ -2374,6 +2410,76 @@ fn swept_obb_vs_obb(
 
     if !(0.0..=1.0).contains(&entry) {
         return None;
+    }
+    if r_sum > 0.0 {
+        let pair = ObbPairDistance::new(world_a, half_a, world_b, half_b);
+        let points_at = |t: f32| pair.closest_points(vec_mul(velocity, t - 1.0));
+        let (on_a, on_b) = points_at(entry);
+        if vec_len_sq(vec_sub(on_a, on_b)) <= r_sum * r_sum {
+            // Preserve the sweep convention: an initially overlapping pair
+            // does not acquire a new entry contact while moving apart.
+            if entry == 0.0 {
+                return None;
+            }
+        } else {
+            // Distance between translating convex cores is convex in time.
+            // Its derivative has the sign of velocity · (on_a - on_b).
+            // Find the minimum inside the conservative SAT interval first;
+            // a rounded contact can occur after its false SAT entry.
+            let mut lo = entry;
+            let mut hi = exit;
+            for _ in 0..32 {
+                let mid = (lo + hi) * 0.5;
+                if mid == lo || mid == hi {
+                    break;
+                }
+                let (on_a, on_b) = points_at(mid);
+                let delta = vec_sub(on_a, on_b);
+                if vec_len_sq(delta) <= r_sum * r_sum {
+                    hi = mid;
+                    break; // A real contact already brackets the first hit.
+                }
+                if vec_dot(velocity, delta) < 0.0 {
+                    lo = mid;
+                } else {
+                    hi = mid;
+                }
+            }
+            let (lo_a, lo_b) = points_at(lo);
+            let (hi_a, hi_b) = points_at(hi);
+            let lo_dist2 = vec_len_sq(vec_sub(lo_a, lo_b));
+            let hi_dist2 = vec_len_sq(vec_sub(hi_a, hi_b));
+            let minimum = if lo_dist2 < hi_dist2 { lo } else { hi };
+            if lo_dist2.min(hi_dist2) > r_sum * r_sum {
+                return None;
+            }
+
+            // Bisect the decreasing part to the first contact. Stop when
+            // f32 time has no representable interior point, or after 32
+            // halvings of a frame interval, without enlarging the radius.
+            lo = entry;
+            hi = minimum;
+            for _ in 0..32 {
+                let mid = (lo + hi) * 0.5;
+                if mid == lo || mid == hi {
+                    break;
+                }
+                let (on_a, on_b) = points_at(mid);
+                if vec_len_sq(vec_sub(on_a, on_b)) <= r_sum * r_sum {
+                    hi = mid;
+                } else {
+                    lo = mid;
+                }
+            }
+            entry = hi;
+        }
+        let (on_a, on_b) = points_at(entry);
+        let normal = normalized_or(vec_sub(on_a, on_b), vec_mul(velocity, -1.0))?;
+        return Some(ContactGeom {
+            point: vec_add(on_b, vec_mul(normal, r_b.max(0.0))),
+            normal,
+            depth: 0.0,
+        });
     }
     let normal = entry_normal?;
     let support_b = obb_projection_radius(&bx, &half_b_arr, normal) + r_b.max(0.0);
@@ -3065,6 +3171,74 @@ mod tests {
     }
 
     #[test]
+    fn test_swept_rounded_obb_rejects_corner_gap_and_finds_later_contact() {
+        let target = Mat4::identity_value();
+        let half = vec3(1.0, 1.0, 1.0);
+        let sweep = |offset| {
+            let mut end = target;
+            end.data[0][3] = 5.0;
+            end.data[1][3] = offset;
+            end.data[2][3] = offset;
+            swept_obb_vs_obb(&end, half, 1.0, vec3(10.0, 0.0, 0.0), &target, half, 1.0)
+        };
+        assert!(sweep(3.5).is_none());
+        let contact = sweep(3.0).unwrap();
+        assert_eq!(contact.depth, 0.0);
+        assert_vec3_close(contact.normal, vec3(-0.5_f32.sqrt(), 0.5, 0.5));
+        assert_vec3_close(contact.point, vec3(-1.0 - 0.5_f32.sqrt(), 1.5, 1.5));
+        // The start can already be inside the expanded SAT projections
+        // yet outside the actual rounding, before a later real entry.
+        let mut end = target;
+        end.data[0][3] = 5.0;
+        end.data[1][3] = 3.0;
+        end.data[2][3] = 3.0;
+        let later =
+            swept_obb_vs_obb(&end, half, 1.0, vec3(8.5, 0.0, 0.0), &target, half, 1.0).unwrap();
+        assert_vec3_close(later.normal, contact.normal);
+        // Endpoint touching is included by the swept test.
+        end.data[0][3] = -4.0;
+        end.data[1][3] = 0.0;
+        end.data[2][3] = 0.0;
+        let endpoint =
+            swept_obb_vs_obb(&end, half, 1.0, vec3(1.0, 0.0, 0.0), &target, half, 1.0).unwrap();
+        assert_vec3_close(endpoint.normal, vec3(-1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_swept_rounded_obb_grazing_and_narrow_crossing() {
+        let target = Mat4::identity_value();
+        let half = vec3(1.0, 1.0, 1.0);
+        // The line through (3.5, 4, 0) in direction (4, -3, 0) is
+        // tangent to the radius-2.5 circle around the core corner (2,2).
+        // Both frame endpoints are outside even for the narrow crossing.
+        for (shift, hit) in [(0.001, false), (0.0, true), (-0.0001, true)] {
+            let mut end = target;
+            end.data[0][3] = 7.5 + 0.6 * shift;
+            end.data[1][3] = 1.0 + 0.8 * shift;
+            let contact =
+                swept_obb_vs_obb(&end, half, 1.25, vec3(8.0, -6.0, 0.0), &target, half, 1.25);
+            assert_eq!(contact.is_some(), hit, "shift={shift}");
+            if shift == 0.0 {
+                // Tangent time is ill-conditioned: f32 distance rounding
+                // produces an angular error of order sqrt(EPSILON). Check
+                // angular alignment rather than crossing-contact tolerance.
+                let alignment = vec_dot(contact.unwrap().normal, vec3(0.6, 0.8, 0.0));
+                assert!(alignment >= 1.0 - 4.0 * f32::EPSILON);
+            }
+        }
+        // A separating move from an initially overlapping pair is not
+        // reported as a new swept entry; sharp boxes retain the old path.
+        let mut end = target;
+        end.data[0][3] = 5.0;
+        assert!(
+            swept_obb_vs_obb(&end, half, 0.1, vec3(4.0, 0.0, 0.0), &target, half, 0.1).is_none()
+        );
+        assert!(
+            swept_obb_vs_obb(&end, half, 0.0, vec3(10.0, 0.0, 0.0), &target, half, 0.0).is_some()
+        );
+    }
+
+    #[test]
     fn test_with_draw_context_outside_scope_returns_none() {
         let result = with_draw_context(|_| 42);
         assert!(result.is_none());
@@ -3355,6 +3529,97 @@ mod tests {
         let contact = rc_ref!(&pairs[0].contact_a);
         assert_vec3_close(*rc_ref!(&contact.normal), vec3(-1.0, 0.0, 0.0));
         assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-3.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_swept_sphere_follows_box_corner_radius() {
+        let world = Mat4::identity_value();
+        let half = vec3(1.0, 1.0, 1.0);
+        let velocity = vec3(0.0, 0.0, 6.0);
+        let zero = vec3(0.0, 0.0, 0.0);
+        // Both paths cross the expanded AABB. Only the .3/.3 offset is within
+        // the summed .5 radius; its corner normal has X/Y components .3/.5.
+        for (sphere_radius, box_radius) in [(0.5, 0.0), (0.25, 0.25)] {
+            assert!(Scene::swept_sphere_vs_rounded_obb(
+                vec3(1.4, 1.4, 3.0),
+                sphere_radius,
+                velocity,
+                &world,
+                half,
+                box_radius,
+                zero,
+            )
+            .is_none());
+            let hit = Scene::swept_sphere_vs_rounded_obb(
+                vec3(1.3, 1.3, 3.0),
+                sphere_radius,
+                velocity,
+                &world,
+                half,
+                box_radius,
+                zero,
+            )
+            .unwrap();
+            assert_vec3_close(hit.normal, vec3(0.6, 0.6, -0.28_f32.sqrt()));
+        }
+    }
+
+    #[test]
+    fn test_swept_sphere_distinguishes_box_overlap_from_aabb_overlap() {
+        let world = Mat4::identity_value();
+        let half = vec3(1.0, 1.0, 1.0);
+        let zero = vec3(0.0, 0.0, 0.0);
+        // Start inside the true rounded boundary and move out: no new impact.
+        assert!(Scene::swept_sphere_vs_rounded_obb(
+            vec3(1.3, 1.3, 3.0),
+            0.5,
+            vec3(0.0, 0.0, 3.0),
+            &world,
+            half,
+            0.0,
+            zero,
+        )
+        .is_none());
+        // Start inside the expanded AABB but outside the rounded boundary,
+        // then cross the box. The earlier broad-filter entry time is zero.
+        let hit = Scene::swept_sphere_vs_rounded_obb(
+            vec3(-2.0, 1.4, 0.0),
+            0.5,
+            vec3(-3.4, 0.0, 0.0),
+            &world,
+            half,
+            0.0,
+            zero,
+        )
+        .unwrap();
+        assert_vec3_close(hit.normal, vec3(0.6, 0.8, 0.0));
+        assert_vec3_close(hit.point, vec3(1.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn test_swept_sphere_contact_tracks_moving_rotated_box() {
+        let rotation = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 0.0, 90.0)));
+        let translation = *rc_ref!(&Mat4::from_translation(&vec3(4.0, 5.0, 6.0)));
+        let world = translation.mul_mat_value(&rotation);
+        let hit = Scene::swept_sphere_vs_rounded_obb(
+            vec3(2.7, 6.3, 9.0),
+            0.25,
+            vec3(2.0, 0.0, 6.0),
+            &world,
+            vec3(1.0, 1.0, 1.0),
+            0.25,
+            vec3(2.0, 0.0, 0.0),
+        )
+        .unwrap();
+        // In box space the path crosses the .5-radius corner at offsets .3/.3.
+        // Its world contact includes the box's translation up to the impact time.
+        let toi = (2.0 - 0.07_f32.sqrt()) / 6.0;
+        assert_vec3_close(hit.normal, vec3(-0.6, 0.6, -0.28_f32.sqrt()));
+        assert_vec3_close(
+            hit.point,
+            vec3(0.85 + 2.0 * toi, 6.15, 5.0 - 0.25 * 0.28_f32.sqrt()),
+        );
+        assert_eq!(hit.depth, 0.0);
     }
 
     #[test]

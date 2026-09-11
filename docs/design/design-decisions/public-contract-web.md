@@ -100,7 +100,7 @@ invalidate those links or justify dropping their options.
 
 ### Undocumented packages option
 
-**Decision:** The [Web launcher](../../../web/launcher/index.html) forwards a
+**Decision:** The [web launcher](../../../web/launcher/index.html) forwards a
 `packages` URL parameter, and the `pyxel-run` and `pyxel-play` custom elements
 in the [web runtime](../../../wasm/pyxel.js) accept a `packages` attribute that
 loads the named Pyodide packages before the command runs. Keep these paths as an

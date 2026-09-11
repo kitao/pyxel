@@ -13,11 +13,10 @@ build-provider names retain the spelling their producers and consumers share.
 Language case conventions apply to the surrounding implementation, not to
 renaming those connections independently.
 
-**Reason:** These names are used to call, load, look up, or exchange something.
-The correspondence is part of their meaning. For example, the
+**Reason:** Callers and consumers depend on the shared spelling. For example,
 [shader uniform names](../../../crates/pyxel-core/src/shaders/) match their
 [Rust lookups](../../../crates/pyxel-core/src/graphics.rs); Python snippets in
-Web data still use Python names. Public API abbreviations are not expanded in
+web data still use Python names. Public API abbreviations are not expanded in
 only one representation.
 
 ### Directional operation families
@@ -80,7 +79,7 @@ do not encode one concrete smart-pointer implementation.
 For a Cube operation with both a shared-object result and a value kernel, use
 the same calculation or result vocabulary with `_value`: `inverse` /
 `inverse_value`, `to_matrix` / `matrix_value`. The suffix identifies the
-unallocated result; it does not require a character-for-character operation
+value result; it does not require a character-for-character operation
 stem. Keep the borrowed receiver used by these calculations. Do not introduce
 a `to_` prefix that requires a receiver change or lint suppression solely to
 match the allocating entry's name. This does not require a companion operation

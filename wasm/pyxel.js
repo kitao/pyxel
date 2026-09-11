@@ -98,6 +98,7 @@ window.pyxelContext = {
   pyodide: null,
   params: null,
   hasFatalError: false,
+  resetPromise: null,
 };
 
 const _virtualGamepadStates = Array(VIRTUAL_GAMEPAD_BUTTON_COUNT).fill(false);
@@ -250,81 +251,16 @@ async function launchPyxel(params) {
 }
 
 async function resetPyxel() {
-  if (!window.pyxelContext.initialized) {
-    return;
-  }
-  if (window.pyxelContext.hasFatalError) {
-    location.reload();
-    return;
-  }
-
+  const context = window.pyxelContext;
+  const previous = context.resetPromise ?? Promise.resolve();
+  const pending = previous.then(_resetPyxel);
+  context.resetPromise = pending;
   try {
-    document.getElementById("pyxel-error-overlay")?.remove();
-    window.pyxelContext.pyodide.runPython(`
-      import pyxel
-      pyxel.quit()
-    `);
-
-    const audioContext =
-      window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
-    if (audioContext && audioContext.state === "running") {
-      // Drain pending audio callbacks before suspending the context.
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      await audioContext.suspend();
+    await pending;
+  } finally {
+    if (context.resetPromise === pending) {
+      context.resetPromise = null;
     }
-
-    const pyodide = window.pyxelContext.pyodide;
-    pyodide._module._emscripten_cancel_main_loop();
-
-    pyodide.runPython(`
-      import importlib
-      import os
-      import shutil
-      import sys
-      import tempfile
-      from types import ModuleType
-
-      import pyxel
-
-      pyxel._reset_statics()
-
-      work_dir = "${PYXEL_WORKING_DIRECTORY}"
-      temp_dir = tempfile.gettempdir()
-      mods = [
-          n
-          for n, m in list(sys.modules.items())
-          if getattr(m, "__file__", "")
-          and os.path.abspath(m.__file__).startswith((work_dir + "/", temp_dir + "/"))
-      ] + ["__main__"]
-
-      for n in mods:
-          try:
-              del sys.modules[n]
-          except BaseException:
-              pass
-      importlib.invalidate_caches()
-      sys.modules["__main__"] = ModuleType("__main__")
-
-      os.chdir("/")
-      if os.path.exists(temp_dir):
-          shutil.rmtree(temp_dir)
-      os.makedirs(temp_dir, exist_ok=True)
-
-      if os.path.exists(work_dir):
-          shutil.rmtree(work_dir)
-      os.makedirs(work_dir, exist_ok=True)
-      os.chdir(work_dir)
-    `);
-
-    await _executePyxelCommand(pyodide, window.pyxelContext.params);
-
-    setTimeout(() => {
-      if (audioContext && audioContext.state === "suspended") {
-        audioContext.resume();
-      }
-    }, 0);
-  } catch (error) {
-    _displayFatalErrorOverlay(error);
   }
 }
 
@@ -957,6 +893,85 @@ const _addVirtualGamepad = (mode) => {
 };
 
 // Command execution
+
+const _resetPyxel = async () => {
+  if (!window.pyxelContext.initialized) {
+    return;
+  }
+  if (window.pyxelContext.hasFatalError) {
+    location.reload();
+    return;
+  }
+
+  try {
+    document.getElementById("pyxel-error-overlay")?.remove();
+    window.pyxelContext.pyodide.runPython(`
+      import pyxel
+      pyxel.quit()
+    `);
+
+    const audioContext =
+      window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
+    if (audioContext && audioContext.state === "running") {
+      // Drain pending audio callbacks before suspending the context.
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      await audioContext.suspend();
+    }
+
+    const pyodide = window.pyxelContext.pyodide;
+    pyodide._module._emscripten_cancel_main_loop();
+
+    pyodide.runPython(`
+      import importlib
+      import os
+      import shutil
+      import sys
+      import tempfile
+      from types import ModuleType
+
+      import pyxel
+
+      pyxel._reset_statics()
+
+      work_dir = "${PYXEL_WORKING_DIRECTORY}"
+      temp_dir = tempfile.gettempdir()
+      mods = [
+          n
+          for n, m in list(sys.modules.items())
+          if getattr(m, "__file__", "")
+          and os.path.abspath(m.__file__).startswith((work_dir + "/", temp_dir + "/"))
+      ] + ["__main__"]
+
+      for n in mods:
+          try:
+              del sys.modules[n]
+          except BaseException:
+              pass
+      importlib.invalidate_caches()
+      sys.modules["__main__"] = ModuleType("__main__")
+
+      os.chdir("/")
+      if os.path.exists(temp_dir):
+          shutil.rmtree(temp_dir)
+      os.makedirs(temp_dir, exist_ok=True)
+
+      if os.path.exists(work_dir):
+          shutil.rmtree(work_dir)
+      os.makedirs(work_dir, exist_ok=True)
+      os.chdir(work_dir)
+    `);
+
+    await _executePyxelCommand(pyodide, window.pyxelContext.params);
+
+    setTimeout(() => {
+      if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+    }, 0);
+  } catch (error) {
+    _displayFatalErrorOverlay(error);
+  }
+};
 
 const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
 

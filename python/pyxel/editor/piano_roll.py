@@ -164,7 +164,7 @@ class PianoRoll(Widget):
         )
 
         # Draw notes
-        for i, note in enumerate(self.get_field(0)):
+        for i, note in enumerate(self.get_field(0)[:MAX_SOUND_LENGTH]):
             pyxel.rect(
                 i * 4 + 31,
                 143 - note * 2,

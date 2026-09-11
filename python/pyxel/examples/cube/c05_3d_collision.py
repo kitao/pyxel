@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
+from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Primitive, Vec3
 
 GRAVITY = -0.03
 JUMP_SPEED = 0.42
@@ -49,6 +49,7 @@ class QuadSurface(Node):
         self.add_child(Node.from_mesh(self.mesh))
 
     def on_draw(self):
+        self.depth_offset(-0.01)
         edge_points = [self.corners[i] for i in [0, 1, 3, 2]]
         for p, q in zip(edge_points, edge_points[1:] + edge_points[:1]):
             self.line(p, q, self.outline)
@@ -86,6 +87,7 @@ class MovingPlatform(Node):
         self.collider.velocity = self.delta
 
     def on_draw(self):
+        self.depth_offset(-0.01)
         self.box(Mat4.IDENTITY, self.size, 10)
         self.boxb(Mat4.IDENTITY, self.size, 1)
 
@@ -103,7 +105,7 @@ class Goal(Node):
 
     def on_draw(self):
         self.box(Mat4.IDENTITY, Vec3(0.75, 0.75, 0.75), 10)
-        self.boxb(Mat4.IDENTITY, Vec3(0.9, 0.9, 0.9), 7)
+        self.boxb(Mat4.IDENTITY, Vec3(0.75, 0.75, 0.75), 7)
 
 
 class Player(Node):
@@ -189,16 +191,7 @@ class Player(Node):
             self.reached_goal = True
             return
 
-        offset = contact.normal * contact.depth
-        if self.parent is not None:
-            parent_world = self.parent.world_transform
-            offset = (
-                Vec3.ZERO
-                if abs(parent_world.determinant()) < 1e-12
-                else offset.to_local_dir(parent_world)
-            )
-
-        push = Mat4.from_translation(offset)
+        push = Mat4.from_translation(contact.normal * contact.depth)
         self.transform = push * self.transform
 
         if contact.normal.y > 0.45:
@@ -214,9 +207,6 @@ class Player(Node):
 class Scene(Node):
     def __init__(self, player_mesh):
         super().__init__()
-
-        self.shading = Shading(pyxel.colors)
-        self.shading.direction = Vec3(0.4, -1.0, -0.3).normalize()
 
         self.camera = Camera()
         self.camera.clear_color = 12

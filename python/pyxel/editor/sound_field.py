@@ -96,7 +96,10 @@ class SoundField(Widget):
 
         # Draw field data
         data_str = [
-            "".join(chars[v] if v < len(chars) else "?" for v in self.get_field(i + 1))
+            "".join(
+                chars[v] if v < len(chars) else "?"
+                for v in self.get_field(i + 1)[:MAX_SOUND_LENGTH]
+            )
             for i, chars in enumerate(_FIELD_CHARS)
         ]
         for i in range(3):

@@ -27,16 +27,7 @@ def make_quad_mesh(corners, color):
 
 
 def apply_contact(node, contact):
-    offset = contact.normal * contact.depth
-    if node.parent is not None:
-        parent_world = node.parent.world_transform
-        offset = (
-            Vec3.ZERO
-            if abs(parent_world.determinant()) < 1e-12
-            else offset.to_local_dir(parent_world)
-        )
-
-    push = Mat4.from_translation(offset)
+    push = Mat4.from_translation(contact.normal * contact.depth)
     spin = Mat4.from_quat(contact.delta_rotation)
     node.transform = push * node.transform * spin
     node.collider.velocity += contact.delta_velocity
@@ -129,7 +120,7 @@ class CapsuleBall(Node):
         self.box(Mat4.IDENTITY, Vec3(0.58, 1.15, 0.58), 14)
         self.sphere(Vec3(0.0, -0.58, 0.0), 0.34, 14)
         self.sphere(Vec3(0.0, 0.58, 0.0), 0.34, 14)
-        self.boxb(Mat4.IDENTITY, Vec3(0.62, 1.18, 0.62), 1)
+        self.boxb(Mat4.IDENTITY, Vec3(0.58, 1.15, 0.58), 1)
         self.line(Vec3(0.0, -0.88, 0.0), Vec3(0.0, 0.88, 0.0), 7)
 
 

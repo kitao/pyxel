@@ -313,7 +313,7 @@ Submitting a pull request implies that you agree to license your contribution un
 
 ## License
 
-Pyxel is licensed under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE). It can be reused in proprietary software, provided that all copies of the software or its substantial portions include a copy of the MIT License terms and a copyright notice.
+Pyxel is licensed under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE). You may freely sell or distribute it as long as you include the copyright notice and the full license text in the source code, a file for license notices, or a similar place.
 
 ## Recruiting Sponsors
 

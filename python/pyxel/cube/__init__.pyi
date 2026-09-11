@@ -454,6 +454,7 @@ class Node:
         colkey: int | None = None,
         angle: float = 0.0,
     ) -> None: ...
+
     # Asset-based
     def prim(
         self,

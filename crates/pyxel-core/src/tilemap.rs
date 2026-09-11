@@ -342,10 +342,11 @@ impl Tilemap {
         delta: f32,
         cross_start: i32,
         cross_end: i32,
+        primary_limit: i32,
         walls: &[Tile],
         make_tile_coords: impl Fn(i32, i32) -> (i32, i32),
     ) -> f32 {
-        if delta == 0.0 {
+        if delta == 0.0 || cross_start > cross_end {
             return delta;
         }
 
@@ -353,8 +354,10 @@ impl Tilemap {
         if delta > 0.0 {
             let cur_edge = pos + size - 1.0;
             let new_edge = cur_edge + delta;
-            let start = ((cur_edge / tile_size).floor() as i32).saturating_add(1);
-            let end = (new_edge / tile_size).floor() as i32;
+            let start = ((cur_edge / tile_size).floor() as i32)
+                .saturating_add(1)
+                .max(0);
+            let end = ((new_edge / tile_size).floor() as i32).min(primary_limit.saturating_sub(1));
 
             for primary in start..=end {
                 for cross in cross_start..=cross_end {
@@ -366,8 +369,10 @@ impl Tilemap {
             }
         } else {
             let new_edge = pos + delta;
-            let start = ((pos / tile_size).floor() as i32).saturating_sub(1);
-            let end = (new_edge / tile_size).floor() as i32;
+            let start = ((pos / tile_size).floor() as i32)
+                .saturating_sub(1)
+                .min(primary_limit.saturating_sub(1));
+            let end = ((new_edge / tile_size).floor() as i32).max(0);
 
             for primary in (end..=start).rev() {
                 for cross in cross_start..=cross_end {
@@ -392,11 +397,19 @@ impl Tilemap {
         walls: &[Tile],
     ) -> f32 {
         let tile_size = TILE_SIZE as f32;
-        let ty0 = (y / tile_size).floor() as i32;
-        let ty1 = ((y + height - 1.0) / tile_size).floor() as i32;
-        self.collide_resolve_axis(x, width, dx, ty0, ty1, walls, |primary, cross| {
-            (primary, cross)
-        })
+        let ty0 = ((y / tile_size).floor() as i32).max(0);
+        let ty1 = (((y + height - 1.0) / tile_size).floor() as i32)
+            .min((self.canvas.height() as i32).saturating_sub(1));
+        self.collide_resolve_axis(
+            x,
+            width,
+            dx,
+            ty0,
+            ty1,
+            self.canvas.width() as i32,
+            walls,
+            |primary, cross| (primary, cross),
+        )
     }
 
     fn collide_resolve_y(
@@ -409,11 +422,19 @@ impl Tilemap {
         walls: &[Tile],
     ) -> f32 {
         let tile_size = TILE_SIZE as f32;
-        let tx0 = (x / tile_size).floor() as i32;
-        let tx1 = ((x + width - 1.0) / tile_size).floor() as i32;
-        self.collide_resolve_axis(y, height, dy, tx0, tx1, walls, |primary, cross| {
-            (cross, primary)
-        })
+        let tx0 = ((x / tile_size).floor() as i32).max(0);
+        let tx1 = (((x + width - 1.0) / tile_size).floor() as i32)
+            .min((self.canvas.width() as i32).saturating_sub(1));
+        self.collide_resolve_axis(
+            y,
+            height,
+            dy,
+            tx0,
+            tx1,
+            self.canvas.height() as i32,
+            walls,
+            |primary, cross| (cross, primary),
+        )
     }
 
     fn is_wall(&self, tx: i32, ty: i32, walls: &[Tile]) -> bool {

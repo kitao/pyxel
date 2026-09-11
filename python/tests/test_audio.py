@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import sys
 
@@ -174,6 +175,46 @@ for seed in range(16):
         )
         assert result.returncode == 0, result.stdout + result.stderr
         assert "Failed to initialize audio device" not in result.stdout
+
+
+class TestAudioExport:
+    def test_mp4_export_preserves_existing_temporary_file(self, tmp_path):
+        if shutil.which("ffmpeg") is None:
+            pytest.skip("FFmpeg is required for MP4 export")
+        sentinel = tmp_path / "pyxel_mp4_image.png"
+        sentinel.write_bytes(b"existing user file")
+        code = """
+import sys
+from pathlib import Path
+
+import pyxel
+
+root = Path(sys.argv[1])
+pyxel.init(8, 8, headless=True)
+pyxel.sounds[0].set("c2", "t", "7", "n", 10)
+music = pyxel.Music()
+music.set([0])
+for name, source in [("sound", pyxel.sounds[0]), ("music", music)]:
+    source.save(str(root / name), 0.1, ffmpeg=True)
+    assert (root / f"{name}.wav").read_bytes()[:4] == b"RIFF"
+    assert (root / f"{name}.mp4").read_bytes()[4:8] == b"ftyp"
+"""
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code, str(tmp_path)],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+            env={
+                **os.environ,
+                "SDL_AUDIODRIVER": "dummy",
+                "TMPDIR": str(tmp_path),
+                "TEMP": str(tmp_path),
+                "TMP": str(tmp_path),
+            },
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert sentinel.read_bytes() == b"existing user file"
 
 
 class TestDeprecatedAccessors:

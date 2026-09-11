@@ -4,32 +4,29 @@
 
 - Added the Pyxel Cube software-rendered 3D extension module
 - Removed old MML syntax and pre-2.0 resource loading
-- Updated Pyodide to version 314.0.6
+- Updated Pyodide to 314.0.6 and WebAssembly wheel platform tags
 - Added an app2exe install extra for PyInstaller
 - Improved Python type hints and catchable API errors
-- Fixed blit clipping, self-copying, flood fills, and tilemap collisions
-- Fixed scaled or rotated bltm drawing tiles outside the image as color 0
-- Fixed GIF capture colors and failures on large captures
-- Fixed screenshot and image saving with colors beyond the palette
+- Fixed blit clipping, primitive and text drawing, and tilemap collisions
+- Fixed capture and image saving with large images or extended palettes
 - Fixed key repeat, modifier states, and mouse positioning
 - Fixed frame timing during long-running sessions
-- Fixed sound playback, sequence data loss, and BGM generation hangs
-- Fixed same-pitch MML ties ignoring the Q gate time
+- Fixed MML timing, sound playback, audio exports, and BGM generation hangs
 - Fixed resource saving, version parsing, and TMX imports
-- Fixed sequence access failures and deadlocks during Python garbage collection
-- Fixed unwanted data changes, import errors, and save failures in Pyxel Editor
-- Fixed drawing and wavetable editing in Pyxel Editor and examples
-- Fixed tile range selection by dragging in Pyxel Editor
-- Kept the title on the save file after dropping a resource in Pyxel Editor
-- Fixed app packaging paths, overwrites, and directory symlinks
+- Fixed data view lifetimes, sequence loss, and garbage collection deadlocks
+- Fixed resource editing, input, and saving in Pyxel Editor and examples
+- Fixed collisions in the shooter example
+- Fixed app packaging, startup paths, overwrites, and directory handling
 - Fixed app2exe imports and concurrent builds
 - Fixed play and watch process cleanup
-- Fixed web startup, imports, and virtual gamepad resizing
+- Fixed web startup, resets, imports, and virtual gamepad resizing
 - Fixed project loading, saving, downloads, and share URLs in web tools
 - Improved web layouts, accessibility, and API reference search
-- Improved blit and primitive drawing performance and reduced audio allocations
+- Fixed local web preview serving and restricted access to public files
+- Improved rendering, audio, tilemap collision, and editor performance
 - Fixed OpenGL cleanup on application shutdown
-- Improved wheel builds and SDL2 download verification
+- Improved wheel builds, validation, and SDL2 download verification
+- Fixed Windows development setup and partial version updates
 - Improved documentation and translations
 
 ## 2.9.9

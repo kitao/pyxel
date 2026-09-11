@@ -47,6 +47,20 @@ class _StaticCollisionCounter(Node):
         self.depths.append(contact.depth)
 
 
+class _RoundedBox(Node):
+    def __init__(self, transform, *, mass=1.0, velocity=Vec3.ZERO):
+        super().__init__()
+        self.transform = transform
+        self.collider = Collider(
+            size=Vec3(2, 2, 2), radius=1.0, mass=mass, velocity=velocity
+        )
+        self.contacts = []
+
+    def on_collide(self, other, contact):
+        del other
+        self.contacts.append((contact.depth, tuple(contact.normal)))
+
+
 class TestCollisionPipeline:
     def test_overlapping_spheres_fire_on_collide(self):
         # Two spheres at distance 0.5 with radius 0.5 each → overlap.
@@ -83,6 +97,77 @@ class TestCollisionPipeline:
         assert wall.collide_count == 1
         assert sensor.depths == [0.0]
         assert wall.depths == [0.0]
+
+    @pytest.mark.parametrize("rotated", [False, True])
+    @pytest.mark.parametrize(
+        "center, depth, normal",
+        [
+            ((3.5, 3.5, 0), None, None),
+            ((3.5, 0, 0), 0.5, (-1, 0, 0)),
+            ((3, 3, 3), 2 - 3**0.5, (-1 / 3**0.5,) * 3),
+        ],
+    )
+    def test_rounded_boxes_use_euclidean_corner_distance(
+        self, rotated, center, depth, normal
+    ):
+        transform = (
+            Mat4.from_translation(Vec3(3, -2, 1))
+            * Mat4.from_axis_angle(Vec3.FORWARD, 37)
+            if rotated
+            else Mat4.IDENTITY
+        )
+        root = Node()
+        body = _RoundedBox(transform)
+        wall = _RoundedBox(transform * Mat4.from_translation(Vec3(*center)), mass=0)
+        root.add_child(body)
+        root.add_child(wall)
+
+        root.update()
+
+        # Core-box gaps are (1.5, 1.5, 0), (1.5, 0, 0), or (1, 1, 1).
+        # Their Euclidean length, not each gap alone, is compared with radius 2.
+        if depth is None:
+            assert body.contacts == []
+            assert wall.contacts == []
+        else:
+            assert len(body.contacts) == len(wall.contacts) == 1
+            # The mass-zero wall leaves the body the full geometric correction.
+            # Unit-scale f32 geometry and rigid transforms need a small tolerance.
+            assert body.contacts[0][0] == pytest.approx(depth, abs=1e-4)
+            assert body.contacts[0][1] == pytest.approx(
+                tuple(Vec3(*normal).to_world_dir(transform)), abs=1e-4
+            )
+            assert wall.contacts[0][0] == 0.0
+
+    @pytest.mark.parametrize(
+        "offset, body_speed, wall_speed, hits",
+        [(3.5, 10, 0, False), (3, 10, 0, True), (3, 8, -2, True)],
+    )
+    def test_swept_rounded_boxes_use_corner_distance(
+        self, offset, body_speed, wall_speed, hits
+    ):
+        root = Node()
+        body = _RoundedBox(
+            Mat4.from_translation(Vec3(-5, offset, offset)),
+            velocity=Vec3(body_speed, 0, 0),
+        )
+        wall = _RoundedBox(Mat4.IDENTITY, mass=0, velocity=Vec3(wall_speed, 0, 0))
+        root.add_child(body)
+        root.add_child(wall)
+
+        root.update()
+
+        # Both endpoints are separated. Relative x motion is 10 in all cases;
+        # the transverse gap is sqrt(2) * (offset - 2), with combined radius 2.
+        if not hits:
+            assert body.contacts == []
+            assert wall.contacts == []
+        else:
+            assert len(body.contacts) == len(wall.contacts) == 1
+            # First contact has core separation (-sqrt(2), 1, 1), of length 2.
+            assert body.contacts[0][1] == pytest.approx(
+                (-(2**0.5) / 2, 0.5, 0.5), abs=1e-4
+            )
 
 
 class TestMeshColliderRobustness:
@@ -203,6 +288,64 @@ class TestRaycast:
         assert hit.distance == 4.5
         assert root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -2), max_distance=3.0) is None
 
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("rotated", [False, True])
+    @pytest.mark.parametrize(
+        "size, origin, direction, point, normal",
+        [
+            ((0, 2, 0), (0, 0, 0), (0, 1, 0), (0, 1.5, 0), (0, 1, 0)),
+            ((0, 2, 0), (0, 1, 0), (0, -1, 0), (0, -1.5, 0), (0, -1, 0)),
+            ((0, 2, 0), (0, 0, 0), (1, 0, 0), (0.5, 0, 0), (1, 0, 0)),
+            ((0, 2, 0), (0, 3, 0), (0, -1, 0), (0, 1.5, 0), (0, 1, 0)),
+            ((2, 2, 2), (0, 1, 0), (1, 0, 0), (1.5, 1, 0), (1, 0, 0)),
+            ((2, 2, 2), (0, 0, 0), (1, 0, 0), (1.5, 0, 0), (1, 0, 0)),
+            (
+                (2, 2, 2),
+                (0, 0, 0),
+                (1, 1, 1),
+                (1 + 0.5 / 3**0.5,) * 3,
+                (1 / 3**0.5,) * 3,
+            ),
+            ((2, 2, 2), (3, 0, 0), (-1, 0, 0), (1.5, 0, 0), (1, 0, 0)),
+        ],
+    )
+    def test_raycast_uses_outer_capsule_and_rounded_box_surfaces(
+        self, method, rotated, size, origin, direction, point, normal
+    ):
+        root = Node()
+        body = Node()
+        body.collider = Collider(size=Vec3(*size), radius=0.5)
+        transform = (
+            Mat4.from_translation(Vec3(3, -2, 1))
+            * Mat4.from_axis_angle(Vec3.FORWARD, 37)
+            if rotated
+            else Mat4.IDENTITY
+        )
+        body.transform = transform
+        root.add_child(body)
+        origin = Vec3(*origin)
+        point = Vec3(*point)
+        distance = (point - origin).length()
+        direction = Vec3(*direction).to_world_dir(transform)
+        origin = transform * origin
+
+        query = getattr(root, method)
+        result = query(origin, direction)
+        hit = result[0] if method == "raycast_all" else result
+        assert hit is not None
+        assert hit.node is body
+        if method == "raycast_all":
+            assert len(result) == 1
+        # Rigid transforms and the diagonal corner introduce unit-scale f32 rounding.
+        assert hit.distance == pytest.approx(distance, abs=1e-5)
+        assert tuple(hit.point) == pytest.approx(tuple(transform * point), abs=1e-5)
+        assert tuple(hit.normal) == pytest.approx(
+            tuple(Vec3(*normal).to_world_dir(transform)), abs=1e-5
+        )
+        assert query(origin, direction, max_distance=distance - 0.01) == (
+            [] if method == "raycast_all" else None
+        )
+
     def test_raycast_returns_none_when_miss(self):
         root = Node()
         root.add_child(_ball(Vec3(0, 0, 0)))
@@ -264,6 +407,30 @@ class TestOverlapQueries:
 
         nodes = root.overlap_box(Mat4.IDENTITY, Vec3(2, 2, 2))
         assert nodes == [inside]
+
+    @pytest.mark.parametrize("rotated", [False, True])
+    @pytest.mark.parametrize(
+        "center, overlaps",
+        [((2.75, 2.75, 0), False), ((2.5, 0, 0), True), ((2.5, 2.5, 2.5), True)],
+    )
+    def test_overlap_box_uses_rounded_target_corner_distance(
+        self, rotated, center, overlaps
+    ):
+        transform = (
+            Mat4.from_translation(Vec3(3, -2, 1))
+            * Mat4.from_axis_angle(Vec3.FORWARD, 37)
+            if rotated
+            else Mat4.IDENTITY
+        )
+        root = Node()
+        target = _RoundedBox(transform * Mat4.from_translation(Vec3(*center)))
+        root.add_child(target)
+
+        # The sharp query contributes no radius. Its core distance to the target
+        # is sqrt(2) * 0.75, 0.5, or sqrt(3) * 0.5; the target radius is 1.
+        assert root.overlap_box(transform, Vec3(2, 2, 2)) == (
+            [target] if overlaps else []
+        )
 
     def test_overlap_sphere_filters_by_tag(self):
         root = Node()

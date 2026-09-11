@@ -377,9 +377,10 @@ accumulator and final check. Standalone shell helpers are separated by one
 blank line with attached explanations kept with them, and a cleanup function
 stays with its trap registration.
 
-Make continuations, heredoc data, echoed file contents, and YAML literal or
-folded scalars are file contents: keep their field or directive inventories
-continuous and do not turn them into source separators.
+Treat whitespace in Make continuations, heredoc bodies, echoed output, and YAML
+literal or folded scalars according to the consuming format. Keep field and
+directive inventories continuous; do not treat content whitespace as a source
+separator.
 
 **Reason:** Tables, records, workflow steps, and targets provide stable
 navigation units; blank lines between every key or recipe line would fragment
