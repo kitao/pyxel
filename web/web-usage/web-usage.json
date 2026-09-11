@@ -948,7 +948,7 @@
     },
     "custom_elements_screen_body": {
       "en": "By default, the Pyxel screen is displayed across the entire page. Place a {1} tag with {0} in the HTML to render the screen inside that element, allowing you to adjust its position and size.",
-      "cn": "默认情况下，Pyxel 屏幕会显示在整个页面上。在 HTML 中放置带有 {0} 的 {1} 标签，即可在该元素内渲染画面，从而调整其位置和大小。",
+      "cn": "默认情况下，Pyxel 屏幕会显示在整个页面上。在 HTML 中放置带有 {0} 的 {1} 标签，即可在该元素内渲染屏幕，从而调整其位置和大小。",
       "de": "Standardmäßig wird der Pyxel-Bildschirm über die gesamte Seite angezeigt. Platzieren Sie ein {1}-Tag mit {0} im HTML, um den Bildschirm in diesem Element zu rendern und Position und Größe anzupassen.",
       "es": "Por defecto, la pantalla de Pyxel se muestra en toda la página. Coloque una etiqueta {1} con {0} en el HTML para renderizar la pantalla dentro de ese elemento, permitiendo ajustar su posición y tamaño.",
       "fr": "Par défaut, l'écran Pyxel est affiché sur toute la page. Placez une balise {1} avec {0} dans le HTML pour afficher l'écran à l'intérieur de cet élément, ce qui permet d'ajuster sa position et sa taille.",

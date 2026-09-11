@@ -34,7 +34,7 @@ contract or introduce a transaction across all project files.
 
 ## Runtime error presentation
 
-**Decision:** The [Web runtime](../../../wasm/pyxel.js) retains an uncaught
+**Decision:** The [web runtime](../../../wasm/pyxel.js) retains an uncaught
 error's name, message, and available stack in its fatal display. If the stack
 already begins with that complete summary, display it once; a stack containing
 only frames still needs the summary. Preserve runtime-provided wording.
@@ -95,7 +95,7 @@ those links or justify dropping their options.
 
 **Decision:** The [Web launcher](../../../web/launcher/index.html) forwards a
 `packages` URL parameter, and the `pyxel-run` and `pyxel-play` custom elements
-in the [Web runtime](../../../wasm/pyxel.js) accept a `packages` attribute that
+in the [web runtime](../../../wasm/pyxel.js) accept a `packages` attribute that
 loads the named Pyodide packages before the command runs. Keep these paths as an
 undocumented compatibility route: the URL builder, guides, and reference do not
 describe them, and neither their presence in the runtime nor their absence from
@@ -118,8 +118,7 @@ inspection. Loading an unrelated CDN build would defeat that purpose.
 [start_showcase](../../../scripts/start_showcase) limits resolved file paths to
 the asset roots, rewrites page headers, and supplies a service worker where
 the browser supports it. Its network-accessible listener does not make it a
-general repository file server. These choices concern the local development
-server; they neither prescribe public hosting nor guarantee service-worker
+general repository file server. These choices concern the showcase server; they neither prescribe public hosting nor guarantee service-worker
 support on every HTTP origin.
 
 Service-worker registration is optional. Its existing warning handles both a

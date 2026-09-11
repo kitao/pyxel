@@ -16,14 +16,16 @@ for manual checks of look, sound, and feel.
 
 The [Makefile](../../../Makefile) provides one automated entry point, `make test`,
 for Python, Rust, and JavaScript. The current JavaScript tests run on Node.js;
-calling them `test-wasm` would imply execution of the WASM runtime they do not
-perform. `make run` first runs the
+calling them `test-wasm` would imply execution of the web runtime they do not
+perform. `make run` installs the current native package, then runs the
 [startup check](../../../scripts/check_window_startup), which opens a window in
 every screen mode, draws, exits, and reports the installed build; the automated
 suites run headless and never create a GL context. It then uses the
 [example runner](../../../scripts/run_examples) for native examples, bundled
-apps, and the editor. `make run-wasm` builds and serves the local browser
-runtime. Those two commands distinguish execution environments, not programming
+apps, and the editor. `make run-wasm` builds the web wheel and serves the web
+runtime locally through the [showcase server](../../../scripts/start_showcase),
+which also serves the working tree with the tracked wheel for page checks.
+Those two commands distinguish execution environments, not programming
 languages.
 
 Archive creation, startup paths, watcher restarts, and executable export have
@@ -127,13 +129,15 @@ behavior, but source text alone does not establish another platform's execution.
 ### Numerical tolerances and audio timing
 
 **Decision:** Use tolerances for floating-point geometry when the calculation's
-precision or algorithm justifies them. State the numerical basis where a
-tolerance is defined for reuse, at a helper or a constant; an inline tolerance
-beside the compared quantities needs no separate statement. Record the source
-of nondeterminism at a test that accepts alternative results. An envelope test
+precision or algorithm justifies them. State the numerical basis once where a
+tolerance is defined for reuse, at a constant, a helper, or the first of
+adjacent helpers sharing the value; an inline tolerance beside the compared
+quantities needs no separate statement. Record the cause of nondeterminism at
+the test or assertion helper that accepts alternative outcomes. An envelope test
 must not accept either endpoint merely to pass.
 
-**Reason:** Those alternatives would hide an unresolved expectation. In
+**Reason:** Accepting either envelope endpoint would hide an unresolved
+expectation. In
 contrast, `play_pos()` queried during live audio playback can depend on callback
 timing, so alternative results may be valid when that timing is the reason.
 A headless calculation does not gain the same allowance merely because it

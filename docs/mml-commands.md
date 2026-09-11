@@ -18,7 +18,7 @@
 | `@VIB <slot> { delay_ticks, period_ticks, depth_cents }` | Slot number: 1 or greater. Sets and switches to the specified vibrato slot. Slot 0 cannot be specified. Inside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note. Example: `@VIB1 { 24, 12, 100 }` |
 | `@GLI <slot>` | Switches the glide (pitch slide) slot. Range: 0 or greater. 0 turns it off. |
 | `@GLI <slot> { offset_cents, dur_ticks }` | Slot number: 1 or greater. Sets and switches to the specified glide (pitch slide) slot. Slot 0 cannot be specified. Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note. Specifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively. Example: `@GLI1 { -100, 24 }` |
-| `O <oct>` | Sets the octave. Range: -1-9. `O4`'s A is 440 Hz. Default is 4. |
+| `O <oct>` | Sets the octave. Range: -1 to 9. `O4`'s A is 440 Hz. Default is 4. |
 | `>` | Raises the octave by 1 (max 9). |
 | `<` | Lowers the octave by 1 (min -1). |
 | `L <len>` | Sets the default note/rest length. Range: 1-192 (divisors of 192 only). `L4` is a quarter note, `L8` is an eighth note, and `L12` is an eighth note triplet. Default is 4. |
