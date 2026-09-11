@@ -1,6 +1,8 @@
 # Documentation Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Documentation policy](../design-policy.md#documentation) · [Release Notes policy](../design-policy.md#release-notes)
+[Audit and decision records](../design-audit.md#decision-records) ·
+[Documentation policy](../design-policy.md#documentation) · [Release Notes
+policy](../design-policy.md#release-notes)
 
 ## Reader and Prose
 
@@ -20,11 +22,12 @@ advanced capabilities that users can discover as they experiment. Listing the
 extensions and qualifications immediately would obscure that starting point
 and increase what a user must learn before making something.
 
-An [advanced API](../../../web/api-reference/index.html) that can extend the palette
-and a basic introduction that says "16 colors" serve different reading tasks.
-They are not automatically contradictory. Relevant conditions and consequences
-still belong in the documentation for the advanced operation itself. This
-choice preserves the distinction across translations and generated documents.
+An [advanced API](../../../web/api-reference/index.html) that can extend the
+palette and a basic introduction that says "16 colors" serve different reading
+tasks. They are not automatically contradictory. Relevant conditions and
+consequences still belong in the documentation for the advanced operation
+itself. This choice preserves the distinction across translations and generated
+documents.
 
 ### Advanced API labels
 
@@ -119,15 +122,15 @@ not require generating every language or making both stubs identical in detail.
 **Decision:** Keep handwritten Markdown's paragraph structure, line breaks, and
 layout under editorial control. The limited typography corrections in
 [format_prose](../../../scripts/format_prose) also apply to its selected
-handwritten inputs, `README.md` and `docs/faq-ja.md`; they do not reflow paragraphs
-or choose their structure. Use relative paths or generic placeholders in
-published instructions; preserve literal code and paths that are part of an
+handwritten inputs, `README.md` and `docs/faq-ja.md`; they do not reflow
+paragraphs or choose their structure. Use relative paths or generic placeholders
+in published instructions; preserve literal code and paths that are part of an
 interface.
 
-**Reason:** Prose structure needs editorial judgment, while private machine paths
-would make the instructions unusable to other contributors. Generated documents
-retain their source-owned formatting rather than being edited as handwritten
-prose.
+**Reason:** Prose structure needs editorial judgment, while private machine
+paths would make the instructions unusable to other contributors. Generated
+documents retain their source-owned formatting rather than being edited as
+handwritten prose.
 
 ### Contributor workflow and command instructions
 
@@ -142,8 +145,9 @@ discussing a change to submitting a pull request. It links to the Makefile for
 setup and commands, and to the design documents for standards and verification.
 
 **Reason:** Contributors need both a workflow and commands, at different steps.
-Duplicating the command catalogue in the PR guide creates competing instructions;
-putting the PR workflow into the Makefile obscures its command reference.
+Duplicating the command catalogue in the PR guide creates competing
+instructions; putting the PR workflow into the Makefile obscures its command
+reference.
 
 ### Organization of design documents
 
@@ -164,11 +168,11 @@ comparison against an old shape.
 
 **Reason:** A reviewer should find the judgments needed for the assigned work
 without reading unrelated decisions. Shared choices stay in one place, with
-links from dependent entries. The audit indexes files and their responsibilities;
-individual entries remain owned by those files. Additions within a file therefore
-do not require another entry list in the audit. Adjust physical file boundaries
-when related reading tasks or volume justify it, while preserving the owning
-policy area and keeping names meaningful in file searches.
+links from dependent entries. The audit indexes files and their
+responsibilities; individual entries remain owned by those files. Additions
+within a file therefore do not require another entry list in the audit. Adjust
+physical file boundaries when related reading tasks or volume justify it, while
+preserving the owning policy area and keeping names meaningful in file searches.
 
 File boundaries follow the decisions a reviewer needs together, not a target
 file size. Cross-file applicability belongs in a decision's scope; it does not
@@ -190,8 +194,8 @@ rationale.
 ### Translation source and comparison chain
 
 **Decision:** Japanese is the maintainer's source of truth. Translate through
-English, then use English to check the other languages. Resolve suspected meaning
-loss against Japanese and correct the complete affected chain.
+English, then use English to check the other languages. Resolve suspected
+meaning loss against Japanese and correct the complete affected chain.
 
 **Reason:** A designated source preserves the intended meaning, and the shared
 English version provides a consistent comparison point across translations.
@@ -261,7 +265,7 @@ Keep each entry on one line of at most 80 characters. Changes to an unreleased
 feature fold into its introductory entry; qualifying documentation and
 translation improvements form one summary entry.
 
-**Reason:** Entries should present useful changes at comparable granularity.
-The length and grouping conventions keep the list scannable, while the exceptions
+**Reason:** Entries should present useful changes at comparable granularity. The
+length and grouping conventions keep the list scannable, while the exceptions
 retain changes that affect how the product is built or released. Specificity is
 still required: grouping does not justify a generic cleanup claim.

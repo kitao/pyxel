@@ -1,6 +1,7 @@
 # Naming Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#naming)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code
+policy](../design-policy.md#naming)
 
 ## Across Languages
 
@@ -8,10 +9,10 @@
 
 **Decision:** Python API names and argument names remain identical through their
 bindings, stubs, reference source data, and generated descriptions. Web routes,
-serialized keys, event names, DOM identifiers, shader uniforms, and build-provider
-names retain the spelling their producers and consumers share. Language case
-conventions apply to the surrounding implementation, not to renaming those
-connections independently.
+serialized keys, event names, DOM identifiers, shader uniforms, and
+build-provider names retain the spelling their producers and consumers share.
+Language case conventions apply to the surrounding implementation, not to
+renaming those connections independently.
 
 **Reason:** These names are used to call, load, look up, or exchange something.
 The correspondence is part of their meaning. For example, the
@@ -23,10 +24,11 @@ only one representation.
 ### Directional operation families
 
 **Decision:** Related operations use the same object term and the direction
-appropriate to each operation. In [Code Maker](../../../web/code-maker/index.html),
-use `loadFromGist` with `saveToGist`, and `loadFromUrl` for loading a URL.
-Native resource operations use `load_resource` and `save_resource`; coordinate
-conversions use `to_local` and `to_world`.
+appropriate to each operation. In [Code
+Maker](../../../web/code-maker/index.html), use `loadFromGist` with
+`saveToGist`, and `loadFromUrl` for loading a URL. Native resource operations
+use `load_resource` and `save_resource`; coordinate conversions use `to_local`
+and `to_world`.
 
 **Reason:** The repeated object identifies the family; the verb and preposition
 identify its direction. Identical prepositions would not express opposite
@@ -44,7 +46,8 @@ identify asset variants. Preserve author and upstream asset names.
 **Reason:** A page URL, importable module, and generated capture have different
 consumers. Their mapping must remain recognizable without imposing one separator
 across those roles. Generated names are changed at their producer together with
-their references, under the [documentation ownership decisions](documentation.md).
+their references, under the [documentation ownership
+decisions](documentation.md).
 
 ## Rust
 
@@ -59,8 +62,8 @@ external API's C names at its call sites.
 
 Image and tilemap drawing APIs keep matching operation names. An internal
 `draw_line` may implement the public `line` API: the layers have distinct naming
-roles. Conversely, a name such as `Canvas.drawCanvas()` repeats its owner without
-adding meaning. These examples distinguish a useful correspondence from
+roles. Conversely, a name such as `Canvas.drawCanvas()` repeats its owner
+without adding meaning. These examples distinguish a useful correspondence from
 mechanical textual identity or redundant qualification.
 
 **Reason:** A binding should be recognizable from the interface it implements.
@@ -71,8 +74,9 @@ not every function in its surrounding file.
 ### Shared handles and value kernels
 
 **Decision:** Keep the shared-resource `Rc` aliases with the meaning recorded
-under [shared graphics and audio ownership](source-code-performance.md#shared-graphics-and-audio-ownership).
-They do not encode one concrete smart-pointer implementation.
+under [shared graphics and audio
+ownership](source-code-performance.md#shared-graphics-and-audio-ownership). They
+do not encode one concrete smart-pointer implementation.
 
 For a Cube operation with both a shared-object result and a value kernel, use
 the same calculation or result vocabulary with `_value`: `inverse` /
@@ -87,8 +91,9 @@ or a suffix on every value-returning helper.
 [quaternion](../../../crates/pyxel-core/src/cube/quat.rs), and
 [node](../../../crates/pyxel-core/src/cube/node.rs) pairs perform the same
 calculation with different result ownership. Their names should expose that
-correspondence; the [value-kernel decision](source-code-performance.md#cube-value-calculations)
-owns when the separate representation is useful.
+correspondence; the [value-kernel
+decision](source-code-performance.md#cube-value-calculations) owns when the
+separate representation is useful.
 
 ## Python
 
@@ -96,20 +101,22 @@ owns when the separate representation is useful.
 
 **Decision:** Editor and widget callbacks registered on an instance use
 `__on_...` names. Their registration identifies the event they handle.
-Overridable Cube `Node` hooks keep the public `on_...` names invoked by traversal.
-Reactive widget properties keep their `_var` names through registration, access,
-and the [interface summaries](source-code-comments.md).
+Overridable Cube `Node` hooks keep the public `on_...` names invoked by
+traversal. Reactive widget properties keep their `_var` names through
+registration, access, and the [interface summaries](source-code-comments.md).
 
-**Reason:** [Registered widget callbacks](../../../python/pyxel/editor/widgets/button.py)
-belong to their defining class; a subclass can register another handler without
-accidentally replacing that method. [Node hooks](../../../crates/pyxel-binding/src/cube/node.rs)
-are instead selected through overriding. Applying the same underscore scheme to
-both would change their dispatch semantics.
+**Reason:** [Registered widget
+callbacks](../../../python/pyxel/editor/widgets/button.py) belong to their
+defining class; a subclass can register another handler without accidentally
+replacing that method. [Node
+hooks](../../../crates/pyxel-binding/src/cube/node.rs) are instead selected
+through overriding. Applying the same underscore scheme to both would change
+their dispatch semantics.
 
 ### Test names and value semantics
 
-**Decision:** The Mat4 and Vec3 transformation-result groups use `TestTransform`.
-Mutation terminology belongs to tests that exercise changes to
+**Decision:** The Mat4 and Vec3 transformation-result groups use
+`TestTransform`. Mutation terminology belongs to tests that exercise changes to
 an existing mutable object, such as Camera or Shading state.
 
 **Reason:** The [matrix](../../../python/tests/cube/test_mat4.py) and

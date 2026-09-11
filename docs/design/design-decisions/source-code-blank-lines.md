@@ -1,11 +1,15 @@
 # Blank Line Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#structure-and-formatting)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code
+policy](../design-policy.md#structure-and-formatting)
 
-These decisions specify where a blank line belongs and where it does not,
-from the role and relationship of the surrounding code. The same conditions
-apply whether that boundary currently has a blank line or not, in every source
-language, in embedded content, and in tests. Where a group is named below, the code identifies it through its structure or a heading; under the [audit procedure](../design-audit.md#1-select-and-resolve-decisions), these records do not enumerate the groups of individual files.
+These decisions specify where a blank line belongs and where it does not, from
+the role and relationship of the surrounding code. The same conditions apply
+whether that boundary currently has a blank line or not, in every source
+language, in embedded content, and in tests. Where a group is named below, the
+code identifies it through its structure or a heading; under the [audit
+procedure](../design-audit.md#1-select-and-resolve-decisions), these records do
+not enumerate the groups of individual files.
 
 ## Across Languages
 
@@ -94,8 +98,9 @@ operation free of internal blank-line groups, and keep a final registration
 call together with its success return.
 
 Declaration and dispatch sites that expose the same concepts share their
-families, as the [MML command declaration](../../../crates/pyxel-core/src/mml_command.rs)
-and its [channel dispatch](../../../crates/pyxel-core/src/channel.rs) do.
+families, as the [MML command
+declaration](../../../crates/pyxel-core/src/mml_command.rs) and its [channel
+dispatch](../../../crates/pyxel-core/src/channel.rs) do.
 
 Where a record, catalogue, or stub marks its groups only by blank lines, each
 group covers one nameable subject. A finding names the unrelated members a group
@@ -157,17 +162,17 @@ subject.
 
 ### Imports, items, and calculations
 
-**Decision:** Apply the shared processing and inventory groups inside
-functions, macros, generated implementations, and native tests. Separate each
-`use` group from following non-import declarations or executable statements
-with one blank line, including inside blocks. Generated types,
-implementations, and methods retain ordinary item separation; a storage cell
-and its sole accessor remain together. Keep compact geometry literals and
-short component calculations together; in a substantial expanded matrix
-calculation, separate complete rows or columns in the calculation's existing
-order, keeping each formula intact. Platform alternatives of one setting stay
-with the setting they select, with every `cfg` attached to its declaration;
-the [settings groups](source-code-structure-and-formatting.md#grouping-and-order-in-settingsrs)
+**Decision:** Apply the shared processing and inventory groups inside functions,
+macros, generated implementations, and native tests. Separate each `use` group
+from following non-import declarations or executable statements with one blank
+line, including inside blocks. Generated types, implementations, and methods
+retain ordinary item separation; a storage cell and its sole accessor remain
+together. Keep compact geometry literals and short component calculations
+together; in a substantial expanded matrix calculation, separate complete rows
+or columns in the calculation's existing order, keeping each formula intact.
+Platform alternatives of one setting stay with the setting they select, with
+every `cfg` attached to its declaration; the [settings
+groups](source-code-structure-and-formatting.md#grouping-and-order-in-settingsrs)
 own the section order.
 
 **Reason:** Import separation distinguishes the local name environment from the
@@ -184,13 +189,14 @@ uses them, and short lambdas remain part of their containing expression. Blank
 source lines and empty strings emitted into generated content have different
 ownership.
 
-In editor and widget classes, keep the opening interface summary as one
-comment block: a line containing only the indented `#` separates `Variables`
-from `Events` and separates the common image-editing variables from the
+In editor and widget classes, keep the opening interface summary as one comment
+block: a line containing only the indented `#` separates `Variables` from
+`Events` and separates the common image-editing variables from the
 tilemap-specific variables where both exist; entries within a group are
 consecutive; one physical blank line follows the summary, including before a
-class variable. The [interface-list decision](source-code-comments.md#ui-interface-list-notation-and-grouping)
-owns which categories and members are listed.
+class variable. The [interface-list
+decision](source-code-comments.md#ui-interface-list-notation-and-grouping) owns
+which categories and members are listed.
 
 In editor constructors, group base construction, stored state, and simple
 variable/property wiring by responsibility. An assignment becoming `new_var`,
@@ -275,14 +281,14 @@ create/click/cleanup chain around one temporary element continuous. In a
 command switch, separate substantial cases and keep each case continuous
 outside its embedded Python.
 
-In the [component stylesheet](../../../web/styles/input.css), keep the rules within each labeled `@layer
-components` group continuous and separate the labeled groups with one blank
-line; a rule using ordinary declarations alongside `@apply` does not start
-another group. Elsewhere, including runtime element rules, page-specific inline
-styles, and responsive `@media` blocks, separate rules with one blank line. Keep
-a rule's property list, a selector list, and a palette's custom properties
-continuous; a group label stays attached to its first rule, and attached rule
-comments have no following blank line.
+In the [component stylesheet](../../../web/styles/input.css), keep the rules
+within each labeled `@layer components` group continuous and separate the
+labeled groups with one blank line; a rule using ordinary declarations alongside
+`@apply` does not start another group. Elsewhere, including runtime element
+rules, page-specific inline styles, and responsive `@media` blocks, separate
+rules with one blank line. Keep a rule's property list, a selector list, and a
+palette's custom properties continuous; a group label stays attached to its
+first rule, and attached rule comments have no following blank line.
 
 In HTML, use one blank line between an explicit `head` and `body`, without
 padding between a region's tags and its members. Keep the head's metadata,

@@ -1,15 +1,17 @@
 # Structure and Formatting Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#structure-and-formatting)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code
+policy](../design-policy.md#structure-and-formatting)
 
 ## Across Languages
 
 ### Definition order
 
-**Decision:** Place high-level structures and public types before their supporting
-free functions. Required declarations and order-dependent behavior take precedence.
-The [Python example layout](#utility-functions-and-classes-in-examples) gives
-module-level teaching helpers a separate position.
+**Decision:** Place high-level structures and public types before their
+supporting free functions. Required declarations and order-dependent behavior
+take precedence. The [Python example
+layout](#utility-functions-and-classes-in-examples) gives module-level teaching
+helpers a separate position.
 
 **Reason:** This layout presents the main structures before their implementation
 support. It is the selected reading order, not a consequence of syntax or a
@@ -94,9 +96,9 @@ WASM, and web-page workflows. The `.PHONY` list uses the same target groups.
 environment derived from them, then expose the commands that use them. Native
 commands own the shared build process and WASM commands specialize it through
 recursive Make calls, so keeping each workflow together makes that
-correspondence visible. Alphabetizing variables would separate inputs from
-their derivations; alphabetizing targets would scatter the workflow. The
-[opening instructions](documentation.md#contributor-workflow-and-command-instructions)
+correspondence visible. Alphabetizing variables would separate inputs from their
+derivations; alphabetizing targets would scatter the workflow. The [opening
+instructions](documentation.md#contributor-workflow-and-command-instructions)
 have a separate reader-oriented sequence.
 
 ### Text and binary asset representation
@@ -204,10 +206,10 @@ declarations needed by decorators, defaults, and parametrization available
 before use. Keep class and fixture setup separate from the order in which
 test cases are collected or executed.
 
-**Reason:** Type help, reference navigation, and reviewing evidence are different
-reading tasks. Alphabetizing tests or copying the reference catalogue's order
-would not establish better coverage. Existing case and fixture groups remain
-recognizable when the same contract needs another case.
+**Reason:** Type help, reference navigation, and reviewing evidence are
+different reading tasks. Alphabetizing tests or copying the reference
+catalogue's order would not establish better coverage. Existing case and fixture
+groups remain recognizable when the same contract needs another case.
 
 ### Editor and widget settings groups
 
@@ -236,16 +238,17 @@ last, including a function whose role is starting or switching applications.
 Required declarations and order-dependent behavior still take precedence.
 
 **Reason:** Small reusable operations such as the entity helpers in
-[Shooter](../../../python/pyxel/examples/09_shooter.py) give readers the vocabulary
-used by the classes. Keeping that utility group before the class group avoids
-hiding shared operations after several hundred lines of game behavior. The
-classes then form a continuous account of the program leading to its startup.
+[Shooter](../../../python/pyxel/examples/09_shooter.py) give readers the
+vocabulary used by the classes. Keeping that utility group before the class
+group avoids hiding shared operations after several hundred lines of game
+behavior. The classes then form a continuous account of the program leading to
+its startup.
 
 This is the selected layout for teaching examples, not a claim that Python
 requires one universal definition order. It does not require extracting new
 helpers or moving behavior out of a class. The launcher's
-[switch_app](../../../python/pyxel/examples/17_app_launcher.py) belongs at the end
-because it selects and starts the application; resetting an existing game is
+[switch_app](../../../python/pyxel/examples/17_app_launcher.py) belongs at the
+end because it selects and starts the application; resetting an existing game is
 ordinary gameplay behavior, not application startup.
 
 Published examples are also quoted in books with line numbers. Assess a change's
@@ -268,7 +271,8 @@ registration. Keep CSS base, variant, state, and override relationships;
 shader fragments retain the host's concatenation and declaration order.
 
 **Reason:** These groups expose what the page does before its supporting
-details, using the [selected group labels](source-code-comments.md#groups-in-shared-helpers-and-applications).
+details, using the [selected group
+labels](source-code-comments.md#groups-in-shared-helpers-and-applications).
 Function hoisting permits some definition moves but does not protect
 initialization or subscriptions. CSS cascade, shader availability, and DOM focus
 order affect the result, so an alphabetical sort is not a layout-only operation.

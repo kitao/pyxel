@@ -1,13 +1,14 @@
 # Web Contract Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
+[Audit and decision records](../design-audit.md#decision-records) · [Public
+Contract policy](../design-policy.md#public-contract)
 
 ## Code Maker
 
 ### Latest project selection in Code Maker
 
-**Decision:** Keep the load token in
-[Code Maker](../../../web/code-maker/index.html) so an earlier download or archive
+**Decision:** Keep the load token in [Code
+Maker](../../../web/code-maker/index.html) so an earlier download or archive
 unpack cannot replace a later project selection or report its failure as the
 current operation's failure. Local, dialog, and startup error-reporting sites
 check the same token before displaying a load error. Startup Gist, GitHub, and
@@ -40,11 +41,12 @@ contract or introduce a transaction across all project files.
 `data..txt`, when copying a Code Maker project into its runtime. Exclude a path
 component equal to `..`, which denotes parent-directory traversal.
 
-**Reason:** Files accepted by the [project loaders and archive writer](../../../web/code-maker/index.html)
-should remain usable in the [runtime project copy](../../../web/code-maker/pyxel-screen.html).
-A double dot within a filename has a different meaning from a parent-directory
-component. This distinction does not define an archive sandbox or prescribe
-the validation used by other file-loading interfaces.
+**Reason:** Files accepted by the [project loaders and archive
+writer](../../../web/code-maker/index.html) should remain usable in the [runtime
+project copy](../../../web/code-maker/pyxel-screen.html). A double dot within a
+filename has a different meaning from a parent-directory component. This
+distinction does not define an archive sandbox or prescribe the validation used
+by other file-loading interfaces.
 
 ### Code Maker dropped-file destinations
 
@@ -93,9 +95,9 @@ exception handlers or make recoverable tool operations fatal.
 counterparts, carrying the query string and fragment.
 
 **Reason:** Published links can contain launch options or a reference location.
-The [redirect pages](../../../wasm/launcher/index.html) preserve that state while
-keeping content at one owner. A directory reorganization does not invalidate
-those links or justify dropping their options.
+The [redirect pages](../../../wasm/launcher/index.html) preserve that state
+while keeping content at one owner. A directory reorganization does not
+invalidate those links or justify dropping their options.
 
 ### Undocumented packages option
 

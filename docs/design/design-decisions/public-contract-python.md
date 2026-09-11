@@ -1,6 +1,7 @@
 # Python Contract Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
+[Audit and decision records](../design-audit.md#decision-records) · [Public
+Contract policy](../design-policy.md#public-contract)
 
 ## Python Interfaces
 
@@ -12,21 +13,21 @@ the TOML resource family, including its older supported format versions. Retain
 the other deprecated Python APIs, including
 `tick` and the sequence `from_list` and `to_list` methods.
 
-**Reason:** These are the maintainer's selected compatibility removals for
-3.0, giving MML one supported grammar and resources one archive layout. The
-[sound binding](../../../crates/pyxel-binding/src/sound_wrapper.rs),
-[MML parser](../../../crates/pyxel-core/src/mml_parser.rs), and
-[resource loader](../../../crates/pyxel-core/src/resource.rs) define the affected
+**Reason:** These are the maintainer's selected compatibility removals for 3.0,
+giving MML one supported grammar and resources one archive layout. The [sound
+binding](../../../crates/pyxel-binding/src/sound_wrapper.rs), [MML
+parser](../../../crates/pyxel-core/src/mml_parser.rs), and [resource
+loader](../../../crates/pyxel-core/src/resource.rs) define the affected
 interfaces. This does not remove the note, tone, volume, and effect lists or
 `Sound.set`; those are distinct from the old MML grammar. Other deprecated APIs
 still serve existing apps; deprecation alone does not justify removing them.
 
 ### List annotations for native sequence proxies
 
-**Decision:** Keep these familiar list annotations in the
-[base stub](../../../python/pyxel/__init__.pyi) and
-[Cube stub](../../../python/pyxel/cube/__init__.pyi), although the corresponding runtime
-objects can be native sequence proxies.
+**Decision:** Keep these familiar list annotations in the [base
+stub](../../../python/pyxel/__init__.pyi) and [Cube
+stub](../../../python/pyxel/cube/__init__.pyi), although the corresponding
+runtime objects can be native sequence proxies.
 
 | Surface | Stub annotation |
 | --- | --- |
@@ -40,13 +41,13 @@ objects can be native sequence proxies.
 | `Primitive.indices` | `list[int]` |
 
 **Reason:** Users read these signatures in editor completion and type help.
-`list[int]` immediately suggests indexing, iteration, and assignment with integer
-elements. An implementation-specific name such as `NotesList` would make users
-open another reference just to understand the type help.
+`list[int]` immediately suggests indexing, iteration, and assignment with
+integer elements. An implementation-specific name such as `NotesList` would make
+users open another reference just to understand the type help.
 
-The [sequence binding](../../../crates/pyxel-binding/src/utils.rs),
-[music binding](../../../crates/pyxel-binding/src/music_wrapper.rs), and
-[Primitive binding](../../../crates/pyxel-binding/src/cube/primitive.rs) retain their
+The [sequence binding](../../../crates/pyxel-binding/src/utils.rs), [music
+binding](../../../crates/pyxel-binding/src/music_wrapper.rs), and [Primitive
+binding](../../../crates/pyxel-binding/src/cube/primitive.rs) retain their
 implementation types. The annotation does not claim exact built-in `list`
 identity or determine whether another property returns a live view or a copy;
 those behavior differences belong in the relevant API description. Ordinary
@@ -83,10 +84,10 @@ selection, which the parameter description explains. There is no single fixed
 magnification to substitute.
 
 The [system binding](../../../crates/pyxel-binding/src/system_wrapper.rs),
-[initialization](../../../crates/pyxel-core/src/pyxel.rs), and
-[resource defaults](../../../crates/pyxel-core/src/resource.rs) establish the
-correspondence. Public descriptions are owned by the
-[API source data](../../../web/api-reference/api-reference.json) and propagated by the
+[initialization](../../../crates/pyxel-core/src/pyxel.rs), and [resource
+defaults](../../../crates/pyxel-core/src/resource.rs) establish the
+correspondence. Public descriptions are owned by the [API source
+data](../../../web/api-reference/api-reference.json) and propagated by the
 [generate_docs](../../../scripts/generate_docs) and
 [generate_pyi_docstrings](../../../scripts/generate_pyi_docstrings) generators.
 
@@ -114,13 +115,15 @@ on how often they appear in this repository.
 **Decision:** `KEY_SHIFT`, `KEY_CTRL`, `KEY_ALT`, and `KEY_GUI` stay pressed
 while either corresponding side is held. Pressing the second side does not
 produce another combined press; releasing one side does not release the combined
-key while the other remains held. The side-specific keys retain their own events.
+key while the other remains held. The side-specific keys retain their own
+events.
 
 **Reason:** A combined key represents either side, not the most recent side's
-event. The [SDL event handler](../../../crates/pyxel-core/src/platform/sdl2/poll_events.rs)
-uses each queued event's modifier state to preserve transitions even when several
-events are processed together. Reading only the final keyboard state would lose
-those intermediate transitions.
+event. The [SDL event
+handler](../../../crates/pyxel-core/src/platform/sdl2/poll_events.rs) uses each
+queued event's modifier state to preserve transitions even when several events
+are processed together. Reading only the final keyboard state would lose those
+intermediate transitions.
 
 ## Apps and CLI
 
@@ -140,9 +143,10 @@ execution independent of metadata completeness.
 
 **Decision:** Run scripts and extracted apps as `__main__`, with their script
 directory available for sibling imports. Preserve the CLI arguments in
-`sys.argv`; `pyxel.init` changes the working directory to its caller's directory.
-For native reset, capture the interpreter, original command line, and working
-directory before that change, so relative launch arguments can be reused.
+`sys.argv`; `pyxel.init` changes the working directory to its caller's
+directory. For native reset, capture the interpreter, original command line, and
+working directory before that change, so relative launch arguments can be
+reused.
 
 **Reason:** The [CLI](../../../python/pyxel/cli.py) and
 [system binding](../../../crates/pyxel-binding/src/system_wrapper.rs)
@@ -186,12 +190,12 @@ Keep package exclusion rules separate from directory traversal.
 
 **Reason:** Packaging must not overwrite a source marker or destroy an existing
 app when reading another input fails. The
-[packager](../../../python/pyxel/cli.py) can preserve both by writing a temporary
-archive and generating its own marker entry. Dotfiles, `__pycache__` components,
-GIF/ZIP files, and the output app are excluded from package inputs; an ancestor
-directory's name must not accidentally exclude an app-relative file. The chosen
-startup script must survive those filters. These are package rules, not rules
-for what the watcher observes or what the Python runtime can load.
+[packager](../../../python/pyxel/cli.py) can preserve both by writing a
+temporary archive and generating its own marker entry. Dotfiles, `__pycache__`
+components, GIF/ZIP files, and the output app are excluded from package inputs;
+an ancestor directory's name must not accidentally exclude an app-relative file.
+The chosen startup script must survive those filters. These are package rules,
+not rules for what the watcher observes or what the Python runtime can load.
 
 ### Portable app startup paths
 
@@ -218,10 +222,10 @@ an integer first argument is not a second positional convention for scale.
 
 **Reason:** The filename-first API is an adopted public interface. Adding
 type-dependent positional interpretations would make the same argument position
-mean different things. The
-[resource binding](../../../crates/pyxel-binding/src/resource_wrapper.rs) and
-[capture settings](../../../crates/pyxel-core/src/resource.rs) own the signatures
-and configured defaults.
+mean different things. The [resource
+binding](../../../crates/pyxel-binding/src/resource_wrapper.rs) and [capture
+settings](../../../crates/pyxel-core/src/resource.rs) own the signatures and
+configured defaults.
 
 ### GIF dimensions before opening the output
 
@@ -270,12 +274,12 @@ preserving the destination therefore does not require a new Python exception.
 Do not add an export-side dimension-validation layer without an established
 Python recovery need.
 
-**Reason:** Exclusion selects the data to save, not just the fields to emit after
-converting every bank. Inspecting excluded data would make an unrelated resource
-prevent the requested save. The
-[resource conversion](../../../crates/pyxel-core/src/resource_data.rs) therefore
-applies each exclusion before converting that bank. This does not change how
-invalid data in an included bank is handled.
+**Reason:** Exclusion selects the data to save, not just the fields to emit
+after converting every bank. Inspecting excluded data would make an unrelated
+resource prevent the requested save. The [resource
+conversion](../../../crates/pyxel-core/src/resource_data.rs) therefore applies
+each exclusion before converting that bank. This does not change how invalid
+data in an included bank is handled.
 
 ## Audio
 
@@ -309,28 +313,30 @@ their count does not limit how much music data can be stored.
 later sequences. Preserving all supplied data also agrees with direct sequence
 editing and resource loading.
 
-**Boundary:** [Resource serialization](../../../crates/pyxel-core/src/resource_data.rs)
-retains its established omission of trailing empty sequences, and loading
-normalizes the same empty tail. This changes neither the indices nor the contents
-of nonempty sequences; empty sequences before a later nonempty one remain.
-The [resource format](../../../docs/pyxres-format.md) therefore need not preserve
-the exact number of trailing unused channels. The real-time channel limit does
-not introduce a new limit on offline `Music.save` rendering.
+**Boundary:** [Resource
+serialization](../../../crates/pyxel-core/src/resource_data.rs) retains its
+established omission of trailing empty sequences, and loading normalizes the
+same empty tail. This changes neither the indices nor the contents of nonempty
+sequences; empty sequences before a later nonempty one remain. The [resource
+format](../../../docs/pyxres-format.md) therefore need not preserve the exact
+number of trailing unused channels. The real-time channel limit does not
+introduce a new limit on offline `Music.save` rendering.
 
 ### Music channel views after removal
 
 **Decision:** A `Music.seqs` inner view addresses a channel index in its parent
 Music. If that index no longer exists, its list operations raise `IndexError`
-with `list index out of range`, including when Python argument conversion removes
-the channel before the operation accesses it.
+with `list index out of range`, including when Python argument conversion
+removes the channel before the operation accesses it.
 
 **Reason:** This is the maintainer's selected handling of an unavailable Music
-channel view. The [music binding](../../../crates/pyxel-binding/src/music_wrapper.rs)
-retains the parent and index, and the
-[sequence binding](../../../crates/pyxel-binding/src/utils.rs) check
-availability at the point of access. The view does not keep a removed sequence
-as independent data. Ordinary element indexing, conversion errors, and releasing
-locks before Python allocation remain separate requirements.
+channel view. The [music
+binding](../../../crates/pyxel-binding/src/music_wrapper.rs) retains the parent
+and index, and the [sequence
+binding](../../../crates/pyxel-binding/src/utils.rs) checks availability at the
+point of access. The view does not keep a removed sequence as independent data.
+Ordinary element indexing, conversion errors, and releasing locks before Python
+allocation remain separate requirements.
 
 ### Same-pitch MML ties
 
@@ -362,8 +368,9 @@ the public Python generation interface. Its
 transposition, instrumentation, seed, and optional playback inputs. Raw Composer
 JSON is a separate interface, not another input form of `pyxel.gen_bgm`.
 
-**Reason:** The [audio binding](../../../crates/pyxel-binding/src/audio_wrapper.rs)
-exposes those arguments. The shared
+**Reason:** The [audio
+binding](../../../crates/pyxel-binding/src/audio_wrapper.rs) exposes those
+arguments. The shared
 [generator](../../../crates/pyxel-core/src/bgm_generator.rs) gives Composer
 separate JSON entry points, which the normal Pyxel build excludes through its
 `pyxel_core` configuration. Their presence in shared source or tests does not
@@ -392,10 +399,10 @@ that every failed file write preserves the previous on-disk file.
 
 ### Sound editor display and speed limits
 
-**Decision:** The sound editor shows the standard four tone symbols and uses
-`?` for tones outside that set. Unsupported tone, volume, effect, and speed
-values are displayed as `?` without rewriting their data or expanding the input
-keys. The speed control accepts 1–99 when the user edits it; viewing or switching
+**Decision:** The sound editor shows the standard four tone symbols and uses `?`
+for tones outside that set. Unsupported tone, volume, effect, and speed values
+are displayed as `?` without rewriting their data or expanding the input keys.
+The speed control accepts 1–99 when the user edits it; viewing or switching
 banks preserves speeds outside that range.
 
 **Reason:** The editor offers a deliberately small set of controls. Preserving
@@ -418,10 +425,11 @@ parent when they must remain independent of that animation.
 **Reason:** Imported transforms describe animated model parts; an application's
 placement describes the model's position in its scene. Composing each sampled
 frame with the node's previous transform would accumulate movement and scale.
-The [motion binding](../../../crates/pyxel-binding/src/cube/node.rs) replaces the
-sampled transforms; a parent preserves scene placement without changing the
-motion contract. The [collision sample](../../../python/pyxel/examples/cube/c05_3d_collision.py)
-uses this separation for its chosen model scale.
+The [motion binding](../../../crates/pyxel-binding/src/cube/node.rs) replaces
+the sampled transforms; a parent preserves scene placement without changing the
+motion contract. The [collision
+sample](../../../python/pyxel/examples/cube/c05_3d_collision.py) uses this
+separation for its chosen model scale.
 
 ### Zero-mass Cube bodies
 

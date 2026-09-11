@@ -11,8 +11,8 @@ the policy and the decisions relevant to the assigned scope, fix the inputs,
 derive coverage before judging compliance, and resolve disagreements from
 evidence, so repeated audits do not drift with the auditor's interpretation. If
 the procedure or a decision contradicts the policy, resolve the conflict through
-[revision review](#revisions-to-governing-documents) before applying the affected
-criteria.
+[revision review](#revisions-to-governing-documents) before applying the
+affected criteria.
 
 ## Modes
 

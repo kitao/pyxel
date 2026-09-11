@@ -1,6 +1,7 @@
 # Rust/Python Boundary Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
+[Audit and decision records](../design-audit.md#decision-records) · [Public
+Contract policy](../design-policy.md#public-contract)
 
 ## Errors and Failures
 
@@ -26,8 +27,8 @@ The relevant boundaries are owned by the
 [audio](../../../crates/pyxel-binding/src/audio_wrapper.rs),
 [channel](../../../crates/pyxel-binding/src/channel_wrapper.rs),
 [sound](../../../crates/pyxel-binding/src/sound_wrapper.rs), and
-[tone](../../../crates/pyxel-binding/src/tone_wrapper.rs) bindings.
-The image, tilemap, and graphics bindings retain their corresponding constructor,
+[tone](../../../crates/pyxel-binding/src/tone_wrapper.rs) bindings. The image,
+tilemap, and graphics bindings retain their corresponding constructor,
 text-data, and resource-selection errors.
 
 **Reason:** Released exceptions are part of the Python behavior callers can
@@ -42,8 +43,8 @@ classes merely to make unrelated operations look alike.
 
 ### File-operation failures exposed to Python
 
-**Decision:** Keep file open, read, decode, parse, write, and conversion failures
-catchable at these existing boundaries.
+**Decision:** Keep file open, read, decode, parse, write, and conversion
+failures catchable at these existing boundaries.
 
 | Operations | Exception conversion | Binding |
 | --- | --- | --- |
@@ -59,9 +60,9 @@ catchable at these existing boundaries.
 continue. The editor does this when loading resources in
 [App](../../../python/pyxel/editor/app.py), images in
 [ImageEditor](../../../python/pyxel/editor/image_editor.py), and maps in
-[TilemapEditor](../../../python/pyxel/editor/tilemap_editor.py).
-The same file-failure purpose covers choosing another output location or handling
-a failed export. It also requires BDF read failures to propagate through `Font`;
+[TilemapEditor](../../../python/pyxel/editor/tilemap_editor.py). The same
+file-failure purpose covers choosing another output location or handling a
+failed export. It also requires BDF read failures to propagate through `Font`;
 silently treating a read error as end-of-file could accept an incomplete font.
 
 **Boundary:** A file operation can also fail because of its arguments or current
@@ -76,12 +77,13 @@ scale before resizing. A product that cannot fit the image library's `u32`
 dimensions fails on the Rust side; it does not introduce another catchable
 Python argument error.
 
-**Reason:** In [Image.save](../../../crates/pyxel-core/src/image.rs), multiplying
-width 2 by scale 2,147,483,649 would wrap back to 2 in a release build and save
-the wrong size. Preventing that arithmetic error is necessary independently of
-failure conversion. The existing file-error mapping does not supply an
-additional recovery contract for an unrepresentable size. The separately
-adopted GIF dimension check retains its own format limit and retry behavior.
+**Reason:** In [Image.save](../../../crates/pyxel-core/src/image.rs),
+multiplying width 2 by scale 2,147,483,649 would wrap back to 2 in a release
+build and save the wrong size. Preventing that arithmetic error is necessary
+independently of failure conversion. The existing file-error mapping does not
+supply an additional recovery contract for an unrepresentable size. The
+separately adopted GIF dimension check retains its own format limit and retry
+behavior.
 
 ### Python conversion and sequence errors
 
@@ -96,15 +98,14 @@ Keep Python-standard errors for Pyxel's list operations:
 extended-slice length mismatch, and the applicable Python errors for invalid
 indices and slices. Unknown module attributes raise `AttributeError`.
 
-The [sequence binding](../../../crates/pyxel-binding/src/utils.rs) and
-[music binding](../../../crates/pyxel-binding/src/music_wrapper.rs) own these
-operations. Pyxel-authored standard diagnostics use CPython's exact wording; PyO3's
-own diagnostics remain owned by PyO3. Do not intercept its errors solely to
-rewrite their presentation.
+The [sequence binding](../../../crates/pyxel-binding/src/utils.rs) and [music
+binding](../../../crates/pyxel-binding/src/music_wrapper.rs) own these
+operations. Pyxel-authored standard diagnostics use CPython's exact wording;
+PyO3's own diagnostics remain owned by PyO3. Do not intercept its errors solely
+to rewrite their presentation.
 
-The [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) try integer
-conversion before floating-point conversion. The shared overload helpers and
-sequence comparisons likewise distinguish an unsupported candidate from a
+The [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) tries integer conversion before floating-point conversion. The shared overload helpers
+and sequence comparisons likewise distinguish an unsupported candidate from a
 failure of the selected operation. Propagating every tentative extraction error
 would prevent those supported alternatives from being reached.
 
@@ -114,9 +115,10 @@ indexing, iteration, attribute lookup, and Python conversion behavior. A Rust
 panic would not implement those protocols.
 
 **Boundary:** Ordinary list annotations alone do not decide a live view's
-lifetime contract. [Music channel views](public-contract-python.md#music-channel-views-after-removal)
-have an explicit unavailable-index decision; do not infer other views' ownership
-or failure behavior from their list annotation.
+lifetime contract. [Music channel
+views](public-contract-python.md#music-channel-views-after-removal) have an
+explicit unavailable-index decision; do not infer other views' ownership or
+failure behavior from their list annotation.
 
 ### Native numerical failures
 
@@ -127,8 +129,8 @@ gain Python-only checks for the native operations' exceptional numerical cases.
 **Reason:** Adding isolated checks for NaN, infinity, or invalid ranges would
 change accepted inputs and add a partial validation layer. The fact that another
 API rejects a numerical argument does not supply a reason to change these APIs.
-The `PyResult` used by `clamp` and `sgn` propagates their final Python extraction
-errors; it does not imply that native numerical failures are wrapped.
+The `PyResult` used by `clamp` and `sgn` propagates their final Python
+extraction errors; it does not imply that native numerical failures are wrapped.
 
 See the [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) and
 [native math](../../../crates/pyxel-core/src/math.rs).
@@ -162,19 +164,19 @@ recovery path. The existing distinctions are visible in
 
 ### Image-source lookup in tilemap drawing
 
-**Decision:** `bltm`, `bltm3d`, `Image.bltm`, and `Image.bltm3d` leave image-source
-lookup to the [renderer](../../../crates/pyxel-core/src/image.rs), preserving each
-drawing path's order of early returns and source access. This applies to both
-tilemap objects and bank indices.
+**Decision:** `bltm`, `bltm3d`, `Image.bltm`, and `Image.bltm3d` leave
+image-source lookup to the [renderer](../../../crates/pyxel-core/src/image.rs),
+preserving each drawing path's order of early returns and source access. This
+applies to both tilemap objects and bank indices.
 
 **Reason:** A zero-width draw can return without using the image source.
 Rejecting an unused source first would turn a released successful no-op into an
 error. Repeating the renderer's conditions in the bindings would duplicate work
 and create another place for them to diverge.
 
-**Boundary:** Validation of the `tm` argument itself remains separate. An invalid
-image source that is actually dereferenced retains Rust-side failure handling;
-there is no established need to add a Python recovery contract for it.
+**Boundary:** Validation of the `tm` argument itself remains separate. An
+invalid image source that is actually dereferenced retains Rust-side failure
+handling; there is no established need to add a Python recovery contract for it.
 
 ### Python reentry while accessing mutable resources
 
@@ -199,14 +201,14 @@ source bank before a lazy iterator reads its next index. Collecting the native
 result first prevents that invalid access; wrapped resources retain their
 shared identity rather than becoming deep copies.
 
-The [sequence binding](../../../crates/pyxel-binding/src/utils.rs),
-[music binding](../../../crates/pyxel-binding/src/music_wrapper.rs), and
-[audio binding](../../../crates/pyxel-binding/src/audio_wrapper.rs) apply
-this ordering alongside the
-[ownership decision](source-code-performance.md#shared-graphics-and-audio-ownership).
+The [sequence binding](../../../crates/pyxel-binding/src/utils.rs), [music
+binding](../../../crates/pyxel-binding/src/music_wrapper.rs), and [audio
+binding](../../../crates/pyxel-binding/src/audio_wrapper.rs) apply this ordering
+alongside the [ownership
+decision](source-code-performance.md#shared-graphics-and-audio-ownership).
 
 **Boundary:** Prevent reentrant access from violating Rust ownership rather than
 catching the resulting panic. This ordering does not require repeated checks of
 unchanged scalar values, blanket rollback, or a new exception class. A removed
-Music view follows its separate
-[unavailable-channel contract](public-contract-python.md#music-channel-views-after-removal).
+Music view follows its separate [unavailable-channel
+contract](public-contract-python.md#music-channel-views-after-removal).
