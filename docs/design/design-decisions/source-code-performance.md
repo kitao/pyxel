@@ -69,11 +69,12 @@ values or accumulate time.
 | [Audio mixing](../../../crates/pyxel-core/src/voice.rs) | Quantized waveform storage uses `i16`, amplitude and fixed-point gain use `i32`, and their products use `i64` before shifting. Fractional modulation and long-running phase calculations remain separate from this integer mixer. |
 | [Native scheduling](../../../crates/pyxel-core/src/platform/sdl2/platform_sdl2.rs) | `u64` clock readings feed `f64` scheduling times to retain timing precision over long uptimes. This does not require widening public frame counters or every short elapsed-time value. |
 
-**Reason:** Each wider calculation follows from the operation performed on its inputs,
-not a preference for large types. Promoting every stored field would change
-memory use and conversions without addressing the same problem. Conversely,
-narrowing an intermediate to match its inputs can lose a valid result.
-These choices do not create new accepted-input limits or Python error classes.
+**Reason:** Each wider calculation follows from the operation performed on its
+inputs, not a preference for large types. Promoting every stored field would
+change memory use and conversions without addressing the same problem.
+Conversely, narrowing an intermediate to match its inputs can lose a valid
+result. These choices do not create new accepted-input limits or Python error
+classes.
 
 ### Primitive raster precision and clipping
 
