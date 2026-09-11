@@ -2,7 +2,9 @@
 
 [Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
 
-## Registry publication of the Rust crates
+## Crates and Wheels
+
+### Registry publication of the Rust crates
 
 **Decision:** Keep `publish = false` in the
 [core](../../../crates/pyxel-core/Cargo.toml) and
@@ -17,7 +19,7 @@ A `pub` Rust item does not by itself establish a supported crates.io API.
 or repository callers. Rust signature changes still affect source callers and
 must be assessed on that basis, without inventing a separate package promise.
 
-## Python ABI and web runtime compatibility
+### Python ABI and web runtime compatibility
 
 **Decision:** Keep Python 3.11 as the minimum runtime and build the extension
 against its stable ABI. Treat the web runtime, Emscripten build, and web wheel
@@ -35,7 +37,7 @@ the package minimum. Web compatibility also depends on the
 Matching version strings alone does not establish that the toolchain works;
 build and runtime verification still apply to the selected targets.
 
-## SDL2 linkage and Linux fallback
+### SDL2 linkage and Linux fallback
 
 **Decision:** Link SDL2 statically for macOS and Windows. On Linux, load the
 system SDL2 library first and fall back to the packaged copy. Web builds link
@@ -51,7 +53,7 @@ linkage and dependencies. These platform differences serve the distributions;
 one linking rule cannot replace them. Import success establishes neither device
 behavior nor audio and graphics quality.
 
-## Web wheel validation and installation
+### Web wheel validation and installation
 
 **Decision:** Validate the selected web wheel before installing it into `wasm/`.
 Check its identity and platform tag, packaged Python sources and metadata, and
@@ -72,7 +74,7 @@ metadata comparisons do not establish compiled Rust/source equivalence. Path
 remapping and `SOURCE_DATE_EPOCH` control build-host paths and timestamps; they
 do not by themselves promise byte-identical builds on every platform.
 
-## Release version correspondence
+### Release version correspondence
 
 **Decision:** Use Python release spelling in the runtime version, Python
 metadata, web wheel filename, and release tag. Map `a`, `b`, and `rc`
@@ -91,7 +93,9 @@ maintains that correspondence across the
 valid prereleases. The mapping does not promise every PEP 440 form, and editing
 version strings does not rebuild the wheel.
 
-## Optional executable-export dependencies
+## Executable Export
+
+### Optional executable-export dependencies
 
 **Decision:** Keep PyInstaller in the `app2exe` extra rather than requiring it
 for ordinary Pyxel installation. The export command explains how to install
@@ -104,7 +108,7 @@ the extra when the tool is unavailable.
 tool because contributors test packaging. Their contents do not define the
 runtime dependency set.
 
-## Executable-export workspaces
+### Executable-export workspaces
 
 **Decision:** Give each executable export its own temporary workspace, including
 the bootstrap script and PyInstaller build/spec files. Clean up that workspace,
@@ -117,7 +121,7 @@ Preserve the requested app's filename in the bootstrap and data mapping;
 resolving a symlink for filesystem access must not silently rename that packaged
 input.
 
-## Static dependency discovery for executable export
+### Static dependency discovery for executable export
 
 **Decision:** Discover imports from source syntax without executing the
 application or imported packages. Include parent package initializers and

@@ -2,7 +2,9 @@
 
 [Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
 
-## Preserving established Python errors
+## Errors and Failures
+
+### Preserving established Python errors
 
 **Decision:** Preserve the accepted inputs and error classes established in
 v2.9.9 except for separately adopted changes. Convert an additional Rust failure
@@ -38,7 +40,7 @@ duplicate check, or newly added failure condition. Review such additions against
 their own purpose and the behavior they change. Do not normalize exception
 classes merely to make unrelated operations look alike.
 
-## File-operation failures exposed to Python
+### File-operation failures exposed to Python
 
 **Decision:** Keep file open, read, decode, parse, write, and conversion failures
 catchable at these existing boundaries.
@@ -67,7 +69,7 @@ resource state. Its existing exception conversion does not authorize adding
 dimension, duration, or reference constraints. Nor does it establish a general
 promise that every failed operation leaves all state unchanged.
 
-## Scaled PNG dimensions
+### Scaled PNG dimensions
 
 **Decision:** Check multiplication of an image's dimensions by its PNG export
 scale before resizing. A product that cannot fit the image library's `u32`
@@ -81,7 +83,7 @@ failure conversion. The existing file-error mapping does not supply an
 additional recovery contract for an unrepresentable size. The separately
 adopted GIF dimension check retains its own format limit and retry behavior.
 
-## Python conversion and sequence errors
+### Python conversion and sequence errors
 
 **Decision:** Keep PyO3's argument conversion and the bindings' explicit
 `PyResult` propagation. A tentative conversion used to select an overload or
@@ -116,7 +118,7 @@ lifetime contract. [Music channel views](public-contract-python.md#music-channel
 have an explicit unavailable-index decision; do not infer other views' ownership
 or failure behavior from their list annotation.
 
-## Native numerical failures
+### Native numerical failures
 
 **Decision:** Keep native numerical failure handling where the API has no
 additional Python recovery requirement. In particular, `clamp` and `rndf` do not
@@ -131,7 +133,7 @@ errors; it does not imply that native numerical failures are wrapped.
 See the [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) and
 [native math](../../../crates/pyxel-core/src/math.rs).
 
-## Normal absence and native failure ownership
+### Normal absence and native failure ownership
 
 **Decision:** Drawing outside the clip region, stopped playback, and spatial
 queries without a hit keep their no-op, `None`, or empty-result behavior.
@@ -156,7 +158,9 @@ recovery path. The existing distinctions are visible in
 [queries](../../../crates/pyxel-core/src/cube/scene.rs), and
 [palette loading](../../../crates/pyxel-core/src/resource.rs).
 
-## Image-source lookup in tilemap drawing
+## Resource Access
+
+### Image-source lookup in tilemap drawing
 
 **Decision:** `bltm`, `bltm3d`, `Image.bltm`, and `Image.bltm3d` leave image-source
 lookup to the [renderer](../../../crates/pyxel-core/src/image.rs), preserving each
@@ -172,7 +176,7 @@ and create another place for them to diverge.
 image source that is actually dereferenced retains Rust-side failure handling;
 there is no established need to add a Python recovery contract for it.
 
-## Python reentry while accessing mutable resources
+### Python reentry while accessing mutable resources
 
 **Decision:** Complete Python conversions before taking Rust borrows or locks
 that reentrant Python code may need. Release those guards before Python
