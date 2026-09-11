@@ -766,7 +766,7 @@
     },
     "custom_elements_run_script": {
       "en": "To run Python code directly, write the code in the {0} attribute.",
-      "cn": "要直接运行 Python 代码，在 {0} 属性中编写代码。",
+      "cn": "要直接运行 Python 代码，请在 {0} 属性中编写代码。",
       "de": "Um Python-Code direkt auszuführen, schreiben Sie den Code in das Attribut {0}.",
       "es": "Para ejecutar código Python directamente, escriba el código en el atributo {0}.",
       "fr": "Pour exécuter du code Python directement, écrivez le code dans l'attribut {0}.",
