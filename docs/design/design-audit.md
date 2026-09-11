@@ -139,23 +139,23 @@ giving each criterion and subject a stable identifier.
   introductory paragraph belongs to its section's criterion with its source
   span. Account for every non-blank policy line as a criterion, an example of
   one, or non-normative structure, so an omitted requirement cannot disappear;
-  an example does not limit the applicability of its rule.
-  Decision entries supply concrete requirements under those criteria, including
-  requirements expressed in tables and explanatory paragraphs, and cannot
-  override the policy.
+  an example does not limit the applicability of its rule. Decision entries
+  supply concrete requirements under those criteria, including requirements
+  expressed in tables and explanatory paragraphs, and cannot override the
+  policy.
 - Subjects are files, relations, hot paths, processes, and commands. Inventory
   every tracked file and intended addition with its path role and all applicable
   content roles: source, test, prose, translation, release notes, policy,
   configuration, and structured data, derived from contents rather than
   extensions. Files marked `binary` by `.gitattributes`, `*.tmx`, `*.bdf`,
-  `Cargo.lock`, `*-lock.json`, `web/styles.css`, and Markdown beginning `<!--
-  This file is generated` receive no direct text-style review; they keep their
-  dependency checks. Define each criterion's selector over those roles, apply it
-  to the complete inventory, and record the routing; a routing check verifies
-  that every file received every applicable criterion; selection does not
-  establish compliance. Use a process subject for obligations without a narrower
-  subject, including manual cases with their expected observations and
-  maintenance of the standards themselves.
+  `Cargo.lock`, `*-lock.json`, `web/styles.css`, and Markdown beginning
+  `<!-- This file is generated` receive no direct text-style
+  review; they keep their dependency checks. Define each criterion's selector
+  over those roles, apply it to the complete inventory, and record the routing;
+  a routing check verifies that every file received every applicable criterion;
+  selection does not establish compliance. Use a process subject for obligations
+  without a narrower subject, including manual cases with their expected
+  observations and maintenance of the standards themselves.
 - Relations cover every policy-governed relationship: sibling conventions;
   public interfaces and their implementations, stubs, reference data, and
   generated descriptions; translations; error families; changes and their

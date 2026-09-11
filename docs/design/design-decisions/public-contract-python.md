@@ -70,8 +70,8 @@ the engine's ordinary `f32` math and from native failure conversion.
 **Decision:** API references and `.pyi` signatures show effective parameter
 defaults. Do not replace them with internal `None` sentinels. Use `None` only
 for actual default behavior such as automatic selection or absence of a value.
-Reference type labels name the public type in Python union notation (`int |
-None`) and do not expose an internal sentinel either.
+Reference type labels name the public type in Python union notation
+(`int | None`) and do not expose an internal sentinel either.
 
 The reference and stub for `pyxel.init` therefore show the values selected when
 fixed-default arguments are omitted: `fps=30`, `capture_scale=2`, and
@@ -242,9 +242,9 @@ captured frames so the caller can retry with a smaller scale.
 
 **Decision:** `screenshot`, `screencast`, and `Image.save` write a pixel value
 beyond the current palette as the palette's last color, matching the display. An
-empty palette remains a native failure with the renderer's `Number of colors
-must be between 1 and 256` diagnostic; the list operations of `colors` do not
-gain an emptiness check.
+empty palette remains a native failure with the renderer's
+`Number of colors must be between 1 and 256`
+diagnostic; the list operations of `colors` do not gain an emptiness check.
 
 **Reason:** A capture records what the screen shows, and the
 [renderer](../../../crates/pyxel-core/src/graphics.rs) samples the palette
