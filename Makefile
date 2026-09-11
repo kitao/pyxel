@@ -166,6 +166,7 @@ test: install
 	@cd $(WEB_DIR); npm test
 
 run: install
+	@$(SCRIPTS_DIR)/check_window_startup
 	@$(SCRIPTS_DIR)/run_examples
 
 clean-wasm:

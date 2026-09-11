@@ -17,10 +17,14 @@ for manual checks of look, sound, and feel.
 The [Makefile](../../../Makefile) provides one automated entry point, `make test`,
 for Python, Rust, and JavaScript. The current JavaScript tests run on Node.js;
 calling them `test-wasm` would imply execution of the WASM runtime they do not
-perform. `make run` uses the [example runner](../../../scripts/run_examples) for
-native examples, bundled apps, and the editor. `make run-wasm` builds and serves
-the local browser runtime. Those two commands distinguish execution environments,
-not programming languages.
+perform. `make run` first runs the
+[startup check](../../../scripts/check_window_startup), which opens a window in
+every screen mode, draws, exits, and reports the installed build; the automated
+suites run headless and never create a GL context. It then uses the
+[example runner](../../../scripts/run_examples) for native examples, bundled
+apps, and the editor. `make run-wasm` builds and serves the local browser
+runtime. Those two commands distinguish execution environments, not programming
+languages.
 
 Archive creation, startup paths, watcher restarts, and executable export have
 automated coverage in the [CLI tests](../../../python/tests/test_cli.py).

@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+import hashlib
+import importlib.metadata
+import importlib.util
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+NUM_SCREEN_MODES = 3
+FRAME_COUNT = 5
+TIMEOUT_SECONDS = 60
+
+RUNNER = """\
+import sys
+
+import pyxel
+
+mode = int(sys.argv[1])
+frames = 0
+
+
+def update():
+    global frames
+    frames += 1
+    if frames >= {frame_count}:
+        pyxel.quit()
+
+
+def draw():
+    pyxel.cls(1)
+    pyxel.circ(80, 60, 20, 8)
+    pyxel.text(40, 100, "Startup check", 7)
+
+
+pyxel.init(160, 120, title="Startup check")
+pyxel.screen_mode(mode)
+pyxel.run(update, draw)
+"""
+
+
+def main() -> int:
+    try:
+        identity = installed_build_identity()
+    except (OSError, StopIteration, importlib.metadata.PackageNotFoundError) as error:
+        print(f"error: installed pyxel not found: {error}", file=sys.stderr)
+        return 1
+
+    failures = []
+    for mode in range(NUM_SCREEN_MODES):
+        try:
+            result = run_startup(mode)
+        except subprocess.TimeoutExpired:
+            failures.append((mode, None, f"no exit within {TIMEOUT_SECONDS} seconds"))
+            continue
+        if result.returncode != 0:
+            failures.append((mode, result.returncode, result.stderr))
+        elif result.stderr.strip():
+            print(f"note: screen mode {mode} wrote to stderr:")
+            _print_indented(result.stderr)
+
+    if failures:
+        print(f"error: windowed startup failed with {identity}", file=sys.stderr)
+        for mode, code, output in failures:
+            status = "timeout" if code is None else f"exit {code}"
+            print(f"  - screen mode {mode}: {status}", file=sys.stderr)
+            _print_indented(output, file=sys.stderr)
+        return 1
+
+    print(f"ok: windowed startup in {NUM_SCREEN_MODES} screen modes with {identity}")
+    return 0
+
+
+def installed_build_identity():
+    version = importlib.metadata.version("pyxel")
+    package_dir = Path(importlib.util.find_spec("pyxel").origin).parent
+    binding = next(package_dir.glob("pyxel_binding*"))
+    digest = hashlib.sha256(binding.read_bytes()).hexdigest()[:12]
+    built = datetime.fromtimestamp(binding.stat().st_mtime, timezone.utc)
+    return (
+        f"pyxel {version} at {package_dir} "
+        f"(binding sha256 {digest}, built {built.strftime('%Y-%m-%dT%H:%M:%SZ')})"
+    )
+
+
+def run_startup(mode):
+    return subprocess.run(
+        [sys.executable, "-c", RUNNER.format(frame_count=FRAME_COUNT), str(mode)],
+        capture_output=True,
+        text=True,
+        timeout=TIMEOUT_SECONDS,
+        check=False,
+    )
+
+
+def _print_indented(text, file=sys.stdout):
+    for line in text.strip().splitlines():
+        print(f"    {line}", file=file)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
