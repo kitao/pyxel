@@ -1,7 +1,6 @@
 # Comment Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code
-policy](../design-policy.md#comments)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#comments)
 
 ## Across Languages
 

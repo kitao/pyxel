@@ -1,7 +1,6 @@
 # Structure and Formatting Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Source Code
-policy](../design-policy.md#structure-and-formatting)
+[Audit and decision records](../design-audit.md#decision-records) · [Source Code policy](../design-policy.md#structure-and-formatting)
 
 ## Across Languages
 

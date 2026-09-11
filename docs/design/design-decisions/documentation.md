@@ -1,8 +1,6 @@
 # Documentation Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) ·
-[Documentation policy](../design-policy.md#documentation) · [Release Notes
-policy](../design-policy.md#release-notes)
+[Audit and decision records](../design-audit.md#decision-records) · [Documentation policy](../design-policy.md#documentation) · [Release Notes policy](../design-policy.md#release-notes)
 
 ## Reader and Prose
 

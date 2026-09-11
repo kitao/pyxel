@@ -1,7 +1,6 @@
 # Testing Decisions
 
-[Audit and decision records](../design-audit.md#decision-records) · [Testing
-policy](../design-policy.md#testing)
+[Audit and decision records](../design-audit.md#decision-records) · [Testing policy](../design-policy.md#testing)
 
 ## Rust, Python, and JavaScript
 
