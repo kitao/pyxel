@@ -119,7 +119,7 @@ needed by the local Showcase. Keep repository-internal paths outside those
 served roots. Replace executable CDN runtime references in page headers with
 the local runtime; preserve instructional examples in page bodies.
 
-**Reason:** [make run-wasm](../../../Makefile) builds a local runtime for
+**Reason:** [`make run-wasm`](../../../Makefile) builds a local runtime for
 inspection. Loading an unrelated CDN build would defeat that purpose.
 [start_showcase](../../../scripts/start_showcase) limits resolved file paths to
 the asset roots, rewrites page headers, and supplies a service worker where the

@@ -28,8 +28,8 @@ change together.
 
 **Reason:** The [binding manifest](../../../crates/pyxel-binding/Cargo.toml)
 selects `abi3-py311`, matching
-[Python metadata](../../../python/pyproject.toml). The interpreter used by
-[wheel CI](../../../.github/workflows/build.yml) can be newer without raising
+[project metadata](../../../python/pyproject.toml). The interpreter used by
+[wheel builds](../../../.github/workflows/build.yml) can be newer without raising
 the package minimum. Web compatibility also depends on the
 [build flags](../../../Makefile), the Pyodide version selected by the
 [web runtime](../../../wasm/pyxel.js), and the tags checked by the
@@ -86,7 +86,7 @@ respective package systems. [update_version](../../../scripts/update_version)
 maintains that correspondence across the
 [workspace manifest](../../../crates/Cargo.toml),
 [runtime settings](../../../crates/pyxel-core/src/settings.rs),
-[Python metadata](../../../python/pyproject.toml), and
+[project metadata](../../../python/pyproject.toml), and
 [web runtime](../../../wasm/pyxel.js).
 [Release automation](../../../.github/workflows/release.yml) uses the
 `v`-prefixed tag. Literal equality across the two version syntaxes would reject

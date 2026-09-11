@@ -4,7 +4,7 @@
 
 ## Rust, Python, and JavaScript
 
-### Division between make test and make run
+### Division between `make test` and `make run`
 
 **Decision:** Use the automated suites under `make test` for behavior with
 mechanically checkable expectations, and running examples under `make run` for
@@ -23,7 +23,7 @@ every screen mode, draws, exits, and reports the installed build; the automated
 suites run headless and never create a GL context. It then uses the
 [example runner](../../../scripts/run_examples) for native examples, bundled
 apps, and the editor. `make run-wasm` builds the web wheel and serves the web
-runtime locally through the [showcase server](../../../scripts/start_showcase),
+runtime locally through [start_showcase](../../../scripts/start_showcase),
 which also serves the working tree with the tracked wheel for page checks.
 Those two commands distinguish execution environments, not programming
 languages.

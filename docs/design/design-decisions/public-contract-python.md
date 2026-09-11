@@ -44,9 +44,9 @@ objects can be native sequence proxies.
 elements. An implementation-specific name such as `NotesList` would make users
 open another reference just to understand the type help.
 
-The [shared sequence wrappers](../../../crates/pyxel-binding/src/utils.rs),
-[music wrappers](../../../crates/pyxel-binding/src/music_wrapper.rs), and
-[Primitive wrappers](../../../crates/pyxel-binding/src/cube/primitive.rs) retain their
+The [sequence binding](../../../crates/pyxel-binding/src/utils.rs),
+[music binding](../../../crates/pyxel-binding/src/music_wrapper.rs), and
+[Primitive binding](../../../crates/pyxel-binding/src/cube/primitive.rs) retain their
 implementation types. The annotation does not claim exact built-in `list`
 identity or determine whether another property returns a live view or a copy;
 those behavior differences belong in the relevant API description. Ordinary
@@ -82,13 +82,13 @@ requested screen size. Its `None` annotation therefore denotes automatic
 selection, which the parameter description explains. There is no single fixed
 magnification to substitute.
 
-The [binding](../../../crates/pyxel-binding/src/system_wrapper.rs),
+The [system binding](../../../crates/pyxel-binding/src/system_wrapper.rs),
 [initialization](../../../crates/pyxel-core/src/pyxel.rs), and
 [resource defaults](../../../crates/pyxel-core/src/resource.rs) establish the
 correspondence. Public descriptions are owned by the
 [API source data](../../../web/api-reference/api-reference.json) and propagated by the
-[documentation](../../../scripts/generate_docs) and
-[stub docstring](../../../scripts/generate_pyi_docstrings) generators.
+[generate_docs](../../../scripts/generate_docs) and
+[generate_pyi_docstrings](../../../scripts/generate_pyi_docstrings) generators.
 
 **Reason:** The user needs to know the actual frame rate, capture magnification,
 and recording duration. An internal sentinel would force the reader to inspect
@@ -101,7 +101,7 @@ code before knowing the behavior of the documented call.
 **Decision:** Keep the selected keyboard constant set in
 [platform keys](../../../crates/pyxel-core/src/platform/key.rs), its
 [Python exports](../../../crates/pyxel-binding/src/constant_wrapper.rs), and
-the [stub](../../../python/pyxel/__init__.pyi). Do not restore the omitted
+the [base stub](../../../python/pyxel/__init__.pyi). Do not restore the omitted
 special-key family, such as `KEY_AUDIOPLAY`, solely to mirror every SDL key.
 
 **Reason:** Defining a public constant for every specialized key would expand
@@ -145,7 +145,7 @@ For native reset, capture the interpreter, original command line, and working
 directory before that change, so relative launch arguments can be reused.
 
 **Reason:** The [CLI](../../../python/pyxel/cli.py) and
-[initialization binding](../../../crates/pyxel-binding/src/system_wrapper.rs)
+[system binding](../../../crates/pyxel-binding/src/system_wrapper.rs)
 have separate responsibilities. Rewriting arguments to imitate a direct script
 invocation would change what existing apps observe. Restarting a relative
 `pyxel play` command from its extracted directory would lose the original app
@@ -219,7 +219,7 @@ an integer first argument is not a second positional convention for scale.
 **Reason:** The filename-first API is an adopted public interface. Adding
 type-dependent positional interpretations would make the same argument position
 mean different things. The
-[capture bindings](../../../crates/pyxel-binding/src/resource_wrapper.rs) and
+[resource binding](../../../crates/pyxel-binding/src/resource_wrapper.rs) and
 [capture settings](../../../crates/pyxel-core/src/resource.rs) own the signatures
 and configured defaults.
 
@@ -325,9 +325,9 @@ with `list index out of range`, including when Python argument conversion remove
 the channel before the operation accesses it.
 
 **Reason:** This is the maintainer's selected handling of an unavailable Music
-channel view. The [Music binding](../../../crates/pyxel-binding/src/music_wrapper.rs)
+channel view. The [music binding](../../../crates/pyxel-binding/src/music_wrapper.rs)
 retains the parent and index, and the
-[shared sequence operations](../../../crates/pyxel-binding/src/utils.rs) check
+[sequence binding](../../../crates/pyxel-binding/src/utils.rs) check
 availability at the point of access. The view does not keep a removed sequence
 as independent data. Ordinary element indexing, conversion errors, and releasing
 locks before Python allocation remain separate requirements.
@@ -362,7 +362,7 @@ the public Python generation interface. Its
 transposition, instrumentation, seed, and optional playback inputs. Raw Composer
 JSON is a separate interface, not another input form of `pyxel.gen_bgm`.
 
-**Reason:** The [Python binding](../../../crates/pyxel-binding/src/audio_wrapper.rs)
+**Reason:** The [audio binding](../../../crates/pyxel-binding/src/audio_wrapper.rs)
 exposes those arguments. The shared
 [generator](../../../crates/pyxel-core/src/bgm_generator.rs) gives Composer
 separate JSON entry points, which the normal Pyxel build excludes through its

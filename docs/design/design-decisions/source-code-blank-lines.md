@@ -11,7 +11,7 @@ language, in embedded content, and in tests. Where a group is named below, the c
 
 ### Formatting ownership
 
-**Decision:** Use the formatting targets in [make format](../../../Makefile).
+**Decision:** Use the formatting targets in [`make format`](../../../Makefile).
 Rustfmt owns Rust formatting, Ruff owns Python sources, stubs, and the
 explicitly selected extensionless Python scripts, and Prettier owns the selected
 Web/WASM and configuration files. Ruff also formats Python fenced blocks in
