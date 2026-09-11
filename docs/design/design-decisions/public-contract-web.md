@@ -2,7 +2,9 @@
 
 [Audit and decision records](../design-audit.md#decision-records) · [Public Contract policy](../design-policy.md#public-contract)
 
-## Latest project selection in Code Maker
+## Code Maker
+
+### Latest project selection in Code Maker
 
 **Decision:** Keep the load token in
 [Code Maker](../../../web/code-maker/index.html) so an earlier download or archive
@@ -14,7 +16,7 @@ URL loads use those same loaders; the loaders still reject for direct callers.
 **Reason:** Downloads and archive processing can finish out of order. The token
 keeps the result consistent with the user's latest project selection.
 
-## Saving resources before Code Maker actions
+### Saving resources before Code Maker actions
 
 **Decision:** Once the embedded resource editor is initialized, Run, ZIP saving,
 and Gist sharing use resource bytes only after saving in its Python context
@@ -32,19 +34,7 @@ Picker cancellation remains silent; other file-write failures do not trigger
 an additional download. This recovery does not change `pyxel.save`'s exception
 contract or introduce a transaction across all project files.
 
-## Runtime error presentation
-
-**Decision:** The [web runtime](../../../wasm/pyxel.js) retains an uncaught
-error's name, message, and available stack in its fatal display. If the stack
-already begins with that complete summary, display it once; a stack containing
-only frames still needs the summary. Preserve runtime-provided wording.
-
-**Reason:** The summary identifies the failure and the stack locates it.
-Repeating the summary adds no information, while relying on every stack to
-include it can hide the actual error. This presentation choice does not add
-exception handlers or make recoverable tool operations fatal.
-
-## Code Maker project filenames
+### Code Maker project filenames
 
 **Decision:** Allow ordinary filenames containing consecutive dots, such as
 `data..txt`, when copying a Code Maker project into its runtime. Exclude a path
@@ -56,7 +46,7 @@ A double dot within a filename has a different meaning from a parent-directory
 component. This distinction does not define an archive sandbox or prescribe
 the validation used by other file-loading interfaces.
 
-## Code Maker dropped-file destinations
+### Code Maker dropped-file destinations
 
 **Decision:** Choose the destination of a dropped `.py` or `.pyxres` file by
 its extension across the page and both embedded Pyxel views. A Python file
@@ -70,7 +60,9 @@ particular pane adds an unnecessary location-dependent rule. The
 Other file types retain their embedded-app handling; this decision does not
 extend project drops to ZIP archives or multiple files.
 
-## Initial MML restoration
+## MML Studio
+
+### Initial MML restoration
 
 **Decision:** Keep [MML Studio](../../../web/mml-studio/index.html)'s initial
 restoration of locally encoded MML without per-channel edit tracking.
@@ -81,7 +73,21 @@ proportion to its purpose. Its share-link generation guard instead protects
 later asynchronous encoding results; it does not preserve typing during initial
 restoration. These operations have distinct responsibilities.
 
-## Published page redirects
+## Runtime and Pages
+
+### Runtime error presentation
+
+**Decision:** The [web runtime](../../../wasm/pyxel.js) retains an uncaught
+error's name, message, and available stack in its fatal display. If the stack
+already begins with that complete summary, display it once; a stack containing
+only frames still needs the summary. Preserve runtime-provided wording.
+
+**Reason:** The summary identifies the failure and the stack locates it.
+Repeating the summary adds no information, while relying on every stack to
+include it can hide the actual error. This presentation choice does not add
+exception handlers or make recoverable tool operations fatal.
+
+### Published page redirects
 
 **Decision:** Retain the legacy pages under `wasm/` as redirects to their web
 counterparts, carrying the query string and fragment.
@@ -91,7 +97,7 @@ The [redirect pages](../../../wasm/launcher/index.html) preserve that state whil
 keeping content at one owner. A directory reorganization does not invalidate
 those links or justify dropping their options.
 
-## Undocumented packages option
+### Undocumented packages option
 
 **Decision:** The [Web launcher](../../../web/launcher/index.html) forwards a
 `packages` URL parameter, and the `pyxel-run` and `pyxel-play` custom elements
@@ -106,7 +112,7 @@ the documentation is a defect.
 support would break those pages for a feature Pyxel no longer promotes, and
 documenting it again would reverse that removal.
 
-## Local Showcase runtime and served files
+### Local Showcase runtime and served files
 
 **Decision:** Serve the public web, documentation, runtime, and example assets
 needed by the local Showcase. Keep repository-internal paths outside those

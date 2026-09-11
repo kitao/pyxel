@@ -7,7 +7,9 @@ from the role and relationship of the surrounding code. The same conditions
 apply whether that boundary currently has a blank line or not, in every source
 language, in embedded content, and in tests. Where a group is named below, the code identifies it through its structure or a heading; under the [audit procedure](../design-audit.md#1-select-and-resolve-decisions), these records do not enumerate the groups of individual files.
 
-## Formatting ownership
+## Across Languages
+
+### Formatting ownership
 
 **Decision:** Use the formatting targets in [make format](../../../Makefile).
 Rustfmt owns Rust formatting, Ruff owns Python sources, stubs, and the
@@ -40,7 +42,7 @@ steps. Both forms can pass formatting, so passing it does not establish that
 the groups are appropriate. Distinguishing formatting from grouping also avoids
 treating content whitespace as an interchangeable source separator.
 
-## Processing groups
+### Processing groups
 
 **Decision:** Use one blank line between paragraphs within a function, loop,
 branch, macro, shell stage, or test body. A paragraph exposes a step readers can
@@ -78,7 +80,7 @@ implementation](https://doc.rust-lang.org/src/std/io/mod.rs.html) show the same
 authored paragraphing: compact helpers beside paragraphs within substantial
 loops, without fixed spacing around every loop or return.
 
-## Declaration inventories
+### Declaration inventories
 
 **Decision:** Keep a compact record, enumeration, constant range, argument
 list, field group, or registration inventory continuous. A different prefix,
@@ -111,7 +113,7 @@ matching groups in a declaration and its initializer make their correspondence
 visible. Splitting every type, component, flag, or prefix would hide the stable
 responsibilities the groups expose.
 
-## Comments at group boundaries
+### Comments at group boundaries
 
 **Decision:** Distinguish a heading for a group of implementations from a label
 on a compact declaration list or processing section and an explanation attached
@@ -153,6 +155,8 @@ subject.
 
 ## Rust
 
+### Imports, items, and calculations
+
 **Decision:** Apply the shared processing and inventory groups inside
 functions, macros, generated implementations, and native tests. Separate each
 `use` group from following non-import declarations or executable statements
@@ -171,6 +175,8 @@ code that uses it. The remaining boundaries follow the shared criteria; Rust's
 ownership syntax and attributes do not add or remove paragraphs on their own.
 
 ## Python
+
+### Definitions, widgets, and embedded programs
 
 **Decision:** Local definitions retain Python's definition spacing, including
 helpers that use captured state; their definitions belong near the work that
@@ -238,6 +244,8 @@ keep the demonstrated operation easy to follow; their published container and
 generation path explain the different definition spacing.
 
 ## Web
+
+### Implementations, runtime stages, styles, and markup
 
 **Decision:** Separate script-level function and class implementations, and
 methods of named classes, with one blank line in web/WASM sources and tests,
@@ -309,6 +317,8 @@ parts cooperate in one setup.
 
 ## GLSL
 
+### Shader formulas and passes
+
 **Decision:** In the [screen shaders](../../../crates/pyxel-core/src/shaders/),
 separate function implementations and declaration groups from implementations
 with one blank line. Keep version/precision directives, the uniform inventory,
@@ -336,6 +346,8 @@ boundaries that match under corner rotation. Returning or writing the
 calculated value adds no new calculation stage.
 
 ## Configuration and shell
+
+### Configuration records and shell tasks
 
 **Decision:** Use these boundaries in build, editor, and GitHub configuration:
 
@@ -372,6 +384,8 @@ payloads can give whitespace operational meaning, so their boundaries follow
 the consuming format.
 
 ## Tests
+
+### Test phases
 
 **Decision:** Apply the shared processing groups to test bodies. Separate
 prepared cases and observable interaction or lifecycle phases, keeping each
