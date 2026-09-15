@@ -185,6 +185,9 @@ class Camera:
     def __init__(self) -> None: ...
 
 class Shading:
+    LEVEL_COUNT: int
+    BASE_LEVEL: int
+
     direction: Vec3
 
     def __init__(self, colors: list[int]) -> None: ...

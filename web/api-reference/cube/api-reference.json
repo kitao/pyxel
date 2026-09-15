@@ -3752,18 +3752,18 @@
           "type": "class",
           "signature": "Shading(colors)",
           "description": {
-            "en": "A face-brightness lookup table with a scene-wide light direction. Built automatically from a palette: each color gets 4 brightness levels (0 = darkest, 3 = brightest), where a level is either a flat color or a 2x2 dither pair. Assign it to Node.shading.",
-            "cn": "带有场景全局光照方向的面亮度查找表。由调色板自动构建：每种颜色有 4 个亮度级别 (0 = 最暗，3 = 最亮)，每一级可以是纯色或 2x2 抖动色对。将它赋给 Node.shading。",
-            "de": "Eine Face-Helligkeits-Lookup-Tabelle mit szenenweiter Lichtrichtung. Wird automatisch aus einer Palette erstellt: Jede Farbe erhält 4 Helligkeitsstufen (0 = dunkelste, 3 = hellste), wobei eine Stufe entweder eine Vollfarbe oder ein 2x2-Dither-Paar ist. Weisen Sie sie Node.shading zu.",
-            "es": "Una tabla de búsqueda de brillo de caras con una dirección de luz para toda la escena. Se crea automáticamente desde una paleta: cada color obtiene 4 niveles de brillo (0 = más oscuro, 3 = más claro), donde un nivel es un color plano o un par de tramado 2x2. Asígnela a Node.shading.",
-            "fr": "Une table de correspondance de luminosité de faces avec une direction de lumière globale à la scène. Construite automatiquement depuis une palette : chaque couleur reçoit 4 niveaux de luminosité (0 = le plus sombre, 3 = le plus clair), chaque niveau étant une couleur pleine ou une paire de tramage 2x2. Assignez-la à Node.shading.",
-            "it": "Una tabella di lookup della luminosità delle facce con una direzione della luce a livello di scena. Costruita automaticamente da una palette: ogni colore ha 4 livelli di luminosità (0 = più scuro, 3 = più chiaro), dove un livello è un colore pieno o una coppia di dithering 2x2. Assegnarla a Node.shading.",
-            "ja": "シーン全体の光の向きと、面の明るさ変換テーブル。パレットから自動構築され、各色が 4 段階の明度レベル（0 が最暗、3 が最明）を持つ。各レベルは単色か 2x2 ディザのペア。Node.shading に設定して使う。",
-            "ko": "장면 전체의 빛 방향을 가진 면 밝기 조회 테이블입니다. 팔레트에서 자동으로 만들어집니다. 각 색은 4단계 밝기(0 = 가장 어둠, 3 = 가장 밝음)를 가지며, 각 단계는 단색 또는 2x2 디더 쌍입니다. Node.shading에 할당하세요.",
-            "pt": "Uma tabela de consulta de brilho de faces com uma direção de luz para toda a cena. Criada automaticamente a partir de uma paleta: cada cor recebe 4 níveis de brilho (0 = mais escuro, 3 = mais claro), em que um nível é uma cor plana ou um par de dithering 2x2. Atribua a Node.shading.",
-            "ru": "Таблица яркости граней с направлением света для всей сцены. Автоматически строится из палитры: каждый цвет получает 4 уровня яркости (0 = самый тёмный, 3 = самый яркий), где уровень — это либо сплошной цвет, либо 2x2 пара дизеринга. Присвойте объект Shading свойству Node.shading.",
-            "tr": "Sahne genelinde ışık yönüne sahip yüz parlaklığı arama tablosu. Bir paletten otomatik oluşturulur: her renk 4 parlaklık seviyesi alır (0 = en koyu, 3 = en parlak); seviye düz renk veya 2x2 dither çifti olabilir. Node.shading değerine atayın.",
-            "uk": "Таблиця яскравості граней з напрямком світла для всієї сцени. Автоматично будується з палітри: кожен колір отримує 4 рівні яскравості (0 = найтемніший, 3 = найяскравіший), де рівень — це суцільний колір або 2x2 пара дизерингу. Присвойте об'єкт Shading властивості Node.shading."
+            "en": "A face-brightness lookup table with a scene-wide light direction. Built automatically from a palette: each color gets 8 brightness levels (0 = darkest, 7 = brightest), where a level is either a flat color or a 2x2 dither pair. Assign it to Node.shading.",
+            "cn": "带有场景全局光照方向的面亮度查找表。由调色板自动构建：每种颜色有 8 个亮度级别 (0 = 最暗，7 = 最亮)，每一级可以是纯色或 2x2 抖动色对。将它赋给 Node.shading。",
+            "de": "Eine Face-Helligkeits-Lookup-Tabelle mit szenenweiter Lichtrichtung. Wird automatisch aus einer Palette erstellt: Jede Farbe erhält 8 Helligkeitsstufen (0 = dunkelste, 7 = hellste), wobei eine Stufe entweder eine Vollfarbe oder ein 2x2-Dither-Paar ist. Weisen Sie sie Node.shading zu.",
+            "es": "Una tabla de búsqueda de brillo de caras con una dirección de luz para toda la escena. Se crea automáticamente desde una paleta: cada color obtiene 8 niveles de brillo (0 = más oscuro, 7 = más claro), donde un nivel es un color plano o un par de tramado 2x2. Asígnela a Node.shading.",
+            "fr": "Une table de correspondance de luminosité de faces avec une direction de lumière globale à la scène. Construite automatiquement depuis une palette : chaque couleur reçoit 8 niveaux de luminosité (0 = le plus sombre, 7 = le plus clair), chaque niveau étant une couleur pleine ou une paire de tramage 2x2. Assignez-la à Node.shading.",
+            "it": "Una tabella di lookup della luminosità delle facce con una direzione della luce a livello di scena. Costruita automaticamente da una palette: ogni colore ha 8 livelli di luminosità (0 = più scuro, 7 = più chiaro), dove un livello è un colore pieno o una coppia di dithering 2x2. Assegnarla a Node.shading.",
+            "ja": "シーン全体の光の向きと、面の明るさ変換テーブル。パレットから自動構築され、各色が 8 段階の明度レベル（0 が最暗、7 が最明）を持つ。各レベルは単色か 2x2 ディザのペア。Node.shading に設定して使う。",
+            "ko": "장면 전체의 빛 방향을 가진 면 밝기 조회 테이블입니다. 팔레트에서 자동으로 만들어집니다. 각 색은 8단계 밝기(0 = 가장 어둠, 7 = 가장 밝음)를 가지며, 각 단계는 단색 또는 2x2 디더 쌍입니다. Node.shading에 할당하세요.",
+            "pt": "Uma tabela de consulta de brilho de faces com uma direção de luz para toda a cena. Criada automaticamente a partir de uma paleta: cada cor recebe 8 níveis de brilho (0 = mais escuro, 7 = mais claro), em que um nível é uma cor plana ou um par de dithering 2x2. Atribua a Node.shading.",
+            "ru": "Таблица яркости граней с направлением света для всей сцены. Автоматически строится из палитры: каждый цвет получает 8 уровней яркости (0 = самый тёмный, 7 = самый яркий), где уровень — это либо сплошной цвет, либо 2x2 пара дизеринга. Присвойте объект Shading свойству Node.shading.",
+            "tr": "Sahne genelinde ışık yönüne sahip yüz parlaklığı arama tablosu. Bir paletten otomatik oluşturulur: her renk 8 parlaklık seviyesi alır (0 = en koyu, 7 = en parlak); seviye düz renk veya 2x2 dither çifti olabilir. Node.shading değerine atayın.",
+            "uk": "Таблиця яскравості граней з напрямком світла для всієї сцени. Автоматично будується з палітри: кожен колір отримує 8 рівнів яскравості (0 = найтемніший, 7 = найяскравіший), де рівень — це суцільний колір або 2x2 пара дизерингу. Присвойте об'єкт Shading властивості Node.shading."
           },
           "params": [
             {
@@ -3791,19 +3791,61 @@
             "scene.shading.direction = Vec3(0.4, -0.8, -0.4)"
           ],
           "notes": {
-            "en": "Automatically generated tables keep the original color at level 2. Depending on the palette, multiple levels may use the same color. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.",
-            "cn": "自动生成的表在第 2 级保留原色。根据调色板的不同，多个级别可能使用相同的颜色。shading[(col, level)] 读取或设置表格单元的 (主色、次色) 颜色对。",
-            "de": "Automatisch erzeugte Tabellen behalten auf Stufe 2 die Originalfarbe bei. Je nach Palette können mehrere Stufen dieselbe Farbe verwenden. shading[(col, level)] liest oder setzt das Farbpaar (primär, sekundär) einer Tabellenzelle.",
-            "es": "Las tablas generadas automáticamente conservan el color original en el nivel 2. Según la paleta, varios niveles pueden usar el mismo color. shading[(col, level)] lee o asigna el par de colores (principal, secundario) de una celda de la tabla.",
-            "fr": "Les tables générées automatiquement conservent la couleur d'origine au niveau 2. Selon la palette, plusieurs niveaux peuvent utiliser la même couleur. shading[(col, level)] lit ou assigne la paire de couleurs (primaire, secondaire) d'une cellule de table.",
-            "it": "Le tabelle generate automaticamente mantengono il colore originale al livello 2. A seconda della palette, più livelli possono usare lo stesso colore. shading[(col, level)] legge o assegna la coppia di colori (primario, secondario) di una cella della tabella.",
-            "ja": "自動生成ではレベル 2 に元色を保持する。パレットによっては、複数のレベルで同じ色を使う場合がある。shading[(col, level)] でテーブルセルの (primary, secondary) 色ペアを読み書きできる。",
-            "ko": "자동 생성된 테이블은 레벨 2에서 원래 색상을 유지합니다. 팔레트에 따라 여러 레벨에서 같은 색상을 사용할 수 있습니다. shading[(col, level)]은 테이블 셀의 (primary, secondary) 색상 쌍을 읽거나 할당합니다.",
-            "pt": "As tabelas geradas automaticamente mantêm a cor original no nível 2. Dependendo da paleta, vários níveis podem usar a mesma cor. shading[(col, level)] lê ou atribui o par de cores (primária, secundária) de uma célula da tabela.",
-            "ru": "Автоматически созданные таблицы сохраняют исходный цвет на уровне 2. В зависимости от палитры несколько уровней могут использовать один и тот же цвет. shading[(col, level)] читает или назначает пару цветов (primary, secondary) ячейки таблицы.",
-            "tr": "Otomatik oluşturulan tablolar 2. seviyede özgün rengi korur. Palete bağlı olarak birden fazla seviye aynı rengi kullanabilir. shading[(col, level)] bir tablo hücresinin (primary, secondary) renk çiftini okur veya atar.",
-            "uk": "Автоматично створені таблиці зберігають початковий колір на рівні 2. Залежно від палітри кілька рівнів можуть використовувати той самий колір. shading[(col, level)] читає або призначає пару кольорів (primary, secondary) клітинки таблиці."
+            "en": "Automatically generated tables keep the original color at level 5. Depending on the palette, multiple levels may use the same color. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.",
+            "cn": "自动生成的表在第 5 级保留原色。根据调色板的不同，多个级别可能使用相同的颜色。shading[(col, level)] 读取或设置表格单元的 (主色、次色) 颜色对。",
+            "de": "Automatisch erzeugte Tabellen behalten auf Stufe 5 die Originalfarbe bei. Je nach Palette können mehrere Stufen dieselbe Farbe verwenden. shading[(col, level)] liest oder setzt das Farbpaar (primär, sekundär) einer Tabellenzelle.",
+            "es": "Las tablas generadas automáticamente conservan el color original en el nivel 5. Según la paleta, varios niveles pueden usar el mismo color. shading[(col, level)] lee o asigna el par de colores (principal, secundario) de una celda de la tabla.",
+            "fr": "Les tables générées automatiquement conservent la couleur d'origine au niveau 5. Selon la palette, plusieurs niveaux peuvent utiliser la même couleur. shading[(col, level)] lit ou assigne la paire de couleurs (primaire, secondaire) d'une cellule de table.",
+            "it": "Le tabelle generate automaticamente mantengono il colore originale al livello 5. A seconda della palette, più livelli possono usare lo stesso colore. shading[(col, level)] legge o assegna la coppia di colori (primario, secondario) di una cella della tabella.",
+            "ja": "自動生成ではレベル 5 に元色を保持する。パレットによっては、複数のレベルで同じ色を使う場合がある。shading[(col, level)] でテーブルセルの (primary, secondary) 色ペアを読み書きできる。",
+            "ko": "자동 생성된 테이블은 레벨 5에서 원래 색상을 유지합니다. 팔레트에 따라 여러 레벨에서 같은 색상을 사용할 수 있습니다. shading[(col, level)]은 테이블 셀의 (primary, secondary) 색상 쌍을 읽거나 할당합니다.",
+            "pt": "As tabelas geradas automaticamente mantêm a cor original no nível 5. Dependendo da paleta, vários níveis podem usar a mesma cor. shading[(col, level)] lê ou atribui o par de cores (primária, secundária) de uma célula da tabela.",
+            "ru": "Автоматически созданные таблицы сохраняют исходный цвет на уровне 5. В зависимости от палитры несколько уровней могут использовать один и тот же цвет. shading[(col, level)] читает или назначает пару цветов (primary, secondary) ячейки таблицы.",
+            "tr": "Otomatik oluşturulan tablolar 5. seviyede özgün rengi korur. Palete bağlı olarak birden fazla seviye aynı rengi kullanabilir. shading[(col, level)] bir tablo hücresinin (primary, secondary) renk çiftini okur veya atar.",
+            "uk": "Автоматично створені таблиці зберігають початковий колір на рівні 5. Залежно від палітри кілька рівнів можуть використовувати той самий колір. shading[(col, level)] читає або призначає пару кольорів (primary, secondary) клітинки таблиці."
           },
+          "advanced": false
+        },
+        {
+          "name": "LEVEL_COUNT",
+          "type": "constant",
+          "signature": "Shading.LEVEL_COUNT",
+          "description": {
+            "en": "Number of brightness-table columns: 8. Iterate over range(Shading.LEVEL_COUNT) to edit every level.",
+            "cn": "亮度表的列数：8。使用 range(Shading.LEVEL_COUNT) 遍历并编辑所有级别。",
+            "de": "Anzahl der Spalten der Helligkeitstabelle: 8. Mit range(Shading.LEVEL_COUNT) können alle Stufen bearbeitet werden.",
+            "es": "Número de columnas de la tabla de brillo: 8. Recorra range(Shading.LEVEL_COUNT) para editar todos los niveles.",
+            "fr": "Nombre de colonnes de la table de luminosité : 8. Parcourez range(Shading.LEVEL_COUNT) pour modifier tous les niveaux.",
+            "it": "Numero di colonne della tabella di luminosità: 8. Usare range(Shading.LEVEL_COUNT) per modificare tutti i livelli.",
+            "ja": "明るさ変換テーブルの列数。値は 8。range(Shading.LEVEL_COUNT) で全レベルを編集できる。",
+            "ko": "밝기 테이블의 열 수입니다. 값은 8입니다. range(Shading.LEVEL_COUNT)로 모든 단계를 순회하며 편집할 수 있습니다.",
+            "pt": "Número de colunas da tabela de brilho: 8. Percorra range(Shading.LEVEL_COUNT) para editar todos os níveis.",
+            "ru": "Количество столбцов таблицы яркости: 8. Используйте range(Shading.LEVEL_COUNT), чтобы изменить все уровни.",
+            "tr": "Parlaklık tablosunun sütun sayısı: 8. Tüm seviyeleri düzenlemek için range(Shading.LEVEL_COUNT) üzerinde yineleyin.",
+            "uk": "Кількість стовпців таблиці яскравості: 8. Використовуйте range(Shading.LEVEL_COUNT), щоб змінити всі рівні."
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "BASE_LEVEL",
+          "type": "constant",
+          "signature": "Shading.BASE_LEVEL",
+          "description": {
+            "en": "The level that keeps the original palette color in an automatically generated table: 5.",
+            "cn": "自动生成的表中保留调色板原色的级别：5。",
+            "de": "Die Stufe, die in automatisch erzeugten Tabellen die ursprüngliche Palettenfarbe beibehält: 5.",
+            "es": "El nivel que conserva el color original de la paleta en una tabla generada automáticamente: 5.",
+            "fr": "Le niveau qui conserve la couleur d'origine de la palette dans une table générée automatiquement : 5.",
+            "it": "Il livello che mantiene il colore originale della palette in una tabella generata automaticamente: 5.",
+            "ja": "自動生成したテーブルでパレットの元色を保持するレベル。値は 5。",
+            "ko": "자동 생성된 테이블에서 팔레트의 원래 색상을 유지하는 단계입니다. 값은 5입니다.",
+            "pt": "O nível que mantém a cor original da paleta em uma tabela gerada automaticamente: 5.",
+            "ru": "Уровень, сохраняющий исходный цвет палитры в автоматически созданной таблице: 5.",
+            "tr": "Otomatik oluşturulan tabloda paletin özgün rengini koruyan seviye: 5.",
+            "uk": "Рівень, що зберігає початковий колір палітри в автоматично створеній таблиці: 5."
+          },
+          "value_type": "int",
           "advanced": false
         },
         {
@@ -3868,7 +3910,25 @@
           "returns": {
             "type": "None"
           },
-          "advanced": false
+          "advanced": false,
+          "notes": {
+            "en": "Call build() after changing the display palette; changing pyxel.colors alone does not regenerate the table. Generation chooses flat colors, 50% checker pairs, and repeated cells for the supplied colors; dithering is optional.",
+            "cn": "更改显示调色板后请调用 build()；仅更改 pyxel.colors 不会重新生成表。生成时会根据提供的颜色选择纯色、50% 棋盘格色对或重复的单元格，不强制使用抖动。",
+            "de": "Rufen Sie nach einer Änderung der Anzeigepalette build() auf; eine Änderung von pyxel.colors allein erzeugt die Tabelle nicht neu. Die Erzeugung wählt Vollfarben, 50%-Schachbrettpaare und wiederholte Zellen für die übergebenen Farben; Dithering ist optional.",
+            "es": "Llame a build() después de cambiar la paleta de pantalla; cambiar solo pyxel.colors no regenera la tabla. La generación elige colores planos, pares en damero al 50% y celdas repetidas para los colores proporcionados; el tramado es opcional.",
+            "fr": "Appelez build() après avoir modifié la palette d’affichage ; modifier uniquement pyxel.colors ne régénère pas la table. La génération choisit des couleurs pleines, des paires en damier à 50% et des cellules répétées pour les couleurs fournies ; le tramage est facultatif.",
+            "it": "Chiamare build() dopo aver modificato la palette di visualizzazione; modificare solo pyxel.colors non rigenera la tabella. La generazione sceglie colori pieni, coppie a scacchiera al 50% e celle ripetute per i colori forniti; il dithering è facoltativo.",
+            "ja": "表示パレットを変更したら build() を呼ぶ。pyxel.colors の変更だけではテーブルは再生成されない。与えられた色に応じて単色、50% の市松模様、同じセルの繰り返しを選ぶ。ディザは必須ではない。",
+            "ko": "표시 팔레트를 변경한 뒤 build()를 호출하세요. pyxel.colors만 변경하면 테이블이 다시 생성되지 않습니다. 제공된 색상에 맞춰 단색, 50% 바둑판 쌍, 반복 셀을 선택하며 디더링은 필수가 아닙니다.",
+            "pt": "Chame build() após alterar a paleta de exibição; alterar apenas pyxel.colors não regenera a tabela. A geração escolhe cores planas, pares quadriculados a 50% e células repetidas para as cores fornecidas; o dithering é opcional.",
+            "ru": "После изменения палитры отображения вызовите build(); одно лишь изменение pyxel.colors не пересоздаёт таблицу. Для переданных цветов выбираются сплошные цвета, шахматные пары с долями 50% и повторяющиеся ячейки; дизеринг необязателен.",
+            "tr": "Görüntü paletini değiştirdikten sonra build() çağırın; yalnızca pyxel.colors değerini değiştirmek tabloyu yeniden oluşturmaz. Verilen renkler için düz renkler, %50 dama çiftleri ve tekrarlanan hücreler seçilir; dither zorunlu değildir.",
+            "uk": "Після зміни палітри відображення викличте build(); сама зміна pyxel.colors не створює таблицю заново. Для переданих кольорів обираються суцільні кольори, шахові пари з частками 50% і повторювані клітинки; дизеринг необов’язковий."
+          },
+          "examples": [
+            "shading.build(pyxel.colors)",
+            "shading[8, Shading.BASE_LEVEL] = (8, 8)"
+          ]
         }
       ]
     },

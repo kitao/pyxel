@@ -5,7 +5,7 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Mesh, Node, Shading, Vec3
 
 MOTION_SPEED = 1.0
-HUD_HEIGHT = 17
+HUD_HEIGHT = 26
 FLOOR_RADIUS = 2.2
 
 
@@ -78,7 +78,8 @@ class App:
 
         self.scene = Node()
         self.scene.camera = Camera()
-        self.scene.camera.clear_color = 1
+        # A light sky keeps the dark horns distinct from the background.
+        self.scene.camera.clear_color = 12
         self.scene.camera.ortho_size = 3.5
         self.shading = Shading(pyxel.colors)
         self.shading.direction = Vec3(-0.5, -1.0, 0.8).normalize()
@@ -110,25 +111,15 @@ class App:
         ]
         self.floor = Floor(joints)
         self.scene.add_child(self.floor)
-        self.reset()
-
-        pyxel.run(self.update, self.draw)
-
-    def reset(self):
         self.yaw = 148.0
         self.pitch = math.degrees(math.atan2(1.7, 6.0))
-        self.auto_camera = True
-        self.auto_motion = True
-        self.paused = False
-        self.actor.active = True
-        self.scene.shading = None
-        self.floor.offset = 0.0
         self.select_motion(0)
         self.update_camera()
 
+        pyxel.run(self.update, self.draw)
+
     def select_motion(self, index):
         self.motion_index = index
-        self.motion_frame = 0.0
         for node, transform in self.rest_pose:
             node.transform = transform
         self.actor.play_motion(self.motions[index], speed=MOTION_SPEED)
@@ -136,42 +127,23 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
-        if pyxel.btnp(pyxel.KEY_R):
-            self.reset()
-            return
 
-        if pyxel.btnp(pyxel.KEY_SPACE):
-            self.paused = not self.paused
         for index, key in enumerate([pyxel.KEY_1, pyxel.KEY_2, pyxel.KEY_3]):
             if pyxel.btnp(key):
-                self.auto_motion = False
                 self.select_motion(index)
 
-        if pyxel.btnp(pyxel.KEY_A):
-            self.auto_camera = not self.auto_camera
         if pyxel.btnp(pyxel.KEY_S):
             self.scene.shading = self.shading if self.scene.shading is None else None
 
         turn = pyxel.btn(pyxel.KEY_RIGHT) - pyxel.btn(pyxel.KEY_LEFT)
         tilt = pyxel.btn(pyxel.KEY_UP) - pyxel.btn(pyxel.KEY_DOWN)
-        if turn or tilt:
-            self.auto_camera = False
-            self.yaw += turn * 2.0
-            self.pitch = max(5.0, min(60.0, self.pitch + tilt))
-        elif self.auto_camera and not self.paused:
-            self.yaw += 0.4
+        self.yaw += 0.4 + turn * 2.0
+        self.pitch = max(5.0, min(60.0, self.pitch + tilt))
         self.update_camera()
 
-        if not self.paused:
-            duration = [120, 90, 90][self.motion_index]
-            if self.auto_motion and self.motion_frame >= duration:
-                self.select_motion((self.motion_index + 1) % 3)
-            self.motion_frame += MOTION_SPEED
+        speed = [0.42, 2.5, 0.0][self.motion_index]
+        self.floor.offset = (self.floor.offset + speed * MOTION_SPEED / 30) % 4.2
 
-            speed = [0.42, 2.5, 0.0][self.motion_index]
-            self.floor.offset = (self.floor.offset + speed * MOTION_SPEED / 30) % 4.2
-
-        self.actor.active = not self.paused
         self.scene.update()
 
     def update_camera(self):
@@ -185,18 +157,8 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        pyxel.text(4, 2, "Arrows:Look Space:Pause 1:Walk 2:Run 3:Eat", 13)
-        pyxel.text(4, 10, "A:Auto camera S:Shade R:Reset Q:Quit", 13)
-
-        motion = ["Walk", "Run", "Eat"][self.motion_index]
-        playback = (
-            "Paused" if self.paused else "Demo" if self.auto_motion else "Playing"
-        )
-        camera = "Auto" if self.auto_camera else "Manual"
-        shade = "On" if self.scene.shading is not None else "Off"
-        status = f"{motion}:{playback}  Camera:{camera}  Shade:{shade}"
-        x = (pyxel.width - len(status) * pyxel.FONT_WIDTH) // 2
-        pyxel.text(x, pyxel.height - 9, status, 10)
+        pyxel.text(8, 8, "Arrows: Rotate  S: Shading  Q: Quit", 7)
+        pyxel.text(8, 18, "1: Walk  2: Run  3: Eat", 7)
 
 
 App()

@@ -492,7 +492,7 @@ class TestStateSetters:
                 self.rect(Mat4.IDENTITY, 2, 2, 7)
 
         shading = Shading(palette())
-        for level in range(4):
+        for level in range(Shading.LEVEL_COUNT):
             shading[7, level] = (3, 3)
         assert self._draw(Probe(), shading) == 7
 
@@ -508,7 +508,7 @@ class TestStateSetters:
                 self.box(Mat4.IDENTITY, Vec3.ONE, img)
 
         shading = Shading(palette())
-        for level in range(4):
+        for level in range(Shading.LEVEL_COUNT):
             shading[7, level] = (7, 7)
         assert self._draw(Probe(), shading) == (7 if all(size) else 0)
 

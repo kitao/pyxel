@@ -303,7 +303,7 @@ pub fn dither_pick(primary: i32, secondary: i32, x: i32, y: i32) -> u8 {
     }
 }
 
-// Quantize positive Lambert brightness into the palette's four shade levels.
+// Quantize positive Lambert brightness into the palette's shade levels.
 pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
     let dot_factor = match normal {
         Some(n) => {
@@ -1223,8 +1223,8 @@ mod tests {
     fn test_shading_quantizes_lambert_brightness() {
         let light = vec3(0.0, -1.0, 0.0);
         assert_eq!(face_shade_level(&light, Some(&vec3(1.0, 0.0, 0.0))), 0);
-        assert_eq!(face_shade_level(&light, Some(&vec3(1.0, 1.0, 0.0))), 2);
-        assert_eq!(face_shade_level(&light, Some(&vec3(0.0, 1.0, 0.0))), 3);
+        assert_eq!(face_shade_level(&light, Some(&vec3(1.0, 1.0, 0.0))), 5);
+        assert_eq!(face_shade_level(&light, Some(&vec3(0.0, 1.0, 0.0))), 7);
         assert_eq!(face_shade_level(&light, Some(&vec3(1.0, -0.25, 0.0))), 0);
         assert_eq!(face_shade_level(&light, Some(&vec3(0.0, -1.0, 0.0))), 0);
     }

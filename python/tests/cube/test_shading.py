@@ -1,3 +1,5 @@
+from itertools import pairwise
+
 import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
@@ -7,7 +9,14 @@ from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 class TestDefault:
     def test_construction(self):
         s = Shading(palette())
-        assert repr(s) == "Shading(16 x 4)"
+        assert repr(s) == "Shading(16 x 8)"
+
+    def test_level_constants_and_last_cell(self):
+        assert Shading.LEVEL_COUNT == 8
+        assert Shading.BASE_LEVEL == 5
+        s = Shading(palette())
+        s[15, Shading.LEVEL_COUNT - 1] = (6, 7)
+        assert s[15, Shading.LEVEL_COUNT - 1] == (6, 7)
 
     def test_direction_default(self):
         s = Shading(palette())
@@ -30,9 +39,9 @@ class TestIndexing:
     def test_out_of_range_level(self):
         s = Shading(palette())
         with raises_exact(IndexError, "Shading index out of range"):
-            _ = s[0, 4]
+            _ = s[0, Shading.LEVEL_COUNT]
         with raises_exact(IndexError, "Shading index out of range"):
-            s[0, 4] = (5, 7)
+            s[0, Shading.LEVEL_COUNT] = (5, 7)
 
     def test_negative_col_raises(self):
         # The binding key is (usize, usize); a negative int always fails
@@ -77,7 +86,7 @@ def test_texture_colkey_uses_source_color(source, mapped, shaded):
     scene.camera = Camera()
     scene.camera.clear_color = 2
     scene.shading = Shading(palette())
-    for level in range(4):
+    for level in range(Shading.LEVEL_COUNT):
         scene.shading[source, level] = (mapped, mapped)
     target = pyxel.Image(64, 64)
 
@@ -90,15 +99,19 @@ class TestBuild:
     def test_build_resets_modifications(self):
         pal = palette()
         s = Shading(pal)
-        initial = [[s[col, level] for level in range(4)] for col in range(len(pal))]
+        initial = [
+            [s[col, level] for level in range(Shading.LEVEL_COUNT)]
+            for col in range(len(pal))
+        ]
 
         for col in range(len(pal)):
-            for level in range(4):
+            for level in range(Shading.LEVEL_COUNT):
                 s[col, level] = (99, 99)
 
         s.build(pal)
         assert [
-            [s[col, level] for level in range(4)] for col in range(len(pal))
+            [s[col, level] for level in range(Shading.LEVEL_COUNT)]
+            for col in range(len(pal))
         ] == initial
 
 
@@ -112,18 +125,16 @@ class TestRampInvariants:
         pal = _pal(pal_name)
         s = Shading(pal)
         for col in range(len(pal)):
-            cells = [s[col, lv] for lv in range(4)]
+            cells = [s[col, lv] for lv in range(Shading.LEVEL_COUNT)]
             ls = [_entry_luma(pal, p, q) for p, q in cells]
-            assert ls[0] <= ls[1] + 1e-6, f"{pal_name} col {col} lv0>lv1"
-            assert ls[1] <= ls[2] + 1e-6, f"{pal_name} col {col} lv1>lv2"
-            assert ls[2] <= ls[3] + 1e-6, f"{pal_name} col {col} lv2>lv3"
+            assert all(a <= b + 1e-6 for a, b in pairwise(ls)), (pal_name, col, ls)
 
     def test_shade_levels_below_or_equal_base(self, pal_name):
         pal = _pal(pal_name)
         s = Shading(pal)
         for col in range(len(pal)):
             base = _linear_luma(pal[col])
-            for lv in (0, 1):
+            for lv in range(Shading.BASE_LEVEL):
                 p, q = s[col, lv]
                 assert _entry_luma(pal, p, q) < base + 1e-6, (
                     f"{pal_name} col {col} lv{lv} brighter than base"
@@ -134,10 +145,11 @@ class TestRampInvariants:
         s = Shading(pal)
         for col in range(len(pal)):
             base = _linear_luma(pal[col])
-            p, q = s[col, 3]
-            assert _entry_luma(pal, p, q) >= base - 1e-6, (
-                f"{pal_name} col {col} lv3 darker than base"
-            )
+            for lv in range(Shading.BASE_LEVEL + 1, Shading.LEVEL_COUNT):
+                p, q = s[col, lv]
+                assert _entry_luma(pal, p, q) >= base - 1e-6, (
+                    f"{pal_name} col {col} lv{lv} darker than base"
+                )
 
 
 def _entry_luma(pal: list[int], primary: int, secondary: int) -> float:
