@@ -762,7 +762,7 @@ When set to a color number, Node.draw() fills the target with it before renderin
 
 ### `Shading(colors)` — class
 
-A face-brightness lookup table with a scene-wide light direction. Built automatically from a palette: each color gets 4 brightness levels (0 = darkest, 3 = brightest), where a level is either a flat color or a 2x2 dither pair. Assign it to Node.shading.
+A face-brightness lookup table with a scene-wide light direction. Built automatically from a palette: each color gets 8 brightness levels (0 = darkest, 7 = brightest), where a level is either a flat color or a 2x2 dither pair. Assign it to Node.shading.
 
 **Parameters:**
 
@@ -777,7 +777,19 @@ scene.shading = Shading(pyxel.colors)
 scene.shading.direction = Vec3(0.4, -0.8, -0.4)
 ```
 
-**Note:** Automatically generated tables keep the original color at level 2. Depending on the palette, multiple levels may use the same color. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.
+**Note:** Automatically generated tables keep the original color at level 5. Depending on the palette, multiple levels may use the same color. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.
+
+### `Shading.LEVEL_COUNT` — constant
+
+Number of brightness-table columns: 8. Iterate over range(Shading.LEVEL_COUNT) to edit every level.
+
+- **Type:** `int`
+
+### `Shading.BASE_LEVEL` — constant
+
+The level that keeps the original palette color in an automatically generated table: 5.
+
+- **Type:** `int`
 
 ### `direction` — variable
 
@@ -792,6 +804,15 @@ Rebuild the lookup table from a palette. Manual edits through shading[(col, leve
 **Parameters:**
 
 - `colors` (*list*) — Display colors as 24-bit values.
+
+**Example:**
+
+```python
+shading.build(pyxel.colors)
+shading[8, Shading.BASE_LEVEL] = (8, 8)
+```
+
+**Note:** Call build() after changing the display palette; changing pyxel.colors alone does not regenerate the table. Generation chooses flat colors, 50% checker pairs, and repeated cells for the supplied colors; dithering is optional.
 
 ## Primitive
 

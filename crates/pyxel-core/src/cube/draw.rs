@@ -2371,7 +2371,7 @@ mod tests {
     fn test_shaded_stored_normals_track_transforms() {
         let shading_rc = Shading::new(&[0; 16]);
         rc_mut!(&shading_rc).direction = Vec3::new(0.0, 0.0, -1.0);
-        for level in 0..4 {
+        for level in 0..crate::cube::shading::LEVEL_COUNT {
             rc_mut!(&shading_rc).set(7, level, (8 + level as i32, 8 + level as i32));
         }
 
@@ -2429,7 +2429,7 @@ mod tests {
             z: -8.0,
         });
         let cases = [
-            (Mat4::identity(), 10),
+            (Mat4::identity(), 13),
             (
                 Mat4::from_axis_angle(
                     &Vec3 {
@@ -2447,7 +2447,7 @@ mod tests {
                     y: 1.0,
                     z: 1.0,
                 }),
-                11,
+                15,
             ),
             (
                 Mat4::from_scale(&Vec3 {
@@ -2463,7 +2463,7 @@ mod tests {
                     y: 1.0,
                     z: 0.0,
                 }),
-                11,
+                15,
             ),
         ];
 
