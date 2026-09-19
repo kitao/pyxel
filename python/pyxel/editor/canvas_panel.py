@@ -452,18 +452,23 @@ class CanvasPanel(Widget):
 
         # Selection tool operations (no Ctrl/Cmd)
         if self.tool_var == TOOL_SELECT and not has_cmd_or_ctrl:
-            # H: Flip horizontal
+            # correction of RefCell already mutably borrowed error on python 3.12
+            # H: Flip horizontal 
             if pyxel.btnp(pyxel.KEY_H):
                 x, y, w, h = self._selection_rect()
                 self._add_pre_history()
-                self.canvas_var.blt(x, y, self.canvas_var, x, y, -w, h)
+                data = self.canvas_var.get_slice(x, y, w, h)
+                data = [row[::-1] for row in data]
+                self.canvas_var.set_slice(x, y, data)
                 self._add_post_history()
 
             # V: Flip vertical
             if pyxel.btnp(pyxel.KEY_V):
                 x, y, w, h = self._selection_rect()
                 self._add_pre_history()
-                self.canvas_var.blt(x, y, self.canvas_var, x, y, w, -h)
+                data = self.canvas_var.get_slice(x, y, w, h)
+                data.reverse()
+                self.canvas_var.set_slice(x, y, data)
                 self._add_post_history()
 
         # Move tile focus
