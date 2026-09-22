@@ -771,10 +771,9 @@ A face-brightness lookup table with a scene-wide light direction. Built automati
 **Example:**
 
 ```python
-from pyxel.cube import Shading, Vec3
+from pyxel.cube import Shading
 
 scene.shading = Shading(pyxel.colors)
-scene.shading.direction = Vec3(0.4, -0.8, -0.4)
 ```
 
 **Note:** Automatically generated tables keep the original color at level 5. Depending on the palette, multiple levels may use the same color. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.
@@ -793,7 +792,7 @@ The level that keeps the original palette color in an automatically generated ta
 
 ### `direction` — variable
 
-The direction the light travels, in world space. Face brightness follows the angle between this and the face normal. The default is Vec3.DOWN.
+The direction the light travels, in world space. Face brightness follows the angle between this and the face normal. The default is Vec3(0.5, -1, -0.8).
 
 - **Type:** `Vec3`
 
@@ -1215,7 +1214,7 @@ The contact normal in world space, pointing from the other node toward this node
 
 ### `depth` — variable
 
-Penetration depth this side should resolve, already split by the mass ratio.
+Suggested push-out distance along normal, already split by the mass ratio. Other solid contacts in the same update are considered together; apply every reported correction when resolving contacts.
 
 - **Type:** `float`
 
@@ -1485,7 +1484,7 @@ Per-frame draw hook, called by draw() in tree order. Call draw commands from her
 
 ### `on_collide(other, contact)` — function
 
-Collision hook, called by update() once per contacting pair. Apply contact.depth and contact.delta_velocity here to resolve the hit.
+Collision hook called by update(). A solid mesh can report multiple contacts with the same node; apply contact.depth and contact.delta_velocity in callback order. Triggers report once per contacting pair.
 
 **Parameters:**
 
@@ -1527,6 +1526,22 @@ Shift only the depth of the following draw commands along the view direction, in
 **Parameters:**
 
 - `offset` (*float*) — Depth shift in world units. Negative is toward the camera.
+
+### `decal(distance)` — function *(Advanced)*
+
+Project shapes and images onto already drawn surfaces when drawing. Applies to rect(), elli(), and plane().
+
+**Parameters:**
+
+- `distance` (*float*) — Projection distance in local units, along mat’s −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.
+
+**Note:** These draw filled planar shapes or images whose position and orientation are specified by a matrix. Borders draw lines and are not included. Other draw commands are unchanged.
+
+Paints already drawn, camera-visible surfaces within the projection range, without changing their depth. Draw receivers first; no collider is needed. Does not stop at the first surface along the projection direction. Dithering, shading, and colkey still apply; depth_test, depth_write, and depth_offset do not affect decal drawing. Resets at each node's on_draw entry.
+
+### `decal()` — function *(Advanced)*
+
+Restore normal drawing. Passing None has the same effect.
 
 ### `shaded(on)` — function
 

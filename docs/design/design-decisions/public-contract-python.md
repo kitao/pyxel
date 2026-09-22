@@ -428,8 +428,9 @@ frame with the node's previous transform would accumulate movement and scale.
 The [motion binding](../../../crates/pyxel-binding/src/cube/node.rs) replaces
 the sampled transforms; a parent preserves scene placement without changing the
 motion contract. The [collision
-sample](../../../python/pyxel/examples/cube/c05_3d_collision.py) uses this
-separation for its chosen model scale.
+sample](../../../python/pyxel/examples/cube/c05_3d_collision.py) keeps player
+placement on the parent and model orientation, foot offset, and motion on the
+actor child.
 
 ### Zero-mass Cube bodies
 

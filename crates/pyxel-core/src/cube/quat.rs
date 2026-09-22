@@ -104,10 +104,6 @@ impl Quat {
         }
         let dot = a.x * b.x + a.y * b.y + a.z * b.z;
         let cos_theta = (dot / len_ab).clamp(-1.0, 1.0);
-        if cos_theta > 0.999_999 {
-            return Self::identity();
-        }
-
         if cos_theta < -0.999_999 {
             // Opposite vectors: pick any perpendicular axis and rotate 180°.
             let a_len = (a.x * a.x + a.y * a.y + a.z * a.z).sqrt();
@@ -493,6 +489,23 @@ mod tests {
         let q = deref(&Quat::from_two_vectors(&a, &a));
         let id = deref(&Quat::identity());
         assert_eq!(q, id);
+    }
+
+    #[test]
+    fn test_from_two_vectors_preserves_small_turns() {
+        let from = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        for y in [0.00001, 0.0001, 0.001] {
+            let target = Vec3 { x: 1.0, y, z: 0.0 };
+            let turn = Quat::from_two_vectors(&from, &target);
+            let actual = rc_ref!(&turn).mul_vec(&from);
+            let expected = target.normalize();
+            assert!(approx_eq_v(&rc_ref!(&actual), &rc_ref!(&expected)));
+            assert!(rc_ref!(&actual).y > 0.0);
+        }
     }
 
     #[test]

@@ -23,8 +23,9 @@ class Shape(Node):
             caption = self.solid_method
             self.draw_solid()
 
-        self.depth_offset(-1.0)
-        self.text(Vec3(0, 0.7, 0), caption, 7)
+        # Keep the label in front of the shape
+        self.depth_offset(-35.0)
+        self.text(Vec3(0, 24.5, 0), caption, 7)
 
 
 class PsetShape(Shape):
@@ -38,47 +39,47 @@ class LineShape(Shape):
     solid_method = "line"
 
     def draw_solid(self):
-        self.line(Vec3(-0.5, 0, 0), Vec3(0.5, 0, 0), 14)
+        self.line(Vec3(-17.5, 0, 0), Vec3(17.5, 0, 0), 14)
 
 
 class TriShape(Shape):
     solid_method, wire_method = "tri", "trib"
 
     def draw_solid(self):
-        self.tri(Vec3(0, 0.5, 0), Vec3(-0.5, -0.35, 0), Vec3(0.5, -0.35, 0), 9)
+        self.tri(Vec3(0, 17.5, 0), Vec3(-17.5, -12.25, 0), Vec3(17.5, -12.25, 0), 9)
 
     def draw_wire(self):
-        self.trib(Vec3(0, 0.5, 0), Vec3(-0.5, -0.35, 0), Vec3(0.5, -0.35, 0), 9)
+        self.trib(Vec3(0, 17.5, 0), Vec3(-17.5, -12.25, 0), Vec3(17.5, -12.25, 0), 9)
 
 
 class RectShape(Shape):
     solid_method, wire_method = "rect", "rectb"
 
     def draw_solid(self):
-        self.rect(Mat4.IDENTITY, 1.0, 0.7, 10)
+        self.rect(Mat4.IDENTITY, 35.0, 24.5, 10)
 
     def draw_wire(self):
-        self.rectb(Mat4.IDENTITY, 1.0, 0.7, 10)
+        self.rectb(Mat4.IDENTITY, 35.0, 24.5, 10)
 
 
 class CircShape(Shape):
     solid_method, wire_method = "circ", "circb"
 
     def draw_solid(self):
-        self.circ(Vec3.ZERO, 0.5, 3)
+        self.circ(Vec3.ZERO, 17.5, 3)
 
     def draw_wire(self):
-        self.circb(Vec3.ZERO, 0.5, 3)
+        self.circb(Vec3.ZERO, 17.5, 3)
 
 
 class ElliShape(Shape):
     solid_method, wire_method = "elli", "ellib"
 
     def draw_solid(self):
-        self.elli(Mat4.IDENTITY, 1.0, 0.7, 11)
+        self.elli(Mat4.IDENTITY, 35.0, 24.5, 11)
 
     def draw_wire(self):
-        self.ellib(Mat4.IDENTITY, 1.0, 0.7, 11)
+        self.ellib(Mat4.IDENTITY, 35.0, 24.5, 11)
 
 
 class PlaneShape(Shape):
@@ -86,7 +87,7 @@ class PlaneShape(Shape):
 
     def draw_solid(self):
         uvs = ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0))
-        self.plane(Mat4.IDENTITY, cat_image, uvs, 1.0, 1.0)
+        self.plane(Mat4.IDENTITY, cat_image, uvs, 35.0, 35.0)
 
 
 class SpriteShape(Shape):
@@ -94,27 +95,27 @@ class SpriteShape(Shape):
 
     def draw_solid(self):
         uvs = ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0))
-        self.sprite(Vec3.ZERO, cat_image, uvs, 1.0, 1.0)
+        self.sprite(Vec3.ZERO, cat_image, uvs, 35.0, 35.0)
 
 
 class BoxShape(Shape):
     solid_method, wire_method = "box", "boxb"
 
     def draw_solid(self):
-        self.box(Mat4.IDENTITY, Vec3(0.85, 0.85, 0.85), cat_image)
+        self.box(Mat4.IDENTITY, Vec3(29.75, 29.75, 29.75), cat_image)
 
     def draw_wire(self):
-        self.boxb(Mat4.IDENTITY, Vec3(0.85, 0.85, 0.85), 12)
+        self.boxb(Mat4.IDENTITY, Vec3(29.75, 29.75, 29.75), 12)
 
 
 class SphereShape(Shape):
     solid_method, wire_method = "sphere", "sphereb"
 
     def draw_solid(self):
-        self.sphere(Vec3.ZERO, 0.5, cat_image)
+        self.sphere(Vec3.ZERO, 17.5, cat_image)
 
     def draw_wire(self):
-        self.sphereb(Vec3.ZERO, 0.5, 2)
+        self.sphereb(Vec3.ZERO, 17.5, 2)
 
 
 class Scene(Node):
@@ -122,7 +123,6 @@ class Scene(Node):
         super().__init__()
 
         self.shading = Shading(pyxel.colors)
-        self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
 
         self.camera = Camera()
         self.camera.clear_color = 1
@@ -146,15 +146,16 @@ class Scene(Node):
 
         for shape_index, shape_class in enumerate(shapes):
             angle = shape_index * 360.0 / len(shapes)
-            position = Vec3(2.5 * pyxel.sin(angle), 2.5 * pyxel.cos(angle), 0)
+            position = Vec3(87.5 * pyxel.sin(angle), 87.5 * pyxel.cos(angle), 0)
             self.add_child(shape_class(position))
 
     def update_camera(self):
-        target = Vec3(0, 0.2, 0)
+        distance = 210.0
+        target = Vec3(0, 7.0, 0)
         eye = target + Vec3(
-            6.0 * pyxel.sin(self.yaw) * pyxel.cos(self.pitch),
-            6.0 * pyxel.sin(self.pitch),
-            6.0 * pyxel.cos(self.yaw) * pyxel.cos(self.pitch),
+            distance * pyxel.sin(self.yaw) * pyxel.cos(self.pitch),
+            distance * pyxel.sin(self.pitch),
+            distance * pyxel.cos(self.yaw) * pyxel.cos(self.pitch),
         )
         self.camera.transform = Mat4.look_at(eye, target)
 
@@ -174,7 +175,7 @@ class App:
         pyxel.init(240, 240, title="Basic Shapes")
 
         global cat_image
-        cat_image = pyxel.Image.from_image("../assets/cat_16x16.png")
+        cat_image = pyxel.Image.from_image("assets/cat_16x16.png")
 
         self.scene = Scene()
 

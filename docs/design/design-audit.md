@@ -93,6 +93,17 @@ complete triggered gates on the settled candidate; repeat them when changed
 inputs or unresolved failures require it, rather than after every intermediate
 adjustment.
 
+For a readability or simplification change, establish the intended reader, the
+result to preserve, and the task the reader should be able to perform. Compare
+the previous and proposed source by tracing that task to the relevant values,
+operations, state, and dependencies. Record what becomes easier to understand or
+change, and what additional knowledge or navigation the proposal requires.
+Include affected support code and assets rather than measuring only the edited
+file. Choose evidence appropriate to both the result and the reading task;
+behavioral equivalence does not establish improved readability. Keep a proposal
+out of the accepted candidate while its claimed benefit or preserved result is
+unsupported. Use the existing findings record for this comparison.
+
 ### Commands
 
 These requirements apply to every mode:

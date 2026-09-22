@@ -20,7 +20,7 @@ class TestDefault:
 
     def test_direction_default(self):
         s = Shading(palette())
-        assert s.direction == Vec3(0, -1, 0)
+        assert s.direction == Vec3(0.5, -1, -0.8)
 
 
 class TestIndexing:

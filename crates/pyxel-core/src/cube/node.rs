@@ -23,6 +23,7 @@ pub struct Node {
     pub children: Vec<RcNode>,
     // Pending deferred destruction; hooks can use this read-only flag to early-return.
     pub destroyed: bool,
+    pub(crate) contact_cache: Option<Box<crate::cube::scene::ContactCache>>,
 }
 
 define_rc_type!(RcNode, Node);
@@ -41,6 +42,7 @@ impl Node {
             parent: None,
             children: Vec::new(),
             destroyed: false,
+            contact_cache: None,
         })
     }
 

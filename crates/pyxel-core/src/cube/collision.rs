@@ -1129,7 +1129,7 @@ pub fn ray_vs_triangle(
 // sphere. Returns ContactGeom with normal pointing from the triangle
 // toward the sphere center.
 pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Option<ContactGeom> {
-    let closest = closest_point_on_triangle(c, v0, v1, v2);
+    let (closest, face_normal) = closest_triangle_point_and_normal(c, v0, v1, v2);
     let dx = c.x - closest.x;
     let dy = c.y - closest.y;
     let dz = c.z - closest.z;
@@ -1139,7 +1139,21 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
     }
 
     let dist = dist_sq.sqrt();
-    let normal = if dist > 1e-9 {
+    let normal = if let Some(n) = face_normal {
+        // A face contact keeps the plane's normal. Subtracting two large
+        // nearby positions would give rolling bodies a changing normal.
+        let length = (n.x * n.x + n.y * n.y + n.z * n.z).sqrt();
+        let sign = if dx * n.x + dy * n.y + dz * n.z < 0.0 {
+            -1.0
+        } else {
+            1.0
+        };
+        Vec3 {
+            x: sign * n.x / length,
+            y: sign * n.y / length,
+            z: sign * n.z / length,
+        }
+    } else if dist > 1e-9 {
         Vec3 {
             x: dx / dist,
             y: dy / dist,
@@ -1284,88 +1298,100 @@ pub(crate) fn closest_points_segment_triangle(
 // Detection §5.1.5). Returns the barycentric point on the triangle
 // or its nearest edge / vertex.
 pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> Vec3 {
-    let ab = Vec3 {
-        x: b.x - a.x,
-        y: b.y - a.y,
-        z: b.z - a.z,
-    };
-    let ac = Vec3 {
-        x: c.x - a.x,
-        y: c.y - a.y,
-        z: c.z - a.z,
-    };
+    closest_triangle_point_and_normal(p, a, b, c).0
+}
 
-    let ap = Vec3 {
-        x: p.x - a.x,
-        y: p.y - a.y,
-        z: p.z - a.z,
+fn closest_triangle_point_and_normal(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> (Vec3, Option<Vec3>) {
+    // Triangle edges can be much longer than the contacting body. Calculate
+    // the region and its closest point without cancelling f32 world positions.
+    let difference = |a: Vec3, b: Vec3| {
+        [
+            f64::from(a.x) - f64::from(b.x),
+            f64::from(a.y) - f64::from(b.y),
+            f64::from(a.z) - f64::from(b.z),
+        ]
     };
-    let d1 = ab.x * ap.x + ab.y * ap.y + ab.z * ap.z;
-    let d2 = ac.x * ap.x + ac.y * ap.y + ac.z * ap.z;
+    let ab = difference(b, a);
+    let ac = difference(c, a);
+    let ap = difference(p, a);
+    let d1 = ab[0] * ap[0] + ab[1] * ap[1] + ab[2] * ap[2];
+    let d2 = ac[0] * ap[0] + ac[1] * ap[1] + ac[2] * ap[2];
     if d1 <= 0.0 && d2 <= 0.0 {
-        return a;
+        return (a, None);
     }
 
-    let bp = Vec3 {
-        x: p.x - b.x,
-        y: p.y - b.y,
-        z: p.z - b.z,
-    };
-    let d3 = ab.x * bp.x + ab.y * bp.y + ab.z * bp.z;
-    let d4 = ac.x * bp.x + ac.y * bp.y + ac.z * bp.z;
+    let bp = difference(p, b);
+    let d3 = ab[0] * bp[0] + ab[1] * bp[1] + ab[2] * bp[2];
+    let d4 = ac[0] * bp[0] + ac[1] * bp[1] + ac[2] * bp[2];
     if d3 >= 0.0 && d4 <= d3 {
-        return b;
+        return (b, None);
     }
 
     let vc = d1 * d4 - d3 * d2;
     if vc <= 0.0 && d1 >= 0.0 && d3 <= 0.0 {
         let v = d1 / (d1 - d3);
-        return Vec3 {
-            x: a.x + ab.x * v,
-            y: a.y + ab.y * v,
-            z: a.z + ab.z * v,
-        };
+        return (
+            Vec3 {
+                x: (f64::from(a.x) + ab[0] * v) as f32,
+                y: (f64::from(a.y) + ab[1] * v) as f32,
+                z: (f64::from(a.z) + ab[2] * v) as f32,
+            },
+            None,
+        );
     }
 
-    let cp = Vec3 {
-        x: p.x - c.x,
-        y: p.y - c.y,
-        z: p.z - c.z,
-    };
-    let d5 = ab.x * cp.x + ab.y * cp.y + ab.z * cp.z;
-    let d6 = ac.x * cp.x + ac.y * cp.y + ac.z * cp.z;
+    let cp = difference(p, c);
+    let d5 = ab[0] * cp[0] + ab[1] * cp[1] + ab[2] * cp[2];
+    let d6 = ac[0] * cp[0] + ac[1] * cp[1] + ac[2] * cp[2];
     if d6 >= 0.0 && d5 <= d6 {
-        return c;
+        return (c, None);
     }
 
     let vb = d5 * d2 - d1 * d6;
     if vb <= 0.0 && d2 >= 0.0 && d6 <= 0.0 {
         let w = d2 / (d2 - d6);
-        return Vec3 {
-            x: a.x + ac.x * w,
-            y: a.y + ac.y * w,
-            z: a.z + ac.z * w,
-        };
+        return (
+            Vec3 {
+                x: (f64::from(a.x) + ac[0] * w) as f32,
+                y: (f64::from(a.y) + ac[1] * w) as f32,
+                z: (f64::from(a.z) + ac[2] * w) as f32,
+            },
+            None,
+        );
     }
 
     let va = d3 * d6 - d5 * d4;
     if va <= 0.0 && (d4 - d3) >= 0.0 && (d5 - d6) >= 0.0 {
         let w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
-        return Vec3 {
-            x: b.x + (c.x - b.x) * w,
-            y: b.y + (c.y - b.y) * w,
-            z: b.z + (c.z - b.z) * w,
-        };
+        return (
+            Vec3 {
+                x: (f64::from(b.x) + (f64::from(c.x) - f64::from(b.x)) * w) as f32,
+                y: (f64::from(b.y) + (f64::from(c.y) - f64::from(b.y)) * w) as f32,
+                z: (f64::from(b.z) + (f64::from(c.z) - f64::from(b.z)) * w) as f32,
+            },
+            None,
+        );
     }
 
-    let denom = 1.0 / (va + vb + vc);
-    let v = vb * denom;
-    let w = vc * denom;
-    Vec3 {
-        x: a.x + ab.x * v + ac.x * w,
-        y: a.y + ab.y * v + ac.y * w,
-        z: a.z + ab.z * v + ac.z * w,
-    }
+    // Inside the face, project along its normal. Reconstructing the point
+    // from barycentric coordinates loses tangential precision on large
+    // triangles and makes a flat floor exert a sideways contact force.
+    let nx = ab[1] * ac[2] - ab[2] * ac[1];
+    let ny = ab[2] * ac[0] - ab[0] * ac[2];
+    let nz = ab[0] * ac[1] - ab[1] * ac[0];
+    let distance = (ap[0] * nx + ap[1] * ny + ap[2] * nz) / (nx * nx + ny * ny + nz * nz);
+    (
+        Vec3 {
+            x: (f64::from(p.x) - nx * distance) as f32,
+            y: (f64::from(p.y) - ny * distance) as f32,
+            z: (f64::from(p.z) - nz * distance) as f32,
+        },
+        Some(Vec3 {
+            x: nx as f32,
+            y: ny as f32,
+            z: nz as f32,
+        }),
+    )
 }
 
 // Closest point on segment [a, b] to point p (Ericson § 5.1.2).
@@ -1401,40 +1427,35 @@ pub(crate) fn closest_points_segment_segment(
     p2: Vec3,
     q2: Vec3,
 ) -> (Vec3, Vec3) {
-    let d1 = Vec3 {
-        x: q1.x - p1.x,
-        y: q1.y - p1.y,
-        z: q1.z - p1.z,
-    };
-    let d2 = Vec3 {
-        x: q2.x - p2.x,
-        y: q2.y - p2.y,
-        z: q2.z - p2.z,
-    };
-    let r = Vec3 {
-        x: p1.x - p2.x,
-        y: p1.y - p2.y,
-        z: p1.z - p2.z,
-    };
-
-    let a = d1.x * d1.x + d1.y * d1.y + d1.z * d1.z;
-    let e = d2.x * d2.x + d2.y * d2.y + d2.z * d2.z;
-    let f = d2.x * r.x + d2.y * r.y + d2.z * r.z;
+    // A short capsule axis can meet a very long triangle edge. Keep the
+    // intermediate parameters precise before storing world-space points.
+    let coordinates = |v: Vec3| [f64::from(v.x), f64::from(v.y), f64::from(v.z)];
+    let p1d = coordinates(p1);
+    let p2d = coordinates(p2);
+    let q1d = coordinates(q1);
+    let q2d = coordinates(q2);
+    let d1 = std::array::from_fn(|i| q1d[i] - p1d[i]);
+    let d2 = std::array::from_fn(|i| q2d[i] - p2d[i]);
+    let r = std::array::from_fn(|i| p1d[i] - p2d[i]);
+    let dot = |a: [f64; 3], b: [f64; 3]| a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    let a = dot(d1, d1);
+    let e = dot(d2, d2);
+    let f = dot(d2, r);
     let (s, t);
-    if a <= f32::EPSILON && e <= f32::EPSILON {
+    if a <= f64::from(f32::EPSILON) && e <= f64::from(f32::EPSILON) {
         return (p1, p2);
     }
 
-    if a <= f32::EPSILON {
+    if a <= f64::from(f32::EPSILON) {
         s = 0.0;
         t = (f / e).clamp(0.0, 1.0);
     } else {
-        let c = d1.x * r.x + d1.y * r.y + d1.z * r.z;
-        if e <= f32::EPSILON {
+        let c = dot(d1, r);
+        if e <= f64::from(f32::EPSILON) {
             t = 0.0;
             s = (-c / a).clamp(0.0, 1.0);
         } else {
-            let b = d1.x * d2.x + d1.y * d2.y + d1.z * d2.z;
+            let b = dot(d1, d2);
             let denom = a * e - b * b;
             // denom == 0 means parallel segments: any s works, pick 0.
             let s0 = if denom == 0.0 {
@@ -1459,14 +1480,14 @@ pub(crate) fn closest_points_segment_segment(
 
     (
         Vec3 {
-            x: p1.x + d1.x * s,
-            y: p1.y + d1.y * s,
-            z: p1.z + d1.z * s,
+            x: (p1d[0] + d1[0] * s) as f32,
+            y: (p1d[1] + d1[1] * s) as f32,
+            z: (p1d[2] + d1[2] * s) as f32,
         },
         Vec3 {
-            x: p2.x + d2.x * t,
-            y: p2.y + d2.y * t,
-            z: p2.z + d2.z * t,
+            x: (p2d[0] + d2[0] * t) as f32,
+            y: (p2d[1] + d2[1] * t) as f32,
+            z: (p2d[2] + d2[2] * t) as f32,
         },
     )
 }
@@ -1670,10 +1691,9 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
 // by the rounding radius `r` (applied as a uniform extension on every
 // SAT axis: exact on faces and edges, over-reporting by at most
 // r·(√3−1) in corner regions). Triangle vertices are given in the same
-// box-local frame; the returned ContactGeom is in that frame with the
-// triangle face normal oriented toward the box center, and the
-// penetration depth measured along it (a good practical proxy at PS1
-// scale).
+// box-local frame. Choose the shortest separating translation, including
+// triangle edges: a box resting on a ledge must go up, not sideways through
+// the opposite ledge merely because it also touches a vertical triangle.
 pub fn local_box_vs_triangle(
     half: Vec3,
     r: f32,
@@ -1681,7 +1701,6 @@ pub fn local_box_vs_triangle(
     p1: Vec3,
     p2: Vec3,
 ) -> Option<ContactGeom> {
-    let r = r.max(0.0);
     let edges = [
         Vec3 {
             x: p1.x - p0.x,
@@ -1699,7 +1718,19 @@ pub fn local_box_vs_triangle(
             z: p0.z - p2.z,
         },
     ];
-    let aabb_axes = [
+    let cross = |a: Vec3, b: Vec3| Vec3 {
+        x: a.y * b.z - a.z * b.y,
+        y: a.z * b.x - a.x * b.z,
+        z: a.x * b.y - a.y * b.x,
+    };
+    let length_squared = |a: Vec3| a.x * a.x + a.y * a.y + a.z * a.z;
+    let face_normal = cross(edges[0], edges[1]);
+    if length_squared(face_normal) < 1e-18 {
+        return None;
+    }
+    // Test the face first so exact ties retain the surface normal.
+    let mut best = box_triangle_axis(face_normal, p0, p1, p2, half, r.max(0.0))?;
+    for axis in [
         Vec3 {
             x: 1.0,
             y: 0.0,
@@ -1715,119 +1746,67 @@ pub fn local_box_vs_triangle(
             y: 0.0,
             z: 1.0,
         },
-    ];
-
-    // SAT 13-axis pass: any separating axis disqualifies the pair.
-    // The overlaps themselves are not used as depth — the triangle
-    // is a thin shell, so the SAT face-normal projection collapses
-    // to a point and yields zero overlap even when the box straddles
-    // the plane. Penetration depth instead uses the face normal.
-    for a in &aabb_axes {
-        for e in &edges {
-            let axis = Vec3 {
-                x: a.y * e.z - a.z * e.y,
-                y: a.z * e.x - a.x * e.z,
-                z: a.x * e.y - a.y * e.x,
-            };
-            if axis.x.abs() < 1e-9 && axis.y.abs() < 1e-9 && axis.z.abs() < 1e-9 {
+    ] {
+        for candidate in std::iter::once(axis).chain(edges.map(|edge| cross(axis, edge))) {
+            if length_squared(candidate) < 1e-18 {
                 continue;
             }
-            sat_overlap(&axis, &p0, &p1, &p2, &half, r)?;
+            let hit = box_triangle_axis(candidate, p0, p1, p2, half, r.max(0.0))?;
+            if hit.0 < best.0 {
+                best = hit;
+            }
         }
     }
-
-    for a in &aabb_axes {
-        sat_overlap(a, &p0, &p1, &p2, &half, r)?;
-    }
-
-    let face_normal = {
-        let e1 = edges[0];
-        let e2 = Vec3 {
-            x: p2.x - p0.x,
-            y: p2.y - p0.y,
-            z: p2.z - p0.z,
-        };
-        Vec3 {
-            x: e1.y * e2.z - e1.z * e2.y,
-            y: e1.z * e2.x - e1.x * e2.z,
-            z: e1.x * e2.y - e1.y * e2.x,
-        }
-    };
-    let fnlen_sq = face_normal.x * face_normal.x
-        + face_normal.y * face_normal.y
-        + face_normal.z * face_normal.z;
-    if fnlen_sq < 1e-18 {
-        return None;
-    }
-    sat_overlap(&face_normal, &p0, &p1, &p2, &half, r)?;
-
-    // Orient toward the box center; an exact plane tie retains the winding normal.
-    let centroid_dot = ((p0.x + p1.x + p2.x) * face_normal.x
-        + (p0.y + p1.y + p2.y) * face_normal.y
-        + (p0.z + p1.z + p2.z) * face_normal.z)
-        / 3.0;
-    let face_normal = if centroid_dot > 0.0 {
-        Vec3 {
-            x: -face_normal.x,
-            y: -face_normal.y,
-            z: -face_normal.z,
-        }
-    } else {
-        face_normal
-    };
-    let fnlen = fnlen_sq.sqrt();
-    let normal = Vec3 {
-        x: face_normal.x / fnlen,
-        y: face_normal.y / fnlen,
-        z: face_normal.z / fnlen,
-    };
-
-    // Penetration depth along the (oriented) face normal: swept box
-    // half-extent along the normal minus the signed distance from
-    // the box center (origin) to the triangle plane.
-    let r_along_normal =
-        half.x * normal.x.abs() + half.y * normal.y.abs() + half.z * normal.z.abs() + r;
-    let plane_offset = normal.x * p0.x + normal.y * p0.y + normal.z * p0.z;
-    let depth = (r_along_normal - plane_offset.abs()).max(0.0);
     Some(ContactGeom {
-        point: Vec3 {
-            x: (p0.x + p1.x + p2.x) / 3.0,
-            y: (p0.y + p1.y + p2.y) / 3.0,
-            z: (p0.z + p1.z + p2.z) / 3.0,
-        },
-        normal,
-        depth,
+        point: closest_point_on_triangle(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            p0,
+            p1,
+            p2,
+        ),
+        normal: best.1,
+        depth: best.0,
     })
 }
 
-// SAT projection helper. Returns None for a separating axis. `swell`
-// is the world-unit sweep radius; SAT axes arrive unnormalized, so it
-// is scaled by the axis length to stay in the axis' projection units.
-fn sat_overlap(
-    axis: &Vec3,
-    p0: &Vec3,
-    p1: &Vec3,
-    p2: &Vec3,
-    extents: &Vec3,
-    swell: f32,
-) -> Option<()> {
-    let pr0 = p0.x * axis.x + p0.y * axis.y + p0.z * axis.z;
-    let pr1 = p1.x * axis.x + p1.y * axis.y + p1.z * axis.z;
-    let pr2 = p2.x * axis.x + p2.y * axis.y + p2.z * axis.z;
-    let tri_min = pr0.min(pr1).min(pr2);
-    let tri_max = pr0.max(pr1).max(pr2);
-
-    let swell_proj = if swell > 0.0 {
-        swell * (axis.x * axis.x + axis.y * axis.y + axis.z * axis.z).sqrt()
-    } else {
-        0.0
-    };
-    let r =
-        extents.x * axis.x.abs() + extents.y * axis.y.abs() + extents.z * axis.z.abs() + swell_proj;
-    if tri_max < -r || tri_min > r {
+// Return the distance and direction needed to separate the projections.
+// Unlike interval intersection length, this also handles a thin triangle
+// whose face-normal projection is a point inside the box's projection.
+fn box_triangle_axis(
+    axis: Vec3,
+    p0: Vec3,
+    p1: Vec3,
+    p2: Vec3,
+    half: Vec3,
+    radius: f32,
+) -> Option<(f32, Vec3)> {
+    let dot = |p: Vec3| p.x * axis.x + p.y * axis.y + p.z * axis.z;
+    let (a, b, c) = (dot(p0), dot(p1), dot(p2));
+    let length = dot(axis).sqrt();
+    let extent =
+        half.x * axis.x.abs() + half.y * axis.y.abs() + half.z * axis.z.abs() + radius * length;
+    let positive = a.max(b).max(c) + extent;
+    let negative = extent - a.min(b).min(c);
+    if positive < 0.0 || negative < 0.0 {
         return None;
     }
-    Some(())
+    let (depth, sign) = if positive <= negative {
+        (positive, 1.0)
+    } else {
+        (negative, -1.0)
+    };
+    Some((
+        depth / length,
+        Vec3 {
+            x: axis.x * sign / length,
+            y: axis.y * sign / length,
+            z: axis.z * sign / length,
+        },
+    ))
 }
 
 fn vec_is_finite(v: Vec3) -> bool {
@@ -2499,6 +2478,29 @@ mod tests {
         .unwrap();
         // Closest is vertex a (0, 0, 0).
         assert_eq!(r.point, vec3(0.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_flat_triangle_contacts_do_not_add_sideways_force() {
+        // A wide terrain triangle used to lose several ulps when rebuilding
+        // the closest point. That noise tipped rolling stacks at rest.
+        for axis in 0..3 {
+            let rotate = |v: Vec3| match axis {
+                0 => v,
+                1 => vec3(v.y, v.z, v.x),
+                _ => vec3(v.z, v.x, v.y),
+            };
+            let a = rotate(vec3(-96.0, 52.0, -112.0));
+            let b = rotate(vec3(-96.0, 52.0, -70.0));
+            let c = rotate(vec3(96.0, 52.0, -70.0));
+            for x in [-71.3, -23.7, 18.2, 39.0] {
+                for z in [-80.9, -78.3, -73.1] {
+                    let hit = sphere_vs_triangle(rotate(vec3(x, 58.84, z)), 7.0, a, b, c).unwrap();
+                    assert_eq!(hit.normal, rotate(vec3(0.0, 1.0, 0.0)));
+                    assert_eq!(hit.point, rotate(vec3(x, 52.0, z)));
+                }
+            }
+        }
     }
 
     #[test]
@@ -3444,6 +3446,24 @@ mod tests {
             } else {
                 assert!(contact.is_none());
             }
+        }
+    }
+
+    #[test]
+    fn test_box_on_a_ledge_separates_upward_at_its_vertical_edge() {
+        let half = vec3(28.0, 4.0, 10.0);
+        for side in [-1.0, 1.0] {
+            let x = side * 25.0;
+            let hit = local_box_vs_triangle(
+                half,
+                0.0,
+                vec3(x, -3.84, -25.0),
+                vec3(x, -11.84, 25.0),
+                vec3(x, -3.84, 25.0),
+            )
+            .unwrap();
+            assert_vec3_close(hit.normal, vec3(0.0, 1.0, 0.0));
+            assert!(approx_eq(hit.depth, 0.16));
         }
     }
 

@@ -15,16 +15,16 @@ class Cube(Node):
         frame = pyxel.frame_count
         orbit = self.phase + frame * 2.0
         position = Vec3(
-            pyxel.cos(orbit) * 2.0,
-            pyxel.sin(self.phase + frame * 4.0) * 0.5 + 0.4,
-            pyxel.sin(orbit) * 2.0,
+            pyxel.cos(orbit) * 52.0,
+            pyxel.sin(self.phase + frame * 4.0) * 13.0 + 10.4,
+            pyxel.sin(orbit) * 52.0,
         )
 
         spin = Mat4.from_euler(Vec3(frame * 3.0, frame * 5.0, 0.0))
         self.transform = Mat4.from_translation(position) * spin
 
     def on_draw(self):
-        self.box(Mat4.IDENTITY, Vec3(0.6, 0.6, 0.6), self.color)
+        self.box(Mat4.IDENTITY, Vec3(15.6, 15.6, 15.6), self.color)
 
 
 class Scene(Node):
@@ -32,11 +32,10 @@ class Scene(Node):
         super().__init__()
 
         self.shading = Shading(pyxel.colors)
-        self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
 
         self.camera = Camera()
         self.camera.clear_color = 0
-        self.camera.transform = Mat4.look_at(Vec3(0.0, 3.0, 4.0), Vec3.ZERO)
+        self.camera.transform = Mat4.look_at(Vec3(0.0, 78.0, 104.0), Vec3.ZERO)
 
         for i in range(CUBE_COUNT):
             self.add_child(Cube(i))

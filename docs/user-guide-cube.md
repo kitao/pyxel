@@ -23,10 +23,10 @@ class Scene(Node):
     def __init__(self):
         super().__init__()
         self.camera = Camera()
-        self.camera.transform = Mat4.look_at(Vec3(0.0, 3.0, 4.0), Vec3.ZERO)
+        self.camera.transform = Mat4.look_at(Vec3(0.0, 78.0, 104.0), Vec3.ZERO)
 
     def on_draw(self):
-        self.box(Mat4.IDENTITY, Vec3(1.0, 1.0, 1.0), 11)
+        self.box(Mat4.IDENTITY, Vec3(26.0, 26.0, 26.0), 11)
 
 
 pyxel.init(200, 150)

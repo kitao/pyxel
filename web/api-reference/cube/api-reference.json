@@ -3786,9 +3786,8 @@
             }
           ],
           "examples": [
-            "from pyxel.cube import Shading, Vec3",
-            "scene.shading = Shading(pyxel.colors)",
-            "scene.shading.direction = Vec3(0.4, -0.8, -0.4)"
+            "from pyxel.cube import Shading",
+            "scene.shading = Shading(pyxel.colors)"
           ],
           "notes": {
             "en": "Automatically generated tables keep the original color at level 5. Depending on the palette, multiple levels may use the same color. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.",
@@ -3853,18 +3852,18 @@
           "type": "variable",
           "signature": "direction",
           "description": {
-            "en": "The direction the light travels, in world space. Face brightness follows the angle between this and the face normal. The default is Vec3.DOWN.",
-            "cn": "光线在世界空间中的传播方向。面的亮度取决于它与面法线之间的角度。默认值为 Vec3.DOWN。",
-            "de": "Die Richtung, in die sich das Licht im World Space bewegt. Die Face-Helligkeit folgt dem Winkel zwischen dieser Richtung und der Face-Normale. Standardwert ist Vec3.DOWN.",
-            "es": "La dirección en la que viaja la luz, en espacio mundial. El brillo de la cara sigue el ángulo entre esta dirección y la normal de la cara. El valor predeterminado es Vec3.DOWN.",
-            "fr": "La direction de propagation de la lumière, dans l'espace monde. La luminosité d'une face suit l'angle entre cette direction et la normale de la face. La valeur par défaut est Vec3.DOWN.",
-            "it": "La direzione in cui viaggia la luce, nello spazio globale. La luminosità della faccia dipende dall'angolo tra questa direzione e la normale della faccia. Il valore predefinito è Vec3.DOWN.",
-            "ja": "光が進む方向（ワールド座標）。面の明るさは、この方向と面法線のなす角で決まる。デフォルトは Vec3.DOWN。",
-            "ko": "월드 공간에서 빛이 진행하는 방향입니다. 면 밝기는 이 방향과 면 법선 사이의 각도를 따릅니다. 기본값은 Vec3.DOWN입니다.",
-            "pt": "A direção em que a luz viaja, no espaço mundial. O brilho da face segue o ângulo entre essa direção e a normal da face. O padrão é Vec3.DOWN.",
-            "ru": "Направление распространения света в мировом пространстве. Яркость грани зависит от угла между ним и нормалью грани. По умолчанию Vec3.DOWN.",
-            "tr": "Işığın dünya uzayında ilerlediği yön. Yüz parlaklığı bu yön ile yüz normali arasındaki açıya bağlıdır. Varsayılan değer Vec3.DOWN.",
-            "uk": "Напрям поширення світла у світовому просторі. Яскравість грані залежить від кута між ним і нормаллю грані. Типове значення Vec3.DOWN."
+            "en": "The direction the light travels, in world space. Face brightness follows the angle between this and the face normal. The default is Vec3(0.5, -1, -0.8).",
+            "cn": "光线在世界空间中的传播方向。面的亮度取决于它与面法线之间的角度。默认值为 Vec3(0.5, -1, -0.8)。",
+            "de": "Die Richtung, in die sich das Licht im World Space bewegt. Die Face-Helligkeit folgt dem Winkel zwischen dieser Richtung und der Face-Normale. Standardwert ist Vec3(0.5, -1, -0.8).",
+            "es": "La dirección en la que viaja la luz, en espacio mundial. El brillo de la cara sigue el ángulo entre esta dirección y la normal de la cara. El valor predeterminado es Vec3(0.5, -1, -0.8).",
+            "fr": "La direction de propagation de la lumière, dans l'espace monde. La luminosité d'une face suit l'angle entre cette direction et la normale de la face. La valeur par défaut est Vec3(0.5, -1, -0.8).",
+            "it": "La direzione in cui viaggia la luce, nello spazio globale. La luminosità della faccia dipende dall'angolo tra questa direzione e la normale della faccia. Il valore predefinito è Vec3(0.5, -1, -0.8).",
+            "ja": "光が進む方向（ワールド座標）。面の明るさは、この方向と面法線のなす角で決まる。デフォルトは Vec3(0.5, -1, -0.8)。",
+            "ko": "월드 공간에서 빛이 진행하는 방향입니다. 면 밝기는 이 방향과 면 법선 사이의 각도를 따릅니다. 기본값은 Vec3(0.5, -1, -0.8)입니다.",
+            "pt": "A direção em que a luz viaja, no espaço mundial. O brilho da face segue o ângulo entre essa direção e a normal da face. O padrão é Vec3(0.5, -1, -0.8).",
+            "ru": "Направление распространения света в мировом пространстве. Яркость грани зависит от угла между ним и нормалью грани. По умолчанию Vec3(0.5, -1, -0.8).",
+            "tr": "Işığın dünya uzayında ilerlediği yön. Yüz parlaklığı bu yön ile yüz normali arasındaki açıya bağlıdır. Varsayılan değer Vec3(0.5, -1, -0.8).",
+            "uk": "Напрям поширення світла у світовому просторі. Яскравість грані залежить від кута між ним і нормаллю грані. Типове значення Vec3(0.5, -1, -0.8)."
           },
           "value_type": "Vec3",
           "advanced": false
@@ -5616,18 +5615,18 @@
           "type": "variable",
           "signature": "depth",
           "description": {
-            "en": "Penetration depth this side should resolve, already split by the mass ratio.",
-            "cn": "此侧应解析的穿透深度，已按质量比例分配。",
-            "de": "Eindringtiefe, die diese Seite auflösen soll, bereits nach Massenverhältnis aufgeteilt.",
-            "es": "Profundidad de penetración que este lado debe resolver, ya dividida por la proporción de masas.",
-            "fr": "Profondeur de pénétration que ce côté doit résoudre, déjà répartie selon le rapport de masses.",
-            "it": "Profondità di penetrazione che questo lato deve risolvere, già divisa in base al rapporto di massa.",
-            "ja": "自分の側が解決すべき貫通量。質量比で配分済み。",
-            "ko": "이쪽에서 해결해야 하는 침투 깊이이며, 이미 질량 비율로 나뉘어 있습니다.",
-            "pt": "Profundidade de penetração que este lado deve resolver, já dividida pela razão de massas.",
-            "ru": "Глубина проникновения, которую должна устранить эта сторона, уже разделённая по соотношению масс.",
-            "tr": "Bu tarafın çözmesi gereken, kütle oranına göre önceden bölünmüş nüfuz derinliği.",
-            "uk": "Глибина проникнення, яку має усунути цей бік, уже розподілена за співвідношенням мас."
+            "en": "Suggested push-out distance along normal, already split by the mass ratio. Other solid contacts in the same update are considered together; apply every reported correction when resolving contacts.",
+            "cn": "沿 normal 方向的建议推开距离，已按质量比例分配。同一次 update 中的其他实体接触会一起计算；处理接触时应应用每次通知的修正。",
+            "de": "Empfohlener Verschiebungsabstand entlang normal, bereits nach dem Massenverhältnis aufgeteilt. Andere feste Kontakte desselben update werden gemeinsam berücksichtigt; beim Auflösen der Kontakte alle gemeldeten Korrekturen anwenden.",
+            "es": "Distancia de separación sugerida en la dirección de normal, ya repartida según la proporción de masas. Los demás contactos sólidos del mismo update se consideran conjuntamente; al resolver los contactos, aplica todas las correcciones notificadas.",
+            "fr": "Distance de séparation conseillée dans la direction de normal, déjà répartie selon le rapport de masses. Les autres contacts solides du même update sont pris en compte ensemble ; pour résoudre les contacts, appliquez toutes les corrections transmises.",
+            "it": "Distanza di separazione suggerita lungo normal, già ripartita secondo il rapporto tra le masse. Gli altri contatti solidi nello stesso update vengono considerati insieme; per risolvere i contatti, applicare tutte le correzioni notificate.",
+            "ja": "normal 方向への押し戻し量。質量比で配分済み。同じ update 内のほかの衝突もまとめて考慮するため、押し戻すときは通知された補正をすべて適用する。",
+            "ko": "normal 방향으로 밀어낼 권장 거리이며, 질량 비율에 따라 이미 나뉘어 있습니다. 같은 update의 다른 고체 접촉도 함께 고려하므로 접촉을 해결할 때는 전달된 보정을 모두 적용하세요.",
+            "pt": "Distância de afastamento sugerida na direção de normal, já dividida pela razão de massas. Os demais contatos sólidos do mesmo update são considerados em conjunto; ao resolver os contatos, aplique todas as correções notificadas.",
+            "ru": "Рекомендуемое расстояние выталкивания вдоль normal, уже распределённое по соотношению масс. Остальные контакты твёрдых тел в том же update учитываются совместно; при разрешении контактов применяйте все полученные коррекции.",
+            "tr": "normal yönünde önerilen ayırma mesafesi; kütle oranına göre önceden paylaştırılmıştır. Aynı update içindeki diğer katı temaslar birlikte değerlendirilir; temasları çözerken bildirilen tüm düzeltmeleri uygulayın.",
+            "uk": "Рекомендована відстань виштовхування вздовж normal, уже розподілена за співвідношенням мас. Інші контакти твердих тіл у тому самому update враховуються разом; для розв’язання контактів застосовуйте всі отримані корекції."
           },
           "value_type": "float",
           "advanced": false
@@ -6759,18 +6758,18 @@
           "type": "function",
           "signature": "on_collide(other, contact)",
           "description": {
-            "en": "Collision hook, called by update() once per contacting pair. Apply contact.depth and contact.delta_velocity here to resolve the hit.",
-            "cn": "碰撞钩子，由 update() 对每个接触对调用一次。在这里应用 contact.depth 和 contact.delta_velocity 来解析命中。",
-            "de": "Kollisions-Hook, von update() einmal pro Kontaktpaar aufgerufen. Wenden Sie hier contact.depth und contact.delta_velocity an, um den Treffer aufzulösen.",
-            "es": "Hook de colisión, llamado por update() una vez por cada par en contacto. Aplique contact.depth y contact.delta_velocity aquí para resolver el impacto.",
-            "fr": "Méthode de rappel de collision, appelée par update() une fois par paire en contact. Appliquez contact.depth et contact.delta_velocity ici pour résoudre l'impact.",
-            "it": "Hook di collisione, chiamato da update() una volta per ogni coppia in contatto. Applicare contact.depth e contact.delta_velocity qui per risolvere l'impatto.",
-            "ja": "衝突フック。update() が接触ペアごとに呼ぶ。contact.depth や contact.delta_velocity をここで適用して衝突を解決する。",
-            "ko": "충돌 훅으로, update()가 접촉 쌍마다 한 번 호출합니다. 여기서 contact.depth와 contact.delta_velocity를 적용해 히트를 해결하세요.",
-            "pt": "Hook de colisão, chamado por update() uma vez por par em contato. Aplique contact.depth e contact.delta_velocity aqui para resolver o acerto.",
-            "ru": "Хук столкновения, вызываемый update() один раз на каждую контактирующую пару. Применяйте здесь contact.depth и contact.delta_velocity для разрешения попадания.",
-            "tr": "update() tarafından temas eden her çift için bir kez çağrılan çarpışma hook'u. İsabeti çözmek için burada contact.depth ve contact.delta_velocity uygulayın.",
-            "uk": "Хук зіткнення, який update() викликає один раз для кожної контактної пари. Застосовуйте тут contact.depth і contact.delta_velocity, щоб розв'язати влучання."
+            "en": "Collision hook called by update(). A solid mesh can report multiple contacts with the same node; apply contact.depth and contact.delta_velocity in callback order. Triggers report once per contacting pair.",
+            "cn": "由 update() 调用的碰撞钩子。实体网格可能对同一个节点报告多个接触；请按回调顺序应用 contact.depth 和 contact.delta_velocity。触发器对每个接触对只报告一次。",
+            "de": "Kollisions-Hook, der von update() aufgerufen wird. Ein solides Mesh kann mehrere Kontakte mit demselben Node melden; wenden Sie contact.depth und contact.delta_velocity in der Reihenfolge der Aufrufe an. Trigger melden jedes Kontaktpaar einmal.",
+            "es": "Hook de colisión llamado por update(). Una malla sólida puede notificar varios contactos con el mismo nodo; aplique contact.depth y contact.delta_velocity en el orden de las llamadas. Los triggers notifican una vez por cada par en contacto.",
+            "fr": "Méthode de rappel de collision appelée par update(). Un maillage solide peut signaler plusieurs contacts avec le même nœud ; appliquez contact.depth et contact.delta_velocity dans l'ordre des appels. Les déclencheurs signalent chaque paire en contact une seule fois.",
+            "it": "Hook di collisione chiamato da update(). Una mesh solida può segnalare più contatti con lo stesso nodo; applicare contact.depth e contact.delta_velocity nell'ordine delle chiamate. I trigger segnalano ogni coppia in contatto una sola volta.",
+            "ja": "update() が呼ぶ衝突フック。メッシュとの衝突では、同じ相手との接触が複数回通知されることがある。通知順に contact.depth と contact.delta_velocity を適用して解決する。トリガーは接触ペアごとに一回通知される。",
+            "ko": "update()가 호출하는 충돌 훅입니다. 솔리드 메시가 같은 노드와의 접촉을 여러 번 알릴 수 있으므로 호출 순서대로 contact.depth와 contact.delta_velocity를 적용하세요. 트리거는 접촉 쌍마다 한 번만 알립니다.",
+            "pt": "Hook de colisão chamado por update(). Uma malha sólida pode informar vários contatos com o mesmo nó; aplique contact.depth e contact.delta_velocity na ordem das chamadas. Os triggers informam uma vez por par em contato.",
+            "ru": "Хук столкновения, вызываемый update(). Твёрдая сетка может сообщать о нескольких контактах с одним узлом; применяйте contact.depth и contact.delta_velocity в порядке вызовов. Триггеры сообщают о каждой контактирующей паре один раз.",
+            "tr": "update() tarafından çağrılan çarpışma hook'u. Katı bir mesh aynı düğümle birden fazla temas bildirebilir; contact.depth ve contact.delta_velocity değerlerini çağrı sırasına göre uygulayın. Tetikleyiciler temas eden her çift için bir kez bildirim yapar.",
+            "uk": "Хук зіткнення, який викликає update(). Тверда сітка може повідомляти про кілька контактів із тим самим вузлом; застосовуйте contact.depth і contact.delta_velocity в порядку викликів. Тригери повідомляють про кожну контактну пару один раз."
           },
           "params": [
             {
@@ -7005,6 +7004,86 @@
               }
             }
           ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "decal",
+          "type": "function",
+          "signature": "decal(distance)",
+          "description": {
+            "en": "Project shapes and images onto already drawn surfaces when drawing. Applies to rect(), elli(), and plane().",
+            "cn": "绘制时将图形和图像投影到已绘制的表面上。 适用于 rect()、elli() 和 plane()。",
+            "de": "Projiziert beim Zeichnen Formen und Bilder auf bereits gezeichnete Oberflächen. Gilt für rect(), elli() und plane().",
+            "es": "Al dibujar, proyecta figuras e imágenes sobre superficies ya dibujadas. Se aplica a rect(), elli() y plane().",
+            "fr": "Lors du dessin, projette les formes et les images sur les surfaces déjà dessinées. S’applique à rect(), elli() et plane().",
+            "it": "Durante il disegno, proietta forme e immagini sulle superfici già disegnate. Si applica a rect(), elli() e plane().",
+            "ja": "描画時に、図形や画像を描画済みの表面に投影する。 rect()・elli()・plane() に適用される。",
+            "ko": "그릴 때 도형과 이미지를 이미 그려진 표면에 투영합니다. rect(), elli(), plane()에 적용됩니다.",
+            "pt": "Ao desenhar, projeta formas e imagens sobre superfícies já desenhadas. Aplica-se a rect(), elli() e plane().",
+            "ru": "При рисовании проецирует фигуры и изображения на уже нарисованные поверхности. Действует для rect(), elli() и plane().",
+            "tr": "Çizim sırasında şekilleri ve görüntüleri önceden çizilmiş yüzeylere yansıtır. rect(), elli() ve plane() için geçerlidir.",
+            "uk": "Під час малювання проєктує фігури та зображення на вже намальовані поверхні. Діє для rect(), elli() та plane()."
+          },
+          "params": [
+            {
+              "name": "distance",
+              "type": "float",
+              "description": {
+                "en": "Projection distance in local units, along mat’s −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.",
+                "cn": "沿 mat 的局部 −Z 轴投影的距离，以局部单位表示。矩阵及祖先节点的缩放也会缩放投影距离。负值沿 +Z 投影。0 不着色，但保持投影模式。",
+                "de": "Projektionsdistanz in lokalen Einheiten entlang der −Z-Achse von mat. Skalierungen der Matrix und der Vorfahren skalieren auch die Reichweite. Negative Werte projizieren entlang +Z. Null färbt nichts, lässt den Decal-Modus aber aktiv.",
+                "es": "Distancia de proyección en unidades locales, por el eje −Z de mat. La escala de la matriz y de los ancestros también escala el alcance. Un valor negativo proyecta por +Z. Cero no colorea nada pero mantiene activo el modo decal.",
+                "fr": "Distance de projection en unités locales, selon l’axe −Z de mat. Les mises à l’échelle de la matrice et des ancêtres modifient aussi la portée. Une valeur négative projette selon +Z. Zéro ne colore rien mais conserve le mode decal.",
+                "it": "Distanza di proiezione in unità locali, lungo l’asse −Z di mat. La scala della matrice e degli antenati modifica anche la portata. Un valore negativo proietta lungo +Z. Zero non colora nulla ma mantiene attiva la modalità decal.",
+                "ja": "mat のローカル −Z 方向への投影距離。単位はローカル座標と同じで、行列や祖先ノードの拡大縮小も反映される。負なら +Z 方向。0 は何も塗らないが、投影モードは解除しない。",
+                "ko": "mat의 로컬 −Z축을 따른 투영 거리입니다. 로컬 좌표 단위이며 행렬과 조상 노드의 배율도 범위에 적용됩니다. 음수는 +Z 방향으로 투영합니다. 0은 아무것도 칠하지 않지만 투영 모드를 유지합니다.",
+                "pt": "Distância de projeção em unidades locais, pelo eixo −Z de mat. A escala da matriz e dos ancestrais também altera o alcance. Valores negativos projetam por +Z. Zero não colore nada, mas mantém o modo decal ativo.",
+                "ru": "Дальность проекции в локальных единицах вдоль оси −Z матрицы mat. Масштаб матрицы и предков также меняет дальность. Отрицательное значение проецирует вдоль +Z. Ноль ничего не окрашивает, но сохраняет режим decal.",
+                "tr": "mat matrisinin yerel −Z ekseni boyunca, yerel birimlerle yansıtma mesafesi. Matrisin ve üst düğümlerin ölçeği menzili de ölçekler. Negatif değer +Z yönünde yansıtır. Sıfır hiçbir şey boyamaz ama decal modunu açık tutar.",
+                "uk": "Дальність проєкції в локальних одиницях уздовж осі −Z матриці mat. Масштаб матриці та предків також змінює дальність. Від’ємне значення проєктує вздовж +Z. Нуль нічого не зафарбовує, але зберігає режим decal."
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true,
+          "notes": {
+            "en": "These draw filled planar shapes or images whose position and orientation are specified by a matrix. Borders draw lines and are not included. Other draw commands are unchanged.\n\nPaints already drawn, camera-visible surfaces within the projection range, without changing their depth. Draw receivers first; no collider is needed. Does not stop at the first surface along the projection direction. Dithering, shading, and colkey still apply; depth_test, depth_write, and depth_offset do not affect decal drawing. Resets at each node's on_draw entry.",
+            "cn": "这三个命令绘制填充平面图形或图像，并通过矩阵指定位置和朝向。轮廓命令绘制的是线条，不在此范围内。其他绘制命令不受影响。\n\n仅给投影范围内已绘制且相机可见的表面着色，不改变其深度。先绘制接收投影的表面；无需碰撞体。不会在投影方向上的第一个表面停止。抖动、明暗和 colkey 仍然生效；depth_test、depth_write 和 depth_offset 不影响投影绘制。每个节点的 on_draw 开始时重置。",
+            "de": "Diese zeichnen gefüllte ebene Formen oder Bilder mit einer durch eine Matrix festgelegten Position und Ausrichtung. Umrisse bestehen aus Linien und sind nicht enthalten. Andere Zeichenbefehle bleiben unverändert.\n\nFärbt bereits gezeichnete, für die Kamera sichtbare Oberflächen innerhalb der Projektionsreichweite, ohne ihre Tiefe zu ändern. Empfänger zuerst zeichnen; kein Collider nötig. Stoppt nicht an der ersten Oberfläche in Projektionsrichtung. Dithering, Schattierung und colkey gelten weiterhin; depth_test, depth_write und depth_offset beeinflussen die Projektion nicht. Wird beim Eintritt in jedes on_draw zurückgesetzt.",
+            "es": "Dibujan figuras planas rellenas o imágenes cuya posición y orientación se especifican con una matriz. Los contornos dibujan líneas y no se incluyen. Los demás comandos de dibujo no cambian.\n\nColorea las superficies ya dibujadas y visibles para la cámara dentro del alcance, sin cambiar su profundidad. Dibuja primero las superficies receptoras; no necesitan collider. No se detiene en la primera superficie en la dirección de proyección. Se mantienen el tramado, el sombreado y colkey; depth_test, depth_write y depth_offset no afectan a la proyección. Se restablece al entrar en cada on_draw.",
+            "fr": "Ces commandes dessinent des formes planes pleines ou des images dont la position et l’orientation sont définies par une matrice. Les contours dessinent des lignes et ne sont pas concernés. Les autres commandes de dessin restent inchangées.\n\nColore les surfaces déjà dessinées et visibles par la caméra dans la portée de projection, sans modifier leur profondeur. Dessinez les surfaces réceptrices en premier ; aucun collider n’est nécessaire. Ne s’arrête pas à la première surface dans la direction de projection. Le tramage, l’ombrage et colkey restent actifs ; depth_test, depth_write et depth_offset n’affectent pas la projection. Réinitialisé à chaque entrée dans on_draw.",
+            "it": "Disegnano forme piane piene o immagini con posizione e orientamento specificati da una matrice. I contorni disegnano linee e non sono inclusi. Gli altri comandi di disegno restano invariati.\n\nColora le superfici già disegnate e visibili alla camera entro la portata, senza modificarne la profondità. Disegnare prima le superfici riceventi; non serve un collider. Non si ferma alla prima superficie nella direzione di proiezione. Dithering, ombreggiatura e colkey restano attivi; depth_test, depth_write e depth_offset non influiscono sulla proiezione. Si reimposta a ogni ingresso in on_draw.",
+            "ja": "いずれも行列で位置と向きを指定できる、平面図形の塗りつぶしまたは画像の描画命令。輪郭は線の描画なので含まない。他の描画命令の動作は変わらない。\n\n投影範囲内にある、描画済みでカメラに見えている表面を塗る。投影先は先に描く。当たり判定は不要。投影方向の最初の表面では止まらず、範囲内の表面すべてが対象になる。投影先の深度は変更しない。ディザ・シェーディング・colkey は通常どおり適用され、depth_test・depth_write・depth_offset は投影描画に影響しない。各ノードの on_draw 開始時にも通常描画へ戻る。",
+            "ko": "이 명령들은 행렬로 위치와 방향을 지정하는 채워진 평면 도형이나 이미지를 그립니다. 윤곽선은 선을 그리므로 포함되지 않습니다. 다른 그리기 명령은 바뀌지 않습니다.\n\n투영 범위 안에서 이미 그려졌으며 카메라에 보이는 표면을 칠하고 깊이는 바꾸지 않습니다. 투영을 받을 표면을 먼저 그리며 콜라이더는 필요하지 않습니다. 투영 방향의 첫 표면에서 멈추지 않습니다. 디더링, 셰이딩, colkey는 그대로 적용되며 depth_test, depth_write, depth_offset은 투영에 영향을 주지 않습니다. 각 on_draw 진입 시 초기화됩니다.",
+            "pt": "Desenham formas planas preenchidas ou imagens cuja posição e orientação são especificadas por uma matriz. Contornos desenham linhas e não estão incluídos. Os demais comandos de desenho não mudam.\n\nColore as superfícies já desenhadas e visíveis para a câmera dentro do alcance, sem alterar sua profundidade. Desenhe primeiro as superfícies receptoras; não precisam de collider. Não para na primeira superfície na direção da projeção. Dithering, sombreamento e colkey continuam ativos; depth_test, depth_write e depth_offset não afetam a projeção. Redefine ao entrar em cada on_draw.",
+            "ru": "Они рисуют заполненные плоские фигуры или изображения, положение и ориентация которых задаются матрицей. Контуры рисуются линиями и не входят в эту группу. Остальные команды рисования не меняются.\n\nОкрашивает уже нарисованные и видимые камере поверхности в пределах дальности проекции, не меняя их глубину. Сначала рисуйте принимающие поверхности; коллайдер не нужен. Не останавливается на первой поверхности вдоль направления проекции. Дизеринг, затенение и colkey действуют как обычно; depth_test, depth_write и depth_offset не влияют на проекцию. Сбрасывается при каждом входе в on_draw.",
+            "tr": "Bu komutlar konumu ve yönü bir matrisle belirlenen dolu düzlemsel şekilleri veya görüntüleri çizer. Kenarlıklar çizgilerden oluşur ve dahil değildir. Diğer çizim komutları değişmez.\n\nMenzil içindeki önceden çizilmiş ve kameraya görünen yüzeyleri, derinliklerini değiştirmeden boyar. Alıcı yüzeyleri önce çizin; collider gerekmez. Yansıtma yönündeki ilk yüzeyde durmaz. Dithering, gölgelendirme ve colkey uygulanır; depth_test, depth_write ve depth_offset yansıtmayı etkilemez. Her on_draw girişinde sıfırlanır.",
+            "uk": "Вони малюють заповнені плоскі фігури або зображення, положення й орієнтація яких задаються матрицею. Контури малюються лініями й не входять до цієї групи. Інші команди малювання не змінюються.\n\nЗафарбовує вже намальовані й видимі камері поверхні в межах дальності проєкції, не змінюючи їхню глибину. Спочатку малюйте поверхні, що приймають проєкцію; колайдер не потрібен. Не зупиняється на першій поверхні вздовж напрямку проєкції. Дизеринг, затінення й colkey діють як зазвичай; depth_test, depth_write та depth_offset не впливають на проєкцію. Скидається при кожному вході в on_draw."
+          }
+        },
+        {
+          "name": "decal",
+          "type": "function",
+          "signature": "decal()",
+          "description": {
+            "en": "Restore normal drawing. Passing None has the same effect.",
+            "cn": "恢复普通绘制。传入 None 效果相同。",
+            "de": "Stellt normales Zeichnen wieder her. None hat dieselbe Wirkung.",
+            "es": "Restaura el dibujo normal. Pasar None tiene el mismo efecto.",
+            "fr": "Rétablit le dessin normal. Passer None a le même effet.",
+            "it": "Ripristina il disegno normale. Passare None ha lo stesso effetto.",
+            "ja": "通常の描画に戻す。None を渡した場合も同じ。",
+            "ko": "일반 그리기로 돌아갑니다. None을 전달해도 같습니다.",
+            "pt": "Restaura o desenho normal. Passar None tem o mesmo efeito.",
+            "ru": "Восстанавливает обычное рисование. Передача None даёт тот же результат.",
+            "tr": "Normal çizime döner. None geçirmek de aynı etkiyi yapar.",
+            "uk": "Відновлює звичайне малювання. Передавання None має той самий ефект."
+          },
           "returns": {
             "type": "None"
           },
