@@ -131,7 +131,7 @@ class App:
         self.scene.camera.ortho_size = 245.0
 
         self.shading = Shading(pyxel.colors)
-        self.shading.direction = Vec3(-0.5, -1.0, 0.8).normalize()
+        self.shading.direction = Vec3(-0.5, -1.0, 0.8)
 
         self.gazelle = Gazelle()
         self.floor = Floor(self.gazelle.joints)
