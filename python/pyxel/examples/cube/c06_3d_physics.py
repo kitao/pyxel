@@ -3,6 +3,7 @@ from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Vec3
 
 GRAVITY = Vec3(0, -0.16, 0)
 CANNON_POS = Vec3(0, 14, -105)
+ANIMAL_NAMES = ["bird", "seal", "pig"]
 
 
 class Toy(Node):
@@ -34,16 +35,16 @@ class Toy(Node):
 
 
 class Animal(Toy):
-    def __init__(self, mesh, kind, pos, velocity):
-        if kind == 0:
+    def __init__(self, mesh, name, pos, velocity):
+        if name == "bird":
             collider = Collider(radius=10, mass=3, restitution=0.65)
-        elif kind == 1:
+        elif name == "seal":
             collider = Collider(size=Vec3(0, 18, 0), radius=8, mass=6, restitution=0.1)
         else:
             collider = Collider(size=Vec3(12, 7, 12), radius=4, mass=9, restitution=0.2)
 
         collider.velocity = velocity
-        rotation = Vec3(-90, 0, 0) if kind == 1 else Vec3(0, 180, 0)
+        rotation = Vec3(-90, 0, 0) if name == "seal" else Vec3(0, 180, 0)
         super().__init__(mesh, pos, collider, rotation)
         self.age = 0
 
@@ -100,7 +101,7 @@ class Scene(Node):
         self.add_child(self.cannon)
 
         self.loaded_animals = []
-        for name in ["bird", "seal", "pig"]:
+        for name in ANIMAL_NAMES:
             animal = Node.from_mesh(meshes[name])
             self.loaded_animals.append(animal)
             self.add_child(animal)
@@ -137,12 +138,12 @@ class Scene(Node):
                 self.kind = index
 
         if pyxel.btnp(pyxel.KEY_SPACE) and self.cooldown == 0:
-            name = ["bird", "seal", "pig"][self.kind]
+            name = ANIMAL_NAMES[self.kind]
             direction = -self.cannon.forward
             self.add_child(
                 Animal(
                     self.meshes[name],
-                    self.kind,
+                    name,
                     CANNON_POS + direction * 32,
                     direction * 8.5,
                 )
@@ -155,7 +156,8 @@ class Scene(Node):
             animal.transform = Mat4.from_translation(
                 CANNON_POS - self.cannon.forward * 32
             )
-            rotation = Vec3(-90, 0, 0) if index == 1 else Vec3(0, 180, 0)
+            name = ANIMAL_NAMES[index]
+            rotation = Vec3(-90, 0, 0) if name == "seal" else Vec3(0, 180, 0)
             animal.transform *= Mat4.from_euler(rotation)
 
     def on_draw(self):
@@ -183,10 +185,8 @@ class App:
                 "ball",
                 "roller",
                 "cannon",
-                "bird",
-                "seal",
-                "pig",
             ]
+            + ANIMAL_NAMES
         }
         self.scene = Scene(self.meshes)
 
@@ -214,9 +214,12 @@ class App:
         pyxel.text(10, 9, "ROLLING PALS", 4)
 
         pyxel.rect(0, 218, 320, 22, 4)
-        for index, label in enumerate(["1:BIRD", "2:SEAL", "3:PIG"]):
+        for index, name in enumerate(ANIMAL_NAMES):
             pyxel.text(
-                18 + index * 65, 222, label, 7 if index == self.scene.kind else 15
+                18 + index * 65,
+                222,
+                f"{index + 1}:{name.upper()}",
+                7 if index == self.scene.kind else 15,
             )
         pyxel.text(241, 222, f"TILT {self.scene.pitch}", 15)
         pyxel.text(20, 232, "LEFT/RIGHT:AIM UP/DOWN:TILT SPACE:FIRE R:RESET", 15)

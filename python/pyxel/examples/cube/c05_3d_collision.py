@@ -163,7 +163,7 @@ class App(Node):
         )
 
         self.lighting = Shading(pyxel.colors)
-        self.lighting.direction = Vec3(-0.5, -1.0, 0.8).normalize()
+        self.lighting.direction = Vec3(-0.5, -1.0, 0.8)
 
         self.camera = Camera()
         self.camera.near = 2

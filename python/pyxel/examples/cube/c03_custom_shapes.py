@@ -187,7 +187,7 @@ class App(Node):
         )
 
         self.shading = Shading(pyxel.colors)
-        self.shading.direction = Vec3(0.4, -1.0, -0.5).normalize()
+        self.shading.direction = Vec3(0.4, -1.0, -0.5)
 
         self.camera = Camera()
         self.camera.clear_color = 0
