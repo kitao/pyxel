@@ -7,9 +7,9 @@ Original model: https://blockbenchworkshop.com/model/monkus/gazelle
 The model, texture, and animations retain this attribution license. They are
 third-party assets, separate from Pyxel's MIT-licensed sample code.
 
-- `cube_gazelle.bbmodel`: editable Blockbench project with all 13 source animations.
-- `cube_gazelle.png`: 64 × 64 texture mapped to Pyxel's default palette.
-- `cube_gazelle.glb`: embedded-texture model used by `cube/c04_mesh_and_motion.py`.
+- `gazelle.bbmodel`: editable Blockbench project with all 13 source animations.
+- `gazelle.png`: 64 × 64 texture mapped to Pyxel's default palette.
+- `gazelle.glb`: embedded-texture model used by `cube/c04_mesh_and_motion.py`.
 
 Changes from the original: texture colors mapped to the nearest RGB colors in
 Pyxel's palette, project/texture renamed, and exported transparent materials

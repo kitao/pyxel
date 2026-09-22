@@ -22,7 +22,6 @@ use crate::font::Font;
 use crate::image::{Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
 
-const CLIP_FRONT_EPSILON: f32 = 1e-4;
 type ScreenPoint = (f32, f32, f32);
 
 #[derive(Clone, Copy)]
@@ -44,9 +43,10 @@ struct ClippedTriangle {
     len: usize,
 }
 
+// A screen-space triangle clipped against four sides has at most seven vertices.
 #[derive(Clone, Copy)]
 struct ProjectedPolygon {
-    vertices: [ProjectedClipVertex; 4],
+    vertices: [ProjectedClipVertex; 7],
     len: usize,
 }
 
@@ -173,7 +173,13 @@ fn lerp_clip_vertex(a: ClipVertex, b: ClipVertex, t: f32) -> ClipVertex {
     }
 }
 
-fn clip_triangle_to_near(vertices: [ClipVertex; 3], clip_row: &[f32; 4]) -> ClippedTriangle {
+// Clip before perspective division: vertices near the camera origin project
+// to huge coordinates and lose precision in coverage and depth interpolation.
+fn clip_triangle_to_near(
+    vertices: [ClipVertex; 3],
+    clip_row: &[f32; 4],
+    near: f32,
+) -> ClippedTriangle {
     let mut clipped = ClippedTriangle {
         vertices: [vertices[0]; 4],
         len: 0,
@@ -184,11 +190,11 @@ fn clip_triangle_to_near(vertices: [ClipVertex; 3], clip_row: &[f32; 4]) -> Clip
         let curr = vertices[i];
         let prev_front = clip_front(&prev.world, clip_row);
         let curr_front = clip_front(&curr.world, clip_row);
-        let prev_inside = prev_front > CLIP_FRONT_EPSILON;
-        let curr_inside = curr_front > CLIP_FRONT_EPSILON;
+        let prev_inside = prev_front >= near;
+        let curr_inside = curr_front >= near;
 
         if prev_inside != curr_inside {
-            let t = (CLIP_FRONT_EPSILON - prev_front) / (curr_front - prev_front);
+            let t = (near - prev_front) / (curr_front - prev_front);
             clipped.vertices[clipped.len] = lerp_clip_vertex(prev, curr, t);
             clipped.len += 1;
         }
@@ -211,7 +217,7 @@ fn project_clipped_vertices(
         uv: (0.0, 0.0),
     };
     let mut out = ProjectedPolygon {
-        vertices: [empty; 4],
+        vertices: [empty; 7],
         len: 0,
     };
 
@@ -237,7 +243,102 @@ fn project_clipped_vertices(
     Some(out)
 }
 
+// Clip projected attributes together so affine UV and depth interpolation stay
+// unchanged. Wide intersections avoid cancellation at distant offscreen vertices.
+fn clip_projected_triangle(
+    vertices: [ProjectedClipVertex; 3],
+    clip: crate::cube::raster::ClipRect,
+) -> ProjectedPolygon {
+    let mut polygon = ProjectedPolygon {
+        vertices: [vertices[0]; 7],
+        len: 3,
+    };
+    polygon.vertices[..3].copy_from_slice(&vertices);
+
+    for (axis, boundary, sign) in [
+        (0, clip.left as f32, 1.0),
+        (0, clip.right as f32 + 1.0, -1.0),
+        (1, clip.top as f32, 1.0),
+        (1, clip.bottom as f32 + 1.0, -1.0),
+    ] {
+        let coordinate = |v: ProjectedClipVertex| if axis == 0 { v.screen.0 } else { v.screen.1 };
+        if polygon.vertices[..polygon.len]
+            .iter()
+            .all(|&v| sign * (f64::from(coordinate(v)) - f64::from(boundary)) >= 0.0)
+        {
+            continue;
+        }
+
+        let input = polygon;
+        polygon.len = 0;
+        for i in 0..input.len {
+            let prev = input.vertices[(i + input.len - 1) % input.len];
+            let curr = input.vertices[i];
+            let prev_distance = sign * (f64::from(coordinate(prev)) - f64::from(boundary));
+            let curr_distance = sign * (f64::from(coordinate(curr)) - f64::from(boundary));
+            if (prev_distance >= 0.0) != (curr_distance >= 0.0) {
+                let t = prev_distance / (prev_distance - curr_distance);
+                let lerp =
+                    |a: f32, b: f32| (f64::from(a) + (f64::from(b) - f64::from(a)) * t) as f32;
+                let mut intersection = ProjectedClipVertex {
+                    screen: (
+                        lerp(prev.screen.0, curr.screen.0),
+                        lerp(prev.screen.1, curr.screen.1),
+                        lerp(prev.screen.2, curr.screen.2),
+                    ),
+                    uv: (lerp(prev.uv.0, curr.uv.0), lerp(prev.uv.1, curr.uv.1)),
+                };
+                if axis == 0 {
+                    intersection.screen.0 = boundary;
+                } else {
+                    intersection.screen.1 = boundary;
+                }
+                polygon.vertices[polygon.len] = intersection;
+                polygon.len += 1;
+            }
+            if curr_distance >= 0.0 {
+                polygon.vertices[polygon.len] = curr;
+                polygon.len += 1;
+            }
+        }
+        if polygon.len < 3 {
+            break;
+        }
+    }
+
+    polygon
+}
+
 fn draw_projected_triangle(
+    ctx: &mut DrawContext,
+    vertices: [ProjectedClipVertex; 3],
+    cull: i32,
+    normal: Option<&Vec3>,
+    col_flat: i32,
+    col_image: Option<&RcImage>,
+    colkey: Option<i32>,
+    state: DrawState,
+) {
+    let polygon = clip_projected_triangle(vertices, ctx.clip);
+    for i in 1..polygon.len.saturating_sub(1) {
+        draw_clipped_triangle(
+            ctx,
+            [
+                polygon.vertices[0],
+                polygon.vertices[i],
+                polygon.vertices[i + 1],
+            ],
+            cull,
+            normal,
+            col_flat,
+            col_image,
+            colkey,
+            state,
+        );
+    }
+}
+
+fn draw_clipped_triangle(
     ctx: &mut DrawContext,
     vertices: [ProjectedClipVertex; 3],
     cull: i32,
@@ -341,19 +442,20 @@ fn project_line_segment(
     ctx: &DrawContext,
     z_shift: &Vec3,
 ) -> Option<(ScreenPoint, ScreenPoint)> {
+    let near = rc_ref!(&ctx.camera).near;
     let front0 = clip_front(p0, &ctx.clip_row);
     let front1 = clip_front(p1, &ctx.clip_row);
-    if front0 <= CLIP_FRONT_EPSILON && front1 <= CLIP_FRONT_EPSILON {
+    if front0 < near && front1 < near {
         return None;
     }
 
     let mut q0 = *p0;
     let mut q1 = *p1;
-    if front0 <= CLIP_FRONT_EPSILON {
-        let t = (CLIP_FRONT_EPSILON - front0) / (front1 - front0);
+    if front0 < near {
+        let t = (near - front0) / (front1 - front0);
         q0 = lerp_world(p0, p1, t);
-    } else if front1 <= CLIP_FRONT_EPSILON {
-        let t = (CLIP_FRONT_EPSILON - front0) / (front1 - front0);
+    } else if front1 < near {
+        let t = (near - front0) / (front1 - front0);
         q1 = lerp_world(p0, p1, t);
     }
 
@@ -534,6 +636,7 @@ pub fn prim(
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let lit = state.shaded && state.shading.is_some();
+    let near = rc_ref!(&ctx.camera).near;
 
     // Cache shared indexed vertices. Lines are projected after clipping.
     ctx.vertex_cache.clear();
@@ -547,7 +650,9 @@ pub fn prim(
             z: positions[base + 2],
         };
         let world = world_mat.mul_vec_value(&local);
-        let screen = if mode == MODE_LINES {
+        let screen = if mode == MODE_LINES
+            || (mode == MODE_TRIANGLES && clip_front(&world, &ctx.clip_row) < near)
+        {
             None
         } else {
             project_offset(
@@ -678,6 +783,7 @@ pub fn prim(
                             ClipVertex { world: v2, uv: uv2 },
                         ],
                         &ctx.clip_row,
+                        near,
                     );
                     if clipped.len < 3 {
                         continue;
@@ -809,8 +915,22 @@ fn border_face_plane(
     z_shift: &Vec3,
 ) -> Option<(ScreenPlane, bool)> {
     let make_plane = |[a, b, c]: [ScreenPoint; 3]| {
-        let plane = ScreenPlane::from_triangle(a, b, c)?;
-        Some((plane, !should_cull(signed_screen_area(a, b, c), CULL_BACK)))
+        let polygon = clip_projected_triangle(
+            [a, b, c].map(|screen| ProjectedClipVertex {
+                screen,
+                uv: (0.0, 0.0),
+            }),
+            ctx.clip,
+        );
+        (1..polygon.len.saturating_sub(1)).find_map(|i| {
+            let [a, b, c] = [
+                polygon.vertices[0].screen,
+                polygon.vertices[i].screen,
+                polygon.vertices[i + 1].screen,
+            ];
+            let plane = ScreenPlane::from_triangle(a, b, c)?;
+            Some((plane, !should_cull(signed_screen_area(a, b, c), CULL_BACK)))
+        })
     };
     let vertices = indices.map(|i| ctx.vertex_cache[i]);
     if let [Some(a), Some(b), Some(c)] = vertices.map(|(_, screen)| screen) {
@@ -822,6 +942,7 @@ fn border_face_plane(
             uv: (0.0, 0.0),
         }),
         &ctx.clip_row,
+        rc_ref!(&ctx.camera).near,
     );
     if clipped.len < 3 {
         return None;
@@ -867,22 +988,27 @@ fn draw_border(
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     ctx.vertex_cache.clear();
     ctx.vertex_cache.reserve(positions.len() / 3);
+    let near = rc_ref!(&ctx.camera).near;
     for point in positions.as_chunks::<3>().0 {
         let world = world_mat.mul_vec_value(&Vec3 {
             x: point[0],
             y: point[1],
             z: point[2],
         });
-        let screen = project_offset(
-            &world,
-            &ctx.vp,
-            &ctx.clip_row,
-            ctx.vp_x,
-            ctx.vp_y,
-            ctx.vp_w,
-            ctx.vp_h,
-            &z_shift,
-        );
+        let screen = (clip_front(&world, &ctx.clip_row) >= near)
+            .then(|| {
+                project_offset(
+                    &world,
+                    &ctx.vp,
+                    &ctx.clip_row,
+                    ctx.vp_x,
+                    ctx.vp_y,
+                    ctx.vp_w,
+                    ctx.vp_h,
+                    &z_shift,
+                )
+            })
+            .flatten();
         ctx.vertex_cache.push((world, screen));
     }
 
@@ -890,12 +1016,7 @@ fn draw_border(
         let (a, screen_a) = ctx.vertex_cache[edge.vertices[0]];
         let (b, screen_b) = ctx.vertex_cache[edge.vertices[1]];
         let projected = match (screen_a, screen_b) {
-            (Some(a_screen), Some(b_screen))
-                if clip_front(&a, &ctx.clip_row) > CLIP_FRONT_EPSILON
-                    && clip_front(&b, &ctx.clip_row) > CLIP_FRONT_EPSILON =>
-            {
-                Some((a_screen, b_screen))
-            }
+            (Some(a_screen), Some(b_screen)) => Some((a_screen, b_screen)),
             _ => project_line_segment(&a, &b, ctx, &z_shift),
         };
         let Some((p0, p1)) = projected else {
@@ -999,8 +1120,251 @@ pub fn trib(
     draw_border(ctx, world_mat, &positions, edges, col, state);
 }
 
+// Only rect, elli, and plane define a filled local XY surface with an explicit
+// orientation. Borders are screen-width lines, not surfaces to extrude.
+// Recolor receivers inside the extrusion without changing their stored depth.
+fn draw_decal(
+    ctx: &mut DrawContext,
+    world_mat: &Mat4,
+    w: f32,
+    h: f32,
+    ellipse: bool,
+    col: i32,
+    image: Option<&RcImage>,
+    uvs: Uvs,
+    colkey: Option<i32>,
+    state: DrawState,
+) {
+    let distance = ctx.decal_distance.unwrap();
+    if distance == 0.0 || !distance.is_finite() || ctx.vp_w <= 0.0 || ctx.vp_h <= 0.0 {
+        return;
+    }
+    let world = prepare_draw(ctx, world_mat, &state);
+    let mut world = scale_axes(&world, w * 0.5, h * 0.5, 1.0);
+    // Geometry transforms, like mul_vec_value, use the affine first three rows.
+    world.data[3] = [0.0, 0.0, 0.0, 1.0];
+    let clip_from_local = Mat4 { data: ctx.vp }.mul_mat_value(&world);
+    let det = clip_from_local.determinant();
+    if !det.is_finite() || det.abs() < 1e-12 {
+        return;
+    }
+    let local_from_clip = clip_from_local.inverse_value();
+    let bounds = decal_screen_bounds(ctx, &clip_from_local, distance);
+    if bounds.left > bounds.right || bounds.top > bounds.bottom {
+        return;
+    }
+
+    let mut normal = tri_normal(
+        &world.mul_vec_value(&Vec3 {
+            x: -1.0,
+            y: 1.0,
+            z: 0.0,
+        }),
+        &world.mul_vec_value(&Vec3 {
+            x: 1.0,
+            y: 1.0,
+            z: 0.0,
+        }),
+        &world.mul_vec_value(&Vec3 {
+            x: -1.0,
+            y: -1.0,
+            z: 0.0,
+        }),
+    );
+    if ellipse {
+        normal.x = -normal.x;
+        normal.y = -normal.y;
+        normal.z = -normal.z;
+    }
+    let shading = state.shading.filter(|_| state.shaded);
+    let colors = shading.map_or((col, col), |shading| {
+        lookup_ramp(shading, col, Some(&normal))
+    });
+    let level =
+        shading.map(|shading| face_shade_level(&rc_ref!(&shading.direction), Some(&normal)));
+
+    let snapshot = image
+        .filter(|image| std::rc::Rc::ptr_eq(image, &ctx.target))
+        .map(|image| new_rc_type!(rc_ref!(image).clone()));
+    let image = snapshot.as_ref().or(image);
+    let image_ref = image.map(|image| rc_ref!(image));
+    if image_ref
+        .as_ref()
+        .is_some_and(|image| image.width() == 0 || image.height() == 0)
+    {
+        return;
+    }
+    let sampler = image_ref
+        .as_ref()
+        .map(|image| make_image_sampler(image, colkey));
+
+    let min_z = (-distance).min(0.0);
+    let max_z = (-distance).max(0.0);
+    let m = &local_from_clip.data;
+    let step_x = 2.0 / ctx.vp_w;
+    let first_x = (bounds.left as f32 + 0.5 - ctx.vp_x) * step_x - 1.0;
+    let mut target = rc_mut!(&ctx.target);
+
+    for y in bounds.top..=bounds.bottom {
+        let ny = 1.0 - (y as f32 + 0.5 - ctx.vp_y) * 2.0 / ctx.vp_h;
+        let row: [f32; 4] = std::array::from_fn(|i| m[i][0] * first_x + m[i][1] * ny + m[i][3]);
+        for x in bounds.left..=bounds.right {
+            let depth = ctx.depth[y as usize * ctx.depth_w as usize + x as usize];
+            if !depth.is_finite() {
+                continue;
+            }
+            let dx = (x - bounds.left) as f32 * step_x;
+            let p: [f32; 4] = std::array::from_fn(|i| row[i] + m[i][0] * dx + m[i][2] * depth);
+            if p[3].abs() < 1e-12 {
+                continue;
+            }
+            let inv_w = 1.0 / p[3];
+            let u = p[0] * inv_w;
+            let v = p[1] * inv_w;
+            let z = p[2] * inv_w;
+            if !(-1.0..=1.0).contains(&u)
+                || !(-1.0..=1.0).contains(&v)
+                || z < min_z
+                || z > max_z
+                || (ellipse && !inside_unit_ellipse(u, v))
+            {
+                continue;
+            }
+
+            let color = if let Some(sampler) = &sampler {
+                let (s, t) = ((u + 1.0) * 0.5, (1.0 - v) * 0.5);
+                // Match plane's two triangles, including arbitrary corner UVs.
+                let uv = if s + t <= 1.0 {
+                    (
+                        uvs.0 .0 + (uvs.1 .0 - uvs.0 .0) * s + (uvs.2 .0 - uvs.0 .0) * t,
+                        uvs.0 .1 + (uvs.1 .1 - uvs.0 .1) * s + (uvs.2 .1 - uvs.0 .1) * t,
+                    )
+                } else {
+                    (
+                        uvs.3 .0
+                            + (uvs.2 .0 - uvs.3 .0) * (1.0 - s)
+                            + (uvs.1 .0 - uvs.3 .0) * (1.0 - t),
+                        uvs.3 .1
+                            + (uvs.2 .1 - uvs.3 .1) * (1.0 - s)
+                            + (uvs.1 .1 - uvs.3 .1) * (1.0 - t),
+                    )
+                };
+                let Some(base) = sampler(uv.0, uv.1, x, y) else {
+                    continue;
+                };
+                if let (Some(shading), Some(level)) = (shading, level) {
+                    let (a, b) = lookup_ramp_at_level(shading, base, level);
+                    dither_pick(a, b, x, y)
+                } else {
+                    base as u8
+                }
+            } else {
+                dither_pick(colors.0, colors.1, x, y)
+            };
+            write_pixel(
+                &mut target,
+                &mut ctx.depth,
+                ctx.depth_w,
+                x,
+                y,
+                depth,
+                color,
+                ctx.dither_alpha,
+                false,
+                false,
+            );
+        }
+    }
+}
+
+fn inside_unit_ellipse(x: f32, y: f32) -> bool {
+    let radius_squared = x * x + y * y;
+    if radius_squared > 1.0 {
+        return false;
+    }
+    // Keep the same polygon as ordinary elli. Most pixels lie inside its
+    // incircle; only the narrow rim needs edge tests, using quadrant symmetry.
+    let half_angle = std::f32::consts::PI / ELLIPSE_SEGMENTS as f32;
+    if radius_squared <= half_angle.cos().powi(2) {
+        return true;
+    }
+    let (x, y) = (x.abs(), y.abs());
+    let positions = unit_ellipse_positions();
+    for i in 1..=ELLIPSE_SEGMENTS / 4 {
+        let (ax, ay) = (positions[i * 3], positions[i * 3 + 1]);
+        let (bx, by) = (positions[(i + 1) * 3], positions[(i + 1) * 3 + 1]);
+        if (bx - ax) * (y - ay) - (by - ay) * (x - ax) < 0.0 {
+            return false;
+        }
+    }
+    true
+}
+
+fn lookup_ramp_at_level(shading: &Shading, color: i32, level: usize) -> (i32, i32) {
+    if shading.palette_size() == 0 {
+        (color, color)
+    } else {
+        shading.get(
+            color.clamp(0, shading.palette_size() as i32 - 1) as usize,
+            level,
+        )
+    }
+}
+
+fn decal_screen_bounds(
+    ctx: &DrawContext,
+    matrix: &Mat4,
+    distance: f32,
+) -> crate::cube::raster::ClipRect {
+    let mut min_x = f32::INFINITY;
+    let mut min_y = f32::INFINITY;
+    let mut max_x = f32::NEG_INFINITY;
+    let mut max_y = f32::NEG_INFINITY;
+    for z in [0.0, -distance] {
+        for y in [-1.0, 1.0] {
+            for x in [-1.0, 1.0] {
+                let p = matrix.mul_vec_value(&Vec3 { x, y, z });
+                let m = &matrix.data;
+                let w = m[3][0] * x + m[3][1] * y + m[3][2] * z + m[3][3];
+                // A volume crossing the eye plane has no finite projected bounds.
+                if w <= 1e-6 || !w.is_finite() {
+                    return ctx.clip;
+                }
+                let sx = ctx.vp_x + (p.x / w + 1.0) * 0.5 * ctx.vp_w;
+                let sy = ctx.vp_y + (1.0 - p.y / w) * 0.5 * ctx.vp_h;
+                min_x = min_x.min(sx);
+                max_x = max_x.max(sx);
+                min_y = min_y.min(sy);
+                max_y = max_y.max(sy);
+            }
+        }
+    }
+
+    crate::cube::raster::ClipRect {
+        left: (min_x.floor() as i32).max(ctx.clip.left),
+        top: (min_y.floor() as i32).max(ctx.clip.top),
+        right: (max_x.ceil() as i32).min(ctx.clip.right),
+        bottom: (max_y.ceil() as i32).min(ctx.clip.bottom),
+    }
+}
+
 // rect / rectb lay out the rectangle in world_mat's local XY plane.
 pub fn rect(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, state: DrawState) {
+    if ctx.decal_distance.is_some() {
+        draw_decal(
+            ctx,
+            world_mat,
+            w,
+            h,
+            false,
+            col,
+            None,
+            ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)),
+            None,
+            state,
+        );
+        return;
+    }
     let scaled = scale_axes(world_mat, w * 0.5, h * 0.5, 1.0);
     let _ = prim(
         ctx,
@@ -1027,6 +1391,21 @@ pub fn rectb(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
 }
 
 pub fn elli(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, state: DrawState) {
+    if ctx.decal_distance.is_some() {
+        draw_decal(
+            ctx,
+            world_mat,
+            w,
+            h,
+            true,
+            col,
+            None,
+            ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)),
+            None,
+            state,
+        );
+        return;
+    }
     let scaled = scale_axes(world_mat, w * 0.5, h * 0.5, 1.0);
     let _ = prim(
         ctx,
@@ -1419,6 +1798,21 @@ pub fn plane(
     colkey: Option<i32>,
     state: DrawState,
 ) {
+    if ctx.decal_distance.is_some() {
+        draw_decal(
+            ctx,
+            world_mat,
+            w,
+            h,
+            false,
+            0,
+            Some(img),
+            uvs,
+            colkey,
+            state,
+        );
+        return;
+    }
     let scaled = scale_axes(world_mat, w * 0.5, h * 0.5, 1.0);
     let g = primitive::unit_plane();
     let uv_array = [
@@ -1616,8 +2010,36 @@ mod tests {
             depth_test: true,
             depth_write: true,
             depth_offset: 0.0,
+            decal_distance: None,
             shaded,
         }
+    }
+
+    #[test]
+    fn test_decal_preserves_every_depth_sample() {
+        let target = Image::new(64, 64);
+        let camera = Camera::new();
+        let mut ctx = draw_context_64(&target, &camera, false);
+        let receiver = *rc_ref!(&Mat4::from_translation(&Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: -5.0,
+        }));
+        rect(&mut ctx, &receiver, 2.0, 2.0, 3, DrawState::unshaded());
+        let depth = ctx.depth.clone();
+
+        ctx.decal_distance = Some(10.0);
+        elli(
+            &mut ctx,
+            &Mat4::identity_value(),
+            4.0,
+            4.0,
+            8,
+            DrawState::unshaded(),
+        );
+        assert_eq!(ctx.depth, depth);
+        assert_eq!(rc_ref!(&target).canvas.read_data(32, 32), 8);
+        assert_eq!(rc_ref!(&target).canvas.read_data(0, 0), 0);
     }
 
     #[test]
@@ -2128,14 +2550,11 @@ mod tests {
         }
     }
 
-    // Interpolated vertices land on the epsilon plane up to the f32 rounding of unit-scale coordinates, well inside 1e-6
+    // Allow for f32 rounding when interpolating onto the near plane.
     fn assert_clip_vertices_inside(vertices: &ClippedTriangle, clip_row: &[f32; 4]) {
         for i in 0..vertices.len {
             let front = clip_front(&vertices.vertices[i].world, clip_row);
-            assert!(
-                front >= CLIP_FRONT_EPSILON - 1e-6,
-                "vertex {i} front={front}"
-            );
+            assert!(front >= 0.1 - 1e-6, "vertex {i} front={front}");
         }
     }
 
@@ -2148,7 +2567,7 @@ mod tests {
             clip_vertex(0.0, 1.0, -1.0, 0.5, 1.0),
         ];
 
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
+        let clipped = clip_triangle_to_near(vertices, &clip_row, 0.1);
         assert_eq!(clipped.len, 3);
         for (actual, expected) in clipped.vertices.iter().zip(vertices) {
             assert_eq!(actual.world, expected.world);
@@ -2165,7 +2584,7 @@ mod tests {
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
 
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
+        let clipped = clip_triangle_to_near(vertices, &clip_row, 0.1);
         assert_eq!(clipped.len, 0);
     }
 
@@ -2178,7 +2597,7 @@ mod tests {
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
 
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
+        let clipped = clip_triangle_to_near(vertices, &clip_row, 0.1);
         assert_eq!(clipped.len, 4);
         assert_clip_vertices_inside(&clipped, &clip_row);
     }
@@ -2192,7 +2611,7 @@ mod tests {
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
 
-        let clipped = clip_triangle_to_near(vertices, &clip_row);
+        let clipped = clip_triangle_to_near(vertices, &clip_row, 0.1);
         assert_eq!(clipped.len, 3);
         assert_clip_vertices_inside(&clipped, &clip_row);
     }
@@ -2294,6 +2713,129 @@ mod tests {
         )
         .unwrap();
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
+    }
+
+    #[test]
+    fn test_viewport_clipping_preserves_affine_depth_and_uvs() {
+        let vertex = |x, y| ProjectedClipVertex {
+            screen: (x, y, x / 2_000_000.0),
+            uv: (0.5 + x / 2_000_000.0, 0.5 + y / 2_000_000.0),
+        };
+        let vertices = [
+            vertex(-1_000_000.0, -1_000_000.0),
+            vertex(1_000_000.0, -1_000_000.0),
+            vertex(0.0, 1_000_000.0),
+        ];
+        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
+
+        for triangle in [vertices, [vertices[2], vertices[1], vertices[0]]] {
+            let polygon = clip_projected_triangle(triangle, clip);
+            assert_eq!(polygon.len, 4);
+            for v in &polygon.vertices[..polygon.len] {
+                assert!((0.0..=64.0).contains(&v.screen.0));
+                assert!((0.0..=64.0).contains(&v.screen.1));
+                let expected = vertex(v.screen.0, v.screen.1);
+                assert!((v.screen.2 - expected.screen.2).abs() < 1e-7);
+                assert!((v.uv.0 - expected.uv.0).abs() < 1e-7);
+                assert!((v.uv.1 - expected.uv.1).abs() < 1e-7);
+            }
+        }
+    }
+
+    #[test]
+    fn test_floor_crossing_camera_plane_keeps_coverage_and_depth() {
+        // A large floor can extend behind an orbiting camera. Check its
+        // visible interior against ray/plane intersections, independent of
+        // triangle clipping and barycentric interpolation.
+        let positions = [
+            -112.0, 0.0, 128.0, 112.0, 0.0, 128.0, -112.0, 0.0, 14.0, 112.0, 0.0, 14.0,
+        ];
+        let texture = Image::new(2, 2);
+        rc_mut!(&texture).clear(7);
+
+        for textured in [false, true] {
+            for near in [0.1, 2.0] {
+                for yaw in 0..360 {
+                    let angle = (yaw as f32).to_radians();
+                    let eye = Vec3 {
+                        x: 84.0 - 132.0 * angle.sin(),
+                        y: 100.0,
+                        z: 60.0 + 132.0 * angle.cos(),
+                    };
+                    let camera = Camera::new();
+                    {
+                        let mut cam = rc_mut!(&camera);
+                        cam.near = near;
+                        cam.far = 20000.0;
+                        cam.transform = Mat4::look_at(
+                            &eye,
+                            &Vec3 {
+                                x: 84.0,
+                                y: 24.0,
+                                z: 60.0,
+                            },
+                            &Vec3 {
+                                x: 0.0,
+                                y: 1.0,
+                                z: 0.0,
+                            },
+                        );
+                    }
+
+                    let target = Image::new(64, 64);
+                    rc_mut!(&target).clear(2);
+                    let mut ctx = draw_context_64(&target, &camera, false);
+                    prim(
+                        &mut ctx,
+                        &Mat4::identity_value(),
+                        MODE_TRIANGLES,
+                        CULL_BACK,
+                        &positions,
+                        Some(&[0, 1, 2, 1, 3, 2]),
+                        None,
+                        Some(&[0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
+                        7,
+                        textured.then_some(&texture),
+                        None,
+                        DrawState::unshaded(),
+                    )
+                    .unwrap();
+
+                    let cam = rc_ref!(&camera);
+                    let transform = rc_ref!(&cam.transform);
+                    let tan_half_fov = (cam.fov.to_radians() * 0.5).tan();
+                    for y in 0..64 {
+                        for x in 0..64 {
+                            let ray = transform.mul_dir_value(&Vec3 {
+                                x: ((x as f32 + 0.5) / 32.0 - 1.0) * tan_half_fov,
+                                y: (1.0 - (y as f32 + 0.5) / 32.0) * tan_half_fov,
+                                z: -1.0,
+                            });
+                            let distance = -eye.y / ray.y;
+                            let hit = Vec3 {
+                                x: eye.x + ray.x * distance,
+                                y: 0.0,
+                                z: eye.z + ray.z * distance,
+                            };
+                            if distance < near
+                                || distance > cam.far
+                                || hit.x.abs() > 111.0
+                                || !(15.0..127.0).contains(&hit.z)
+                            {
+                                continue;
+                            }
+                            let expected =
+                                world_to_screen(&hit, &ctx.vp, &ctx.clip_row, 0.0, 0.0, 64.0, 64.0)
+                                    .unwrap();
+                            assert_eq!(rc_ref!(&target).pixel(x as f32, y as f32), 7,
+                                       "missing floor at ({x}, {y}), yaw={yaw}, near={near}, textured={textured}");
+                            assert!((ctx.depth[y * 64 + x] - expected.2).abs() < 0.0001,
+                                    "incorrect depth at ({x}, {y}), yaw={yaw}, near={near}, textured={textured}: {} vs {}", ctx.depth[y * 64 + x], expected.2);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     #[test]

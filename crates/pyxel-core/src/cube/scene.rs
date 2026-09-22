@@ -1,4 +1,5 @@
 use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
 
 use crate::cube::camera::RcCamera;
 use crate::cube::collider::{Collider, RcCollider};
@@ -49,6 +50,7 @@ pub struct DrawContext {
     pub depth_write: bool,
     // View-direction depth bias that leaves screen position unchanged
     pub depth_offset: f32,
+    pub decal_distance: Option<f32>,
     pub shaded: bool,
 }
 
@@ -85,6 +87,7 @@ pub fn reset_draw_state() {
         ctx.depth_test = true;
         ctx.depth_write = true;
         ctx.depth_offset = 0.0;
+        ctx.decal_distance = None;
         ctx.shaded = true;
     });
 }
@@ -115,21 +118,243 @@ pub struct RaycastHitInfo {
     pub distance: f32,
 }
 
+// Contact solver state
+
+#[derive(Clone)]
 struct ColliderEntry {
     node: RcNode,
     world: Mat4,
+    inverse: Mat4,
     aabb: Aabb,
     collider: RcCollider,
     velocity: Vec3,
     immovable: bool,
     trigger: bool,
+    margin: f32,
+}
+
+#[derive(Clone)]
+struct ContactConstraint {
+    pair: usize,
+    a: usize,
+    b: usize,
+    normal: Vec3,
+    depth: f32,
+    shares: (f32, f32),
+    push: f32,
+    swept: bool,
+}
+
+struct ContactBody {
+    inverse_mass: f32,
+    inverse_inertia: Vec3,
+    axes: [Vec3; 3],
+    velocity: Vec3,
+    spin: Vec3,
+}
+
+impl ContactBody {
+    fn new(entry: &ColliderEntry, mass_unit: f32) -> Self {
+        let collider = rc_ref!(&entry.collider);
+        // A common mass unit keeps equivalent scenes numerically equivalent.
+        // Ratios below float precision already behave as an immovable partner.
+        let physical_mass = collider.contact_mass();
+        let mass = if physical_mass > 0.0 {
+            (physical_mass / mass_unit).max(1e-12)
+        } else {
+            0.0
+        };
+        let inverse_mass = if mass > 0.0 { 1.0 / mass } else { 0.0 };
+        let radius = collider.radius.max(0.0);
+        let size = *rc_ref!(&collider.size);
+        let inertia = match classify_shape(size, radius) {
+            ColliderShape::Sphere { r } => {
+                let i = 0.4 * mass * r * r;
+                Vec3 { x: i, y: i, z: i }
+            }
+            ColliderShape::Capsule { half_h, r } => {
+                let length = 2.0 * half_h;
+                let cylinder = mass * length / (length + 4.0 * r / 3.0);
+                let caps = mass - cylinder;
+                let axial = cylinder * r * r * 0.5 + caps * r * r * 0.4;
+                let radial = cylinder * (3.0 * r * r + length * length) / 12.0
+                    + caps * (0.4 * r * r + half_h * half_h + 0.75 * half_h * r);
+                Vec3 {
+                    x: radial,
+                    y: axial,
+                    z: radial,
+                }
+            }
+            ColliderShape::RoundedBox { half, r } => {
+                let x = (half.x + r) * 2.0;
+                let y = (half.y + r) * 2.0;
+                let z = (half.z + r) * 2.0;
+                Vec3 {
+                    x: mass * (y * y + z * z) / 12.0,
+                    y: mass * (x * x + z * z) / 12.0,
+                    z: mass * (x * x + y * y) / 12.0,
+                }
+            }
+        };
+        let inverse = |i: f32| {
+            if collider.rolls && mass > 0.0 && i > 0.0 {
+                1.0 / i
+            } else {
+                0.0
+            }
+        };
+
+        let rotation = Node::world_rotation_value(&entry.node);
+        let axes = std::array::from_fn(|i| Vec3 {
+            x: rotation.data[0][i],
+            y: rotation.data[1][i],
+            z: rotation.data[2][i],
+        });
+        let spin = if collider.mesh.is_some() {
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            }
+        } else {
+            rotation.mul_dir_value(&vec_mul(
+                *rc_ref!(&collider.angular_velocity),
+                1.0_f32.to_radians(),
+            ))
+        };
+
+        Self {
+            inverse_mass,
+            inverse_inertia: Vec3 {
+                x: inverse(inertia.x),
+                y: inverse(inertia.y),
+                z: inverse(inertia.z),
+            },
+            axes,
+            velocity: entry.velocity,
+            spin,
+        }
+    }
+
+    fn apply_inverse_inertia(&self, torque: Vec3) -> Vec3 {
+        let mut result = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        for (axis, inverse) in self.axes.iter().zip([
+            self.inverse_inertia.x,
+            self.inverse_inertia.y,
+            self.inverse_inertia.z,
+        ]) {
+            result = vec_add(result, vec_mul(*axis, vec_dot(*axis, torque) * inverse));
+        }
+        result
+    }
+
+    fn point_velocity(&self, arm: Vec3) -> Vec3 {
+        vec_add(self.velocity, vec_cross(self.spin, arm))
+    }
+
+    fn apply_impulse(&mut self, arm: Vec3, impulse: Vec3) {
+        self.velocity = vec_add(self.velocity, vec_mul(impulse, self.inverse_mass));
+        self.spin = vec_add(
+            self.spin,
+            self.apply_inverse_inertia(vec_cross(arm, impulse)),
+        );
+    }
+}
+
+#[derive(Default)]
+pub(crate) struct ContactCache {
+    contacts: Vec<CachedContact>,
+    bodies: Vec<CachedBody>,
+}
+
+struct CachedBody {
+    node: crate::cube::node::WeakNode,
+    world: Mat4,
+    velocity: Vec3,
+    spin: Vec3,
+    output_velocity: Vec3,
+    acceleration: Vec3,
+    previous_acceleration: Vec3,
+    material: [f32; 8],
+    quiet_frames: u8,
+    tolerance: f32,
+    integrated: bool,
+}
+
+impl CachedBody {
+    fn matches_pose(&self, world: &Mat4, displacement: Vec3) -> bool {
+        let position = vec_sub(world.pos_value(), displacement);
+        vec_len_sq(vec_sub(position, self.world.pos_value())) < self.tolerance * self.tolerance
+            && (0..3).all(|row| {
+                (0..3).all(|col| (world.data[row][col] - self.world.data[row][col]).abs() < 0.0001)
+            })
+    }
+
+    fn matches_integrated_pose(&self, entry: &ColliderEntry) -> bool {
+        let mut world = entry.world;
+        let mut displacement = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        if self.integrated {
+            displacement = entry.velocity;
+            let collider = rc_ref!(&entry.collider);
+            if collider.mesh.is_none() {
+                let angular = *rc_ref!(&collider.angular_velocity);
+                let length = vec_len(angular);
+                if length > 1e-6 {
+                    let undo =
+                        Mat4::from_axis_angle_value(&vec_mul(angular, 1.0 / length), -length);
+                    world = world.mul_mat_value(&undo);
+                }
+            }
+        }
+        self.matches_pose(&world, displacement)
+    }
+
+    fn matches_motion(&self, velocity: Vec3, spin: Vec3) -> bool {
+        vec_len_sq(vec_sub(velocity, self.velocity)) < self.tolerance * self.tolerance
+            && vec_len_sq(vec_sub(spin, self.spin)) < 1e-8
+    }
+}
+
+struct CachedContact {
+    nodes: [crate::cube::node::WeakNode; 2],
+    anchors: [Vec3; 2],
+    normal: Vec3,
+    impulse: Vec3,
+    mass_unit: f32,
+}
+
+struct ContactImpulse {
+    pair: usize,
+    a: usize,
+    b: usize,
+    normal: Vec3,
+    ra: Vec3,
+    rb: Vec3,
+    bounce: f32,
+    friction: f32,
+    normal_impulse: f32,
+    tangent_impulse: Vec3,
+    tangents: [Vec3; 2],
+    angular_a: [Vec3; 3],
+    angular_b: [Vec3; 3],
+    normal_mass: f32,
+    tangent_mass: [f32; 3],
+    velocity_change: [f32; 3],
 }
 
 thread_local! {
     static COLLIDER_ENTRY_SCRATCH: RefCell<Vec<ColliderEntry>> = const { RefCell::new(Vec::new()) };
 }
 
-// Namespace for stateless pipeline and spatial-query operations on a subtree
+// Pipeline and spatial-query operations on a subtree
 pub struct Scene;
 
 // Spatial-query kernels keep shapes, transforms, velocities, and tolerances
@@ -171,10 +396,24 @@ impl Scene {
             return;
         }
         let parent_world = parent.as_ref().map(Node::world_transform_value);
-        Self::integrate_motion_recursive(scene_root, parent_world.as_ref());
+        let mut cache = rc_mut!(scene_root).contact_cache.take();
+        let mut previous: HashMap<_, _> = cache
+            .iter_mut()
+            .flat_map(|cache| &mut cache.bodies)
+            .map(|body| {
+                body.integrated = true;
+                (body.node.as_ptr(), body)
+            })
+            .collect();
+        Self::integrate_motion_recursive(scene_root, parent_world.as_ref(), &mut previous);
+        rc_mut!(scene_root).contact_cache = cache;
     }
 
-    fn integrate_motion_recursive(node: &RcNode, parent_world: Option<&Mat4>) {
+    fn integrate_motion_recursive(
+        node: &RcNode,
+        parent_world: Option<&Mat4>,
+        previous: &mut HashMap<*const RefCell<Node>, &mut CachedBody>,
+    ) {
         if !rc_ref!(node).active {
             return;
         }
@@ -196,10 +435,35 @@ impl Scene {
             let angular_len_sq = angular_velocity.x * angular_velocity.x
                 + angular_velocity.y * angular_velocity.y
                 + angular_velocity.z * angular_velocity.z;
-            if world_velocity.x != 0.0
-                || world_velocity.y != 0.0
-                || world_velocity.z != 0.0
-                || angular_len_sq > 1e-12
+            let resting = previous
+                .get_mut(&std::rc::Rc::as_ptr(node))
+                .is_some_and(|old| {
+                    if old.quiet_frames < 20 || old.material != contact_material(&coll) {
+                        return false;
+                    }
+                    let local = *rc_ref!(&rc_ref!(node).transform);
+                    let world = parent_world.map_or(local, |parent| parent.mul_mat_value(&local));
+                    let spin = Node::world_rotation_value(node)
+                        .mul_dir_value(&vec_mul(angular_velocity, 1.0_f32.to_radians()));
+                    let unchanged = old.matches_pose(
+                        &world,
+                        Vec3 {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                    ) && old.matches_motion(world_velocity, spin);
+                    old.integrated = !unchanged;
+                    unchanged
+                });
+            // Do not sink a sleeping stack under the same per-frame gravity.
+            // Correcting that sink along slightly tilted contact normals would
+            // otherwise accumulate sideways drift even with zero final speed.
+            if !resting
+                && (world_velocity.x != 0.0
+                    || world_velocity.y != 0.0
+                    || world_velocity.z != 0.0
+                    || angular_len_sq > 1e-12)
             {
                 let transform_rc = rc_ref!(node).transform.clone();
                 let mut transform = *rc_ref!(&transform_rc);
@@ -238,7 +502,7 @@ impl Scene {
         let world = parent_world.map_or(local, |parent| parent.mul_mat_value(&local));
         let node_ref = rc_ref!(node);
         for child in &node_ref.children {
-            Self::integrate_motion_recursive(child, Some(&world));
+            Self::integrate_motion_recursive(child, Some(&world), previous);
         }
     }
 
@@ -262,15 +526,35 @@ impl Scene {
     // response resolution. Returns the contact pairs the binding layer
     // feeds to on_collide.
     pub fn detect_contacts(scene_root: &RcNode) -> Vec<ContactPair> {
+        let previous = rc_mut!(scene_root).contact_cache.take();
         Self::with_collider_entries(scene_root, true, |entries| {
             let n = entries.len();
             let mut pairs: Vec<ContactPair> = Vec::new();
+            let mut constraints = Vec::new();
 
             for i in 0..n {
                 for j in (i + 1)..n {
                     let entry_a = &entries[i];
                     let entry_b = &entries[j];
-                    if !entry_a.aabb.overlaps(&entry_b.aabb) {
+                    let margin = entry_a.margin.max(entry_b.margin);
+                    let mut bounds = entry_a.aabb;
+                    bounds.min = vec_sub(
+                        bounds.min,
+                        Vec3 {
+                            x: margin,
+                            y: margin,
+                            z: margin,
+                        },
+                    );
+                    bounds.max = vec_add(
+                        bounds.max,
+                        Vec3 {
+                            x: margin,
+                            y: margin,
+                            z: margin,
+                        },
+                    );
+                    if !bounds.overlaps(&entry_b.aabb) {
                         continue;
                     }
                     if entry_a.immovable
@@ -281,35 +565,1382 @@ impl Scene {
                         continue;
                     }
 
-                    let contact = Self::narrow_phase(
-                        &entry_a.world,
-                        &entry_a.collider,
-                        entry_a.velocity,
-                        &entry_b.world,
-                        &entry_b.collider,
-                        entry_b.velocity,
-                    );
+                    let mesh_contact = rc_ref!(&entry_a.collider).mesh.is_some()
+                        || rc_ref!(&entry_b.collider).mesh.is_some();
+                    let iterations = if mesh_contact && !entry_a.trigger && !entry_b.trigger {
+                        8
+                    } else {
+                        1
+                    };
+                    let mut world_a = entry_a.world;
+                    let mut world_b = entry_b.world;
+                    let mut velocity_a = entry_a.velocity;
+                    let mut velocity_b = entry_b.velocity;
+                    let first_constraint = constraints.len();
+                    let zero = Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    };
 
-                    if let Some(geom) = contact {
+                    for iteration in 0..iterations {
+                        // Keep sweeping the motion along resolved surfaces: a
+                        // wall contact must not hide a floor crossed in this frame.
+                        let Some((geom, swept)) = Self::narrow_phase(
+                            &world_a,
+                            &entry_a.collider,
+                            velocity_a,
+                            &world_b,
+                            &entry_b.collider,
+                            velocity_b,
+                        )
+                        .or_else(|| {
+                            if margin == 0.0 || entry_a.trigger || entry_b.trigger {
+                                return None;
+                            }
+                            // Keep near-touching support contacts coherent. A
+                            // separated point may close its gap, but cannot pull.
+                            Self::narrow_phase_with_margin(
+                                &world_a,
+                                &entry_a.collider,
+                                zero,
+                                &world_b,
+                                &entry_b.collider,
+                                zero,
+                                margin,
+                            )
+                            .map(|(mut geom, swept)| {
+                                geom.depth -= margin;
+                                (geom, swept)
+                            })
+                        }) else {
+                            break;
+                        };
+                        if iteration > 0 && geom.depth <= 1e-5 {
+                            break;
+                        }
+
+                        let normal = geom.normal;
+                        let offset = (0..3)
+                            .map(|axis| {
+                                component(normal, axis)
+                                    * (world_a.data[axis][3]
+                                        - entry_a.world.data[axis][3]
+                                        - world_b.data[axis][3]
+                                        + entry_b.world.data[axis][3])
+                            })
+                            .sum::<f32>();
+                        let depth = geom.depth + offset;
+                        // Opposite faces reached by successive mesh corrections
+                        // can be alternative exits from a thin solid. Do not
+                        // turn those exits into an impossible pair of constraints.
+                        if constraints[first_constraint..].iter().any(
+                            |previous: &ContactConstraint| {
+                                previous.normal.dot(&normal) < -0.9999
+                                    && previous.depth + depth > 1e-5
+                            },
+                        ) {
+                            break;
+                        }
+
                         let pair = Self::build_contact_pair(
                             &entry_a.node,
                             &entry_a.collider,
-                            entry_a.velocity,
                             &entry_b.node,
                             &entry_b.collider,
-                            entry_b.velocity,
-                            geom,
+                            ContactGeom {
+                                depth: geom.depth.max(0.0),
+                                ..geom
+                            },
                         );
+                        if !entry_a.trigger && !entry_b.trigger {
+                            let a = rc_ref!(&entry_a.collider);
+                            let b = rc_ref!(&entry_b.collider);
+                            constraints.push(ContactConstraint {
+                                pair: pairs.len(),
+                                a: i,
+                                b: j,
+                                normal,
+                                depth,
+                                shares: Self::contact_shares(a.contact_mass(), b.contact_mass()),
+                                push: 0.0,
+                                swept,
+                            });
+                        }
+                        if iterations > 1 {
+                            for (world, velocity, contact) in [
+                                (&mut world_a, &mut velocity_a, &pair.contact_a),
+                                (&mut world_b, &mut velocity_b, &pair.contact_b),
+                            ] {
+                                Scene::apply_contact_to_snapshot(world, velocity, contact);
+                                // Continue only the tangential sweep. Physical
+                                // friction and restitution are resolved later.
+                                let contact = rc_ref!(contact);
+                                let normal = rc_ref!(&contact.normal);
+                                let inward = velocity.dot(&normal).min(0.0);
+                                velocity.x -= normal.x * inward;
+                                velocity.y -= normal.y * inward;
+                                velocity.z -= normal.z * inward;
+                            }
+                        }
                         if pairs.is_empty() {
                             pairs.reserve(n);
                         }
                         pairs.push(pair);
+                        if geom.depth <= 1e-5 {
+                            break;
+                        }
                     }
                 }
             }
 
+            Self::resolve_contact_positions(entries, &pairs, &mut constraints);
+            let next_cache = Self::resolve_contact_velocities(
+                entries,
+                &pairs,
+                &constraints,
+                previous.as_deref().unwrap_or(&ContactCache::default()),
+            );
+            if !next_cache.contacts.is_empty() {
+                let mut cache = previous.unwrap_or_default();
+                *cache = next_cache;
+                rc_mut!(scene_root).contact_cache = Some(cache);
+            }
             pairs
         })
+    }
+
+    // Coupled normal responses make a stack's floor and inter-block contacts agree
+    // about support. Callers still receive and apply the same contact callbacks.
+    fn resolve_contact_positions(
+        entries: &[ColliderEntry],
+        pairs: &[ContactPair],
+        constraints: &mut [ContactConstraint],
+    ) {
+        if constraints.len() < 2 {
+            return;
+        }
+        let zero = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let mut offsets = vec![zero; entries.len()];
+        for iteration in 0..32 {
+            let mut largest_change = 0.0_f32;
+            for step in 0..constraints.len() {
+                let index = if iteration % 2 == 0 {
+                    step
+                } else {
+                    constraints.len() - 1 - step
+                };
+                let constraint = &mut constraints[index];
+                let normal = constraint.normal;
+                let separation =
+                    normal.dot(&offsets[constraint.a]) - normal.dot(&offsets[constraint.b]);
+                // Keep overlap above the coordinate rounding error so touching
+                // bodies remain in the next frame's contact graph. A fixed
+                // world-unit slop disappears at larger coordinate magnitudes.
+                let slop = if constraint.shares.0 > 0.0 && constraint.shares.1 > 0.0 {
+                    let scale = (0..3).fold(1.0_f32, |scale, axis| {
+                        scale
+                            .max(entries[constraint.a].world.data[axis][3].abs())
+                            .max(entries[constraint.b].world.data[axis][3].abs())
+                    });
+                    (4.0 * f32::EPSILON * scale).max(1e-5).max(
+                        entries[constraint.a]
+                            .margin
+                            .max(entries[constraint.b].margin)
+                            * 0.1,
+                    )
+                } else {
+                    0.0
+                };
+                let push = (constraint.push + constraint.depth - slop - separation).max(0.0);
+                let push_change = push - constraint.push;
+                constraint.push = push;
+                largest_change = largest_change.max(push_change.abs());
+                for (index, share) in [
+                    (constraint.a, constraint.shares.0),
+                    (constraint.b, -constraint.shares.1),
+                ] {
+                    offsets[index].x += normal.x * push_change * share;
+                    offsets[index].y += normal.y * push_change * share;
+                    offsets[index].z += normal.z * push_change * share;
+                }
+            }
+            if largest_change < 1e-5 {
+                break;
+            }
+        }
+
+        for constraint in constraints {
+            let pair = &pairs[constraint.pair];
+            for (contact, share) in [
+                (&pair.contact_a, constraint.shares.0),
+                (&pair.contact_b, constraint.shares.1),
+            ] {
+                let mut contact = rc_mut!(contact);
+                contact.depth = constraint.push * share;
+            }
+        }
+    }
+
+    fn resolve_contact_velocities(
+        entries: &[ColliderEntry],
+        pairs: &[ContactPair],
+        constraints: &[ContactConstraint],
+        cache: &ContactCache,
+    ) -> ContactCache {
+        if constraints.is_empty() {
+            return ContactCache::default();
+        }
+
+        // Without rotation or restitution, contact points all have the same
+        // velocity. Solve translation directly: no contact patches, inertia,
+        // warm-start history, or sleeping-body bookkeeping are needed.
+        let is_linear = |contact: &ContactConstraint| {
+            [contact.a, contact.b].into_iter().all(|i| {
+                let collider = rc_ref!(&entries[i].collider);
+                collider.restitution == 0.0
+                    && (collider.mesh.is_some()
+                        || ((!collider.rolls || entries[i].immovable)
+                            && vec_len_sq(*rc_ref!(&collider.angular_velocity)) == 0.0))
+            })
+        };
+        if constraints.iter().all(is_linear) {
+            Self::resolve_linear_velocities(entries, pairs, constraints);
+            return ContactCache::default();
+        }
+
+        // A rolling body elsewhere in the scene must not make every character
+        // pay for rigid-body response. Only moving bodies connect contact groups;
+        // sharing the same immovable floor does not connect them.
+        let mut groups: Vec<_> = (0..entries.len()).collect();
+        for contact in constraints {
+            if !entries[contact.a].immovable && !entries[contact.b].immovable {
+                let a = contact_group(&groups, contact.a);
+                let b = contact_group(&groups, contact.b);
+                groups[b] = a;
+            }
+        }
+        for i in 0..groups.len() {
+            groups[i] = contact_group(&groups, i);
+        }
+        let mut rigid = vec![false; entries.len()];
+        for contact in constraints.iter().filter(|contact| !is_linear(contact)) {
+            for i in [contact.a, contact.b] {
+                if !entries[i].immovable {
+                    rigid[groups[i]] = true;
+                }
+            }
+        }
+
+        let mut linear_contacts = Vec::new();
+        let mut rigid_contacts = Vec::new();
+        let mut rigid_entries = Vec::new();
+        let mut indices = vec![usize::MAX; entries.len()];
+        for contact in constraints {
+            if !rigid[groups[contact.a]] && !rigid[groups[contact.b]] {
+                linear_contacts.push(contact.clone());
+                continue;
+            }
+            let mut contact = contact.clone();
+            for i in [&mut contact.a, &mut contact.b] {
+                if indices[*i] == usize::MAX {
+                    indices[*i] = rigid_entries.len();
+                    rigid_entries.push(entries[*i].clone());
+                }
+                *i = indices[*i];
+            }
+            rigid_contacts.push(contact);
+        }
+
+        if !linear_contacts.is_empty() {
+            Self::resolve_linear_velocities(entries, pairs, &linear_contacts);
+        }
+        Self::resolve_rigid_velocities(&rigid_entries, pairs, &rigid_contacts, cache)
+    }
+
+    fn resolve_rigid_velocities(
+        entries: &[ColliderEntry],
+        pairs: &[ContactPair],
+        constraints: &[ContactConstraint],
+        cache: &ContactCache,
+    ) -> ContactCache {
+        let previous = &cache.contacts;
+        let zero = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let mut groups: Vec<_> = (0..entries.len()).collect();
+        for contact in constraints {
+            if !entries[contact.a].immovable && !entries[contact.b].immovable {
+                let a = contact_group(&groups, contact.a);
+                let b = contact_group(&groups, contact.b);
+                groups[b] = a;
+            }
+        }
+        for i in 0..groups.len() {
+            groups[i] = contact_group(&groups, i);
+        }
+
+        // Unrelated contact groups must not change each other's mass ratios or
+        // rounding, even when their bodies have very different mass scales.
+        let mut mass_units = vec![f32::MIN_POSITIVE; entries.len()];
+        for (i, entry) in entries.iter().enumerate() {
+            mass_units[groups[i]] =
+                mass_units[groups[i]].max(rc_ref!(&entry.collider).contact_mass());
+        }
+        let contact_mass_unit =
+            |a: usize, b: usize| mass_units[groups[if entries[a].immovable { b } else { a }]];
+        let mut bodies: Vec<_> = entries
+            .iter()
+            .enumerate()
+            .map(|(i, entry)| ContactBody::new(entry, mass_units[groups[i]]))
+            .collect();
+        let initial_velocities: Vec<_> = bodies
+            .iter()
+            .map(|body| (body.velocity, body.spin))
+            .collect();
+        let materials: Vec<_> = entries
+            .iter()
+            .map(|entry| contact_material(&rc_ref!(&entry.collider)))
+            .collect();
+        let old_body_map: HashMap<_, _> = cache
+            .bodies
+            .iter()
+            .map(|old| (old.node.as_ptr(), old))
+            .collect();
+        let old_bodies: Vec<_> = entries
+            .iter()
+            .map(|entry| old_body_map.get(&std::rc::Rc::as_ptr(&entry.node)).copied())
+            .collect();
+
+        let mut old_pairs = HashMap::new();
+        let mut start = 0;
+        // Contact points for one collider pair are adjacent in the cache.
+        while start < previous.len() {
+            let key = (
+                previous[start].nodes[0].as_ptr(),
+                previous[start].nodes[1].as_ptr(),
+            );
+            let mut end = start + 1;
+            while end < previous.len()
+                && (
+                    previous[end].nodes[0].as_ptr(),
+                    previous[end].nodes[1].as_ptr(),
+                ) == key
+            {
+                end += 1;
+            }
+            old_pairs.insert(key, start..end);
+            start = end;
+        }
+
+        let mut quiet = vec![20_u8; entries.len()];
+        let mut supported = vec![false; entries.len()];
+        let mut valid = vec![false; entries.len()];
+        let mut poses_valid = vec![false; entries.len()];
+        for (i, entry) in entries.iter().enumerate() {
+            poses_valid[i] = old_bodies[i].is_some_and(|old| {
+                old.material == materials[i] && old.matches_integrated_pose(entry)
+            });
+            valid[i] = poses_valid[i]
+                && old_bodies[i]
+                    .is_some_and(|old| old.matches_motion(bodies[i].velocity, bodies[i].spin));
+            if bodies[i].inverse_mass > 0.0 {
+                quiet[groups[i]] = quiet[groups[i]].min(if valid[i] && entry.margin > 0.0 {
+                    old_bodies[i].unwrap().quiet_frames
+                } else {
+                    0
+                });
+            }
+        }
+        for contact in constraints {
+            for (body, other) in [(contact.a, contact.b), (contact.b, contact.a)] {
+                if bodies[body].inverse_mass == 0.0 {
+                    continue;
+                }
+                if bodies[other].inverse_mass == 0.0 {
+                    let still = vec_len_sq(bodies[other].velocity) == 0.0
+                        && vec_len_sq(bodies[other].spin) == 0.0;
+                    supported[groups[body]] |= still;
+                    if !still || !valid[other] {
+                        quiet[groups[body]] = 0;
+                    }
+                }
+                if materials[body][1] + materials[other][1] == 0.0 {
+                    quiet[groups[body]] = 0;
+                }
+            }
+        }
+
+        let mut impulses = Vec::new();
+        let mut reused = vec![false; previous.len()];
+        for constraint in constraints {
+            let a = &entries[constraint.a];
+            let b = &entries[constraint.b];
+            let pair = &pairs[constraint.pair];
+            let mass_unit = contact_mass_unit(constraint.a, constraint.b);
+            // Sweeps use the contact surfaces at impact. End-of-frame centers
+            // can be far beyond those surfaces and invent large torque arms.
+            let impact = constraint.swept.then(|| {
+                let closing = -vec_dot(vec_sub(a.velocity, b.velocity), constraint.normal);
+                let remaining = if closing > 0.0 {
+                    (constraint.depth / closing).clamp(0.0, 1.0)
+                } else {
+                    0.0
+                };
+                [a, b].map(|entry| {
+                    let mut entry = entry.clone();
+                    let offset = vec_mul(entry.velocity, -remaining);
+                    for axis in 0..3 {
+                        entry.world.data[axis][3] += component(offset, axis);
+                    }
+                    entry.inverse = entry.world.inverse_value();
+                    entry.aabb.min = vec_add(entry.aabb.min, offset);
+                    entry.aabb.max = vec_add(entry.aabb.max, offset);
+                    entry
+                })
+            });
+            let (a, b) = impact
+                .as_ref()
+                .map_or((a, b), |entries| (&entries[0], &entries[1]));
+            let point = *rc_ref!(&rc_ref!(&pair.contact_a).point);
+            let depth = if constraint.swept {
+                0.0
+            } else {
+                constraint.depth
+            };
+            let points = Self::contact_patch(a, b, constraint.normal, point, depth);
+            let key = (std::rc::Rc::as_ptr(&a.node), std::rc::Rc::as_ptr(&b.node));
+            let old_range = old_pairs.get(&key).cloned().unwrap_or(0..0);
+
+            let restitution = rc_ref!(&a.collider)
+                .restitution
+                .max(rc_ref!(&b.collider).restitution);
+            let support_speed = if restitution > 0.0
+                && poses_valid[constraint.a]
+                && poses_valid[constraint.b]
+                && old_range.clone().any(|i| {
+                    vec_dot(previous[i].normal, constraint.normal) > 0.99
+                        && vec_dot(previous[i].impulse, previous[i].normal) > 0.0
+                }) {
+                let old_a = old_bodies[constraint.a].unwrap();
+                let old_b = old_bodies[constraint.b].unwrap();
+                let input = vec_sub(bodies[constraint.a].velocity, bodies[constraint.b].velocity);
+                let output = vec_sub(old_a.output_velocity, old_b.output_velocity);
+                let acceleration = vec_sub(input, output);
+                let previous_acceleration = vec_sub(old_a.acceleration, old_b.acceleration);
+                let speed = -vec_dot(acceleration, constraint.normal);
+                let previous_speed = -vec_dot(previous_acceleration, constraint.normal);
+                let tolerance = 32.0
+                    * f32::EPSILON
+                    * (vec_len(bodies[constraint.a].velocity)
+                        + vec_len(bodies[constraint.b].velocity)
+                        + vec_len(old_a.output_velocity)
+                        + vec_len(old_b.output_velocity)
+                        + vec_len(old_a.acceleration)
+                        + vec_len(old_b.acceleration))
+                    + 1e-6;
+                let change = speed - previous_speed;
+                let previous_input = vec_sub(old_a.velocity, old_b.velocity);
+                let previous_output = vec_sub(previous_input, previous_acceleration);
+                let output_change = vec_dot(vec_sub(output, previous_output), constraint.normal);
+                // With constant force and velocity damping, the acceleration
+                // change opposes, and cannot exceed, the prior velocity change.
+                let repeated = change.abs() <= tolerance
+                    || (change * output_change >= 0.0
+                        && change.abs() <= output_change.abs() + tolerance);
+                if repeated {
+                    // One explicit velocity change must not become the next
+                    // frame's estimate of the ordinary supporting force.
+                    let older_speed = -vec_dot(
+                        vec_sub(old_a.previous_acceleration, old_b.previous_acceleration),
+                        constraint.normal,
+                    );
+                    speed.min(previous_speed).min(older_speed).max(0.0)
+                } else {
+                    0.0
+                }
+            } else {
+                0.0
+            };
+            let friction = ((rc_ref!(&a.collider).friction + rc_ref!(&b.collider).friction) * 0.5)
+                .clamp(0.0, 1.0);
+            let mut matched = false;
+            for point in points {
+                let anchors = [
+                    a.inverse.mul_vec_value(&point),
+                    b.inverse.mul_vec_value(&point),
+                ];
+                let size = *rc_ref!(&rc_ref!(&a.collider).size);
+                let other_size = *rc_ref!(&rc_ref!(&b.collider).size);
+                let scale = [
+                    size.x.abs(),
+                    size.y.abs(),
+                    size.z.abs(),
+                    rc_ref!(&a.collider).radius,
+                    other_size.x.abs(),
+                    other_size.y.abs(),
+                    other_size.z.abs(),
+                    rc_ref!(&b.collider).radius,
+                ]
+                .into_iter()
+                .filter(|v| *v > 0.0)
+                .fold(f32::INFINITY, f32::min);
+                let tolerance = (scale * 0.02).max(0.001);
+                let warm = old_range
+                    .clone()
+                    .filter(|index| {
+                        !reused[*index]
+                            && vec_dot(previous[*index].normal, constraint.normal) > 0.99
+                    })
+                    .map(|index| (index, &previous[index]))
+                    .filter_map(|(index, old)| {
+                        let distance = vec_len_sq(vec_sub(old.anchors[0], anchors[0]))
+                            + vec_len_sq(vec_sub(old.anchors[1], anchors[1]));
+                        (distance < 2.0 * tolerance * tolerance).then_some((
+                            distance,
+                            index,
+                            old.impulse,
+                            old.mass_unit,
+                        ))
+                    })
+                    .min_by(|a, b| a.0.total_cmp(&b.0))
+                    .map_or(zero, |(_, index, impulse, old_mass_unit)| {
+                        let ratio = old_mass_unit / mass_unit;
+                        if !(1e-6..=1e6).contains(&ratio) {
+                            return zero;
+                        }
+                        reused[index] = true;
+                        matched = true;
+                        vec_mul(impulse, ratio)
+                    });
+                let normal_impulse = vec_dot(warm, constraint.normal).max(0.0);
+                let tangent_impulse = vec_sub(warm, vec_mul(constraint.normal, normal_impulse));
+
+                let ra = vec_sub(point, a.world.pos_value());
+                let rb = vec_sub(point, b.world.pos_value());
+                let relative = vec_sub(
+                    bodies[constraint.a].point_velocity(ra),
+                    bodies[constraint.b].point_velocity(rb),
+                );
+                let speed = vec_dot(relative, constraint.normal);
+                let normal = constraint.normal;
+                let axis = if normal.x.abs() < 0.577 {
+                    Vec3 {
+                        x: 1.0,
+                        y: 0.0,
+                        z: 0.0,
+                    }
+                } else {
+                    Vec3 {
+                        x: 0.0,
+                        y: 1.0,
+                        z: 0.0,
+                    }
+                };
+                let t0 = vec_cross(normal, axis);
+                let t0 = vec_mul(t0, 1.0 / vec_len(t0));
+                let t1 = vec_cross(normal, t0);
+                let directions = [normal, t0, t1];
+                let ba = &bodies[constraint.a];
+                let bb = &bodies[constraint.b];
+                let angular_a = directions.map(|d| ba.apply_inverse_inertia(vec_cross(ra, d)));
+                let angular_b = directions.map(|d| bb.apply_inverse_inertia(vec_cross(rb, d)));
+                let response = |i: usize| {
+                    vec_add(
+                        vec_mul(directions[i], ba.inverse_mass + bb.inverse_mass),
+                        vec_add(vec_cross(angular_a[i], ra), vec_cross(angular_b[i], rb)),
+                    )
+                };
+                let normal_k = vec_dot(normal, response(0));
+                let k00 = vec_dot(t0, response(1));
+                let k01 = vec_dot(t0, response(2));
+                let k11 = vec_dot(t1, response(2));
+                let determinant = k00 * k11 - k01 * k01;
+                let tangent_mass = if determinant > 0.0 {
+                    [k11 / determinant, -k01 / determinant, k00 / determinant]
+                } else {
+                    [0.0; 3]
+                };
+
+                let speed_tolerance = if support_speed > 0.0 {
+                    32.0 * f32::EPSILON
+                        * (vec_len(ba.velocity)
+                            + vec_len(bb.velocity)
+                            + vec_len(ba.spin) * vec_len(ra)
+                            + vec_len(bb.spin) * vec_len(rb)
+                            + support_speed)
+                        // Contact arms subtract world positions. Include that
+                        // rounding error before their normal speeds cancel.
+                        + 4.0 * f32::EPSILON
+                            * (vec_len(ba.spin) * (vec_len(point) + vec_len(a.world.pos_value()))
+                                + vec_len(bb.spin) * (vec_len(point) + vec_len(b.world.pos_value())))
+                        + 1e-6
+                } else {
+                    0.0
+                };
+                impulses.push(ContactImpulse {
+                    pair: constraint.pair,
+                    a: constraint.a,
+                    b: constraint.b,
+                    normal: constraint.normal,
+                    ra,
+                    rb,
+                    bounce: if constraint.depth < 0.0 {
+                        constraint.depth
+                    } else if support_speed > 0.0 && -speed <= support_speed + speed_tolerance {
+                        // Repeated normal acceleration is support, including
+                        // while rolling. A changed approach still rebounds.
+                        0.0
+                    } else {
+                        -speed.min(0.0) * restitution
+                    },
+                    friction,
+                    normal_impulse,
+                    tangent_impulse,
+                    tangents: [t0, t1],
+                    angular_a,
+                    angular_b,
+                    normal_mass: if normal_k > 0.0 { 1.0 / normal_k } else { 0.0 },
+                    tangent_mass,
+                    velocity_change: std::array::from_fn(|i| vec_len(response(i))),
+                });
+            }
+            if !matched {
+                quiet[groups[constraint.a]] = 0;
+                quiet[groups[constraint.b]] = 0;
+            }
+            for contact in [&pair.contact_a, &pair.contact_b] {
+                let mut contact = rc_mut!(contact);
+                contact.delta_velocity = Vec3::zero();
+                contact.delta_angular_velocity = Vec3::zero();
+            }
+        }
+
+        // Reuse the preceding support forces as the starting guess. The solver
+        // can subtract them again; this does not apply anything to user nodes.
+        for contact in &impulses {
+            let impulse = vec_add(
+                vec_mul(contact.normal, contact.normal_impulse),
+                contact.tangent_impulse,
+            );
+            bodies[contact.a].apply_impulse(contact.ra, impulse);
+            bodies[contact.b].apply_impulse(contact.rb, vec_mul(impulse, -1.0));
+        }
+
+        // Accumulate impulses at material contact points. Translation and spin
+        // share the same impulse, so neither can gain energy independently.
+        for iteration in 0..128 {
+            let mut largest_change = 0.0_f32;
+            for step in 0..impulses.len() {
+                let index = if iteration % 2 == 0 {
+                    step
+                } else {
+                    impulses.len() - 1 - step
+                };
+                let contact = &mut impulses[index];
+                let group = if bodies[contact.a].inverse_mass > 0.0 {
+                    groups[contact.a]
+                } else {
+                    groups[contact.b]
+                };
+                if quiet[group] >= 20 && supported[group] {
+                    continue;
+                }
+                let relative = vec_sub(
+                    bodies[contact.a].point_velocity(contact.ra),
+                    bodies[contact.b].point_velocity(contact.rb),
+                );
+                let next = (contact.normal_impulse
+                    + (contact.bounce - vec_dot(relative, contact.normal)) * contact.normal_mass)
+                    .max(0.0);
+                let delta = next - contact.normal_impulse;
+                contact.normal_impulse = next;
+                let impulse = vec_mul(contact.normal, delta);
+                bodies[contact.a].velocity = vec_add(
+                    bodies[contact.a].velocity,
+                    vec_mul(impulse, bodies[contact.a].inverse_mass),
+                );
+                bodies[contact.b].velocity = vec_sub(
+                    bodies[contact.b].velocity,
+                    vec_mul(impulse, bodies[contact.b].inverse_mass),
+                );
+                bodies[contact.a].spin =
+                    vec_add(bodies[contact.a].spin, vec_mul(contact.angular_a[0], delta));
+                bodies[contact.b].spin =
+                    vec_sub(bodies[contact.b].spin, vec_mul(contact.angular_b[0], delta));
+                largest_change = largest_change.max(delta.abs() * contact.velocity_change[0]);
+
+                let relative = vec_sub(
+                    bodies[contact.a].point_velocity(contact.ra),
+                    bodies[contact.b].point_velocity(contact.rb),
+                );
+                let x = vec_dot(relative, contact.tangents[0]);
+                let y = vec_dot(relative, contact.tangents[1]);
+                let [m00, m01, m11] = contact.tangent_mass;
+                let delta = vec_add(
+                    vec_mul(contact.tangents[0], -m00 * x - m01 * y),
+                    vec_mul(contact.tangents[1], -m01 * x - m11 * y),
+                );
+                let mut next = vec_add(contact.tangent_impulse, delta);
+                let limit = contact.friction * contact.normal_impulse;
+                let length = vec_len(next);
+                if length > limit {
+                    next = vec_mul(next, limit / length);
+                }
+                let delta = vec_sub(next, contact.tangent_impulse);
+                contact.tangent_impulse = next;
+                bodies[contact.a].velocity = vec_add(
+                    bodies[contact.a].velocity,
+                    vec_mul(delta, bodies[contact.a].inverse_mass),
+                );
+                bodies[contact.b].velocity = vec_sub(
+                    bodies[contact.b].velocity,
+                    vec_mul(delta, bodies[contact.b].inverse_mass),
+                );
+                let x = vec_dot(delta, contact.tangents[0]);
+                let y = vec_dot(delta, contact.tangents[1]);
+                bodies[contact.a].spin = vec_add(
+                    bodies[contact.a].spin,
+                    vec_add(
+                        vec_mul(contact.angular_a[1], x),
+                        vec_mul(contact.angular_a[2], y),
+                    ),
+                );
+                bodies[contact.b].spin = vec_sub(
+                    bodies[contact.b].spin,
+                    vec_add(
+                        vec_mul(contact.angular_b[1], x),
+                        vec_mul(contact.angular_b[2], y),
+                    ),
+                );
+                largest_change = largest_change.max(
+                    x.abs() * contact.velocity_change[1] + y.abs() * contact.velocity_change[2],
+                );
+            }
+            if largest_change < 1e-6 {
+                break;
+            }
+        }
+
+        for (i, body) in bodies.iter().enumerate() {
+            if body.inverse_mass == 0.0 {
+                continue;
+            }
+            let tolerance = entries[i].margin;
+            let radius = vec_len(vec_sub(entries[i].aabb.max, entries[i].aabb.min)) * 0.5;
+            if vec_len(body.velocity) + radius * vec_len(body.spin) > tolerance {
+                quiet[groups[i]] = 0;
+            }
+        }
+
+        let mut next_cache = Vec::with_capacity(impulses.len());
+        for impulse in impulses {
+            let pair = &pairs[impulse.pair];
+            let momentum = vec_add(
+                vec_mul(impulse.normal, impulse.normal_impulse),
+                impulse.tangent_impulse,
+            );
+            next_cache.push(CachedContact {
+                nodes: [
+                    std::rc::Rc::downgrade(&entries[impulse.a].node),
+                    std::rc::Rc::downgrade(&entries[impulse.b].node),
+                ],
+                anchors: [
+                    entries[impulse.a].inverse.mul_dir_value(&impulse.ra),
+                    entries[impulse.b].inverse.mul_dir_value(&impulse.rb),
+                ],
+                normal: impulse.normal,
+                impulse: momentum,
+                mass_unit: contact_mass_unit(impulse.a, impulse.b),
+            });
+            for (index, arm, sign, contact) in [
+                (impulse.a, impulse.ra, 1.0, &pair.contact_a),
+                (impulse.b, impulse.rb, -1.0, &pair.contact_b),
+            ] {
+                let body = &bodies[index];
+                let momentum = vec_mul(momentum, sign);
+                let dv = vec_mul(momentum, body.inverse_mass);
+                let spin = body.apply_inverse_inertia(vec_cross(arm, momentum));
+                let dw = vec_mul(
+                    Self::world_to_node_local_direction(&entries[index].node, spin),
+                    1.0_f32.to_degrees(),
+                );
+                let contact = rc_ref!(contact);
+                let mut velocity = rc_mut!(&contact.delta_velocity);
+                *velocity = vec_add(*velocity, dv);
+                let mut angular = rc_mut!(&contact.delta_angular_velocity);
+                *angular = vec_add(*angular, dw);
+            }
+        }
+
+        let mut resting = vec![false; entries.len()];
+        let mut next_bodies = Vec::with_capacity(entries.len());
+        for (i, entry) in entries.iter().enumerate() {
+            let quiet_frames = if supported[groups[i]] && entry.margin > 0.0 {
+                quiet[groups[i]].saturating_add(1).min(20)
+            } else {
+                0
+            };
+            resting[i] = quiet_frames >= 20;
+            next_bodies.push(CachedBody {
+                node: std::rc::Rc::downgrade(&entry.node),
+                world: entry.world,
+                velocity: initial_velocities[i].0,
+                spin: initial_velocities[i].1,
+                output_velocity: if resting[i] { zero } else { bodies[i].velocity },
+                acceleration: old_bodies[i].map_or(zero, |old| {
+                    vec_sub(initial_velocities[i].0, old.output_velocity)
+                }),
+                previous_acceleration: old_bodies[i].map_or(zero, |old| old.acceleration),
+                material: materials[i],
+                quiet_frames,
+                tolerance: entry.margin.max(0.001) * 0.1,
+                integrated: true,
+            });
+        }
+
+        // Resting is internal to the solver. A changed velocity, transform,
+        // material, support, or a new impact wakes the connected moving bodies.
+        // Callers still receive and apply their usual correction values.
+        for constraint in constraints {
+            let pair = &pairs[constraint.pair];
+            for (i, contact) in [
+                (constraint.a, &pair.contact_a),
+                (constraint.b, &pair.contact_b),
+            ] {
+                let mut contact = rc_mut!(contact);
+                if next_bodies[i].quiet_frames >= 20
+                    && old_bodies[i].is_some_and(|old| !old.integrated)
+                {
+                    contact.depth = 0.0;
+                }
+                let offset = vec_mul(*rc_ref!(&contact.normal), contact.depth);
+                for axis in 0..3 {
+                    next_bodies[i].world.data[axis][3] += component(offset, axis);
+                }
+                if !resting[i] {
+                    continue;
+                }
+                resting[i] = false;
+                let mut velocity = rc_mut!(&contact.delta_velocity);
+                *velocity = vec_sub(*velocity, bodies[i].velocity);
+                let correction = vec_mul(
+                    Self::world_to_node_local_direction(&entries[i].node, bodies[i].spin),
+                    1.0_f32.to_degrees(),
+                );
+                let mut spin = rc_mut!(&contact.delta_angular_velocity);
+                *spin = vec_sub(*spin, correction);
+            }
+        }
+
+        ContactCache {
+            contacts: next_cache,
+            bodies: next_bodies,
+        }
+    }
+
+    fn resolve_linear_velocities(
+        entries: &[ColliderEntry],
+        pairs: &[ContactPair],
+        constraints: &[ContactConstraint],
+    ) {
+        let zero = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let response = |constraint: &ContactConstraint, relative: Vec3, old: Vec3| {
+            let normal = constraint.normal;
+            let normal_speed = (vec_dot(old, normal) + constraint.depth.min(0.0)
+                - vec_dot(relative, normal))
+            .max(0.0);
+            let tangent = vec_sub(old, relative);
+            let tangent = vec_sub(tangent, vec_mul(normal, vec_dot(tangent, normal)));
+            let friction = ((rc_ref!(&entries[constraint.a].collider).friction
+                + rc_ref!(&entries[constraint.b].collider).friction)
+                * 0.5)
+                .clamp(0.0, 1.0);
+            let limit = friction * normal_speed;
+            let length = vec_len(tangent);
+            let tangent = if length > limit {
+                vec_mul(tangent, limit / length)
+            } else {
+                tangent
+            };
+            vec_add(vec_mul(normal, normal_speed), tangent)
+        };
+        let store = |constraint: &ContactConstraint, correction: Vec3| {
+            let pair = &pairs[constraint.pair];
+            *rc_mut!(&rc_ref!(&pair.contact_a).delta_velocity) =
+                vec_mul(correction, constraint.shares.0);
+            *rc_mut!(&rc_ref!(&pair.contact_b).delta_velocity) =
+                vec_mul(correction, -constraint.shares.1);
+        };
+        if let [constraint] = constraints {
+            let relative = vec_sub(
+                entries[constraint.a].velocity,
+                entries[constraint.b].velocity,
+            );
+            store(constraint, response(constraint, relative, zero));
+            return;
+        }
+
+        let mut velocities: Vec<_> = entries.iter().map(|entry| entry.velocity).collect();
+        let mut corrections = vec![zero; constraints.len()];
+        for iteration in 0..128 {
+            let mut largest_change = 0.0_f32;
+            for step in 0..constraints.len() {
+                let i = if iteration % 2 == 0 {
+                    step
+                } else {
+                    constraints.len() - 1 - step
+                };
+                let constraint = &constraints[i];
+                let relative = vec_sub(velocities[constraint.a], velocities[constraint.b]);
+                let next = response(constraint, relative, corrections[i]);
+                let change = vec_sub(next, corrections[i]);
+                corrections[i] = next;
+                velocities[constraint.a] = vec_add(
+                    velocities[constraint.a],
+                    vec_mul(change, constraint.shares.0),
+                );
+                velocities[constraint.b] = vec_sub(
+                    velocities[constraint.b],
+                    vec_mul(change, constraint.shares.1),
+                );
+                largest_change = largest_change.max(vec_len_sq(change));
+            }
+            if largest_change < 1e-12 {
+                break;
+            }
+        }
+
+        for (constraint, correction) in constraints.iter().zip(corrections) {
+            store(constraint, correction);
+        }
+    }
+
+    fn contact_patch(
+        a: &ColliderEntry,
+        b: &ColliderEntry,
+        normal: Vec3,
+        point: Vec3,
+        depth: f32,
+    ) -> Vec<Vec3> {
+        let scale = a
+            .aabb
+            .max
+            .x
+            .abs()
+            .max(a.aabb.max.y.abs())
+            .max(a.aabb.max.z.abs())
+            .max(1.0);
+        let tolerance = (scale * f32::EPSILON * 8.0)
+            .max(0.001)
+            .max(a.margin.max(b.margin));
+        if let Some(points) = Self::box_contact_patch(a, b, normal, tolerance)
+            .or_else(|| Self::mesh_contact_patch(a, b, normal, point, tolerance))
+            .or_else(|| Self::mesh_contact_patch(b, a, normal, point, tolerance))
+            .or_else(|| Self::capsule_mesh_contact_patch(a, b, normal, point, tolerance))
+            .or_else(|| {
+                Self::capsule_mesh_contact_patch(b, a, vec_mul(normal, -1.0), point, tolerance)
+            })
+        {
+            if !points.is_empty() {
+                return reduce_contact_patch(points, normal, tolerance);
+            }
+        }
+
+        let mut points = Vec::new();
+        for (entry, other, sign) in [(a, b, -1.0), (b, a, 1.0)] {
+            let collider = rc_ref!(&entry.collider);
+            if collider.mesh.is_some() {
+                continue;
+            }
+            let outward = vec_mul(normal, sign);
+            let radius = collider.radius.max(0.0);
+            let size = *rc_ref!(&collider.size);
+            let mut vertices = Vec::new();
+            match classify_shape(size, radius) {
+                ColliderShape::Sphere { r } => {
+                    vertices.push(vec_add(entry.world.pos_value(), vec_mul(outward, r)));
+                }
+                ColliderShape::Capsule { half_h, r } => {
+                    for y in [-half_h, half_h] {
+                        vertices.push(vec_add(
+                            entry.world.mul_vec_value(&Vec3 { x: 0.0, y, z: 0.0 }),
+                            vec_mul(outward, r),
+                        ));
+                    }
+                    // A long capsule can contact the middle of a shorter box:
+                    // neither capsule endpoint nor a box corner lies on that
+                    // contact line. Clip its ends to the box instead of using
+                    // one arbitrary point and tipping a centered impact.
+                    let direction = vec_sub(vertices[1], vertices[0]);
+                    let other_collider = rc_ref!(&other.collider);
+                    if other_collider.mesh.is_none()
+                        && vec_dot(direction, normal).abs() <= tolerance
+                    {
+                        if let ColliderShape::RoundedBox { half, r } =
+                            classify_shape(*rc_ref!(&other_collider.size), other_collider.radius)
+                        {
+                            let ends = [vertices[0], vertices[1]].map(|vertex| {
+                                vec_sub(
+                                    vertex,
+                                    vec_mul(normal, vec_dot(vec_sub(vertex, point), normal)),
+                                )
+                            });
+                            for (start, end) in [(ends[0], ends[1]), (ends[1], ends[0])] {
+                                if !Self::contains_contact_point(other, start, tolerance) {
+                                    if let Some((_, p, _)) = ray_vs_rounded_box(
+                                        other.inverse.mul_vec_value(&start),
+                                        other.inverse.mul_dir_value(&vec_sub(end, start)),
+                                        half,
+                                        r + tolerance,
+                                        1.0,
+                                    ) {
+                                        vertices.push(other.world.mul_vec_value(&p));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                ColliderShape::RoundedBox { half, r } => {
+                    for x in [-half.x, half.x] {
+                        for y in [-half.y, half.y] {
+                            for z in [-half.z, half.z] {
+                                vertices.push(vec_add(
+                                    entry.world.mul_vec_value(&Vec3 { x, y, z }),
+                                    vec_mul(outward, r),
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            let support = vertices
+                .iter()
+                .map(|p| vec_dot(*p, outward))
+                .fold(f32::NEG_INFINITY, f32::max);
+            let tolerance = tolerance.max(
+                1e-4 * size
+                    .x
+                    .abs()
+                    .max(size.y.abs())
+                    .max(size.z.abs())
+                    .max(radius)
+                    .max(1.0),
+            );
+            let reach = depth.abs() + tolerance;
+            for vertex in vertices {
+                if support - vec_dot(vertex, outward) > reach {
+                    continue;
+                }
+                let projected = vec_sub(
+                    vertex,
+                    vec_mul(normal, vec_dot(vec_sub(vertex, point), normal)),
+                );
+                let candidate = if rc_ref!(&other.collider).mesh.is_some() {
+                    let origin = vec_sub(vertex, vec_mul(outward, reach));
+                    Self::ray_vs_mesh_collider(
+                        origin,
+                        outward,
+                        &other.world,
+                        &other.collider,
+                        reach * 2.0,
+                    )
+                    .filter(|(_, _, n)| vec_dot(*n, normal).abs() > 0.99)
+                    .map(|(_, p, _)| p)
+                } else if Self::contains_contact_point(other, projected, tolerance) {
+                    Some(projected)
+                } else {
+                    None
+                };
+                if let Some(candidate) = candidate {
+                    if points
+                        .iter()
+                        .all(|p| vec_len_sq(vec_sub(*p, candidate)) > tolerance * tolerance)
+                    {
+                        points.push(candidate);
+                    }
+                }
+            }
+        }
+
+        if points.is_empty() {
+            points.push(point);
+        }
+        points
+    }
+
+    fn box_contact_patch(
+        a: &ColliderEntry,
+        b: &ColliderEntry,
+        normal: Vec3,
+        tolerance: f32,
+    ) -> Option<Vec<Vec3>> {
+        let ca = rc_ref!(&a.collider);
+        let cb = rc_ref!(&b.collider);
+        if ca.mesh.is_some() || cb.mesh.is_some() {
+            return None;
+        }
+        let ColliderShape::RoundedBox { half: ha, r: ra } =
+            classify_shape(*rc_ref!(&ca.size), ca.radius)
+        else {
+            return None;
+        };
+        let ColliderShape::RoundedBox { half: hb, r: rb } =
+            classify_shape(*rc_ref!(&cb.size), cb.radius)
+        else {
+            return None;
+        };
+
+        let na = a.inverse.mul_dir_value(&normal);
+        let nb = b.inverse.mul_dir_value(&normal);
+        let axis_a = dominant_axis(na);
+        let axis_b = dominant_axis(nb);
+        let (reference, incident, half, radius, incident_half, incident_radius, outward) =
+            if component(na, axis_a).abs() >= component(nb, axis_b).abs() {
+                (a, b, ha, ra, hb, rb, vec_mul(normal, -1.0))
+            } else {
+                (b, a, hb, rb, ha, ra, normal)
+            };
+        let reference_inv = reference.inverse;
+        let local_normal = reference_inv.mul_dir_value(&outward);
+        let axis = dominant_axis(local_normal);
+        // A cross-edge separating axis has no reference face.
+        if component(local_normal, axis).abs() < 0.99 {
+            return None;
+        }
+
+        let sign = component(local_normal, axis).signum();
+        let direction = incident
+            .world
+            .inverse_value()
+            .mul_dir_value(&vec_mul(outward, -1.0));
+        let mut polygon: Vec<_> = box_face(incident_half, incident_radius, direction)
+            .into_iter()
+            .map(|p| reference_inv.mul_vec_value(&incident.world.mul_vec_value(&p)))
+            .collect();
+        for other in 0..3 {
+            if other == axis {
+                continue;
+            }
+            for side in [-1.0, 1.0] {
+                polygon =
+                    clip_contact_polygon(polygon, other, side, component(half, other) + radius);
+            }
+        }
+        polygon = clip_contact_polygon(
+            polygon,
+            axis,
+            sign,
+            component(half, axis) + radius + tolerance,
+        );
+
+        for point in &mut polygon {
+            let separation = sign * component(*point, axis) - component(half, axis) - radius;
+            let coordinate = component(*point, axis) - sign * separation * 0.5;
+            set_axis(point, axis, coordinate);
+            *point = reference.world.mul_vec_value(point);
+        }
+
+        Some(polygon)
+    }
+
+    fn mesh_contact_patch(
+        body: &ColliderEntry,
+        terrain: &ColliderEntry,
+        normal: Vec3,
+        point: Vec3,
+        tolerance: f32,
+    ) -> Option<Vec<Vec3>> {
+        let collider = rc_ref!(&body.collider);
+        if collider.mesh.is_some() {
+            return None;
+        }
+        let ColliderShape::RoundedBox { half, r } =
+            classify_shape(*rc_ref!(&collider.size), collider.radius)
+        else {
+            return None;
+        };
+        let mesh = rc_ref!(&terrain.collider).mesh.clone()?;
+        let inverse = body.inverse;
+        let query = transform_aabb_to_local(&terrain.inverse, &body.aabb);
+        let mesh = rc_ref!(&mesh);
+        let mut points = Vec::new();
+        mesh.with_collision_bvh(|bvh| {
+            bvh.query_aabb(&query, |indices| {
+                let vertices = indices
+                    .map(|index| terrain.world.mul_vec_value(&bvh.positions[index as usize]));
+                let face = vec_cross(
+                    vec_sub(vertices[1], vertices[0]),
+                    vec_sub(vertices[2], vertices[0]),
+                );
+                let Some(face_normal) = normalize_axis(face) else {
+                    return;
+                };
+                if vec_dot(face_normal, normal).abs() < 0.999
+                    || vec_dot(vec_sub(vertices[0], point), normal).abs() > tolerance
+                {
+                    return;
+                }
+                let mut polygon: Vec<_> = vertices
+                    .into_iter()
+                    .map(|p| inverse.mul_vec_value(&p))
+                    .collect();
+                for axis in 0..3 {
+                    for sign in [-1.0, 1.0] {
+                        polygon = clip_contact_polygon(
+                            polygon,
+                            axis,
+                            sign,
+                            component(half, axis) + r + tolerance,
+                        );
+                    }
+                }
+                for p in polygon {
+                    let p = body.world.mul_vec_value(&p);
+                    if points
+                        .iter()
+                        .all(|q| vec_len_sq(vec_sub(*q, p)) > tolerance * tolerance)
+                    {
+                        points.push(p);
+                    }
+                }
+            });
+        });
+        Some(points)
+    }
+
+    fn capsule_mesh_contact_patch(
+        body: &ColliderEntry,
+        terrain: &ColliderEntry,
+        normal: Vec3,
+        point: Vec3,
+        tolerance: f32,
+    ) -> Option<Vec<Vec3>> {
+        let collider = rc_ref!(&body.collider);
+        if collider.mesh.is_some() {
+            return None;
+        }
+        let ColliderShape::Capsule { half_h, r } =
+            classify_shape(*rc_ref!(&collider.size), collider.radius)
+        else {
+            return None;
+        };
+        let mesh = rc_ref!(&terrain.collider).mesh.clone()?;
+        let ends = [-half_h, half_h].map(|y| {
+            vec_sub(
+                body.world.mul_vec_value(&Vec3 { x: 0.0, y, z: 0.0 }),
+                vec_mul(normal, r),
+            )
+        });
+        let direction = vec_sub(ends[1], ends[0]);
+        if vec_dot(direction, normal).abs() > tolerance {
+            return None;
+        }
+        let ends = ends.map(|p| vec_sub(p, vec_mul(normal, vec_dot(vec_sub(p, point), normal))));
+        let direction = vec_sub(ends[1], ends[0]);
+        let query = transform_aabb_to_local(&terrain.inverse, &body.aabb);
+        let mut interval: Option<(f32, f32)> = None;
+        // The capsule can bridge several triangles with both end caps outside
+        // the platform. Keep the extreme supported points of its contact line.
+        rc_ref!(&mesh).with_collision_bvh(|bvh| {
+            bvh.query_aabb(&query, |indices| {
+                let vertices =
+                    indices.map(|i| terrain.world.mul_vec_value(&bvh.positions[i as usize]));
+                let Some(face_normal) = normalize_axis(vec_cross(
+                    vec_sub(vertices[1], vertices[0]),
+                    vec_sub(vertices[2], vertices[0]),
+                )) else {
+                    return;
+                };
+                if vec_dot(face_normal, normal).abs() < 0.999
+                    || vec_dot(vec_sub(vertices[0], point), normal).abs() > tolerance
+                {
+                    return;
+                }
+                let mut lo = 0.0_f32;
+                let mut hi = 1.0_f32;
+                for i in 0..3 {
+                    let edge = vec_sub(vertices[(i + 1) % 3], vertices[i]);
+                    let distances = ends
+                        .map(|p| vec_dot(vec_cross(edge, vec_sub(p, vertices[i])), face_normal));
+                    let epsilon = tolerance * vec_len(edge);
+                    let [a, b] = distances;
+                    if a < -epsilon && b < -epsilon {
+                        return;
+                    }
+                    if a < -epsilon {
+                        lo = lo.max(a / (a - b));
+                    }
+                    if b < -epsilon {
+                        hi = hi.min(a / (a - b));
+                    }
+                    if lo > hi {
+                        return;
+                    }
+                }
+                interval = Some(interval.map_or((lo, hi), |(a, b)| (a.min(lo), b.max(hi))));
+            });
+        });
+
+        interval.map(|(lo, hi)| {
+            vec![
+                vec_add(ends[0], vec_mul(direction, lo)),
+                vec_add(ends[0], vec_mul(direction, hi)),
+            ]
+        })
+    }
+
+    fn contains_contact_point(entry: &ColliderEntry, point: Vec3, tolerance: f32) -> bool {
+        let collider = rc_ref!(&entry.collider);
+        let p = entry.inverse.mul_vec_value(&point);
+        let shape = classify_shape(*rc_ref!(&collider.size), collider.radius.max(0.0));
+        let (distance, radius) = match shape {
+            ColliderShape::Sphere { r } => (vec_len(p), r),
+            ColliderShape::Capsule { half_h, r } => (
+                vec_len(Vec3 {
+                    x: p.x,
+                    y: p.y - p.y.clamp(-half_h, half_h),
+                    z: p.z,
+                }),
+                r,
+            ),
+            ColliderShape::RoundedBox { half, r } => (
+                vec_len(Vec3 {
+                    x: (p.x.abs() - half.x).max(0.0),
+                    y: (p.y.abs() - half.y).max(0.0),
+                    z: (p.z.abs() - half.z).max(0.0),
+                }),
+                r,
+            ),
+        };
+        distance <= radius + tolerance
+    }
+
+    // Update a detached snapshot; callers still apply the returned corrections
+    // to their nodes themselves, in notification order.
+    fn apply_contact_to_snapshot(world: &mut Mat4, velocity: &mut Vec3, contact: &RcContact) {
+        let contact = rc_ref!(contact);
+        let normal = rc_ref!(&contact.normal);
+        let mut push = Mat4::identity_value();
+        push.data[0][3] = normal.x * contact.depth;
+        push.data[1][3] = normal.y * contact.depth;
+        push.data[2][3] = normal.z * contact.depth;
+        *world = push.mul_mat_value(world);
+        let delta = rc_ref!(&contact.delta_velocity);
+        velocity.x += delta.x;
+        velocity.y += delta.y;
+        velocity.z += delta.z;
     }
 
     fn with_collider_entries<R>(
@@ -329,11 +1960,31 @@ impl Scene {
                     entries.push(ColliderEntry {
                         node: node.clone(),
                         world: *world,
+                        inverse: world.inverse_value(),
                         aabb: *aabb,
                         collider: collider.clone(),
                         velocity,
                         immovable: collider_ref.contact_mass() == 0.0,
                         trigger: collider_ref.trigger,
+                        margin: if collider_ref.rolls
+                            && !collider_ref.trigger
+                            && collider_ref.mesh.is_none()
+                        {
+                            let size = *rc_ref!(&collider_ref.size);
+                            let radius = collider_ref.radius.max(0.0);
+                            let scale = [size.x.abs(), size.y.abs(), size.z.abs()]
+                                .into_iter()
+                                .map(|s| s + radius * 2.0)
+                                .filter(|s| *s > 0.0)
+                                .fold(f32::INFINITY, f32::min);
+                            if scale.is_finite() {
+                                scale * 0.001
+                            } else {
+                                0.0
+                            }
+                        } else {
+                            0.0
+                        },
                     });
                 },
             );
@@ -428,10 +2079,22 @@ impl Scene {
         world_b: &Mat4,
         coll_b: &RcCollider,
         vel_b: Vec3,
-    ) -> Option<ContactGeom> {
+    ) -> Option<(ContactGeom, bool)> {
+        Self::narrow_phase_with_margin(world_a, coll_a, vel_a, world_b, coll_b, vel_b, 0.0)
+    }
+
+    fn narrow_phase_with_margin(
+        world_a: &Mat4,
+        coll_a: &RcCollider,
+        vel_a: Vec3,
+        world_b: &Mat4,
+        coll_b: &RcCollider,
+        vel_b: Vec3,
+        margin: f32,
+    ) -> Option<(ContactGeom, bool)> {
         use ColliderShape as S;
 
-        let (size_a, r_a, mesh_a) = {
+        let (size_a, mut r_a, mesh_a) = {
             let a = rc_ref!(coll_a);
             let size = *rc_ref!(&a.size);
             (size, a.radius.max(0.0), a.mesh.clone())
@@ -441,6 +2104,11 @@ impl Scene {
             let size = *rc_ref!(&b.size);
             (size, b.radius.max(0.0), b.mesh.clone())
         };
+
+        let r_b = r_b + if mesh_a.is_some() { margin } else { 0.0 };
+        if mesh_a.is_none() {
+            r_a += margin;
+        }
 
         // Normalize swapped solvers back to the b → a normal contract.
         let flip = |g: ContactGeom| ContactGeom {
@@ -461,7 +2129,7 @@ impl Scene {
                 return Self::narrow_phase_mesh_vs_shape(
                     world_a, &mesh, world_b, size_b, r_b, vel_b,
                 )
-                .map(flip);
+                .map(|(geom, swept)| (flip(geom), swept));
             }
             (None, Some(mesh)) => {
                 return Self::narrow_phase_mesh_vs_shape(
@@ -473,70 +2141,80 @@ impl Scene {
 
         let c_a = world_a.pos_value();
         let c_b = world_b.pos_value();
-        match (classify_shape(size_a, r_a), classify_shape(size_b, r_b)) {
-            (S::Sphere { r: ra }, S::Sphere { r: rb }) => sphere_vs_sphere(c_a, ra, c_b, rb)
-                .or_else(|| Self::swept_sphere_vs_sphere(c_a, ra, vel_a, c_b, rb, vel_b)),
-
+        let shapes = (classify_shape(size_a, r_a), classify_shape(size_b, r_b));
+        let overlap = match shapes {
+            (S::Sphere { r: ra }, S::Sphere { r: rb }) => sphere_vs_sphere(c_a, ra, c_b, rb),
             (S::Sphere { r: ra }, S::RoundedBox { half, r }) => {
-                // Normal box → sphere = b → a: no flip.
-                sphere_vs_rounded_obb(c_a, ra, world_b, half, r).or_else(|| {
-                    Self::swept_sphere_vs_rounded_obb(c_a, ra, vel_a, world_b, half, r, vel_b)
-                })
+                sphere_vs_rounded_obb(c_a, ra, world_b, half, r)
             }
             (S::RoundedBox { half, r }, S::Sphere { r: rb }) => {
-                sphere_vs_rounded_obb(c_b, rb, world_a, half, r)
-                    .or_else(|| {
-                        Self::swept_sphere_vs_rounded_obb(c_b, rb, vel_b, world_a, half, r, vel_a)
-                    })
-                    .map(flip)
+                sphere_vs_rounded_obb(c_b, rb, world_a, half, r).map(flip)
             }
-
             (S::Sphere { r: ra }, S::Capsule { half_h, r }) => {
-                // Normal capsule → sphere = b → a: no flip.
-                capsule_vs_sphere(world_b, half_h, r, c_a, ra).or_else(|| {
-                    Self::swept_sphere_vs_capsule(c_a, ra, vel_a, world_b, half_h, r, vel_b)
-                })
+                capsule_vs_sphere(world_b, half_h, r, c_a, ra)
             }
             (S::Capsule { half_h, r }, S::Sphere { r: rb }) => {
-                capsule_vs_sphere(world_a, half_h, r, c_b, rb)
-                    .or_else(|| {
-                        Self::swept_sphere_vs_capsule(c_b, rb, vel_b, world_a, half_h, r, vel_a)
-                    })
-                    .map(flip)
+                capsule_vs_sphere(world_a, half_h, r, c_b, rb).map(flip)
             }
-
             (S::Capsule { half_h: ha, r: ra }, S::Capsule { half_h: hb, r: rb }) => {
-                capsule_vs_capsule(world_a, ha, ra, world_b, hb, rb).or_else(|| {
-                    Self::swept_capsule_vs_capsule(world_a, ha, ra, vel_a, world_b, hb, rb, vel_b)
-                })
+                capsule_vs_capsule(world_a, ha, ra, world_b, hb, rb)
             }
-
             (S::Capsule { half_h, r }, S::RoundedBox { half, r: br }) => {
-                // Normal box → capsule = b → a: no flip.
-                capsule_vs_rounded_obb(world_a, half_h, r, world_b, half, br).or_else(|| {
-                    Self::swept_capsule_vs_rounded_obb(
-                        world_a, half_h, r, vel_a, world_b, half, br, vel_b,
-                    )
-                })
+                capsule_vs_rounded_obb(world_a, half_h, r, world_b, half, br)
             }
             (S::RoundedBox { half, r: br }, S::Capsule { half_h, r }) => {
-                capsule_vs_rounded_obb(world_b, half_h, r, world_a, half, br)
-                    .or_else(|| {
-                        Self::swept_capsule_vs_rounded_obb(
-                            world_b, half_h, r, vel_b, world_a, half, br, vel_a,
-                        )
-                    })
-                    .map(flip)
+                capsule_vs_rounded_obb(world_b, half_h, r, world_a, half, br).map(flip)
             }
-
             (S::RoundedBox { half: ha, r: ra }, S::RoundedBox { half: hb, r: rb }) => {
-                rounded_obb_vs_rounded_obb(world_a, ha, ra, world_b, hb, rb).or_else(|| {
-                    Self::swept_rounded_obb_vs_rounded_obb(
-                        world_a, ha, ra, vel_a, world_b, hb, rb, vel_b,
-                    )
-                })
+                rounded_obb_vs_rounded_obb(world_a, ha, ra, world_b, hb, rb)
+            }
+        };
+        // A body can finish on the far side while still overlapping. Preserve
+        // resting contacts, but use the entry face for a newly crossed solid.
+        let relative = vec_sub(vel_a, vel_b);
+        if overlap.is_some_and(|geom| {
+            vec_dot(relative, geom.normal) < 0.0 || vec_len_sq(relative) < 1e-12
+        }) {
+            return overlap.map(|geom| (geom, false));
+        }
+        match shapes {
+            (S::Sphere { r: ra }, S::Sphere { r: rb }) => {
+                Self::swept_sphere_vs_sphere(c_a, ra, vel_a, c_b, rb, vel_b)
+            }
+            (S::Sphere { r: ra }, S::RoundedBox { half, r }) => {
+                Self::swept_sphere_vs_rounded_obb(c_a, ra, vel_a, world_b, half, r, vel_b)
+            }
+            (S::RoundedBox { half, r }, S::Sphere { r: rb }) => {
+                Self::swept_sphere_vs_rounded_obb(c_b, rb, vel_b, world_a, half, r, vel_a).map(flip)
+            }
+            (S::Sphere { r: ra }, S::Capsule { half_h, r }) => {
+                Self::swept_sphere_vs_capsule(c_a, ra, vel_a, world_b, half_h, r, vel_b)
+            }
+            (S::Capsule { half_h, r }, S::Sphere { r: rb }) => {
+                Self::swept_sphere_vs_capsule(c_b, rb, vel_b, world_a, half_h, r, vel_a).map(flip)
+            }
+            (S::Capsule { half_h: ha, r: ra }, S::Capsule { half_h: hb, r: rb }) => {
+                Self::swept_capsule_vs_capsule(world_a, ha, ra, vel_a, world_b, hb, rb, vel_b)
+            }
+            (S::Capsule { half_h, r }, S::RoundedBox { half, r: br }) => {
+                Self::swept_capsule_vs_rounded_obb(
+                    world_a, half_h, r, vel_a, world_b, half, br, vel_b,
+                )
+            }
+            (S::RoundedBox { half, r: br }, S::Capsule { half_h, r }) => {
+                Self::swept_capsule_vs_rounded_obb(
+                    world_b, half_h, r, vel_b, world_a, half, br, vel_a,
+                )
+                .map(flip)
+            }
+            (S::RoundedBox { half: ha, r: ra }, S::RoundedBox { half: hb, r: rb }) => {
+                Self::swept_rounded_obb_vs_rounded_obb(
+                    world_a, ha, ra, vel_a, world_b, hb, rb, vel_b,
+                )
             }
         }
+        .map(|geom| (geom, true))
+        .or_else(|| overlap.map(|geom| (geom, false)))
     }
 
     // Continuous collision helpers
@@ -568,7 +2246,14 @@ impl Scene {
         let b = 2.0 * (d0.x * rel.x + d0.y * rel.y + d0.z * rel.z);
         let c = d0.x * d0.x + d0.y * d0.y + d0.z * d0.z - r_sum * r_sum;
         if c <= 0.0 {
-            return None;
+            let distance = vec_len(d0);
+            let normal = normalize_axis(d0)?;
+            let closing = -vec_dot(rel, normal);
+            return (closing > 1e-6).then(|| ContactGeom {
+                point: vec_add(vec_sub(c_b, vel_b), vec_mul(normal, r_b)),
+                normal,
+                depth: (r_sum - distance).max(0.0) + closing,
+            });
         }
         let disc = b * b - 4.0 * a * c;
         if disc < 0.0 {
@@ -612,7 +2297,7 @@ impl Scene {
         Some(ContactGeom {
             point,
             normal,
-            depth: 0.0,
+            depth: (-vec_dot(rel, normal) * (1.0 - toi)).max(0.0),
         })
     }
 
@@ -660,14 +2345,29 @@ impl Scene {
 
         ray_vs_aabb(previous_local, rel_local, &expanded, 1.0)?;
         // The expanded AABB is only a broad filter; its corners extend beyond
-        // the box's rounded boundary. Leave initial overlaps to discrete contact.
+        // the box's rounded boundary. A touching start still blocks approach.
         let offset = Vec3 {
             x: (previous_local.x.abs() - half.x).max(0.0),
             y: (previous_local.y.abs() - half.y).max(0.0),
             z: (previous_local.z.abs() - half.z).max(0.0),
         };
         if vec_len_sq(offset) <= reach * reach {
-            return None;
+            let core_point = Vec3 {
+                x: previous_local.x.clamp(-half.x, half.x),
+                y: previous_local.y.clamp(-half.y, half.y),
+                z: previous_local.z.clamp(-half.z, half.z),
+            };
+            let normal_local = normalize_axis(vec_sub(previous_local, core_point))?;
+            let normal = box_world.mul_dir_value(&normal_local);
+            let closing = -vec_dot(rel_vel, normal);
+            return (closing > 1e-6).then(|| ContactGeom {
+                point: vec_sub(
+                    box_world.mul_vec_value(&vec_add(core_point, vec_mul(normal_local, box_r))),
+                    box_vel,
+                ),
+                normal,
+                depth: (reach - vec_len(offset)).max(0.0) + closing,
+            });
         }
         let (toi, _, normal_local) =
             ray_vs_rounded_box(previous_local, rel_local, half, reach, 1.0)?;
@@ -689,7 +2389,7 @@ impl Scene {
         Some(ContactGeom {
             point,
             normal,
-            depth: 0.0,
+            depth: (-vec_dot(rel_vel, normal) * (1.0 - toi)).max(0.0),
         })
     }
 
@@ -729,6 +2429,17 @@ impl Scene {
         });
 
         let reach = r_sphere + cap_r.max(0.0);
+        let (_, on_axis) = closest_points_segment_segment(previous, previous, top, bot);
+        let offset = vec_sub(previous, on_axis);
+        if vec_len_sq(offset) <= reach * reach {
+            let normal = normalize_axis(offset)?;
+            let closing = -vec_dot(rel_vel, normal);
+            return (closing > 1e-6).then(|| ContactGeom {
+                point: vec_sub(vec_add(on_axis, vec_mul(normal, cap_r)), cap_vel),
+                normal,
+                depth: (reach - vec_len(offset)).max(0.0) + closing,
+            });
+        }
         let mut best = swept_sphere_vs_capsule_axis(previous, rel_vel, reach, cap_r, top, bot);
         for end in [top, bot] {
             if let Some((toi, mut geom)) = swept_sphere_vs_point(previous, rel_vel, reach, end) {
@@ -743,7 +2454,11 @@ impl Scene {
             }
         }
 
-        best.map(|(_, geom)| geom)
+        best.map(|(toi, mut geom)| {
+            geom.depth = (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom.point = vec_sub(geom.point, vec_mul(cap_vel, 1.0 - toi));
+            geom
+        })
     }
 
     fn swept_capsule_vs_capsule(
@@ -802,7 +2517,12 @@ impl Scene {
             top_b,
             bot_b,
         )
-        .map(|(_, geom)| geom)
+        .filter(|(_, geom)| vec_dot(rel_vel, geom.normal) < -1e-6)
+        .map(|(toi, mut geom)| {
+            geom.depth += (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom.point = vec_sub(geom.point, vec_mul(vel_b, 1.0 - toi));
+            geom
+        })
     }
 
     fn swept_capsule_vs_rounded_obb(
@@ -855,7 +2575,12 @@ impl Scene {
             half,
             box_world,
         )
-        .map(|(_, geom)| geom)
+        .filter(|(_, geom)| vec_dot(rel_vel, geom.normal) < -1e-6)
+        .map(|(toi, mut geom)| {
+            geom.depth += (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom.point = vec_sub(geom.point, vec_mul(box_vel, 1.0 - toi));
+            geom
+        })
     }
 
     fn swept_rounded_obb_vs_rounded_obb(
@@ -873,12 +2598,17 @@ impl Scene {
             y: vel_a.y - vel_b.y,
             z: vel_a.z - vel_b.z,
         };
-        swept_obb_vs_obb(world_a, half_a, r_a, rel_vel, world_b, half_b, r_b)
+        swept_obb_vs_obb(world_a, half_a, r_a, rel_vel, world_b, half_b, r_b).map(|mut geom| {
+            let closing = -vec_dot(rel_vel, geom.normal);
+            if closing > 0.0 {
+                geom.point = vec_sub(geom.point, vec_mul(vel_b, (geom.depth / closing).min(1.0)));
+            }
+            geom
+        })
     }
 
-    // Solves a dynamic shape against static mesh terrain: the overlap test
-    // first, then the swept fallback of the shape's family. The normal
-    // points from the mesh toward the shape.
+    // Keep ordinary overlap contacts stable. An overlap facing along the motion
+    // may be behind a crossed triangle; prefer the swept impact in that case.
     fn narrow_phase_mesh_vs_shape(
         world_mesh: &Mat4,
         mesh: &RcMesh,
@@ -886,38 +2616,42 @@ impl Scene {
         size_shape: Vec3,
         r_shape: f32,
         shape_vel: Vec3,
-    ) -> Option<ContactGeom> {
-        narrow_phase_mesh_vs_dynamic(world_mesh, mesh, world_shape, size_shape, r_shape)
-            .or_else(|| {
-                Self::swept_sphere_vs_mesh(
-                    world_mesh,
-                    mesh,
-                    world_shape,
-                    size_shape,
-                    r_shape,
-                    shape_vel,
-                )
-            })
-            .or_else(|| {
-                Self::swept_capsule_vs_mesh(
-                    world_mesh,
-                    mesh,
-                    world_shape,
-                    size_shape,
-                    r_shape,
-                    shape_vel,
-                )
-            })
-            .or_else(|| {
-                Self::swept_rounded_obb_vs_mesh(
-                    world_mesh,
-                    mesh,
-                    world_shape,
-                    size_shape,
-                    r_shape,
-                    shape_vel,
-                )
-            })
+    ) -> Option<(ContactGeom, bool)> {
+        let overlap =
+            narrow_phase_mesh_vs_dynamic(world_mesh, mesh, world_shape, size_shape, r_shape);
+        if overlap.is_some_and(|geom| vec_dot(shape_vel, geom.normal) <= 0.0) {
+            return overlap.map(|geom| (geom, false));
+        }
+        Self::swept_sphere_vs_mesh(
+            world_mesh,
+            mesh,
+            world_shape,
+            size_shape,
+            r_shape,
+            shape_vel,
+        )
+        .or_else(|| {
+            Self::swept_capsule_vs_mesh(
+                world_mesh,
+                mesh,
+                world_shape,
+                size_shape,
+                r_shape,
+                shape_vel,
+            )
+        })
+        .or_else(|| {
+            Self::swept_rounded_obb_vs_mesh(
+                world_mesh,
+                mesh,
+                world_shape,
+                size_shape,
+                r_shape,
+                shape_vel,
+            )
+        })
+        .map(|geom| (geom, true))
+        .or_else(|| overlap.map(|geom| (geom, false)))
     }
 
     fn swept_sphere_vs_mesh(
@@ -956,6 +2690,7 @@ impl Scene {
             },
         };
 
+        let tolerance = 4.0 * f32::EPSILON * (vec_len(previous) + r);
         let mesh_inv = world_mesh.inverse_value();
         let query_local = transform_aabb_to_local(&mesh_inv, &swept_world);
         let m = rc_ref!(mesh);
@@ -971,6 +2706,9 @@ impl Scene {
                 else {
                     return;
                 };
+                if !is_blocking_sweep(toi, &geom, rel_vel, tolerance) {
+                    return;
+                }
                 match best {
                     None => best = Some((toi, geom)),
                     Some((prev_toi, _)) if toi < prev_toi => best = Some((toi, geom)),
@@ -979,7 +2717,10 @@ impl Scene {
             });
         });
 
-        best.map(|(_, geom)| geom)
+        best.map(|(toi, mut geom)| {
+            geom.depth += (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom
+        })
     }
 
     fn swept_capsule_vs_mesh(
@@ -1033,6 +2774,7 @@ impl Scene {
             },
         };
 
+        let tolerance = 4.0 * f32::EPSILON * (vec_len(prev_top).max(vec_len(prev_bot)) + r);
         let mesh_inv = world_mesh.inverse_value();
         let query_local = transform_aabb_to_local(&mesh_inv, &swept_world);
         let m = rc_ref!(mesh);
@@ -1049,6 +2791,9 @@ impl Scene {
                 else {
                     return;
                 };
+                if !is_blocking_sweep(toi, &geom, rel_vel, tolerance) {
+                    return;
+                }
                 match best {
                     None => best = Some((toi, geom)),
                     Some((prev_toi, _)) if toi < prev_toi => best = Some((toi, geom)),
@@ -1057,7 +2802,10 @@ impl Scene {
             });
         });
 
-        best.map(|(_, geom)| geom)
+        best.map(|(toi, mut geom)| {
+            geom.depth = (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom
+        })
     }
 
     fn swept_rounded_obb_vs_mesh(
@@ -1079,6 +2827,9 @@ impl Scene {
 
         let corners = rounded_obb_corners(world_box, half);
         let swept_world = swept_points_aabb(&corners, rel_vel, r);
+        let tolerance = 4.0
+            * f32::EPSILON
+            * (vec_len(world_box.pos_value()) + vec_len(half) + r + vec_len(rel_vel));
         let mesh_inv = world_mesh.inverse_value();
         let query_local = transform_aabb_to_local(&mesh_inv, &swept_world);
         let m = rc_ref!(mesh);
@@ -1095,6 +2846,9 @@ impl Scene {
                 else {
                     return;
                 };
+                if !is_blocking_sweep(toi, &geom, rel_vel, tolerance) {
+                    return;
+                }
                 match best {
                     None => best = Some((toi, geom)),
                     Some((prev_toi, _)) if toi < prev_toi => best = Some((toi, geom)),
@@ -1103,7 +2857,10 @@ impl Scene {
             });
         });
 
-        best.map(|(_, geom)| geom)
+        best.map(|(toi, mut geom)| {
+            geom.depth = (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom
+        })
     }
 
     // Contact response
@@ -1111,10 +2868,8 @@ impl Scene {
     fn build_contact_pair(
         node_a: &RcNode,
         coll_a: &RcCollider,
-        vel_a: Vec3,
         node_b: &RcNode,
         coll_b: &RcCollider,
-        vel_b: Vec3,
         geom: ContactGeom,
     ) -> ContactPair {
         let a = rc_ref!(coll_a);
@@ -1123,12 +2878,47 @@ impl Scene {
         let mass_b = b.contact_mass();
         let trigger_a = a.trigger;
         let trigger_b = b.trigger;
-        let rolls_a = a.rolls;
-        let rolls_b = b.rolls;
-        let resti = a.restitution.max(b.restitution);
-        let frict = (a.friction + b.friction) * 0.5;
 
-        let (share_a, share_b) = if mass_a == 0.0 && mass_b == 0.0 {
+        let (share_a, share_b) = Self::contact_shares(mass_a, mass_b);
+
+        let zero = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let trigger_pair = trigger_a || trigger_b;
+        let depth_a = if trigger_pair {
+            0.0
+        } else {
+            geom.depth * share_a
+        };
+        let depth_b = if trigger_pair {
+            0.0
+        } else {
+            geom.depth * share_b
+        };
+        let contact_a = Contact::from_values(geom.point, geom.normal, depth_a, zero, zero);
+        let contact_b = Contact::from_values(
+            geom.point,
+            Vec3 {
+                x: -geom.normal.x,
+                y: -geom.normal.y,
+                z: -geom.normal.z,
+            },
+            depth_b,
+            zero,
+            zero,
+        );
+        ContactPair {
+            node_a: node_a.clone(),
+            node_b: node_b.clone(),
+            contact_a,
+            contact_b,
+        }
+    }
+
+    fn contact_shares(mass_a: f32, mass_b: f32) -> (f32, f32) {
+        if mass_a == 0.0 && mass_b == 0.0 {
             (0.0, 0.0)
         } else if mass_a == 0.0 {
             (0.0, 1.0)
@@ -1145,106 +2935,7 @@ impl Scene {
                 let scaled_total = scaled_a + scaled_b;
                 (scaled_b / scaled_total, scaled_a / scaled_total)
             }
-        };
-
-        let zero = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        let trigger_pair = trigger_a || trigger_b;
-        let (depth_a, dv_a, dav_a) = if trigger_pair {
-            (0.0, zero, zero)
-        } else {
-            Self::compute_deltas(geom, share_a, vel_a, vel_b, resti, frict, rolls_a, true)
-        };
-        let (depth_b, dv_b, dav_b) = if trigger_pair {
-            (0.0, zero, zero)
-        } else {
-            Self::compute_deltas(geom, share_b, vel_b, vel_a, resti, frict, rolls_b, false)
-        };
-        let dav_a = Self::world_to_node_local_direction(node_a, dav_a);
-        let dav_b = Self::world_to_node_local_direction(node_b, dav_b);
-
-        let contact_a = Contact::from_values(geom.point, geom.normal, depth_a, dv_a, dav_a);
-        let contact_b = Contact::from_values(
-            geom.point,
-            Vec3 {
-                x: -geom.normal.x,
-                y: -geom.normal.y,
-                z: -geom.normal.z,
-            },
-            depth_b,
-            dv_b,
-            dav_b,
-        );
-        ContactPair {
-            node_a: node_a.clone(),
-            node_b: node_b.clone(),
-            contact_a,
-            contact_b,
         }
-    }
-
-    fn compute_deltas(
-        geom: ContactGeom,
-        share: f32,
-        my_vel: Vec3,
-        other_vel: Vec3,
-        resti: f32,
-        frict: f32,
-        rolls: bool,
-        i_am_a: bool,
-    ) -> (f32, Vec3, Vec3) {
-        let zero = Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        };
-        if share == 0.0 {
-            return (0.0, zero, zero);
-        }
-
-        let depth = geom.depth * share;
-        let rel = Vec3 {
-            x: my_vel.x - other_vel.x,
-            y: my_vel.y - other_vel.y,
-            z: my_vel.z - other_vel.z,
-        };
-        let normal_sign = if i_am_a { 1.0 } else { -1.0 };
-        let n = Vec3 {
-            x: geom.normal.x * normal_sign,
-            y: geom.normal.y * normal_sign,
-            z: geom.normal.z * normal_sign,
-        };
-
-        let v_n = rel.x * n.x + rel.y * n.y + rel.z * n.z;
-        let impulse_n = if v_n < 0.0 {
-            -(1.0 + resti) * v_n * share
-        } else {
-            0.0
-        };
-
-        let tan_x = rel.x - v_n * n.x;
-        let tan_y = rel.y - v_n * n.y;
-        let tan_z = rel.z - v_n * n.z;
-        let frict_share = frict.clamp(0.0, 1.0) * share;
-        let dv = Vec3 {
-            x: n.x * impulse_n - tan_x * frict_share,
-            y: n.y * impulse_n - tan_y * frict_share,
-            z: n.z * impulse_n - tan_z * frict_share,
-        };
-
-        let dav = if rolls {
-            Vec3 {
-                x: tan_y * n.z - tan_z * n.y,
-                y: tan_z * n.x - tan_x * n.z,
-                z: tan_x * n.y - tan_y * n.x,
-            }
-        } else {
-            zero
-        };
-        (depth, dv, dav)
     }
 
     fn world_to_node_local_direction(node: &RcNode, direction: Vec3) -> Vec3 {
@@ -1867,6 +3558,164 @@ fn set_nearer_hit(best: &mut Option<(f32, Vec3, Vec3)>, hit: (f32, Vec3, Vec3)) 
     }
 }
 
+// Contact material and patch helpers
+
+fn contact_material(collider: &Collider) -> [f32; 8] {
+    let size = *rc_ref!(&collider.size);
+    [
+        collider.mass,
+        collider.friction,
+        collider.restitution,
+        collider.radius,
+        size.x,
+        size.y,
+        size.z,
+        f32::from(collider.rolls),
+    ]
+}
+
+fn dominant_axis(v: Vec3) -> usize {
+    let mut axis = 0;
+    for i in 1..3 {
+        if component(v, i).abs() > component(v, axis).abs() {
+            axis = i;
+        }
+    }
+    axis
+}
+
+fn box_face(half: Vec3, radius: f32, direction: Vec3) -> Vec<Vec3> {
+    let axis = dominant_axis(direction);
+    let u = (axis + 1) % 3;
+    let v = (axis + 2) % 3;
+    let mut points = Vec::with_capacity(4);
+    for (a, b) in [(-1.0, -1.0), (1.0, -1.0), (1.0, 1.0), (-1.0, 1.0)] {
+        let mut p = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        set_axis(
+            &mut p,
+            axis,
+            component(direction, axis).signum() * (component(half, axis) + radius),
+        );
+        set_axis(&mut p, u, a * component(half, u));
+        set_axis(&mut p, v, b * component(half, v));
+        points.push(p);
+    }
+    points
+}
+
+fn clip_contact_polygon(polygon: Vec<Vec3>, axis: usize, sign: f32, limit: f32) -> Vec<Vec3> {
+    let Some(mut previous) = polygon.last().copied() else {
+        return polygon;
+    };
+    let mut output = Vec::with_capacity(polygon.len() + 1);
+    let mut previous_distance = sign * component(previous, axis) - limit;
+    for current in polygon {
+        let distance = sign * component(current, axis) - limit;
+        if (distance <= 0.0) != (previous_distance <= 0.0) {
+            let fraction = previous_distance / (previous_distance - distance);
+            output.push(vec_add(
+                previous,
+                vec_mul(vec_sub(current, previous), fraction),
+            ));
+        }
+        if distance <= 0.0 {
+            output.push(current);
+        }
+        previous = current;
+        previous_distance = distance;
+    }
+    output
+}
+
+fn contact_group(groups: &[usize], mut index: usize) -> usize {
+    while groups[index] != index {
+        index = groups[index];
+    }
+    index
+}
+
+// Triangulation adds interior and collinear points without changing support.
+// Reduce the surface boundary first, so those points cannot replace its corners.
+fn reduce_contact_patch(mut points: Vec<Vec3>, normal: Vec3, tolerance: f32) -> Vec<Vec3> {
+    if points.len() <= 4 {
+        return points;
+    }
+    let axis = dominant_axis(normal);
+    let u = (axis + 1) % 3;
+    let v = (axis + 2) % 3;
+    points.sort_by(|a, b| {
+        component(*a, u)
+            .total_cmp(&component(*b, u))
+            .then_with(|| component(*a, v).total_cmp(&component(*b, v)))
+    });
+
+    let mut hull: Vec<Vec3> = Vec::with_capacity(points.len() * 2);
+    for reverse in [false, true] {
+        let first = hull.len();
+        for i in 0..points.len() {
+            let point = points[if reverse { points.len() - 1 - i } else { i }];
+            while hull.len() >= first + 2 {
+                let a = hull[hull.len() - 2];
+                let b = hull[hull.len() - 1];
+                let edge = vec_sub(b, a);
+                let next = vec_sub(point, b);
+                let area = component(edge, u) * component(next, v)
+                    - component(edge, v) * component(next, u);
+                if area > tolerance * vec_len(vec_sub(point, a)) {
+                    break;
+                }
+                hull.pop();
+            }
+            hull.push(point);
+        }
+        hull.pop();
+    }
+    points = hull;
+    if points.len() <= 4 {
+        return points;
+    }
+
+    let center = vec_mul(
+        points.iter().copied().fold(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            vec_add,
+        ),
+        1.0 / points.len() as f32,
+    );
+    let (first, _) = points
+        .iter()
+        .enumerate()
+        .max_by(|(_, a), (_, b)| {
+            vec_len_sq(vec_sub(**a, center)).total_cmp(&vec_len_sq(vec_sub(**b, center)))
+        })
+        .unwrap();
+    let mut result = vec![points.remove(first)];
+    while result.len() < 4 && !points.is_empty() {
+        let (index, _) = points
+            .iter()
+            .enumerate()
+            .map(|(i, point)| {
+                let nearest = result
+                    .iter()
+                    .map(|other| vec_len_sq(vec_sub(*point, *other)))
+                    .fold(f32::INFINITY, f32::min);
+                (i, nearest)
+            })
+            .max_by(|a, b| a.1.total_cmp(&b.1))
+            .unwrap();
+        result.push(points.remove(index));
+    }
+    result
+}
+
 // Mesh narrow-phase helpers
 
 // Mesh-vs-dynamic contact in world space, with the normal pointing toward the dynamic body.
@@ -2170,7 +4019,7 @@ fn refine_swept_segment_vs_segment(
         ContactGeom {
             point: vec_add(on_b, vec_mul(normal, target_radius)),
             normal,
-            depth: 0.0,
+            depth: (reach - vec_len(vec_sub(on_a, on_b))).max(0.0),
         },
     ))
 }
@@ -2260,7 +4109,7 @@ fn refine_swept_segment_vs_aabb(
         ContactGeom {
             point: box_world.mul_vec_value(&point_local),
             normal: box_world.mul_dir_value(&normal_local),
-            depth: 0.0,
+            depth: (reach - vec_len(vec_sub(on_seg, on_box))).max(0.0),
         },
     ))
 }
@@ -2393,7 +4242,7 @@ fn swept_obb_vs_obb(
         let axis_entry = t0.min(t1);
         let axis_exit = t0.max(t1);
 
-        if axis_entry > entry {
+        if axis_entry > entry || (entry_normal.is_none() && axis_entry == entry) {
             entry = axis_entry;
             let dist_at_entry = dist0 + speed * axis_entry;
             entry_normal = Some(if dist_at_entry >= 0.0 {
@@ -2416,9 +4265,8 @@ fn swept_obb_vs_obb(
         let points_at = |t: f32| pair.closest_points(vec_mul(velocity, t - 1.0));
         let (on_a, on_b) = points_at(entry);
         if vec_len_sq(vec_sub(on_a, on_b)) <= r_sum * r_sum {
-            // Preserve the sweep convention: an initially overlapping pair
-            // does not acquire a new entry contact while moving apart.
-            if entry == 0.0 {
+            // Initial contact blocks approach, but never an exit or a slide.
+            if entry == 0.0 && vec_dot(velocity, vec_sub(on_a, on_b)) >= 0.0 {
                 return None;
             }
         } else {
@@ -2475,10 +4323,14 @@ fn swept_obb_vs_obb(
         }
         let (on_a, on_b) = points_at(entry);
         let normal = normalized_or(vec_sub(on_a, on_b), vec_mul(velocity, -1.0))?;
+        let closing = -vec_dot(velocity, normal);
+        if closing <= 1e-6 {
+            return None;
+        }
         return Some(ContactGeom {
             point: vec_add(on_b, vec_mul(normal, r_b.max(0.0))),
             normal,
-            depth: 0.0,
+            depth: (r_sum - vec_len(vec_sub(on_a, on_b))).max(0.0) + closing * (1.0 - entry),
         });
     }
     let normal = entry_normal?;
@@ -2486,7 +4338,7 @@ fn swept_obb_vs_obb(
     Some(ContactGeom {
         point: vec_add(cb, vec_mul(normal, support_b)),
         normal,
-        depth: 0.0,
+        depth: (-vec_dot(velocity, normal) * (1.0 - entry)).max(0.0),
     })
 }
 
@@ -2734,6 +4586,14 @@ fn vec_len_sq(v: Vec3) -> f32 {
 
 // Swept-sphere intersection helpers
 
+// A zero-time hit already supports the body. Reconstructing its start point
+// and normal after sliding introduces coordinate rounding; that tiny correction
+// must not mask another triangle farther along the remaining motion.
+fn is_blocking_sweep(toi: f32, geom: &ContactGeom, velocity: Vec3, tolerance: f32) -> bool {
+    let closing = -vec_dot(velocity, geom.normal);
+    closing > 0.0 && (toi > 0.0 || geom.depth + closing > tolerance)
+}
+
 fn swept_sphere_vs_triangle(
     previous_center: Vec3,
     velocity: Vec3,
@@ -2742,6 +4602,14 @@ fn swept_sphere_vs_triangle(
     v1: Vec3,
     v2: Vec3,
 ) -> Option<(f32, ContactGeom)> {
+    let tolerance = 4.0 * f32::EPSILON * (vec_len(previous_center) + radius);
+    if let Some(mut contact) = sphere_vs_triangle(previous_center, radius + tolerance, v0, v1, v2) {
+        if vec_dot(velocity, contact.normal) >= 0.0 {
+            return None;
+        }
+        contact.depth = (contact.depth - tolerance).max(0.0);
+        return Some((0.0, contact));
+    }
     let mut best = swept_sphere_vs_triangle_face(previous_center, velocity, radius, v0, v1, v2);
     for (a, b) in [(v0, v1), (v1, v2), (v2, v0)] {
         if let Some(hit) = swept_sphere_vs_segment(previous_center, velocity, radius, a, b) {
@@ -2847,47 +4715,34 @@ fn swept_sphere_vs_segment(
     a: Vec3,
     b: Vec3,
 ) -> Option<(f32, ContactGeom)> {
-    let axis = Vec3 {
-        x: b.x - a.x,
-        y: b.y - a.y,
-        z: b.z - a.z,
-    };
-    let len_sq = axis.x * axis.x + axis.y * axis.y + axis.z * axis.z;
+    // A long mesh edge can dwarf the moving body. Keep the projection and
+    // quadratic in f64 so a tangential motion cannot become a false impact.
+    let coordinates = |v: Vec3| [f64::from(v.x), f64::from(v.y), f64::from(v.z)];
+    let start = coordinates(previous_center);
+    let motion = coordinates(velocity);
+    let origin = coordinates(a);
+    let end = coordinates(b);
+    let dot = |a: [f64; 3], b: [f64; 3]| a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    let axis = std::array::from_fn(|i| end[i] - origin[i]);
+    let len_sq = dot(axis, axis);
     if len_sq < 1e-12 {
         return swept_sphere_vs_point(previous_center, velocity, radius, a);
     }
 
     let len = len_sq.sqrt();
-    let u = Vec3 {
-        x: axis.x / len,
-        y: axis.y / len,
-        z: axis.z / len,
-    };
-    let rel = Vec3 {
-        x: previous_center.x - a.x,
-        y: previous_center.y - a.y,
-        z: previous_center.z - a.z,
-    };
-    let s0 = rel.x * u.x + rel.y * u.y + rel.z * u.z;
-    let sv = velocity.x * u.x + velocity.y * u.y + velocity.z * u.z;
-
-    let q0 = Vec3 {
-        x: rel.x - u.x * s0,
-        y: rel.y - u.y * s0,
-        z: rel.z - u.z * s0,
-    };
-    let qv = Vec3 {
-        x: velocity.x - u.x * sv,
-        y: velocity.y - u.y * sv,
-        z: velocity.z - u.z * sv,
-    };
-    let qa = qv.x * qv.x + qv.y * qv.y + qv.z * qv.z;
+    let unit: [f64; 3] = std::array::from_fn(|i| axis[i] / len);
+    let relative = std::array::from_fn(|i| start[i] - origin[i]);
+    let s0 = dot(relative, unit);
+    let sv = dot(motion, unit);
+    let q0 = std::array::from_fn(|i| relative[i] - unit[i] * s0);
+    let qv = std::array::from_fn(|i| motion[i] - unit[i] * sv);
+    let qa = dot(qv, qv);
     if qa < 1e-12 {
         return None;
     }
 
-    let qb = 2.0 * (q0.x * qv.x + q0.y * qv.y + q0.z * qv.z);
-    let qc = q0.x * q0.x + q0.y * q0.y + q0.z * q0.z - radius * radius;
+    let qb = 2.0 * dot(q0, qv);
+    let qc = dot(q0, q0) - f64::from(radius).powi(2);
     if qc <= 0.0 {
         return None;
     }
@@ -2896,10 +4751,9 @@ fn swept_sphere_vs_segment(
         return None;
     }
 
-    let sqrt_disc = disc.sqrt();
     for toi in [
-        (-qb - sqrt_disc) / (2.0 * qa),
-        (-qb + sqrt_disc) / (2.0 * qa),
+        (-qb - disc.sqrt()) / (2.0 * qa),
+        (-qb + disc.sqrt()) / (2.0 * qa),
     ] {
         if !(0.0..=1.0).contains(&toi) {
             continue;
@@ -2908,39 +4762,29 @@ fn swept_sphere_vs_segment(
         if s < -1e-5 || s > len + 1e-5 {
             continue;
         }
-
-        let point = Vec3 {
-            x: a.x + u.x * s.clamp(0.0, len),
-            y: a.y + u.y * s.clamp(0.0, len),
-            z: a.z + u.z * s.clamp(0.0, len),
-        };
-        let center = Vec3 {
-            x: previous_center.x + velocity.x * toi,
-            y: previous_center.y + velocity.y * toi,
-            z: previous_center.z + velocity.z * toi,
-        };
-
-        let nx = center.x - point.x;
-        let ny = center.y - point.y;
-        let nz = center.z - point.z;
-        let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
-        if nlen < 1e-12 {
+        let point: [f64; 3] = std::array::from_fn(|i| origin[i] + unit[i] * s.clamp(0.0, len));
+        let normal = std::array::from_fn(|i| start[i] + motion[i] * toi - point[i]);
+        let normal_len = dot(normal, normal).sqrt();
+        if normal_len < 1e-12 {
             continue;
         }
         return Some((
-            toi,
+            toi as f32,
             ContactGeom {
-                point,
+                point: Vec3 {
+                    x: point[0] as f32,
+                    y: point[1] as f32,
+                    z: point[2] as f32,
+                },
                 normal: Vec3 {
-                    x: nx / nlen,
-                    y: ny / nlen,
-                    z: nz / nlen,
+                    x: (normal[0] / normal_len) as f32,
+                    y: (normal[1] / normal_len) as f32,
+                    z: (normal[2] / normal_len) as f32,
                 },
                 depth: 0.0,
             },
         ));
     }
-
     None
 }
 
@@ -2952,112 +4796,9 @@ fn swept_sphere_vs_capsule_axis(
     a: Vec3,
     b: Vec3,
 ) -> Option<(f32, ContactGeom)> {
-    let axis = Vec3 {
-        x: b.x - a.x,
-        y: b.y - a.y,
-        z: b.z - a.z,
-    };
-    let len_sq = axis.x * axis.x + axis.y * axis.y + axis.z * axis.z;
-    if len_sq < 1e-12 {
-        let (toi, mut geom) = swept_sphere_vs_point(previous_center, velocity, reach, a)?;
-        geom.point = Vec3 {
-            x: a.x + geom.normal.x * capsule_radius,
-            y: a.y + geom.normal.y * capsule_radius,
-            z: a.z + geom.normal.z * capsule_radius,
-        };
-        return Some((toi, geom));
-    }
-
-    let len = len_sq.sqrt();
-    let u = Vec3 {
-        x: axis.x / len,
-        y: axis.y / len,
-        z: axis.z / len,
-    };
-    let rel = Vec3 {
-        x: previous_center.x - a.x,
-        y: previous_center.y - a.y,
-        z: previous_center.z - a.z,
-    };
-    let s0 = rel.x * u.x + rel.y * u.y + rel.z * u.z;
-    let sv = velocity.x * u.x + velocity.y * u.y + velocity.z * u.z;
-
-    let q0 = Vec3 {
-        x: rel.x - u.x * s0,
-        y: rel.y - u.y * s0,
-        z: rel.z - u.z * s0,
-    };
-    let qv = Vec3 {
-        x: velocity.x - u.x * sv,
-        y: velocity.y - u.y * sv,
-        z: velocity.z - u.z * sv,
-    };
-    let qa = qv.x * qv.x + qv.y * qv.y + qv.z * qv.z;
-    if qa < 1e-12 {
-        return None;
-    }
-
-    let qb = 2.0 * (q0.x * qv.x + q0.y * qv.y + q0.z * qv.z);
-    let qc = q0.x * q0.x + q0.y * q0.y + q0.z * q0.z - reach * reach;
-    if qc <= 0.0 {
-        return None;
-    }
-    let disc = qb * qb - 4.0 * qa * qc;
-    if disc < 0.0 {
-        return None;
-    }
-
-    let sqrt_disc = disc.sqrt();
-    for toi in [
-        (-qb - sqrt_disc) / (2.0 * qa),
-        (-qb + sqrt_disc) / (2.0 * qa),
-    ] {
-        if !(0.0..=1.0).contains(&toi) {
-            continue;
-        }
-        let s = s0 + sv * toi;
-        if s < -1e-5 || s > len + 1e-5 {
-            continue;
-        }
-
-        let axis_point = Vec3 {
-            x: a.x + u.x * s.clamp(0.0, len),
-            y: a.y + u.y * s.clamp(0.0, len),
-            z: a.z + u.z * s.clamp(0.0, len),
-        };
-        let center = Vec3 {
-            x: previous_center.x + velocity.x * toi,
-            y: previous_center.y + velocity.y * toi,
-            z: previous_center.z + velocity.z * toi,
-        };
-
-        let nx = center.x - axis_point.x;
-        let ny = center.y - axis_point.y;
-        let nz = center.z - axis_point.z;
-        let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
-        if nlen < 1e-12 {
-            continue;
-        }
-        let normal = Vec3 {
-            x: nx / nlen,
-            y: ny / nlen,
-            z: nz / nlen,
-        };
-        return Some((
-            toi,
-            ContactGeom {
-                point: Vec3 {
-                    x: axis_point.x + normal.x * capsule_radius,
-                    y: axis_point.y + normal.y * capsule_radius,
-                    z: axis_point.z + normal.z * capsule_radius,
-                },
-                normal,
-                depth: 0.0,
-            },
-        ));
-    }
-
-    None
+    let (toi, mut geom) = swept_sphere_vs_segment(previous_center, velocity, reach, a, b)?;
+    geom.point = vec_add(geom.point, vec_mul(geom.normal, capsule_radius));
+    Some((toi, geom))
 }
 
 fn swept_sphere_vs_point(
@@ -3171,6 +4912,108 @@ mod tests {
     }
 
     #[test]
+    fn test_contact_reduction_keeps_corners_when_triangles_split_edges() {
+        let corners = [
+            vec3(-8.0, 0.0, -3.0),
+            vec3(-8.0, 0.0, 3.0),
+            vec3(8.0, 0.0, 3.0),
+            vec3(8.0, 0.0, -3.0),
+        ];
+        for axis in 0..3 {
+            let rotate = |p: Vec3| match axis {
+                0 => p,
+                1 => vec3(p.y, p.z, p.x),
+                _ => vec3(p.z, p.x, p.y),
+            };
+            let expected = corners.map(rotate);
+            let mut points = expected.to_vec();
+            points.extend(
+                [
+                    vec3(0.0, 0.0, -3.0),
+                    vec3(0.0, 0.0, 3.0),
+                    vec3(0.0, 0.0, 0.0),
+                ]
+                .map(rotate),
+            );
+            for reverse in [false, true] {
+                if reverse {
+                    points.reverse();
+                }
+                for _ in 0..points.len() {
+                    points.rotate_left(1);
+                    let patch =
+                        reduce_contact_patch(points.clone(), rotate(vec3(0.0, 1.0, 0.0)), 0.006);
+                    assert_eq!(patch.len(), 4);
+                    assert!(expected.iter().all(|p| patch.contains(p)));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_mesh_triangulation_preserves_a_resting_stack() {
+        for (nx, nz, shift) in [(1, 1, 0.0), (6, 3, 0.0), (6, 3, 1.0)] {
+            let root = mesh_floor_root();
+            let floor = rc_ref!(&root).children[0].clone();
+            let collider = rc_ref!(&floor).collider.clone().unwrap();
+            let mesh = rc_ref!(&collider).mesh.clone().unwrap();
+            let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+            {
+                let mut primitive = rc_mut!(&primitive);
+                primitive.positions.clear();
+                primitive.indices.clear();
+                for x in 0..nx {
+                    for z in 0..nz {
+                        let x0 = -115.0 + 230.0 * x as f32 / nx as f32;
+                        let x1 = -115.0 + 230.0 * (x + 1) as f32 / nx as f32;
+                        let z0 = -80.0 + 230.0 * z as f32 / nz as f32;
+                        let z1 = -80.0 + 230.0 * (z + 1) as f32 / nz as f32;
+                        let i = primitive.positions.len() as i32 / 3;
+                        primitive
+                            .positions
+                            .extend([x0, 0.0, z0, x0, 0.0, z1, x1, 0.0, z1, x1, 0.0, z0]);
+                        primitive.indices.extend([i, i + 1, i + 2, i, i + 2, i + 3]);
+                    }
+                }
+            }
+
+            let mut bodies = Vec::new();
+            let mut starts = Vec::new();
+            for (size, radius, mass, pos) in [
+                ((16.0, 28.0, 6.0), 0.0, 0.5, (43.0, 14.0, 60.0)),
+                ((16.0, 28.0, 6.0), 0.0, 0.5, (81.0, 14.0, 60.0)),
+                ((56.0, 8.0, 20.0), 0.0, 2.0, (62.0, 32.0, 60.0)),
+                ((0.0, 0.0, 0.0), 8.0, 1.0, (62.0, 44.0, 60.0)),
+            ] {
+                let body = Node::new();
+                let start = vec3(pos.0 + shift, pos.1, pos.2);
+                place_at(&body, start.x, start.y, start.z);
+                let collider = box_family_collider(Vec3::new(size.0, size.1, size.2), radius, mass);
+                rc_mut!(&collider).rolls = true;
+                rc_mut!(&collider).friction = 0.2;
+                rc_mut!(&body).collider = Some(collider);
+                Node::add_child(&root, &body);
+                bodies.push(body);
+                starts.push(start);
+            }
+
+            for _ in 0..1800 {
+                advance_rigid_bodies(&root, &bodies);
+            }
+
+            for (body, start) in bodies.iter().zip(starts) {
+                let pos = Node::world_transform_value(body).pos_value();
+                assert!(
+                    vec_len(vec_sub(pos, start)) < 0.03,
+                    "nx={nx}, nz={nz}, shift={shift}, start={start:?}, pos={pos:?}"
+                );
+                let collider = rc_ref!(body).collider.clone().unwrap();
+                assert!(vec_len(*rc_ref!(&rc_ref!(&collider).velocity)) < 1e-5);
+            }
+        }
+    }
+
+    #[test]
     fn test_swept_rounded_obb_rejects_corner_gap_and_finds_later_contact() {
         let target = Mat4::identity_value();
         let half = vec3(1.0, 1.0, 1.0);
@@ -3183,9 +5026,10 @@ mod tests {
         };
         assert!(sweep(3.5).is_none());
         let contact = sweep(3.0).unwrap();
-        assert_eq!(contact.depth, 0.0);
+        assert!((contact.depth - (1.0 + 7.0 * 0.5_f32.sqrt())).abs() < 1e-4);
         assert_vec3_close(contact.normal, vec3(-0.5_f32.sqrt(), 0.5, 0.5));
         assert_vec3_close(contact.point, vec3(-1.0 - 0.5_f32.sqrt(), 1.5, 1.5));
+
         // The start can already be inside the expanded SAT projections
         // yet outside the actual rounding, before a later real entry.
         let mut end = target;
@@ -3195,6 +5039,7 @@ mod tests {
         let later =
             swept_obb_vs_obb(&end, half, 1.0, vec3(8.5, 0.0, 0.0), &target, half, 1.0).unwrap();
         assert_vec3_close(later.normal, contact.normal);
+
         // Endpoint touching is included by the swept test.
         end.data[0][3] = -4.0;
         end.data[1][3] = 0.0;
@@ -3226,6 +5071,7 @@ mod tests {
                 assert!(alignment >= 1.0 - 4.0 * f32::EPSILON);
             }
         }
+
         // A separating move from an initially overlapping pair is not
         // reported as a new swept entry; sharp boxes retain the old path.
         let mut end = target;
@@ -3336,6 +5182,639 @@ mod tests {
 
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
+    }
+
+    #[test]
+    fn test_mesh_corner_resolves_floor_and_wall_for_each_shape() {
+        for (size, radius, start, expected) in [
+            ((0.0, 0.0, 0.0), 0.5, (0.4, 0.3), (0.5, 0.5)),
+            ((0.0, 1.0, 0.0), 0.5, (0.4, 0.9), (0.5, 1.0)),
+            ((1.0, 1.0, 1.0), 0.0, (0.4, 0.3), (0.5, 0.5)),
+            ((1.0, 1.0, 1.0), 0.1, (0.5, 0.4), (0.6, 0.6)),
+        ] {
+            for reverse in [false, true] {
+                let root = mesh_corner_root();
+                let body = Node::new();
+                place_at(&body, start.0, start.1, 0.0);
+                let collider = box_family_collider(Vec3::new(size.0, size.1, size.2), radius, 1.0);
+                rc_mut!(&collider).friction = 0.0;
+                rc_mut!(&collider).velocity = Vec3::new(-0.2, -0.3, 0.4);
+                rc_mut!(&body).collider = Some(collider);
+                Node::add_child(&root, &body);
+                if reverse {
+                    rc_mut!(&root).children.reverse();
+                }
+
+                let pairs = Scene::detect_contacts(&root);
+                assert_eq!(pairs.len(), 2, "size={size:?}, radius={radius}");
+                let mut position = (start.0, start.1, 0.0);
+                let mut velocity = (-0.2, -0.3, 0.4);
+                for pair in pairs {
+                    let contact = if std::rc::Rc::ptr_eq(&pair.node_a, &body) {
+                        rc_ref!(&pair.contact_a)
+                    } else {
+                        rc_ref!(&pair.contact_b)
+                    };
+                    let normal = rc_ref!(&contact.normal);
+                    position.0 += normal.x * contact.depth;
+                    position.1 += normal.y * contact.depth;
+                    position.2 += normal.z * contact.depth;
+                    let delta = rc_ref!(&contact.delta_velocity);
+                    velocity.0 += delta.x;
+                    velocity.1 += delta.y;
+                    velocity.2 += delta.z;
+                }
+                assert!((position.0 - expected.0).abs() < 1e-5, "{position:?}");
+                assert!((position.1 - expected.1).abs() < 1e-5, "{position:?}");
+                assert!(position.2.abs() < 1e-5, "{position:?}");
+                assert!(
+                    velocity.0.abs() < 1e-5 && velocity.1.abs() < 1e-5,
+                    "{velocity:?}"
+                );
+                assert!((velocity.2 - 0.4).abs() < 1e-5, "{velocity:?}");
+                // Detection computes payloads without moving the node itself.
+                assert_eq!(Node::world_transform_value(&body).pos_value().x, start.0);
+                assert_eq!(Node::world_transform_value(&body).pos_value().y, start.1);
+            }
+        }
+    }
+
+    #[test]
+    fn test_stack_support_remains_stable_in_both_traversal_orders() {
+        for mesh_floor in [false, true] {
+            for reverse in [false, true] {
+                let root = if mesh_floor {
+                    mesh_floor_root()
+                } else {
+                    Node::new()
+                };
+                if !mesh_floor {
+                    let floor = Node::new();
+                    place_at(&floor, 0.0, -0.5, 0.0);
+                    rc_mut!(&floor).collider =
+                        Some(box_family_collider(Vec3::new(10.0, 1.0, 10.0), 0.0, 0.0));
+                    Node::add_child(&root, &floor);
+                }
+
+                let mut blocks = Vec::new();
+                for level in 0..4 {
+                    let block = Node::new();
+                    place_at(&block, 0.0, 0.5 + level as f32, 0.0);
+                    let collider = box_family_collider(Vec3::one(), 0.0, 1.0);
+                    rc_mut!(&collider).friction = 0.0;
+                    rc_mut!(&block).collider = Some(collider);
+                    Node::add_child(&root, &block);
+                    blocks.push(block);
+                }
+                if reverse {
+                    rc_mut!(&root).children.reverse();
+                }
+
+                for frame in 0..180 {
+                    for block in &blocks {
+                        let collider = rc_ref!(block).collider.clone().unwrap();
+                        let velocity = rc_ref!(&collider).velocity.clone();
+                        rc_mut!(&velocity).y -= 0.01;
+                    }
+                    Scene::integrate_motion(&root);
+                    let pairs = Scene::detect_contacts(&root);
+                    // Solver passes must not become duplicate collision callbacks.
+                    assert!(pairs.len() <= 4);
+                    for pair in pairs {
+                        for (node, contact) in [
+                            (&pair.node_a, &pair.contact_a),
+                            (&pair.node_b, &pair.contact_b),
+                        ] {
+                            let collider = rc_ref!(node).collider.clone().unwrap();
+                            let transform = rc_ref!(node).transform.clone();
+                            let velocity = rc_ref!(&collider).velocity.clone();
+                            Scene::apply_contact_to_snapshot(
+                                &mut rc_mut!(&transform),
+                                &mut rc_mut!(&velocity),
+                                contact,
+                            );
+                        }
+                    }
+                    if frame < 60 {
+                        continue;
+                    }
+                    for (level, block) in blocks.iter().enumerate() {
+                        let pos = Node::world_transform_value(block).pos_value();
+                        let collider = rc_ref!(block).collider.clone().unwrap();
+                        let velocity = *rc_ref!(&rc_ref!(&collider).velocity);
+                        assert!((pos.y - (0.5 + level as f32)).abs() < 0.003,
+                            "mesh={mesh_floor}, reverse={reverse}, frame={frame}, level={level}, y={}", pos.y);
+                        assert!(velocity.y.abs() < 0.003, "{velocity:?}");
+                    }
+                }
+            }
+        }
+    }
+
+    fn advance_rigid_bodies(root: &RcNode, bodies: &[RcNode]) {
+        advance_damped_rigid_bodies(root, bodies, 1.0, 1.0);
+    }
+
+    fn advance_damped_rigid_bodies(
+        root: &RcNode,
+        bodies: &[RcNode],
+        damping: f32,
+        angular_damping: f32,
+    ) {
+        for body in bodies {
+            let collider = rc_ref!(body).collider.clone().unwrap();
+            let velocity = rc_ref!(&collider).velocity.clone();
+            let mut velocity = rc_mut!(&velocity);
+            velocity.y -= 0.16;
+            *velocity = vec_mul(*velocity, damping);
+            let spin = rc_ref!(&collider).angular_velocity.clone();
+            let mut spin = rc_mut!(&spin);
+            *spin = vec_mul(*spin, angular_damping);
+        }
+        Scene::integrate_motion(root);
+        for pair in Scene::detect_contacts(root) {
+            for (node, contact) in [
+                (&pair.node_a, &pair.contact_a),
+                (&pair.node_b, &pair.contact_b),
+            ] {
+                let collider = rc_ref!(node).collider.clone().unwrap();
+                let transform = rc_ref!(node).transform.clone();
+                let velocity = rc_ref!(&collider).velocity.clone();
+                Scene::apply_contact_to_snapshot(
+                    &mut rc_mut!(&transform),
+                    &mut rc_mut!(&velocity),
+                    contact,
+                );
+                let spin = rc_ref!(&collider).angular_velocity.clone();
+                let value = vec_add(
+                    *rc_ref!(&spin),
+                    *rc_ref!(&rc_ref!(contact).delta_angular_velocity),
+                );
+                *rc_mut!(&spin) = value;
+            }
+        }
+    }
+
+    #[test]
+    fn test_capsule_resting_across_a_short_mesh_platform_does_not_tip() {
+        let root = mesh_floor_root();
+        let floor = rc_ref!(&root).children[0].clone();
+        let collider = rc_ref!(&floor).collider.clone().unwrap();
+        let mesh = rc_ref!(&collider).mesh.clone().unwrap();
+        let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+        for position in &mut rc_mut!(&primitive).positions {
+            *position *= 0.2;
+        }
+
+        let body = Node::new();
+        place_rotated_z_at(&body, 0.0, 1.0, 0.0, 90.0);
+        let collider = box_family_collider(Vec3::new(0.0, 4.0, 0.0), 1.0, 1.0);
+        rc_mut!(&collider).rolls = true;
+        rc_mut!(&body).collider = Some(collider.clone());
+        Node::add_child(&root, &body);
+
+        for _ in 0..600 {
+            advance_rigid_bodies(&root, std::slice::from_ref(&body));
+            let pos = Node::world_transform_value(&body).pos_value();
+            assert!(
+                vec_len(vec_sub(pos, vec3(0.0, 1.0, 0.0))) < 0.003,
+                "{pos:?}"
+            );
+            assert!(vec_len(*rc_ref!(&rc_ref!(&collider).angular_velocity)) < 0.001);
+        }
+    }
+
+    #[test]
+    fn test_restitution_bounces_impacts_but_not_continuing_support() {
+        let root = Node::new();
+        let floor = Node::new();
+        place_at(&floor, 0.0, -4.0, 0.0);
+        let collider = box_family_collider(Vec3::new(100.0, 8.0, 100.0), 0.0, 0.0);
+        rc_mut!(&collider).friction = 0.0;
+        rc_mut!(&floor).collider = Some(collider);
+        Node::add_child(&root, &floor);
+
+        let ball = Node::new();
+        place_at(&ball, 0.0, 40.0, 0.0);
+        let collider = sphere_collider(10.0, 1.0);
+        rc_mut!(&collider).rolls = true;
+        rc_mut!(&collider).friction = 0.0;
+        rc_mut!(&collider).restitution = 0.65;
+        rc_mut!(&ball).collider = Some(collider.clone());
+        Node::add_child(&root, &ball);
+
+        let mut bounced = false;
+        for _ in 0..600 {
+            advance_rigid_bodies(&root, std::slice::from_ref(&ball));
+            bounced |= rc_ref!(&rc_ref!(&collider).velocity).y > 0.1;
+        }
+        assert!(bounced);
+        assert!((Node::world_transform_value(&ball).pos_value().y - 10.0).abs() < 0.001);
+        assert!(vec_len(*rc_ref!(&rc_ref!(&collider).velocity)) < 1e-5);
+    }
+
+    #[test]
+    fn test_bouncy_bodies_roll_without_repeated_gravity_bounces() {
+        for (damping, angular_damping) in [(1.0, 1.0), (0.995, 0.98)] {
+            for capsule in [false, true] {
+                for slope in [-10.0, 0.0, 10.0] {
+                    let root = mesh_floor_root();
+                    let floor = rc_ref!(&root).children[0].clone();
+                    let terrain = rc_ref!(&floor).collider.clone().unwrap();
+                    let mesh = rc_ref!(&terrain).mesh.clone().unwrap();
+                    let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+                    for position in &mut rc_mut!(&primitive).positions {
+                        *position *= 2000.0;
+                    }
+                    let rotation = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 0.0, slope)));
+                    rc_mut!(&floor).transform = Mat4::from_rows(rotation.data);
+                    let normal = rotation.mul_dir_value(&vec3(0.0, 1.0, 0.0));
+                    let tangent = rotation.mul_dir_value(&vec3(1.0, 0.0, 0.0));
+
+                    let radius = 10.0;
+                    let body = Node::new();
+                    let size = if capsule {
+                        Vec3::new(0.0, 18.0, 0.0)
+                    } else {
+                        Vec3::zero()
+                    };
+                    let collider = box_family_collider(size, radius, 1.0);
+                    rc_mut!(&collider).rolls = true;
+                    rc_mut!(&collider).restitution = 0.65;
+                    rc_mut!(&collider).velocity = Vec3::new(tangent.x, tangent.y, tangent.z);
+                    let spin = (-1.0 / radius).to_degrees();
+                    rc_mut!(&collider).angular_velocity = if capsule {
+                        Vec3::new(0.0, spin, 0.0)
+                    } else {
+                        Vec3::new(0.0, 0.0, spin)
+                    };
+                    rc_mut!(&body).collider = Some(collider.clone());
+                    let mut pose = if capsule {
+                        *rc_ref!(&Mat4::from_euler(&vec3(90.0, 0.0, 0.0)))
+                    } else {
+                        Mat4::identity_value()
+                    };
+                    for axis in 0..3 {
+                        pose.data[axis][3] = component(normal, axis) * radius;
+                    }
+                    rc_mut!(&body).transform = Mat4::from_rows(pose.data);
+                    Node::add_child(&root, &body);
+
+                    for frame in 0..600 {
+                        advance_damped_rigid_bodies(
+                            &root,
+                            std::slice::from_ref(&body),
+                            damping,
+                            angular_damping,
+                        );
+                        if frame < 10 {
+                            continue;
+                        }
+                        let velocity = *rc_ref!(&rc_ref!(&collider).velocity);
+                        let normal_speed = vec_dot(velocity, normal);
+                        assert!(normal_speed.abs() < 0.001, "damping={damping}, capsule={capsule}, slope={slope}, frame={frame}, normal_speed={normal_speed}, pos={:?}, spin={:?}", Node::world_transform_value(&body).pos_value(), *rc_ref!(&rc_ref!(&collider).angular_velocity));
+                        let distance =
+                            vec_dot(Node::world_transform_value(&body).pos_value(), normal);
+                        assert!(
+                            (distance - radius).abs() < 0.003,
+                            "damping={damping}, capsule={capsule}, slope={slope}, frame={frame}, distance={distance}"
+                        );
+                    }
+
+                    // A new imposed approach is an impact, even without a frame
+                    // of separation from the preceding rolling contact.
+                    rc_mut!(&collider).velocity =
+                        Vec3::new(-2.0 * normal.x, -2.0 * normal.y, -2.0 * normal.z);
+                    advance_rigid_bodies(&root, std::slice::from_ref(&body));
+                    assert!(vec_dot(*rc_ref!(&rc_ref!(&collider).velocity), normal) > 1.0);
+
+                    // A new drop after relocating above the same floor must also bounce.
+                    let mut pose = Node::world_transform_value(&body);
+                    for axis in 0..3 {
+                        pose.data[axis][3] += component(normal, axis) * 30.0;
+                    }
+                    rc_mut!(&body).transform = Mat4::from_rows(pose.data);
+                    rc_mut!(&collider).velocity = Vec3::zero();
+                    let mut bounced = false;
+                    for _ in 0..100 {
+                        advance_rigid_bodies(&root, std::slice::from_ref(&body));
+                        let distance =
+                            vec_dot(Node::world_transform_value(&body).pos_value(), normal);
+                        if distance < radius + 0.01
+                            && vec_dot(*rc_ref!(&rc_ref!(&collider).velocity), normal) > 1.0
+                        {
+                            bounced = true;
+                        }
+                    }
+                    assert!(bounced, "capsule={capsule}, slope={slope}");
+
+                    Node::remove_child(&root, &floor);
+                    for _ in 0..60 {
+                        advance_rigid_bodies(&root, std::slice::from_ref(&body));
+                    }
+                    assert!(
+                        vec_dot(Node::world_transform_value(&body).pos_value(), normal) < -50.0
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_fast_sphere_stops_when_starting_in_mesh_contact() {
+        for (x, z) in [(0.0, 0.0), (5.0, 0.0), (5.0, -5.0)] {
+            for y in [1.0, 0.99] {
+                for restitution in [0.0, 0.65] {
+                    let root = mesh_floor_root();
+                    let ball = Node::new();
+                    place_at(&ball, x, y, z);
+                    let collider = sphere_collider(1.0, 1.0);
+                    rc_mut!(&collider).rolls = true;
+                    rc_mut!(&collider).restitution = restitution;
+                    rc_mut!(&collider).velocity = Vec3::new(0.0, -10.0, 0.0);
+                    rc_mut!(&ball).collider = Some(collider.clone());
+                    Node::add_child(&root, &ball);
+
+                    advance_rigid_bodies(&root, std::slice::from_ref(&ball));
+                    let pos = Node::world_transform_value(&ball).pos_value();
+                    let velocity = *rc_ref!(&rc_ref!(&collider).velocity);
+                    assert!(
+                        (pos.y - 1.0).abs() < 1e-4,
+                        "start=({x},{y},{z}), pos={pos:?}"
+                    );
+                    assert!(
+                        (velocity.y - 10.16 * restitution).abs() < 1e-4,
+                        "start=({x},{y},{z}), velocity={velocity:?}"
+                    );
+                    assert!(vec_len(*rc_ref!(&rc_ref!(&collider).angular_velocity)) < 1e-4);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_new_approach_after_a_large_impact_still_bounces() {
+        let root = Node::new();
+        let floor = Node::new();
+        place_at(&floor, 0.0, -4.0, 0.0);
+        rc_mut!(&floor).collider =
+            Some(box_family_collider(Vec3::new(100.0, 8.0, 100.0), 0.0, 0.0));
+        Node::add_child(&root, &floor);
+
+        let ball = Node::new();
+        place_at(&ball, 0.0, 10.0, 0.0);
+        let collider = sphere_collider(10.0, 1.0);
+        rc_mut!(&collider).rolls = true;
+        rc_mut!(&collider).restitution = 0.65;
+        rc_mut!(&collider).velocity = Vec3::new(0.0, -10.0, 0.0);
+        rc_mut!(&ball).collider = Some(collider.clone());
+        Node::add_child(&root, &ball);
+
+        advance_rigid_bodies(&root, std::slice::from_ref(&ball));
+        assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 6.0);
+        rc_mut!(&collider).velocity = Vec3::new(0.0, -2.0, 0.0);
+        advance_rigid_bodies(&root, std::slice::from_ref(&ball));
+        assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 1.0);
+
+        // An existing gravity history must not turn a large explicit approach
+        // into a supporting force that absorbs the following smaller impact.
+        for _ in 0..120 {
+            advance_rigid_bodies(&root, std::slice::from_ref(&ball));
+        }
+        rc_mut!(&collider).velocity = Vec3::new(0.0, -10.0, 0.0);
+        advance_rigid_bodies(&root, std::slice::from_ref(&ball));
+        assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 6.0);
+        rc_mut!(&collider).velocity = Vec3::new(0.0, -6.0, 0.0);
+        advance_rigid_bodies(&root, std::slice::from_ref(&ball));
+        assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 3.9);
+    }
+
+    #[test]
+    fn test_resting_stack_wakes_on_motion_impact_and_lost_support() {
+        let root = Node::new();
+        let floor = Node::new();
+        place_at(&floor, 0.0, -4.0, 0.0);
+        rc_mut!(&floor).collider =
+            Some(box_family_collider(Vec3::new(200.0, 8.0, 200.0), 0.0, 0.0));
+        Node::add_child(&root, &floor);
+
+        let mut bodies = Vec::new();
+        let mut starts = Vec::new();
+        for (size, radius, mass, pos) in [
+            ((16.0, 28.0, 6.0), 0.0, 0.5, (-19.0, 14.0, 0.0)),
+            ((16.0, 28.0, 6.0), 0.0, 0.5, (19.0, 14.0, 0.0)),
+            ((56.0, 8.0, 20.0), 0.0, 2.0, (0.0, 32.0, 0.0)),
+            ((0.0, 0.0, 0.0), 8.0, 1.0, (0.0, 44.0, 0.0)),
+        ] {
+            let body = Node::new();
+            place_at(&body, pos.0, pos.1, pos.2);
+            let collider = box_family_collider(Vec3::new(size.0, size.1, size.2), radius, mass);
+            rc_mut!(&collider).rolls = true;
+            rc_mut!(&collider).friction = 0.2;
+            rc_mut!(&body).collider = Some(collider);
+            Node::add_child(&root, &body);
+            bodies.push(body);
+            starts.push(vec3(pos.0, pos.1, pos.2));
+        }
+
+        for _ in 0..600 {
+            advance_rigid_bodies(&root, &bodies);
+        }
+        for (body, start) in bodies.iter().zip(&starts) {
+            let pos = Node::world_transform_value(body).pos_value();
+            assert!(
+                vec_len(vec_sub(pos, *start)) < 0.03,
+                "start={start:?}, pos={pos:?}"
+            );
+            let collider = rc_ref!(body).collider.clone().unwrap();
+            assert!(vec_len(*rc_ref!(&rc_ref!(&collider).velocity)) < 1e-5);
+        }
+
+        let resting: Vec<_> = bodies.iter().map(Node::world_transform_value).collect();
+        for _ in 0..2400 {
+            advance_rigid_bodies(&root, &bodies);
+        }
+        for (body, pose) in bodies.iter().zip(resting) {
+            assert_eq!(Node::world_transform_value(body).data, pose.data);
+        }
+
+        let ball = &bodies[3];
+        let collider = rc_ref!(ball).collider.clone().unwrap();
+        rc_mut!(&collider).velocity = Vec3::new(1.0, 1.0, 0.0);
+        advance_rigid_bodies(&root, &bodies);
+        let pos = Node::world_transform_value(ball).pos_value();
+        assert!(pos.x > 0.9 && pos.y > 44.5, "{pos:?}");
+
+        let shot = Node::new();
+        place_at(&shot, -42.0, 15.0, 0.0);
+        let collider = sphere_collider(8.0, 3.0);
+        rc_mut!(&collider).rolls = true;
+        rc_mut!(&collider).velocity = Vec3::new(8.0, 0.0, 0.0);
+        rc_mut!(&shot).collider = Some(collider);
+        Node::add_child(&root, &shot);
+        bodies.push(shot);
+        for _ in 0..10 {
+            advance_rigid_bodies(&root, &bodies);
+        }
+        assert!(
+            vec_len(vec_sub(
+                Node::world_transform_value(&bodies[0]).pos_value(),
+                starts[0]
+            )) > 1.0
+        );
+
+        Node::remove_child(&root, &floor);
+        for _ in 0..60 {
+            advance_rigid_bodies(&root, &bodies);
+        }
+        assert!(bodies
+            .iter()
+            .all(|body| Node::world_transform_value(body).pos_value().y < -50.0));
+    }
+
+    #[test]
+    fn test_rolling_capsules_support_a_loaded_plank_at_rest() {
+        for reverse in [false, true] {
+            let root = mesh_floor_root();
+            let floor = rc_ref!(&root).children[0].clone();
+            let floor_collider = rc_ref!(&floor).collider.clone().unwrap();
+            rc_mut!(&floor_collider).friction = 0.0;
+            let mesh = rc_ref!(&floor_collider).mesh.clone().unwrap();
+            let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+            rc_mut!(&primitive).positions = vec![
+                -96.0, 52.0, -112.0, -96.0, 52.0, -70.0, 96.0, 52.0, -70.0, 96.0, 52.0, -112.0,
+            ];
+            rc_mut!(&primitive).indices = vec![0, 1, 2, 0, 2, 3];
+
+            let mut bodies = Vec::new();
+            for (size, radius, mass, pos, angle) in [
+                ((0.0, 16.0, 0.0), 7.0, 2.0, (49.0, 59.0, -97.0), 90.0),
+                ((0.0, 16.0, 0.0), 7.0, 2.0, (49.0, 59.0, -81.0), 90.0),
+                ((56.0, 8.0, 20.0), 0.0, 2.0, (49.0, 70.0, -89.0), 0.0),
+                ((0.0, 0.0, 0.0), 8.0, 1.0, (39.0, 82.0, -89.0), 0.0),
+                ((0.0, 0.0, 0.0), 8.0, 1.0, (59.0, 82.0, -89.0), 0.0),
+            ] {
+                let body = Node::new();
+                place_rotated_z_at(&body, pos.0, pos.1, pos.2, angle);
+                let collider = box_family_collider(Vec3::new(size.0, size.1, size.2), radius, mass);
+                rc_mut!(&collider).rolls = true;
+                rc_mut!(&collider).friction = 0.2;
+                rc_mut!(&body).collider = Some(collider);
+                Node::add_child(&root, &body);
+                bodies.push((body, vec3(pos.0, pos.1, pos.2)));
+            }
+            if reverse {
+                rc_mut!(&root).children.reverse();
+            }
+
+            for frame in 0..600 {
+                for (body, _) in &bodies {
+                    let collider = rc_ref!(body).collider.clone().unwrap();
+                    let velocity = rc_ref!(&collider).velocity.clone();
+                    let spin = rc_ref!(&collider).angular_velocity.clone();
+                    rc_mut!(&velocity).y -= 0.16;
+                    let damped_velocity = vec_mul(*rc_ref!(&velocity), 0.995);
+                    let damped_spin = vec_mul(*rc_ref!(&spin), 0.98);
+                    *rc_mut!(&velocity) = damped_velocity;
+                    *rc_mut!(&spin) = damped_spin;
+                }
+                Scene::integrate_motion(&root);
+                for pair in Scene::detect_contacts(&root) {
+                    for (node, contact) in [
+                        (&pair.node_a, &pair.contact_a),
+                        (&pair.node_b, &pair.contact_b),
+                    ] {
+                        let collider = rc_ref!(node).collider.clone().unwrap();
+                        let transform = rc_ref!(node).transform.clone();
+                        let velocity = rc_ref!(&collider).velocity.clone();
+                        Scene::apply_contact_to_snapshot(
+                            &mut rc_mut!(&transform),
+                            &mut rc_mut!(&velocity),
+                            contact,
+                        );
+                        let spin = rc_ref!(&collider).angular_velocity.clone();
+                        let updated = vec_add(
+                            *rc_ref!(&spin),
+                            *rc_ref!(&rc_ref!(contact).delta_angular_velocity),
+                        );
+                        *rc_mut!(&spin) = updated;
+                    }
+                }
+                if frame >= 60 {
+                    for (body, start) in &bodies {
+                        let pos = Node::world_transform_value(body).pos_value();
+                        assert!(
+                            vec_len(vec_sub(pos, *start)) < 0.01,
+                            "reverse={reverse}, frame={frame}, start={start:?}, pos={pos:?}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_mesh_opposite_faces_do_not_amplify_position_corrections() {
+        for reverse in [false, true] {
+            let root = mesh_floor_root();
+            let floor = rc_ref!(&root).children[0].clone();
+            let collider = rc_ref!(&floor).collider.clone().unwrap();
+            let mesh = rc_ref!(&collider).mesh.clone().unwrap();
+            let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+            {
+                let mut primitive = rc_mut!(&primitive);
+                // A body wider than this opening cannot satisfy both exits.
+                primitive.positions.extend_from_slice(&[
+                    -5.0, 0.8, -5.0, 5.0, 0.8, -5.0, -5.0, 0.8, 5.0, 5.0, 0.8, 5.0,
+                ]);
+                primitive.indices.extend_from_slice(&[4, 5, 6, 5, 7, 6]);
+            }
+
+            let body = Node::new();
+            place_at(&body, 0.0, 0.3, 0.0);
+            rc_mut!(&body).collider = Some(box_family_collider(Vec3::new(1.0, 1.0, 1.0), 0.0, 1.0));
+            Node::add_child(&root, &body);
+            if reverse {
+                rc_mut!(&root).children.reverse();
+            }
+
+            let pairs = Scene::detect_contacts(&root);
+            assert_eq!(pairs.len(), 1);
+            let contact = if std::rc::Rc::ptr_eq(&pairs[0].node_a, &body) {
+                rc_ref!(&pairs[0].contact_a)
+            } else {
+                rc_ref!(&pairs[0].contact_b)
+            };
+            assert!((contact.depth - 0.2).abs() < 1e-5);
+            assert!(rc_ref!(&contact.normal).y > 0.99);
+        }
+    }
+
+    #[test]
+    fn test_mesh_corner_trigger_reports_once_without_correction() {
+        let root = mesh_corner_root();
+        let body = Node::new();
+        place_at(&body, 0.4, 0.3, 0.0);
+        rc_mut!(&body).collider = Some(trigger_sphere_collider(0.5, 1.0));
+        Node::add_child(&root, &body);
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        assert_eq!(rc_ref!(&pairs[0].contact_b).depth, 0.0);
+    }
+
+    fn mesh_corner_root() -> RcNode {
+        let root = mesh_floor_root();
+        let floor = rc_ref!(&root).children[0].clone();
+        let collider = rc_ref!(&floor).collider.clone().unwrap();
+        rc_mut!(&collider).friction = 0.0;
+        let mesh = rc_ref!(&collider).mesh.clone().unwrap();
+        let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+        let mut primitive = rc_mut!(&primitive);
+        primitive
+            .positions
+            .extend_from_slice(&[0.0, 0.0, -5.0, 0.0, 5.0, -5.0, 0.0, 0.0, 5.0, 0.0, 5.0, 5.0]);
+        primitive.indices.extend_from_slice(&[4, 5, 6, 5, 7, 6]);
+        root
     }
 
     #[test]
@@ -3488,6 +5967,259 @@ mod tests {
     }
 
     #[test]
+    fn test_swept_analytic_bodies_stop_on_the_entry_side() {
+        // Sphere, capsule, and box all have a unit half-width on the motion
+        // axis. Check actual applied responses, including partial crossings,
+        // a moving zero-mass obstacle, and an equally massive dynamic body.
+        let shapes = [
+            (vec3(0.0, 0.0, 0.0), 1.0),
+            (vec3(0.0, 4.0, 0.0), 1.0),
+            (vec3(2.0, 2.0, 2.0), 0.0),
+        ];
+        for (sa, ra) in shapes {
+            for (sb, rb) in shapes {
+                for mass_b in [0.0, 1.0] {
+                    for speed_b in [0.0, 7.0] {
+                        for closing_speed in [11.0, 30.0] {
+                            for restitution in [0.0, 1.0] {
+                                let root = Node::new();
+                                let a = Node::new();
+                                let b = Node::new();
+                                let ca = box_family_collider(Vec3::new(sa.x, sa.y, sa.z), ra, 1.0);
+                                let cb =
+                                    box_family_collider(Vec3::new(sb.x, sb.y, sb.z), rb, mass_b);
+                                for (node, collider, x, speed) in [
+                                    (&a, &ca, -10.0, closing_speed + speed_b),
+                                    (&b, &cb, 0.0, speed_b),
+                                ] {
+                                    place_at(node, x, 0.0, 0.0);
+                                    rc_mut!(collider).rolls = true;
+                                    rc_mut!(collider).friction = 0.0;
+                                    rc_mut!(collider).restitution = restitution;
+                                    rc_mut!(collider).velocity = Vec3::new(speed, 0.0, 0.0);
+                                    rc_mut!(node).collider = Some(collider.clone());
+                                    Node::add_child(&root, node);
+                                }
+
+                                Scene::integrate_motion(&root);
+                                let contacts = Scene::detect_contacts(&root);
+                                assert_eq!(contacts.len(), 1);
+                                let pair = &contacts[0];
+                                let impact_x = speed_b * (8.0 / closing_speed) - 1.0;
+                                assert!(
+                                    (rc_ref!(&rc_ref!(&pair.contact_a).point).x - impact_x).abs()
+                                        < 1e-4,
+                                    "point={:?}, expected_x={impact_x}, sa={sa:?} sb={sb:?}",
+                                    *rc_ref!(&rc_ref!(&pair.contact_a).point)
+                                );
+                                for (node, collider, contact) in
+                                    [(&a, &ca, &pair.contact_a), (&b, &cb, &pair.contact_b)]
+                                {
+                                    let transform = rc_ref!(node).transform.clone();
+                                    let velocity = rc_ref!(collider).velocity.clone();
+                                    Scene::apply_contact_to_snapshot(
+                                        &mut rc_mut!(&transform),
+                                        &mut rc_mut!(&velocity),
+                                        contact,
+                                    );
+                                    assert!(
+                                        vec_len(*rc_ref!(&rc_ref!(contact).delta_angular_velocity))
+                                            < 0.001,
+                                        "sa={sa:?} sb={sb:?} mass_b={mass_b} speed_b={speed_b} closing={closing_speed} e={restitution} spin={:?}",
+                                        *rc_ref!(&rc_ref!(contact).delta_angular_velocity)
+                                    );
+                                }
+
+                                let separation = Node::world_transform_value(&b).pos_value().x
+                                    - Node::world_transform_value(&a).pos_value().x;
+                                assert!(
+                                    (separation - 2.0).abs() < 1e-4,
+                                    "separation={separation}, sa={sa:?}, sb={sb:?}"
+                                );
+                                let va = *rc_ref!(&rc_ref!(&ca).velocity);
+                                let vb = *rc_ref!(&rc_ref!(&cb).velocity);
+                                let impulse = closing_speed * (1.0 + restitution) / (1.0 + mass_b);
+                                assert_vec3_close(
+                                    va,
+                                    vec3(speed_b + closing_speed - impulse, 0.0, 0.0),
+                                );
+                                assert_vec3_close(vb, vec3(speed_b + impulse * mass_b, 0.0, 0.0));
+                                // In the obstacle's initial rest frame, e=1 conserves
+                                // energy and e=0 cannot add energy.
+                                let energy =
+                                    (va.x - speed_b).powi(2) + mass_b * (vb.x - speed_b).powi(2);
+                                let initial_energy = closing_speed * closing_speed;
+                                assert!(energy <= initial_energy + 0.001);
+                                if restitution == 1.0 {
+                                    assert!((energy - initial_energy).abs() < 0.001);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_swept_analytic_bodies_approach_from_initial_touch() {
+        let shapes = [
+            (vec3(0.0, 0.0, 0.0), 1.0),
+            (vec3(0.0, 4.0, 0.0), 1.0),
+            (vec3(2.0, 2.0, 2.0), 0.0),
+            (vec3(1.0, 1.0, 1.0), 0.5),
+        ];
+        for (sa, ra) in shapes {
+            for (sb, rb) in shapes {
+                for mass_b in [0.0, 1.0] {
+                    for speed_b in [0.0, 7.0] {
+                        let root = Node::new();
+                        let a = Node::new();
+                        let b = Node::new();
+                        let ca = box_family_collider(Vec3::new(sa.x, sa.y, sa.z), ra, 1.0);
+                        let cb = box_family_collider(Vec3::new(sb.x, sb.y, sb.z), rb, mass_b);
+                        for (node, collider, x, speed) in
+                            [(&a, &ca, -2.0, speed_b + 6.0), (&b, &cb, 0.0, speed_b)]
+                        {
+                            place_at(node, x, 0.0, 0.0);
+                            rc_mut!(collider).rolls = true;
+                            rc_mut!(collider).friction = 0.0;
+                            rc_mut!(collider).restitution = 1.0;
+                            rc_mut!(collider).velocity = Vec3::new(speed, 0.0, 0.0);
+                            rc_mut!(node).collider = Some(collider.clone());
+                            Node::add_child(&root, node);
+                        }
+
+                        Scene::integrate_motion(&root);
+                        let contacts = Scene::detect_contacts(&root);
+                        assert_eq!(
+                            contacts.len(),
+                            1,
+                            "sa={sa:?} sb={sb:?} mass_b={mass_b} speed_b={speed_b}"
+                        );
+                        let pair = &contacts[0];
+                        assert!((rc_ref!(&rc_ref!(&pair.contact_a).point).x + 1.0).abs() < 1e-4);
+                        for (node, collider, contact) in
+                            [(&a, &ca, &pair.contact_a), (&b, &cb, &pair.contact_b)]
+                        {
+                            let transform = rc_ref!(node).transform.clone();
+                            let velocity = rc_ref!(collider).velocity.clone();
+                            Scene::apply_contact_to_snapshot(
+                                &mut rc_mut!(&transform),
+                                &mut rc_mut!(&velocity),
+                                contact,
+                            );
+                            assert!(
+                                vec_len(*rc_ref!(&rc_ref!(contact).delta_angular_velocity)) < 0.001
+                            );
+                        }
+
+                        let separation = Node::world_transform_value(&b).pos_value().x
+                            - Node::world_transform_value(&a).pos_value().x;
+                        assert!(
+                            (separation - 2.0).abs() < 1e-4,
+                            "sa={sa:?} sb={sb:?} separation={separation}"
+                        );
+                        let impulse = 12.0 / (1.0 + mass_b);
+                        assert_vec3_close(
+                            *rc_ref!(&rc_ref!(&ca).velocity),
+                            vec3(speed_b + 6.0 - impulse, 0.0, 0.0),
+                        );
+                        assert_vec3_close(
+                            *rc_ref!(&rc_ref!(&cb).velocity),
+                            vec3(speed_b + impulse * mass_b, 0.0, 0.0),
+                        );
+
+                        // The same touching boundary must allow sliding and exit.
+                        for motion in [vec3(-6.0, 0.0, 0.0), vec3(0.0, 0.0, 0.5)] {
+                            let va = vec_add(motion, vec3(speed_b, 0.0, 0.0));
+                            let vb = vec3(speed_b, 0.0, 0.0);
+                            place_at(&a, -2.0 + va.x, va.y, va.z);
+                            place_at(&b, vb.x, vb.y, vb.z);
+                            assert!(
+                                Scene::narrow_phase(
+                                    &Node::world_transform_value(&a),
+                                    &ca,
+                                    va,
+                                    &Node::world_transform_value(&b),
+                                    &cb,
+                                    vb,
+                                )
+                                .is_none(),
+                                "sa={sa:?} sb={sb:?} motion={motion:?}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_sweep_keeps_the_entry_face_when_ending_inside_a_wide_box() {
+        let root = Node::new();
+        let ball = Node::new();
+        let wall = Node::new();
+        let collider = sphere_collider(1.0, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(100.0, 0.0, 0.0);
+        rc_mut!(&ball).collider = Some(collider);
+        rc_mut!(&wall).collider = Some(box_family_collider(Vec3::new(100.0, 2.0, 100.0), 0.0, 0.0));
+        place_at(&ball, -100.0, 0.0, 0.0);
+        Node::add_child(&root, &ball);
+        Node::add_child(&root, &wall);
+
+        Scene::integrate_motion(&root);
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        let contact = rc_ref!(&pairs[0].contact_a);
+        assert_vec3_close(*rc_ref!(&contact.normal), vec3(-1.0, 0.0, 0.0));
+        assert!((contact.depth - 51.0).abs() < 1e-4);
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-100.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_swept_friction_uses_the_sphere_radius_at_impact() {
+        let root = Node::new();
+        let ball = Node::new();
+        let wall = Node::new();
+        let ca = sphere_collider(1.0, 1.0);
+        let cb = box_family_collider(Vec3::new(2.0, 100.0, 100.0), 0.0, 0.0);
+        rc_mut!(&ca).rolls = true;
+        rc_mut!(&ca).friction = 0.5;
+        rc_mut!(&cb).friction = 0.5;
+        rc_mut!(&ca).velocity = Vec3::new(30.0, 10.0, 0.0);
+        rc_mut!(&ball).collider = Some(ca.clone());
+        rc_mut!(&wall).collider = Some(cb);
+        place_at(&ball, -10.0, 0.0, 0.0);
+        Node::add_child(&root, &ball);
+        Node::add_child(&root, &wall);
+
+        Scene::integrate_motion(&root);
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        let contact = rc_ref!(&pairs[0].contact_a);
+        let velocity = vec_add(
+            *rc_ref!(&rc_ref!(&ca).velocity),
+            *rc_ref!(&contact.delta_velocity),
+        );
+        let spin = vec_mul(
+            *rc_ref!(&contact.delta_angular_velocity),
+            1.0_f32.to_radians(),
+        );
+        // I = 2/5 m r². An inelastic normal impact and sufficient friction
+        // leave 5/7 of the tangential speed, with matching surface rotation.
+        assert_vec3_close(velocity, vec3(0.0, 50.0 / 7.0, 0.0));
+        assert_vec3_close(spin, vec3(0.0, 0.0, -50.0 / 7.0));
+        let position = vec_add(
+            Node::world_transform_value(&ball).pos_value(),
+            vec_mul(*rc_ref!(&contact.normal), contact.depth),
+        );
+        assert_vec3_close(position, vec3(-2.0, 10.0, 0.0));
+        let energy = 0.5 * vec_len_sq(velocity) + 0.2 * vec_len_sq(spin);
+        assert!((energy - 250.0 / 7.0).abs() < 1e-4);
+    }
+
+    #[test]
     fn test_detect_contacts_swept_sphere_against_static_sphere() {
         let root = Node::new();
         let moving = Node::new();
@@ -3619,7 +6351,7 @@ mod tests {
             hit.point,
             vec3(0.85 + 2.0 * toi, 6.15, 5.0 - 0.25 * 0.28_f32.sqrt()),
         );
-        assert_eq!(hit.depth, 0.0);
+        assert!((hit.depth - 6.0 * 0.28_f32.sqrt() * (1.0 - toi)).abs() < 1e-4);
     }
 
     #[test]
@@ -3788,6 +6520,128 @@ mod tests {
         let contact = rc_ref!(&pairs[0].contact_b);
         assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 1.0, 0.0));
         assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 3.0, 0.0));
+    }
+
+    #[test]
+    fn test_long_mesh_edge_does_not_deflect_parallel_motion() {
+        let rotation = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 0.0, 10.0)));
+        let a = rotation.mul_vec_value(&vec3(-10000.0, 0.0, -10000.0));
+        let b = rotation.mul_vec_value(&vec3(10000.0, 0.0, 10000.0));
+        let velocity = rotation.mul_dir_value(&vec3(-0.96, 0.0, 0.0));
+        for clearance in [0.00001, 0.001, 0.01] {
+            let start = rotation.mul_vec_value(&vec3(0.2, 10.0 + clearance, 0.0));
+            assert!(swept_sphere_vs_segment(start, velocity, 10.0, a, b).is_none());
+        }
+    }
+
+    #[test]
+    fn test_touching_mesh_vertex_does_not_hide_a_crossed_floor() {
+        let root = mesh_floor_root();
+        let floor = rc_ref!(&root).children[0].clone();
+        let collider = rc_ref!(&floor).collider.clone().unwrap();
+        let mesh = rc_ref!(&collider).mesh.clone().unwrap();
+        let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+        {
+            let mut p = rc_mut!(&primitive);
+            // A raised triangle corner, followed by a lower, broad floor.
+            p.positions = vec![
+                -128.0, 48.0, -128.0, 128.0, 48.0, -128.0, -128.0, 48.0, 128.0, 128.0, 48.0, 128.0,
+                0.0, 56.0, -33.0, 16.0, 56.0, -33.0, 0.0, 56.0, -17.0,
+            ];
+            p.indices.extend([4, 5, 6]);
+        }
+
+        let body = Node::new();
+        let collider = sphere_collider(8.0, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.9806976, -9.674616, 0.2771951);
+        rc_mut!(&body).collider = Some(collider);
+        place_at(&body, -5.4078255, 56.25569, -38.889828);
+        Node::add_child(&root, &body);
+
+        Scene::integrate_motion(&root);
+        let mut position = Node::world_transform_value(&body).pos_value();
+        for pair in Scene::detect_contacts(&root) {
+            let contact = rc_ref!(&pair.contact_b);
+            position = vec_add(position, vec_mul(*rc_ref!(&contact.normal), contact.depth));
+        }
+        assert!(position.y >= 56.0 - 1e-4, "{position:?}");
+    }
+
+    #[test]
+    fn test_mesh_wall_contact_does_not_hide_a_crossed_floor() {
+        for (size, radius, height) in [
+            ((0.0, 0.0, 0.0), 0.5, 0.5),
+            ((0.0, 1.0, 0.0), 0.5, 1.0),
+            ((1.0, 1.0, 1.0), 0.0, 0.5),
+            ((1.0, 1.0, 1.0), 0.1, 0.6),
+        ] {
+            for reverse in [false, true] {
+                let root = mesh_corner_root();
+                let body = Node::new();
+                let width = size.0 * 0.5 + radius;
+                let start_y = height + 0.01;
+                let collider = box_family_collider(Vec3::new(size.0, size.1, size.2), radius, 1.0);
+                rc_mut!(&collider).velocity = Vec3::new(-0.001, -start_y - 0.1, 0.2);
+                rc_mut!(&body).collider = Some(collider);
+                place_at(&body, width, start_y, 0.0);
+                Node::add_child(&root, &body);
+                if reverse {
+                    rc_mut!(&root).children.reverse();
+                }
+
+                Scene::integrate_motion(&root);
+                let mut position = Node::world_transform_value(&body).pos_value();
+                for pair in Scene::detect_contacts(&root) {
+                    let contact = if std::rc::Rc::ptr_eq(&pair.node_a, &body) {
+                        rc_ref!(&pair.contact_a)
+                    } else {
+                        rc_ref!(&pair.contact_b)
+                    };
+                    position = vec_add(position, vec_mul(*rc_ref!(&contact.normal), contact.depth));
+                }
+                assert!(
+                    (position.x - width).abs() < 1e-4,
+                    "size={size:?}: {position:?}"
+                );
+                assert!(
+                    (position.y - height).abs() < 1e-4,
+                    "size={size:?}: {position:?}"
+                );
+                assert!(
+                    (position.z - 0.2).abs() < 1e-4,
+                    "size={size:?}: {position:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_mesh_landing_resolves_crossed_surface_for_each_shape() {
+        for (size, radius, height) in [
+            ((0.0, 0.0, 0.0), 0.5, 0.5),
+            ((0.0, 1.0, 0.0), 0.5, 1.0),
+            ((1.0, 1.0, 1.0), 0.0, 0.5),
+            ((1.0, 1.0, 1.0), 0.1, 0.6),
+        ] {
+            for end_y in [-0.01, -2.0] {
+                let root = mesh_floor_root();
+                let body = Node::new();
+                let start_y = height + 0.1;
+                let collider = box_family_collider(Vec3::new(size.0, size.1, size.2), radius, 1.0);
+                rc_mut!(&collider).velocity = Vec3::new(0.0, end_y - start_y, 0.0);
+                rc_mut!(&body).collider = Some(collider);
+                place_at(&body, 0.0, start_y, 0.0);
+                Node::add_child(&root, &body);
+                Scene::integrate_motion(&root);
+
+                let pairs = Scene::detect_contacts(&root);
+                assert_eq!(pairs.len(), 1, "size={size:?}, end_y={end_y}");
+                let contact = rc_ref!(&pairs[0].contact_b);
+                assert_vec3_close(*rc_ref!(&contact.normal), vec3(0.0, 1.0, 0.0));
+                assert!((end_y + contact.depth - height).abs() < 1e-4);
+                assert!((end_y - start_y + rc_ref!(&contact.delta_velocity).y).abs() < 1e-4);
+            }
+        }
     }
 
     #[test]
@@ -4037,6 +6891,80 @@ mod tests {
     }
 
     #[test]
+    fn test_coupled_contacts_conserve_momentum_and_ignore_triggers() {
+        for restitution in [0.0, 0.5, 1.0] {
+            for reverse in [false, true] {
+                let root = Node::new();
+                let masses = [1.0, 2.0, 3.0];
+                let speeds = [0.2, 0.0, -0.1];
+                let mut bodies = Vec::new();
+                for index in 0..3 {
+                    let body = Node::new();
+                    place_at(&body, (index as f32 - 1.0) * 0.9, 0.0, 0.0);
+                    let collider = sphere_collider(0.5, masses[index]);
+                    rc_mut!(&collider).velocity = Vec3::new(speeds[index], 0.0, 0.0);
+                    rc_mut!(&collider).friction = 0.0;
+                    rc_mut!(&collider).restitution = restitution;
+                    rc_mut!(&body).collider = Some(collider);
+                    Node::add_child(&root, &body);
+                    bodies.push(body);
+                }
+                let trigger = Node::new();
+                rc_mut!(&trigger).collider = Some(trigger_sphere_collider(2.0, 100.0));
+                Node::add_child(&root, &trigger);
+                if reverse {
+                    rc_mut!(&root).children.reverse();
+                }
+
+                let pairs = Scene::detect_contacts(&root);
+                assert_eq!(pairs.len(), 5); // Two solid pairs and three trigger pairs.
+                let mut resolved = speeds;
+                for pair in pairs {
+                    let is_trigger = std::rc::Rc::ptr_eq(&pair.node_a, &trigger)
+                        || std::rc::Rc::ptr_eq(&pair.node_b, &trigger);
+                    for (node, contact) in [
+                        (&pair.node_a, &pair.contact_a),
+                        (&pair.node_b, &pair.contact_b),
+                    ] {
+                        let contact = rc_ref!(contact);
+                        let delta = rc_ref!(&contact.delta_velocity);
+                        if is_trigger {
+                            assert_eq!(contact.depth, 0.0);
+                            assert_eq!((delta.x, delta.y, delta.z), (0.0, 0.0, 0.0));
+                        }
+                        if let Some(index) = bodies
+                            .iter()
+                            .position(|body| std::rc::Rc::ptr_eq(body, node))
+                        {
+                            resolved[index] += delta.x;
+                        }
+                    }
+                }
+                let momentum: f32 = masses
+                    .iter()
+                    .zip(speeds)
+                    .map(|(mass, speed)| mass * speed)
+                    .sum();
+                let resolved_momentum: f32 = masses
+                    .iter()
+                    .zip(resolved)
+                    .map(|(mass, speed)| mass * speed)
+                    .sum();
+                assert!((momentum - resolved_momentum).abs() < 1e-6);
+                let center_speed = momentum / masses.iter().sum::<f32>();
+                for index in 0..3 {
+                    // Collinear contacts reverse relative speed by restitution.
+                    let expected = center_speed - restitution * (speeds[index] - center_speed);
+                    assert!((resolved[index] - expected).abs() < 1e-5, "{resolved:?}");
+                    let collider = rc_ref!(&bodies[index]).collider.clone().unwrap();
+                    // Detection supplies corrections; it must not apply them itself.
+                    assert_eq!(rc_ref!(&rc_ref!(&collider).velocity).x, speeds[index]);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn test_restitution_reflects_normal_velocity() {
         let root = Node::new();
         let movable = Node::new();
@@ -4058,6 +6986,141 @@ mod tests {
         assert_eq!(delta_velocity.x, -2.0);
         assert_eq!(delta_velocity.y, 0.0);
         assert_eq!(delta_velocity.z, 0.0);
+    }
+
+    #[test]
+    fn test_linear_mesh_contacts_keep_friction_without_physics_history() {
+        for (size, radius) in [
+            ((0.0, 0.0, 0.0), 1.0),
+            ((0.0, 1.0, 0.0), 0.5),
+            ((1.0, 1.0, 1.0), 0.5),
+            ((2.0, 2.0, 2.0), 0.0),
+        ] {
+            let root = mesh_floor_root();
+            let floor = rc_ref!(&root).children[0].clone();
+            let floor_collider = rc_ref!(&floor).collider.clone().unwrap();
+            rc_mut!(&floor_collider).friction = 0.3;
+
+            let body = Node::new();
+            let collider = box_family_collider(Vec3::new(size.0, size.1, size.2), radius, 2.0);
+            rc_mut!(&collider).friction = 0.5;
+            rc_mut!(&collider).velocity = Vec3::new(2.0, -1.0, 0.0);
+            rc_mut!(&body).collider = Some(collider);
+            place_at(&body, 0.0, 0.9, 0.0);
+            Node::add_child(&root, &body);
+
+            for _ in 0..3 {
+                let pairs = Scene::detect_contacts(&root);
+                assert_eq!(pairs.len(), 1);
+                let contact = rc_ref!(&pairs[0].contact_b);
+                assert!((contact.depth - 0.1).abs() < 1e-5);
+                assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-0.4, 1.0, 0.0));
+                assert_vec3_close(
+                    *rc_ref!(&contact.delta_angular_velocity),
+                    vec3(0.0, 0.0, 0.0),
+                );
+                assert!(rc_ref!(&root).contact_cache.is_none());
+            }
+        }
+    }
+
+    #[test]
+    fn test_rigid_contact_history_excludes_unconnected_characters() {
+        let root = mesh_floor_root();
+        let mut bodies = Vec::new();
+        for (x, rolls) in [(-3.0, false), (0.0, true), (3.0, false)] {
+            let body = Node::new();
+            let collider = sphere_collider(1.0, 1.0);
+            rc_mut!(&collider).rolls = rolls;
+            rc_mut!(&collider).velocity = Vec3::new(0.0, -0.1, 0.0);
+            rc_mut!(&body).collider = Some(collider);
+            place_at(&body, x, 0.95, 0.0);
+            Node::add_child(&root, &body);
+            bodies.push(body);
+        }
+
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 3);
+        for pair in &pairs {
+            assert_vec3_close(
+                *rc_ref!(&rc_ref!(&pair.contact_b).delta_velocity),
+                vec3(0.0, 0.1, 0.0),
+            );
+        }
+        assert_eq!(
+            rc_ref!(&root).contact_cache.as_ref().unwrap().bodies.len(),
+            2
+        );
+
+        // The character hitting a rolling body must join its coupled response;
+        // another character merely standing on the same floor still must not.
+        place_at(&bodies[0], -1.8, 0.95, 0.0);
+        Scene::detect_contacts(&root);
+        let root = rc_ref!(&root);
+        let cache = root.contact_cache.as_ref().unwrap();
+        assert_eq!(cache.bodies.len(), 3);
+        assert!(cache
+            .bodies
+            .iter()
+            .all(|cached| cached.node.as_ptr() != std::rc::Rc::as_ptr(&bodies[2])));
+    }
+
+    #[test]
+    fn test_disconnected_contacts_keep_their_mass_ratios() {
+        let root = Node::new();
+        for (x, mass, speed) in [
+            (0.0, 1.0, 3.0),
+            (0.9, 2.0, 0.0),
+            (1000.0, 1e25, 3.0),
+            (1000.9, 2e25, 0.0),
+            (2000.0, 1e30, 0.0),
+        ] {
+            let body = Node::new();
+            let collider = sphere_collider(0.5, mass);
+            rc_mut!(&collider).rolls = true;
+            rc_mut!(&collider).restitution = 1.0;
+            rc_mut!(&collider).velocity = Vec3::new(speed, 0.0, 0.0);
+            rc_mut!(&body).collider = Some(collider);
+            place_at(&body, x, 0.0, 0.0);
+            Node::add_child(&root, &body);
+        }
+
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 2);
+        // For masses 1 and 2, an elastic head-on impact at speed 3 ends at
+        // speeds -1 and 2 at either mass scale. Neither a separate collision
+        // nor a body in free flight can alter the colliding bodies' mass ratio.
+        for pair in pairs {
+            assert_vec3_close(
+                *rc_ref!(&rc_ref!(&pair.contact_a).delta_velocity),
+                vec3(-4.0, 0.0, 0.0),
+            );
+            assert_vec3_close(
+                *rc_ref!(&rc_ref!(&pair.contact_b).delta_velocity),
+                vec3(2.0, 0.0, 0.0),
+            );
+        }
+    }
+
+    #[test]
+    fn test_prescribed_spin_still_affects_nonrolling_contact_friction() {
+        let root = mesh_floor_root();
+        let body = Node::new();
+        let collider = sphere_collider(1.0, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(0.0, -0.1, 0.0);
+        rc_mut!(&collider).angular_velocity = Vec3::new(0.0, 0.0, 90.0);
+        rc_mut!(&body).collider = Some(collider);
+        place_at(&body, 0.0, 0.95, 0.0);
+        Node::add_child(&root, &body);
+
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        let contact = rc_ref!(&pairs[0].contact_b);
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(-0.05, 0.1, 0.0));
+        assert_vec3_close(
+            *rc_ref!(&contact.delta_angular_velocity),
+            vec3(0.0, 0.0, 0.0),
+        );
     }
 
     #[test]
@@ -4087,59 +7150,124 @@ mod tests {
     }
 
     #[test]
-    fn test_rolling_side_receives_angular_velocity_delta() {
-        let root = Node::new();
-        let movable = Node::new();
-        let wall = Node::new();
-        let movable_collider = sphere_collider(0.5, 1.0);
-        rc_mut!(&movable_collider).velocity = Vec3::new(1.0, 1.0, 0.0);
-        rc_mut!(&movable_collider).rolls = true;
-        rc_mut!(&movable).collider = Some(movable_collider);
-        rc_mut!(&wall).collider = Some(sphere_collider(0.5, 0.0));
-        place_at(&movable, 0.0, 0.0, 0.0);
-        place_at(&wall, 0.5, 0.0, 0.0);
-        Node::add_child(&root, &movable);
-        Node::add_child(&root, &wall);
+    fn test_rigid_impacts_conserve_energy_and_turn_only_off_center() {
+        for mass in [1e-25, 1.0, 1e25] {
+            for height in [-0.8, 0.0, 0.8] {
+                let root = Node::new();
+                let ball = Node::new();
+                let block = Node::new();
+                place_at(&ball, -2.4, height, 0.0);
+                let ball_collider = sphere_collider(0.5, mass);
+                rc_mut!(&ball_collider).velocity = Vec3::new(3.0, 0.0, 0.0);
+                rc_mut!(&ball_collider).rolls = true;
+                rc_mut!(&ball_collider).friction = 0.0;
+                rc_mut!(&ball_collider).restitution = 1.0;
+                rc_mut!(&ball).collider = Some(ball_collider);
+                let block_collider = box_family_collider(Vec3::new(4.0, 2.0, 2.0), 0.0, mass * 2.0);
+                rc_mut!(&block_collider).rolls = true;
+                rc_mut!(&block_collider).friction = 0.0;
+                rc_mut!(&block).collider = Some(block_collider);
+                Node::add_child(&root, &ball);
+                Node::add_child(&root, &block);
 
-        let pairs = Scene::detect_contacts(&root);
-        assert_eq!(pairs.len(), 1);
-        let contact = rc_ref!(&pairs[0].contact_a);
-        let delta_angular_velocity = rc_ref!(&contact.delta_angular_velocity);
-        assert_eq!(delta_angular_velocity.x, 0.0);
-        assert_eq!(delta_angular_velocity.y, 0.0);
-        assert_eq!(delta_angular_velocity.z, 1.0);
+                let pairs = Scene::detect_contacts(&root);
+                assert_eq!(pairs.len(), 1);
+                let contact_a = rc_ref!(&pairs[0].contact_a);
+                let contact_b = rc_ref!(&pairs[0].contact_b);
+                let va = vec_add(vec3(3.0, 0.0, 0.0), *rc_ref!(&contact_a.delta_velocity));
+                let vb = *rc_ref!(&contact_b.delta_velocity);
+                let wa = vec_mul(
+                    *rc_ref!(&contact_a.delta_angular_velocity),
+                    1.0_f32.to_radians(),
+                );
+                let wb = vec_mul(
+                    *rc_ref!(&contact_b.delta_angular_velocity),
+                    1.0_f32.to_radians(),
+                );
+                assert_vec3_close(vec_add(va, vec_mul(vb, 2.0)), vec3(3.0, 0.0, 0.0));
+                let energy = 0.5 * vec_len_sq(va)
+                    + vec_len_sq(vb)
+                    + 0.5 * 0.1 * vec_len_sq(wa)
+                    + 0.5 * (4.0 / 3.0 * wb.x * wb.x + 10.0 / 3.0 * (wb.y * wb.y + wb.z * wb.z));
+                assert!(
+                    (energy - 4.5).abs() < 1e-4,
+                    "height={height}, energy={energy}"
+                );
+                assert!(vec_len(wa) < 1e-5);
+                if height == 0.0 {
+                    assert!(vec_len(wb) < 1e-5);
+                } else {
+                    assert!(wb.z * height < -0.1, "height={height}, spin={wb:?}");
+                }
+            }
+        }
     }
 
     #[test]
-    fn test_rolling_delta_uses_receiving_node_local_axes() {
-        let root = Node::new();
-        let movable = Node::new();
-        let wall = Node::new();
-        let movable_collider = sphere_collider(0.5, 1.0);
-        rc_mut!(&movable_collider).velocity = Vec3::new(1.0, 1.0, 0.0);
-        rc_mut!(&movable_collider).rolls = true;
-        rc_mut!(&movable).collider = Some(movable_collider);
-        let rotation = Mat4::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            90.0,
-        );
-        rc_mut!(&movable).transform = rotation;
-        rc_mut!(&wall).collider = Some(sphere_collider(0.5, 0.0));
-        place_at(&wall, 0.5, 0.0, 0.0);
-        Node::add_child(&root, &movable);
-        Node::add_child(&root, &wall);
+    fn test_frictionless_sliding_does_not_create_spin() {
+        let root = mesh_floor_root();
+        let floor = rc_ref!(&root).children[0].clone();
+        let floor_collider = rc_ref!(&floor).collider.clone().unwrap();
+        rc_mut!(&floor_collider).friction = 0.0;
+
+        let ball = Node::new();
+        place_at(&ball, 0.0, 0.49, 0.0);
+        let collider = sphere_collider(0.5, 1.0);
+        rc_mut!(&collider).velocity = Vec3::new(1.0, -0.1, 0.0);
+        rc_mut!(&collider).rolls = true;
+        rc_mut!(&collider).friction = 0.0;
+        rc_mut!(&ball).collider = Some(collider);
+        Node::add_child(&root, &ball);
 
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
-        let contact = rc_ref!(&pairs[0].contact_a);
-        let delta = rc_ref!(&contact.delta_angular_velocity);
-        assert!((delta.x + 1.0).abs() < 1e-6, "delta.x = {}", delta.x);
-        assert!(delta.y.abs() < 1e-6, "delta.y = {}", delta.y);
-        assert!(delta.z.abs() < 1e-6, "delta.z = {}", delta.z);
+        let contact = rc_ref!(&pairs[0].contact_b);
+        assert_vec3_close(*rc_ref!(&contact.delta_velocity), vec3(0.0, 0.1, 0.0));
+        assert!(vec_len(*rc_ref!(&contact.delta_angular_velocity)) < 1e-5);
+    }
+
+    #[test]
+    fn test_friction_converts_sliding_to_rolling_without_adding_energy() {
+        for radius in [0.5, 9.0, 18.0] {
+            for rotated in [false, true] {
+                let root = Node::new();
+                let ball = Node::new();
+                place_at(&ball, 0.0, radius - 0.001, 0.0);
+                if rotated {
+                    let transform = rc_ref!(&ball).transform.clone();
+                    rc_mut!(&ball).transform = rc_ref!(&transform)
+                        .mul_mat(&rc_ref!(&Mat4::from_euler(&vec3(25.0, 70.0, 35.0))));
+                }
+                let collider = sphere_collider(radius, 1.0);
+                rc_mut!(&collider).velocity = Vec3::new(1.0, -1.0, 0.0);
+                rc_mut!(&collider).friction = 1.0;
+                rc_mut!(&collider).rolls = true;
+                rc_mut!(&ball).collider = Some(collider);
+                let floor = Node::new();
+                place_at(&floor, 0.0, -1.0, 0.0);
+                let floor_collider = box_family_collider(Vec3::new(100.0, 2.0, 100.0), 0.0, 0.0);
+                rc_mut!(&floor_collider).friction = 1.0;
+                rc_mut!(&floor).collider = Some(floor_collider);
+                Node::add_child(&root, &ball);
+                Node::add_child(&root, &floor);
+
+                let pairs = Scene::detect_contacts(&root);
+                let contact = rc_ref!(&pairs[0].contact_a);
+                let velocity = vec_add(vec3(1.0, -1.0, 0.0), *rc_ref!(&contact.delta_velocity));
+                let spin = Node::world_rotation_value(&ball).mul_dir_value(&vec_mul(
+                    *rc_ref!(&contact.delta_angular_velocity),
+                    1.0_f32.to_radians(),
+                ));
+                // A solid sphere settles to v=5/7 and omega=v/r after friction
+                // converts some of its initial translational energy into rotation.
+                assert!((velocity.x - 5.0 / 7.0).abs() < 0.002, "{velocity:?}");
+                assert!(
+                    vec_len(vec_add(velocity, vec_cross(spin, vec3(0.0, -radius, 0.0)))) < 0.003
+                );
+                let energy = 0.5 * vec_len_sq(velocity) + 0.2 * radius * radius * vec_len_sq(spin);
+                assert!(energy < 0.5, "{energy}");
+            }
+        }
     }
 
     #[test]

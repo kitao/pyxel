@@ -1230,6 +1230,22 @@ mod tests {
     }
 
     #[test]
+    fn test_default_light_preserves_top_color_and_separates_side_levels() {
+        let shading = Shading::new(&crate::settings::DEFAULT_COLORS);
+        let shading = rc_ref!(&shading);
+        let light = rc_ref!(&shading.direction);
+        let top = vec3(0.0, 1.0, 0.0);
+
+        assert_eq!(
+            face_shade_level(&light, Some(&top)),
+            crate::cube::shading::BASE_LEVEL
+        );
+        assert_eq!(lookup_ramp(&shading, 11, Some(&top)), (11, 11));
+        assert_eq!(face_shade_level(&light, Some(&vec3(-1.0, 0.0, 0.0))), 3);
+        assert_eq!(face_shade_level(&light, Some(&vec3(0.0, 0.0, 1.0))), 4);
+    }
+
+    #[test]
     fn test_shading_depends_on_direction_not_vector_length() {
         for normal in [vec3(1.0, 1.0, 0.0), vec3(0.0, -1.0, 0.0)] {
             let scaled = vec3(normal.x * 4.0, normal.y * 4.0, normal.z * 4.0);

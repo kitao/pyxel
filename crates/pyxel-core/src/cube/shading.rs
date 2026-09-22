@@ -22,7 +22,7 @@ impl Shading {
     pub fn new(palette: &[Rgb24]) -> RcShading {
         new_rc_type!(Shading {
             data: Self::compute(palette),
-            direction: Vec3::down(),
+            direction: Vec3::new(0.5, -1.0, -0.8),
         })
     }
 

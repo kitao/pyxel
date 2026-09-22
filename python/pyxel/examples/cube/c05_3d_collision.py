@@ -1,313 +1,300 @@
 import pyxel
-from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Primitive, Vec3
+from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Quat, Shading, Vec3
 
-GRAVITY = -0.03
-JUMP_SPEED = 0.42
-MOVE_SPEED = 0.13
-TURN_SPEED = 4.0
-PLAYER_START = Vec3(0.0, 1.2, 5.0)
+GRAVITY = -0.45
+JUMP_SPEED = 6.5
+MOVE_SPEED = 2.0
 
-
-def pressed(*keys):
-    return any(pyxel.btn(key) for key in keys)
-
-
-def pressedp(*keys):
-    return any(pyxel.btnp(key) for key in keys)
-
-
-def make_quad_mesh(corners, color):
-    positions = []
-
-    for v in corners:
-        positions += [v.x, v.y, v.z]
-
-    primitive = Primitive(
-        Primitive.MODE_TRIANGLES,
-        positions,
-        [0, 1, 2, 1, 3, 2],
-        cull=Primitive.CULL_BACK,
-    )
-    primitive.compute_normals()
-
-    return Mesh(
-        primitives=[primitive],
-        transforms=[Mat4.IDENTITY],
-        parents=[-1],
-        col_img=color,
-    )
-
-
-class QuadSurface(Node):
-    def __init__(self, corners, color, outline=1):
-        super().__init__()
-
-        self.corners = corners
-        self.outline = outline
-        self.mesh = make_quad_mesh(corners, color)
-        self.collider = Collider(mesh=self.mesh)
-        self.add_child(Node.from_mesh(self.mesh))
-
-    def on_draw(self):
-        self.depth_offset(-0.01)
-        edge_points = [self.corners[i] for i in [0, 1, 3, 2]]
-        for p, q in zip(edge_points, edge_points[1:] + edge_points[:1]):
-            self.line(p, q, self.outline)
-
-
-class MarkerBox(Node):
-    def __init__(self, pos, size, color, outline=1):
-        super().__init__()
-
-        self.transform = Mat4.from_translation(pos)
-        self.size = size
-        self.color = color
-        self.outline = outline
-
-    def on_draw(self):
-        self.box(Mat4.IDENTITY, self.size, self.color)
-        self.boxb(Mat4.IDENTITY, self.size, self.outline)
+CAMERA_MIN_DISTANCE = 48
 
 
 class MovingPlatform(Node):
-    def __init__(self):
+    def __init__(self, start, end):
         super().__init__()
 
-        self.size = Vec3(2.4, 0.35, 4.4)
-        self.transform = Mat4.from_translation(Vec3(0.0, 1.0 - self.size.y * 0.5, -7.3))
-        self.direction = 1.0
+        self.add_child(Node.from_mesh(Mesh.from_glb("assets/moving_platform.glb")))
+        self.collider = Collider(
+            mesh=Mesh.from_glb("assets/moving_platform_collision.glb"), mass=0
+        )
+        self.tags = ["ground"]
+        self.start = start
+        self.end = end
+        self.transform = Mat4.from_translation(start)
         self.delta = Vec3.ZERO
-        self.collider = Collider(size=self.size, mass=0.0)
 
     def on_update(self):
-        if abs(self.transform.pos.x) > 1.2:
-            self.direction *= -1.0
-
-        self.delta = Vec3(0.03 * self.direction, 0.0, 0.0)
-        self.collider.velocity = self.delta
-
-    def on_draw(self):
-        self.depth_offset(-0.01)
-        self.box(Mat4.IDENTITY, self.size, 10)
-        self.boxb(Mat4.IDENTITY, self.size, 1)
-
-
-class Goal(Node):
-    def __init__(self, pos):
-        super().__init__()
-
-        self.pos = pos
-        self.collider = Collider(radius=0.65, trigger=True, mass=0.0)
-
-    def on_update(self):
-        spin = Mat4.from_euler(Vec3(0.0, pyxel.frame_count * 4.0, 0.0))
-        self.transform = Mat4.from_translation(self.pos) * spin
-
-    def on_draw(self):
-        self.box(Mat4.IDENTITY, Vec3(0.75, 0.75, 0.75), 10)
-        self.boxb(Mat4.IDENTITY, Vec3(0.75, 0.75, 0.75), 7)
+        pos = self.start.lerp(self.end, (1 - pyxel.cos(pyxel.frame_count * 1.5)) / 2)
+        self.delta = pos - self.transform.pos
+        self.transform = Mat4.from_translation(pos)
 
 
 class Player(Node):
-    def __init__(self, mesh):
+    def __init__(self, start):
         super().__init__()
 
-        self.transform = Mat4.from_translation(PLAYER_START)
-        self.collider = Collider(size=Vec3(0.0, 0.9, 0.0), radius=0.32, mass=1.0)
-        self.yaw = 0.0
-        self.on_floor = False
-        self.reached_goal = False
-        self.walking = False
+        self.start = start + Vec3(0, 8, 0)
+        self.collider = Collider(radius=8, mass=1)
+        self.coins = 0
+        self.reset()
 
-        self.motion = mesh.motions[0] if mesh.motions else None
-        self.model = Node.from_mesh(mesh)
-        model_parent = Node()
-        model_parent.transform = Mat4.from_translation(
-            Vec3(0.0, -0.4, 0.0)
-        ) * Mat4.from_scale(Vec3(0.37, 0.37, 0.37))
-        if self.motion is not None:
-            self.model.apply_motion(self.motion, 0.0)
-        model_parent.add_child(self.model)
-        self.add_child(model_parent)
+        mesh = Mesh.from_glb("assets/player.glb")
+        self.motions = {motion.name: motion for motion in mesh.motions}
+        self.actor = Node.from_mesh(mesh)
+        self.add_child(self.actor)
 
     def reset(self):
-        self.transform = Mat4.from_translation(PLAYER_START)
+        self.transform = Mat4.from_translation(self.start)
         self.collider.velocity = Vec3.ZERO
-        self.yaw = 0.0
-        self.on_floor = False
-        self.reached_goal = False
+        self.on_floor = True
+        self.floor_normal = Vec3.UP
+        self.platform = None
+        self.jumps = 0
 
-    def facing(self):
-        return Vec3(pyxel.sin(self.yaw), 0.0, -pyxel.cos(self.yaw))
-
-    def set_walking(self, enabled):
-        if self.motion is None or self.walking == enabled:
-            return
-
-        self.walking = enabled
-        if enabled:
-            self.model.play_motion(self.motion, speed=1.3)
-        else:
-            self.model.stop_motion()
-            self.model.apply_motion(self.motion, 0.0)
+        self.move_input = (0, 0)
+        self.move = Vec3.ZERO
+        self.heading = 180
+        self.rotation = Quat.from_euler(Vec3(0, self.heading, 0))
+        self.motion = None
 
     def on_update(self):
-        if pressed(pyxel.KEY_LEFT, pyxel.KEY_A):
-            self.yaw -= TURN_SPEED
-        if pressed(pyxel.KEY_RIGHT, pyxel.KEY_D):
-            self.yaw += TURN_SPEED
+        if self.transform.pos.y < -100:
+            self.reset()
+            self.parent.reset_camera()
 
-        forward = self.facing()
-        move = Vec3.ZERO
-        if pressed(pyxel.KEY_UP, pyxel.KEY_W):
-            move += forward
-        if pressed(pyxel.KEY_DOWN, pyxel.KEY_S):
-            move -= forward
+        # Move with the platform before checking contacts.
+        if self.platform:
+            self.transform = self.transform.translate(self.platform.delta)
+        self.platform = None
 
-        v = self.collider.velocity
+        # Keep the movement direction steady while the camera turns.
+        dx = pyxel.btn(pyxel.KEY_RIGHT) - pyxel.btn(pyxel.KEY_LEFT)
+        dz = pyxel.btn(pyxel.KEY_UP) - pyxel.btn(pyxel.KEY_DOWN)
+        if (dx, dz) != self.move_input:
+            camera = self.parent.camera.transform
+            right = Vec3(camera[0, 0], 0, camera[2, 0]).normalize()
+            forward = Vec3(-camera[0, 2], 0, -camera[2, 2]).normalize()
+            self.move = right * dx + forward * dz
+            self.move_input = (dx, dz)
+        move = self.move.normalize() * MOVE_SPEED
         if move.length() > 0:
-            move = move.normalize() * MOVE_SPEED
-            vx, vz = move.x, move.z
-        else:
-            vx, vz = v.x * 0.75, v.z * 0.75
+            self.heading = pyxel.atan2(move.x, move.z)
 
-        vy = max(v.y + GRAVITY, -0.55)
-        if self.on_floor and pressedp(pyxel.KEY_SPACE, pyxel.GAMEPAD1_BUTTON_A):
+        vy = max(self.collider.velocity.y + GRAVITY, -10)
+        if self.on_floor:
+            # Follow the slope to stay grounded when moving downhill.
+            vy = min(-move.dot(self.floor_normal) / self.floor_normal.y, 0) + GRAVITY
+
+        if pyxel.btnp(pyxel.KEY_SPACE) and self.jumps < 2:
             vy = JUMP_SPEED
+            if self.jumps == 0:
+                self.parent.yaw = self.heading + 180
+            self.jumps += 1
+            self.motion = None
+            self.on_floor = False
             pyxel.play(0, 0)
 
-        self.on_floor = False
-        self.collider.velocity = Vec3(vx, vy, vz)
-        self.transform = Mat4.from_translation(self.transform.pos) * Mat4.from_euler(
-            Vec3(0.0, self.yaw, 0.0)
-        )
-        self.set_walking(move.length() > 0)
+        self.collider.velocity = Vec3(move.x, vy, move.z)
+        self.animate(move.length() > 0)
 
-        if self.transform.pos.y < -4.0:
-            self.reset()
+        # on_collide restores ground contact after this update.
+        self.on_floor = False
+
+    def animate(self, walking):
+        self.rotation = self.rotation.slerp(
+            Quat.from_euler(Vec3(0, self.heading, 0)), 0.25
+        )
+        self.actor.transform = Mat4.from_quat(self.rotation).translate(Vec3(0, -8, 0))
+
+        motion = "jump" if not self.on_floor else "walk" if walking else "idle"
+        if motion != self.motion:
+            self.actor.play_motion(self.motions[motion])
+            self.motion = motion
 
     def on_collide(self, other, contact):
-        if isinstance(other, Goal):
-            self.reached_goal = True
+        if "coin" in other.tags:
+            other.active = other.visible = False
+            self.coins += 1
+            pyxel.play(1, 1)
             return
 
-        push = Mat4.from_translation(contact.normal * contact.depth)
-        self.transform = push * self.transform
+        if other is self.parent.goal:
+            other.active = False
+            pyxel.play(2, 2)
+            return
 
-        if contact.normal.y > 0.45:
+        # Push out of solid surfaces without canceling an upward jump.
+        self.transform = self.transform.translate(contact.normal * contact.depth)
+
+        if contact.normal.y > 0.45 and self.collider.velocity.y <= 0:
             self.on_floor = True
+            self.floor_normal = contact.normal
+            self.jumps = 0
+            v = self.collider.velocity
+            self.collider.velocity = Vec3(v.x, 0, v.z)
             if isinstance(other, MovingPlatform):
-                self.transform = Mat4.from_translation(other.delta) * self.transform
-            if self.collider.velocity.y < 0:
-                self.collider.velocity = Vec3(
-                    self.collider.velocity.x, 0.0, self.collider.velocity.z
-                )
+                self.platform = other
+
+    def on_draw(self):
+        hit = self.parent.raycast(self.transform.pos, Vec3.DOWN, tags=["ground"])
+        if hit:
+            self.shaded(False)
+            # Leave room for the downhill side of the shadow on a slope.
+            self.decal(hit.distance + 8)
+            mat = Mat4.from_euler(Vec3(-90, 0, 0))
+            self.dither(0.5)
+            self.elli(mat, 14, 14, 0)
+            self.dither(1)
+            self.elli(mat, 9, 9, 0)
 
 
-class Scene(Node):
-    def __init__(self, player_mesh):
+class App(Node):
+    def __init__(self):
         super().__init__()
 
+        pyxel.init(320, 240, title="3D Collision")
+        pyxel.Image.from_image("assets/garden.png", include_colors=True)
+
+        pyxel.sounds[0].mml(
+            "T240 Q100 @1 V64 O3 E32 @2 V112 @ENV1{127,6,96,30,0} @GLI1{-1900,30} O5 C8."
+        )
+        pyxel.sounds[1].mml("T225 Q100 @2 V112 O5 A32 @ENV1{127,3,96,15,24,18,0} >E8.")
+        pyxel.sounds[2].mml(
+            "T200 Q80 @2 V104 O5 L16 E G >C8 R <G A8 B Q100 @ENV1{127,6,96,66,0} >C4."
+        )
+
+        self.lighting = Shading(pyxel.colors)
+        self.lighting.direction = Vec3(-0.5, -1.0, 0.8).normalize()
+
         self.camera = Camera()
-        self.camera.clear_color = 12
+        self.camera.near = 2
 
-        self.player = Player(player_mesh)
-        self.platform = MovingPlatform()
-        self.goal = Goal(Vec3(0.0, 2.35, -11.4))
+        stage = Node.from_mesh(Mesh.from_glb("assets/garden.glb"))
+        stage.collider = Collider(
+            mesh=Mesh.from_glb("assets/garden_collision.glb"), mass=0
+        )
+        stage.tags = ["ground"]
+        self.add_child(stage)
 
-        self.build_stage()
-        self.add_child(self.platform)
-        self.add_child(self.goal)
+        # Placement markers are saved with the stage in the model editor.
+        self.coins = stage.find_by_name("Coins")[0].children
+        coin_mesh = Mesh.from_glb("assets/coin.glb")
+        for coin in self.coins:
+            coin.add_child(Node.from_mesh(coin_mesh))
+            coin.collider = Collider(radius=5, trigger=True, mass=0)
+            coin.tags = ["coin"]
+
+        self.goal = stage.find_by_name("Goal")[0]
+        self.goal.transform = self.goal.transform.translate(Vec3(0, 8, 0))
+        self.goal.collider = Collider(size=Vec3(24, 16, 24), trigger=True, mass=0)
+
+        start = stage.find_by_name("PlatformStart")[0].world_transform.pos
+        end = stage.find_by_name("PlatformEnd")[0].world_transform.pos
+        self.add_child(MovingPlatform(start, end))
+
+        self.player = Player(stage.find_by_name("Start")[0].world_transform.pos)
         self.add_child(self.player)
+
+        self.reset_camera()
+        pyxel.run(self.update_game, self.draw_game)
+
+    def on_update(self):
+        for coin in self.coins:
+            coin.children[0].transform = Mat4.IDENTITY.rotate_y(pyxel.frame_count * 4)
+
+    def reset_camera(self):
+        self.yaw = 28
+        self.target = self.player.transform.pos
+        self.camera_offset = None
         self.update_camera()
 
-    def build_stage(self):
-        # Main route: each patch is (4 corners, color)
-        routes = [
-            (
-                [
-                    Vec3(-5.6, 0.0, 6.4),
-                    Vec3(5.6, 0.0, 6.4),
-                    Vec3(-5.6, 0.0, 0.7),
-                    Vec3(5.6, 0.0, 0.7),
-                ],
-                3,
-            ),
-            (
-                [
-                    Vec3(-1.55, 0.0, 0.7),
-                    Vec3(1.55, 0.0, 0.7),
-                    Vec3(-1.55, 1.0, -2.4),
-                    Vec3(1.55, 1.0, -2.4),
-                ],
-                11,
-            ),
-            (
-                [
-                    Vec3(-4.2, 1.0, -2.4),
-                    Vec3(4.2, 1.0, -2.4),
-                    Vec3(-4.2, 1.0, -5.4),
-                    Vec3(4.2, 1.0, -5.4),
-                ],
-                5,
-            ),
-            (
-                [
-                    Vec3(-1.8, 1.15, -10.5),
-                    Vec3(1.8, 1.15, -10.5),
-                    Vec3(-1.8, 1.15, -12.5),
-                    Vec3(1.8, 1.15, -12.5),
-                ],
-                5,
-            ),
-        ]
-
-        for corners, color in routes:
-            self.add_child(QuadSurface(corners, color))
-
-        # Surface markers
-        for z in [5.2, 3.9, 2.6, 1.3]:
-            self.add_child(MarkerBox(Vec3(0.0, 0.035, z), Vec3(1.25, 0.06, 0.45), 9))
-        for z in [-3.4, -4.6]:
-            self.add_child(MarkerBox(Vec3(0.0, 1.035, z), Vec3(1.1, 0.06, 0.38), 9))
-        for x, z in [(-4.2, 4.5), (4.2, 3.0), (-3.4, -3.2), (3.4, -4.6)]:
-            self.add_child(MarkerBox(Vec3(x, 0.45, z), Vec3(0.35, 0.9, 0.35), 4))
-
     def update_camera(self):
-        target = self.player.transform.pos + Vec3(0.0, 0.75, 0.0)
-        back = self.player.facing() * -6.6
-        eye = target + back + Vec3(0.0, 3.8, 0.0)
-        self.camera.transform = Mat4.look_at(eye, target)
+        focus = self.player.transform.pos
+        self.target += (focus - self.target) * 0.15
+        back = Vec3(pyxel.sin(self.yaw), 0, pyxel.cos(self.yaw))
+        side = Vec3(back.z, 0, -back.x)
+        if self.camera_offset and self.camera_offset.dot(side) < 0:
+            side = -side
 
+        # First move closer, then try above or beside the obstacle.
+        offset = Vec3.ZERO
+        for candidate in (
+            self.target - focus + back * 100 + Vec3(0, 63, 0),
+            back * 60 + Vec3(0, 60, 0),
+            back * 30 + Vec3(0, 60, 0),
+            back * 8 + Vec3(0, 60, 0),
+            back * 80,
+            (back + side) * 56,
+            (back - side) * 56,
+            -back * 80,
+        ):
+            candidate = self.clip_camera_offset(focus, candidate)
+            if candidate.length() > offset.length():
+                offset = candidate
+            if offset.length() >= CAMERA_MIN_DISTANCE:
+                break
 
-class App:
-    def __init__(self):
-        pyxel.init(240, 180, title="3D Collision")
+        if self.camera_offset:
+            previous = self.camera_offset
+            turn = Quat.from_two_vectors(previous, offset)
+            angle = Quat.IDENTITY.angle_to(turn)
+            turn = Quat.IDENTITY.slerp(turn, min(0.25, 8 / max(angle, 0.001)))
+            distance = previous.length() + (offset.length() - previous.length()) * 0.25
+            offset = turn * previous.normalize() * max(CAMERA_MIN_DISTANCE, distance)
+            clipped = self.clip_camera_offset(focus, offset)
+            if clipped.length() >= CAMERA_MIN_DISTANCE:
+                offset = clipped
+            else:
+                # Slide along the obstacle without moving inside the player.
+                eye = focus + offset
+                start = self.camera.transform.pos
+                for _ in range(2):
+                    delta = eye - start
+                    hit = self.raycast(start, delta, delta.length(), tags=["ground"])
+                    if hit is None:
+                        break
+                    eye += hit.normal * (4 - (eye - hit.point).dot(hit.normal))
+                offset = eye - focus
 
-        pyxel.sounds[0].set("c3g3c4", "t", "654", "nnf", 4)
+        self.camera_offset = offset
+        self.camera.transform = Mat4.look_at(focus + offset, focus)
 
-        mesh = Mesh.from_glb("../assets/cube_actor.glb", colkey=0, fps=30.0)
-        self.scene = Scene(mesh)
+    def clip_camera_offset(self, focus, offset):
+        hit = self.raycast(focus, offset, offset.length(), tags=["ground"])
+        if hit:
+            return offset.normalize() * max(1, hit.distance - 6)
+        return offset
 
-        pyxel.run(self.update, self.draw)
-
-    def update(self):
+    def update_game(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_R):
-            self.scene.player.reset()
+        if pyxel.btnp(pyxel.KEY_S):
+            self.shading = self.lighting if self.shading is None else None
 
-        self.scene.update()
-        self.scene.update_camera()
+        self.update()
+        if self.player.on_floor and self.player.move.length() > 0:
+            turn = (self.player.heading + 180 - self.yaw + 180) % 360 - 180
+            self.yaw += pyxel.clamp(turn * 0.05, -2, 2)
+        self.update_camera()
 
-    def draw(self):
-        self.scene.draw(0, 0, pyxel.width, pyxel.height)
+    def draw_game(self):
+        pyxel.cls(30)
+        self.draw(0, 0, pyxel.width, pyxel.height)
 
-        if self.scene.player.reached_goal:
-            pyxel.text(8, 8, "GOAL! Press R", 10)
-        else:
-            pyxel.text(8, 8, "Up/W: Move  Left/Right: Turn  Space: Jump", 7)
+        self.draw_text(8, 8, f"COINS {self.player.coins}/{len(self.coins)}")
+        if not self.goal.active:
+            self.draw_text(252, 8, "SUMMIT REACHED!")
+
+        pyxel.rect(0, 228, 320, 12, 0)
+        help_text = "Arrows: Move  Space: Jump x2  S: Shading  Q: Quit"
+        pyxel.text((320 - len(help_text) * 4) // 2, 231, help_text, 7)
+
+    def draw_text(self, x, y, text):
+        for dy in range(-1, 2):
+            for dx in range(-1, 2):
+                pyxel.text(x + dx, y + dy, text, 0)
+
+        pyxel.text(x, y, text, 7)
 
 
 App()

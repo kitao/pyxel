@@ -716,6 +716,14 @@ impl Node {
     }
 
     #[allow(clippy::unused_self)]
+    #[pyo3(signature = (distance=None))]
+    fn decal(&self, distance: Option<f32>) {
+        with_draw_context(|ctx| {
+            ctx.decal_distance = distance;
+        });
+    }
+
+    #[allow(clippy::unused_self)]
     fn shaded(&self, on: bool) {
         with_draw_context(|ctx| {
             ctx.shaded = on;
@@ -1062,6 +1070,7 @@ impl Node {
             depth_test: true,
             depth_write: true,
             depth_offset: 0.0,
+            decal_distance: None,
             shaded: true,
         });
 

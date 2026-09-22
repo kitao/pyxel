@@ -12,8 +12,9 @@ Concrete choices applying these standards and their rationale are recorded in
   separation of basic and advanced capabilities: they support learning and
   discovery. Keep differences that serve distinct users or purposes.
 - **Clarity.** Keep what readers need to understand, use, or maintain the
-  project. Prefer direct code and concise explanations; preserve necessary
-  conditions and rationale.
+  project. Prefer direct code and concise explanations that reduce the intended
+  reader's effort while preserving necessary behavior, meaning, conditions, and
+  rationale.
 - **Evidence.** Make decisions reproducible from the rules and evidence.
   Explain judgments through the relevant rule, source, and comparable sites.
   Personal taste and majority usage do not settle a disagreement.

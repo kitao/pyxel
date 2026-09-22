@@ -57,6 +57,7 @@ fn main() {
     bench_motion_sample();
     bench_node_find_by_tags();
     bench_scene_walk_contacts();
+    bench_scene_pushback();
 }
 
 // Benchmarks
@@ -326,6 +327,47 @@ fn bench_scene_walk_contacts() {
     });
 }
 
+// Character push-back should stay cheap even when an unrelated rolling body
+// shares its floor. Keep the contact geometry identical in every sample.
+fn bench_scene_pushback() {
+    for (name, count, rolling) in [
+        ("scene_pushback_1", 1, false),
+        ("scene_pushback_128", 128, false),
+        ("scene_pushback_128_mixed", 128, true),
+    ] {
+        let root = Node::new();
+        for i in 0..=count {
+            let floor = i == count;
+            let node = Node::new();
+            rc_mut!(&node).transform = Mat4::from_translation(&Vec3 {
+                x: if floor { 0.0 } else { (i % 16) as f32 * 3.0 },
+                y: if floor { -1.0 } else { 0.9 },
+                z: if floor { 0.0 } else { (i / 16) as f32 * 3.0 },
+            });
+            rc_mut!(&node).collider = Some(Collider::new(
+                if floor {
+                    Vec3::new(200.0, 2.0, 200.0)
+                } else {
+                    Vec3::zero()
+                },
+                if floor { 0.0 } else { 1.0 },
+                None,
+                false,
+                rolling && i == 0,
+                if floor { 0.0 } else { 1.0 },
+                0.0,
+                0.5,
+                Vec3::new(0.0, if floor { 0.0 } else { -0.1 }, 0.0),
+                Vec3::zero(),
+            ));
+            Node::add_child(&root, &node);
+        }
+        run_bench(name, 1_000, |_| {
+            black_box(Scene::detect_contacts(black_box(&root)));
+        });
+    }
+}
+
 // Reset the iteration index each sample so input cycles repeat identically.
 fn run_bench(name: &str, iters_per_sample: u32, mut f: impl FnMut(u32)) {
     for i in 0..iters_per_sample {
@@ -376,6 +418,7 @@ fn make_draw_context(target_size: u32) -> DrawContext {
         depth_test: true,
         depth_write: true,
         depth_offset: 0.0,
+        decal_distance: None,
         shaded: true,
     }
 }

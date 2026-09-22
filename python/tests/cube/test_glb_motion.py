@@ -33,8 +33,6 @@ from ._glb_fixtures import (
     write_two_texture_glb,
 )
 
-EXAMPLES_DIR = Path(__file__).parents[2] / "pyxel" / "examples"
-
 
 def test_motion_not_user_constructible():
     with raises_exact(TypeError, "cannot create 'pyxel.cube.Motion' instances"):
@@ -104,8 +102,8 @@ def test_from_glb_loads_blockbench_profile_smooth_motion(tmp_path):
     assert root.transform.pos.x == 0.15625
 
 
-def test_bundled_actor_cube_is_closed_and_outward_wound():
-    path = EXAMPLES_DIR / "assets" / "cube_actor.glb"
+def test_actor_cube_is_closed_and_outward_wound():
+    path = Path(__file__).parent / "fixtures" / "actor.glb"
     mesh = Mesh.from_glb(str(path), colkey=0)
     primitives = [primitive for primitive in mesh.primitives if primitive is not None]
 

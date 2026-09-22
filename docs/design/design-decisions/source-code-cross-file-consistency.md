@@ -76,29 +76,49 @@ supplies a scale of at least one.
 
 ### Teaching scope and direct code in examples
 
-**Decision:** Keep teaching examples focused on what the reader is meant to
-learn and try. Do not require them to cover every game sequence or exceptional
-state. Fix defects that break the demonstrated behavior or normal interaction;
-a possible edge case alone does not justify adding gameplay or defensive
-branches.
+**Decision:** Treat an example's result and its source as one teaching artifact.
+Readers should be drawn to what it produces and be able to understand, modify,
+and reuse the relevant technique. Preserve the behavior and expressive qualities
+that define the intended demonstration when simplifying its implementation;
+reducing the demonstration's scope is a separate design choice. This applies to
+all example families, including basic and advanced graphics, sound, and games.
 
-Keep screen dimensions directly in `pyxel.init` in examples such
-as [Hello Pyxel](../../../python/pyxel/examples/01_hello_pyxel.py), rather than
-creating constants merely to name the arguments. Use named values where they
-expose something the learner is expected to change and play with, such as
-`MOTION_SPEED` in [Mesh and
-Motion](../../../python/pyxel/examples/cube/c04_mesh_and_motion.py).
+Organize code around the objects, operations, and relationships the reader needs
+to follow. Choose grouping and explanations for the knowledge the intended
+reader brings. Teaching code may need to expose steps that a reader familiar
+with the implementation would infer without those boundaries or explanations.
+A helper, class, or shared representation is useful when it gives a
+coherent operation or concept a recognizable home and reduces what the reader
+must keep in mind. Prefer direct code when a layer merely redirects the reader
+or introduces vocabulary without helping that task. Judge the complete path
+from a desired effect to the code and assets that produce it, including any
+support code introduced by the example. Shorter files or fewer definitions do
+not establish a simpler learning path.
 
-**Reason:** Beginners should be able to follow the short program and try a
-change without navigating layers of constants and helpers. The screen size is
-already clear at the call site. The motion speed exposes a value the learner
-can change to compare animation playback, making that experiment available
-through one edit.
+Keep local values directly at their use when their meaning is clear. Name values
+that expose a useful experiment or express a relationship across the program.
+A local screen size can be written at `pyxel.init`; a bound shared by movement
+and drawing can use a name. Neither a literal nor a repeated expression alone
+requires extraction. Keep sample-specific choices distinguishable from API
+requirements.
 
-Applying production abstraction habits mechanically would obscure the lesson.
-Direct control flow and local names and values are deliberate choices here.
-A number or small repeated expression does not by itself establish a need for
-extraction.
+Keep the agreed demonstration focused. Do not require every possible game
+sequence or exceptional state; fix defects that break the demonstrated behavior
+or normal interaction. This limit on incidental machinery does not justify
+removing the content that makes the demonstration worth understanding.
+
+**Reason:** Pyxel examples make an expressive result attainable through a small,
+understandable program. Readers need both the motivation to create it and a
+clear route from what they experience to what they can change. Code economy
+serves that connection; deleting the result or moving its implementation out of
+view does not establish it.
+
+The object classes in [Shooter](../../../python/pyxel/examples/09_shooter.py)
+and the direct calls in [Transform](../../../python/pyxel/examples/16_transform.py)
+serve different demonstrations. Their reasons transfer across example families;
+their structures are not universal prescriptions. Technical difficulty changes
+the concepts that must be taught, not the obligation to make their relationship
+to the result understandable.
 
 ### Cube node identity and ownership
 
