@@ -4,7 +4,6 @@ from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Quat, Shading, Vec3
 GRAVITY = -0.45
 JUMP_SPEED = 6.5
 MOVE_SPEED = 2.0
-
 CAMERA_MIN_DISTANCE = 48
 
 
@@ -12,9 +11,9 @@ class MovingPlatform(Node):
     def __init__(self, start, end):
         super().__init__()
 
-        self.add_child(Node.from_mesh(Mesh.from_glb("assets/moving_platform.glb")))
+        self.add_child(Node.from_mesh(Mesh.from_glb("assets/garden_platform.glb")))
         self.collider = Collider(
-            mesh=Mesh.from_glb("assets/moving_platform_collision.glb"), mass=0
+            mesh=Mesh.from_glb("assets/garden_platform_collision.glb"), mass=0
         )
         self.tags = ["ground"]
         self.start = start
@@ -37,7 +36,7 @@ class Player(Node):
         self.coins = 0
         self.reset()
 
-        mesh = Mesh.from_glb("assets/player.glb")
+        mesh = Mesh.from_glb("assets/garden_player.glb")
         self.motions = {motion.name: motion for motion in mesh.motions}
         self.actor = Node.from_mesh(mesh)
         self.add_child(self.actor)
@@ -107,8 +106,11 @@ class Player(Node):
 
         motion = "jump" if not self.on_floor else "walk" if walking else "idle"
         if motion != self.motion:
-            self.actor.play_motion(self.motions[motion])
             self.motion = motion
+            self.motion_frame = 0
+        self.actor.apply_motion(self.motions[motion], self.motion_frame)
+        speed = max(1.8 - self.motion_frame / 40, 1)
+        self.motion_frame += speed if motion == "jump" else 1
 
     def on_collide(self, other, contact):
         if "coin" in other.tags:
@@ -129,8 +131,7 @@ class Player(Node):
             self.on_floor = True
             self.floor_normal = contact.normal
             self.jumps = 0
-            v = self.collider.velocity
-            self.collider.velocity = Vec3(v.x, 0, v.z)
+            self.collider.velocity -= Vec3(0, self.collider.velocity.y, 0)
             if isinstance(other, MovingPlatform):
                 self.platform = other
 
@@ -142,9 +143,9 @@ class Player(Node):
             self.decal(hit.distance + 8)
             mat = Mat4.from_euler(Vec3(-90, 0, 0))
             self.dither(0.5)
-            self.elli(mat, 14, 14, 0)
+            self.elli(mat, 14, 14, 1)
             self.dither(1)
-            self.elli(mat, 9, 9, 0)
+            self.elli(mat, 9, 9, 1)
 
 
 class App(Node):
@@ -152,7 +153,6 @@ class App(Node):
         super().__init__()
 
         pyxel.init(320, 240, title="3D Collision")
-        pyxel.Image.from_image("assets/garden.png", include_colors=True)
 
         pyxel.sounds[0].mml(
             "T240 Q100 @1 V64 O3 E32 @2 V112 @ENV1{127,6,96,30,0} @GLI1{-1900,30} O5 C8."
@@ -163,28 +163,27 @@ class App(Node):
         )
 
         self.lighting = Shading(pyxel.colors)
-        self.lighting.direction = Vec3(-0.5, -1.0, 0.8)
+        self.lighting.direction = Vec3(-0.5, -1.0, -0.8)
 
         self.camera = Camera()
         self.camera.near = 2
 
-        stage = Node.from_mesh(Mesh.from_glb("assets/garden.glb"))
+        stage = Node.from_mesh(Mesh.from_glb("assets/garden_stage.glb"))
         stage.collider = Collider(
-            mesh=Mesh.from_glb("assets/garden_collision.glb"), mass=0
+            mesh=Mesh.from_glb("assets/garden_stage_collision.glb"), mass=0
         )
         stage.tags = ["ground"]
         self.add_child(stage)
 
         # Placement markers are saved with the stage in the model editor.
         self.coins = stage.find_by_name("Coins")[0].children
-        coin_mesh = Mesh.from_glb("assets/coin.glb")
+        coin_mesh = Mesh.from_glb("assets/garden_coin.glb")
         for coin in self.coins:
             coin.add_child(Node.from_mesh(coin_mesh))
             coin.collider = Collider(radius=5, trigger=True, mass=0)
             coin.tags = ["coin"]
 
         self.goal = stage.find_by_name("Goal")[0]
-        self.goal.transform = self.goal.transform.translate(Vec3(0, 8, 0))
         self.goal.collider = Collider(size=Vec3(24, 16, 24), trigger=True, mass=0)
 
         start = stage.find_by_name("PlatformStart")[0].world_transform.pos
@@ -199,7 +198,7 @@ class App(Node):
 
     def on_update(self):
         for coin in self.coins:
-            coin.children[0].transform = Mat4.IDENTITY.rotate_y(pyxel.frame_count * 4)
+            coin.children[0].transform = Mat4.IDENTITY.rotate_y(pyxel.frame_count * 6)
 
     def reset_camera(self):
         self.yaw = 28
@@ -278,7 +277,7 @@ class App(Node):
         self.update_camera()
 
     def draw_game(self):
-        pyxel.cls(30)
+        pyxel.cls(6)
         self.draw(0, 0, pyxel.width, pyxel.height)
 
         self.draw_text(8, 8, f"COINS {self.player.coins}/{len(self.coins)}")

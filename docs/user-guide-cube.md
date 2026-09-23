@@ -43,3 +43,19 @@ def draw():
 
 pyxel.run(update, draw)
 ```
+
+## Creating Models in Blockbench
+
+First, download the Pyxel GIMP palette file [pyxel.gpl](https://kitao.github.io/pyxel/docs/pyxel.gpl). Use this palette when creating or editing models for the Cube examples.
+
+- Create a Generic Model or open a sample .bbmodel, then switch to Paint. Choose Import Palette in the Palette panel, select pyxel.gpl, and enable Replace Palette. Check that the usual 16 Pyxel colors appear in their original order before painting.
+- Edit with these 16 colors. The .bbmodel files are the editable projects; .glb files are for loading in Pyxel Cube. For c05, extract garden_models.zip in cube/assets and open a .bbmodel inside. The palette is a Blockbench setting, so import pyxel.gpl again when using a different installation.
+- Use File > Export > Export glTF Model. Select Binary (glb), enable Embed Textures, and disable Armature. Enable Export Animations for animated models. Keep the saved scale when re-exporting a sample project.
+
+## Building the c05 Stage
+
+Extract garden_models.zip from cube/assets and open garden_parts.bbmodel. Build Example is an L-shaped island assembled from the same parts as garden_stage.bbmodel. Duplicate the part groups to build your own stage.
+
+- Grass parts are 48 by 48 units and 32 units high, with their origin at the walking surface center. Stack Cliff parts below in 32-unit steps. Stacking instead of stretching preserves the texture dot size. A/B share the same shape but differ in pattern placement.
+- N/E/S/W identify exposed sides (-Z/+X/+Z/-X). Choose the matching orientation rather than rotating the painted lighting. Place the matching Inner part at inside corners. Ramp rises 24 units over a 48-unit run; Ramp Tall has a deeper foundation. Bridge spans 48 units. Use Joint parts to fill the 1.5-unit side gaps where ramps meet islands.
+- Copy visual parts into garden_stage.bbmodel and a matching-height box from Collision Columns into garden_stage_collision.bbmodel. Align their walking surfaces. Collision boxes cover whole columns without per-part divisions or decorative bevels. Export the two assembled models under their existing .glb names. The parts library itself is not used at runtime.
