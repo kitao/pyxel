@@ -36,6 +36,8 @@
         wrap.innerHTML = `
           <section class="card" id="s-overview"></section>
           <section class="card" id="s-getting-started"></section>
+          <section class="card" id="s-models"></section>
+          <section class="card" id="s-parts"></section>
         `;
         app.appendChild(wrap);
         updateTexts();
@@ -83,6 +85,24 @@ def draw():
 pyxel.run(update, draw)`,
             "python",
           )}`;
+
+        document.getElementById("s-models").innerHTML = `
+          <h2 class="section-title">${esc(t("models_title"))}</h2>
+          <p class="body">${t("models_palette").replace("{0}", link("https://kitao.github.io/pyxel/docs/pyxel.gpl", "pyxel.gpl"))}</p>
+          <ul class="list-disc pl-6 space-y-2 body mt-2">
+            <li>${esc(t("models_import"))}</li>
+            <li>${esc(t("models_edit"))}</li>
+            <li>${esc(t("models_export"))}</li>
+          </ul>`;
+
+        document.getElementById("s-parts").innerHTML = `
+          <h2 class="section-title">${esc(t("parts_title"))}</h2>
+          <p class="body">${esc(t("parts_open"))}</p>
+          <ul class="list-disc pl-6 space-y-2 body mt-2">
+            <li>${esc(t("parts_grid"))}</li>
+            <li>${esc(t("parts_join"))}</li>
+            <li>${esc(t("parts_collision"))}</li>
+          </ul>`;
 
         setDocLang(lang);
         hljs.highlightAll();

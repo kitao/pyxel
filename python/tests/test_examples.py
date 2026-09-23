@@ -268,7 +268,7 @@ class Axis(Node):
 
 coin_scene = Node()
 coin_scene.camera = Camera()
-coin_actor = Node.from_mesh(Mesh.from_glb("assets/coin.glb"))
+coin_actor = Node.from_mesh(Mesh.from_glb("assets/garden_coin.glb"))
 coin_scene.add_child(coin_actor)
 axis = Axis()
 coin_scene.add_child(axis)
@@ -277,12 +277,12 @@ for eye in (Vec3(0, 0, 30), Vec3(0, 20, 30), Vec3(12, 30, 30)):
     for angle in range(0, 360, 15):
         coin_actor.transform = Mat4.IDENTITY.rotate_y(angle)
         axis.visible = False
-        pyxel.cls(30)
+        pyxel.cls(6)
         coin_scene.draw(0, 0, 64, 64)
         before = [pyxel.pget(x, y) for y in range(64) for x in range(64)]
-        assert any(color != 30 for color in before)
+        assert any(color != 6 for color in before)
         axis.visible = True
-        pyxel.cls(30)
+        pyxel.cls(6)
         coin_scene.draw(0, 0, 64, 64)
         after = [pyxel.pget(x, y) for y in range(64) for x in range(64)]
         assert before == after, (eye, angle)
@@ -293,10 +293,15 @@ wings = player.actor.find_by_name("LeftWing") + player.actor.find_by_name("Right
 rest_wings = [wing.transform.rot for wing in wings]
 step(jump=True)
 takeoff_wings = [wing.transform.rot for wing in wings]
+takeoff_phase = player.motion_frame
 step(3)
+early_flap_speed = (player.motion_frame - takeoff_phase) / 3
 for wing, takeoff in zip(wings, takeoff_wings):
     assert wing.transform.rot.angle_to(takeoff) > 45
+early_phase = player.motion_frame
 step(9)
+late_flap_speed = (player.motion_frame - early_phase) / 9
+assert 1 <= late_flap_speed < early_flap_speed <= 1.8
 first_y = player.transform.pos.y
 step(jump=True)
 for wing, takeoff in zip(wings, takeoff_wings):
