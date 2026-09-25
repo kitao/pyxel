@@ -2482,8 +2482,8 @@ mod tests {
 
     #[test]
     fn test_flat_triangle_contacts_do_not_add_sideways_force() {
-        // A wide terrain triangle used to lose several ulps when rebuilding
-        // the closest point. That noise tipped rolling stacks at rest.
+        // Reconstructing a closest point on wide terrain can lose several
+        // ulps and introduce sideways force in a resting stack.
         for axis in 0..3 {
             let rotate = |v: Vec3| match axis {
                 0 => v,

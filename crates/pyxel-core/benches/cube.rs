@@ -1,6 +1,7 @@
 // Deterministic Cube rasterization, motion, and collision benchmarks. Run with:
 // cargo bench -p pyxel-core --features sdl2_static
 
+use std::collections::HashSet;
 use std::hint::black_box;
 use std::time::Instant;
 
@@ -607,7 +608,7 @@ fn make_scene_tree() -> RcNode {
             let mut group_ref = rc_mut!(&group);
             group_ref.transform =
                 Mat4::from_translation(&rc_ref!(&Vec3::new(g as f32 * 4.0, 0.0, 0.0)));
-            group_ref.tags = vec![String::from("group")];
+            group_ref.tags = HashSet::from([String::from("group")]);
         }
         Node::add_child(&root, &group);
 
@@ -618,7 +619,7 @@ fn make_scene_tree() -> RcNode {
                 leaf_ref.transform =
                     Mat4::from_translation(&rc_ref!(&Vec3::new(0.0, 0.0, l as f32 * 0.9)));
                 if l < COLLIDERS_PER_GROUP {
-                    leaf_ref.tags = vec![String::from("enemy")];
+                    leaf_ref.tags = HashSet::from([String::from("enemy")]);
                     leaf_ref.collider = Some(Collider::new(
                         Vec3::zero(),
                         0.5,
@@ -636,7 +637,7 @@ fn make_scene_tree() -> RcNode {
                         0.0,
                     ));
                 } else {
-                    leaf_ref.tags = vec![String::from("decor")];
+                    leaf_ref.tags = HashSet::from([String::from("decor")]);
                 }
             }
             Node::add_child(&group, &leaf);

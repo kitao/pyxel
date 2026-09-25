@@ -382,15 +382,25 @@ impl Scene {
         for child in &node_ref.children {
             Self::collect_destroyed_recursive(child, out);
         }
-        if node_ref.destroyed {
+        if node_ref.destroyed && !node_ref.destroy_processed {
             out.push(node.clone());
         }
     }
 
-    // Detach a destroyed node and consume its pending notification.
+    // Consume before calling Python, which can reenter update or raise an exception.
+    pub fn take_destroy_notification(node: &RcNode) -> bool {
+        let mut node = rc_mut!(node);
+        if !node.destroyed || node.destroy_notified {
+            return false;
+        }
+        node.destroy_notified = true;
+        true
+    }
+
+    // Detachment completes cleanup without clearing the public destruction state.
     pub fn detach_destroyed(node: &RcNode) {
         Node::detach(node);
-        rc_mut!(node).destroyed = false;
+        rc_mut!(node).destroy_processed = true;
     }
 
     // Motion integration: walks the active subtree and applies each
@@ -3292,7 +3302,7 @@ impl Scene {
             return true;
         };
         let node_tags = &rc_ref!(node).tags;
-        tags.iter().any(|t| node_tags.iter().any(|nt| nt == t))
+        tags.iter().any(|t| node_tags.contains(t))
     }
 
     // Mesh raycast through the collision BVH. The ray is mapped into
@@ -3454,22 +3464,6 @@ fn ray_vs_rounded_box(
     max_distance: f32,
 ) -> Option<(f32, Vec3, Vec3)> {
     let r = radius.max(0.0);
-    if r <= 0.0 {
-        let local_aabb = Aabb {
-            min: Vec3 {
-                x: -half.x,
-                y: -half.y,
-                z: -half.z,
-            },
-            max: Vec3 {
-                x: half.x,
-                y: half.y,
-                z: half.z,
-            },
-        };
-        return ray_vs_aabb(origin, direction, &local_aabb, max_distance);
-    }
-
     let mut best: Option<(f32, Vec3, Vec3)> = None;
     for axis in 0..3 {
         for sign in [-1.0, 1.0] {
@@ -3479,6 +3473,10 @@ fn ray_vs_rounded_box(
                 set_nearer_hit(&mut best, hit);
             }
         }
+    }
+
+    if r <= 0.0 {
+        return best;
     }
 
     // Only each edge capsule's outward quarter belongs to the box surface;
@@ -4958,6 +4956,8 @@ fn point_in_triangle(point: Vec3, tri_a: Vec3, tri_b: Vec3, tri_c: Vec3) -> bool
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use super::*;
 
     fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
@@ -5136,7 +5136,7 @@ mod tests {
         }
 
         // A separating move from an initially overlapping pair is not
-        // reported as a new swept entry; sharp boxes retain the old path.
+        // reported as a new swept entry; sharp boxes use the SAT path.
         let mut end = target;
         end.data[0][3] = 5.0;
         assert!(
@@ -5969,7 +5969,7 @@ mod tests {
         let scene = Node::new();
         Node::destroy(&scene);
         Scene::detach_destroyed(&scene);
-        assert!(!rc_ref!(&scene).destroyed);
+        assert!(rc_ref!(&scene).destroyed);
         assert!(Scene::collect_destroyed_post_order(&scene).is_empty());
     }
 
@@ -8080,8 +8080,8 @@ mod tests {
         let friend = Node::new();
         rc_mut!(&enemy).collider = Some(sphere_collider(0.5, 1.0));
         rc_mut!(&friend).collider = Some(sphere_collider(0.5, 1.0));
-        rc_mut!(&enemy).tags = vec!["enemy".to_string()];
-        rc_mut!(&friend).tags = vec!["friend".to_string()];
+        rc_mut!(&enemy).tags = HashSet::from(["enemy".to_string()]);
+        rc_mut!(&friend).tags = HashSet::from(["friend".to_string()]);
         Node::add_child(&root, &enemy);
         Node::add_child(&root, &friend);
 

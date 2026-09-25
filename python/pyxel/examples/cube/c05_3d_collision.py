@@ -15,7 +15,7 @@ class MovingPlatform(Node):
         self.collider = Collider(
             mesh=Mesh.from_glb("assets/garden_platform_collision.glb"), mass=0
         )
-        self.tags = ["ground"]
+        self.tags = {"ground"}
         self.start = start
         self.end = end
         self.transform = Mat4.from_translation(start)
@@ -76,6 +76,7 @@ class Player(Node):
             forward = Vec3(-camera[0, 2], 0, -camera[2, 2]).normalize()
             self.move = right * dx + forward * dz
             self.move_input = (dx, dz)
+
         move = self.move.normalize() * MOVE_SPEED
         if move.length() > 0:
             self.heading = pyxel.atan2(move.x, move.z)
@@ -138,7 +139,7 @@ class Player(Node):
                 self.platform = other
 
     def on_draw(self):
-        hit = self.parent.raycast(self.transform.pos, Vec3.DOWN, tags=["ground"])
+        hit = self.parent.raycast(self.transform.pos, Vec3.DOWN, tags={"ground"})
         if hit:
             self.shaded(False)
             # Leave room for the downhill side of the shadow on a slope.
@@ -174,7 +175,7 @@ class App(Node):
         stage.collider = Collider(
             mesh=Mesh.from_glb("assets/garden_stage_collision.glb"), mass=0
         )
-        stage.tags = ["ground"]
+        stage.tags = {"ground"}
         self.add_child(stage)
 
         # Placement markers are saved with the stage in the model editor.
@@ -183,7 +184,7 @@ class App(Node):
         for coin in self.coins:
             coin.add_child(Node.from_mesh(coin_mesh))
             coin.collider = Collider(radius=5, trigger=True, mass=0)
-            coin.tags = ["coin"]
+            coin.tags = {"coin"}
 
         self.goal = stage.find_by_name("Goal")[0]
         self.goal.collider = Collider(size=Vec3(24, 16, 24), trigger=True, mass=0)
@@ -250,7 +251,7 @@ class App(Node):
                 start = self.camera.transform.pos
                 for _ in range(2):
                     delta = eye - start
-                    hit = self.raycast(start, delta, delta.length(), tags=["ground"])
+                    hit = self.raycast(start, delta, delta.length(), tags={"ground"})
                     if hit is None:
                         break
                     eye += hit.normal * (4 - (eye - hit.point).dot(hit.normal))
@@ -260,7 +261,7 @@ class App(Node):
         self.camera.transform = Mat4.look_at(focus + offset, focus)
 
     def clip_camera_offset(self, focus, offset):
-        hit = self.raycast(focus, offset, offset.length(), tags=["ground"])
+        hit = self.raycast(focus, offset, offset.length(), tags={"ground"})
         if hit:
             return offset.normalize() * max(1, hit.distance - 6)
         return offset

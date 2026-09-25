@@ -22,6 +22,27 @@ class TestUpdate:
     def test_update_no_children(self):
         Node().update()
 
+    def test_direct_subtree_update_respects_inactive_ancestor(self):
+        class Body(Node):
+            calls = 0
+
+            def on_update(self):
+                self.calls += 1
+
+        parent, branch, body = Node(), Node(), Body()
+        parent.add_child(branch)
+        branch.add_child(body)
+        body.collider = Collider(velocity=Vec3.RIGHT, gravity=0, linear_damp=0)
+        parent.active = False
+        branch.update()
+        assert body.calls == 0
+        assert body.transform.pos == Vec3.ZERO
+
+        parent.active = True
+        branch.update()
+        assert body.calls == 1
+        assert body.transform.pos == Vec3.RIGHT
+
 
 class TestGravity:
     def test_defaults_and_independent_body_settings(self):
@@ -395,30 +416,37 @@ class TestRaycast:
     @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
     @pytest.mark.parametrize("rotated", [False, True])
     @pytest.mark.parametrize(
-        "size, origin, direction, point, normal",
+        "size, radius, origin, direction, point, normal",
         [
-            ((0, 2, 0), (0, 0, 0), (0, 1, 0), (0, 1.5, 0), (0, 1, 0)),
-            ((0, 2, 0), (0, 1, 0), (0, -1, 0), (0, -1.5, 0), (0, -1, 0)),
-            ((0, 2, 0), (0, 0, 0), (1, 0, 0), (0.5, 0, 0), (1, 0, 0)),
-            ((0, 2, 0), (0, 3, 0), (0, -1, 0), (0, 1.5, 0), (0, 1, 0)),
-            ((2, 2, 2), (0, 1, 0), (1, 0, 0), (1.5, 1, 0), (1, 0, 0)),
-            ((2, 2, 2), (0, 0, 0), (1, 0, 0), (1.5, 0, 0), (1, 0, 0)),
+            ((0, 2, 0), 0.5, (0, 0, 0), (0, 1, 0), (0, 1.5, 0), (0, 1, 0)),
+            ((0, 2, 0), 0.5, (0, 1, 0), (0, -1, 0), (0, -1.5, 0), (0, -1, 0)),
+            ((0, 2, 0), 0.5, (0, 0, 0), (1, 0, 0), (0.5, 0, 0), (1, 0, 0)),
+            ((0, 2, 0), 0.5, (0, 3, 0), (0, -1, 0), (0, 1.5, 0), (0, 1, 0)),
+            ((2, 2, 2), 0.5, (0, 1, 0), (1, 0, 0), (1.5, 1, 0), (1, 0, 0)),
+            ((2, 2, 2), 0.5, (0, 0, 0), (1, 0, 0), (1.5, 0, 0), (1, 0, 0)),
             (
                 (2, 2, 2),
+                0.5,
                 (0, 0, 0),
                 (1, 1, 1),
                 (1 + 0.5 / 3**0.5,) * 3,
                 (1 / 3**0.5,) * 3,
             ),
-            ((2, 2, 2), (3, 0, 0), (-1, 0, 0), (1.5, 0, 0), (1, 0, 0)),
+            ((2, 2, 2), 0.5, (3, 0, 0), (-1, 0, 0), (1.5, 0, 0), (1, 0, 0)),
+            ((2, 2, 2), 0, (0, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0)),
+            ((2, 2, 2), 0, (0, 0, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0)),
+            ((2, 2, 2), 0, (0, 0, 0), (0, 0, 1), (0, 0, 1), (0, 0, 1)),
+            ((2, 2, 2), 0, (3, 0, 0), (-1, 0, 0), (1, 0, 0), (1, 0, 0)),
+            ((2, 2, 2), 0, (0, -3, 0), (0, 1, 0), (0, -1, 0), (0, -1, 0)),
+            ((2, 2, 2), 0, (0, 0, 3), (0, 0, -1), (0, 0, 1), (0, 0, 1)),
         ],
     )
-    def test_raycast_uses_outer_capsule_and_rounded_box_surfaces(
-        self, method, rotated, size, origin, direction, point, normal
+    def test_raycast_uses_outer_collider_surfaces(
+        self, method, rotated, size, radius, origin, direction, point, normal
     ):
         root = Node()
         body = Node()
-        body.collider = Collider(size=Vec3(*size), radius=0.5)
+        body.collider = Collider(size=Vec3(*size), radius=radius)
         transform = (
             Mat4.from_translation(Vec3(3, -2, 1))
             * Mat4.from_axis_angle(Vec3.FORWARD, 37)
@@ -455,6 +483,18 @@ class TestRaycast:
         root.add_child(_ball(Vec3(0, 0, 0)))
         hit = root.raycast(Vec3(10, 10, 10), Vec3(1, 0, 0))
         assert hit is None
+
+    @pytest.mark.parametrize("axis", [Vec3.RIGHT, Vec3.UP, Vec3.FORWARD])
+    @pytest.mark.parametrize("sign", [-1, 1])
+    def test_raycast_from_box_surface_returns_outward_normal(self, axis, sign):
+        body = Node()
+        body.collider = Collider(size=Vec3(2, 2, 2), radius=0)
+        point = axis * sign
+        hit = body.raycast(point, -point, max_distance=0)
+        assert hit is not None
+        assert hit.distance == 0
+        assert hit.point == point
+        assert hit.normal == point
 
     def test_raycast_all_sorted_by_distance(self):
         root = Node()
@@ -539,13 +579,13 @@ class TestOverlapQueries:
     def test_overlap_sphere_filters_by_tag(self):
         root = Node()
         enemy = _ball(Vec3(0, 0, 0))
-        enemy.tags = ["enemy"]
+        enemy.tags = {"enemy"}
         friend = _ball(Vec3(0.5, 0, 0))
-        friend.tags = ["friend"]
+        friend.tags = {"friend"}
         root.add_child(enemy)
         root.add_child(friend)
 
-        nodes = root.overlap_sphere(Vec3.ZERO, 1.0, tags=["enemy"])
+        nodes = root.overlap_sphere(Vec3.ZERO, 1.0, tags={"enemy"})
         assert nodes == [enemy]
 
     def test_trigger_skipped_by_default(self):
@@ -569,6 +609,26 @@ class _ColoredBox(Node):
     def on_draw(self):
         self.shaded(False)
         self.box(Mat4.IDENTITY, Vec3(4, 4, 4), self.col)
+
+
+class TestVisibility:
+    def test_direct_subtree_draw_respects_hidden_ancestor_and_clears(self):
+        parent, branch = Node(), Node()
+        parent.add_child(branch)
+        branch.add_child(_ColoredBox(Vec3(0, 0, -8), 11))
+        parent.camera = Camera()
+        parent.camera.ortho_size = 10
+        parent.camera.clear_color = 0
+        target = pyxel.Image(16, 16)
+        target.cls(7)
+
+        parent.visible = False
+        branch.draw(0, 0, 16, 16, target)
+        assert target.pget(8, 8) == 0
+
+        parent.visible = True
+        branch.draw(0, 0, 16, 16, target)
+        assert target.pget(8, 8) == 11
 
 
 class TestOrthoCameraClipping:

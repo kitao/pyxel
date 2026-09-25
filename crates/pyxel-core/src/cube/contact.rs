@@ -1,4 +1,3 @@
-use crate::cube::quat::{Quat, RcQuat};
 use crate::cube::vec3::{RcVec3, Vec3};
 
 // on_collide receives the geometry and motion deltas for resolving penetration.
@@ -6,7 +5,6 @@ pub struct Contact {
     pub point: RcVec3,
     pub normal: RcVec3,
     pub depth: f32,
-    pub delta_rotation: RcQuat,
     pub delta_velocity: RcVec3,
     pub delta_angular_velocity: RcVec3,
 }
@@ -34,7 +32,6 @@ impl Contact {
             point: Vec3::new(point.x, point.y, point.z),
             normal: Vec3::new(normal.x, normal.y, normal.z),
             depth,
-            delta_rotation: Quat::identity(),
             delta_velocity: Vec3::new(delta_velocity.x, delta_velocity.y, delta_velocity.z),
             delta_angular_velocity: Vec3::new(
                 delta_angular_velocity.x,

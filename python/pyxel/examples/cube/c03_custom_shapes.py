@@ -75,6 +75,7 @@ class App(Node):
             if i < LASER_POINTS - 1:
                 j = i * 2
                 indices += [j, j + 1, j + 2, j + 1, j + 3, j + 2]
+
         self.strip = Primitive(
             Primitive.MODE_TRIANGLES,
             [0.0] * (LASER_POINTS * 6),
@@ -82,6 +83,7 @@ class App(Node):
             uvs=uvs,
             cull=Primitive.CULL_NONE,
         )
+
         self.locked = []
         pyxel.play(1, 1)
         pyxel.play(3, 3)
@@ -136,6 +138,7 @@ class App(Node):
                     + 2.2 * math.sin(4.0 * z + 2.1 * time + phase * 0.6)
                 )
                 positions += [x * radius, y * radius, z * radius]
+
             self.body.positions[:] = positions
             self.body.compute_normals()
             flash = self.flashes[index]
@@ -158,6 +161,7 @@ class App(Node):
                     side = side.normalize() if side.length() > 1e-6 else right
                     positions.extend(point - side * LASER_HALF_WIDTH)
                     positions.extend(point + side * LASER_HALF_WIDTH)
+
                 self.strip.positions[:] = positions
                 self.prim(Mat4.IDENTITY, self.strip, self.laser_image, colkey=0)
 

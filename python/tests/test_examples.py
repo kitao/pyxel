@@ -542,7 +542,7 @@ scene.camera_offset = None
 scene.update_camera()
 wall = Node()
 wall.collider = Collider(size=Vec3(100, 200, 4), mass=0)
-wall.tags = ["ground"]
+wall.tags = {"ground"}
 wall.transform = Mat4.from_translation(Vec3(-20, 80, 300))
 scene.add_child(wall)
 previous = scene.camera.transform.rot
@@ -554,7 +554,7 @@ for z in range(160, 283, 2):
     assert eye.z < 298
     offset = eye - focus
     assert offset.length() >= 48
-    assert scene.raycast(focus, offset, offset.length(), tags=["ground"]) is None
+    assert scene.raycast(focus, offset, offset.length(), tags={"ground"}) is None
     assert scene.camera.transform.rot.angle_to(previous) < 10
     previous = scene.camera.transform.rot
 
@@ -592,19 +592,19 @@ for pos in [(-165, 104, -67), (-85, 96, -57), (-56, 104, -112), (-106, 56, -78)]
         if previous is not None:
             assert scene.camera.transform.rot.angle_to(previous) < 10
         previous = scene.camera.transform.rot
-        if scene.raycast(focus, offset, offset.length(), tags=["ground"]):
+        if scene.raycast(focus, offset, offset.length(), tags={"ground"}):
             occluded_frames += 1
             assert occluded_frames < 15
         else:
             occluded_frames = 0
-        hit = scene.raycast(eye, -offset, offset.length(), tags=["ground"])
+        hit = scene.raycast(eye, -offset, offset.length(), tags={"ground"})
         assert hit is None or hit.normal.dot(-offset) <= 0
     for _ in range(60):
         scene.update_camera()
     offset = scene.camera.transform.pos - focus
     expected = Vec3(pyxel.sin(359), 0.63, pyxel.cos(359)).normalize()
     assert (offset.normalize() - expected).length() < 0.005
-    assert scene.raycast(focus, offset, offset.length(), tags=["ground"]) is None
+    assert scene.raycast(focus, offset, offset.length(), tags={"ground"}) is None
 
 # The camera must turn gradually when walking under the low tree at the ramp.
 app = type(app)()
@@ -629,7 +629,7 @@ pyxel.set_btn(pyxel.KEY_RIGHT, False)
 step(60)
 offset = scene.camera.transform.pos - player.transform.pos
 assert (
-    scene.raycast(player.transform.pos, offset, offset.length(), tags=["ground"])
+    scene.raycast(player.transform.pos, offset, offset.length(), tags={"ground"})
     is None
 )
 
@@ -650,7 +650,7 @@ for i in range(17):
     scene.update_camera()
     offset = scene.camera.transform.pos - focus
     assert offset.length() >= 48
-    assert scene.raycast(focus, offset, offset.length(), tags=["ground"]) is None
+    assert scene.raycast(focus, offset, offset.length(), tags={"ground"}) is None
     assert scene.camera.transform.rot.angle_to(previous) < 10
     previous = scene.camera.transform.rot
 

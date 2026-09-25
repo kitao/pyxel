@@ -70,7 +70,7 @@ impl Quat {
         Self::new(axis.x * s, axis.y * s, axis.z * s, half.cos())
     }
 
-    pub fn from_euler(rot: &Vec3) -> RcQuat {
+    pub fn from_euler(euler: &Vec3) -> RcQuat {
         // XYZ extrinsic: result = Rz * Ry * Rx (applied to vector from right)
         let x_axis = Vec3 {
             x: 1.0,
@@ -88,9 +88,9 @@ impl Quat {
             z: 1.0,
         };
 
-        let qx = Self::from_axis_angle(&x_axis, rot.x);
-        let qy = Self::from_axis_angle(&y_axis, rot.y);
-        let qz = Self::from_axis_angle(&z_axis, rot.z);
+        let qx = Self::from_axis_angle(&x_axis, euler.x);
+        let qy = Self::from_axis_angle(&y_axis, euler.y);
+        let qz = Self::from_axis_angle(&z_axis, euler.z);
         let zy = rc_ref!(&qz).mul_quat(&rc_ref!(&qy));
         let result = rc_ref!(&zy).mul_quat(&rc_ref!(&qx));
         result
@@ -138,8 +138,7 @@ impl Quat {
     }
 
     pub fn from_matrix(mat: &Mat4) -> RcQuat {
-        let q = Self::from_matrix_value(mat);
-        Self::new(q.x, q.y, q.z, q.w)
+        mat.rot()
     }
 
     pub(crate) fn from_matrix_value(mat: &Mat4) -> Self {
@@ -229,7 +228,8 @@ impl Quat {
                 [0.0, 0.0, 0.0, 1.0],
             ],
         };
-        Self::from_matrix(&mat)
+        let q = Self::from_matrix_value(&mat);
+        Self::new(q.x, q.y, q.z, q.w)
     }
 
     // Unary operations
