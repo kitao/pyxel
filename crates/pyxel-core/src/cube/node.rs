@@ -192,14 +192,9 @@ impl Node {
         }
     }
 
-    // Remove scale before composing ancestors so it cannot skew angular directions.
+    // Compose first so reflections canceled by descendants preserve angular directions.
     pub(crate) fn world_rotation_value(node: &RcNode) -> Mat4 {
-        let local_rc = &rc_ref!(node).transform;
-        let local_rotation = rc_ref!(local_rc).rot_value().matrix_value();
-        match Self::parent(node) {
-            Some(parent) => Self::world_rotation_value(&parent).mul_mat_value(&local_rotation),
-            None => local_rotation,
-        }
+        Self::world_transform_value(node).rot_value().matrix_value()
     }
 
     // Shading and camera inherit the closest non-None ancestor value.

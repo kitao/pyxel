@@ -304,13 +304,13 @@ The translation part of the matrix.
 
 ### `rot` — variable
 
-The rotation part of the matrix as a Quat. Assumes a translation-rotation-scale composition.
+The rotation part of the matrix as a unit Quat. Assumes a translation-rotation-scale (TRS) composition. Returns Quat.IDENTITY if any axis has zero scale.
 
 - **Type:** `Quat`
 
 ### `scale` — variable
 
-The scale part of the matrix.
+The scale part of the matrix. X and Y are nonnegative; Z carries any reflection sign, so original axis signs are not preserved. If any axis has zero scale, returns axis magnitudes with zeros preserved.
 
 - **Type:** `Vec3`
 
@@ -608,7 +608,7 @@ Create the shortest rotation that turns from_vec to face the same direction as t
 
 ### `Quat.from_matrix(mat)` — class *(Advanced)*
 
-Extract the rotation of a matrix as a Quat.
+Returns the same rotation as mat.rot.
 
 **Parameters:**
 

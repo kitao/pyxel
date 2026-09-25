@@ -1,5 +1,6 @@
 from math import isclose, sqrt
 
+import pytest
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Quat, Vec3
 
@@ -121,6 +122,11 @@ class TestFactories:
         assert approx_v(q * Vec3.RIGHT, Vec3(0, 0, -1))
         assert approx_v(q * Vec3.UP, Vec3.UP)
         assert approx_v(q * Vec3(0, 0, 1), Vec3.RIGHT)
+
+    @pytest.mark.parametrize("scale", [Vec3(-2, 3, 4), Vec3(2, 0, 4)])
+    def test_from_matrix_matches_signed_and_zero_scale_decomposition(self, scale):
+        mat = Mat4.compose(Vec3.ZERO, Quat.from_euler(Vec3(23, -47, 71)), scale)
+        assert Quat.from_matrix(mat) == mat.rot
 
     def test_from_direction_negative_x(self):
         q = Quat.from_direction(Vec3(-1, 0, 0), Vec3.UP)
