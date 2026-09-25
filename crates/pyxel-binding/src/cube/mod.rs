@@ -12,6 +12,7 @@ mod primitive;
 mod quat;
 mod raycast_hit;
 mod shading;
+mod tags;
 mod vec3;
 
 pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {

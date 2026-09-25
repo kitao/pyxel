@@ -1,7 +1,7 @@
 from math import isclose, sqrt
 
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
-from pyxel.cube import Quat, Vec3
+from pyxel.cube import Mat4, Quat, Vec3
 
 
 class TestConstructor:
@@ -112,6 +112,15 @@ class TestFactories:
         m = q1.to_matrix()
         q2 = Quat.from_matrix(m)
         assert approx_v(q1 * Vec3(1, 0, 0), q2 * Vec3(1, 0, 0))
+
+    def test_from_matrix_extracts_rotation_without_translation_or_scale(self):
+        mat = Mat4.compose(
+            Vec3(3, 4, 5), Quat.from_axis_angle(Vec3.UP, 90), Vec3(2, 3, 4)
+        )
+        q = Quat.from_matrix(mat)
+        assert approx_v(q * Vec3.RIGHT, Vec3(0, 0, -1))
+        assert approx_v(q * Vec3.UP, Vec3.UP)
+        assert approx_v(q * Vec3(0, 0, 1), Vec3.RIGHT)
 
     def test_from_direction_negative_x(self):
         q = Quat.from_direction(Vec3(-1, 0, 0), Vec3.UP)

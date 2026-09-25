@@ -561,6 +561,22 @@ def test_play_motion_advances_during_update(tmp_path):
     assert root.transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
 
 
+def test_play_motion_pauses_under_inactive_ancestor(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    parent, root = Node(), Node.from_mesh(mesh)
+    parent.add_child(root)
+    root.play_motion(mesh.motions[0])
+
+    parent.active = False
+    root.update()
+    assert root.transform.pos == Vec3.ZERO
+
+    parent.active = True
+    root.update()
+    assert root.transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
+
+
 def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
     # f32 cannot represent consecutive integers beyond 2^24.
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")

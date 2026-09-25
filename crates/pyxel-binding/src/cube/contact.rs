@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
 
-use super::quat::Quat;
 use super::vec3::Vec3;
 
 define_wrapper!(Contact, pyxel::cube::Contact, module = "pyxel.cube");
@@ -24,11 +23,6 @@ impl Contact {
     #[getter]
     fn depth(&self) -> f32 {
         self.inner_ref().depth
-    }
-
-    #[getter]
-    fn delta_rotation(&self) -> Quat {
-        Quat::wrap(self.inner_ref().delta_rotation.clone())
     }
 
     #[getter]

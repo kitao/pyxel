@@ -1646,7 +1646,7 @@
             "uk": "Матриця перетворення 4x4. Конструктор створює одиничну матрицю. Значення незмінні; методи перетворення повертають новий Mat4."
           },
           "examples": [
-            "from pyxel.cube import Mat4, Quat, Vec3",
+            "from pyxel.cube import Mat4, Vec3",
             "node.transform = Mat4.from_translation(Vec3(0, 1, 0))",
             "spin = node.transform * Mat4.from_axis_angle(Vec3.UP, 90)"
           ],
@@ -2781,18 +2781,18 @@
             "rotated = q * Vec3.FORWARD"
           ],
           "notes": {
-            "en": "Supports * with another Quat (composition) or a Vec3 (applies the rotation), unary -, ==, indexing, and iteration.",
-            "cn": "支持与另一个 Quat 的 * (合成) 或与 Vec3 的 * (应用旋转)，也支持一元 -、==、索引和迭代。",
-            "de": "Unterstützt * mit einem anderen Quat (Komposition) oder einem Vec3 (wendet die Rotation an), unäres -, ==, Indizierung und Iteration.",
-            "es": "Admite * con otro Quat (composición) o con un Vec3 (aplica la rotación), - unario, ==, indexación e iteración.",
-            "fr": "Prend en charge * avec un autre Quat (composition) ou un Vec3 (applique la rotation), le - unaire, ==, l'indexation et l'itération.",
-            "it": "Supporta * con un altro Quat (composizione) o con un Vec3 (applica la rotazione), - unario, ==, indicizzazione e iterazione.",
-            "ja": "Quat 同士の *（回転の合成）、Vec3 との *（回転の適用）、単項 -、==、インデックス参照、イテレートに対応する。",
-            "ko": "다른 Quat와의 * (합성) 또는 Vec3와의 * (회전 적용), 단항 -, ==, 인덱싱, 반복을 지원합니다.",
-            "pt": "Suporta * com outro Quat (composição) ou um Vec3 (aplica a rotação), - unário, ==, indexação e iteração.",
-            "ru": "Поддерживает * с другим Quat (композиция) или Vec3 (применяет вращение), унарный -, ==, индексацию и итерацию.",
-            "tr": "Başka bir Quat ile * (bileşim) veya Vec3 ile * (dönmeyi uygular), tekil -, ==, indeksleme ve yinelemeyi destekler.",
-            "uk": "Підтримує * з іншим Quat (композиція) або Vec3 (застосовує обертання), унарний -, ==, індексацію та ітерацію."
+            "en": "Supports * with another Quat (composition) or a Vec3 (applies the rotation), unary -, ==, indexing, and iteration. Rotation operations require a unit quaternion. Use normalize() when specifying components directly.",
+            "cn": "支持与另一个 Quat 的 * (合成) 或与 Vec3 的 * (应用旋转)，也支持一元 -、==、索引和迭代。 旋转运算要求单位四元数。直接指定分量时，请用 normalize() 归一化。",
+            "de": "Unterstützt * mit einem anderen Quat (Komposition) oder einem Vec3 (wendet die Rotation an), unäres -, ==, Indizierung und Iteration. Rotationsoperationen setzen ein Einheitsquaternion voraus. Verwenden Sie normalize(), wenn Sie Komponenten direkt angeben.",
+            "es": "Admite * con otro Quat (composición) o con un Vec3 (aplica la rotación), - unario, ==, indexación e iteración. Las operaciones de rotación requieren un cuaternión unitario. Use normalize() al especificar los componentes directamente.",
+            "fr": "Prend en charge * avec un autre Quat (composition) ou un Vec3 (applique la rotation), le - unaire, ==, l'indexation et l'itération. Les opérations de rotation nécessitent un quaternion unitaire. Utilisez normalize() si vous spécifiez directement les composantes.",
+            "it": "Supporta * con un altro Quat (composizione) o con un Vec3 (applica la rotazione), - unario, ==, indicizzazione e iterazione. Le operazioni di rotazione richiedono un quaternione unitario. Usare normalize() quando si specificano direttamente le componenti.",
+            "ja": "Quat 同士の *（回転の合成）、Vec3 との *（回転の適用）、単項 -、==、インデックス参照、イテレートに対応する。 回転演算には長さ 1 の Quat を使う。成分を直接指定する場合は normalize() で正規化する。",
+            "ko": "다른 Quat와의 * (합성) 또는 Vec3와의 * (회전 적용), 단항 -, ==, 인덱싱, 반복을 지원합니다. 회전 연산에는 단위 쿼터니언이 필요합니다. 성분을 직접 지정할 때는 normalize()로 정규화하세요.",
+            "pt": "Suporta * com outro Quat (composição) ou um Vec3 (aplica a rotação), - unário, ==, indexação e iteração. As operações de rotação exigem um quatérnio unitário. Use normalize() ao especificar os componentes diretamente.",
+            "ru": "Поддерживает * с другим Quat (композиция) или Vec3 (применяет вращение), унарный -, ==, индексацию и итерацию. Операции вращения требуют единичного кватерниона. При прямом задании компонентов используйте normalize().",
+            "tr": "Başka bir Quat ile * (bileşim) veya Vec3 ile * (dönmeyi uygular), tekil -, ==, indeksleme ve yinelemeyi destekler. Dönme işlemleri birim kuaterniyon gerektirir. Bileşenleri doğrudan belirtirken normalize() kullanın.",
+            "uk": "Підтримує * з іншим Quat (композиція) або Vec3 (застосовує обертання), унарний -, ==, індексацію та ітерацію. Операції обертання потребують одиничного кватерніона. При прямому заданні компонентів використовуйте normalize()."
           },
           "advanced": false
         },
@@ -2965,7 +2965,7 @@
         {
           "name": "Quat.from_euler",
           "type": "class",
-          "signature": "Quat.from_euler(rot)",
+          "signature": "Quat.from_euler(euler)",
           "description": {
             "en": "Create a rotation from Euler angles in degrees, applied around the world axes in X, Y, Z order.",
             "cn": "根据以度为单位的欧拉角创建旋转，按 X、Y、Z 顺序绕世界轴应用。",
@@ -2982,7 +2982,7 @@
           },
           "params": [
             {
-              "name": "rot",
+              "name": "euler",
               "type": "Vec3",
               "description": {
                 "en": "Rotation around each axis in degrees.",
@@ -3915,14 +3915,14 @@
             "cn": "更改显示调色板后请调用 build()；仅更改 pyxel.colors 不会重新生成表。生成时会根据提供的颜色选择纯色、50% 棋盘格色对或重复的单元格，不强制使用抖动。",
             "de": "Rufen Sie nach einer Änderung der Anzeigepalette build() auf; eine Änderung von pyxel.colors allein erzeugt die Tabelle nicht neu. Die Erzeugung wählt Vollfarben, 50%-Schachbrettpaare und wiederholte Zellen für die übergebenen Farben; Dithering ist optional.",
             "es": "Llame a build() después de cambiar la paleta de pantalla; cambiar solo pyxel.colors no regenera la tabla. La generación elige colores planos, pares en damero al 50% y celdas repetidas para los colores proporcionados; el tramado es opcional.",
-            "fr": "Appelez build() après avoir modifié la palette d’affichage ; modifier uniquement pyxel.colors ne régénère pas la table. La génération choisit des couleurs pleines, des paires en damier à 50% et des cellules répétées pour les couleurs fournies ; le tramage est facultatif.",
+            "fr": "Appelez build() après avoir modifié la palette d'affichage ; modifier uniquement pyxel.colors ne régénère pas la table. La génération choisit des couleurs pleines, des paires en damier à 50% et des cellules répétées pour les couleurs fournies ; le tramage est facultatif.",
             "it": "Chiamare build() dopo aver modificato la palette di visualizzazione; modificare solo pyxel.colors non rigenera la tabella. La generazione sceglie colori pieni, coppie a scacchiera al 50% e celle ripetute per i colori forniti; il dithering è facoltativo.",
             "ja": "表示パレットを変更したら build() を呼ぶ。pyxel.colors の変更だけではテーブルは再生成されない。与えられた色に応じて単色、50% の市松模様、同じセルの繰り返しを選ぶ。ディザは必須ではない。",
             "ko": "표시 팔레트를 변경한 뒤 build()를 호출하세요. pyxel.colors만 변경하면 테이블이 다시 생성되지 않습니다. 제공된 색상에 맞춰 단색, 50% 바둑판 쌍, 반복 셀을 선택하며 디더링은 필수가 아닙니다.",
             "pt": "Chame build() após alterar a paleta de exibição; alterar apenas pyxel.colors não regenera a tabela. A geração escolhe cores planas, pares quadriculados a 50% e células repetidas para as cores fornecidas; o dithering é opcional.",
             "ru": "После изменения палитры отображения вызовите build(); одно лишь изменение pyxel.colors не пересоздаёт таблицу. Для переданных цветов выбираются сплошные цвета, шахматные пары с долями 50% и повторяющиеся ячейки; дизеринг необязателен.",
             "tr": "Görüntü paletini değiştirdikten sonra build() çağırın; yalnızca pyxel.colors değerini değiştirmek tabloyu yeniden oluşturmaz. Verilen renkler için düz renkler, %50 dama çiftleri ve tekrarlanan hücreler seçilir; dither zorunlu değildir.",
-            "uk": "Після зміни палітри відображення викличте build(); сама зміна pyxel.colors не створює таблицю заново. Для переданих кольорів обираються суцільні кольори, шахові пари з частками 50% і повторювані клітинки; дизеринг необов’язковий."
+            "uk": "Після зміни палітри відображення викличте build(); сама зміна pyxel.colors не створює таблицю заново. Для переданих кольорів обираються суцільні кольори, шахові пари з частками 50% і повторювані клітинки; дизеринг необов'язковий."
           },
           "examples": [
             "shading.build(pyxel.colors)",
@@ -4610,7 +4610,7 @@
           "description": {
             "en": "A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.",
             "cn": "分层 3D 模型资产。primitives、transforms、parents 和 names 是描述部件树的并行数组；父部件必须位于子部件之前 (parents[i] < i)。可用 Node.from_mesh() 实例化，用 Mesh.from_glb() 加载，或设置到 Collider.mesh 作为静态地形。",
-            "de": "Ein hierarchisches 3D-Modell-Asset. primitives, transforms, parents und names sind parallele Arrays, die den Teilbaum beschreiben; Eltern müssen vor Kindern stehen (parents[i] < i). Mit Node.from_mesh() instanziieren, mit Mesh.from_glb() laden oder als statisches Terrain auf Collider.mesh setzen.",
+            "de": "Ein hierarchisches 3D-Modell-Asset. primitives, transforms, parents und names sind parallele Arrays, die den Teilbaum beschreiben; Eltern müssen vor Kindern stehen (parents[i] < i). Instanziieren Sie es mit Node.from_mesh(), laden Sie es mit Mesh.from_glb() oder weisen Sie es Collider.mesh als statisches Terrain zu.",
             "es": "Un asset de modelo 3D jerárquico. primitives, transforms, parents y names son arrays paralelos que describen el árbol de partes; los padres deben venir antes que los hijos (parents[i] < i). Instáncielo con Node.from_mesh(), cárguelo con Mesh.from_glb() o asígnelo a Collider.mesh como terreno estático.",
             "fr": "Une ressource de modèle 3D hiérarchique. primitives, transforms, parents et names sont des tableaux parallèles décrivant l'arbre des parties ; les parents doivent précéder les enfants (parents[i] < i). Instanciez-la avec Node.from_mesh(), chargez-la avec Mesh.from_glb() ou assignez-la à Collider.mesh comme terrain statique.",
             "it": "Un asset di modello 3D gerarchico. primitives, transforms, parents e names sono array paralleli che descrivono l'albero delle parti; i genitori devono precedere i figli (parents[i] < i). Istanziarlo con Node.from_mesh(), caricarlo con Mesh.from_glb() o assegnarlo a Collider.mesh come terreno statico.",
@@ -4624,7 +4624,7 @@
           "params": [
             {
               "name": "primitives",
-              "type": "list",
+              "type": "list[Primitive | None]",
               "description": {
                 "en": "Primitive per part, or None for a transform-only group part. Defaults to empty.",
                 "cn": "每个部件的 Primitive；对于仅含变换的组部件则为 None。默认为空。",
@@ -4642,7 +4642,7 @@
             },
             {
               "name": "transforms",
-              "type": "list",
+              "type": "list[Mat4]",
               "description": {
                 "en": "Local transform of each part relative to its parent. Defaults to empty.",
                 "cn": "每个部件相对于其父部件的局部变换。默认为空。",
@@ -4660,7 +4660,7 @@
             },
             {
               "name": "parents",
-              "type": "list",
+              "type": "list[int]",
               "description": {
                 "en": "Parent index of each part. -1 is a root. Defaults to empty.",
                 "cn": "每个部件的父索引。-1 表示根。默认为空。",
@@ -4678,7 +4678,7 @@
             },
             {
               "name": "names",
-              "type": "list",
+              "type": "list[str] | None",
               "description": {
                 "en": "Node name per part. Defaults to empty strings.",
                 "cn": "每个部件的节点名称。默认为空字符串。",
@@ -4733,11 +4733,25 @@
           ],
           "examples": [
             "from pyxel.cube import Mat4, Mesh, Node, Primitive",
+            "prim = Primitive.box()",
             "mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)",
-            "mesh = Mesh.from_glb(\"actor.glb\", colkey=0)",
             "node = Node.from_mesh(mesh)"
           ],
-          "advanced": false
+          "advanced": false,
+          "notes": {
+            "en": "Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared.",
+            "cn": "部件列表属性返回副本。修改列表后需将其重新赋给属性；列表中的 Primitive 对象仍然共享。",
+            "de": "Teil-Listenattribute liefern Kopien. Eine bearbeitete Liste muss dem Attribut wieder zugewiesen werden; ihre Primitive-Objekte bleiben gemeinsam genutzt.",
+            "es": "Los atributos de listas de partes devuelven copias. Tras editar una lista, asígnela de nuevo al atributo; sus objetos Primitive siguen compartidos.",
+            "fr": "Les attributs de listes de pièces renvoient des copies. Après modification, réaffectez la liste à l'attribut ; ses objets Primitive restent partagés.",
+            "it": "Gli attributi con liste di parti restituiscono copie. Dopo una modifica, riassegnare la lista all'attributo; gli oggetti Primitive contenuti restano condivisi.",
+            "ja": "部品リストの属性はコピーを返す。リストを編集するときは、変更したリストを属性に代入し直す。中の Primitive は共有される。",
+            "ko": "부품 리스트 속성은 복사본을 반환합니다. 리스트를 수정한 뒤 속성에 다시 대입해야 하며, 안의 Primitive 객체는 계속 공유됩니다.",
+            "pt": "Os atributos de listas de partes retornam cópias. Após editar uma lista, atribua-a novamente ao atributo; seus objetos Primitive continuam compartilhados.",
+            "ru": "Атрибуты списков частей возвращают копии. После изменения списка присвойте его обратно атрибуту; объекты Primitive в нём остаются общими.",
+            "tr": "Parça listesi öznitelikleri kopya döndürür. Listeyi düzenledikten sonra özniteliğe yeniden atayın; içindeki Primitive nesneleri paylaşılmaya devam eder.",
+            "uk": "Атрибути списків частин повертають копії. Після зміни списку присвойте його назад атрибуту; об'єкти Primitive в ньому залишаються спільними."
+          }
         },
         {
           "name": "primitives",
@@ -5182,18 +5196,18 @@
               "name": "size",
               "type": "Vec3",
               "description": {
-                "en": "Core dimensions and shape selector. Component signs are ignored; for shape classification, components with an absolute value less than 1e-9 are treated as zero. An all-zero size produces a sphere of radius max(radius, 0). A size of (0, h, 0) produces a capsule whose central axis segment has length abs(h) and whose total height is abs(h) + 2 * max(radius, 0). Any other size produces a rounded box with core dimensions abs(size) and overall dimensions abs(size) + 2 * max(radius, 0), component-wise. Defaults to Vec3.ZERO (a sphere).",
-                "cn": "形状的核心尺寸和类型选择。各分量的正负号会被忽略；在判定形状类型时，绝对值小于 1e-9 的分量按 0 处理。所有分量均为 0 时，形状是半径为 max(radius, 0) 的球体。size 为 (0, h, 0) 时，形状是中心轴线段长度为 abs(h)、总高度为 abs(h) + 2 * max(radius, 0) 的胶囊体。其他值会生成核心尺寸为 abs(size)、各轴外部尺寸为 abs(size) + 2 * max(radius, 0) 的圆角盒体。默认值为 Vec3.ZERO (球体)。",
-                "de": "Kerndimensionen und Formauswahl. Die Vorzeichen der Komponenten werden ignoriert; bei der Formklassifizierung werden Komponenten mit einem Absolutwert unter 1e-9 als null behandelt. Sind alle Komponenten null, entsteht eine Kugel mit dem Radius max(radius, 0). Der Wert (0, h, 0) erzeugt eine Kapsel mit einem zentralen Achsensegment der Länge abs(h) und der Gesamthöhe abs(h) + 2 * max(radius, 0). Jeder andere Wert erzeugt eine abgerundete Box mit den Kerndimensionen abs(size) und den komponentenweisen Gesamtdimensionen abs(size) + 2 * max(radius, 0). Standardwert ist Vec3.ZERO (eine Kugel).",
-                "es": "Dimensiones del núcleo y selector de forma. Se ignoran los signos de los componentes; para clasificar la forma, los componentes con un valor absoluto inferior a 1e-9 se consideran cero. Si todos son cero, se crea una esfera de radio max(radius, 0). El valor (0, h, 0) crea una cápsula cuyo segmento axial central mide abs(h) y cuya altura total es abs(h) + 2 * max(radius, 0). Cualquier otro valor crea una caja redondeada con dimensiones centrales abs(size) y dimensiones totales abs(size) + 2 * max(radius, 0) en cada eje. El valor predeterminado es Vec3.ZERO (una esfera).",
-                "fr": "Dimensions du noyau et sélection de la forme. Le signe des composantes est ignoré ; pour classer la forme, les composantes dont la valeur absolue est inférieure à 1e-9 sont considérées comme nulles. Si elles sont toutes nulles, une sphère de rayon max(radius, 0) est créée. La valeur (0, h, 0) crée une capsule dont le segment axial central mesure abs(h) et dont la hauteur totale vaut abs(h) + 2 * max(radius, 0). Toute autre valeur crée une boîte arrondie dont les dimensions du noyau sont abs(size) et les dimensions totales abs(size) + 2 * max(radius, 0), composante par composante. La valeur par défaut est Vec3.ZERO (une sphère).",
-                "it": "Dimensioni del nucleo e selezione della forma. Il segno dei componenti viene ignorato; per classificare la forma, i componenti con valore assoluto inferiore a 1e-9 sono considerati zero. Se tutti sono zero, si crea una sfera di raggio max(radius, 0). Il valore (0, h, 0) crea una capsula il cui segmento assiale centrale misura abs(h) e la cui altezza totale è abs(h) + 2 * max(radius, 0). Qualsiasi altro valore crea un box arrotondato con dimensioni del nucleo abs(size) e dimensioni totali abs(size) + 2 * max(radius, 0) per ogni asse. Il valore predefinito è Vec3.ZERO (una sfera).",
-                "ja": "形状の芯の寸法と種類を指定する。各成分の符号は無視され、形状の判定では絶対値が 1e-9 未満の成分を 0 として扱う。全成分が 0 なら、半径 max(radius, 0) の球になる。(0, h, 0) なら、中心軸上の線分の長さが abs(h)、全高が abs(h) + 2 * max(radius, 0) のカプセルになる。それ以外なら、芯の寸法が abs(size)、各軸の外寸が abs(size) + 2 * max(radius, 0) の角丸ボックスになる。デフォルトは Vec3.ZERO（球）。",
-                "ko": "형상의 핵심 치수와 종류를 지정합니다. 각 성분의 부호는 무시되며, 형상을 분류할 때 절댓값이 1e-9 미만인 성분은 0으로 처리됩니다. 모든 성분이 0이면 반지름이 max(radius, 0)인 구체가 됩니다. (0, h, 0)이면 중심축 선분 길이가 abs(h)이고 전체 높이가 abs(h) + 2 * max(radius, 0)인 캡슐이 됩니다. 그 밖의 값은 핵심 치수가 abs(size)이고 각 축의 전체 치수가 abs(size) + 2 * max(radius, 0)인 둥근 모서리 상자가 됩니다. 기본값은 Vec3.ZERO(구체)입니다.",
-                "pt": "Dimensões do núcleo e seleção da forma. Os sinais dos componentes são ignorados; para classificar a forma, componentes com valor absoluto inferior a 1e-9 são tratados como zero. Se todos forem zero, cria-se uma esfera de raio max(radius, 0). O valor (0, h, 0) cria uma cápsula cujo segmento axial central mede abs(h) e cuja altura total é abs(h) + 2 * max(radius, 0). Qualquer outro valor cria uma caixa arredondada com dimensões centrais abs(size) e dimensões totais abs(size) + 2 * max(radius, 0) em cada eixo. O padrão é Vec3.ZERO (uma esfera).",
-                "ru": "Основные размеры и выбор формы. Знаки компонентов игнорируются; при определении формы компоненты с абсолютным значением меньше 1e-9 считаются нулевыми. Если все компоненты равны нулю, создаётся сфера радиуса max(radius, 0). Значение (0, h, 0) создаёт капсулу с центральным осевым отрезком длиной abs(h) и полной высотой abs(h) + 2 * max(radius, 0). Любое другое значение создаёт скруглённую коробку с основными размерами abs(size) и полными размерами abs(size) + 2 * max(radius, 0) по каждой оси. По умолчанию Vec3.ZERO (сфера).",
-                "tr": "Temel boyutları ve şekil türünü belirler. Bileşenlerin işaretleri yok sayılır; şekil sınıflandırılırken mutlak değeri 1e-9'dan küçük bileşenler sıfır kabul edilir. Tüm bileşenler sıfırsa yarıçapı max(radius, 0) olan bir küre oluşur. (0, h, 0) değeri, merkez eksen parçasının uzunluğu abs(h) ve toplam yüksekliği abs(h) + 2 * max(radius, 0) olan bir kapsül oluşturur. Diğer değerler, çekirdek boyutları abs(size) ve her eksendeki toplam boyutları abs(size) + 2 * max(radius, 0) olan yuvarlatılmış bir kutu oluşturur. Varsayılan değer Vec3.ZERO (küre).",
-                "uk": "Основні розміри та вибір форми. Знаки компонентів ігноруються; під час визначення форми компоненти з абсолютним значенням менше 1e-9 вважаються нульовими. Якщо всі компоненти дорівнюють нулю, створюється сфера радіуса max(radius, 0). Значення (0, h, 0) створює капсулу з центральним осьовим відрізком завдовжки abs(h) і повною висотою abs(h) + 2 * max(radius, 0). Будь-яке інше значення створює заокруглену коробку з основними розмірами abs(size) і повними розмірами abs(size) + 2 * max(radius, 0) уздовж кожної осі. Типове значення Vec3.ZERO (сфера)."
+                "en": "Core dimensions: Vec3.ZERO selects a sphere, (0, h, 0) a capsule, and other sizes a rounded box. Defaults to Vec3.ZERO.",
+                "cn": "核心尺寸：Vec3.ZERO 选择球体，(0, h, 0) 选择胶囊体，其他尺寸选择圆角盒体。默认值为 Vec3.ZERO。",
+                "de": "Kerndimensionen: Vec3.ZERO wählt eine Kugel, (0, h, 0) eine Kapsel und andere Größen eine abgerundete Box. Standardwert ist Vec3.ZERO.",
+                "es": "Dimensiones del núcleo: Vec3.ZERO selecciona una esfera, (0, h, 0) una cápsula y otros tamaños una caja redondeada. El valor predeterminado es Vec3.ZERO.",
+                "fr": "Dimensions du noyau : Vec3.ZERO sélectionne une sphère, (0, h, 0) une capsule et les autres tailles une boîte arrondie. La valeur par défaut est Vec3.ZERO.",
+                "it": "Dimensioni del nucleo: Vec3.ZERO seleziona una sfera, (0, h, 0) una capsula e le altre dimensioni un box arrotondato. Il valore predefinito è Vec3.ZERO.",
+                "ja": "芯の寸法。Vec3.ZERO なら球、(0, h, 0) ならカプセル、それ以外なら角丸ボックスになる。デフォルトは Vec3.ZERO。",
+                "ko": "핵심 치수입니다. Vec3.ZERO는 구체, (0, h, 0)은 캡슐, 그 밖의 크기는 둥근 모서리 상자를 선택합니다. 기본값은 Vec3.ZERO입니다.",
+                "pt": "Dimensões do núcleo: Vec3.ZERO seleciona uma esfera, (0, h, 0) uma cápsula e outros tamanhos uma caixa arredondada. O padrão é Vec3.ZERO.",
+                "ru": "Основные размеры: Vec3.ZERO задаёт сферу, (0, h, 0) — капсулу, другие размеры — скруглённую коробку. По умолчанию Vec3.ZERO.",
+                "tr": "Çekirdek boyutları: Vec3.ZERO küreyi, (0, h, 0) kapsülü, diğer boyutlar yuvarlatılmış kutuyu seçer. Varsayılan değer Vec3.ZERO.",
+                "uk": "Основні розміри: Vec3.ZERO задає сферу, (0, h, 0) — капсулу, інші розміри — заокруглену коробку. Типове значення Vec3.ZERO."
               }
             },
             {
@@ -5272,18 +5286,18 @@
               "name": "mass",
               "type": "float",
               "description": {
-                "en": "Mass used for contact resolution. It must be finite and greater than or equal to 0. For a non-mesh collider, 0.0 makes this side receive no contact correction; the mass value itself does not disable velocity or angular_velocity. Mesh colliders ignore this value. Defaults to 1.0.",
-                "cn": "用于接触解析的质量。该值必须是有限数且大于或等于 0。对于非 mesh 碰撞体，设为 0.0 时本侧不会获得接触修正；mass 值本身不会禁用 velocity 或 angular_velocity。mesh 碰撞体会忽略此值。默认值为 1.0。",
-                "de": "Masse für die Kontaktauflösung. Der Wert muss endlich und größer oder gleich 0 sein. Bei einem Nicht-Mesh-Collider bewirkt 0.0, dass diese Seite keine Kontaktkorrektur erhält; der Wert von mass selbst deaktiviert weder velocity noch angular_velocity. Mesh-Collider ignorieren diesen Wert. Standardwert ist 1.0.",
-                "es": "Masa usada para resolver contactos. El valor debe ser finito y mayor o igual que 0. En un collider sin mesh, 0.0 hace que este lado no reciba correcciones de contacto; el valor de mass por sí solo no desactiva velocity ni angular_velocity. Los colliders con mesh ignoran este valor. El valor predeterminado es 1.0.",
-                "fr": "Masse utilisée pour résoudre les contacts. La valeur doit être finie et supérieure ou égale à 0. Pour un collider sans mesh, 0.0 empêche ce côté de recevoir une correction de contact ; la valeur de mass elle-même ne désactive ni velocity ni angular_velocity. Les colliders avec mesh ignorent cette valeur. La valeur par défaut est 1.0.",
-                "it": "Massa usata per risolvere i contatti. Il valore deve essere finito e maggiore o uguale a 0. Per un collider senza mesh, 0.0 impedisce a questo lato di ricevere correzioni di contatto; il valore di mass in sé non disattiva né velocity né angular_velocity. I collider con mesh ignorano questo valore. Il valore predefinito è 1.0.",
-                "ja": "接触解決に使う質量。有限かつ 0 以上の値を指定する。非メッシュコライダーでは、0.0 にすると自分側の接触補正を受けない。ただし、mass の値自体が velocity や angular_velocity を無効にすることはない。メッシュコライダーでは無視される。デフォルトは 1.0。",
-                "ko": "접촉 해결에 사용하는 질량입니다. 유한한 0 이상의 값이어야 합니다. mesh가 없는 collider에서는 0.0으로 설정하면 이쪽에 접촉 보정이 적용되지 않지만, mass 값 자체는 velocity나 angular_velocity를 비활성화하지 않습니다. mesh collider에서는 이 값이 무시됩니다. 기본값은 1.0입니다.",
-                "pt": "Massa usada na resolução de contatos. O valor deve ser finito e maior ou igual a 0. Em um collider sem mesh, 0.0 faz este lado não receber correções de contato; o valor de mass em si não desativa velocity nem angular_velocity. Colliders com mesh ignoram este valor. O padrão é 1.0.",
-                "ru": "Масса для разрешения контактов. Значение должно быть конечным и неотрицательным. У коллайдера без mesh значение 0.0 отключает коррекции контакта для этой стороны; само значение mass не отключает ни velocity, ни angular_velocity. Коллайдеры с mesh игнорируют это значение. По умолчанию 1.0.",
-                "tr": "Temas çözümünde kullanılan kütle. Değer sonlu ve 0 veya daha büyük olmalıdır. Mesh içermeyen bir collider için 0.0, bu tarafın temas düzeltmesi almamasını sağlar; mass değerinin kendisi velocity veya angular_velocity değerlerini devre dışı bırakmaz. Mesh collider'lar bu değeri yok sayar. Varsayılan değer 1.0.",
-                "uk": "Маса для розв'язання контактів. Значення має бути скінченним і невід'ємним. Для колайдера без mesh значення 0.0 вимикає корекції контакту для цього боку; саме значення mass не вимикає ні velocity, ні angular_velocity. Колайдери з mesh ігнорують це значення. Типове значення 1.0."
+                "en": "Mass used for contact resolution. It must be finite and greater than or equal to 0. Defaults to 1.0.",
+                "cn": "用于接触解析的质量。该值必须是有限数且大于或等于 0。默认值为 1.0。",
+                "de": "Masse für die Kontaktauflösung. Der Wert muss endlich und größer oder gleich 0 sein. Standardwert ist 1.0.",
+                "es": "Masa usada para resolver contactos. El valor debe ser finito y mayor o igual que 0. El valor predeterminado es 1.0.",
+                "fr": "Masse utilisée pour résoudre les contacts. La valeur doit être finie et supérieure ou égale à 0. La valeur par défaut est 1.0.",
+                "it": "Massa usata per risolvere i contatti. Il valore deve essere finito e maggiore o uguale a 0. Il valore predefinito è 1.0.",
+                "ja": "接触解決に使う質量。有限かつ 0 以上の値を指定する。デフォルトは 1.0。",
+                "ko": "접촉 해결에 사용하는 질량입니다. 유한한 0 이상의 값이어야 합니다. 기본값은 1.0입니다.",
+                "pt": "Massa usada na resolução de contatos. O valor deve ser finito e maior ou igual a 0. O padrão é 1.0.",
+                "ru": "Масса для разрешения контактов. Значение должно быть конечным и неотрицательным. По умолчанию 1.0.",
+                "tr": "Temas çözümünde kullanılan kütle. Değer sonlu ve 0 veya daha büyük olmalıdır. Varsayılan değer 1.0.",
+                "uk": "Маса для розв'язання контактів. Значення має бути скінченним і невід'ємним. Типове значення 1.0."
               }
             },
             {
@@ -5326,108 +5340,108 @@
               "name": "velocity",
               "type": "Vec3",
               "description": {
-                "en": "World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. Defaults to Vec3.ZERO.",
-                "cn": "非 mesh 碰撞体在每次更新时应用的世界空间位移。若父节点的世界变换为奇异矩阵，则不应用该位移，并在扫掠碰撞检测和接触响应中将其按 0 处理。默认值为 Vec3.ZERO。",
-                "de": "Verschiebung im World Space, die bei einem Nicht-Mesh-Collider pro Update angewendet wird. Ist die Welttransformation des Eltern-Nodes singulär, wird diese Verschiebung übersprungen und für die kontinuierliche Kollisionserkennung und Kontaktreaktion als null behandelt. Standardwert ist Vec3.ZERO.",
-                "es": "Desplazamiento en espacio mundial aplicado a un collider sin mesh en cada actualización. Si el transform mundial del nodo padre es singular, este desplazamiento no se aplica y se considera cero para la detección de colisiones por barrido y la respuesta de contacto. El valor predeterminado es Vec3.ZERO.",
-                "fr": "Déplacement en espace monde appliqué à chaque mise à jour à un collider sans mesh. Si la transformation monde du nœud parent est singulière, ce déplacement n'est pas appliqué et vaut zéro pour la détection continue des collisions et la réponse de contact. La valeur par défaut est Vec3.ZERO.",
-                "it": "Spostamento nello spazio globale applicato a ogni aggiornamento a un collider senza mesh. Se il transform globale del nodo padre è singolare, lo spostamento non viene applicato ed è considerato zero per il rilevamento continuo delle collisioni e la risposta al contatto. Il valore predefinito è Vec3.ZERO.",
-                "ja": "非メッシュコライダーに update ごとに適用されるワールド座標の変位。親ノードのワールド変換が特異行列の場合、この変位は適用されず、スイープ衝突判定と接触応答でも 0 として扱われる。デフォルトは Vec3.ZERO。",
-                "ko": "mesh가 없는 collider에 매 업데이트마다 적용되는 월드 공간 변위입니다. 부모 노드의 월드 transform이 특이 행렬이면 이 변위는 적용되지 않으며 스윕 충돌 감지와 접촉 응답에서도 0으로 처리됩니다. 기본값은 Vec3.ZERO입니다.",
-                "pt": "Deslocamento em espaço mundial aplicado a um collider sem mesh a cada atualização. Se o transform mundial do nó pai for singular, esse deslocamento não será aplicado e será tratado como zero na detecção de colisão por varredura e na resposta de contato. O padrão é Vec3.ZERO.",
-                "ru": "Смещение в мировом пространстве, применяемое при каждом обновлении к коллайдеру без mesh. Если мировое преобразование родительского узла вырождено, смещение не применяется и считается нулевым при проверке столкновений по траектории и расчёте контактной реакции. По умолчанию Vec3.ZERO.",
-                "tr": "Mesh içermeyen bir collider'a her güncellemede uygulanan dünya uzayı yer değiştirmesi. Üst düğümün dünya transform'u tekilse bu yer değiştirme uygulanmaz ve sürekli çarpışma algılama ile temas tepkisinde sıfır kabul edilir. Varsayılan değer Vec3.ZERO.",
-                "uk": "Зміщення у світовому просторі, що застосовується під час кожного оновлення до колайдера без mesh. Якщо світове перетворення батьківського вузла вироджене, зміщення не застосовується й вважається нульовим під час перевірки зіткнень уздовж траєкторії та розрахунку контактної реакції. Типове значення Vec3.ZERO."
+                "en": "World-space displacement applied to a non-mesh collider every update. Defaults to Vec3.ZERO.",
+                "cn": "非 mesh 碰撞体在每次更新时应用的世界空间位移。默认值为 Vec3.ZERO。",
+                "de": "Verschiebung im World Space, die bei einem Nicht-Mesh-Collider pro Update angewendet wird. Standardwert ist Vec3.ZERO.",
+                "es": "Desplazamiento en espacio mundial aplicado a un collider sin mesh en cada actualización. El valor predeterminado es Vec3.ZERO.",
+                "fr": "Déplacement en espace monde appliqué à chaque mise à jour à un collider sans mesh. La valeur par défaut est Vec3.ZERO.",
+                "it": "Spostamento nello spazio globale applicato a ogni aggiornamento a un collider senza mesh. Il valore predefinito è Vec3.ZERO.",
+                "ja": "非メッシュコライダーに update ごとに適用されるワールド座標の変位。デフォルトは Vec3.ZERO。",
+                "ko": "mesh가 없는 collider에 매 업데이트마다 적용되는 월드 공간 변위입니다. 기본값은 Vec3.ZERO입니다.",
+                "pt": "Deslocamento em espaço mundial aplicado a um collider sem mesh a cada atualização. O padrão é Vec3.ZERO.",
+                "ru": "Смещение в мировом пространстве, применяемое при каждом обновлении к коллайдеру без mesh. По умолчанию Vec3.ZERO.",
+                "tr": "Mesh içermeyen bir collider'a her güncellemede uygulanan dünya uzayı yer değiştirmesi. Varsayılan değer Vec3.ZERO.",
+                "uk": "Зміщення у світовому просторі, що застосовується під час кожного оновлення до колайдера без mesh. Типове значення Vec3.ZERO."
               }
             },
             {
               "name": "angular_velocity",
               "type": "Vec3",
               "description": {
-                "en": "Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular. Defaults to Vec3.ZERO.",
-                "cn": "每次更新在节点局部坐标中作为旋转应用的“轴 × 角度 (度)”。mesh 碰撞体会忽略它，但父节点的世界变换为奇异矩阵时仍会应用。默认值为 Vec3.ZERO。",
-                "de": "Achse mal Winkel (in Grad), pro Update als Drehung in den lokalen Koordinaten des Nodes angewendet. Bei Mesh-Collidern wird der Wert ignoriert, bei einer singulären Welttransformation des Eltern-Nodes aber weiterhin angewendet. Standardwert ist Vec3.ZERO.",
-                "es": "Eje por ángulo (en grados), aplicado en cada actualización como giro en las coordenadas locales del nodo. Se ignora en los colliders de mesh, pero se sigue aplicando si el transform mundial del nodo padre es singular. El valor predeterminado es Vec3.ZERO.",
-                "fr": "Axe multiplié par l'angle (en degrés), appliqué à chaque mise à jour comme rotation dans les coordonnées locales du nœud. Cette valeur est ignorée pour les colliders de mesh, mais reste appliquée si la transformation monde du parent est singulière. La valeur par défaut est Vec3.ZERO.",
-                "it": "Asse per angolo (in gradi), applicato a ogni aggiornamento come rotazione nelle coordinate locali del nodo. Il valore viene ignorato per i collider mesh, ma resta applicato se il transform globale del nodo padre è singolare. Il valore predefinito è Vec3.ZERO.",
-                "ja": "ノードのローカル座標で update ごとに回転として適用される、軸×角度（度）。メッシュコライダーでは無視されるが、親ノードのワールド変換が特異行列でも適用される。デフォルトは Vec3.ZERO。",
-                "ko": "매 업데이트마다 노드의 로컬 좌표에서 회전으로 적용되는 축 × 각도(도 단위)입니다. mesh collider에서는 무시되지만 부모 노드의 월드 transform이 특이 행렬이어도 적용됩니다. 기본값은 Vec3.ZERO입니다.",
-                "pt": "Eixo vezes ângulo (em graus), aplicado a cada atualização como rotação nas coordenadas locais do nó. O valor é ignorado em colliders de mesh, mas continua sendo aplicado se o transform mundial do nó pai for singular. O padrão é Vec3.ZERO.",
-                "ru": "Ось, умноженная на угол (в градусах), применяемая при каждом обновлении как вращение в локальных координатах узла. Значение игнорируется у mesh-коллайдеров, но продолжает применяться при вырожденном мировом преобразовании родительского узла. По умолчанию Vec3.ZERO.",
-                "tr": "Her güncellemede düğümün yerel koordinatlarında dönüş olarak uygulanan eksen çarpı açı (derece cinsinden). Değer mesh collider'larda yok sayılır, ancak üst düğümün dünya transform'u tekil olduğunda da uygulanır. Varsayılan değer Vec3.ZERO.",
-                "uk": "Вісь, помножена на кут (у градусах), що застосовується під час кожного оновлення як обертання в локальних координатах вузла. Значення ігнорується для mesh-колайдерів, але продовжує застосовуватися за виродженого світового перетворення батьківського вузла. Типове значення Vec3.ZERO."
+                "en": "Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. Defaults to Vec3.ZERO.",
+                "cn": "每次更新在节点局部坐标中作为旋转应用的“轴 × 角度 (度)”。默认值为 Vec3.ZERO。",
+                "de": "Achse mal Winkel (in Grad), pro Update als Drehung in den lokalen Koordinaten des Nodes angewendet. Standardwert ist Vec3.ZERO.",
+                "es": "Eje por ángulo (en grados), aplicado en cada actualización como giro en las coordenadas locales del nodo. El valor predeterminado es Vec3.ZERO.",
+                "fr": "Axe multiplié par l'angle (en degrés), appliqué à chaque mise à jour comme rotation dans les coordonnées locales du nœud. La valeur par défaut est Vec3.ZERO.",
+                "it": "Asse per angolo (in gradi), applicato a ogni aggiornamento come rotazione nelle coordinate locali del nodo. Il valore predefinito è Vec3.ZERO.",
+                "ja": "ノードのローカル座標で update ごとに回転として適用される、軸×角度（度）。デフォルトは Vec3.ZERO。",
+                "ko": "매 업데이트마다 노드의 로컬 좌표에서 회전으로 적용되는 축 × 각도(도 단위)입니다. 기본값은 Vec3.ZERO입니다.",
+                "pt": "Eixo vezes ângulo (em graus), aplicado a cada atualização como rotação nas coordenadas locais do nó. O padrão é Vec3.ZERO.",
+                "ru": "Ось, умноженная на угол (в градусах), применяемая при каждом обновлении как вращение в локальных координатах узла. По умолчанию Vec3.ZERO.",
+                "tr": "Her güncellemede düğümün yerel koordinatlarında dönüş olarak uygulanan eksen çarpı açı (derece cinsinden). Varsayılan değer Vec3.ZERO.",
+                "uk": "Вісь, помножена на кут (у градусах), що застосовується під час кожного оновлення як обертання в локальних координатах вузла. Типове значення Vec3.ZERO."
               }
             },
             {
               "name": "gravity",
               "type": "float",
               "description": {
-                "en": "Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.",
-                "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。100 ワールド座標を 1m とし、pyxel.init で設定した fps を使って、更新ごとに正規化した gravity_direction × gravity × 100 / fps²を velocity に加える。mesh がなく mass > 0 のコライダーにのみ適用する。負の値は方向を反転する。 pyxel.init 前の fps は 30。",
-                "cn": "重力强度 (m/s²)，默认为 9.8，0 表示禁用。每次更新向 velocity 加上归一化的 gravity_direction × gravity × 100 / fps²，fps 取自 pyxel.init，100 个世界单位对应 1 米。仅作用于未设置 mesh 且 mass > 0 的碰撞体。负值反转方向。 pyxel.init 之前，fps 为 30。",
-                "de": "Gravitationsstärke in m/s². Standard: 9.8; 0 deaktiviert die Gravitation. Pro Update wird die normierte gravity_direction × gravity × 100 / fps² zu velocity addiert. fps stammt aus pyxel.init; 100 Welteinheiten entsprechen einem Meter. Gilt nur ohne mesh und mit mass > 0. Negative Werte kehren die Richtung um. Vor pyxel.init beträgt fps 30.",
-                "es": "Intensidad de la gravedad en m/s². Por defecto, 9.8; 0 la desactiva. Cada actualización suma a velocity gravity_direction normalizada × gravity × 100 / fps², con el fps de pyxel.init y 100 unidades del mundo por metro. Solo afecta a colliders sin mesh y con mass > 0. Un valor negativo invierte la dirección. Antes de pyxel.init, fps es 30.",
-                "fr": "Intensité de la gravité en m/s². Par défaut : 9.8 ; 0 désactive la gravité. Chaque mise à jour ajoute à velocity gravity_direction normalisée × gravity × 100 / fps², avec le fps de pyxel.init et 100 unités du monde par mètre. Ne concerne que les colliders sans mesh avec mass > 0. Une valeur négative inverse la direction. Avant pyxel.init, fps vaut 30.",
-                "it": "Intensità della gravità in m/s². Valore predefinito: 9.8; 0 la disattiva. Ogni aggiornamento aggiunge a velocity gravity_direction normalizzata × gravity × 100 / fps², usando fps di pyxel.init e 100 unità del mondo per metro. Si applica solo senza mesh e con mass > 0. Un valore negativo inverte la direzione. Prima di pyxel.init, fps è 30.",
-                "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다. 매 업데이트마다 정규화한 gravity_direction × gravity × 100 / fps²를 velocity에 더합니다. fps는 pyxel.init의 설정값이며 월드 단위 100이 1m입니다. mesh가 없고 mass > 0인 콜라이더에만 적용됩니다. 음수는 방향을 반전합니다. pyxel.init 전에는 fps가 30입니다.",
-                "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade. Cada atualização soma a velocity gravity_direction normalizada × gravity × 100 / fps², usando fps de pyxel.init e 100 unidades do mundo por metro. Aplica-se apenas sem mesh e com mass > 0. Um valor negativo inverte a direção. Antes de pyxel.init, fps é 30.",
-                "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию. При каждом обновлении к velocity прибавляется нормализованный gravity_direction × gravity × 100 / fps². fps задаётся в pyxel.init; 100 мировых единиц соответствуют метру. Действует только без mesh и при mass > 0. Отрицательное значение меняет направление на обратное. До pyxel.init значение fps равно 30.",
-                "tr": "Yerçekimi ivmesinin büyüklüğü (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır. Her güncellemede velocity değerine normalize edilmiş gravity_direction × gravity × 100 / fps² eklenir. fps, pyxel.init ayarıdır; 100 dünya birimi bir metredir. Yalnızca mesh olmayan ve mass > 0 olan çarpıştırıcılara uygulanır. Negatif değer yönü tersine çevirir. pyxel.init öncesinde fps 30 olur.",
-                "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію. Кожне оновлення додає до velocity нормалізований gravity_direction × gravity × 100 / fps². fps задається в pyxel.init; 100 світових одиниць відповідають метру. Діє лише без mesh і за mass > 0. Від’ємне значення змінює напрямок на протилежний. До pyxel.init значення fps дорівнює 30."
+                "en": "Gravity strength in m/s². Defaults to 9.8; 0 disables gravity.",
+                "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。",
+                "cn": "重力强度 (m/s²)，默认为 9.8，0 表示禁用。",
+                "de": "Gravitationsstärke in m/s². Standard: 9.8; 0 deaktiviert die Gravitation.",
+                "es": "Intensidad de la gravedad en m/s². Por defecto, 9.8; 0 la desactiva.",
+                "fr": "Intensité de la gravité en m/s². Par défaut : 9.8 ; 0 désactive la gravité.",
+                "it": "Intensità della gravità in m/s². Valore predefinito: 9.8; 0 la disattiva.",
+                "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다.",
+                "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade.",
+                "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию.",
+                "tr": "Yerçekimi ivmesinin büyüklüğü (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır.",
+                "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію."
               }
             },
             {
               "name": "gravity_direction",
               "type": "Vec3",
               "description": {
-                "en": "World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.",
-                "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。内部で正規化するため、ベクトルの長さは強さに影響しない。Vec3.ZERO なら重力は加わらない。ノードや親の回転には影響されない。",
-                "cn": "世界空间中的重力方向，默认为 Vec3.DOWN。内部会归一化，因此长度不影响强度；Vec3.ZERO 不施加重力。不受节点或父节点旋转影响。",
-                "de": "Gravitationsrichtung in Weltkoordinaten. Standard: Vec3.DOWN. Wird intern normiert; die Länge beeinflusst die Stärke nicht. Vec3.ZERO bewirkt keine Gravitation. Unabhängig von Knoten- und Elternrotationen.",
-                "es": "Dirección de la gravedad en el espacio global. Por defecto, Vec3.DOWN. Se normaliza internamente: su longitud no cambia la intensidad. Vec3.ZERO no aplica gravedad. Independiente de las rotaciones del nodo y sus padres.",
-                "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN. Normalisée en interne : sa longueur ne change pas l’intensité. Vec3.ZERO n’applique aucune gravité. Indépendante des rotations du nœud et de ses parents.",
-                "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN. Normalizzata internamente: la lunghezza non cambia l’intensità. Vec3.ZERO non applica gravità. Indipendente dalle rotazioni del nodo e dei suoi genitori.",
-                "ko": "월드 공간의 중력 방향. 기본값은 Vec3.DOWN입니다. 내부에서 정규화하므로 길이는 세기에 영향을 주지 않습니다. Vec3.ZERO는 중력을 적용하지 않습니다. 노드와 부모의 회전과 무관합니다.",
-                "pt": "Direção da gravidade no espaço global. Padrão: Vec3.DOWN. Normalizada internamente: o comprimento não altera a intensidade. Vec3.ZERO não aplica gravidade. Independente das rotações do nó e dos pais.",
-                "ru": "Направление гравитации в мировом пространстве. По умолчанию Vec3.DOWN. Нормализуется внутри: длина не влияет на силу. Vec3.ZERO отключает действие гравитации. Не зависит от поворотов узла и его родителей.",
-                "tr": "Dünya uzayındaki yerçekimi yönü. Varsayılan Vec3.DOWN. İçeride normalize edilir; uzunluğu kuvveti değiştirmez. Vec3.ZERO yerçekimi uygulamaz. Düğümün ve üst düğümlerin dönüşlerinden bağımsızdır.",
-                "uk": "Напрямок гравітації у світовому просторі. Типово Vec3.DOWN. Нормалізується всередині: довжина не впливає на величину. Vec3.ZERO не застосовує гравітацію. Не залежить від обертань вузла та його батьків."
+                "en": "World-space gravity direction. Defaults to Vec3.DOWN.",
+                "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。",
+                "cn": "世界空间中的重力方向，默认为 Vec3.DOWN。",
+                "de": "Gravitationsrichtung in Weltkoordinaten. Standard: Vec3.DOWN.",
+                "es": "Dirección de la gravedad en el espacio global. Por defecto, Vec3.DOWN.",
+                "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN.",
+                "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN.",
+                "ko": "월드 공간의 중력 방향. 기본값은 Vec3.DOWN입니다.",
+                "pt": "Direção da gravidade no espaço global. Padrão: Vec3.DOWN.",
+                "ru": "Направление гравитации в мировом пространстве. По умолчанию Vec3.DOWN.",
+                "tr": "Dünya uzayındaki yerçekimi yönü. Varsayılan Vec3.DOWN.",
+                "uk": "Напрямок гравітації у світовому просторі. Типово Vec3.DOWN."
               }
             },
             {
               "name": "linear_damp",
               "type": "float",
               "description": {
-                "en": "Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
-                "ja": "並進の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
-                "cn": "线性：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
-                "de": "Linear: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
-                "es": "Lineal: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
-                "fr": "Linéaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
-                "it": "Lineare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
-                "ko": "선형: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
-                "pt": "Linear: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
-                "ru": "Линейная скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
-                "tr": "Doğrusal: Saniye başına sönüm katsayısı, varsayılan 0.1. Yerçekiminden önce her güncellemede ilgili hız max(0, 1 - max(0, damp) / fps) ile çarpılır. Yalnızca mesh yokken ve mass > 0 iken uygulanır; 0 kapatır. Aerodinamik sürükleme veya temas sürtünmesi modeli değildir.",
-                "uk": "Лінійна швидкість: Коефіцієнт згасання за секунду, типово 0.1. Перед гравітацією кожне оновлення множить відповідну швидкість на max(0, 1 - max(0, damp) / fps). Лише без mesh і за mass > 0; 0 вимикає згасання. Це не модель аеродинамічного опору чи контактного тертя."
+                "en": "Linear damping per second. Defaults to 0.1.",
+                "ja": "並進の毎秒の減衰係数。既定値は 0.1。",
+                "cn": "线性：每秒阻尼系数，默认为 0.1。",
+                "de": "Linear: Dämpfung pro Sekunde, Standard 0.1.",
+                "es": "Lineal: Amortiguación por segundo, por defecto 0.1.",
+                "fr": "Linéaire : Amortissement par seconde, par défaut 0.1.",
+                "it": "Lineare: Smorzamento al secondo, predefinito 0.1.",
+                "ko": "선형: 초당 감쇠 계수이며 기본값은 0.1입니다.",
+                "pt": "Linear: Amortecimento por segundo, padrão 0.1.",
+                "ru": "Линейная скорость: Коэффициент затухания в секунду, по умолчанию 0.1.",
+                "tr": "Doğrusal: Saniye başına sönüm katsayısı, varsayılan 0.1.",
+                "uk": "Лінійна швидкість: Коефіцієнт згасання за секунду, типово 0.1."
               }
             },
             {
               "name": "angular_damp",
               "type": "float",
               "description": {
-                "en": "Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
-                "ja": "回転の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
-                "cn": "角速度：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
-                "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
-                "es": "Angular: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
-                "fr": "Angulaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
-                "it": "Angolare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
-                "ko": "각속도: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
-                "pt": "Angular: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
-                "ru": "Угловая скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
-                "tr": "Açısal: Saniye başına sönüm katsayısı, varsayılan 0.1. Yerçekiminden önce her güncellemede ilgili hız max(0, 1 - max(0, damp) / fps) ile çarpılır. Yalnızca mesh yokken ve mass > 0 iken uygulanır; 0 kapatır. Aerodinamik sürükleme veya temas sürtünmesi modeli değildir.",
-                "uk": "Кутова швидкість: Коефіцієнт згасання за секунду, типово 0.1. Перед гравітацією кожне оновлення множить відповідну швидкість на max(0, 1 - max(0, damp) / fps). Лише без mesh і за mass > 0; 0 вимикає згасання. Це не модель аеродинамічного опору чи контактного тертя."
+                "en": "Angular damping per second. Defaults to 0.1.",
+                "ja": "回転の毎秒の減衰係数。既定値は 0.1。",
+                "cn": "角速度：每秒阻尼系数，默认为 0.1。",
+                "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1.",
+                "es": "Angular: Amortiguación por segundo, por defecto 0.1.",
+                "fr": "Angulaire : Amortissement par seconde, par défaut 0.1.",
+                "it": "Angolare: Smorzamento al secondo, predefinito 0.1.",
+                "ko": "각속도: 초당 감쇠 계수이며 기본값은 0.1입니다.",
+                "pt": "Angular: Amortecimento por segundo, padrão 0.1.",
+                "ru": "Угловая скорость: Коэффициент затухания в секунду, по умолчанию 0.1.",
+                "tr": "Açısal: Saniye başına sönüm katsayısı, varsayılan 0.1.",
+                "uk": "Кутова швидкість: Коефіцієнт згасання за секунду, типово 0.1."
               }
             }
           ],
@@ -5654,7 +5668,7 @@
           "signature": "gravity",
           "description": {
             "en": "Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.",
-            "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。100 ワールド座標を 1m とし、pyxel.init で設定した fps を使って、更新ごとに正規化した gravity_direction × gravity × 100 / fps²を velocity に加える。mesh がなく mass > 0 のコライダーにのみ適用する。負の値は方向を反転する。 pyxel.init 前の fps は 30。",
+            "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。100 ワールド単位を 1m とし、pyxel.init で設定した fps を使って、更新ごとに正規化した gravity_direction × gravity × 100 / fps² を velocity に加える。mesh がなく mass > 0 のコライダーにのみ適用する。負の値は方向を反転する。 pyxel.init 前の fps は 30。",
             "cn": "重力强度 (m/s²)，默认为 9.8，0 表示禁用。每次更新向 velocity 加上归一化的 gravity_direction × gravity × 100 / fps²，fps 取自 pyxel.init，100 个世界单位对应 1 米。仅作用于未设置 mesh 且 mass > 0 的碰撞体。负值反转方向。 pyxel.init 之前，fps 为 30。",
             "de": "Gravitationsstärke in m/s². Standard: 9.8; 0 deaktiviert die Gravitation. Pro Update wird die normierte gravity_direction × gravity × 100 / fps² zu velocity addiert. fps stammt aus pyxel.init; 100 Welteinheiten entsprechen einem Meter. Gilt nur ohne mesh und mit mass > 0. Negative Werte kehren die Richtung um. Vor pyxel.init beträgt fps 30.",
             "es": "Intensidad de la gravedad en m/s². Por defecto, 9.8; 0 la desactiva. Cada actualización suma a velocity gravity_direction normalizada × gravity × 100 / fps², con el fps de pyxel.init y 100 unidades del mundo por metro. Solo afecta a colliders sin mesh y con mass > 0. Un valor negativo invierte la dirección. Antes de pyxel.init, fps es 30.",
@@ -5664,7 +5678,7 @@
             "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade. Cada atualização soma a velocity gravity_direction normalizada × gravity × 100 / fps², usando fps de pyxel.init e 100 unidades do mundo por metro. Aplica-se apenas sem mesh e com mass > 0. Um valor negativo inverte a direção. Antes de pyxel.init, fps é 30.",
             "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию. При каждом обновлении к velocity прибавляется нормализованный gravity_direction × gravity × 100 / fps². fps задаётся в pyxel.init; 100 мировых единиц соответствуют метру. Действует только без mesh и при mass > 0. Отрицательное значение меняет направление на обратное. До pyxel.init значение fps равно 30.",
             "tr": "Yerçekimi ivmesinin büyüklüğü (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır. Her güncellemede velocity değerine normalize edilmiş gravity_direction × gravity × 100 / fps² eklenir. fps, pyxel.init ayarıdır; 100 dünya birimi bir metredir. Yalnızca mesh olmayan ve mass > 0 olan çarpıştırıcılara uygulanır. Negatif değer yönü tersine çevirir. pyxel.init öncesinde fps 30 olur.",
-            "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію. Кожне оновлення додає до velocity нормалізований gravity_direction × gravity × 100 / fps². fps задається в pyxel.init; 100 світових одиниць відповідають метру. Діє лише без mesh і за mass > 0. Від’ємне значення змінює напрямок на протилежний. До pyxel.init значення fps дорівнює 30."
+            "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію. Кожне оновлення додає до velocity нормалізований gravity_direction × gravity × 100 / fps². fps задається в pyxel.init; 100 світових одиниць відповідають метру. Діє лише без mesh і за mass > 0. Від'ємне значення змінює напрямок на протилежний. До pyxel.init значення fps дорівнює 30."
           },
           "value_type": "float",
           "advanced": false
@@ -5679,8 +5693,8 @@
             "cn": "世界空间中的重力方向，默认为 Vec3.DOWN。内部会归一化，因此长度不影响强度；Vec3.ZERO 不施加重力。不受节点或父节点旋转影响。",
             "de": "Gravitationsrichtung in Weltkoordinaten. Standard: Vec3.DOWN. Wird intern normiert; die Länge beeinflusst die Stärke nicht. Vec3.ZERO bewirkt keine Gravitation. Unabhängig von Knoten- und Elternrotationen.",
             "es": "Dirección de la gravedad en el espacio global. Por defecto, Vec3.DOWN. Se normaliza internamente: su longitud no cambia la intensidad. Vec3.ZERO no aplica gravedad. Independiente de las rotaciones del nodo y sus padres.",
-            "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN. Normalisée en interne : sa longueur ne change pas l’intensité. Vec3.ZERO n’applique aucune gravité. Indépendante des rotations du nœud et de ses parents.",
-            "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN. Normalizzata internamente: la lunghezza non cambia l’intensità. Vec3.ZERO non applica gravità. Indipendente dalle rotazioni del nodo e dei suoi genitori.",
+            "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN. Normalisée en interne : sa longueur ne change pas l'intensité. Vec3.ZERO n'applique aucune gravité. Indépendante des rotations du nœud et de ses parents.",
+            "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN. Normalizzata internamente: la lunghezza non cambia l'intensità. Vec3.ZERO non applica gravità. Indipendente dalle rotazioni del nodo e dei suoi genitori.",
             "ko": "월드 공간의 중력 방향. 기본값은 Vec3.DOWN입니다. 내부에서 정규화하므로 길이는 세기에 영향을 주지 않습니다. Vec3.ZERO는 중력을 적용하지 않습니다. 노드와 부모의 회전과 무관합니다.",
             "pt": "Direção da gravidade no espaço global. Padrão: Vec3.DOWN. Normalizada internamente: o comprimento não altera a intensidade. Vec3.ZERO não aplica gravidade. Independente das rotações do nó e dos pais.",
             "ru": "Направление гравитации в мировом пространстве. По умолчанию Vec3.DOWN. Нормализуется внутри: длина не влияет на силу. Vec3.ZERO отключает действие гравитации. Не зависит от поворотов узла и его родителей.",
@@ -5835,8 +5849,8 @@
           "description": {
             "en": "Suggested push-out distance along normal, already split by the mass ratio. Other solid contacts in the same update are considered together; apply every reported correction when resolving contacts.",
             "cn": "沿 normal 方向的建议推开距离，已按质量比例分配。同一次 update 中的其他实体接触会一起计算；处理接触时应应用每次通知的修正。",
-            "de": "Empfohlener Verschiebungsabstand entlang normal, bereits nach dem Massenverhältnis aufgeteilt. Andere feste Kontakte desselben update werden gemeinsam berücksichtigt; beim Auflösen der Kontakte alle gemeldeten Korrekturen anwenden.",
-            "es": "Distancia de separación sugerida en la dirección de normal, ya repartida según la proporción de masas. Los demás contactos sólidos del mismo update se consideran conjuntamente; al resolver los contactos, aplica todas las correcciones notificadas.",
+            "de": "Empfohlener Verschiebungsabstand entlang normal, bereits nach dem Massenverhältnis aufgeteilt. Andere feste Kontakte desselben update werden gemeinsam berücksichtigt; wenden Sie beim Auflösen der Kontakte alle gemeldeten Korrekturen an.",
+            "es": "Distancia de separación sugerida en la dirección de normal, ya repartida según la proporción de masas. Los demás contactos sólidos del mismo update se consideran conjuntamente; al resolver los contactos, aplique todas las correcciones notificadas.",
             "fr": "Distance de séparation conseillée dans la direction de normal, déjà répartie selon le rapport de masses. Les autres contacts solides du même update sont pris en compte ensemble ; pour résoudre les contacts, appliquez toutes les corrections transmises.",
             "it": "Distanza di separazione suggerita lungo normal, già ripartita secondo il rapporto tra le masse. Gli altri contatti solidi nello stesso update vengono considerati insieme; per risolvere i contatti, applicare tutte le correzioni notificate.",
             "ja": "normal 方向への押し戻し量。質量比で配分済み。同じ update 内のほかの衝突もまとめて考慮するため、押し戻すときは通知された補正をすべて適用する。",
@@ -5844,30 +5858,9 @@
             "pt": "Distância de afastamento sugerida na direção de normal, já dividida pela razão de massas. Os demais contatos sólidos do mesmo update são considerados em conjunto; ao resolver os contatos, aplique todas as correções notificadas.",
             "ru": "Рекомендуемое расстояние выталкивания вдоль normal, уже распределённое по соотношению масс. Остальные контакты твёрдых тел в том же update учитываются совместно; при разрешении контактов применяйте все полученные коррекции.",
             "tr": "normal yönünde önerilen ayırma mesafesi; kütle oranına göre önceden paylaştırılmıştır. Aynı update içindeki diğer katı temaslar birlikte değerlendirilir; temasları çözerken bildirilen tüm düzeltmeleri uygulayın.",
-            "uk": "Рекомендована відстань виштовхування вздовж normal, уже розподілена за співвідношенням мас. Інші контакти твердих тіл у тому самому update враховуються разом; для розв’язання контактів застосовуйте всі отримані корекції."
+            "uk": "Рекомендована відстань виштовхування вздовж normal, уже розподілена за співвідношенням мас. Інші контакти твердих тіл у тому самому update враховуються разом; для розв'язання контактів застосовуйте всі отримані корекції."
           },
           "value_type": "float",
-          "advanced": false
-        },
-        {
-          "name": "delta_rotation",
-          "type": "variable",
-          "signature": "delta_rotation",
-          "description": {
-            "en": "Rotation correction reserved for a future response; currently always the identity, so applying it is a harmless no-op.",
-            "cn": "为未来响应保留的旋转修正；目前始终为单位旋转，因此应用它是无害的空操作。",
-            "de": "Rotationskorrektur für eine zukünftige Reaktion reserviert; derzeit immer die Identität, daher ist das Anwenden ein harmloser No-op.",
-            "es": "Corrección de rotación reservada para una respuesta futura; actualmente siempre es la identidad, por lo que aplicarla es un no-op inofensivo.",
-            "fr": "Correction de rotation réservée à une réponse future ; actuellement toujours l'identité, donc l'appliquer est un no-op inoffensif.",
-            "it": "Correzione di rotazione riservata a una risposta futura; attualmente è sempre l'identità, quindi applicarla è un no-op innocuo.",
-            "ja": "将来の応答のために予約された回転補正。現在は常に恒等回転で、適用しても影響はない。",
-            "ko": "향후 응답을 위해 예약된 회전 보정입니다. 현재는 항상 항등이므로 적용해도 해가 없는 no-op입니다.",
-            "pt": "Correção de rotação reservada para uma resposta futura; atualmente é sempre a identidade, então aplicá-la é um no-op inofensivo.",
-            "ru": "Коррекция вращения зарезервирована для будущей реакции; сейчас всегда тождественная, поэтому её применение — безвредный no-op.",
-            "tr": "Gelecekteki bir tepki için ayrılmış dönme düzeltmesi; şu anda her zaman birimdir, bu yüzden uygulamak zararsız bir no-op işlemidir.",
-            "uk": "Корекція обертання зарезервована для майбутньої реакції; зараз завжди тотожна, тому її застосування — нешкідливий no-op."
-          },
-          "value_type": "Quat",
           "advanced": false
         },
         {
@@ -6003,18 +5996,18 @@
           "type": "variable",
           "signature": "normal",
           "description": {
-            "en": "The surface normal at the hit, facing the ray origin's side.",
-            "cn": "命中点处的表面法线，朝向射线起点一侧。",
-            "de": "Die Flächennormale am Treffer, zur Seite des Strahlursprungs gerichtet.",
-            "es": "La normal de la superficie en el impacto, orientada hacia el lado del origen del rayo.",
-            "fr": "La normale de surface au point touché, orientée vers le côté de l'origine du rayon.",
-            "it": "La normale della superficie nel punto di intersezione, rivolta verso il lato dell'origine del raggio.",
-            "ja": "ヒット面の法線。レイの始点側を向く。",
-            "ko": "히트 지점의 표면 법선이며, 레이 원점 쪽을 향합니다.",
-            "pt": "A normal da superfície no acerto, voltada para o lado da origem do raio.",
-            "ru": "Нормаль поверхности в точке попадания, направленная в сторону начала луча.",
-            "tr": "İsabet noktasındaki yüzey normali; ışının başlangıç tarafına bakar.",
-            "uk": "Нормаль поверхні в точці влучання, спрямована в бік початку променя."
+            "en": "World-space surface normal. Points toward the ray origin for meshes, outward for other shapes.",
+            "cn": "世界空间中的表面法线。网格的法线朝向射线起点，其他形状的法线朝外。",
+            "de": "Flächennormale im World Space. Bei Meshes zum Strahlursprung gerichtet, bei anderen Formen nach außen.",
+            "es": "Normal de la superficie en espacio mundial. Apunta hacia el origen del rayo en las mallas y hacia fuera en las demás formas.",
+            "fr": "Normale de surface dans l'espace monde. Dirigée vers l'origine du rayon pour les maillages, vers l'extérieur pour les autres formes.",
+            "it": "Normale della superficie nello spazio globale. Rivolta verso l'origine del raggio per le mesh, verso l'esterno per le altre forme.",
+            "ja": "ヒット面の法線（ワールド座標）。メッシュ形状ではレイの始点側、その他の形状では外側を向く。",
+            "ko": "월드 공간의 표면 법선입니다. 메시에서는 레이 원점을 향하고, 다른 형상에서는 바깥쪽을 향합니다.",
+            "pt": "Normal da superfície no espaço mundial. Aponta para a origem do raio nas malhas e para fora nas demais formas.",
+            "ru": "Нормаль поверхности в мировом пространстве. Для мешей направлена к началу луча, для остальных форм — наружу.",
+            "tr": "Dünya uzayındaki yüzey normali. Meshlerde ışının başlangıcına, diğer şekillerde dışa doğru bakar.",
+            "uk": "Нормаль поверхні у світовому просторі. Для мешів спрямована до початку променя, для решти форм — назовні."
           },
           "value_type": "Vec3",
           "advanced": false
@@ -6241,20 +6234,20 @@
           "type": "variable",
           "signature": "tags",
           "description": {
-            "en": "Tag strings used by find_by_tags() and the tags filter of spatial queries.",
-            "cn": "find_by_tags() 和空间查询的 tags 过滤器使用的标签字符串。",
-            "de": "Tag-Strings, die von find_by_tags() und dem tags-Filter räumlicher Abfragen verwendet werden.",
-            "es": "Cadenas de etiqueta usadas por find_by_tags() y el filtro tags de las consultas espaciales.",
-            "fr": "Chaînes de tags utilisées par find_by_tags() et le filtre tags des requêtes spatiales.",
-            "it": "Stringhe tag usate da find_by_tags() e dal filtro tags delle query spaziali.",
-            "ja": "タグ文字列のリスト。find_by_tags() や空間クエリの tags 絞り込みに使う。",
-            "ko": "find_by_tags()와 공간 쿼리의 tags 필터에서 사용하는 태그 문자열입니다.",
-            "pt": "Strings de tags usadas por find_by_tags() e pelo filtro tags de consultas espaciais.",
-            "ru": "Строки тегов, используемые find_by_tags() и фильтром tags пространственных запросов.",
-            "tr": "find_by_tags() ve uzamsal sorguların tags filtresi tarafından kullanılan etiket dizeleri.",
-            "uk": "Рядки тегів, які використовують find_by_tags() і фільтр tags просторових запитів."
+            "en": "A set of tag strings. Edits apply directly to this node. Used by find_by_tags() and the tags filter of spatial queries.",
+            "cn": "标签字符串的集合。修改会直接应用到此节点。供 find_by_tags() 和空间查询的 tags 过滤器使用。",
+            "de": "Eine Menge von Tag-Strings. Änderungen wirken direkt auf diesen Node. Verwendet von find_by_tags() und dem tags-Filter räumlicher Abfragen.",
+            "es": "Un conjunto de cadenas de etiqueta. Los cambios se aplican directamente a este nodo. Se usa en find_by_tags() y en el filtro tags de las consultas espaciales.",
+            "fr": "Un ensemble de chaînes de tags. Les modifications s'appliquent directement à ce nœud. Utilisé par find_by_tags() et le filtre tags des requêtes spatiales.",
+            "it": "Un insieme di stringhe tag. Le modifiche si applicano direttamente a questo nodo. Usato da find_by_tags() e dal filtro tags delle query spaziali.",
+            "ja": "タグ文字列の集合。変更はこのノードに直接反映される。find_by_tags() や空間クエリの tags 絞り込みに使う。",
+            "ko": "태그 문자열의 집합입니다. 변경은 이 노드에 직접 반영됩니다. find_by_tags()와 공간 쿼리의 tags 필터에 사용합니다.",
+            "pt": "Um conjunto de strings de tags. As alterações se aplicam diretamente a este nó. Usado por find_by_tags() e pelo filtro tags das consultas espaciais.",
+            "ru": "Множество строк тегов. Изменения применяются непосредственно к этому узлу. Используется find_by_tags() и фильтром tags пространственных запросов.",
+            "tr": "Etiket dizelerinden oluşan bir küme. Değişiklikler doğrudan bu düğüme uygulanır. find_by_tags() ve uzamsal sorguların tags filtresi tarafından kullanılır.",
+            "uk": "Множина рядків тегів. Зміни застосовуються безпосередньо до цього вузла. Використовується find_by_tags() і фільтром tags просторових запитів."
           },
-          "value_type": "list",
+          "value_type": "set[str]",
           "advanced": false
         },
         {
@@ -6304,18 +6297,18 @@
           "type": "variable",
           "signature": "destroyed",
           "description": {
-            "en": "True after destroy() has been called, until the node is detached at the end of update().",
-            "cn": "调用 destroy() 后为 True，直到节点在 update() 结束时从树上分离。",
-            "de": "True, nachdem destroy() aufgerufen wurde, bis der Node am Ende von update() abgehängt wird.",
-            "es": "True después de llamar a destroy(), hasta que el nodo se desprende al final de update().",
-            "fr": "True après l'appel à destroy(), jusqu'à ce que le nœud soit détaché à la fin de update().",
-            "it": "True dopo la chiamata a destroy(), finché il nodo non viene staccato alla fine di update().",
-            "ja": "destroy() 呼び出し後に True になる。update() の最後に木から外れるまで保たれる。",
-            "ko": "destroy()가 호출된 뒤 update() 끝에서 노드가 분리될 때까지 True입니다.",
-            "pt": "True depois que destroy() é chamado, até o nó ser destacado no fim de update().",
-            "ru": "True после вызова destroy(), пока узел не будет отсоединён в конце update().",
-            "tr": "destroy() çağrıldıktan sonra, düğüm update() sonunda ayrılana kadar True.",
-            "uk": "True після виклику destroy(), доки вузол не буде від'єднано наприкінці update()."
+            "en": "True once destroy() has been called. Remains True after the node is detached.",
+            "cn": "调用 destroy() 后变为 True。节点被移除后仍保持 True。",
+            "de": "True, sobald destroy() aufgerufen wurde. Bleibt nach dem Abtrennen des Nodes True.",
+            "es": "True una vez que se llama a destroy(). Permanece en True después de separar el nodo.",
+            "fr": "True après l'appel à destroy(). Reste True après le détachement du nœud.",
+            "it": "True dopo la chiamata a destroy(). Rimane True dopo che il nodo è stato scollegato.",
+            "ja": "destroy() 呼び出し後に True になり、木から外れた後も True のままになる。",
+            "ko": "destroy() 호출 후 True가 됩니다. 노드가 분리된 후에도 True를 유지합니다.",
+            "pt": "True após a chamada de destroy(). Permanece True depois que o nó é destacado.",
+            "ru": "True после вызова destroy(). Остаётся True после отсоединения узла.",
+            "tr": "destroy() çağrıldıktan sonra True olur. Düğüm ayrıldıktan sonra da True kalır.",
+            "uk": "True після виклику destroy(). Залишається True після від'єднання вузла."
           },
           "value_type": "bool",
           "advanced": false
@@ -6451,18 +6444,18 @@
           "type": "class",
           "signature": "Node.from_mesh(mesh)",
           "description": {
-            "en": "Create a Node tree from a Mesh and return its root node.",
-            "cn": "从 Mesh 创建 Node 树，并返回其根节点。",
-            "de": "Erstellt aus einem Mesh einen Node-Baum und gibt dessen Wurzel-Node zurück.",
-            "es": "Crea un árbol de Node a partir de un Mesh y devuelve su nodo raíz.",
-            "fr": "Crée un arbre de Node depuis un Mesh et renvoie son nœud racine.",
-            "it": "Crea un albero di Node da un Mesh e restituisce il nodo radice.",
-            "ja": "Mesh から Node ツリーを作り、そのルートノードを返す。",
-            "ko": "Mesh에서 Node 트리를 만들고 루트 노드를 반환합니다.",
-            "pt": "Cria uma árvore de Node a partir de um Mesh e retorna seu nó raiz.",
-            "ru": "Создаёт дерево Node из Mesh и возвращает его корневой узел.",
-            "tr": "Bir Mesh değerinden Node ağacı oluşturur ve kök düğümünü döndürür.",
-            "uk": "Створює дерево Node з Mesh і повертає його кореневий вузол."
+            "en": "Create a Node tree from a Mesh and return its root node. Each call creates independent nodes and motion playback state; Primitive data is shared.",
+            "cn": "从 Mesh 创建 Node 树，并返回其根节点。每次调用都会创建独立的节点和动画播放状态；Primitive 数据共享。",
+            "de": "Erstellt aus einem Mesh einen Node-Baum und gibt dessen Wurzel-Node zurück. Jeder Aufruf erzeugt unabhängige Nodes und einen eigenen Animationszustand; Primitive-Daten werden gemeinsam genutzt.",
+            "es": "Crea un árbol de Node a partir de un Mesh y devuelve su nodo raíz. Cada llamada crea nodos y un estado de reproducción independientes; los datos de Primitive se comparten.",
+            "fr": "Crée un arbre de Node depuis un Mesh et renvoie son nœud racine. Chaque appel crée des nœuds et un état de lecture d'animation indépendants ; les données Primitive sont partagées.",
+            "it": "Crea un albero di Node da un Mesh e restituisce il nodo radice. Ogni chiamata crea nodi e uno stato di riproduzione indipendenti; i dati Primitive sono condivisi.",
+            "ja": "Mesh から Node ツリーを作り、そのルートノードを返す。呼び出すたびに独立したノードとモーション再生状態を作る。Primitive のデータは共有する。",
+            "ko": "Mesh에서 Node 트리를 만들고 루트 노드를 반환합니다. 호출할 때마다 독립적인 노드와 모션 재생 상태를 만들며 Primitive 데이터는 공유합니다.",
+            "pt": "Cria uma árvore de Node a partir de um Mesh e retorna seu nó raiz. Cada chamada cria nós e um estado de reprodução independentes; os dados Primitive são compartilhados.",
+            "ru": "Создаёт дерево Node из Mesh и возвращает его корневой узел. Каждый вызов создаёт независимые узлы и состояние воспроизведения анимации; данные Primitive используются совместно.",
+            "tr": "Bir Mesh değerinden Node ağacı oluşturur ve kök düğümünü döndürür. Her çağrı bağımsız düğümler ve animasyon oynatma durumu oluşturur; Primitive verileri paylaşılır.",
+            "uk": "Створює дерево Node з Mesh і повертає його кореневий вузол. Кожен виклик створює незалежні вузли та стан відтворення анімації; дані Primitive використовуються спільно."
           },
           "params": [
             {
@@ -6617,18 +6610,18 @@
           "type": "function",
           "signature": "apply_motion(motion, frame, *, loop=True)",
           "description": {
-            "en": "Sample a Motion at the given frame and immediately apply it to this Node.from_mesh() subtree.",
-            "cn": "在给定帧采样 Motion，并立即应用到此 Node.from_mesh() 子树。",
-            "de": "Tastet eine Motion am angegebenen Frame ab und wendet sie sofort auf diesen Node.from_mesh()-Teilbaum an.",
-            "es": "Muestrea un Motion en el fotograma dado y lo aplica de inmediato a este subárbol de Node.from_mesh().",
-            "fr": "Échantillonne une Motion à l'image donnée et l'applique immédiatement à ce sous-arbre Node.from_mesh().",
-            "it": "Campiona una Motion al frame indicato e la applica immediatamente a questo sottoalbero Node.from_mesh().",
-            "ja": "指定フレームで Motion をサンプリングし、この Node.from_mesh() 由来のサブツリーへ即座に適用する。",
-            "ko": "지정한 프레임에서 Motion을 샘플링하고 이 Node.from_mesh() 하위 트리에 즉시 적용합니다.",
-            "pt": "Amostra uma Motion no frame dado e a aplica imediatamente a esta subárvore Node.from_mesh().",
-            "ru": "Выбирает Motion в заданном кадре и сразу применяет её к этому поддереву Node.from_mesh().",
-            "tr": "Verilen karede bir Motion örnekler ve hemen bu Node.from_mesh() alt ağacına uygular.",
-            "uk": "Семплює Motion у заданому кадрі й одразу застосовує його до цього піддерева Node.from_mesh()."
+            "en": "Sample a Motion at the given frame, replacing the matching local transforms in this Node.from_mesh() subtree. Keep scene placement and scale on a separate parent.",
+            "cn": "在指定帧采样 Motion，替换此 Node.from_mesh() 子树中匹配的局部变换。场景位置和缩放应放在单独的父节点上。",
+            "de": "Wertet eine Motion im angegebenen Frame aus und ersetzt die passenden lokalen Transformationen dieses Node.from_mesh()-Teilbaums. Szenenplatzierung und Skalierung gehören auf einen separaten Eltern-Node.",
+            "es": "Muestrea un Motion en el fotograma indicado y reemplaza los transforms locales correspondientes de este subárbol Node.from_mesh(). Mantenga la posición y escala en la escena en un padre separado.",
+            "fr": "Échantillonne une Motion à l'image indiquée et remplace les transformations locales correspondantes de ce sous-arbre Node.from_mesh(). Gardez le placement et l'échelle dans la scène sur un parent distinct.",
+            "it": "Campiona una Motion al frame indicato e sostituisce le trasformazioni locali corrispondenti di questo sottoalbero Node.from_mesh(). Tenere posizione e scala nella scena su un genitore separato.",
+            "ja": "指定フレームで Motion をサンプリングし、この Node.from_mesh() 由来のサブツリーの対応するローカル変換を置き換える。シーン内の配置と拡大縮小は別の親ノードに設定する。",
+            "ko": "지정 프레임에서 Motion을 샘플링하여 이 Node.from_mesh() 하위 트리의 해당 로컬 변환을 대체합니다. 장면 배치와 크기 조절은 별도의 부모 노드에 설정하세요.",
+            "pt": "Amostra uma Motion no quadro indicado e substitui as transformações locais correspondentes desta subárvore Node.from_mesh(). Mantenha posição e escala na cena em um pai separado.",
+            "ru": "Вычисляет Motion в указанном кадре, заменяя соответствующие локальные преобразования в этом поддереве Node.from_mesh(). Размещение и масштаб в сцене задавайте отдельному родительскому узлу.",
+            "tr": "Motion değerini belirtilen karede örnekleyerek bu Node.from_mesh() alt ağacındaki ilgili yerel dönüşümleri değiştirir. Sahnedeki konumu ve ölçeği ayrı bir üst düğümde tutun.",
+            "uk": "Обчислює Motion у вказаному кадрі, замінюючи відповідні локальні перетворення в цьому піддереві Node.from_mesh(). Розміщення та масштаб у сцені задавайте окремому батьківському вузлу."
           },
           "params": [
             {
@@ -6889,7 +6882,7 @@
           "params": [
             {
               "name": "tags",
-              "type": "list",
+              "type": "set[str]",
               "description": {
                 "en": "Tags to search for.",
                 "cn": "要搜索的标签。",
@@ -6897,7 +6890,7 @@
                 "es": "Etiquetas que se van a buscar.",
                 "fr": "Tags à rechercher.",
                 "it": "Tag da cercare.",
-                "ja": "検索するタグのリスト。",
+                "ja": "検索するタグの集合。",
                 "ko": "검색할 태그입니다.",
                 "pt": "Tags a pesquisar.",
                 "ru": "Теги для поиска.",
@@ -7037,18 +7030,18 @@
           "type": "function",
           "signature": "on_destroy()",
           "description": {
-            "en": "Destruction hook, called at the end of update() before the node is detached.",
-            "cn": "销毁钩子，在 update() 结束、节点分离前调用。",
-            "de": "Zerstörungs-Hook, am Ende von update() vor dem Abhängen des Nodes aufgerufen.",
-            "es": "Hook de destrucción, llamado al final de update() antes de desprender el nodo.",
-            "fr": "Méthode de rappel de destruction, appelée à la fin de update() avant que le nœud soit détaché.",
-            "it": "Hook di distruzione, chiamato alla fine di update() prima che il nodo venga staccato.",
-            "ja": "破棄フック。update() の最後、木から外れる直前に呼ばれる。",
-            "ko": "파괴 훅으로, update() 끝에서 노드가 분리되기 전에 호출됩니다.",
-            "pt": "Hook de destruição, chamado no fim de update() antes do nó ser destacado.",
-            "ru": "Хук уничтожения, вызываемый в конце update() перед отсоединением узла.",
-            "tr": "Yok etme hook'u; update() sonunda düğüm ayrılmadan önce çağrılır.",
-            "uk": "Хук знищення, який викликається наприкінці update() перед від'єднанням вузла."
+            "en": "Destruction hook, called once per node at the end of update(), just before detachment.",
+            "cn": "销毁钩子。在 update() 结束时、节点移除前调用，每个节点只调用一次。",
+            "de": "Zerstörungs-Hook, der pro Node einmal am Ende von update(), unmittelbar vor dem Abtrennen, aufgerufen wird.",
+            "es": "Hook de destrucción, llamado una vez por nodo al final de update(), justo antes de separarlo.",
+            "fr": "Hook de destruction, appelé une seule fois par nœud à la fin de update(), juste avant son détachement.",
+            "it": "Hook di distruzione, chiamato una sola volta per nodo alla fine di update(), subito prima dello scollegamento.",
+            "ja": "破棄フック。update() の最後、木から外れる直前に、ノードごとに一度だけ呼ばれる。",
+            "ko": "파괴 훅입니다. update() 마지막에 노드가 분리되기 직전, 노드당 한 번만 호출됩니다.",
+            "pt": "Hook de destruição, chamado uma vez por nó no fim de update(), logo antes de destacá-lo.",
+            "ru": "Обработчик уничтожения, вызываемый один раз для каждого узла в конце update(), непосредственно перед отсоединением.",
+            "tr": "Yok etme kancası; update() sonunda, düğüm ayrılmadan hemen önce düğüm başına bir kez çağrılır.",
+            "uk": "Обробник знищення, що викликається один раз для кожного вузла наприкінці update(), безпосередньо перед від'єднанням."
           },
           "returns": {
             "type": "None"
@@ -7236,7 +7229,7 @@
             "cn": "绘制时将图形和图像投影到已绘制的表面上。 适用于 rect()、elli() 和 plane()。",
             "de": "Projiziert beim Zeichnen Formen und Bilder auf bereits gezeichnete Oberflächen. Gilt für rect(), elli() und plane().",
             "es": "Al dibujar, proyecta figuras e imágenes sobre superficies ya dibujadas. Se aplica a rect(), elli() y plane().",
-            "fr": "Lors du dessin, projette les formes et les images sur les surfaces déjà dessinées. S’applique à rect(), elli() et plane().",
+            "fr": "Lors du dessin, projette les formes et les images sur les surfaces déjà dessinées. S'applique à rect(), elli() et plane().",
             "it": "Durante il disegno, proietta forme e immagini sulle superfici già disegnate. Si applica a rect(), elli() e plane().",
             "ja": "描画時に、図形や画像を描画済みの表面に投影する。 rect()・elli()・plane() に適用される。",
             "ko": "그릴 때 도형과 이미지를 이미 그려진 표면에 투영합니다. rect(), elli(), plane()에 적용됩니다.",
@@ -7250,18 +7243,18 @@
               "name": "distance",
               "type": "float",
               "description": {
-                "en": "Projection distance in local units, along mat’s −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.",
+                "en": "Projection distance in local units, along mat's −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.",
                 "cn": "沿 mat 的局部 −Z 轴投影的距离，以局部单位表示。矩阵及祖先节点的缩放也会缩放投影距离。负值沿 +Z 投影。0 不着色，但保持投影模式。",
                 "de": "Projektionsdistanz in lokalen Einheiten entlang der −Z-Achse von mat. Skalierungen der Matrix und der Vorfahren skalieren auch die Reichweite. Negative Werte projizieren entlang +Z. Null färbt nichts, lässt den Decal-Modus aber aktiv.",
                 "es": "Distancia de proyección en unidades locales, por el eje −Z de mat. La escala de la matriz y de los ancestros también escala el alcance. Un valor negativo proyecta por +Z. Cero no colorea nada pero mantiene activo el modo decal.",
-                "fr": "Distance de projection en unités locales, selon l’axe −Z de mat. Les mises à l’échelle de la matrice et des ancêtres modifient aussi la portée. Une valeur négative projette selon +Z. Zéro ne colore rien mais conserve le mode decal.",
-                "it": "Distanza di proiezione in unità locali, lungo l’asse −Z di mat. La scala della matrice e degli antenati modifica anche la portata. Un valore negativo proietta lungo +Z. Zero non colora nulla ma mantiene attiva la modalità decal.",
+                "fr": "Distance de projection en unités locales, selon l'axe −Z de mat. Les mises à l'échelle de la matrice et des ancêtres modifient aussi la portée. Une valeur négative projette selon +Z. Zéro ne colore rien mais conserve le mode decal.",
+                "it": "Distanza di proiezione in unità locali, lungo l'asse −Z di mat. La scala della matrice e degli antenati modifica anche la portata. Un valore negativo proietta lungo +Z. Zero non colora nulla ma mantiene attiva la modalità decal.",
                 "ja": "mat のローカル −Z 方向への投影距離。単位はローカル座標と同じで、行列や祖先ノードの拡大縮小も反映される。負なら +Z 方向。0 は何も塗らないが、投影モードは解除しない。",
                 "ko": "mat의 로컬 −Z축을 따른 투영 거리입니다. 로컬 좌표 단위이며 행렬과 조상 노드의 배율도 범위에 적용됩니다. 음수는 +Z 방향으로 투영합니다. 0은 아무것도 칠하지 않지만 투영 모드를 유지합니다.",
                 "pt": "Distância de projeção em unidades locais, pelo eixo −Z de mat. A escala da matriz e dos ancestrais também altera o alcance. Valores negativos projetam por +Z. Zero não colore nada, mas mantém o modo decal ativo.",
                 "ru": "Дальность проекции в локальных единицах вдоль оси −Z матрицы mat. Масштаб матрицы и предков также меняет дальность. Отрицательное значение проецирует вдоль +Z. Ноль ничего не окрашивает, но сохраняет режим decal.",
                 "tr": "mat matrisinin yerel −Z ekseni boyunca, yerel birimlerle yansıtma mesafesi. Matrisin ve üst düğümlerin ölçeği menzili de ölçekler. Negatif değer +Z yönünde yansıtır. Sıfır hiçbir şey boyamaz ama decal modunu açık tutar.",
-                "uk": "Дальність проєкції в локальних одиницях уздовж осі −Z матриці mat. Масштаб матриці та предків також змінює дальність. Від’ємне значення проєктує вздовж +Z. Нуль нічого не зафарбовує, але зберігає режим decal."
+                "uk": "Дальність проєкції в локальних одиницях уздовж осі −Z матриці mat. Масштаб матриці та предків також змінює дальність. Від'ємне значення проєктує вздовж +Z. Нуль нічого не зафарбовує, але зберігає режим decal."
               }
             }
           ],
@@ -7272,12 +7265,12 @@
           "notes": {
             "en": "These draw filled planar shapes or images whose position and orientation are specified by a matrix. Borders draw lines and are not included. Other draw commands are unchanged.\n\nPaints already drawn, camera-visible surfaces within the projection range, without changing their depth. Draw receivers first; no collider is needed. Does not stop at the first surface along the projection direction. Dithering, shading, and colkey still apply; depth_test, depth_write, and depth_offset do not affect decal drawing. Resets at each node's on_draw entry.",
             "cn": "这三个命令绘制填充平面图形或图像，并通过矩阵指定位置和朝向。轮廓命令绘制的是线条，不在此范围内。其他绘制命令不受影响。\n\n仅给投影范围内已绘制且相机可见的表面着色，不改变其深度。先绘制接收投影的表面；无需碰撞体。不会在投影方向上的第一个表面停止。抖动、明暗和 colkey 仍然生效；depth_test、depth_write 和 depth_offset 不影响投影绘制。每个节点的 on_draw 开始时重置。",
-            "de": "Diese zeichnen gefüllte ebene Formen oder Bilder mit einer durch eine Matrix festgelegten Position und Ausrichtung. Umrisse bestehen aus Linien und sind nicht enthalten. Andere Zeichenbefehle bleiben unverändert.\n\nFärbt bereits gezeichnete, für die Kamera sichtbare Oberflächen innerhalb der Projektionsreichweite, ohne ihre Tiefe zu ändern. Empfänger zuerst zeichnen; kein Collider nötig. Stoppt nicht an der ersten Oberfläche in Projektionsrichtung. Dithering, Schattierung und colkey gelten weiterhin; depth_test, depth_write und depth_offset beeinflussen die Projektion nicht. Wird beim Eintritt in jedes on_draw zurückgesetzt.",
-            "es": "Dibujan figuras planas rellenas o imágenes cuya posición y orientación se especifican con una matriz. Los contornos dibujan líneas y no se incluyen. Los demás comandos de dibujo no cambian.\n\nColorea las superficies ya dibujadas y visibles para la cámara dentro del alcance, sin cambiar su profundidad. Dibuja primero las superficies receptoras; no necesitan collider. No se detiene en la primera superficie en la dirección de proyección. Se mantienen el tramado, el sombreado y colkey; depth_test, depth_write y depth_offset no afectan a la proyección. Se restablece al entrar en cada on_draw.",
-            "fr": "Ces commandes dessinent des formes planes pleines ou des images dont la position et l’orientation sont définies par une matrice. Les contours dessinent des lignes et ne sont pas concernés. Les autres commandes de dessin restent inchangées.\n\nColore les surfaces déjà dessinées et visibles par la caméra dans la portée de projection, sans modifier leur profondeur. Dessinez les surfaces réceptrices en premier ; aucun collider n’est nécessaire. Ne s’arrête pas à la première surface dans la direction de projection. Le tramage, l’ombrage et colkey restent actifs ; depth_test, depth_write et depth_offset n’affectent pas la projection. Réinitialisé à chaque entrée dans on_draw.",
+            "de": "Diese zeichnen gefüllte ebene Formen oder Bilder mit einer durch eine Matrix festgelegten Position und Ausrichtung. Umrisse bestehen aus Linien und sind nicht enthalten. Andere Zeichenbefehle bleiben unverändert.\n\nFärbt bereits gezeichnete, für die Kamera sichtbare Oberflächen innerhalb der Projektionsreichweite, ohne ihre Tiefe zu ändern. Zeichnen Sie die empfangenden Oberflächen zuerst; ein Collider ist nicht erforderlich. Stoppt nicht an der ersten Oberfläche in Projektionsrichtung. Dithering, Schattierung und colkey gelten weiterhin; depth_test, depth_write und depth_offset beeinflussen die Projektion nicht. Wird beim Eintritt in jedes on_draw zurückgesetzt.",
+            "es": "Dibujan figuras planas rellenas o imágenes cuya posición y orientación se especifican con una matriz. Los contornos dibujan líneas y no se incluyen. Los demás comandos de dibujo no cambian.\n\nColorea las superficies ya dibujadas y visibles para la cámara dentro del alcance, sin cambiar su profundidad. Dibuje primero las superficies receptoras; no necesitan collider. No se detiene en la primera superficie en la dirección de proyección. Se mantienen el tramado, el sombreado y colkey; depth_test, depth_write y depth_offset no afectan a la proyección. Se restablece al entrar en cada on_draw.",
+            "fr": "Ces commandes dessinent des formes planes pleines ou des images dont la position et l'orientation sont définies par une matrice. Les contours dessinent des lignes et ne sont pas concernés. Les autres commandes de dessin restent inchangées.\n\nColore les surfaces déjà dessinées et visibles par la caméra dans la portée de projection, sans modifier leur profondeur. Dessinez les surfaces réceptrices en premier ; aucun collider n'est nécessaire. Ne s'arrête pas à la première surface dans la direction de projection. Le tramage, l'ombrage et colkey restent actifs ; depth_test, depth_write et depth_offset n'affectent pas la projection. Réinitialisé à chaque entrée dans on_draw.",
             "it": "Disegnano forme piane piene o immagini con posizione e orientamento specificati da una matrice. I contorni disegnano linee e non sono inclusi. Gli altri comandi di disegno restano invariati.\n\nColora le superfici già disegnate e visibili alla camera entro la portata, senza modificarne la profondità. Disegnare prima le superfici riceventi; non serve un collider. Non si ferma alla prima superficie nella direzione di proiezione. Dithering, ombreggiatura e colkey restano attivi; depth_test, depth_write e depth_offset non influiscono sulla proiezione. Si reimposta a ogni ingresso in on_draw.",
             "ja": "いずれも行列で位置と向きを指定できる、平面図形の塗りつぶしまたは画像の描画命令。輪郭は線の描画なので含まない。他の描画命令の動作は変わらない。\n\n投影範囲内にある、描画済みでカメラに見えている表面を塗る。投影先は先に描く。当たり判定は不要。投影方向の最初の表面では止まらず、範囲内の表面すべてが対象になる。投影先の深度は変更しない。ディザ・シェーディング・colkey は通常どおり適用され、depth_test・depth_write・depth_offset は投影描画に影響しない。各ノードの on_draw 開始時にも通常描画へ戻る。",
-            "ko": "이 명령들은 행렬로 위치와 방향을 지정하는 채워진 평면 도형이나 이미지를 그립니다. 윤곽선은 선을 그리므로 포함되지 않습니다. 다른 그리기 명령은 바뀌지 않습니다.\n\n투영 범위 안에서 이미 그려졌으며 카메라에 보이는 표면을 칠하고 깊이는 바꾸지 않습니다. 투영을 받을 표면을 먼저 그리며 콜라이더는 필요하지 않습니다. 투영 방향의 첫 표면에서 멈추지 않습니다. 디더링, 셰이딩, colkey는 그대로 적용되며 depth_test, depth_write, depth_offset은 투영에 영향을 주지 않습니다. 각 on_draw 진입 시 초기화됩니다.",
+            "ko": "이 명령들은 행렬로 위치와 방향을 지정하는 채워진 평면 도형이나 이미지를 그립니다. 윤곽선은 선을 그리므로 포함되지 않습니다. 다른 그리기 명령은 바뀌지 않습니다.\n\n투영 범위 안에서 이미 그려졌으며 카메라에 보이는 표면을 칠하고 깊이는 바꾸지 않습니다. 투영을 받을 표면을 먼저 그리세요. 콜라이더는 필요하지 않습니다. 투영 방향의 첫 표면에서 멈추지 않습니다. 디더링, 셰이딩, colkey는 그대로 적용되며 depth_test, depth_write, depth_offset은 투영에 영향을 주지 않습니다. 각 on_draw 진입 시 초기화됩니다.",
             "pt": "Desenham formas planas preenchidas ou imagens cuja posição e orientação são especificadas por uma matriz. Contornos desenham linhas e não estão incluídos. Os demais comandos de desenho não mudam.\n\nColore as superfícies já desenhadas e visíveis para a câmera dentro do alcance, sem alterar sua profundidade. Desenhe primeiro as superfícies receptoras; não precisam de collider. Não para na primeira superfície na direção da projeção. Dithering, sombreamento e colkey continuam ativos; depth_test, depth_write e depth_offset não afetam a projeção. Redefine ao entrar em cada on_draw.",
             "ru": "Они рисуют заполненные плоские фигуры или изображения, положение и ориентация которых задаются матрицей. Контуры рисуются линиями и не входят в эту группу. Остальные команды рисования не меняются.\n\nОкрашивает уже нарисованные и видимые камере поверхности в пределах дальности проекции, не меняя их глубину. Сначала рисуйте принимающие поверхности; коллайдер не нужен. Не останавливается на первой поверхности вдоль направления проекции. Дизеринг, затенение и colkey действуют как обычно; depth_test, depth_write и depth_offset не влияют на проекцию. Сбрасывается при каждом входе в on_draw.",
             "tr": "Bu komutlar konumu ve yönü bir matrisle belirlenen dolu düzlemsel şekilleri veya görüntüleri çizer. Kenarlıklar çizgilerden oluşur ve dahil değildir. Diğer çizim komutları değişmez.\n\nMenzil içindeki önceden çizilmiş ve kameraya görünen yüzeyleri, derinliklerini değiştirmeden boyar. Alıcı yüzeyleri önce çizin; collider gerekmez. Yansıtma yönündeki ilk yüzeyde durmaz. Dithering, gölgelendirme ve colkey uygulanır; depth_test, depth_write ve depth_offset yansıtmayı etkilemez. Her on_draw girişinde sıfırlanır.",
@@ -7725,36 +7718,36 @@
               "name": "w",
               "type": "float",
               "description": {
-                "en": "Width in world units.",
-                "cn": "宽度，以世界单位表示。",
-                "de": "Breite in Welteinheiten.",
-                "es": "Anchura en unidades mundiales.",
-                "fr": "Largeur en unités monde.",
-                "it": "Larghezza in unità globali.",
-                "ja": "幅（ワールド単位）。",
-                "ko": "월드 단위의 너비입니다.",
-                "pt": "Largura em unidades mundiais.",
-                "ru": "Ширина в мировых единицах.",
-                "tr": "Dünya birimleriyle genişlik.",
-                "uk": "Ширина у світових одиницях."
+                "en": "Width along mat's local X axis.",
+                "cn": "沿 mat 局部 X 轴的宽度。",
+                "de": "Breite entlang der lokalen X-Achse von mat.",
+                "es": "Anchura a lo largo del eje X local de mat.",
+                "fr": "Largeur le long de l'axe X local de mat.",
+                "it": "Larghezza lungo l'asse X locale di mat.",
+                "ja": "mat のローカル X 軸方向の幅。",
+                "ko": "mat의 로컬 X축 방향 너비입니다.",
+                "pt": "Largura ao longo do eixo X local de mat.",
+                "ru": "Ширина вдоль локальной оси X матрицы mat.",
+                "tr": "mat değerinin yerel X ekseni boyunca genişlik.",
+                "uk": "Ширина вздовж локальної осі X матриці mat."
               }
             },
             {
               "name": "h",
               "type": "float",
               "description": {
-                "en": "Height in world units.",
-                "cn": "高度，以世界单位表示。",
-                "de": "Höhe in Welteinheiten.",
-                "es": "Altura en unidades mundiales.",
-                "fr": "Hauteur en unités monde.",
-                "it": "Altezza in unità globali.",
-                "ja": "高さ（ワールド単位）。",
-                "ko": "월드 단위의 높이입니다.",
-                "pt": "Altura em unidades mundiais.",
-                "ru": "Высота в мировых единицах.",
-                "tr": "Dünya birimleriyle yükseklik.",
-                "uk": "Висота у світових одиницях."
+                "en": "Height along mat's local Y axis.",
+                "cn": "沿 mat 局部 Y 轴的高度。",
+                "de": "Höhe entlang der lokalen Y-Achse von mat.",
+                "es": "Altura a lo largo del eje Y local de mat.",
+                "fr": "Hauteur le long de l'axe Y local de mat.",
+                "it": "Altezza lungo l'asse Y locale di mat.",
+                "ja": "mat のローカル Y 軸方向の高さ。",
+                "ko": "mat의 로컬 Y축 방향 높이입니다.",
+                "pt": "Altura ao longo do eixo Y local de mat.",
+                "ru": "Высота вдоль локальной оси Y матрицы mat.",
+                "tr": "mat değerinin yerel Y ekseni boyunca yükseklik.",
+                "uk": "Висота вздовж локальної осі Y матриці mat."
               }
             },
             {
@@ -7822,36 +7815,36 @@
               "name": "w",
               "type": "float",
               "description": {
-                "en": "Width in world units.",
-                "cn": "宽度，以世界单位表示。",
-                "de": "Breite in Welteinheiten.",
-                "es": "Anchura en unidades mundiales.",
-                "fr": "Largeur en unités monde.",
-                "it": "Larghezza in unità globali.",
-                "ja": "幅（ワールド単位）。",
-                "ko": "월드 단위의 너비입니다.",
-                "pt": "Largura em unidades mundiais.",
-                "ru": "Ширина в мировых единицах.",
-                "tr": "Dünya birimleriyle genişlik.",
-                "uk": "Ширина у світових одиницях."
+                "en": "Width along mat's local X axis.",
+                "cn": "沿 mat 局部 X 轴的宽度。",
+                "de": "Breite entlang der lokalen X-Achse von mat.",
+                "es": "Anchura a lo largo del eje X local de mat.",
+                "fr": "Largeur le long de l'axe X local de mat.",
+                "it": "Larghezza lungo l'asse X locale di mat.",
+                "ja": "mat のローカル X 軸方向の幅。",
+                "ko": "mat의 로컬 X축 방향 너비입니다.",
+                "pt": "Largura ao longo do eixo X local de mat.",
+                "ru": "Ширина вдоль локальной оси X матрицы mat.",
+                "tr": "mat değerinin yerel X ekseni boyunca genişlik.",
+                "uk": "Ширина вздовж локальної осі X матриці mat."
               }
             },
             {
               "name": "h",
               "type": "float",
               "description": {
-                "en": "Height in world units.",
-                "cn": "高度，以世界单位表示。",
-                "de": "Höhe in Welteinheiten.",
-                "es": "Altura en unidades mundiales.",
-                "fr": "Hauteur en unités monde.",
-                "it": "Altezza in unità globali.",
-                "ja": "高さ（ワールド単位）。",
-                "ko": "월드 단위의 높이입니다.",
-                "pt": "Altura em unidades mundiais.",
-                "ru": "Высота в мировых единицах.",
-                "tr": "Dünya birimleriyle yükseklik.",
-                "uk": "Висота у світових одиницях."
+                "en": "Height along mat's local Y axis.",
+                "cn": "沿 mat 局部 Y 轴的高度。",
+                "de": "Höhe entlang der lokalen Y-Achse von mat.",
+                "es": "Altura a lo largo del eje Y local de mat.",
+                "fr": "Hauteur le long de l'axe Y local de mat.",
+                "it": "Altezza lungo l'asse Y locale di mat.",
+                "ja": "mat のローカル Y 軸方向の高さ。",
+                "ko": "mat의 로컬 Y축 방향 높이입니다.",
+                "pt": "Altura ao longo do eixo Y local de mat.",
+                "ru": "Высота вдоль локальной оси Y матрицы mat.",
+                "tr": "mat değerinin yerel Y ekseni boyunca yükseklik.",
+                "uk": "Висота вздовж локальної осі Y матриці mat."
               }
             },
             {
@@ -8077,36 +8070,36 @@
               "name": "w",
               "type": "float",
               "description": {
-                "en": "Width in world units.",
-                "cn": "宽度，以世界单位表示。",
-                "de": "Breite in Welteinheiten.",
-                "es": "Anchura en unidades mundiales.",
-                "fr": "Largeur en unités monde.",
-                "it": "Larghezza in unità globali.",
-                "ja": "幅（ワールド単位）。",
-                "ko": "월드 단위의 너비입니다.",
-                "pt": "Largura em unidades mundiais.",
-                "ru": "Ширина в мировых единицах.",
-                "tr": "Dünya birimleriyle genişlik.",
-                "uk": "Ширина у світових одиницях."
+                "en": "Width along mat's local X axis.",
+                "cn": "沿 mat 局部 X 轴的宽度。",
+                "de": "Breite entlang der lokalen X-Achse von mat.",
+                "es": "Anchura a lo largo del eje X local de mat.",
+                "fr": "Largeur le long de l'axe X local de mat.",
+                "it": "Larghezza lungo l'asse X locale di mat.",
+                "ja": "mat のローカル X 軸方向の幅。",
+                "ko": "mat의 로컬 X축 방향 너비입니다.",
+                "pt": "Largura ao longo do eixo X local de mat.",
+                "ru": "Ширина вдоль локальной оси X матрицы mat.",
+                "tr": "mat değerinin yerel X ekseni boyunca genişlik.",
+                "uk": "Ширина вздовж локальної осі X матриці mat."
               }
             },
             {
               "name": "h",
               "type": "float",
               "description": {
-                "en": "Height in world units.",
-                "cn": "高度，以世界单位表示。",
-                "de": "Höhe in Welteinheiten.",
-                "es": "Altura en unidades mundiales.",
-                "fr": "Hauteur en unités monde.",
-                "it": "Altezza in unità globali.",
-                "ja": "高さ（ワールド単位）。",
-                "ko": "월드 단위의 높이입니다.",
-                "pt": "Altura em unidades mundiais.",
-                "ru": "Высота в мировых единицах.",
-                "tr": "Dünya birimleriyle yükseklik.",
-                "uk": "Висота у світових одиницях."
+                "en": "Height along mat's local Y axis.",
+                "cn": "沿 mat 局部 Y 轴的高度。",
+                "de": "Höhe entlang der lokalen Y-Achse von mat.",
+                "es": "Altura a lo largo del eje Y local de mat.",
+                "fr": "Hauteur le long de l'axe Y local de mat.",
+                "it": "Altezza lungo l'asse Y locale di mat.",
+                "ja": "mat のローカル Y 軸方向の高さ。",
+                "ko": "mat의 로컬 Y축 방향 높이입니다.",
+                "pt": "Altura ao longo do eixo Y local de mat.",
+                "ru": "Высота вдоль локальной оси Y матрицы mat.",
+                "tr": "mat değerinin yerel Y ekseni boyunca yükseklik.",
+                "uk": "Висота вздовж локальної осі Y матриці mat."
               }
             },
             {
@@ -8174,36 +8167,36 @@
               "name": "w",
               "type": "float",
               "description": {
-                "en": "Width in world units.",
-                "cn": "宽度，以世界单位表示。",
-                "de": "Breite in Welteinheiten.",
-                "es": "Anchura en unidades mundiales.",
-                "fr": "Largeur en unités monde.",
-                "it": "Larghezza in unità globali.",
-                "ja": "幅（ワールド単位）。",
-                "ko": "월드 단위의 너비입니다.",
-                "pt": "Largura em unidades mundiais.",
-                "ru": "Ширина в мировых единицах.",
-                "tr": "Dünya birimleriyle genişlik.",
-                "uk": "Ширина у світових одиницях."
+                "en": "Width along mat's local X axis.",
+                "cn": "沿 mat 局部 X 轴的宽度。",
+                "de": "Breite entlang der lokalen X-Achse von mat.",
+                "es": "Anchura a lo largo del eje X local de mat.",
+                "fr": "Largeur le long de l'axe X local de mat.",
+                "it": "Larghezza lungo l'asse X locale di mat.",
+                "ja": "mat のローカル X 軸方向の幅。",
+                "ko": "mat의 로컬 X축 방향 너비입니다.",
+                "pt": "Largura ao longo do eixo X local de mat.",
+                "ru": "Ширина вдоль локальной оси X матрицы mat.",
+                "tr": "mat değerinin yerel X ekseni boyunca genişlik.",
+                "uk": "Ширина вздовж локальної осі X матриці mat."
               }
             },
             {
               "name": "h",
               "type": "float",
               "description": {
-                "en": "Height in world units.",
-                "cn": "高度，以世界单位表示。",
-                "de": "Höhe in Welteinheiten.",
-                "es": "Altura en unidades mundiales.",
-                "fr": "Hauteur en unités monde.",
-                "it": "Altezza in unità globali.",
-                "ja": "高さ（ワールド単位）。",
-                "ko": "월드 단위의 높이입니다.",
-                "pt": "Altura em unidades mundiais.",
-                "ru": "Высота в мировых единицах.",
-                "tr": "Dünya birimleriyle yükseklik.",
-                "uk": "Висота у світових одиницях."
+                "en": "Height along mat's local Y axis.",
+                "cn": "沿 mat 局部 Y 轴的高度。",
+                "de": "Höhe entlang der lokalen Y-Achse von mat.",
+                "es": "Altura a lo largo del eje Y local de mat.",
+                "fr": "Hauteur le long de l'axe Y local de mat.",
+                "it": "Altezza lungo l'asse Y locale di mat.",
+                "ja": "mat のローカル Y 軸方向の高さ。",
+                "ko": "mat의 로컬 Y축 방향 높이입니다.",
+                "pt": "Altura ao longo do eixo Y local de mat.",
+                "ru": "Высота вдоль локальной оси Y матрицы mat.",
+                "tr": "mat değerinin yerel Y ekseni boyunca yükseklik.",
+                "uk": "Висота вздовж локальної осі Y матриці mat."
               }
             },
             {
@@ -8448,18 +8441,18 @@
               "name": "r",
               "type": "float",
               "description": {
-                "en": "Radius in world units.",
-                "cn": "半径，以世界单位表示。",
-                "de": "Radius in Welteinheiten.",
-                "es": "Radio en unidades mundiales.",
-                "fr": "Rayon en unités monde.",
-                "it": "Raggio in unità globali.",
-                "ja": "半径（ワールド単位）。",
-                "ko": "월드 단위의 반지름입니다.",
-                "pt": "Raio em unidades mundiais.",
-                "ru": "Радиус в мировых единицах.",
-                "tr": "Dünya birimleriyle yarıçap.",
-                "uk": "Радіус у світових одиницях."
+                "en": "Radius in node-local units; the node's transform scales it.",
+                "cn": "节点局部单位的半径，受节点变换的缩放影响。",
+                "de": "Radius in lokalen Node-Einheiten; die Node-Transformation skaliert ihn.",
+                "es": "Radio en unidades locales del nodo; el transform del nodo lo escala.",
+                "fr": "Rayon en unités locales du nœud, mis à l'échelle par sa transformation.",
+                "it": "Raggio in unità locali del nodo, scalato dalla trasformazione del nodo.",
+                "ja": "ノードのローカル単位での半径。ノードの変換による拡大縮小が適用される。",
+                "ko": "노드 로컬 단위의 반지름이며 노드 변환의 배율이 적용됩니다.",
+                "pt": "Raio em unidades locais do nó, escalado pela transformação do nó.",
+                "ru": "Радиус в локальных единицах узла; к нему применяется масштаб преобразования узла.",
+                "tr": "Düğümün yerel birimleriyle yarıçap; düğümün dönüşümüyle ölçeklenir.",
+                "uk": "Радіус у локальних одиницях вузла; до нього застосовується масштаб перетворення вузла."
               }
             },
             {
@@ -8545,18 +8538,18 @@
               "name": "r",
               "type": "float",
               "description": {
-                "en": "Radius in world units.",
-                "cn": "半径，以世界单位表示。",
-                "de": "Radius in Welteinheiten.",
-                "es": "Radio en unidades mundiales.",
-                "fr": "Rayon en unités monde.",
-                "it": "Raggio in unità globali.",
-                "ja": "半径（ワールド単位）。",
-                "ko": "월드 단위의 반지름입니다.",
-                "pt": "Raio em unidades mundiais.",
-                "ru": "Радиус в мировых единицах.",
-                "tr": "Dünya birimleriyle yarıçap.",
-                "uk": "Радіус у світових одиницях."
+                "en": "Radius in node-local units; the node's transform scales it.",
+                "cn": "节点局部单位的半径，受节点变换的缩放影响。",
+                "de": "Radius in lokalen Node-Einheiten; die Node-Transformation skaliert ihn.",
+                "es": "Radio en unidades locales del nodo; el transform del nodo lo escala.",
+                "fr": "Rayon en unités locales du nœud, mis à l'échelle par sa transformation.",
+                "it": "Raggio in unità locali del nodo, scalato dalla trasformazione del nodo.",
+                "ja": "ノードのローカル単位での半径。ノードの変換による拡大縮小が適用される。",
+                "ko": "노드 로컬 단위의 반지름이며 노드 변환의 배율이 적용됩니다.",
+                "pt": "Raio em unidades locais do nó, escalado pela transformação do nó.",
+                "ru": "Радиус в локальных единицах узла; к нему применяется масштаб преобразования узла.",
+                "tr": "Düğümün yerel birimleriyle yarıçap; düğümün dönüşümüyle ölçeklenir.",
+                "uk": "Радіус у локальних одиницях вузла; до нього застосовується масштаб перетворення вузла."
               }
             },
             {
@@ -8660,36 +8653,36 @@
               "name": "w",
               "type": "float",
               "description": {
-                "en": "Width in world units.",
-                "cn": "宽度，以世界单位表示。",
-                "de": "Breite in Welteinheiten.",
-                "es": "Anchura en unidades mundiales.",
-                "fr": "Largeur en unités monde.",
-                "it": "Larghezza in unità globali.",
-                "ja": "幅（ワールド単位）。",
-                "ko": "월드 단위의 너비입니다.",
-                "pt": "Largura em unidades mundiais.",
-                "ru": "Ширина в мировых единицах.",
-                "tr": "Dünya birimleriyle genişlik.",
-                "uk": "Ширина у світових одиницях."
+                "en": "Width along mat's local X axis.",
+                "cn": "沿 mat 局部 X 轴的宽度。",
+                "de": "Breite entlang der lokalen X-Achse von mat.",
+                "es": "Anchura a lo largo del eje X local de mat.",
+                "fr": "Largeur le long de l'axe X local de mat.",
+                "it": "Larghezza lungo l'asse X locale di mat.",
+                "ja": "mat のローカル X 軸方向の幅。",
+                "ko": "mat의 로컬 X축 방향 너비입니다.",
+                "pt": "Largura ao longo do eixo X local de mat.",
+                "ru": "Ширина вдоль локальной оси X матрицы mat.",
+                "tr": "mat değerinin yerel X ekseni boyunca genişlik.",
+                "uk": "Ширина вздовж локальної осі X матриці mat."
               }
             },
             {
               "name": "h",
               "type": "float",
               "description": {
-                "en": "Height in world units.",
-                "cn": "高度，以世界单位表示。",
-                "de": "Höhe in Welteinheiten.",
-                "es": "Altura en unidades mundiales.",
-                "fr": "Hauteur en unités monde.",
-                "it": "Altezza in unità globali.",
-                "ja": "高さ（ワールド単位）。",
-                "ko": "월드 단위의 높이입니다.",
-                "pt": "Altura em unidades mundiais.",
-                "ru": "Высота в мировых единицах.",
-                "tr": "Dünya birimleriyle yükseklik.",
-                "uk": "Висота у світових одиницях."
+                "en": "Height along mat's local Y axis.",
+                "cn": "沿 mat 局部 Y 轴的高度。",
+                "de": "Höhe entlang der lokalen Y-Achse von mat.",
+                "es": "Altura a lo largo del eje Y local de mat.",
+                "fr": "Hauteur le long de l'axe Y local de mat.",
+                "it": "Altezza lungo l'asse Y locale di mat.",
+                "ja": "mat のローカル Y 軸方向の高さ。",
+                "ko": "mat의 로컬 Y축 방향 높이입니다.",
+                "pt": "Altura ao longo do eixo Y local de mat.",
+                "ru": "Высота вдоль локальной оси Y матрицы mat.",
+                "tr": "mat değerinin yerel Y ekseni boyunca yükseklik.",
+                "uk": "Висота вздовж локальної осі Y матриці mat."
               }
             },
             {
@@ -8719,7 +8712,7 @@
         {
           "name": "sprite",
           "type": "function",
-          "signature": "sprite(pos, img, uvs, w, h, *, colkey=None, angle=0.0)",
+          "signature": "sprite(pos, img, uvs, w, h, *, colkey=None, rotate=0.0)",
           "description": {
             "en": "Draw a textured rectangle that always faces the camera. Sprites render unshaded.",
             "cn": "绘制始终面向相机的纹理矩形。Sprite 不进行明暗处理。",
@@ -8844,21 +8837,21 @@
               }
             },
             {
-              "name": "angle",
+              "name": "rotate",
               "type": "float",
               "description": {
-                "en": "Screen-space rotation in degrees. Defaults to 0.0.",
-                "cn": "屏幕空间旋转角度 (度)。默认值为 0.0。",
-                "de": "Rotation im Screen Space in Grad. Standardwert ist 0.0.",
-                "es": "Rotación en espacio de pantalla en grados. El valor predeterminado es 0.0.",
-                "fr": "Rotation en espace écran en degrés. La valeur par défaut est 0.0.",
-                "it": "Rotazione nello spazio schermo in gradi. Il valore predefinito è 0.0.",
-                "ja": "画面上の回転角（度）。デフォルトは 0.0。",
-                "ko": "스크린 공간 회전 각도(도 단위)입니다. 기본값은 0.0입니다.",
-                "pt": "Rotação em espaço de tela em graus. O padrão é 0.0.",
-                "ru": "Вращение в экранном пространстве в градусах. По умолчанию 0.0.",
-                "tr": "Ekran uzayında derece cinsinden dönme. Varsayılan değer 0.0.",
-                "uk": "Обертання в екранному просторі в градусах. Типове значення 0.0."
+                "en": "Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.",
+                "cn": "从相机看去的逆时针旋转角度 (度)。默认值为 0.0。",
+                "de": "Drehung gegen den Uhrzeigersinn aus Sicht der Kamera, in Grad. Standardwert ist 0.0.",
+                "es": "Rotación en sentido antihorario vista desde la cámara, en grados. El valor predeterminado es 0.0.",
+                "fr": "Rotation antihoraire vue depuis la caméra, en degrés. La valeur par défaut est 0.0.",
+                "it": "Rotazione antioraria vista dalla camera, in gradi. Il valore predefinito è 0.0.",
+                "ja": "カメラから見た反時計回りの回転角（度）。デフォルトは 0.0。",
+                "ko": "카메라에서 보았을 때 반시계 방향 회전 각도(도 단위)입니다. 기본값은 0.0입니다.",
+                "pt": "Rotação no sentido anti-horário vista da câmera, em graus. O padrão é 0.0.",
+                "ru": "Вращение против часовой стрелки при взгляде из камеры, в градусах. По умолчанию 0.0.",
+                "tr": "Kameradan bakıldığında saat yönünün tersine dönme, derece cinsinden. Varsayılan değer 0.0.",
+                "uk": "Обертання проти годинникової стрілки при погляді з камери, у градусах. Типове значення 0.0."
               }
             }
           ],
@@ -9089,18 +9082,18 @@
           "type": "function",
           "signature": "draw(x, y, w, h, target=None)",
           "description": {
-            "en": "Render this subtree into the viewport (x, y, w, h). A camera must be set on this node or an ancestor. When the camera has a clear_color, the target is filled with it first.",
-            "cn": "将此子树渲染到视口 (x, y, w, h)。此节点或某个祖先必须设置 Camera。当 Camera 有 clear_color 时，会先用它填充目标。",
-            "de": "Rendert diesen Teilbaum in den Viewport (x, y, w, h). Eine Camera muss auf diesem Node oder einem Vorfahren gesetzt sein. Wenn die Camera clear_color hat, wird das Ziel zuerst damit gefüllt.",
-            "es": "Renderiza este subárbol en el viewport (x, y, w, h). Debe haber una Camera en este nodo o en un ancestro. Cuando la Camera tiene clear_color, el destino se rellena con él primero.",
-            "fr": "Rend ce sous-arbre dans la zone d'affichage (x, y, w, h). Une Camera doit être définie sur ce nœud ou un ancêtre. Quand la Camera a clear_color, la cible est d'abord remplie avec cette couleur.",
-            "it": "Renderizza questo sottoalbero nel viewport (x, y, w, h). Una Camera deve essere impostata su questo nodo o su un antenato. Quando la Camera ha clear_color, il target viene prima riempito con quel colore.",
-            "ja": "サブツリーをビューポート (x, y, w, h) に描画する。このノードか祖先にカメラが必要。カメラに clear_color があれば、まず描画先をその色で塗りつぶす。",
-            "ko": "이 하위 트리를 뷰포트 (x, y, w, h)에 렌더링합니다. 이 노드나 조상에 Camera가 설정되어 있어야 합니다. Camera에 clear_color가 있으면 대상이 먼저 그 색으로 채워집니다.",
-            "pt": "Renderiza esta subárvore no viewport (x, y, w, h). Uma Camera deve estar definida neste nó ou em um ancestral. Quando a Camera tem clear_color, o destino é preenchido com ela primeiro.",
-            "ru": "Рендерит это поддерево во viewport (x, y, w, h). Camera должна быть задана на этом узле или предке. Если у Camera есть clear_color, цель сначала заполняется им.",
-            "tr": "Bu alt ağacı viewport (x, y, w, h) içine render eder. Bu düğümde veya bir atada Camera ayarlanmış olmalıdır. Camera clear_color değerine sahipse hedef önce bununla doldurulur.",
-            "uk": "Рендерить це піддерево у viewport (x, y, w, h). Camera має бути задана на цьому вузлі або предку. Якщо Camera має clear_color, ціль спочатку заповнюється ним."
+            "en": "Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the entire target before rendering.",
+            "cn": "使用此节点的 effective_camera 将整个子树绘制到视口 (x, y, w, h)。此节点或祖先节点必须设置相机。若设置了 clear_color，绘制前会用该颜色填充整个目标。",
+            "de": "Rendert den gesamten Teilbaum mit effective_camera dieses Nodes in den Viewport (x, y, w, h). Eine Kamera muss an diesem Node oder einem Vorfahren gesetzt sein. Ist clear_color gesetzt, wird vor dem Rendern das gesamte Ziel damit gefüllt.",
+            "es": "Renderiza todo el subárbol en el viewport (x, y, w, h) con effective_camera de este nodo. Debe haber una cámara en este nodo o un ancestro. Si tiene clear_color, se rellena todo el destino con ese color antes de renderizar.",
+            "fr": "Dessine tout le sous-arbre dans le viewport (x, y, w, h) avec effective_camera de ce nœud. Une caméra doit être définie sur ce nœud ou un ancêtre. Si clear_color est défini, toute la cible est remplie de cette couleur avant le rendu.",
+            "it": "Disegna tutto il sottoalbero nel viewport (x, y, w, h) usando effective_camera di questo nodo. Una camera deve essere assegnata a questo nodo o a un antenato. Se clear_color è impostato, riempie tutta la destinazione prima del rendering.",
+            "ja": "このノードの effective_camera を使い、サブツリー全体をビューポート (x, y, w, h) に描画する。このノードか祖先にカメラが必要。clear_color があれば、先に描画先全体をその色で塗りつぶす。",
+            "ko": "이 노드의 effective_camera를 사용하여 전체 하위 트리를 뷰포트 (x, y, w, h)에 그립니다. 이 노드나 조상에 카메라가 필요합니다. clear_color가 설정되어 있으면 그리기 전에 대상 전체를 해당 색으로 채웁니다.",
+            "pt": "Renderiza toda a subárvore no viewport (x, y, w, h) com effective_camera deste nó. Uma câmera deve estar definida neste nó ou em um ancestral. Se clear_color estiver definido, preenche todo o destino com essa cor antes de renderizar.",
+            "ru": "Рисует всё поддерево в области (x, y, w, h) с effective_camera этого узла. Камера должна быть задана у этого узла или предка. Если задан clear_color, перед рисованием им заполняется вся целевая поверхность.",
+            "tr": "Bu düğümün effective_camera değeriyle tüm alt ağacı (x, y, w, h) görünüm alanına çizer. Bu düğümde veya bir atasında kamera bulunmalıdır. clear_color ayarlanmışsa çizimden önce hedefin tamamı bu renkle doldurulur.",
+            "uk": "Малює все піддерево в області (x, y, w, h) з effective_camera цього вузла. Камеру слід задати цьому вузлу або предку. Якщо задано clear_color, перед малюванням ним заповнюється вся цільова поверхня."
           },
           "params": [
             {
@@ -9293,7 +9286,7 @@
             },
             {
               "name": "tags",
-              "type": "list | None",
+              "type": "set[str] | None",
               "description": {
                 "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
                 "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",
@@ -9425,7 +9418,7 @@
             },
             {
               "name": "tags",
-              "type": "list | None",
+              "type": "set[str] | None",
               "description": {
                 "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
                 "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",
@@ -9536,7 +9529,7 @@
             },
             {
               "name": "tags",
-              "type": "list | None",
+              "type": "set[str] | None",
               "description": {
                 "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
                 "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",
@@ -9647,7 +9640,7 @@
             },
             {
               "name": "tags",
-              "type": "list | None",
+              "type": "set[str] | None",
               "description": {
                 "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
                 "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",

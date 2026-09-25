@@ -221,14 +221,14 @@ class TestHierarchy:
         root = Node()
         a = Node()
         b = Node()
-        a.tags = ["enemy"]
-        b.tags = ["player"]
+        a.tags = {"enemy"}
+        b.tags = {"player"}
         root.add_child(a)
         root.add_child(b)
 
-        assert root.find_by_tags(["enemy"]) == [a]
+        assert root.find_by_tags({"enemy"}) == [a]
         # Multiple tags match any (OR).
-        assert root.find_by_tags(["enemy", "player"]) == [a, b]
+        assert root.find_by_tags({"enemy", "player"}) == [a, b]
 
 
 class TestSubclassing:

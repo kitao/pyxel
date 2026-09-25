@@ -194,6 +194,27 @@ def test_cube_stub_rejects_read_only_property_assignment(tmp_path):
         assert message in result.stdout
 
 
+def test_cube_stub_accepts_tag_sets(tmp_path):
+    source = tmp_path / "tag_sets.py"
+    source.write_text(
+        "from pyxel.cube import Mat4, Node, Vec3\n"
+        "node = Node()\n"
+        "node.tags = {'enemy', 'boss'}\n"
+        "tags: set[str] = node.tags\n"
+        "tags.add('flying')\n"
+        "tags.discard('boss')\n"
+        "node.tags |= {'visible'}\n"
+        "node.find_by_tags(tags)\n"
+        "node.raycast(Vec3.ZERO, Vec3.FORWARD, tags=tags)\n"
+        "node.raycast_all(Vec3.ZERO, Vec3.FORWARD, tags=tags)\n"
+        "node.overlap_sphere(Vec3.ZERO, 1, tags=tags)\n"
+        "node.overlap_box(Mat4.IDENTITY, Vec3.ONE, tags=tags)\n",
+        encoding="utf-8",
+    )
+    result = _run_mypy(source)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def _run_mypy(source):
     env = {**os.environ, "MYPYPATH": str(ROOT_DIR / "python")}
     return subprocess.run(

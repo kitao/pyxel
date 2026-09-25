@@ -22,6 +22,7 @@ use super::mat4::Mat4;
 use super::motion::Motion;
 use super::raycast_hit::RaycastHit;
 use super::shading::Shading;
+use super::tags::Tags;
 use super::vec3::Vec3;
 
 #[derive(Clone)]
@@ -445,13 +446,15 @@ impl Node {
     }
 
     #[getter]
-    fn tags(&self) -> Vec<String> {
-        self.inner_ref().tags.clone()
+    fn tags(&self) -> Tags {
+        Tags::wrap(self.inner.clone())
     }
 
     #[setter]
-    fn set_tags(&self, v: Vec<String>) {
-        self.inner_mut().tags = v;
+    fn set_tags(&self, v: &Bound<'_, PyAny>) -> PyResult<()> {
+        let tags = Tags::extract(v)?;
+        self.inner_mut().tags = tags;
+        Ok(())
     }
 
     // Properties
@@ -563,8 +566,9 @@ impl Node {
     fn find_by_tags(
         slf: PyRef<'_, Node>,
         py: Python<'_>,
-        tags: Vec<String>,
+        tags: &Bound<'_, PyAny>,
     ) -> PyResult<Vec<Py<Node>>> {
+        let tags = Tags::extract_filter(tags)?;
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
         let mut out: Vec<Py<Node>> = Vec::new();
         Self::collect_matching(
@@ -905,7 +909,7 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (pos, img, uvs, w, h, *, colkey=None, angle=0.0))]
+    #[pyo3(signature = (pos, img, uvs, w, h, *, colkey=None, rotate=0.0))]
     fn sprite(
         &self,
         pos: PyRef<'_, Vec3>,
@@ -914,14 +918,14 @@ impl Node {
         w: f32,
         h: f32,
         colkey: Option<i32>,
-        angle: f32,
+        rotate: f32,
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         let img_inner = img.inner.clone();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
             pyxel::cube::draw::sprite(
-                ctx, &world_mat, &local, &img_inner, uvs, w, h, colkey, angle, state,
+                ctx, &world_mat, &local, &img_inner, uvs, w, h, colkey, rotate, state,
             );
         });
     }
@@ -994,7 +998,9 @@ impl Node {
             let node_index = build_py_node_index(&any)?;
             for inner in &destroyed {
                 if let Some(py_node) = find_indexed_py_node(&node_index, inner, py) {
-                    py_node.bind(py).call_method0("on_destroy")?;
+                    if pyxel::cube::Scene::take_destroy_notification(inner) {
+                        py_node.bind(py).call_method0("on_destroy")?;
+                    }
                 }
             }
 
@@ -1094,8 +1100,9 @@ impl Node {
         direction: PyRef<'_, Vec3>,
         max_distance: Option<f32>,
         hit_triggers: bool,
-        tags: Option<Vec<String>>,
+        tags: Option<&Bound<'_, PyAny>>,
     ) -> PyResult<Option<super::raycast_hit::RaycastHit>> {
+        let tags = tags.map(Tags::extract_filter).transpose()?;
         let root_inner = slf.inner.clone();
         let root_any = slf.into_pyobject(py)?.into_any();
         let origin_v = *origin.inner_ref();
@@ -1127,8 +1134,9 @@ impl Node {
         direction: PyRef<'_, Vec3>,
         max_distance: Option<f32>,
         hit_triggers: bool,
-        tags: Option<Vec<String>>,
+        tags: Option<&Bound<'_, PyAny>>,
     ) -> PyResult<Vec<super::raycast_hit::RaycastHit>> {
+        let tags = tags.map(Tags::extract_filter).transpose()?;
         let root_inner = slf.inner.clone();
         let root_any = slf.into_pyobject(py)?.into_any();
         let origin_v = *origin.inner_ref();
@@ -1161,8 +1169,9 @@ impl Node {
         center: PyRef<'_, Vec3>,
         radius: f32,
         hit_triggers: bool,
-        tags: Option<Vec<String>>,
+        tags: Option<&Bound<'_, PyAny>>,
     ) -> PyResult<Vec<Py<Node>>> {
+        let tags = tags.map(Tags::extract_filter).transpose()?;
         let root_inner = slf.inner.clone();
         let root_any = slf.into_pyobject(py)?.into_any();
         let center_v = *center.inner_ref();
@@ -1188,8 +1197,9 @@ impl Node {
         mat: PyRef<'_, Mat4>,
         size: PyRef<'_, Vec3>,
         hit_triggers: bool,
-        tags: Option<Vec<String>>,
+        tags: Option<&Bound<'_, PyAny>>,
     ) -> PyResult<Vec<Py<Node>>> {
+        let tags = tags.map(Tags::extract_filter).transpose()?;
         let root_inner = slf.inner.clone();
         let root_any = slf.into_pyobject(py)?.into_any();
         let mat_m = *mat.inner_ref();
@@ -1236,6 +1246,11 @@ fn push_children_reverse(node: &Bound<'_, Node>, py: Python<'_>, stack: &mut Vec
 
 // Pre-order tree traversal that skips inactive subtrees and dispatches updates.
 fn traverse_update(root: &Bound<'_, PyAny>) -> PyResult<()> {
+    let parent = InnerNode::parent(&root.cast::<Node>()?.borrow().inner);
+    if parent.is_some_and(|parent| !InnerNode::effective_active(&parent)) {
+        return Ok(());
+    }
+
     let py = root.py();
     let mut stack = vec![root.clone().unbind()];
     while let Some(node) = stack.pop() {
@@ -1251,6 +1266,11 @@ fn traverse_update(root: &Bound<'_, PyAny>) -> PyResult<()> {
 
 // Pre-order playback traversal that follows the active cascade.
 fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
+    let parent = InnerNode::parent(&root.cast::<Node>()?.borrow().inner);
+    if parent.is_some_and(|parent| !InnerNode::effective_active(&parent)) {
+        return Ok(());
+    }
+
     let py = root.py();
     let mut stack = vec![root.clone().unbind()];
 
@@ -1288,6 +1308,11 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
 
 // Pre-order tree traversal that skips hidden subtrees and dispatches draws.
 fn traverse_draw(root: &Bound<'_, PyAny>) -> PyResult<()> {
+    let parent = InnerNode::parent(&root.cast::<Node>()?.borrow().inner);
+    if parent.is_some_and(|parent| !InnerNode::effective_visible(&parent)) {
+        return Ok(());
+    }
+
     let py = root.py();
     let mut stack = vec![root.clone().unbind()];
     while let Some(node) = stack.pop() {

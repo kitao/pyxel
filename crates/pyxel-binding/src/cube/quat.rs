@@ -112,8 +112,8 @@ impl Quat {
     }
 
     #[staticmethod]
-    fn from_euler(rot: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(pyxel::cube::Quat::from_euler(&rot.inner_ref()))
+    fn from_euler(euler: PyRef<'_, Vec3>) -> Self {
+        Self::wrap(pyxel::cube::Quat::from_euler(&euler.inner_ref()))
     }
 
     #[staticmethod]

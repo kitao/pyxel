@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::HashSet;
 use std::rc::{Rc, Weak};
 
 use crate::cube::camera::RcCamera;
@@ -18,11 +19,13 @@ pub struct Node {
     pub camera: Option<RcCamera>,
     pub shading: Option<RcShading>,
     pub collider: Option<RcCollider>,
-    pub tags: Vec<String>,
+    pub tags: HashSet<String>,
     pub parent: Option<WeakNode>,
     pub children: Vec<RcNode>,
-    // Pending deferred destruction; hooks can use this read-only flag to early-return.
+    // Logical destruction remains visible after deferred detachment.
     pub destroyed: bool,
+    pub(crate) destroy_notified: bool,
+    pub(crate) destroy_processed: bool,
     pub(crate) contact_cache: Option<Box<crate::cube::scene::ContactCache>>,
 }
 
@@ -38,10 +41,12 @@ impl Node {
             camera: None,
             shading: None,
             collider: None,
-            tags: Vec::new(),
+            tags: HashSet::new(),
             parent: None,
             children: Vec::new(),
             destroyed: false,
+            destroy_notified: false,
+            destroy_processed: false,
             contact_cache: None,
         })
     }
@@ -382,8 +387,8 @@ mod tests {
         let root = Node::new();
         let a = Node::new();
         let b = Node::new();
-        rc_mut!(&a).tags = vec!["enemy".to_string()];
-        rc_mut!(&b).tags = vec!["player".to_string()];
+        rc_mut!(&a).tags = HashSet::from(["enemy".to_string()]);
+        rc_mut!(&b).tags = HashSet::from(["player".to_string()]);
         Node::add_child(&root, &a);
         Node::add_child(&root, &b);
 
@@ -396,7 +401,7 @@ mod tests {
     fn test_find_by_tags_any_match() {
         let root = Node::new();
         let a = Node::new();
-        rc_mut!(&a).tags = vec!["enemy".to_string(), "boss".to_string()];
+        rc_mut!(&a).tags = HashSet::from(["enemy".to_string(), "boss".to_string()]);
         Node::add_child(&root, &a);
 
         let found = Node::find_by_tags(&root, &["boss".to_string(), "player".to_string()]);

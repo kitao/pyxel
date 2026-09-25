@@ -1738,13 +1738,13 @@ pub fn sprite(
     w: f32,
     h: f32,
     colkey: Option<i32>,
-    angle: f32,
+    rotate: f32,
     state: DrawState,
 ) {
     let world = world_mat.mul_vec_value(local);
     let corners = {
         let camera = rc_ref!(&ctx.camera);
-        sprite_corners(&world, w, h, angle, &camera)
+        sprite_corners(&world, w, h, rotate, &camera)
     };
 
     let positions = [

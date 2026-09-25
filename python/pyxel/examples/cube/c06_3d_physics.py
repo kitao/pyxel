@@ -120,6 +120,7 @@ class Scene(Node):
         for body in self.children:
             if body.collider.mass:
                 self.remove_child(body)
+
         self.shots, self.shot_count = [], 0
 
         for x, y, z, layers, palette in [

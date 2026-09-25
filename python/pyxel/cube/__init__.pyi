@@ -147,7 +147,7 @@ class Quat:
     @staticmethod
     def from_axis_angle(axis: Vec3, deg: float) -> Quat: ...
     @staticmethod
-    def from_euler(rot: Vec3) -> Quat: ...
+    def from_euler(euler: Vec3) -> Quat: ...
     @staticmethod
     def from_two_vectors(from_vec: Vec3, to_vec: Vec3) -> Quat: ...
     @staticmethod
@@ -246,9 +246,9 @@ class Mesh:
     def motions(self) -> list[Motion]: ...
     def __init__(
         self,
-        primitives: list[Primitive | None] | None = [],
-        transforms: list[Mat4] | None = [],
-        parents: list[int] | None = [],
+        primitives: list[Primitive | None] = [],
+        transforms: list[Mat4] = [],
+        parents: list[int] = [],
         names: list[str] | None = None,
         col_img: int | Image = 7,
         colkey: int | None = None,
@@ -312,8 +312,6 @@ class Contact:
     @property
     def depth(self) -> float: ...
     @property
-    def delta_rotation(self) -> Quat: ...
-    @property
     def delta_velocity(self) -> Vec3: ...
     @property
     def delta_angular_velocity(self) -> Vec3: ...
@@ -339,7 +337,7 @@ class Node:
     camera: Camera | None
     shading: Shading | None
     collider: Collider | None
-    tags: list[str]
+    tags: set[str]
 
     # Properties
     @property
@@ -367,7 +365,7 @@ class Node:
     @property
     def world_transform(self) -> Mat4: ...
     def find_by_name(self, name: str) -> list[Node]: ...
-    def find_by_tags(self, tags: list[str]) -> list[Node]: ...
+    def find_by_tags(self, tags: set[str]) -> list[Node]: ...
     def add_child(self, node: Node) -> None: ...
     def remove_child(self, node: Node) -> None: ...
     def destroy(self) -> None: ...
@@ -466,7 +464,7 @@ class Node:
         h: float,
         *,
         colkey: int | None = None,
-        angle: float = 0.0,
+        rotate: float = 0.0,
     ) -> None: ...
 
     # Asset-based
@@ -506,7 +504,7 @@ class Node:
         max_distance: float | None = None,
         *,
         hit_triggers: bool = False,
-        tags: list[str] | None = None,
+        tags: set[str] | None = None,
     ) -> RaycastHit | None: ...
     def raycast_all(
         self,
@@ -515,7 +513,7 @@ class Node:
         max_distance: float | None = None,
         *,
         hit_triggers: bool = False,
-        tags: list[str] | None = None,
+        tags: set[str] | None = None,
     ) -> list[RaycastHit]: ...
     def overlap_sphere(
         self,
@@ -523,7 +521,7 @@ class Node:
         radius: float,
         *,
         hit_triggers: bool = False,
-        tags: list[str] | None = None,
+        tags: set[str] | None = None,
     ) -> list[Node]: ...
     def overlap_box(
         self,
@@ -531,5 +529,5 @@ class Node:
         size: Vec3,
         *,
         hit_triggers: bool = False,
-        tags: list[str] | None = None,
+        tags: set[str] | None = None,
     ) -> list[Node]: ...

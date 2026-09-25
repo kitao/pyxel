@@ -282,7 +282,7 @@ A 4x4 transform matrix. The constructor creates an identity matrix. Values are i
 **Example:**
 
 ```python
-from pyxel.cube import Mat4, Quat, Vec3
+from pyxel.cube import Mat4, Vec3
 
 node.transform = Mat4.from_translation(Vec3(0, 1, 0))
 spin = node.transform * Mat4.from_axis_angle(Vec3.UP, 90)
@@ -542,7 +542,7 @@ q = Quat.from_axis_angle(Vec3.UP, 45)
 rotated = q * Vec3.FORWARD
 ```
 
-**Note:** Supports * with another Quat (composition) or a Vec3 (applies the rotation), unary -, ==, indexing, and iteration.
+**Note:** Supports * with another Quat (composition) or a Vec3 (applies the rotation), unary -, ==, indexing, and iteration. Rotation operations require a unit quaternion. Use normalize() when specifying components directly.
 
 ### `Quat.IDENTITY` — constant
 
@@ -585,13 +585,13 @@ Create a rotation around an axis.
 
 **Returns:** `Quat`
 
-### `Quat.from_euler(rot)` — class
+### `Quat.from_euler(euler)` — class
 
 Create a rotation from Euler angles in degrees, applied around the world axes in X, Y, Z order.
 
 **Parameters:**
 
-- `rot` (*Vec3*) — Rotation around each axis in degrees.
+- `euler` (*Vec3*) — Rotation around each axis in degrees.
 
 **Returns:** `Quat`
 
@@ -989,10 +989,10 @@ A hierarchical 3D model asset. primitives, transforms, parents, and names are pa
 
 **Parameters:**
 
-- `primitives` (*list*) — Primitive per part, or None for a transform-only group part. Defaults to empty.
-- `transforms` (*list*) — Local transform of each part relative to its parent. Defaults to empty.
-- `parents` (*list*) — Parent index of each part. -1 is a root. Defaults to empty.
-- `names` (*list*) — Node name per part. Defaults to empty strings.
+- `primitives` (*list[Primitive | None]*) — Primitive per part, or None for a transform-only group part. Defaults to empty.
+- `transforms` (*list[Mat4]*) — Local transform of each part relative to its parent. Defaults to empty.
+- `parents` (*list[int]*) — Parent index of each part. -1 is a root. Defaults to empty.
+- `names` (*list[str] | None*) — Node name per part. Defaults to empty strings.
 - `col_img` (*int | Image*) — Default flat color number, or texture Image. Defaults to 7.
 - `colkey` (*int | None*) — Transparent color when col_img is an Image. Defaults to None.
 
@@ -1001,10 +1001,12 @@ A hierarchical 3D model asset. primitives, transforms, parents, and names are pa
 ```python
 from pyxel.cube import Mat4, Mesh, Node, Primitive
 
+prim = Primitive.box()
 mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)
-mesh = Mesh.from_glb("actor.glb", colkey=0)
 node = Node.from_mesh(mesh)
 ```
+
+**Note:** Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared.
 
 ### `primitives` — variable
 
@@ -1113,20 +1115,20 @@ Collision shape, physical coefficients, and motion state for a Node. It represen
 
 **Parameters:**
 
-- `size` (*Vec3*) — Core dimensions and shape selector. Component signs are ignored; for shape classification, components with an absolute value less than 1e-9 are treated as zero. An all-zero size produces a sphere of radius max(radius, 0). A size of (0, h, 0) produces a capsule whose central axis segment has length abs(h) and whose total height is abs(h) + 2 * max(radius, 0). Any other size produces a rounded box with core dimensions abs(size) and overall dimensions abs(size) + 2 * max(radius, 0), component-wise. Defaults to Vec3.ZERO (a sphere).
+- `size` (*Vec3*) — Core dimensions: Vec3.ZERO selects a sphere, (0, h, 0) a capsule, and other sizes a rounded box. Defaults to Vec3.ZERO.
 - `radius` (*float*) — Sphere or capsule radius, and the corner rounding of a box. Negative values are treated as 0. Defaults to 0.0.
 - `mesh` (*Mesh | None*) — Static terrain mesh. When set, collision physics ignores size, radius, mass, rolls, velocity, and angular_velocity for this collider. Defaults to None.
 - `trigger` (*bool*) — When True, reports contacts without any push-back. Defaults to False.
 - `rolls` (*bool*) — When True, contacts also produce delta_angular_velocity. Defaults to False.
-- `mass` (*float*) — Mass used for contact resolution. It must be finite and greater than or equal to 0. For a non-mesh collider, 0.0 makes this side receive no contact correction; the mass value itself does not disable velocity or angular_velocity. Mesh colliders ignore this value. Defaults to 1.0.
+- `mass` (*float*) — Mass used for contact resolution. It must be finite and greater than or equal to 0. Defaults to 1.0.
 - `restitution` (*float*) — Bounciness. The larger of the two contacting values is used. Defaults to 0.0.
 - `friction` (*float*) — Friction. The average of the two contacting values is used. Defaults to 0.5.
-- `velocity` (*Vec3*) — World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. Defaults to Vec3.ZERO.
-- `angular_velocity` (*Vec3*) — Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular. Defaults to Vec3.ZERO.
-- `gravity` (*float*) — Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.
-- `gravity_direction` (*Vec3*) — World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.
-- `linear_damp` (*float*) — Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
-- `angular_damp` (*float*) — Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
+- `velocity` (*Vec3*) — World-space displacement applied to a non-mesh collider every update. Defaults to Vec3.ZERO.
+- `angular_velocity` (*Vec3*) — Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. Defaults to Vec3.ZERO.
+- `gravity` (*float*) — Gravity strength in m/s². Defaults to 9.8; 0 disables gravity.
+- `gravity_direction` (*Vec3*) — World-space gravity direction. Defaults to Vec3.DOWN.
+- `linear_damp` (*float*) — Linear damping per second. Defaults to 0.1.
+- `angular_damp` (*float*) — Angular damping per second. Defaults to 0.1.
 
 **Example:**
 
@@ -1263,12 +1265,6 @@ Suggested push-out distance along normal, already split by the mass ratio. Other
 
 - **Type:** `float`
 
-### `delta_rotation` — variable
-
-Rotation correction reserved for a future response; currently always the identity, so applying it is a harmless no-op.
-
-- **Type:** `Quat`
-
 ### `delta_velocity` — variable
 
 Suggested additive velocity correction for the receiving node, in world coordinates.
@@ -1309,7 +1305,7 @@ The hit position in world space.
 
 ### `normal` — variable
 
-The surface normal at the hit, facing the ray origin's side.
+World-space surface normal. Points toward the ray origin for meshes, outward for other shapes.
 
 - **Type:** `Vec3`
 
@@ -1386,9 +1382,9 @@ Collision shape and motion state. None keeps the node out of collision.
 
 ### `tags` — variable
 
-Tag strings used by find_by_tags() and the tags filter of spatial queries.
+A set of tag strings. Edits apply directly to this node. Used by find_by_tags() and the tags filter of spatial queries.
 
-- **Type:** `list`
+- **Type:** `set[str]`
 
 ### `parent` — variable
 
@@ -1404,7 +1400,7 @@ The child nodes as a tuple.
 
 ### `destroyed` — variable
 
-True after destroy() has been called, until the node is detached at the end of update().
+True once destroy() has been called. Remains True after the node is detached.
 
 - **Type:** `bool`
 
@@ -1446,7 +1442,7 @@ The world transform composed from the root down to this node.
 
 ### `Node.from_mesh(mesh)` — class
 
-Create a Node tree from a Mesh and return its root node.
+Create a Node tree from a Mesh and return its root node. Each call creates independent nodes and motion playback state; Primitive data is shared.
 
 **Parameters:**
 
@@ -1476,7 +1472,7 @@ Flag this node and its descendants for destruction. At the end of update(), on_d
 
 ### `apply_motion(motion, frame, *, loop=True)` — function
 
-Sample a Motion at the given frame and immediately apply it to this Node.from_mesh() subtree.
+Sample a Motion at the given frame, replacing the matching local transforms in this Node.from_mesh() subtree. Keep scene placement and scale on a separate parent.
 
 **Parameters:**
 
@@ -1515,7 +1511,7 @@ Return every node in this subtree carrying any of the given tags.
 
 **Parameters:**
 
-- `tags` (*list*) — Tags to search for.
+- `tags` (*set[str]*) — Tags to search for.
 
 **Returns:** `list` — The matching nodes.
 
@@ -1538,7 +1534,7 @@ Collision hook called by update(). A solid mesh can report multiple contacts wit
 
 ### `on_destroy()` — function
 
-Destruction hook, called at the end of update() before the node is detached.
+Destruction hook, called once per node at the end of update(), just before detachment.
 
 ### `dither(alpha)` — function
 
@@ -1578,7 +1574,7 @@ Project shapes and images onto already drawn surfaces when drawing. Applies to r
 
 **Parameters:**
 
-- `distance` (*float*) — Projection distance in local units, along mat’s −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.
+- `distance` (*float*) — Projection distance in local units, along mat's −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.
 
 **Note:** These draw filled planar shapes or images whose position and orientation are specified by a matrix. Borders draw lines and are not included. Other draw commands are unchanged.
 
@@ -1644,8 +1640,8 @@ Draw a filled rectangle of size w x h on mat's local XY plane.
 **Parameters:**
 
 - `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width in world units.
-- `h` (*float*) — Height in world units.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
 - `col` (*int*) — Color number.
 
 ### `rectb(mat, w, h, col)` — function
@@ -1655,8 +1651,8 @@ Draw a rectangle outline on mat's local XY plane.
 **Parameters:**
 
 - `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width in world units.
-- `h` (*float*) — Height in world units.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
 - `col` (*int*) — Color number.
 
 ### `circ(pos, r, col)` — function
@@ -1686,8 +1682,8 @@ Draw a filled ellipse of size w x h on mat's local XY plane.
 **Parameters:**
 
 - `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width in world units.
-- `h` (*float*) — Height in world units.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
 - `col` (*int*) — Color number.
 
 ### `ellib(mat, w, h, col)` — function
@@ -1697,8 +1693,8 @@ Draw an ellipse outline on mat's local XY plane.
 **Parameters:**
 
 - `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width in world units.
-- `h` (*float*) — Height in world units.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
 - `col` (*int*) — Color number.
 
 ### `box(mat, size, col_img=7, *, colkey=None)` — function
@@ -1735,7 +1731,7 @@ Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an 
 **Parameters:**
 
 - `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in world units.
+- `r` (*float*) — Radius in node-local units; the node's transform scales it.
 - `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
 - `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
 
@@ -1746,7 +1742,7 @@ Draw the wireframe edges of a sphere.
 **Parameters:**
 
 - `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in world units.
+- `r` (*float*) — Radius in node-local units; the node's transform scales it.
 - `col` (*int*) — Color number.
 
 ### `plane(mat, img, uvs, w, h, *, colkey=None)` — function
@@ -1758,11 +1754,11 @@ Draw a textured rectangle of size w x h on mat's local XY plane.
 - `mat` (*Mat4*) — Placement relative to the node.
 - `img` (*Image*) — Texture image.
 - `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
-- `w` (*float*) — Width in world units.
-- `h` (*float*) — Height in world units.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
 - `colkey` (*int | None*) — Transparent color. Defaults to None.
 
-### `sprite(pos, img, uvs, w, h, *, colkey=None, angle=0.0)` — function
+### `sprite(pos, img, uvs, w, h, *, colkey=None, rotate=0.0)` — function
 
 Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 
@@ -1774,7 +1770,7 @@ Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 - `w` (*float*) — Width in world units.
 - `h` (*float*) — Height in world units.
 - `colkey` (*int | None*) — Transparent color. Defaults to None.
-- `angle` (*float*) — Screen-space rotation in degrees. Defaults to 0.0.
+- `rotate` (*float*) — Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.
 
 ### `prim(mat, primitive, col_img=7, *, colkey=None)` — function
 
@@ -1804,7 +1800,7 @@ Advance this subtree by one frame: on_update hooks, node motion playback, collid
 
 ### `draw(x, y, w, h, target=None)` — function
 
-Render this subtree into the viewport (x, y, w, h). A camera must be set on this node or an ancestor. When the camera has a clear_color, the target is filled with it first.
+Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the entire target before rendering.
 
 **Parameters:**
 
@@ -1830,7 +1826,7 @@ Cast a ray against the colliders in this subtree and return the closest hit.
 - `direction` (*Vec3*) — Ray direction.
 - `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
 - `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
-- `tags` (*list | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
 
 **Returns:** `RaycastHit | None` — The closest hit, or None.
 
@@ -1850,7 +1846,7 @@ Cast a ray and return every hit sorted by distance.
 - `direction` (*Vec3*) — Ray direction.
 - `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
 - `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
-- `tags` (*list | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
 
 **Returns:** `list` — Every hit sorted by distance.
 
@@ -1863,7 +1859,7 @@ Return every node in this subtree whose collider overlaps the given sphere.
 - `center` (*Vec3*) — Sphere center in world space.
 - `radius` (*float*) — Sphere radius.
 - `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
-- `tags` (*list | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
 
 **Returns:** `list` — The overlapping nodes.
 
@@ -1876,6 +1872,6 @@ Return every node in this subtree whose collider overlaps the given box.
 - `mat` (*Mat4*) — Box placement in world space.
 - `size` (*Vec3*) — Edge lengths along each axis.
 - `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
-- `tags` (*list | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
 
 **Returns:** `list` — The overlapping nodes.
