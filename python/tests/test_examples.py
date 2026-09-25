@@ -84,11 +84,29 @@ CAPTURE_PLANS = {
         {"frame": 100, "press": [pyxel.KEY_S]},
     ],
     "c06_3d_physics": [
-        {"frame": 1},
-        {"frame": 40, "press": [pyxel.KEY_SPACE], "capture": False},
-        {"frame": 41, "capture": False},
-        {"frame": 70},
-        {"frame": 140},
+        {"frame": 1, "mouse": (160, 120), "fps": 30},
+        {"frame": 18, "press": [pyxel.KEY_RIGHT], "capture": False},
+        {"frame": 21, "press": [pyxel.KEY_UP], "capture": False},
+        {
+            "frame": 22,
+            "mouse": (144, 114),
+            "press": [pyxel.KEY_SPACE],
+            "capture": False,
+        },
+        {"frame": 100},
+        {"frame": 300},
+        {"frame": 301, "press": [pyxel.KEY_R], "capture": False},
+        {"frame": 380, "press": [pyxel.KEY_LEFT], "capture": False},
+        {"frame": 529, "capture": False},
+        {
+            "frame": 530,
+            "mouse": (153, 99),
+            "press": [pyxel.MOUSE_BUTTON_LEFT],
+            "capture": False,
+        },
+        {"frame": 600},
+        {"frame": 750},
+        {"frame": 1100},
     ],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
@@ -130,13 +148,13 @@ callbacks = {}
 pyxel.run = lambda update, draw: callbacks.update(update=update)
 namespace = runpy.run_path(sys.argv[1])
 app = callbacks["update"].__self__
-app.update()
-for enemy in app.enemies:
-    enemy.visible = False
-app.locked_enemies = [app.enemies[0]]
+app.update_game()
+# Hide only slime geometry, retaining the actual unified on_draw.
+app.base_positions = [0.0] * len(app.base_positions)
+
+app.locked = [0]
 app.start_fire()
-laser = app.lasers
-laser.age = 10
+app.age = 10
 
 # Texture changes must affect both the width and the length of the ribbon,
 # without changing its path or creating separate geometry for each color.
@@ -151,29 +169,29 @@ for eye in (Vec3(0, 132, 110), Vec3(110, 100, 80), Vec3(-90, 200, 110)):
     app.camera.transform = Mat4.look_at(eye, namespace["AIM_POINT"])
     app.laser_image = plain
     app.draw(0, 0, 256, 192)
-    positions = list(laser.strip.positions)
+    positions = list(app.strip.positions)
     app.laser_image = texture
     app.draw(0, 0, 256, 192)
     colors = {pyxel.pget(x, y) for y in range(192) for x in range(256)}
     assert {3, 9, 14, 15} <= colors
-    assert list(laser.strip.positions) == positions
+    assert list(app.strip.positions) == positions
 
     # Color zero is transparent so a flame texture can have an irregular edge.
     texture.rect(0, 0, 16, 16, 0)
     app.draw(0, 0, 256, 192)
     hidden = [pyxel.pget(x, y) for y in range(192) for x in range(256)]
-    laser.visible = False
+    saved_targets = app.targets
+    app.targets = []
     app.draw(0, 0, 256, 192)
     assert hidden == [pyxel.pget(x, y) for y in range(192) for x in range(256)]
-    laser.visible = True
+    app.targets = saved_targets
     texture.rect(0, 0, 8, 8, 3)
     texture.rect(8, 0, 8, 8, 9)
     texture.rect(0, 8, 8, 8, 14)
     texture.rect(8, 8, 8, 8, 15)
 
-# Finishing or interrupting a volley hits once and removes it in that frame.
-app.remove_child(laser)
-app.lasers = None
+# Each volley hits once; interruption removes it immediately, expiry later.
+app.targets = []
 plain.rect(0, 0, 16, 16, 11)
 app.laser_image = plain
 calls = []
@@ -181,13 +199,17 @@ pyxel.play = lambda channel, sound: calls.append((channel, sound))
 for interruption in (3, 13, 14, 17, 22, 23, 30):
     pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, False)
     pyxel.flip()
-    app.locked_enemies = app.enemies[:]
+    app.locked = list(range(len(app.centers)))
     app.start_fire()
+    app.flashes = [0] * len(app.centers)
     calls.clear()
     for age in range(2, 25):
         pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, age == interruption)
         app.update_game()
-        assert calls.count((2, 2)) == int(age >= min(14, interruption))
+        hit_age = min(14, interruption)
+        assert calls.count((2, 2)) == int(age >= hit_age)
+        expected_flash = max(0, 12 - (age - hit_age)) if age >= hit_age else 0
+        assert app.flashes == [expected_flash] * len(app.centers), (age, app.flashes)
         if age >= min(23, interruption):
             app.draw_game()
             colors = {pyxel.pget(x, y) for y in range(192) for x in range(256)}
@@ -422,8 +444,11 @@ player = app.player
 step(2)
 initial_camera = app.camera.transform
 player.coins = 3
+player.transform = Mat4.from_translation(Vec3(-112, -120, -90))
+step()
+assert player.transform.pos.y < -120
 for yaw in (0, 120, 240):
-    player.transform = Mat4.from_translation(Vec3(-112, -101, -90))
+    player.transform = Mat4.from_translation(Vec3(-112, -161, -90))
     app.yaw = yaw
     app.update_camera()
     step()
@@ -678,171 +703,223 @@ pyxel.play = play
         )
         assert result.returncode == 0, result.stderr
 
-    def test_physics_example_launches_shapes_topples_stacks_and_resets(self):
+    def test_physics_example_demonstrations_and_controls(self, tmp_path):
         code = """
-import os
+import math
 import runpy
 import sys
-from pathlib import Path
 
 import pyxel
+from pyxel.cube import Vec3
 
 init = pyxel.init
-
-
-def init_headless(*args, **kwargs):
-    init(*args, **{**kwargs, "headless": True, "fps": 1_000_000})
-    os.chdir(Path(sys.argv[1]).parent)
-
-
-pyxel.init = init_headless
+pyxel.init = lambda *args, **kwargs: init(
+    *args, **{**kwargs, "headless": True, "fps": 30}
+)
 callbacks = {}
 pyxel.run = lambda update, draw: callbacks.update(update=update, draw=draw)
 namespace = runpy.run_path(sys.argv[1])
 app = callbacks["update"].__self__
-
-contacts = set()
-ball_type = namespace["Animal"]
-on_collide = ball_type.on_collide
+body_type = namespace["Body"]
 
 
-def observe_contact(self, other, contact):
-    contacts.add(type(other).__name__)
-    on_collide(self, other, contact)
-
-
-ball_type.on_collide = observe_contact
-
-played = []
-stopped = []
-pyxel.play = lambda channel, sound: played.append((channel, sound))
-pyxel.play_pos = lambda channel: None
-pyxel.stop = lambda: stopped.append(True)
-
-
-def step(frames=1, keys=()):
-    for key in (
-        pyxel.KEY_SPACE,
-        pyxel.KEY_LEFT,
-        pyxel.KEY_RIGHT,
-        pyxel.KEY_UP,
-        pyxel.KEY_DOWN,
-        pyxel.KEY_R,
-        pyxel.KEY_1,
-        pyxel.KEY_2,
-        pyxel.KEY_3,
-    ):
-        pyxel.set_btn(key, key in keys)
+def step(frames=1, key=None):
+    for button in (pyxel.KEY_SPACE, pyxel.KEY_R, pyxel.MOUSE_BUTTON_LEFT):
+        pyxel.set_btn(button, button == key)
     for _ in range(frames):
         app.update()
         pyxel.flip()
 
 
-def targets():
-    return [node for node in app.scene.children if type(node) is namespace["Toy"]]
+def bodies():
+    return [b for b in app.scene.children if isinstance(b, body_type) and b.collider.mass > 0]
 
 
-initial = [(toy.transform.pos, toy.up) for toy in targets()]
+def aim(point):
+    local = app.scene.camera.transform.inverse() * point
+    scale = 2 * math.tan(math.radians(app.scene.camera.fov / 2)) / pyxel.height
+    pyxel.set_mouse_pos(round(pyxel.width / 2 - local.x / local.z / scale),
+                        round(pyxel.height / 2 + local.y / local.z / scale))
 
 
-def displaced_targets():
-    return {
-        i
-        for i, toy in enumerate(targets())
-        if (toy.transform.pos - initial[i][0]).length() > 15
-        or toy.up.dot(initial[i][1]) < 0.7
-    }
+# Static terrain remains at multiple heights; moving arms turn in two planes.
+initial_bodies = bodies()
+initial_poses = [b.transform for b in initial_bodies]
+paddles = [b for b in app.scene.children if b.collider.mass == 0
+           and b.collider.angular_velocity != Vec3.ZERO]
+assert any(abs((b.transform.rot * b.collider.angular_velocity).y) > 1 for b in paddles)
+assert any(abs((b.transform.rot * b.collider.angular_velocity).z) > 1 for b in paddles)
+paddle_start = [b.transform for b in paddles]
+assert any(b.collider.size == Vec3.ZERO and b.collider.radius > 0 for b in initial_bodies)
+assert any(b.collider.size.x > 0 and b.collider.radius == 0 for b in initial_bodies)
+assert any(b.collider.size.x == 0 and b.collider.size.y > 0 for b in initial_bodies)
+assert all(isinstance(b.paint, pyxel.Image) for b in initial_bodies)
+initial = [b.transform.pos for b in initial_bodies]
+camera_start = app.scene.camera.transform.pos
+step(1800)
+assert all((b.transform.pos - p).length() < 2 for b, p in zip(initial_bodies, initial))
+assert any(b.transform != p for b, p in zip(paddles, paddle_start))
+assert app.scene.camera.transform.pos == camera_start
+assert not app.scene.shots
 
+# Repeated resets must not make fresh stacks collide with the previous ones.
+for _ in range(3):
+    step(key=pyxel.KEY_R)
+    standing = bodies()
+    step(120)
+    assert len(standing) == len(initial_bodies)
+    assert all((b.transform.pos - p.pos).length() < 2
+               for b, p in zip(standing, initial_poses))
 
-# A resting scene must not drift or shimmer between consecutive frames.
-def poses():
-    return [
-        tuple(toy.transform[row, col] for row in range(4) for col in range(4))
-        for toy in targets()
-    ]
+# The arrows choose the firing viewpoint; the pointer chooses its target.
+pyxel.set_btn(pyxel.KEY_RIGHT, True)
+pyxel.set_btn(pyxel.KEY_UP, True)
+step(20)
+pyxel.set_btn(pyxel.KEY_RIGHT, False)
+pyxel.set_btn(pyxel.KEY_UP, False)
+assert (app.scene.camera.transform.pos - camera_start).length() > 200
+assert app.scene.camera.transform.pos.y > camera_start.y
+assert app.scene.angle == 75 and app.scene.pitch == 50
 
+# Aimed fire removes a tower support and drops all its upper floors.
+step(key=pyxel.KEY_R)
+standing = bodies()
+floors = [b for b in standing if b.collider.size == Vec3(180, 15, 160)
+          and b.transform.pos.x == 290]
+initial = [b.transform.pos for b in floors]
+app.scene.angle = 115
+app.scene.pitch = 20
+app.scene.move_camera()
+aim(Vec3(240, 412.5, -130))
+step(key=pyxel.MOUSE_BUTTON_LEFT)
+step(600)
+assert all((b.transform.pos - p).length() > 20 for b, p in zip(floors, initial))
+assert all(b in app.scene.children for b in standing)
 
-step(300)
-rest_poses = poses()
-step(2700)
-assert poses() == rest_poses
-assert not displaced_targets()
-assert max(toy.collider.velocity.length() for toy in targets()) < 0.005
+# Aimed fire dislodges the loose bridge and the capsule it carries.
+step(key=pyxel.KEY_R)
+bridge = next(b for b in bodies() if b.collider.size == Vec3(280, 20, 90))
+roller = next(b for b in bodies() if b.collider.radius == 35)
+app.scene.angle = 270
+app.scene.pitch = 15
+app.scene.move_camera()
+aim(Vec3(-450, 570, 160))
+for _ in range(3):
+    step(key=pyxel.MOUSE_BUTTON_LEFT)
+    step(19)
+step(600)
+assert (bridge.world_transform * Vec3(-140, 0, 0)).y < 60
+assert roller.transform.pos.y < 100
 
+# One crossbeam hit collapses the open stack and sends debris into the vertical arms.
+step(key=pyxel.KEY_R)
+standing = bodies()
+initial = [b.transform.pos for b in standing]
+beams = [b for b in standing if b.collider.size == Vec3(64, 14, 180)]
+beam_heights = [b.transform.pos.y for b in beams]
+arm_contacts = set()
+first_contacts = {}
+on_collide = body_type.on_collide
 
-def pixels():
-    callbacks["draw"]()
-    return bytes(pyxel.screen.pget(x, y) for y in range(240) for x in range(320))
+def record_contact(self, other, contact):
+    if self in standing and other.collider.mass == 0:
+        if other.collider.angular_velocity != Vec3.ZERO:
+            arm_contacts.add(other)
+            if abs((other.transform.rot * other.collider.angular_velocity).z) > 1:
+                first_contacts.setdefault(self, pyxel.frame_count)
+    on_collide(self, other, contact)
 
+body_type.on_collide = record_contact
+app.scene.angle = 90
+app.scene.pitch = 15
+app.scene.move_camera()
+aim(Vec3(280, 561, 195))
+step(key=pyxel.MOUSE_BUTTON_LEFT)
+step(800)
+body_type.on_collide = on_collide
+assert any(abs((b.transform.rot * b.collider.angular_velocity).z) > 1
+           for b in arm_contacts)
+# Losing half the pillar height establishes collapse, even onto a lower deck.
+assert all(b.transform.pos.y < y - 32 for b, y in zip(beams, beam_heights))
+assert any(p.y > 500 and b.transform.pos.y < 200
+           for b, p in zip(standing, initial))
+assert all(b in app.scene.children for b in standing)
+assert all(math.isfinite(v) for b in bodies() for v in b.transform.pos)
+assert app.scene.shot_count == 1
+app.scene.shoot()
+app.scene.shoot()
+for index, shot in enumerate(app.scene.shots):
+    if index == 0:
+        assert shot.collider.size == Vec3.ZERO and shot.collider.radius > 0
+    elif index == 1:
+        assert shot.collider.size.x == 0 and shot.collider.size.y > 0 and shot.collider.radius > 0
+    else:
+        assert shot.collider.size.x > 0 and shot.collider.radius == 0
 
-rest = pixels()
-for _ in range(12):
-    step()
-    assert pixels() == rest
-    assert poses() == rest_poses
+# One wall shot should send a burst of original debris onto the central rotor.
+for angle, pitch, target in [(270, 15, Vec3(-235, 625, -25)),
+                             (70, 15, Vec3(200, 565, 145))]:
+    step(key=pyxel.KEY_R)
+    standing, first_contacts = bodies(), {}
+    body_type.on_collide = record_contact
+    app.scene.angle, app.scene.pitch = angle, pitch
+    app.scene.move_camera()
+    aim(target)
+    step(key=pyxel.MOUSE_BUTTON_LEFT)
+    step(800)
+    body_type.on_collide = on_collide
+    assert app.scene.shot_count == 1
+    times = sorted(first_contacts.values())
+    assert any(sum(t <= other < t + 60 for other in times) >= 8 for t in times)
 
-# Direction and elevation stop at their bounds; held fire launches only once.
-step(80, (pyxel.KEY_LEFT, pyxel.KEY_DOWN))
-assert app.scene.angle == -60 and app.scene.pitch == 10
-step(160, (pyxel.KEY_RIGHT, pyxel.KEY_UP))
-assert app.scene.angle == 60 and app.scene.pitch == 60
-step(90, (pyxel.KEY_SPACE,))
-assert played.count((0, 0)) == 1
+# An earlier projectile at the muzzle must not become the next shot's target.
+step(key=pyxel.KEY_R)
+pyxel.set_mouse_pos(200, 175)
+app.scene.shoot()
+first_velocity = app.scene.shots[-1].collider.velocity
+app.scene.shoot()
+assert app.scene.shots[-1].collider.velocity == first_velocity
 
-# Each choice really changes shape, mass and restitution, and leaves the muzzle
-# upwards before landing, colliding and rolling among the building contents.
-for kind, key in enumerate((pyxel.KEY_1, pyxel.KEY_2, pyxel.KEY_3)):
-    step(1, (pyxel.KEY_R,))
-    step(60)
-    contacts.clear()
-    step(1, (key,))
-    step(1, (pyxel.KEY_SPACE,))
-    shot = next(node for node in app.scene.children if isinstance(node, ball_type))
-    collider = shot.collider
-    assert collider.mass == (3, 6, 9)[kind]
-    assert tuple(collider.size) == ((0, 0, 0), (0, 18, 0), (12, 7, 12))[kind]
-    assert collider.radius == (10, 8, 4)[kind]
-    assert abs(collider.restitution - (0.65, 0.1, 0.2)[kind]) < 1e-6
-    start = shot.transform.pos
-    assert collider.velocity.y > 0 and collider.velocity.z > 0
-    step(10)
-    assert shot.transform.pos.y > start.y + 5
-    step(220)
-    assert displaced_targets()
-    assert "Toy" in contacts
+# The wheel remains unbound; Space fires like a click without moving the camera.
+step(key=pyxel.KEY_R)
+camera = app.scene.camera.transform
+pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 3)
+step(31)
+pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 0)
+assert app.scene.camera.transform == camera
+assert app.scene.shot_count == 0
+step(31, key=pyxel.KEY_SPACE)
+assert app.scene.camera.transform == camera
+assert app.scene.shot_count == 4
 
-# A low shot reaches the ground floor; a high shot reaches the top floor.
-# The fixed frame remains in place while its loose floors and contents move.
-hits = []
-for angle, pitch in [(14, 10), (14, 48), (-21, 30)]:
-    step(1, (pyxel.KEY_R,))
-    step(90)
-    stage = app.scene.children[0]
-    fixed_transform = tuple(
-        stage.transform[row, col] for row in range(4) for col in range(4)
-    )
-    assert stage.collider.mesh is not None
-    app.scene.angle = angle
-    app.scene.pitch = pitch
-    step(1, (pyxel.KEY_SPACE,))
-    step(240)
-    hits.append(displaced_targets())
-    assert (
-        tuple(stage.transform[row, col] for row in range(4) for col in range(4))
-        == fixed_transform
-    )
-assert hits[0] and hits[0] <= set(range(5))
-assert hits[1] and hits[1] <= set(range(9, 13))
-assert hits[2] and hits[2] <= set(range(13, 23))
+# Holding fire repeats; the projectile limit bounds scene growth and reset restores it.
+scene = app.scene
+step(key=pyxel.KEY_R)
+assert app.scene is scene and len(bodies()) == len(initial_bodies)
+assert not app.scene.shots and app.scene.shot_count == 0
+assert app.scene.camera.transform == camera
+pyxel.set_mouse_pos(pyxel.width // 2, pyxel.height // 2)
+step(31, key=pyxel.MOUSE_BUTTON_LEFT)
+assert len(app.scene.shots) == 4
+step(150, key=pyxel.MOUSE_BUTTON_LEFT)
+assert len(app.scene.shots) == 16
+assert len(bodies()) <= len(initial_bodies) + 16
 
-step(500)
-assert not any(isinstance(node, ball_type) for node in app.scene.children)
-step(1, (pyxel.KEY_R,))
-assert stopped
-assert app.scene.angle == 14 and app.scene.pitch == 30
-assert app.scene.kind == 0
-assert not displaced_targets()
-assert not any(isinstance(node, ball_type) for node in app.scene.children)
+# Reset restores only loose objects; the camera and rotating paddles keep their pose.
+camera = scene.camera.transform
+paddle_poses = [b.transform for b in paddles]
+scene.reset()
+assert not scene.shots and scene.shot_count == 0
+restored = bodies()
+assert len(restored) == len(initial_bodies)
+assert scene.camera.transform == camera
+assert [b.transform for b in paddles] == paddle_poses
+for body, transform in zip(restored, initial_poses):
+    assert body.transform == transform
+    assert body.collider.velocity == body.collider.angular_velocity == Vec3.ZERO
+step()
+assert bodies() == restored
+callbacks["draw"]()
 """
 
         result = subprocess.run(
@@ -852,9 +929,10 @@ assert not any(isinstance(node, ball_type) for node in app.scene.children)
                 code,
                 str(EXAMPLES_DIR / "cube" / "c06_3d_physics.py"),
             ],
+            cwd=tmp_path,
             capture_output=True,
             text=True,
-            timeout=20,
+            timeout=300,
             check=False,
         )
         assert result.returncode == 0, result.stderr

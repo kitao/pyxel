@@ -4248,6 +4248,68 @@
           "advanced": false
         },
         {
+          "name": "Primitive.capsule",
+          "type": "class",
+          "signature": "Primitive.capsule(height=1.0, radius=0.5)",
+          "description": {
+            "en": "Create a textured low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.",
+            "cn": "创建以原点为中心、沿 Y 轴的带纹理低多边形胶囊 Primitive，使用平面法线。UV 绕胶囊一周；V 从顶部的 0 递增到底部的 1。height 为 0 时生成球体。",
+            "de": "Erstellt ein texturiertes Low-Poly-Kapsel-Primitive mit flachen Normalen, zentriert am Ursprung entlang der Y-Achse. Die UVs umlaufen die Kapsel einmal; V reicht von 0 oben bis 1 unten. Bei height 0 entsteht eine Kugel.",
+            "es": "Crea un Primitive de cápsula low-poly texturizada, centrada en el origen a lo largo del eje Y, con normales planas. Las UV rodean la cápsula una vez; V va de 0 arriba a 1 abajo. Una altura de 0 crea una esfera.",
+            "fr": "Crée un Primitive de capsule low-poly texturée, centré à l'origine le long de l'axe Y, avec des normales plates. Les UV font un tour de la capsule ; V va de 0 en haut à 1 en bas. Une hauteur de 0 crée une sphère.",
+            "it": "Crea un Primitive capsula low-poly con texture, centrato nell'origine lungo l'asse Y, con normali piatte. Le UV avvolgono la capsula una volta; V va da 0 in alto a 1 in basso. Un'altezza di 0 crea una sfera.",
+            "ja": "原点を中心に Y 軸方向に伸びる、フラット法線を持つテクスチャ対応のローポリカプセル Primitive を作成する。UV は周囲を 1 周し、V は上端の 0 から下端の 1 へ変化する。height が 0 の場合は球になる。",
+            "ko": "원점을 중심으로 Y축을 따라 놓인 텍스처 로우폴리 캡슐 Primitive를 평면 법선과 함께 만듭니다. UV는 캡슐을 한 바퀴 감싸며 V는 위쪽의 0에서 아래쪽의 1까지 변합니다. height가 0이면 구체를 만듭니다.",
+            "pt": "Cria um Primitive de cápsula low-poly texturizada, centrado na origem ao longo do eixo Y, com normais planas. As UVs dão uma volta na cápsula; V vai de 0 no topo a 1 na base. Uma altura de 0 cria uma esfera.",
+            "ru": "Создаёт текстурированный низкополигональный Primitive-капсулу с плоскими нормалями, центрированную в начале координат вдоль оси Y. UV охватывают капсулу один раз; V меняется от 0 сверху до 1 снизу. При height 0 создаётся сфера.",
+            "tr": "Orijinde merkezlenmiş, Y ekseni boyunca uzanan, düz normalli ve dokulu düşük poligonlu bir kapsül Primitive oluşturur. UV'ler kapsülü bir kez sarar; V üstte 0'dan altta 1'e uzanır. height 0 olduğunda bir küre oluşturulur.",
+            "uk": "Створює текстурований низькополігональний Primitive-капсулу з пласкими нормалями, центровану в початку координат уздовж осі Y. UV охоплюють капсулу один раз; V змінюється від 0 зверху до 1 знизу. За height 0 створюється сфера."
+          },
+          "params": [
+            {
+              "name": "height",
+              "type": "float",
+              "description": {
+                "en": "Length of the central axis segment, as in Collider.size.y. The absolute value is used. Total height is abs(height) + 2 * max(radius, 0).",
+                "cn": "中心轴线段的长度，与 Collider.size.y 相同。使用绝对值。总高度为 abs(height) + 2 * max(radius, 0)。",
+                "de": "Länge des mittleren Achsenabschnitts, wie bei Collider.size.y. Der Absolutwert wird verwendet. Die Gesamthöhe ist abs(height) + 2 * max(radius, 0).",
+                "es": "Longitud del segmento central del eje, como en Collider.size.y. Se usa el valor absoluto. La altura total es abs(height) + 2 * max(radius, 0).",
+                "fr": "Longueur du segment central de l'axe, comme Collider.size.y. La valeur absolue est utilisée. La hauteur totale est abs(height) + 2 * max(radius, 0).",
+                "it": "Lunghezza del segmento centrale dell'asse, come Collider.size.y. Viene usato il valore assoluto. L'altezza totale è abs(height) + 2 * max(radius, 0).",
+                "ja": "Collider.size.y と同じ、中央の軸線分の長さ。絶対値を使用する。全高は abs(height) + 2 * max(radius, 0)。",
+                "ko": "Collider.size.y와 같은 중심 축 선분의 길이입니다. 절댓값을 사용합니다. 전체 높이는 abs(height) + 2 * max(radius, 0)입니다.",
+                "pt": "Comprimento do segmento central do eixo, como em Collider.size.y. Usa o valor absoluto. A altura total é abs(height) + 2 * max(radius, 0).",
+                "ru": "Длина центрального отрезка оси, как в Collider.size.y. Используется абсолютное значение. Полная высота равна abs(height) + 2 * max(radius, 0).",
+                "tr": "Collider.size.y gibi merkez eksen parçasının uzunluğu. Mutlak değer kullanılır. Toplam yükseklik abs(height) + 2 * max(radius, 0) olur.",
+                "uk": "Довжина центрального відрізка осі, як у Collider.size.y. Використовується абсолютне значення. Повна висота дорівнює abs(height) + 2 * max(radius, 0)."
+              }
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "description": {
+                "en": "Radius of the hemispheres and straight section. Negative values are treated as 0.",
+                "cn": "半球和直线段的半径。负值按 0 处理。",
+                "de": "Radius der Halbkugeln und des geraden Abschnitts. Negative Werte werden als 0 behandelt.",
+                "es": "Radio de las semiesferas y de la sección recta. Los valores negativos se tratan como 0.",
+                "fr": "Rayon des hémisphères et de la partie droite. Les valeurs négatives sont traitées comme 0.",
+                "it": "Raggio delle semisfere e della sezione retta. I valori negativi sono trattati come 0.",
+                "ja": "半球と直線部分の半径。負の値は 0 として扱う。",
+                "ko": "반구와 직선 부분의 반지름입니다. 음수는 0으로 처리합니다.",
+                "pt": "Raio dos hemisférios e da seção reta. Valores negativos são tratados como 0.",
+                "ru": "Радиус полусфер и прямого участка. Отрицательные значения считаются равными 0.",
+                "tr": "Yarım kürelerin ve düz bölümün yarıçapı. Negatif değerler 0 olarak işlenir.",
+                "uk": "Радіус півсфер і прямої ділянки. Від'ємні значення вважаються рівними 0."
+              }
+            }
+          ],
+          "returns": {
+            "type": "Primitive"
+          },
+          "examples": ["prim = Primitive.capsule(1.0, 0.5)"],
+          "advanced": false
+        },
+        {
           "name": "MODE_POINTS",
           "type": "constant",
           "signature": "Primitive.MODE_POINTS",
@@ -5100,7 +5162,7 @@
         {
           "name": "Collider",
           "type": "class",
-          "signature": "Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO)",
+          "signature": "Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO, gravity=9.8, gravity_direction=Vec3.DOWN, linear_damp=0.1, angular_damp=0.1)",
           "description": {
             "en": "Collision shape, physical coefficients, and motion state for a Node. It represents a sphere, capsule, or rounded box derived from size and radius, or static triangle terrain when mesh is set. Analytic shapes require a rigid effective world transform (translation and rotation only); terrain accepts a fixed invertible affine transform.",
             "cn": "Node 的碰撞形状、物理系数和运动状态。形状由 size 和 radius 定义为球体、胶囊体或圆角盒体；设置 mesh 时则为静态三角形地形。解析形状要求有效世界变换为刚体变换 (仅平移和旋转)；地形可使用固定且可逆的仿射变换。",
@@ -5294,6 +5356,78 @@
                 "ru": "Ось, умноженная на угол (в градусах), применяемая при каждом обновлении как вращение в локальных координатах узла. Значение игнорируется у mesh-коллайдеров, но продолжает применяться при вырожденном мировом преобразовании родительского узла. По умолчанию Vec3.ZERO.",
                 "tr": "Her güncellemede düğümün yerel koordinatlarında dönüş olarak uygulanan eksen çarpı açı (derece cinsinden). Değer mesh collider'larda yok sayılır, ancak üst düğümün dünya transform'u tekil olduğunda da uygulanır. Varsayılan değer Vec3.ZERO.",
                 "uk": "Вісь, помножена на кут (у градусах), що застосовується під час кожного оновлення як обертання в локальних координатах вузла. Значення ігнорується для mesh-колайдерів, але продовжує застосовуватися за виродженого світового перетворення батьківського вузла. Типове значення Vec3.ZERO."
+              }
+            },
+            {
+              "name": "gravity",
+              "type": "float",
+              "description": {
+                "en": "Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.",
+                "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。100 ワールド座標を 1m とし、pyxel.init で設定した fps を使って、更新ごとに正規化した gravity_direction × gravity × 100 / fps²を velocity に加える。mesh がなく mass > 0 のコライダーにのみ適用する。負の値は方向を反転する。 pyxel.init 前の fps は 30。",
+                "cn": "重力强度 (m/s²)，默认为 9.8，0 表示禁用。每次更新向 velocity 加上归一化的 gravity_direction × gravity × 100 / fps²，fps 取自 pyxel.init，100 个世界单位对应 1 米。仅作用于未设置 mesh 且 mass > 0 的碰撞体。负值反转方向。 pyxel.init 之前，fps 为 30。",
+                "de": "Gravitationsstärke in m/s². Standard: 9.8; 0 deaktiviert die Gravitation. Pro Update wird die normierte gravity_direction × gravity × 100 / fps² zu velocity addiert. fps stammt aus pyxel.init; 100 Welteinheiten entsprechen einem Meter. Gilt nur ohne mesh und mit mass > 0. Negative Werte kehren die Richtung um. Vor pyxel.init beträgt fps 30.",
+                "es": "Intensidad de la gravedad en m/s². Por defecto, 9.8; 0 la desactiva. Cada actualización suma a velocity gravity_direction normalizada × gravity × 100 / fps², con el fps de pyxel.init y 100 unidades del mundo por metro. Solo afecta a colliders sin mesh y con mass > 0. Un valor negativo invierte la dirección. Antes de pyxel.init, fps es 30.",
+                "fr": "Intensité de la gravité en m/s². Par défaut : 9.8 ; 0 désactive la gravité. Chaque mise à jour ajoute à velocity gravity_direction normalisée × gravity × 100 / fps², avec le fps de pyxel.init et 100 unités du monde par mètre. Ne concerne que les colliders sans mesh avec mass > 0. Une valeur négative inverse la direction. Avant pyxel.init, fps vaut 30.",
+                "it": "Intensità della gravità in m/s². Valore predefinito: 9.8; 0 la disattiva. Ogni aggiornamento aggiunge a velocity gravity_direction normalizzata × gravity × 100 / fps², usando fps di pyxel.init e 100 unità del mondo per metro. Si applica solo senza mesh e con mass > 0. Un valore negativo inverte la direzione. Prima di pyxel.init, fps è 30.",
+                "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다. 매 업데이트마다 정규화한 gravity_direction × gravity × 100 / fps²를 velocity에 더합니다. fps는 pyxel.init의 설정값이며 월드 단위 100이 1m입니다. mesh가 없고 mass > 0인 콜라이더에만 적용됩니다. 음수는 방향을 반전합니다. pyxel.init 전에는 fps가 30입니다.",
+                "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade. Cada atualização soma a velocity gravity_direction normalizada × gravity × 100 / fps², usando fps de pyxel.init e 100 unidades do mundo por metro. Aplica-se apenas sem mesh e com mass > 0. Um valor negativo inverte a direção. Antes de pyxel.init, fps é 30.",
+                "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию. При каждом обновлении к velocity прибавляется нормализованный gravity_direction × gravity × 100 / fps². fps задаётся в pyxel.init; 100 мировых единиц соответствуют метру. Действует только без mesh и при mass > 0. Отрицательное значение меняет направление на обратное. До pyxel.init значение fps равно 30.",
+                "tr": "Yerçekimi ivmesinin büyüklüğü (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır. Her güncellemede velocity değerine normalize edilmiş gravity_direction × gravity × 100 / fps² eklenir. fps, pyxel.init ayarıdır; 100 dünya birimi bir metredir. Yalnızca mesh olmayan ve mass > 0 olan çarpıştırıcılara uygulanır. Negatif değer yönü tersine çevirir. pyxel.init öncesinde fps 30 olur.",
+                "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію. Кожне оновлення додає до velocity нормалізований gravity_direction × gravity × 100 / fps². fps задається в pyxel.init; 100 світових одиниць відповідають метру. Діє лише без mesh і за mass > 0. Від’ємне значення змінює напрямок на протилежний. До pyxel.init значення fps дорівнює 30."
+              }
+            },
+            {
+              "name": "gravity_direction",
+              "type": "Vec3",
+              "description": {
+                "en": "World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.",
+                "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。内部で正規化するため、ベクトルの長さは強さに影響しない。Vec3.ZERO なら重力は加わらない。ノードや親の回転には影響されない。",
+                "cn": "世界空间中的重力方向，默认为 Vec3.DOWN。内部会归一化，因此长度不影响强度；Vec3.ZERO 不施加重力。不受节点或父节点旋转影响。",
+                "de": "Gravitationsrichtung in Weltkoordinaten. Standard: Vec3.DOWN. Wird intern normiert; die Länge beeinflusst die Stärke nicht. Vec3.ZERO bewirkt keine Gravitation. Unabhängig von Knoten- und Elternrotationen.",
+                "es": "Dirección de la gravedad en el espacio global. Por defecto, Vec3.DOWN. Se normaliza internamente: su longitud no cambia la intensidad. Vec3.ZERO no aplica gravedad. Independiente de las rotaciones del nodo y sus padres.",
+                "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN. Normalisée en interne : sa longueur ne change pas l’intensité. Vec3.ZERO n’applique aucune gravité. Indépendante des rotations du nœud et de ses parents.",
+                "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN. Normalizzata internamente: la lunghezza non cambia l’intensità. Vec3.ZERO non applica gravità. Indipendente dalle rotazioni del nodo e dei suoi genitori.",
+                "ko": "월드 공간의 중력 방향. 기본값은 Vec3.DOWN입니다. 내부에서 정규화하므로 길이는 세기에 영향을 주지 않습니다. Vec3.ZERO는 중력을 적용하지 않습니다. 노드와 부모의 회전과 무관합니다.",
+                "pt": "Direção da gravidade no espaço global. Padrão: Vec3.DOWN. Normalizada internamente: o comprimento não altera a intensidade. Vec3.ZERO não aplica gravidade. Independente das rotações do nó e dos pais.",
+                "ru": "Направление гравитации в мировом пространстве. По умолчанию Vec3.DOWN. Нормализуется внутри: длина не влияет на силу. Vec3.ZERO отключает действие гравитации. Не зависит от поворотов узла и его родителей.",
+                "tr": "Dünya uzayındaki yerçekimi yönü. Varsayılan Vec3.DOWN. İçeride normalize edilir; uzunluğu kuvveti değiştirmez. Vec3.ZERO yerçekimi uygulamaz. Düğümün ve üst düğümlerin dönüşlerinden bağımsızdır.",
+                "uk": "Напрямок гравітації у світовому просторі. Типово Vec3.DOWN. Нормалізується всередині: довжина не впливає на величину. Vec3.ZERO не застосовує гравітацію. Не залежить від обертань вузла та його батьків."
+              }
+            },
+            {
+              "name": "linear_damp",
+              "type": "float",
+              "description": {
+                "en": "Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
+                "ja": "並進の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
+                "cn": "线性：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
+                "de": "Linear: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
+                "es": "Lineal: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
+                "fr": "Linéaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
+                "it": "Lineare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
+                "ko": "선형: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
+                "pt": "Linear: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
+                "ru": "Линейная скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
+                "tr": "Doğrusal: Saniye başına sönüm katsayısı, varsayılan 0.1. Yerçekiminden önce her güncellemede ilgili hız max(0, 1 - max(0, damp) / fps) ile çarpılır. Yalnızca mesh yokken ve mass > 0 iken uygulanır; 0 kapatır. Aerodinamik sürükleme veya temas sürtünmesi modeli değildir.",
+                "uk": "Лінійна швидкість: Коефіцієнт згасання за секунду, типово 0.1. Перед гравітацією кожне оновлення множить відповідну швидкість на max(0, 1 - max(0, damp) / fps). Лише без mesh і за mass > 0; 0 вимикає згасання. Це не модель аеродинамічного опору чи контактного тертя."
+              }
+            },
+            {
+              "name": "angular_damp",
+              "type": "float",
+              "description": {
+                "en": "Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
+                "ja": "回転の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
+                "cn": "角速度：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
+                "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
+                "es": "Angular: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
+                "fr": "Angulaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
+                "it": "Angolare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
+                "ko": "각속도: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
+                "pt": "Angular: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
+                "ru": "Угловая скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
+                "tr": "Açısal: Saniye başına sönüm katsayısı, varsayılan 0.1. Yerçekiminden önce her güncellemede ilgili hız max(0, 1 - max(0, damp) / fps) ile çarpılır. Yalnızca mesh yokken ve mass > 0 iken uygulanır; 0 kapatır. Aerodinamik sürükleme veya temas sürtünmesi modeli değildir.",
+                "uk": "Кутова швидкість: Коефіцієнт згасання за секунду, типово 0.1. Перед гравітацією кожне оновлення множить відповідну швидкість на max(0, 1 - max(0, damp) / fps). Лише без mesh і за mass > 0; 0 вимикає згасання. Це не модель аеродинамічного опору чи контактного тертя."
               }
             }
           ],
@@ -5513,6 +5647,90 @@
           },
           "value_type": "Vec3",
           "advanced": false
+        },
+        {
+          "name": "gravity",
+          "type": "variable",
+          "signature": "gravity",
+          "description": {
+            "en": "Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.",
+            "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。100 ワールド座標を 1m とし、pyxel.init で設定した fps を使って、更新ごとに正規化した gravity_direction × gravity × 100 / fps²を velocity に加える。mesh がなく mass > 0 のコライダーにのみ適用する。負の値は方向を反転する。 pyxel.init 前の fps は 30。",
+            "cn": "重力强度 (m/s²)，默认为 9.8，0 表示禁用。每次更新向 velocity 加上归一化的 gravity_direction × gravity × 100 / fps²，fps 取自 pyxel.init，100 个世界单位对应 1 米。仅作用于未设置 mesh 且 mass > 0 的碰撞体。负值反转方向。 pyxel.init 之前，fps 为 30。",
+            "de": "Gravitationsstärke in m/s². Standard: 9.8; 0 deaktiviert die Gravitation. Pro Update wird die normierte gravity_direction × gravity × 100 / fps² zu velocity addiert. fps stammt aus pyxel.init; 100 Welteinheiten entsprechen einem Meter. Gilt nur ohne mesh und mit mass > 0. Negative Werte kehren die Richtung um. Vor pyxel.init beträgt fps 30.",
+            "es": "Intensidad de la gravedad en m/s². Por defecto, 9.8; 0 la desactiva. Cada actualización suma a velocity gravity_direction normalizada × gravity × 100 / fps², con el fps de pyxel.init y 100 unidades del mundo por metro. Solo afecta a colliders sin mesh y con mass > 0. Un valor negativo invierte la dirección. Antes de pyxel.init, fps es 30.",
+            "fr": "Intensité de la gravité en m/s². Par défaut : 9.8 ; 0 désactive la gravité. Chaque mise à jour ajoute à velocity gravity_direction normalisée × gravity × 100 / fps², avec le fps de pyxel.init et 100 unités du monde par mètre. Ne concerne que les colliders sans mesh avec mass > 0. Une valeur négative inverse la direction. Avant pyxel.init, fps vaut 30.",
+            "it": "Intensità della gravità in m/s². Valore predefinito: 9.8; 0 la disattiva. Ogni aggiornamento aggiunge a velocity gravity_direction normalizzata × gravity × 100 / fps², usando fps di pyxel.init e 100 unità del mondo per metro. Si applica solo senza mesh e con mass > 0. Un valore negativo inverte la direzione. Prima di pyxel.init, fps è 30.",
+            "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다. 매 업데이트마다 정규화한 gravity_direction × gravity × 100 / fps²를 velocity에 더합니다. fps는 pyxel.init의 설정값이며 월드 단위 100이 1m입니다. mesh가 없고 mass > 0인 콜라이더에만 적용됩니다. 음수는 방향을 반전합니다. pyxel.init 전에는 fps가 30입니다.",
+            "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade. Cada atualização soma a velocity gravity_direction normalizada × gravity × 100 / fps², usando fps de pyxel.init e 100 unidades do mundo por metro. Aplica-se apenas sem mesh e com mass > 0. Um valor negativo inverte a direção. Antes de pyxel.init, fps é 30.",
+            "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию. При каждом обновлении к velocity прибавляется нормализованный gravity_direction × gravity × 100 / fps². fps задаётся в pyxel.init; 100 мировых единиц соответствуют метру. Действует только без mesh и при mass > 0. Отрицательное значение меняет направление на обратное. До pyxel.init значение fps равно 30.",
+            "tr": "Yerçekimi ivmesinin büyüklüğü (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır. Her güncellemede velocity değerine normalize edilmiş gravity_direction × gravity × 100 / fps² eklenir. fps, pyxel.init ayarıdır; 100 dünya birimi bir metredir. Yalnızca mesh olmayan ve mass > 0 olan çarpıştırıcılara uygulanır. Negatif değer yönü tersine çevirir. pyxel.init öncesinde fps 30 olur.",
+            "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію. Кожне оновлення додає до velocity нормалізований gravity_direction × gravity × 100 / fps². fps задається в pyxel.init; 100 світових одиниць відповідають метру. Діє лише без mesh і за mass > 0. Від’ємне значення змінює напрямок на протилежний. До pyxel.init значення fps дорівнює 30."
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "gravity_direction",
+          "type": "variable",
+          "signature": "gravity_direction",
+          "description": {
+            "en": "World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.",
+            "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。内部で正規化するため、ベクトルの長さは強さに影響しない。Vec3.ZERO なら重力は加わらない。ノードや親の回転には影響されない。",
+            "cn": "世界空间中的重力方向，默认为 Vec3.DOWN。内部会归一化，因此长度不影响强度；Vec3.ZERO 不施加重力。不受节点或父节点旋转影响。",
+            "de": "Gravitationsrichtung in Weltkoordinaten. Standard: Vec3.DOWN. Wird intern normiert; die Länge beeinflusst die Stärke nicht. Vec3.ZERO bewirkt keine Gravitation. Unabhängig von Knoten- und Elternrotationen.",
+            "es": "Dirección de la gravedad en el espacio global. Por defecto, Vec3.DOWN. Se normaliza internamente: su longitud no cambia la intensidad. Vec3.ZERO no aplica gravedad. Independiente de las rotaciones del nodo y sus padres.",
+            "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN. Normalisée en interne : sa longueur ne change pas l’intensité. Vec3.ZERO n’applique aucune gravité. Indépendante des rotations du nœud et de ses parents.",
+            "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN. Normalizzata internamente: la lunghezza non cambia l’intensità. Vec3.ZERO non applica gravità. Indipendente dalle rotazioni del nodo e dei suoi genitori.",
+            "ko": "월드 공간의 중력 방향. 기본값은 Vec3.DOWN입니다. 내부에서 정규화하므로 길이는 세기에 영향을 주지 않습니다. Vec3.ZERO는 중력을 적용하지 않습니다. 노드와 부모의 회전과 무관합니다.",
+            "pt": "Direção da gravidade no espaço global. Padrão: Vec3.DOWN. Normalizada internamente: o comprimento não altera a intensidade. Vec3.ZERO não aplica gravidade. Independente das rotações do nó e dos pais.",
+            "ru": "Направление гравитации в мировом пространстве. По умолчанию Vec3.DOWN. Нормализуется внутри: длина не влияет на силу. Vec3.ZERO отключает действие гравитации. Не зависит от поворотов узла и его родителей.",
+            "tr": "Dünya uzayındaki yerçekimi yönü. Varsayılan Vec3.DOWN. İçeride normalize edilir; uzunluğu kuvveti değiştirmez. Vec3.ZERO yerçekimi uygulamaz. Düğümün ve üst düğümlerin dönüşlerinden bağımsızdır.",
+            "uk": "Напрямок гравітації у світовому просторі. Типово Vec3.DOWN. Нормалізується всередині: довжина не впливає на величину. Vec3.ZERO не застосовує гравітацію. Не залежить від обертань вузла та його батьків."
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "linear_damp",
+          "type": "variable",
+          "signature": "linear_damp",
+          "description": {
+            "en": "Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
+            "ja": "並進の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
+            "cn": "线性：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
+            "de": "Linear: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
+            "es": "Lineal: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
+            "fr": "Linéaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
+            "it": "Lineare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
+            "ko": "선형: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
+            "pt": "Linear: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
+            "ru": "Линейная скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
+            "tr": "Doğrusal: Saniye başına sönüm katsayısı, varsayılan 0.1. Yerçekiminden önce her güncellemede ilgili hız max(0, 1 - max(0, damp) / fps) ile çarpılır. Yalnızca mesh yokken ve mass > 0 iken uygulanır; 0 kapatır. Aerodinamik sürükleme veya temas sürtünmesi modeli değildir.",
+            "uk": "Лінійна швидкість: Коефіцієнт згасання за секунду, типово 0.1. Перед гравітацією кожне оновлення множить відповідну швидкість на max(0, 1 - max(0, damp) / fps). Лише без mesh і за mass > 0; 0 вимикає згасання. Це не модель аеродинамічного опору чи контактного тертя."
+          },
+          "value_type": "float",
+          "advanced": true
+        },
+        {
+          "name": "angular_damp",
+          "type": "variable",
+          "signature": "angular_damp",
+          "description": {
+            "en": "Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
+            "ja": "回転の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
+            "cn": "角速度：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
+            "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
+            "es": "Angular: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
+            "fr": "Angulaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
+            "it": "Angolare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
+            "ko": "각속도: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
+            "pt": "Angular: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
+            "ru": "Угловая скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
+            "tr": "Açısal: Saniye başına sönüm katsayısı, varsayılan 0.1. Yerçekiminden önce her güncellemede ilgili hız max(0, 1 - max(0, damp) / fps) ile çarpılır. Yalnızca mesh yokken ve mass > 0 iken uygulanır; 0 kapatır. Aerodinamik sürükleme veya temas sürtünmesi modeli değildir.",
+            "uk": "Кутова швидкість: Коефіцієнт згасання за секунду, типово 0.1. Перед гравітацією кожне оновлення множить відповідну швидкість на max(0, 1 - max(0, damp) / fps). Лише без mesh і за mass > 0; 0 вимикає згасання. Це не модель аеродинамічного опору чи контактного тертя."
+          },
+          "value_type": "float",
+          "advanced": true
         }
       ]
     },

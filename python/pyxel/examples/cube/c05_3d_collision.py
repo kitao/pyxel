@@ -32,7 +32,9 @@ class Player(Node):
         super().__init__()
 
         self.start = start + Vec3(0, 8, 0)
-        self.collider = Collider(radius=8, mass=1)
+        self.collider = Collider(
+            radius=8, mass=1, gravity=0, linear_damp=0, angular_damp=0
+        )
         self.coins = 0
         self.reset()
 
@@ -56,7 +58,7 @@ class Player(Node):
         self.motion = None
 
     def on_update(self):
-        if self.transform.pos.y < -100:
+        if self.transform.pos.y < -160:
             self.reset()
             self.parent.reset_camera()
 

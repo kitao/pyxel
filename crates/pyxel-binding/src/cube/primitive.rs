@@ -112,6 +112,12 @@ impl Primitive {
         Self::wrap(pyxel::cube::Primitive::sphere(radius))
     }
 
+    #[staticmethod]
+    #[pyo3(signature = (height=1.0, radius=0.5))]
+    fn capsule(height: f32, radius: f32) -> Self {
+        Self::wrap(pyxel::cube::Primitive::capsule(height, radius))
+    }
+
     // Vertex attributes (live proxies)
 
     #[getter]

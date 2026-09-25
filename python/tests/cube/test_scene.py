@@ -1,4 +1,6 @@
 import gc
+import subprocess
+import sys
 import weakref
 
 import pytest
@@ -21,11 +23,107 @@ class TestUpdate:
         Node().update()
 
 
+class TestGravity:
+    def test_defaults_and_independent_body_settings(self):
+        a, b = Collider(), Collider()
+        assert a.gravity == pytest.approx(9.8)
+        assert a.gravity_direction == Vec3.DOWN
+        assert a.linear_damp == a.angular_damp == pytest.approx(0.1)
+        a.gravity, a.gravity_direction = 1.62, Vec3.RIGHT
+        a.linear_damp, a.angular_damp = 0.3, 0.4
+        assert a.gravity == pytest.approx(1.62)
+        assert a.gravity_direction == Vec3.RIGHT
+        assert a.linear_damp == pytest.approx(0.3)
+        assert a.angular_damp == pytest.approx(0.4)
+        assert b.gravity == pytest.approx(9.8)
+        assert b.gravity_direction == Vec3.DOWN
+        assert b.linear_damp == b.angular_damp == pytest.approx(0.1)
+
+    def test_update_preserves_shared_vector_values(self):
+        velocity, spin = Vec3(3, 0, 0), Vec3(0, 3, 0)
+        body = Node()
+        body.collider = Collider(velocity=velocity, angular_velocity=spin)
+        other = Collider(velocity=velocity, angular_velocity=spin)
+        saved = body.collider.velocity
+        body.update()
+        assert velocity == saved == other.velocity == Vec3(3, 0, 0)
+        assert spin == other.angular_velocity == Vec3(0, 3, 0)
+        assert body.collider.velocity != saved
+        body.collider.velocity = body.collider.angular_velocity = Vec3.ZERO
+        body.update()
+        assert Vec3.ZERO == Vec3(0, 0, 0)
+
+    @pytest.mark.parametrize("fps", [0, 30, 60])
+    def test_free_fall_and_damping_use_configured_time_step(self, fps):
+        code = """
+import sys
+import pyxel
+from pyxel.cube import Collider, Mat4, Node, Vec3
+fps = int(sys.argv[1])
+if fps:
+    pyxel.init(16, 16, fps=fps, headless=True)
+else:
+    fps = 30  # Scene updates without init retain the default time step.
+# One second in free fall reaches 9.8 m/s regardless of mass or update rate.
+for mass in (1, 100):
+    body = Node()
+    body.collider = Collider(mass=mass, linear_damp=0)
+    for _ in range(fps):
+        body.update()
+    assert abs(body.collider.velocity.y * fps / 100 + 9.8) < 1e-4
+    # Semi-implicit Euler falls an extra half-step compared with g*t*t/2.
+    expected = -490 * (fps + 1) / fps
+    assert abs(body.transform.pos.y - expected) < 0.002
+# About 9.5 percent of both speeds is lost in one second at damping 0.1.
+body = Node()
+body.collider = Collider(gravity=0, velocity=Vec3(3, 0, 0), angular_velocity=Vec3(0, 3, 0))
+for _ in range(fps):
+    body.update()
+assert 0.903 < body.collider.velocity.x / 3 < 0.906
+assert 0.903 < body.collider.angular_velocity.y / 3 < 0.906
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(fps)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
+    def test_direction_is_world_space_and_normalized(self):
+        parent, body = Node(), Node()
+        parent.transform = Mat4.from_euler(Vec3(0, 0, 90))
+        body.collider = Collider(gravity_direction=Vec3(7, 0, 0), linear_damp=0)
+        parent.add_child(body)
+        parent.update()
+        assert tuple(body.collider.velocity) == pytest.approx((980 / 900, 0, 0))
+        assert tuple(body.transform.pos) == pytest.approx((0, -980 / 900, 0), abs=1e-6)
+        body.collider.gravity_direction = Vec3.ZERO
+        parent.update()
+        assert tuple(body.collider.velocity) == pytest.approx((980 / 900, 0, 0))
+
+    def test_static_and_inactive_bodies_ignore_gravity_and_damping(self):
+        body = Node()
+        body.collider = Collider(
+            mass=0, velocity=Vec3(1, 0, 0), angular_velocity=Vec3(0, 1, 0)
+        )
+        body.update()
+        assert body.transform.pos == Vec3.RIGHT
+        assert body.collider.velocity == Vec3.RIGHT
+        assert body.collider.angular_velocity == Vec3.UP
+        body.collider.mass = 1
+        body.active = False
+        body.update()
+        assert body.transform.pos == Vec3.RIGHT
+        assert body.collider.velocity == Vec3.RIGHT
+
+
 class _CollisionCounter(Node):
     def __init__(self, pos: Vec3):
         super().__init__()
         self.transform = Mat4.from_translation(pos)
-        self.collider = Collider(radius=0.5)
+        self.collider = Collider(radius=0.5, gravity=0, linear_damp=0, angular_damp=0)
         self.collide_count = 0
 
     def on_collide(self, other, contact):
@@ -52,7 +150,13 @@ class _RoundedBox(Node):
         super().__init__()
         self.transform = transform
         self.collider = Collider(
-            size=Vec3(2, 2, 2), radius=1.0, mass=mass, velocity=velocity
+            size=Vec3(2, 2, 2),
+            radius=1.0,
+            mass=mass,
+            velocity=velocity,
+            gravity=0,
+            linear_damp=0,
+            angular_damp=0,
         )
         self.contacts = []
 
@@ -367,7 +471,7 @@ class TestRaycast:
         root = Node()
         ball = Ball()
         ball.transform = Mat4.from_translation(Vec3.ZERO)
-        ball.collider = Collider(radius=0.5)
+        ball.collider = Collider(radius=0.5, gravity=0, linear_damp=0, angular_damp=0)
         root.add_child(ball)
 
         hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -1))

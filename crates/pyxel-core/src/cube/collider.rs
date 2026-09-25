@@ -13,6 +13,10 @@ pub struct Collider {
     pub friction: f32,
     pub velocity: RcVec3,
     pub angular_velocity: RcVec3,
+    pub gravity: f32,
+    pub gravity_direction: RcVec3,
+    pub linear_damp: f32,
+    pub angular_damp: f32,
 }
 
 define_rc_type!(RcCollider, Collider);
@@ -29,6 +33,10 @@ impl Collider {
         friction: f32,
         velocity: RcVec3,
         angular_velocity: RcVec3,
+        gravity: f32,
+        gravity_direction: RcVec3,
+        linear_damp: f32,
+        angular_damp: f32,
     ) -> RcCollider {
         new_rc_type!(Collider {
             size,
@@ -41,6 +49,10 @@ impl Collider {
             friction,
             velocity,
             angular_velocity,
+            gravity,
+            gravity_direction,
+            linear_damp,
+            angular_damp,
         })
     }
 

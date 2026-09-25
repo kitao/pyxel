@@ -1498,18 +1498,18 @@
             "uk": "Анімовані GLB-моделі"
           },
           "details": {
-            "en": "A low-poly gazelle with a pixel-art texture, editable in Blockbench. Mesh.from_glb loads the model, and the 1-3 keys switch between the walk, run, and eat motions. Turn the view with the arrow keys or pause with the space key to inspect it.",
-            "cn": "可在 Blockbench 中编辑的像素纹理低多边形瞪羚。用 Mesh.from_glb 加载模型，用 1～3 键切换行走、奔跑和进食动作。用方向键转动视角，或用空格键暂停以便观察。",
-            "de": "Eine Low-Poly-Gazelle mit Pixel-Art-Textur, editierbar in Blockbench. Mesh.from_glb lädt das Modell, und die Tasten 1–3 schalten zwischen den Bewegungen Gehen, Laufen und Fressen um. Mit den Pfeiltasten lässt sich die Ansicht drehen, mit der Leertaste pausieren.",
-            "es": "Una gacela low-poly con textura pixel art, editable en Blockbench. Mesh.from_glb carga el modelo y las teclas 1-3 cambian entre los movimientos de caminar, correr y comer. Gire la vista con las flechas o pause con la barra espaciadora para observarla.",
-            "fr": "Une gazelle low-poly avec une texture pixel art, modifiable dans Blockbench. Mesh.from_glb charge le modèle et les touches 1-3 basculent entre les mouvements marcher, courir et manger. Tournez la vue avec les flèches ou mettez en pause avec la barre d'espace pour l'observer.",
-            "it": "Una gazzella low-poly con texture pixel art, modificabile in Blockbench. Mesh.from_glb carica il modello e i tasti 1-3 passano tra i movimenti camminare, correre e mangiare. Ruotare la vista con le frecce o mettere in pausa con la barra spaziatrice per osservarla.",
-            "ja": "Blockbench で編集できる、ドット絵テクスチャのローポリガゼルです。Mesh.from_glb でモデルを読み込み、1〜3 キーで歩行・走行・食事のモーションを切り替えます。矢印キーで視点を回し、スペースキーで一時停止して形と動きを観察できます。",
-            "ko": "Blockbench에서 편집할 수 있는 픽셀 아트 텍스처의 로우폴리 가젤입니다. Mesh.from_glb로 모델을 불러오고, 1~3 키로 걷기, 달리기, 먹기 모션을 전환합니다. 방향키로 시점을 돌리거나 스페이스 키로 일시 정지하여 관찰할 수 있습니다.",
-            "pt": "Uma gazela low-poly com textura em pixel art, editável no Blockbench. Mesh.from_glb carrega o modelo e as teclas 1-3 alternam entre os movimentos de andar, correr e comer. Gire a visão com as setas ou pause com a barra de espaço para observá-la.",
-            "ru": "Низкополигональная газель с пиксельной текстурой, редактируемая в Blockbench. Mesh.from_glb загружает модель, а клавиши 1–3 переключают движения ходьбы, бега и еды. Поворачивайте вид стрелками или ставьте на паузу пробелом, чтобы рассмотреть её.",
-            "tr": "Blockbench'te düzenlenebilen piksel sanatı dokulu düşük poligonlu bir ceylan. Mesh.from_glb modeli yükler ve 1-3 tuşları yürüme, koşma ve yeme hareketleri arasında geçiş yapar. Ok tuşlarıyla görünümü döndürün veya incelemek için boşluk tuşuyla duraklatın.",
-            "uk": "Низькополігональна газель із піксельною текстурою, яку можна редагувати в Blockbench. Mesh.from_glb завантажує модель, а клавіші 1–3 перемикають рухи ходьби, бігу та їжі. Повертайте вид стрілками або ставте на паузу пробілом, щоб роздивитися її."
+            "en": "A low-poly gazelle with a pixel-art texture, editable in Blockbench. Mesh.from_glb loads the model, and the 1-3 keys switch between walk, run, and eat motions. Use the arrow keys to turn the view and S to compare shading.",
+            "cn": "可在 Blockbench 中编辑的像素纹理低多边形瞪羚。用 Mesh.from_glb 加载模型，用 1～3 键切换行走、奔跑和进食动作。方向键转动视角，S 键切换阴影以进行比较。",
+            "de": "Eine Low-Poly-Gazelle mit Pixel-Art-Textur, editierbar in Blockbench. Mesh.from_glb lädt das Modell, und die Tasten 1–3 wechseln zwischen Gehen, Laufen und Fressen. Die Pfeiltasten drehen die Ansicht; S schaltet die Schattierung zum Vergleich um.",
+            "es": "Una gacela low-poly con textura pixel art, editable en Blockbench. Mesh.from_glb carga el modelo y las teclas 1-3 alternan entre caminar, correr y comer. Las flechas giran la vista y S activa o desactiva el sombreado para compararlo.",
+            "fr": "Une gazelle low-poly avec une texture pixel art, modifiable dans Blockbench. Mesh.from_glb charge le modèle et les touches 1-3 alternent entre marche, course et repas. Les flèches tournent la vue et S active ou désactive l'ombrage pour comparer.",
+            "it": "Una gazzella low-poly con texture pixel art, modificabile in Blockbench. Mesh.from_glb carica il modello e i tasti 1-3 alternano camminata, corsa e alimentazione. Le frecce ruotano la vista e S attiva o disattiva l'ombreggiatura per confrontarla.",
+            "ja": "Blockbench で編集できる、ドット絵テクスチャのローポリガゼルです。Mesh.from_glb でモデルを読み込み、1〜3 キーで歩行・走行・食事のモーションを切り替えます。矢印キーで視点を回し、S キーで陰影の有無を比較できます。",
+            "ko": "Blockbench에서 편집할 수 있는 픽셀 아트 텍스처의 로우폴리 가젤입니다. Mesh.from_glb로 모델을 불러오고 1~3 키로 걷기, 달리기, 먹기 모션을 전환합니다. 방향키로 시점을 돌리고 S 키로 음영 유무를 비교합니다.",
+            "pt": "Uma gazela low-poly com textura em pixel art, editável no Blockbench. Mesh.from_glb carrega o modelo e as teclas 1-3 alternam entre andar, correr e comer. Use as setas para girar a vista e S para comparar o sombreamento ativado e desativado.",
+            "ru": "Низкополигональная газель с пиксельной текстурой, редактируемая в Blockbench. Mesh.from_glb загружает модель, а клавиши 1–3 переключают ходьбу, бег и еду. Стрелки поворачивают вид, S включает и отключает затенение для сравнения.",
+            "tr": "Blockbench'te düzenlenebilen piksel sanatı dokulu düşük poligonlu bir ceylan. Mesh.from_glb modeli yükler, 1-3 tuşları yürüme, koşma ve yeme hareketlerini seçer. Ok tuşları görünümü döndürür; S, karşılaştırma için gölgelendirmeyi açıp kapatır.",
+            "uk": "Низькополігональна газель із піксельною текстурою, яку можна редагувати в Blockbench. Mesh.from_glb завантажує модель, а клавіші 1–3 перемикають ходьбу, біг і їжу. Стрілки повертають вид, S вмикає й вимикає затінення для порівняння."
           }
         },
         {
@@ -1531,18 +1531,18 @@
             "uk": "Платформна гра з 3D-зіткненнями"
           },
           "details": {
-            "en": "A mini 3D platformer where a capsule-collider player jumps across slopes and a moving platform toward a trigger goal.",
-            "cn": "拥有胶囊碰撞体的玩家在坡道和移动平台之间跳跃，向触发器终点前进的迷你 3D 平台游戏。",
-            "de": "Ein Mini-3D-Plattformspiel, in dem eine Spielfigur mit Kapsel-Collider über Rampen und eine bewegliche Plattform zu einem Trigger-Ziel springt.",
-            "es": "Un mini juego de plataformas 3D en el que un jugador con collider de cápsula salta entre rampas y una plataforma móvil hacia una meta trigger.",
-            "fr": "Un mini jeu de plateforme 3D où un joueur à collider capsule saute entre des pentes et une plateforme mobile vers un objectif trigger.",
-            "it": "Un mini gioco di piattaforma 3D in cui un giocatore con collider a capsula salta tra rampe e una piattaforma mobile verso un traguardo trigger.",
-            "ja": "カプセル形状のコライダーを持つプレイヤーが坂道や動く足場を跳び移り、トリガーのゴールを目指すミニ 3D アクションゲームです。",
-            "ko": "캡슐 콜라이더를 가진 플레이어가 경사면과 움직이는 발판을 뛰어넘어 트리거 골에 도달하는 미니 3D 플랫포머입니다.",
-            "pt": "Um mini jogo de plataforma 3D em que um jogador com collider de cápsula salta por rampas e uma plataforma móvel em direção a uma meta trigger.",
-            "ru": "Мини-платформер в 3D, где игрок с капсульным коллайдером прыгает по склонам и движущейся платформе к триггерной цели.",
-            "tr": "Kapsül collider'a sahip oyuncunun rampalar ve hareketli bir platform arasında zıplayarak trigger hedefe ilerlediği mini bir 3D platform oyunu.",
-            "uk": "Міні-платформер у 3D, де гравець із капсульним колайдером стрибає по схилах і рухомій платформі до тригерної цілі."
+            "en": "A mini 3D platformer where a bird jumps across slopes and a moving platform, collecting coins with trigger colliders.",
+            "cn": "小鸟在坡道和移动平台之间跳跃，通过触发器碰撞体收集金币的迷你 3D 平台游戏。",
+            "de": "Ein Mini-3D-Plattformspiel, in dem ein Vogel über Rampen und eine bewegliche Plattform springt und Münzen mit Trigger-Collidern einsammelt.",
+            "es": "Un mini juego de plataformas 3D en el que un pájaro salta entre rampas y una plataforma móvil, recogiendo monedas mediante colliders de tipo trigger.",
+            "fr": "Un mini jeu de plateforme 3D où un oiseau saute entre des pentes et une plateforme mobile, et ramasse des pièces grâce à des colliders déclencheurs.",
+            "it": "Un mini gioco di piattaforma 3D in cui un uccello salta tra rampe e una piattaforma mobile e raccoglie monete tramite collider trigger.",
+            "ja": "鳥が坂道や動く足場を跳び移り、トリガーのコライダーでコインを集めるミニ 3D アクションゲームです。",
+            "ko": "새가 경사면과 움직이는 발판을 뛰어넘으며 트리거 콜라이더로 동전을 모으는 미니 3D 플랫폼 게임입니다.",
+            "pt": "Um mini jogo de plataforma 3D em que um pássaro salta por rampas e uma plataforma móvel, recolhendo moedas com colliders do tipo trigger.",
+            "ru": "Мини-платформер в 3D, где птица прыгает по склонам и движущейся платформе и собирает монеты с помощью триггерных коллайдеров.",
+            "tr": "Bir kuşun rampalar ve hareketli bir platform arasında zıplayıp tetikleyici collider'larla paraları topladığı mini bir 3D platform oyunu.",
+            "uk": "Міні-платформер у 3D, де птах стрибає по схилах і рухомій платформі та збирає монети за допомогою тригерних колайдерів."
           }
         },
         {
@@ -1564,18 +1564,18 @@
             "uk": "Симуляція 3D-фізики"
           },
           "details": {
-            "en": "A physics demo where a rolling capsule tumbles down a ramp into a stack of barrels, using colliders with mass, restitution, and friction.",
-            "cn": "滚动的胶囊沿坡道冲入木桶堆的物理演示，使用带有质量、弹性和摩擦的碰撞体。",
-            "de": "Eine Physik-Demo, in der eine rollende Kapsel über eine Rampe in einen Stapel Fässer kracht, mit Collidern, die Masse, Rückprallkoeffizient und Reibung nutzen.",
-            "es": "Una demo de física en la que una cápsula rodante baja por una rampa y choca contra una pila de barriles, usando colliders con masa, rebote y fricción.",
-            "fr": "Une démo de physique où une capsule roulante dévale une rampe et percute une pile de tonneaux, avec des colliders dotés de masse, rebond et friction.",
-            "it": "Una demo di fisica in cui una capsula rotolante scende da una rampa e travolge una pila di barili, usando collider con massa, rimbalzo e attrito.",
-            "ja": "質量・反発係数・摩擦係数を設定したコライダーを使い、転がるカプセルが坂を下って樽の山に突っ込む物理デモです。",
-            "ko": "질량, 탄성, 마찰을 설정한 콜라이더를 사용하여, 구르는 캡슐이 경사로를 내려가 쌓인 나무통 더미에 부딪히는 물리 데모입니다.",
-            "pt": "Uma demo de física em que uma cápsula rolante desce uma rampa e derruba uma pilha de barris, usando colliders com massa, elasticidade e atrito.",
-            "ru": "Демо физики, в котором катящаяся капсула скатывается по рампе и сбивает штабель бочек, используя коллайдеры с массой, упругостью и трением.",
-            "tr": "Kütle, sekme ve sürtünmeye sahip collider'larla, yuvarlanan bir kapsülün rampadan inip fıçı yığınına çarptığı bir fizik demosu.",
-            "uk": "Демо фізики, у якому капсула, що котиться, з'їжджає рампою та збиває штабель бочок, використовуючи колайдери з масою, пружністю та тертям."
+            "en": "An asset-free physics playground with fixed platforms at different heights, rotating paddles, block piles, a tower and a collapsible bridge. Orbit the viewpoint, then repeatedly fire spheres, rugby balls and cubes to bring down structures from different directions.",
+            "cn": "无需外部素材的物理游乐场，将不同高度的固定平台与旋转桨叶、积木堆、高塔及可坍塌的桥梁组合在一起。旋转视角，连续发射球体、橄榄球和立方体，从不同方向击垮结构。",
+            "de": "Ein Physikspielplatz ohne externe Assets mit festen Plattformen auf verschiedenen Höhen, rotierenden Armen, Blockstapeln, einem Turm und einer einstürzenden Brücke. Drehen Sie die Ansicht und feuern Sie wiederholt Kugeln, Rugbybälle und Würfel ab, um die Bauwerke aus verschiedenen Richtungen zum Einsturz zu bringen.",
+            "es": "Un escenario de física sin recursos externos, con plataformas fijas a distintas alturas, paletas giratorias, pilas de bloques, una torre y un puente que puede derrumbarse. Gire la vista, y dispare repetidamente esferas, balones de rugby y cubos para derribar las estructuras desde distintas direcciones.",
+            "fr": "Un terrain de jeu physique sans ressources externes, avec des plateformes fixes à différentes hauteurs, des pales tournantes, des piles de blocs, une tour et une passerelle qui peut s’effondrer. Faites pivoter la vue, puis lancez à répétition des sphères, ballons de rugby et cubes pour faire tomber les structures depuis différentes directions.",
+            "it": "Un parco di fisica senza risorse esterne, con piattaforme fisse a diverse altezze, pale rotanti, pile di blocchi, una torre e un ponte che può crollare. Ruotare la vista, quindi lanciare ripetutamente sfere, palloni da rugby e cubi per abbattere le strutture da diverse direzioni.",
+            "ja": "外部アセットを使わず、高さの異なる固定の足場に、回転羽根、ブロックの山、塔、崩せる橋を組み合わせた物理デモです。視点を上下左右に回転させ、球・ラグビーボール・立方体を繰り返し発射して、様々な方向から構造を崩せます。",
+            "ko": "외부 에셋 없이 서로 다른 높이의 고정 발판에 회전 날개, 블록 더미, 탑, 무너뜨릴 수 있는 다리를 조합한 물리 놀이터입니다. 시점을 회전하며 구, 럭비공, 정육면체를 연속 발사해 여러 방향에서 구조물을 무너뜨릴 수 있습니다.",
+            "pt": "Um playground de física sem recursos externos, com plataformas fixas em diferentes alturas, pás giratórias, pilhas de blocos, uma torre e uma ponte que pode desabar. Gire a vista e lance repetidamente esferas, bolas de rúgbi e cubos para derrubar as estruturas de diferentes direções.",
+            "ru": "Физическая игровая площадка без внешних ресурсов: неподвижные платформы на разных высотах, вращающиеся лопасти, стопки блоков, башня и обрушивающийся мост. Вращайте обзор, многократно запускайте сферы, мячи для регби и кубы, чтобы разрушать конструкции с разных сторон.",
+            "tr": "Harici varlık kullanmayan; farklı yüksekliklerde sabit platformlar, döner kanatlar, blok yığınları, bir kule ve yıkılabilen bir köprü içeren bir fizik oyun alanı. Görüşü döndürün; farklı yönlerden yapıları yıkmak için art arda küreler, ragbi topları ve küpler fırlatın.",
+            "uk": "Фізичний ігровий майданчик без зовнішніх ресурсів: нерухомі платформи на різних висотах, обертові лопаті, стоси блоків, вежа й міст, який можна обвалити. Обертайте огляд, багаторазово запускайте сфери, м’ячі для регбі та куби, щоб руйнувати конструкції з різних боків."
           }
         }
       ]

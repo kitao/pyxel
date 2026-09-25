@@ -970,7 +970,8 @@ impl Node {
         let any = slf.into_pyobject(py)?.into_any();
         traverse_update(&any)?;
         traverse_motion_players(&any)?;
-        pyxel::cube::Scene::integrate_motion(&root_inner);
+        let frame_seconds = pyxel::frame_seconds();
+        pyxel::cube::Scene::integrate_motion(&root_inner, frame_seconds);
 
         let pairs = pyxel::cube::Scene::detect_contacts(&root_inner);
         if !pairs.is_empty() {

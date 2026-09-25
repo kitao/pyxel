@@ -74,6 +74,64 @@ impl Primitive {
         clone_scaled(unit_sphere_textured(), radius, radius, radius)
     }
 
+    pub fn capsule(height: f32, radius: f32) -> RcPrimitive {
+        let height = height.abs();
+        let radius = radius.max(0.0);
+        let mut positions = Vec::new();
+        let mut uvs = Vec::new();
+        let mut indices = Vec::new();
+
+        // Duplicate the equator to join the hemispheres with a straight section.
+        for (row, degrees) in [-90.0_f32, -45.0, 0.0, 0.0, 45.0, 90.0].iter().enumerate() {
+            let angle = degrees.to_radians();
+            let y = radius * angle.sin() + if row < 3 { -height / 2.0 } else { height / 2.0 };
+            let ring_radius = if row == 0 || row == 5 {
+                0.0
+            } else {
+                radius * angle.cos()
+            };
+            let total_height = height + 2.0 * radius;
+            let v = if total_height > 0.0 {
+                (total_height / 2.0 - y) / total_height
+            } else {
+                0.0
+            };
+            for column in 0..=12 {
+                // Close the texture seam at exactly the same position.
+                let longitude = ((column % 12) as f32 * 30.0).to_radians();
+                positions.extend([
+                    ring_radius * longitude.cos(),
+                    y,
+                    ring_radius * longitude.sin(),
+                ]);
+                uvs.extend([column as f32 / 12.0, v]);
+            }
+        }
+
+        for row in 0..5 {
+            if row == 2 && height == 0.0 {
+                continue;
+            }
+            for column in 0..12 {
+                let a = row * 13 + column;
+                if row != 0 {
+                    indices.extend([a, a + 13, a + 1]);
+                }
+                if row != 4 {
+                    indices.extend([a + 1, a + 13, a + 14]);
+                }
+            }
+        }
+
+        new_rc_type!(make_primitive(
+            MODE_TRIANGLES,
+            CULL_BACK,
+            positions,
+            indices,
+            uvs
+        ))
+    }
+
     // Per-face flat normals: one (nx, ny, nz) per triangle, matching the
     // layout draw::prim consumes. Non-triangle topology and empty positions
     // yield empty output; an out-of-range index yields a zero entry. Empty

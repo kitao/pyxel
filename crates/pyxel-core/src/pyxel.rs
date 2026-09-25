@@ -51,6 +51,16 @@ pub fn pyxel() -> RefMut<'static, Pyxel> {
     })
 }
 
+pub fn frame_seconds() -> f32 {
+    // Scene updates also work before a window or headless engine is initialized.
+    PYXEL.with(|instance| {
+        instance
+            .borrow()
+            .as_ref()
+            .map_or(1.0 / DEFAULT_FPS as f32, Pyxel::frame_seconds)
+    })
+}
+
 fn set_pyxel(instance: Pyxel) {
     // The leaked RefCell keeps the owner address stable through Python module
     // cleanup; replace its value only when the next initialization is ready.

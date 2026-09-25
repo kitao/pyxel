@@ -318,7 +318,14 @@ impl CachedBody {
     }
 
     fn matches_motion(&self, velocity: Vec3, spin: Vec3) -> bool {
-        vec_len_sq(vec_sub(velocity, self.velocity)) < self.tolerance * self.tolerance
+        // Sleeping removes the previous residual velocity, so repeated caller
+        // acceleration is applied to zero on the next update.
+        let expected_velocity = if self.quiet_frames >= 20 {
+            self.acceleration
+        } else {
+            self.velocity
+        };
+        vec_len_sq(vec_sub(velocity, expected_velocity)) < self.tolerance * self.tolerance
             && vec_len_sq(vec_sub(spin, self.spin)) < 1e-8
     }
 }
@@ -333,6 +340,7 @@ struct CachedContact {
 
 struct ContactImpulse {
     pair: usize,
+    group: usize,
     a: usize,
     b: usize,
     normal: Vec3,
@@ -387,7 +395,7 @@ impl Scene {
 
     // Motion integration: walks the active subtree and applies each
     // analytic collider's velocity / angular_velocity to its node transform.
-    pub fn integrate_motion(scene_root: &RcNode) {
+    pub fn integrate_motion(scene_root: &RcNode, frame_seconds: f32) {
         let parent = Node::parent(scene_root);
         if parent
             .as_ref()
@@ -405,7 +413,13 @@ impl Scene {
                 (body.node.as_ptr(), body)
             })
             .collect();
-        Self::integrate_motion_recursive(scene_root, parent_world.as_ref(), &mut previous);
+        // Geometry uses centimeters; gravity is specified in meters per second squared.
+        Self::integrate_motion_recursive(
+            scene_root,
+            parent_world.as_ref(),
+            &mut previous,
+            frame_seconds,
+        );
         rc_mut!(scene_root).contact_cache = cache;
     }
 
@@ -413,6 +427,7 @@ impl Scene {
         node: &RcNode,
         parent_world: Option<&Mat4>,
         previous: &mut HashMap<*const RefCell<Node>, &mut CachedBody>,
+        frame_seconds: f32,
     ) {
         if !rc_ref!(node).active {
             return;
@@ -420,7 +435,25 @@ impl Scene {
 
         let coll_opt = rc_ref!(node).collider.clone();
         if let Some(coll_rc) = coll_opt {
-            let coll = rc_ref!(&coll_rc);
+            let mut coll = rc_mut!(&coll_rc);
+            if coll.mesh.is_none() && coll.mass > 0.0 {
+                let linear = (1.0 - coll.linear_damp.max(0.0) * frame_seconds).max(0.0);
+                let angular = (1.0 - coll.angular_damp.max(0.0) * frame_seconds).max(0.0);
+                let mut velocity = vec_mul(*rc_ref!(&coll.velocity), linear);
+                let spin = vec_mul(*rc_ref!(&coll.angular_velocity), angular);
+                let gravity_step = 100.0 * frame_seconds * frame_seconds;
+                let direction = *rc_ref!(&coll.gravity_direction);
+                let length = vec_len(direction);
+                if length > 0.0 {
+                    velocity = vec_add(
+                        velocity,
+                        vec_mul(direction, coll.gravity * gravity_step / length),
+                    );
+                }
+                // Vec3 values can be shared with callers and constants; replace their handles.
+                coll.velocity = Vec3::new(velocity.x, velocity.y, velocity.z);
+                coll.angular_velocity = Vec3::new(spin.x, spin.y, spin.z);
+            }
             let world_velocity = Self::effective_linear_velocity(parent_world, &coll);
             let angular_velocity = if coll.mesh.is_none() {
                 *rc_ref!(&coll.angular_velocity)
@@ -502,7 +535,7 @@ impl Scene {
         let world = parent_world.map_or(local, |parent| parent.mul_mat_value(&local));
         let node_ref = rc_ref!(node);
         for child in &node_ref.children {
-            Self::integrate_motion_recursive(child, Some(&world), previous);
+            Self::integrate_motion_recursive(child, Some(&world), previous, frame_seconds);
         }
     }
 
@@ -947,9 +980,12 @@ impl Scene {
             poses_valid[i] = old_bodies[i].is_some_and(|old| {
                 old.material == materials[i] && old.matches_integrated_pose(entry)
             });
+            // Awake bodies settle according to their solved motion. Only an
+            // already sleeping body must preserve its input motion to stay asleep.
             valid[i] = poses_valid[i]
-                && old_bodies[i]
-                    .is_some_and(|old| old.matches_motion(bodies[i].velocity, bodies[i].spin));
+                && old_bodies[i].is_some_and(|old| {
+                    old.quiet_frames < 20 || old.matches_motion(bodies[i].velocity, bodies[i].spin)
+                });
             if bodies[i].inverse_mass > 0.0 {
                 quiet[groups[i]] = quiet[groups[i]].min(if valid[i] && entry.margin > 0.0 {
                     old_bodies[i].unwrap().quiet_frames
@@ -1070,7 +1106,6 @@ impl Scene {
             };
             let friction = ((rc_ref!(&a.collider).friction + rc_ref!(&b.collider).friction) * 0.5)
                 .clamp(0.0, 1.0);
-            let mut matched = false;
             for point in points {
                 let anchors = [
                     a.inverse.mul_vec_value(&point),
@@ -1116,7 +1151,6 @@ impl Scene {
                             return zero;
                         }
                         reused[index] = true;
-                        matched = true;
                         vec_mul(impulse, ratio)
                     });
                 let normal_impulse = vec_dot(warm, constraint.normal).max(0.0);
@@ -1186,6 +1220,11 @@ impl Scene {
                 };
                 impulses.push(ContactImpulse {
                     pair: constraint.pair,
+                    group: groups[if entries[constraint.a].immovable {
+                        constraint.b
+                    } else {
+                        constraint.a
+                    }],
                     a: constraint.a,
                     b: constraint.b,
                     normal: constraint.normal,
@@ -1211,7 +1250,12 @@ impl Scene {
                     velocity_change: std::array::from_fn(|i| vec_len(response(i))),
                 });
             }
-            if !matched {
+            // Contact points can change while the same faces stay at rest.
+            // Wake on a new pair or normal, not on a missed warm-start anchor.
+            let persistent = old_range
+                .clone()
+                .any(|i| vec_dot(previous[i].normal, constraint.normal) > 0.99);
+            if !persistent {
                 quiet[groups[constraint.a]] = 0;
                 quiet[groups[constraint.b]] = 0;
             }
@@ -1222,21 +1266,35 @@ impl Scene {
             }
         }
 
-        // Reuse the preceding support forces as the starting guess. The solver
-        // can subtract them again; this does not apply anything to user nodes.
+        // Disconnected groups converge independently; one slow stack must not
+        // keep solving unrelated contacts. Static partners never receive impulses.
+        let mut active = vec![false; entries.len()];
         for contact in &impulses {
-            let impulse = vec_add(
-                vec_mul(contact.normal, contact.normal_impulse),
-                contact.tangent_impulse,
-            );
-            bodies[contact.a].apply_impulse(contact.ra, impulse);
-            bodies[contact.b].apply_impulse(contact.rb, vec_mul(impulse, -1.0));
+            active[contact.group] = quiet[contact.group] < 20 || !supported[contact.group];
         }
-
-        // Accumulate impulses at material contact points. Translation and spin
-        // share the same impulse, so neither can gain energy independently.
-        for iteration in 0..128 {
-            let mut largest_change = 0.0_f32;
+        let mut changes = vec![0.0_f32; entries.len()];
+        // Periodically reconstruct motion from accumulated impulses to bound
+        // rounding drift without repeating the full warm start on every sweep.
+        for iteration in 0..512 {
+            if iteration % 8 == 0 {
+                for (i, body) in bodies.iter_mut().enumerate() {
+                    if iteration == 0 || active[groups[i]] {
+                        (body.velocity, body.spin) = initial_velocities[i];
+                    }
+                }
+                for contact in &impulses {
+                    if iteration > 0 && !active[contact.group] {
+                        continue;
+                    }
+                    let impulse = vec_add(
+                        vec_mul(contact.normal, contact.normal_impulse),
+                        contact.tangent_impulse,
+                    );
+                    bodies[contact.a].apply_impulse(contact.ra, impulse);
+                    bodies[contact.b].apply_impulse(contact.rb, vec_mul(impulse, -1.0));
+                }
+            }
+            changes.fill(0.0);
             for step in 0..impulses.len() {
                 let index = if iteration % 2 == 0 {
                     step
@@ -1244,12 +1302,8 @@ impl Scene {
                     impulses.len() - 1 - step
                 };
                 let contact = &mut impulses[index];
-                let group = if bodies[contact.a].inverse_mass > 0.0 {
-                    groups[contact.a]
-                } else {
-                    groups[contact.b]
-                };
-                if quiet[group] >= 20 && supported[group] {
+                let group = contact.group;
+                if !active[group] {
                     continue;
                 }
                 let relative = vec_sub(
@@ -1274,7 +1328,7 @@ impl Scene {
                     vec_add(bodies[contact.a].spin, vec_mul(contact.angular_a[0], delta));
                 bodies[contact.b].spin =
                     vec_sub(bodies[contact.b].spin, vec_mul(contact.angular_b[0], delta));
-                largest_change = largest_change.max(delta.abs() * contact.velocity_change[0]);
+                changes[group] = changes[group].max(delta.abs() * contact.velocity_change[0]);
 
                 let relative = vec_sub(
                     bodies[contact.a].point_velocity(contact.ra),
@@ -1319,17 +1373,22 @@ impl Scene {
                         vec_mul(contact.angular_b[2], y),
                     ),
                 );
-                largest_change = largest_change.max(
+                changes[group] = changes[group].max(
                     x.abs() * contact.velocity_change[1] + y.abs() * contact.velocity_change[2],
                 );
             }
-            if largest_change < 1e-6 {
+            for (active, change) in active.iter_mut().zip(&changes) {
+                *active &= *change >= 1e-6;
+            }
+            if !active.iter().any(|active| *active) {
                 break;
             }
         }
 
         for (i, body) in bodies.iter().enumerate() {
-            if body.inverse_mass == 0.0 {
+            // Sleeping groups skipped the solve; cached impulses are not a new
+            // estimate of their motion.
+            if body.inverse_mass == 0.0 || (quiet[groups[i]] >= 20 && supported[groups[i]]) {
                 continue;
             }
             let tolerance = entries[i].margin;
@@ -1392,7 +1451,11 @@ impl Scene {
                 node: std::rc::Rc::downgrade(&entry.node),
                 world: entry.world,
                 velocity: initial_velocities[i].0,
-                spin: initial_velocities[i].1,
+                spin: if resting[i] {
+                    zero
+                } else {
+                    initial_velocities[i].1
+                },
                 output_velocity: if resting[i] { zero } else { bodies[i].velocity },
                 acceleration: old_bodies[i].map_or(zero, |old| {
                     vec_sub(initial_velocities[i].0, old.output_velocity)
@@ -5177,6 +5240,10 @@ mod tests {
             0.5,
             Vec3::zero(),
             Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         ));
         Node::add_child(&root, &ball_node);
 
@@ -5276,7 +5343,7 @@ mod tests {
                         let velocity = rc_ref!(&collider).velocity.clone();
                         rc_mut!(&velocity).y -= 0.01;
                     }
-                    Scene::integrate_motion(&root);
+                    Scene::integrate_motion(&root, 1.0 / 30.0);
                     let pairs = Scene::detect_contacts(&root);
                     // Solver passes must not become duplicate collision callbacks.
                     assert!(pairs.len() <= 4);
@@ -5331,7 +5398,7 @@ mod tests {
             let mut spin = rc_mut!(&spin);
             *spin = vec_mul(*spin, angular_damping);
         }
-        Scene::integrate_motion(root);
+        Scene::integrate_motion(root, 1.0 / 30.0);
         for pair in Scene::detect_contacts(root) {
             for (node, contact) in [
                 (&pair.node_a, &pair.contact_a),
@@ -5590,6 +5657,70 @@ mod tests {
     }
 
     #[test]
+    fn test_rounded_cross_stack_stays_at_rest_in_both_traversal_orders() {
+        for reverse in [false, true] {
+            let root = Node::new();
+            let floor = Node::new();
+            place_at(&floor, 0.0, -6.0, 0.0);
+            rc_mut!(&floor).collider =
+                Some(box_family_collider(Vec3::new(300.0, 12.0, 260.0), 0.0, 0.0));
+            Node::add_child(&root, &floor);
+
+            let mut bodies = Vec::new();
+            for level in 0..6 {
+                for offset in [-20.0, 0.0, 20.0] {
+                    let body = Node::new();
+                    let y = 10.0 + level as f32 * 20.0;
+                    if level % 2 == 0 {
+                        place_at(&body, 0.0, y, offset);
+                    } else {
+                        let translation = *rc_ref!(&Mat4::from_translation(&vec3(offset, y, 0.0)));
+                        let rotation = *rc_ref!(&Mat4::from_euler(&vec3(0.0, 90.0, 0.0)));
+                        rc_mut!(&body).transform = translation.mul_mat(&rotation);
+                    }
+                    let collider = box_family_collider(Vec3::new(58.0, 18.0, 18.0), 1.0, 1.0);
+                    rc_mut!(&collider).rolls = true;
+                    rc_mut!(&body).collider = Some(collider);
+                    bodies.push(body);
+                }
+            }
+            if reverse {
+                bodies.reverse();
+            }
+            for body in &bodies {
+                Node::add_child(&root, body);
+            }
+            let starts: Vec<_> = bodies
+                .iter()
+                .map(|body| Node::world_transform_value(body).pos_value())
+                .collect();
+
+            for _ in 0..600 {
+                advance_rigid_bodies(&root, &bodies);
+            }
+            for (body, start) in bodies.iter().zip(starts) {
+                // Settling stays within one twentieth of a beam's thickness.
+                let pos = Node::world_transform_value(body).pos_value();
+                assert!(
+                    vec_len(vec_sub(pos, start)) < 1.0,
+                    "reverse={reverse}, {pos:?}"
+                );
+            }
+            let resting: Vec<_> = bodies.iter().map(Node::world_transform_value).collect();
+            for _ in 0..2400 {
+                advance_rigid_bodies(&root, &bodies);
+            }
+            for (body, pose) in bodies.iter().zip(resting) {
+                assert_eq!(
+                    Node::world_transform_value(body).data,
+                    pose.data,
+                    "reverse={reverse}"
+                );
+            }
+        }
+    }
+
+    #[test]
     fn test_resting_stack_wakes_on_motion_impact_and_lost_support() {
         let root = Node::new();
         let floor = Node::new();
@@ -5718,7 +5849,7 @@ mod tests {
                     *rc_mut!(&velocity) = damped_velocity;
                     *rc_mut!(&spin) = damped_spin;
                 }
-                Scene::integrate_motion(&root);
+                Scene::integrate_motion(&root, 1.0 / 30.0);
                 for pair in Scene::detect_contacts(&root) {
                     for (node, contact) in [
                         (&pair.node_a, &pair.contact_a),
@@ -5854,6 +5985,10 @@ mod tests {
             0.5,
             crate::cube::Vec3::zero(),
             crate::cube::Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         )
     }
 
@@ -5869,6 +6004,10 @@ mod tests {
             0.5,
             crate::cube::Vec3::zero(),
             crate::cube::Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         )
     }
 
@@ -5889,6 +6028,10 @@ mod tests {
             0.5,
             crate::cube::Vec3::zero(),
             crate::cube::Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         )
     }
 
@@ -6001,7 +6144,7 @@ mod tests {
                                     Node::add_child(&root, node);
                                 }
 
-                                Scene::integrate_motion(&root);
+                                Scene::integrate_motion(&root, 1.0 / 30.0);
                                 let contacts = Scene::detect_contacts(&root);
                                 assert_eq!(contacts.len(), 1);
                                 let pair = &contacts[0];
@@ -6090,7 +6233,7 @@ mod tests {
                             Node::add_child(&root, node);
                         }
 
-                        Scene::integrate_motion(&root);
+                        Scene::integrate_motion(&root, 1.0 / 30.0);
                         let contacts = Scene::detect_contacts(&root);
                         assert_eq!(
                             contacts.len(),
@@ -6168,7 +6311,7 @@ mod tests {
         Node::add_child(&root, &ball);
         Node::add_child(&root, &wall);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6194,7 +6337,7 @@ mod tests {
         Node::add_child(&root, &ball);
         Node::add_child(&root, &wall);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6233,7 +6376,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &wall);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6255,7 +6398,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &wall);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6368,7 +6511,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &post);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6390,7 +6533,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &floor);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6412,7 +6555,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &post);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6434,7 +6577,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &post);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6456,7 +6599,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &wall);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6478,7 +6621,7 @@ mod tests {
         Node::add_child(&root, &moving);
         Node::add_child(&root, &wall);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_a);
@@ -6496,7 +6639,7 @@ mod tests {
         place_at(&moving, 0.0, 1.5, 0.0);
         Node::add_child(&root, &moving);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
@@ -6514,7 +6657,7 @@ mod tests {
         place_at(&moving, 0.0, 1.5, 0.0);
         Node::add_child(&root, &moving);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
@@ -6558,7 +6701,7 @@ mod tests {
         place_at(&body, -5.4078255, 56.25569, -38.889828);
         Node::add_child(&root, &body);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let mut position = Node::world_transform_value(&body).pos_value();
         for pair in Scene::detect_contacts(&root) {
             let contact = rc_ref!(&pair.contact_b);
@@ -6589,7 +6732,7 @@ mod tests {
                     rc_mut!(&root).children.reverse();
                 }
 
-                Scene::integrate_motion(&root);
+                Scene::integrate_motion(&root, 1.0 / 30.0);
                 let mut position = Node::world_transform_value(&body).pos_value();
                 for pair in Scene::detect_contacts(&root) {
                     let contact = if std::rc::Rc::ptr_eq(&pair.node_a, &body) {
@@ -6632,7 +6775,7 @@ mod tests {
                 rc_mut!(&body).collider = Some(collider);
                 place_at(&body, 0.0, start_y, 0.0);
                 Node::add_child(&root, &body);
-                Scene::integrate_motion(&root);
+                Scene::integrate_motion(&root, 1.0 / 30.0);
 
                 let pairs = Scene::detect_contacts(&root);
                 assert_eq!(pairs.len(), 1, "size={size:?}, end_y={end_y}");
@@ -6657,7 +6800,7 @@ mod tests {
         place_at(&moving, 0.0, 1.5, 0.0);
         Node::add_child(&root, &moving);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
     }
@@ -6672,7 +6815,7 @@ mod tests {
         place_at(&moving, 5.1, 1.5, 0.0);
         Node::add_child(&root, &moving);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
@@ -6691,7 +6834,7 @@ mod tests {
         place_at(&moving, 0.0, 1.5, 0.0);
         Node::add_child(&root, &moving);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
@@ -6709,7 +6852,7 @@ mod tests {
         place_rotated_z_at(&moving, 0.0, 0.0, -2.0, -90.0);
         Node::add_child(&root, &moving);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
@@ -6727,7 +6870,7 @@ mod tests {
         place_at(&moving, 0.0, 0.0, -2.0);
         Node::add_child(&root, &moving);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert_eq!(pairs.len(), 1);
         let contact = rc_ref!(&pairs[0].contact_b);
@@ -7454,6 +7597,10 @@ mod tests {
             0.5,
             Vec3::zero(),
             Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         ));
         Node::add_child(&root, &floor);
         root
@@ -7491,6 +7638,10 @@ mod tests {
             0.5,
             Vec3::zero(),
             Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         ));
         Node::add_child(&root, &wall);
         root
@@ -7528,6 +7679,10 @@ mod tests {
             0.5,
             Vec3::zero(),
             Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         ));
         Node::add_child(&root, &terrain);
         (root, terrain)
@@ -8119,7 +8274,7 @@ mod tests {
         rc_mut!(&root).active = false;
         Node::add_child(&root, &n);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pos_rc = rc_ref!(&n).transform.clone();
         let pos = rc_ref!(&pos_rc).pos();
         assert_eq!(rc_ref!(&pos).x, 0.0, "inactive subtree should not move");
@@ -8147,7 +8302,7 @@ mod tests {
         rc_mut!(&collider).velocity = Vec3::new(1.0, 2.0, 3.0);
         rc_mut!(&collider).angular_velocity = Vec3::new(0.0, 45.0, 0.0);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let actual_rc = rc_ref!(&terrain).transform.clone();
         let actual = rc_ref!(&actual_rc);
         assert_eq!(actual.data, initial.data);
@@ -8166,7 +8321,7 @@ mod tests {
         rc_mut!(&collider).angular_velocity = Vec3::new(0.0, 90.0, 0.0);
         rc_mut!(&node).collider = Some(collider);
 
-        Scene::integrate_motion(&node);
+        Scene::integrate_motion(&node, 1.0 / 30.0);
 
         let translation = Mat4::from_translation(&Vec3 {
             x: 2.0,
@@ -8210,7 +8365,7 @@ mod tests {
         Node::add_child(&root, &parent);
         Node::add_child(&parent, &child);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let world = Node::world_transform_value(&child);
         let pos = world.pos_value();
         assert!((pos.x - 1.0).abs() < 1e-6, "pos.x = {}", pos.x);
@@ -8234,7 +8389,7 @@ mod tests {
         Node::add_child(&root, &parent);
         Node::add_child(&parent, &child);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pos = Node::world_transform_value(&child).pos_value();
         assert!((pos.x - 1.0).abs() < 1e-6, "pos.x = {}", pos.x);
         assert!((pos.y - 1.0).abs() < 1e-6, "pos.y = {}", pos.y);
@@ -8258,7 +8413,7 @@ mod tests {
         rc_mut!(&child).collider = Some(collider);
         Node::add_child(&parent, &child);
 
-        Scene::integrate_motion(&child);
+        Scene::integrate_motion(&child, 1.0 / 30.0);
         let pos = Node::world_transform_value(&child).pos_value();
         assert!((pos.x - 1.0).abs() < 1e-6, "pos.x = {}", pos.x);
         assert!(pos.y.abs() < 1e-6, "pos.y = {}", pos.y);
@@ -8282,7 +8437,7 @@ mod tests {
         Node::add_child(&root, &parent);
         Node::add_child(&parent, &child);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let local_rc = rc_ref!(&child).transform.clone();
         let local = rc_ref!(&local_rc);
         assert_eq!(
@@ -8304,7 +8459,7 @@ mod tests {
         rc_mut!(&collider).velocity = Vec3::new(1.0, 2.0, 3.0);
         rc_mut!(&node).collider = Some(collider);
 
-        Scene::integrate_motion(&node);
+        Scene::integrate_motion(&node, 1.0 / 30.0);
         let pos = Node::world_transform_value(&node).pos_value();
         assert_eq!(
             pos,
@@ -8336,7 +8491,7 @@ mod tests {
         Node::add_child(&parent, &child);
         Node::add_child(&root, &wall);
 
-        Scene::integrate_motion(&root);
+        Scene::integrate_motion(&root, 1.0 / 30.0);
         let pairs = Scene::detect_contacts(&root);
         assert!(pairs.is_empty());
     }

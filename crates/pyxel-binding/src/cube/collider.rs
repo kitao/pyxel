@@ -20,6 +20,10 @@ impl Collider {
         friction=0.5,
         velocity=None,
         angular_velocity=None,
+        gravity=9.8,
+        gravity_direction=None,
+        linear_damp=0.1,
+        angular_damp=0.1,
     ))]
     fn new(
         size: Option<PyRef<'_, Vec3>>,
@@ -32,6 +36,10 @@ impl Collider {
         friction: f32,
         velocity: Option<PyRef<'_, Vec3>>,
         angular_velocity: Option<PyRef<'_, Vec3>>,
+        gravity: f32,
+        gravity_direction: Option<PyRef<'_, Vec3>>,
+        linear_damp: f32,
+        angular_damp: f32,
     ) -> PyResult<Self> {
         validate_mass(mass)?;
         let size_rc = size
@@ -44,6 +52,10 @@ impl Collider {
         let angular_velocity_rc = angular_velocity
             .as_ref()
             .map_or_else(pyxel::cube::Vec3::zero, |v| v.inner.clone());
+        let gravity_direction_rc = gravity_direction.as_ref().map_or_else(
+            || pyxel::cube::Vec3::new(0.0, -1.0, 0.0),
+            |v| v.inner.clone(),
+        );
         Ok(Self::wrap(pyxel::cube::Collider::new(
             size_rc,
             radius,
@@ -55,6 +67,10 @@ impl Collider {
             friction,
             velocity_rc,
             angular_velocity_rc,
+            gravity,
+            gravity_direction_rc,
+            linear_damp,
+            angular_damp,
         )))
     }
 
@@ -163,6 +179,46 @@ impl Collider {
     #[setter]
     fn set_angular_velocity(&self, v: PyRef<'_, Vec3>) {
         self.inner_mut().angular_velocity = v.inner.clone();
+    }
+
+    #[getter]
+    fn gravity(&self) -> f32 {
+        self.inner_ref().gravity
+    }
+
+    #[setter]
+    fn set_gravity(&self, v: f32) {
+        self.inner_mut().gravity = v;
+    }
+
+    #[getter]
+    fn gravity_direction(&self) -> Vec3 {
+        Vec3::wrap(self.inner_ref().gravity_direction.clone())
+    }
+
+    #[setter]
+    fn set_gravity_direction(&self, v: PyRef<'_, Vec3>) {
+        self.inner_mut().gravity_direction = v.inner.clone();
+    }
+
+    #[getter]
+    fn linear_damp(&self) -> f32 {
+        self.inner_ref().linear_damp
+    }
+
+    #[setter]
+    fn set_linear_damp(&self, v: f32) {
+        self.inner_mut().linear_damp = v;
+    }
+
+    #[getter]
+    fn angular_damp(&self) -> f32 {
+        self.inner_ref().angular_damp
+    }
+
+    #[setter]
+    fn set_angular_damp(&self, v: f32) {
+        self.inner_mut().angular_damp = v;
     }
 
     fn __repr__(&self) -> String {
