@@ -43,6 +43,62 @@ class TestUpdate:
         assert body.calls == 1
         assert body.transform.pos == Vec3.RIGHT
 
+    @pytest.mark.parametrize("scale", [(-1, 1, 1), (1, -1, 1), (1, 1, -1)])
+    def test_canceled_parent_reflections_preserve_contact_response(self, scale):
+        class Body(Node):
+            def __init__(self):
+                super().__init__()
+                self.impulses = []
+
+            def on_collide(self, other, contact):
+                self.impulses.append(
+                    (*contact.delta_velocity, *contact.delta_angular_velocity)
+                )
+
+        def simulate(reflect):
+            root, parent, floor, body = Node(), Node(), Node(), Body()
+            root.add_child(parent)
+            root.add_child(floor)
+            parent.add_child(body)
+            parent.transform = reflect
+
+            world = Mat4.from_translation(Vec3(0, 1.499, 0)) * Mat4.from_euler(
+                Vec3(90, 0, 0)
+            )
+            body.transform = reflect * world
+            body.collider = Collider(
+                radius=0.5,
+                mass=1,
+                rolls=True,
+                friction=1,
+                velocity=Vec3(0, -1, 0),
+                angular_velocity=Vec3(0, 10, 0),
+                gravity=0,
+                linear_damp=0,
+                angular_damp=0,
+            )
+
+            floor.transform = Mat4.from_translation(Vec3(0, -1, 0))
+            floor.collider = Collider(size=Vec3(100, 2, 100), mass=0, friction=1)
+
+            root.update()
+            return body
+
+        plain = simulate(Mat4.IDENTITY)
+        mirrored = simulate(Mat4.from_scale(Vec3(*scale)))
+        assert plain.impulses and any(plain.impulses[0])
+        assert len(mirrored.impulses) == len(plain.impulses)
+        for actual, expected in zip(mirrored.impulses, plain.impulses):
+            assert actual == pytest.approx(expected, abs=1e-6)
+        for row in range(4):
+            for col in range(4):
+                assert mirrored.world_transform[row, col] == pytest.approx(
+                    plain.world_transform[row, col], abs=1e-6
+                )
+        assert tuple(mirrored.collider.angular_velocity) == pytest.approx(
+            tuple(plain.collider.angular_velocity), abs=1e-6
+        )
+
 
 class TestGravity:
     def test_defaults_and_independent_body_settings(self):

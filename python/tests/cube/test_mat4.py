@@ -75,6 +75,50 @@ class TestDecomposed:
         assert approx_v(m.scale, scale)
         assert approx_v(m.rot.to_euler(), rot_euler)
 
+    @pytest.mark.parametrize("sx", [-2, 2])
+    @pytest.mark.parametrize("sy", [-3, 3])
+    @pytest.mark.parametrize("sz", [-4, 4])
+    def test_signed_scale_decomposition_reconstructs_transform(self, sx, sy, sz):
+        m = Mat4.compose(
+            Vec3(1, 2, 3), Quat.from_euler(Vec3(23, -47, 71)), Vec3(sx, sy, sz)
+        )
+        expected_scale = Vec3(2, 3, -4 if sx * sy * sz < 0 else 4)
+
+        assert approx_v(m.scale, expected_scale)
+        assert isclose(m.rot.length(), 1, abs_tol=1e-6)
+        assert approx_m(Mat4.compose(m.pos, m.rot, m.scale), m)
+
+    @pytest.mark.parametrize(
+        "scale",
+        [
+            Vec3(0, -3, 4),
+            Vec3(-2, 0, 4),
+            Vec3(-2, 3, 0),
+            Vec3(0, 0, -4),
+            Vec3(0, -3, 0),
+            Vec3(-2, 0, 0),
+            Vec3(0, 0, 0),
+        ],
+    )
+    def test_zero_scale_preserves_lengths_and_returns_identity_rotation(self, scale):
+        m = Mat4.compose(Vec3(1, 2, 3), Quat.from_euler(Vec3(23, -47, 71)), scale)
+
+        assert approx_v(m.scale, Vec3(abs(scale.x), abs(scale.y), abs(scale.z)))
+        assert m.rot == Quat.IDENTITY
+
+    @pytest.mark.parametrize("magnitude", [1e-30, 1e-22, 1e-12, 1, 1e20, 1e30])
+    def test_decomposition_preserves_small_and_large_nonzero_scales(self, magnitude):
+        rot = Quat.from_euler(Vec3(23, -47, 71))
+        scale = Vec3(magnitude, 2 * magnitude, -3 * magnitude)
+        m = Mat4.compose(Vec3.ZERO, rot, scale)
+
+        for actual, expected in zip(
+            (m.scale.x, m.scale.y, m.scale.z), (scale.x, scale.y, scale.z)
+        ):
+            assert isclose(actual, expected, rel_tol=2e-6, abs_tol=0)
+        assert isclose(m.rot.length(), 1, abs_tol=1e-6)
+        assert approx_v(m.rot * Vec3(1, 2, 3), rot * Vec3(1, 2, 3))
+
 
 class TestOperators:
     def test_mul_invalid_type(self):

@@ -57,16 +57,34 @@ impl Mat4 {
     }
 
     pub(crate) fn scale_vec_value(&self) -> Vec3 {
-        let sx =
-            (self.data[0][0].powi(2) + self.data[1][0].powi(2) + self.data[2][0].powi(2)).sqrt();
-        let sy =
-            (self.data[0][1].powi(2) + self.data[1][1].powi(2) + self.data[2][1].powi(2)).sqrt();
-        let sz =
-            (self.data[0][2].powi(2) + self.data[1][2].powi(2) + self.data[2][2].powi(2)).sqrt();
+        // Wider intermediates keep finite f32 scales from underflowing or overflowing.
+        let mut columns = [[0.0_f64; 3]; 3];
+        let mut scale = [0.0; 3];
+        for i in 0..3 {
+            for j in 0..3 {
+                columns[i][j] = f64::from(self.data[j][i]);
+            }
+            // Preserve ordinary f32 rounding so existing physics trajectories stay stable.
+            let length_squared =
+                self.data[0][i].powi(2) + self.data[1][i].powi(2) + self.data[2][i].powi(2);
+            scale[i] = if length_squared.is_normal() {
+                length_squared.sqrt()
+            } else {
+                columns[i].iter().map(|v| v * v).sum::<f64>().sqrt() as f32
+            };
+        }
+
+        // Match GLB matrix decomposition: keep reflection in Z and a proper rotation.
+        let [x, y, z] = columns;
+        let det = x[0] * (y[1] * z[2] - y[2] * z[1]) - y[0] * (x[1] * z[2] - x[2] * z[1])
+            + z[0] * (x[1] * y[2] - x[2] * y[1]);
+        if det < 0.0 {
+            scale[2] = -scale[2];
+        }
         Vec3 {
-            x: sx,
-            y: sy,
-            z: sz,
+            x: scale[0],
+            y: scale[1],
+            z: scale[2],
         }
     }
 
@@ -76,11 +94,16 @@ impl Mat4 {
     }
 
     pub(crate) fn rot_value(&self) -> Quat {
-        // Strip scale from the upper-left 3x3 and derive the rotation Quat.
         let scale = self.scale_vec_value();
-        let sx = if scale.x.abs() > 1e-9 { scale.x } else { 1.0 };
-        let sy = if scale.y.abs() > 1e-9 { scale.y } else { 1.0 };
-        let sz = if scale.z.abs() > 1e-9 { scale.z } else { 1.0 };
+        if scale.x == 0.0 || scale.y == 0.0 || scale.z == 0.0 {
+            return Quat {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                w: 1.0,
+            };
+        }
+        let (sx, sy, sz) = (scale.x, scale.y, scale.z);
 
         let rot_only = Mat4 {
             data: [
