@@ -230,6 +230,8 @@ class Primitive:
     def box(size: Vec3 = Vec3.ONE) -> Primitive: ...
     @staticmethod
     def sphere(radius: float = 0.5) -> Primitive: ...
+    @staticmethod
+    def capsule(height: float = 1.0, radius: float = 0.5) -> Primitive: ...
     def compute_normals(self) -> None: ...
 
 class Mesh:
@@ -278,6 +280,10 @@ class Collider:
     friction: float
     velocity: Vec3
     angular_velocity: Vec3
+    gravity: float
+    gravity_direction: Vec3
+    linear_damp: float
+    angular_damp: float
 
     def __init__(
         self,
@@ -291,6 +297,10 @@ class Collider:
         friction: float = 0.5,
         velocity: Vec3 = Vec3.ZERO,
         angular_velocity: Vec3 = Vec3.ZERO,
+        gravity: float = 9.8,
+        gravity_direction: Vec3 = Vec3.DOWN,
+        linear_damp: float = 0.1,
+        angular_damp: float = 0.1,
     ) -> None: ...
 
 # Created by the collision pipeline and passed to on_collide.

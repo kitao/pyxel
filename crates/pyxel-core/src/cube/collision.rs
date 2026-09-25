@@ -2571,6 +2571,10 @@ mod tests {
             0.5,
             crate::cube::Vec3::zero(),
             crate::cube::Vec3::zero(),
+            0.0,
+            crate::cube::Vec3::zero(),
+            0.0,
+            0.0,
         );
         let transform_rc = crate::cube::Mat4::from_translation(&Vec3 {
             x: 1.0,

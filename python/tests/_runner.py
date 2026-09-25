@@ -40,7 +40,7 @@ def main():
 
 def _run_example(script_path, plan, out_dir):
     captured = {}
-    _patch_init()
+    _patch_init(fps=plan[0].get("fps", 1_000_000))
     pyxel.run = lambda update, draw: captured.update(update=update, draw=draw)
     pyxel.show = lambda: None
 
@@ -136,12 +136,12 @@ def _run_editor(editor, resource_file, out_dir):
 # Capture helpers
 
 
-def _patch_init(*, extra=None):
+def _patch_init(*, extra=None, fps=1_000_000):
     original_init = pyxel.init
 
     def patched(*args, **kwargs):
         kwargs["headless"] = True
-        kwargs["fps"] = 1_000_000
+        kwargs["fps"] = fps
 
         cwd = os.getcwd()
         original_init(*args, **kwargs)

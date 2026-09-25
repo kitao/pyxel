@@ -320,7 +320,7 @@ fn bench_scene_walk_contacts() {
     let root = make_scene_tree();
     let enemy_tags = vec![String::from("enemy")];
     run_bench("scene_walk_contacts", 1_500, |_| {
-        Scene::integrate_motion(black_box(&root));
+        Scene::integrate_motion(black_box(&root), 1.0 / 30.0);
         let pairs = Scene::detect_contacts(black_box(&root));
         let tagged = Node::find_by_tags(&root, &enemy_tags);
         black_box(pairs.len() + tagged.len());
@@ -359,6 +359,10 @@ fn bench_scene_pushback() {
                 0.5,
                 Vec3::new(0.0, if floor { 0.0 } else { -0.1 }, 0.0),
                 Vec3::zero(),
+                0.0,
+                Vec3::zero(),
+                0.0,
+                0.0,
             ));
             Node::add_child(&root, &node);
         }
@@ -626,6 +630,10 @@ fn make_scene_tree() -> RcNode {
                         0.5,
                         Vec3::zero(),
                         Vec3::zero(),
+                        0.0,
+                        Vec3::zero(),
+                        0.0,
+                        0.0,
                     ));
                 } else {
                     leaf_ref.tags = vec![String::from("decor")];

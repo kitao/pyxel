@@ -70,6 +70,10 @@ impl System {
 }
 
 impl Pyxel {
+    pub(crate) fn frame_seconds(&self) -> f32 {
+        1.0 / self.system.fps as f32
+    }
+
     // Main loop
 
     pub fn run<T: PyxelCallback>(mut callback: T) {

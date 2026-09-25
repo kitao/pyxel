@@ -888,6 +888,23 @@ Create a textured low-poly sphere Primitive with flat normals.
 prim = Primitive.sphere(0.5)
 ```
 
+### `Primitive.capsule(height=1.0, radius=0.5)` — class
+
+Create a textured low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.
+
+**Parameters:**
+
+- `height` (*float*) — Length of the central axis segment, as in Collider.size.y. The absolute value is used. Total height is abs(height) + 2 * max(radius, 0).
+- `radius` (*float*) — Radius of the hemispheres and straight section. Negative values are treated as 0.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.capsule(1.0, 0.5)
+```
+
 ### `Primitive.MODE_POINTS` — constant
 
 Draw each vertex as a point.
@@ -1090,7 +1107,7 @@ Clip length in Pyxel frames.
 
 ## Collider
 
-### `Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO)` — class
+### `Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO, gravity=9.8, gravity_direction=Vec3.DOWN, linear_damp=0.1, angular_damp=0.1)` — class
 
 Collision shape, physical coefficients, and motion state for a Node. It represents a sphere, capsule, or rounded box derived from size and radius, or static triangle terrain when mesh is set. Analytic shapes require a rigid effective world transform (translation and rotation only); terrain accepts a fixed invertible affine transform.
 
@@ -1106,6 +1123,10 @@ Collision shape, physical coefficients, and motion state for a Node. It represen
 - `friction` (*float*) — Friction. The average of the two contacting values is used. Defaults to 0.5.
 - `velocity` (*Vec3*) — World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. Defaults to Vec3.ZERO.
 - `angular_velocity` (*Vec3*) — Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular. Defaults to Vec3.ZERO.
+- `gravity` (*float*) — Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.
+- `gravity_direction` (*Vec3*) — World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.
+- `linear_damp` (*float*) — Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
+- `angular_damp` (*float*) — Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
 
 **Example:**
 
@@ -1175,6 +1196,30 @@ World-space displacement applied to a non-mesh collider every update. If the par
 Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular.
 
 - **Type:** `Vec3`
+
+### `gravity` — variable
+
+Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.
+
+- **Type:** `float`
+
+### `gravity_direction` — variable
+
+World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.
+
+- **Type:** `Vec3`
+
+### `linear_damp` — variable *(Advanced)*
+
+Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
+
+- **Type:** `float`
+
+### `angular_damp` — variable *(Advanced)*
+
+Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
+
+- **Type:** `float`
 
 ## Contact
 

@@ -73,10 +73,10 @@ pub use crate::music::{Music, RcMusic};
 #[cfg(target_os = "emscripten")]
 pub use crate::pyxel::reset_statics;
 pub use crate::pyxel::{
-    channels, colors, cursor_image, dropped_files, font_image, frame_count, height, images, init,
-    input_keys, input_text, mouse_wheel, mouse_x, mouse_y, musics, pyxel, quit_callback,
-    reset_callback, screen, sounds, tilemaps, tones, validate_init_params, width, AudioGlobalGuard,
-    Pyxel,
+    channels, colors, cursor_image, dropped_files, font_image, frame_count, frame_seconds, height,
+    images, init, input_keys, input_text, mouse_wheel, mouse_x, mouse_y, musics, pyxel,
+    quit_callback, reset_callback, screen, sounds, tilemaps, tones, validate_init_params, width,
+    AudioGlobalGuard, Pyxel,
 };
 pub use crate::settings::*;
 pub use crate::sound::{
