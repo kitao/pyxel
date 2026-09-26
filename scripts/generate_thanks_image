@@ -109,7 +109,6 @@ def generate_thanks_image():
     draw_example_images(thanks_image)
     draw_message_image(thanks_image)
 
-    thanks_image.show()
     thanks_image.save(THANKS_IMAGE_FILE)
 
 
@@ -155,11 +154,11 @@ def draw_message_image(thanks_image):
 
     base_image.load(43, 8, str(LOGO_IMAGE_FILE))
 
-    base_image.text(10, 29, "Thank you for 17,000 stars", 12)
-    base_image.text(10 + 14 * 4, 29, "17,000", 9)
+    base_image.text(10, 29, "Thank you for 18,000 stars", 12)
+    base_image.text(10 + 14 * 4, 29, "18,000", 9)
 
-    base_image.text(15, 37, "and 1,600,000 downloads!", 12)
-    base_image.text(15 + 4 * 4, 37, "1,600,000", 9)
+    base_image.text(15, 37, "and 1,700,000 downloads!", 12)
+    base_image.text(15 + 4 * 4, 37, "1,700,000", 9)
 
     if DRAW_LAYOUT_GUIDES:
         x1 = 2
