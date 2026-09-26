@@ -1,0 +1,557 @@
+#!/usr/bin/env python3
+"""Generate documentation previews for examples 01 through 19 and 99.
+
+Run without numbers to regenerate all supported files in docs/images, or pass example
+numbers to regenerate a subset. Use --output-dir to inspect images elsewhere.
+"""
+
+import argparse
+import heapq
+import os
+import random
+import runpy
+import subprocess
+import sys
+import tempfile
+from itertools import pairwise
+from pathlib import Path
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+EXAMPLES = ROOT / "python" / "pyxel" / "examples"
+DEFAULT_OUTPUT = ROOT / "docs" / "images"
+NAMES = {
+    1: "01_hello_pyxel",
+    2: "02_jump_game",
+    3: "03_draw_api",
+    4: "04_sound_api",
+    5: "05_color_palette",
+    6: "06_click_game",
+    7: "07_snake",
+    8: "08_triangle_api",
+    9: "09_shooter",
+    10: "10_platformer",
+    11: "11_offscreen",
+    12: "12_perlin_noise",
+    13: "13_custom_font",
+    14: "14_synthesizer",
+    15: "15_tiled_map_file",
+    16: "16_transform",
+    17: "17_app_launcher",
+    18: "18_audio_playback",
+    19: "19_perspective",
+    99: "99_flip_animation",
+}
+# Source frames, capture interval, output scale, playback frame rate.
+SETTINGS = {
+    1: (30, 1, 2, 30),
+    2: (360, 1, 2, 30),
+    3: (280, 1, 2, 30),
+    4: (180, 1, 2, 30),
+    5: (0, 1, 2, 1),
+    6: (300, 1, 1, 30),
+    7: (220, 1, 6, 20),
+    8: (1110, 3, 2, 25),
+    9: (280, 1, 2, 30),
+    10: (315, 1, 2, 30),
+    11: (240, 1, 2, 30),
+    12: (300, 1, 4, 30),
+    13: (0, 1, 2, 1),
+    14: (280, 1, 2, 30),
+    15: (200, 1, 2, 30),
+    16: (150, 1, 2, 30),
+    17: (215, 1, 2, 30),
+    18: (300, 1, 2, 30),
+    19: (165, 1, 2, 30),
+    99: (30, 1, 2, 30),
+}
+
+
+SEEDS = {2: 2, 7: 72, 9: 2}
+
+
+def snake_route(app):
+    directions = ((0, -1), (0, 1), (-1, 0), (1, 0))
+    start = (*app.snake[0], app.direction)
+    queue = [(0, 0, start, ())]
+    visited = set()
+    order = 0
+    while queue:
+        cost, _, (x, y, direction), route = heapq.heappop(queue)
+        if (x, y, direction) in visited:
+            continue
+        visited.add((x, y, direction))
+        if (x, y) == app.apple:
+            return route
+        for next_direction in directions:
+            dx, dy = next_direction
+            nx, ny = x + dx, y + dy
+            if (
+                next_direction == (-direction[0], -direction[1])
+                or not (0 <= nx < 40 and 5 <= ny < 50)
+                or (nx, ny) in app.snake
+            ):
+                continue
+            order += 1
+            turn_cost = 5 if next_direction != direction else 0
+            heapq.heappush(
+                queue,
+                (
+                    cost + 1 + turn_cost,
+                    order,
+                    (nx, ny, next_direction),
+                    route + (next_direction,),
+                ),
+            )
+    return ()
+
+
+def jump_target(app):
+    candidates = []
+    for delay in range(1, 19):
+        y = app.player_y + sum(min(app.player_dy + step, 8) for step in range(delay))
+        if not (-12 <= y <= 108):
+            continue
+        for x, fruit_y, kind, alive in app.fruit:
+            future_x = x - 2 * delay
+            if alive and 0 <= future_x <= 144 and abs(y - fruit_y) < 10:
+                target_x = round(future_x)
+                if abs(target_x - app.player_x) <= 2 * delay + 10:
+                    candidates.append((delay - (kind + 1) * 2, target_x))
+        if app.player_dy > 0:
+            for x, floor_y, alive in app.floor:
+                future_x = x - 4 * delay
+                if alive and abs(y + 16 - floor_y) < 8:
+                    target_x = max(0, min(144, round(future_x + 12)))
+                    if abs(target_x - app.player_x) <= 2 * delay + 20:
+                        candidates.append((delay + 6, target_x))
+    return min(candidates)[1] if candidates else 72
+
+
+def smooth_cursor(path, frame):
+    if frame < path[0][0]:
+        return (-10, 37)
+    if frame >= path[-1][0]:
+        return path[-1][1:]
+
+    for index, (start, end) in enumerate(pairwise(path)):
+        if start[0] <= frame < end[0]:
+            break
+    previous = path[max(index - 1, 0)]
+    following = path[min(index + 2, len(path) - 1)]
+    span = end[0] - start[0]
+    t = (frame - start[0]) / span
+    result = []
+    for axis in (1, 2):
+        speed = (end[axis] - start[axis]) / span
+        if speed:
+            sign = 1 if speed > 0 else -1
+            before = (end[axis] - previous[axis]) / (end[0] - previous[0])
+            after = (following[axis] - start[axis]) / (following[0] - start[0])
+            before = sign * max(0, min(3 * abs(speed), sign * before))
+            after = sign * max(0, min(3 * abs(speed), sign * after))
+        else:
+            before = after = 0
+        value = (
+            (2 * t**3 - 3 * t**2 + 1) * start[axis]
+            + (t**3 - 2 * t**2 + t) * span * before
+            + (-2 * t**3 + 3 * t**2) * end[axis]
+            + (t**3 - t**2) * span * after
+        )
+        result.append(round(value))
+    return tuple(result)
+
+
+def input_for_frame(number, frame, app, namespace, controls):
+    import pyxel
+
+    keys = set()
+    mouse = None
+
+    if number == 2:
+        if frame < 275:
+            target_x = jump_target(app)
+            if app.player_x < target_x - 3:
+                keys.add(pyxel.KEY_RIGHT)
+            elif app.player_x > target_x + 3:
+                keys.add(pyxel.KEY_LEFT)
+        elif frame < 310:
+            keys.add(pyxel.KEY_RIGHT)
+    elif number == 3:
+        if frame >= 100:
+            keys.add(pyxel.KEY_SPACE)
+        mouse = (182, 135)
+    elif number == 4:
+        for start, key in (
+            (37, pyxel.KEY_2),
+            (73, pyxel.KEY_3),
+            (109, pyxel.KEY_4),
+            (145, pyxel.KEY_5),
+        ):
+            if frame == start:
+                keys.add(key)
+    elif number == 6:
+        if frame <= 40 or frame >= 250:
+            return keys, controls["mouse"]
+        guide_points = (
+            (70, 80),
+            (205, 85),
+            (120, 200),
+            (50, 180),
+            (95, 150),
+            (130, 95),
+        )
+        if controls["cooldown"]:
+            controls["cooldown"] -= 1
+        elif controls["target"] not in app.bubbles:
+            guide_x, guide_y = guide_points[controls["clicks"] % len(guide_points)]
+            x, y = controls["mouse"]
+            candidates = [
+                bubble
+                for bubble in app.bubbles
+                if bubble.r >= 12
+                and (bubble.x - x) ** 2 + (bubble.y - y) ** 2 <= 110**2
+            ]
+            controls["target"] = (
+                min(
+                    candidates,
+                    key=lambda bubble: (
+                        abs(bubble.x - guide_x) + abs(bubble.y - guide_y) - bubble.r * 2
+                    ),
+                )
+                if candidates
+                else None
+            )
+
+        target = controls["target"]
+        x, y = controls["mouse"]
+        vx, vy = controls["velocity"]
+        if target is not None:
+            dx, dy = target.x - x, target.y - y
+            distance = (dx * dx + dy * dy) ** 0.5
+            if distance <= max(3, target.r / 2):
+                keys.add(pyxel.MOUSE_BUTTON_LEFT)
+                controls["target"] = None
+                controls["cooldown"] = 12
+                controls["clicks"] += 1
+            elif distance:
+                # Limit acceleration when a merged bubble changes the target.
+                desired_vx, desired_vy = 6 * dx / distance, 6 * dy / distance
+                change_x, change_y = desired_vx - vx, desired_vy - vy
+                change = (change_x * change_x + change_y * change_y) ** 0.5
+                if change > 1.5:
+                    change_x *= 1.5 / change
+                    change_y *= 1.5 / change
+                vx += change_x
+                vy += change_y
+                speed = (vx * vx + vy * vy) ** 0.5
+                limit = min(6, max(1, distance / 2))
+                if speed > limit:
+                    vx *= limit / speed
+                    vy *= limit / speed
+        if controls["target"] is None:
+            vx *= 0.65
+            vy *= 0.65
+        x = max(0, min(255, x + vx))
+        y = max(0, min(255, y + vy))
+        controls["mouse"] = (x, y)
+        controls["velocity"] = (vx, vy)
+        mouse = (round(x), round(y))
+    elif number == 7:
+        # Plan a route to each apple and hold straight runs between turns.
+        if not app.death:
+            x, y = app.snake[0]
+            dx, dy = app.direction
+            # Miss the turn to the next apple only when it is due at the edge.
+            if (
+                app.score >= 4
+                and frame >= 140
+                and (x + dx < 0 or x + dx >= 40 or y + dy < 5 or y + dy >= 50)
+            ):
+                return keys, mouse
+            if controls.get("apple") != app.apple or not controls.get("route"):
+                controls["apple"] = app.apple
+                controls["route"] = snake_route(app)
+            if controls["route"]:
+                direction = controls["route"][0]
+                controls["route"] = controls["route"][1:]
+                keys.add(
+                    {
+                        (0, -1): pyxel.KEY_UP,
+                        (0, 1): pyxel.KEY_DOWN,
+                        (-1, 0): pyxel.KEY_LEFT,
+                        (1, 0): pyxel.KEY_RIGHT,
+                    }[direction]
+                )
+    elif number == 9:
+        if frame == 30:
+            keys.add(pyxel.KEY_RETURN)
+        if app.scene == namespace["SCENE_PLAY"]:
+            # Broad diagonal sweeps follow the hand-played reference's trajectory.
+            waypoints = (
+                (45, 60, 140),
+                (65, 80, 128),
+                (105, 10, 118),
+                (145, 70, 108),
+                (165, 40, 92),
+                (185, 80, 126),
+                (204, 46, 100),
+                (224, 90, 100),
+            )
+            target_x, target_y = next(
+                ((x, y) for end, x, y in waypoints if frame <= end),
+                (0, 110),
+            )
+            if app.player.x < target_x - 1:
+                keys.add(pyxel.KEY_RIGHT)
+            elif app.player.x > target_x + 1:
+                keys.add(pyxel.KEY_LEFT)
+            if app.player.y < target_y - 1:
+                keys.add(pyxel.KEY_DOWN)
+            elif app.player.y > target_y + 1:
+                keys.add(pyxel.KEY_UP)
+            if frame % 8 == 0:
+                keys.add(pyxel.KEY_SPACE)
+    elif number == 10:
+        # Show the fall and a short run before the first jump.
+        action_frame = frame - 15
+        # Wait on the ledge for the patrolling enemy to pass.
+        if not 110 <= action_frame <= 140:
+            keys.add(pyxel.KEY_RIGHT)
+        if action_frame in (
+            2,
+            16,
+            28,
+            49,
+            64,
+            73,
+            82,
+            99,
+            174,
+            185,
+            201,
+            234,
+            252,
+            265,
+            279,
+            291,
+        ):
+            keys.add(pyxel.KEY_SPACE)
+    elif number == 14:
+        action_frame = frame - 1
+        # A few landmarks from the hand-played cursor path; interpolate the drag.
+        path = (
+            (25, -1, 37),
+            (29, 4, 37),
+            (44, 4, 37),
+            (68, 26, 21),
+            (73, 35, 21),
+            (76, 40, 21),
+            (80, 47, 23),
+            (96, 59, 39),
+            (108, 79, 48),
+            (115, 90, 53),
+            (122, 96, 53),
+            (125, 104, 52),
+            (127, 110, 50),
+            (133, 117, 45),
+            (137, 124, 40),
+            (139, 127, 35),
+            (141, 129, 34),
+            (155, 143, 23),
+            (169, 152, 25),
+            (177, 163, 28),
+            (186, 170, 33),
+            (192, 170, 33),
+            (216, 179, 45),
+            (237, 179, 45),
+            (240, 182, 45),
+            (245, 200, 45),
+        )
+        mouse = smooth_cursor(path, action_frame)
+        if 51 <= action_frame <= 190 or action_frame == 222:
+            keys.add(pyxel.MOUSE_BUTTON_LEFT)
+        controls["mouse"] = mouse
+    elif number == 15:
+        # Cross ahead of the approaching car, then follow the sidewalk route.
+        if 20 <= frame <= 159:
+            keys.add(pyxel.KEY_DOWN)
+        if 20 <= frame <= 59:
+            keys.add(pyxel.KEY_LEFT)
+        if 87 <= frame <= 110:
+            keys.add(pyxel.KEY_RIGHT)
+    elif number == 17:
+        if frame in (32, 46, 60, 75, 90):
+            keys.add(pyxel.KEY_DOWN)
+        if frame in (141, 155, 168, 183, 197):
+            keys.add(pyxel.KEY_UP)
+    elif number == 18:
+        if frame == 150:
+            keys.add(pyxel.KEY_RETURN)
+    elif number == 19:
+        for start, end, key in (
+            (9, 31, pyxel.KEY_D),
+            (33, 74, pyxel.KEY_W),
+            (42, 65, pyxel.KEY_LEFT),
+            (82, 108, pyxel.KEY_S),
+            (112, 143, pyxel.KEY_G),
+        ):
+            if start <= frame <= end:
+                keys.add(key)
+
+    return keys, mouse
+
+
+def generate(number, destination):
+    import pyxel
+
+    name = NAMES[number]
+    total, interval, scale, fps = SETTINGS[number]
+    original_init = pyxel.init
+    callbacks = {}
+
+    def init_headless(*args, **kwargs):
+        cwd = os.getcwd()
+        original_init(*args, **{**kwargs, "headless": True, "fps": 1_000_000})
+        os.chdir(cwd)
+        seed = SEEDS.get(number, 0)
+        random.seed(seed)
+        pyxel.rseed(seed)
+        pyxel.nseed(seed)
+
+    pyxel.init = init_headless
+    pyxel.run = lambda update, draw: callbacks.update(update=update, draw=draw)
+    pyxel.show = lambda: None
+
+    os.chdir(EXAMPLES)
+    sys.path.insert(0, str(EXAMPLES))
+    if number == 99:
+        frames = []
+        native_flip = pyxel.flip
+        with tempfile.TemporaryDirectory() as temp_dir:
+            shot = Path(temp_dir) / "frame.png"
+
+            def capture_flip():
+                native_flip()
+                pyxel.screenshot(str(shot), scale=scale)
+                with Image.open(shot) as image:
+                    frames.append(image.convert("RGB"))
+                if len(frames) == total:
+                    raise StopIteration
+
+            pyxel.flip = capture_flip
+            try:
+                runpy.run_path(str(EXAMPLES / f"{name}.py"), run_name="__main__")
+            except StopIteration:
+                pass
+        save_gif(frames, destination, fps)
+        return
+
+    namespace = runpy.run_path(str(EXAMPLES / f"{name}.py"), run_name="__main__")
+
+    if number in (5, 13):
+        pyxel.screenshot(str(destination), scale=scale)
+        return
+
+    app = callbacks["update"].__self__
+    if number == 17:
+        # Preserve the six-entry scroll rhythm of the reference recording.
+        app.apps[:] = [item for item in app.apps if item["name"] != "laser-jetman"]
+    frames = []
+    held_keys = set()
+    controls = {
+        "mouse": (130, 130),
+        "velocity": (0, 0),
+        "target": None,
+        "cooldown": 0,
+        "clicks": 0,
+    }
+    with tempfile.TemporaryDirectory() as temp_dir:
+        shot = Path(temp_dir) / "frame.png"
+        preroll = 21 if number == 10 else 0
+        for frame in range(1 - preroll, total + 1):
+            keys, mouse = input_for_frame(number, frame, app, namespace, controls)
+            for key in held_keys - keys:
+                pyxel.set_btn(key, False)
+            for key in keys - held_keys:
+                pyxel.set_btn(key, True)
+            held_keys = keys
+            if mouse is not None:
+                pyxel.set_mouse_pos(*mouse)
+
+            callbacks["update"]()
+            callbacks["draw"]()
+            pyxel.flip()
+            if frame >= 1 and (frame == 1 or frame % interval == 0):
+                pyxel.screenshot(str(shot), scale=scale)
+                with Image.open(shot) as image:
+                    frames.append(image.convert("RGB"))
+
+    save_gif(frames, destination, fps)
+
+
+def save_gif(frames, destination, fps):
+    colors = sorted({color for frame in frames for _, color in frame.getcolors(256)})
+    palette = Image.new("P", (1, 1))
+    palette.putpalette(
+        [channel for color in colors for channel in color]
+        + [0] * (768 - 3 * len(colors))
+    )
+    frames = [
+        frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames
+    ]
+
+    frames[0].save(
+        destination,
+        save_all=True,
+        append_images=frames[1:],
+        duration=round(1000 / fps / 10) * 10,
+        loop=0,
+        disposal=1,
+        optimize=True,
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("numbers", nargs="*", type=int, default=list(NAMES))
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--worker", type=int, help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    args.output_dir = args.output_dir.resolve()
+
+    if args.worker is not None:
+        suffix = "png" if args.worker in (5, 13) else "gif"
+        generate(args.worker, args.output_dir / f"{NAMES[args.worker]}.{suffix}")
+        return
+
+    for number in args.numbers:
+        if number not in NAMES:
+            parser.error(f"unsupported example: {number}")
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
+        for number in args.numbers:
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).resolve()),
+                    "--worker",
+                    str(number),
+                    "--output-dir",
+                    temp_dir,
+                ],
+                check=True,
+                timeout=120,
+            )
+
+        for number in args.numbers:
+            name = NAMES[number]
+            suffix = "png" if number in (5, 13) else "gif"
+            filename = f"{name}.{suffix}"
+            os.replace(Path(temp_dir) / filename, args.output_dir / filename)
+            print(f"Generated {filename}")
+
+
+if __name__ == "__main__":
+    main()
