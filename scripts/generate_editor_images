@@ -1,0 +1,289 @@
+#!/usr/bin/env python3
+"""Recreate Pyxel Editor GIFs from the bundled sample resource.
+
+Run without arguments to regenerate the documentation and editor manual copies.
+Pass editor names to select GIFs, or --output-dir to inspect them elsewhere.
+"""
+
+import argparse
+import os
+import subprocess
+import sys
+import tempfile
+from itertools import pairwise
+from pathlib import Path
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+RESOURCE = ROOT / "python" / "pyxel" / "examples" / "assets" / "sample.pyxres"
+DOC_IMAGES = ROOT / "docs" / "images"
+MANUAL_IMAGES = ROOT / "web" / "editor-manual" / "images"
+FRAMES = {"image": 179, "tilemap": 161, "sound": 231, "music": 267}
+COMPOSITES = {
+    "image_tilemap": ("image", "tilemap"),
+    "sound_music": ("sound", "music"),
+    "pyxel": tuple(FRAMES),
+}
+OUTPUTS = {
+    **{name: f"{name}_editor.gif" for name in FRAMES},
+    **{name: f"{name}_editor.gif" for name in COMPOSITES},
+}
+
+
+def cursor_at(frame, points):
+    if frame <= points[0][0]:
+        return points[0][1:]
+    for (start, x1, y1), (end, x2, y2) in pairwise(points):
+        if frame <= end:
+            t = (frame - start) / (end - start)
+            t = (t * t * (3 - 2 * t)) ** 0.75
+            return round(x1 + (x2 - x1) * t), round(y1 + (y2 - y1) * t)
+    return points[-1][1:]
+
+
+def input_for_frame(editor, frame, pyxel):
+    keys = set()
+    if editor == "image":
+        mouse = cursor_at(
+            frame,
+            (
+                (1, 56, 38),
+                (39, 56, 38),
+                (51, 85, 25),
+                (78, 85, 25),
+                (85, 113, 28),
+                (95, 136, 25),
+                (125, 136, 25),
+                (135, 136, 37),
+                (179, 136, 37),
+            ),
+        )
+        if frame == 18:
+            keys.update((pyxel.KEY_SHIFT, pyxel.KEY_1))
+        if frame in (63, 111):
+            keys.add(pyxel.MOUSE_BUTTON_LEFT)
+    elif editor == "tilemap":
+        mouse = cursor_at(
+            frame,
+            (
+                (1, 101, 88),
+                (28, 101, 88),
+                (40, 110, 83),
+                (65, 110, 83),
+                (80, 125, 83),
+                (102, 125, 83),
+                (121, 132, 91),
+                (161, 132, 91),
+            ),
+        )
+        if frame in (40, 80):
+            keys.add(pyxel.MOUSE_BUTTON_LEFT)
+    elif editor == "sound":
+        mouse = (25, 88)
+        if 24 <= frame <= 57:
+            keys.add(pyxel.MOUSE_BUTTON_LEFT)
+        if frame in (35, 44, 50):
+            keys.add(pyxel.KEY_RETURN)
+        if frame == 83:
+            keys.add(pyxel.KEY_SPACE)
+    else:
+        mouse = cursor_at(
+            frame,
+            (
+                (1, 9, 142),
+                (20, 9, 142),
+                (30, 20, 136),
+                (60, 20, 136),
+                (70, 33, 136),
+                (267, 33, 136),
+            ),
+        )
+        if (
+            (40 <= frame <= 44)
+            or (50 <= frame <= 53)
+            or (83 <= frame <= 87)
+            or (95 <= frame <= 99)
+        ):
+            keys.add(pyxel.MOUSE_BUTTON_LEFT)
+        if frame == 123:
+            keys.add(pyxel.KEY_SPACE)
+    return keys, mouse
+
+
+def save_gif(frames, destination, durations=30):
+    colors = sorted({color for frame in frames for _, color in frame.getcolors(256)})
+    palette = Image.new("P", (1, 1))
+    palette.putpalette(
+        [channel for color in colors for channel in color]
+        + [0] * (768 - 3 * len(colors))
+    )
+    frames = [
+        frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames
+    ]
+    frames[0].save(
+        destination,
+        save_all=True,
+        append_images=frames[1:],
+        duration=durations,
+        loop=0,
+        disposal=1,
+        optimize=True,
+    )
+
+
+def generate(editor, destination):
+    import pyxel
+    from pyxel import editor as pyxel_editor
+
+    original_init = pyxel.init
+    callbacks = {}
+    audio = {"start": None}
+    frame = 0
+
+    def init_headless(*args, **kwargs):
+        cwd = os.getcwd()
+        original_init(*args, **{**kwargs, "headless": True, "fps": 1_000_000})
+        os.chdir(cwd)
+
+    def play(*args, **kwargs):
+        if editor == "sound" and args[0] == 0 and not kwargs.get("loop", False):
+            audio["start"] = frame
+
+    def playm(*args, **kwargs):
+        audio["start"] = frame
+
+    def stop(*args, **kwargs):
+        if (editor == "sound" and (not args or args[0] == 0)) or (
+            editor == "music" and not args
+        ):
+            audio["start"] = None
+
+    def play_pos(channel):
+        if audio["start"] is None:
+            return None
+        if editor == "music" and (
+            not pyxel.musics[0].seqs[channel] or (channel == 2 and frame >= 224)
+        ):
+            return None
+        elapsed = (frame - audio["start"]) / 30
+        return 0, elapsed
+
+    pyxel.init = init_headless
+    pyxel.run = lambda update, draw: callbacks.update(update=update, draw=draw)
+    pyxel.play = play
+    pyxel.playm = playm
+    pyxel.stop = stop
+    pyxel.play_pos = play_pos
+
+    pyxel_editor.App(str(RESOURCE), editor)
+    app = callbacks["update"].__self__
+    if editor == "image":
+        app._editors[0].tool_var = 6  # Bucket, selected throughout the original GIF.
+    elif editor == "tilemap":
+        tilemap = pyxel.tilemaps[0]
+        tilemap.pset(12, 8, (0, 0))
+        tilemap.pset(14, 8, (0, 0))
+        viewer = app._editors[1]._image_viewer
+        viewer.viewport_x_var = 6
+        viewer.focus_x_var = 12
+        viewer.focus_y_var = 3
+    elif editor == "sound":
+        app._editors[2].field_cursor.move_to(27, 0, False)
+        del pyxel.sounds[0].notes[27:]
+    elif editor == "music":
+        pyxel.musics[0].seqs[0].clear()
+
+    frames = []
+    held_keys = set()
+    with tempfile.TemporaryDirectory() as temp_dir:
+        shot = Path(temp_dir) / "frame.png"
+        for frame in range(1, FRAMES[editor] + 1):
+            keys, mouse = input_for_frame(editor, frame, pyxel)
+            for key in held_keys - keys:
+                pyxel.set_btn(key, False)
+            for key in keys - held_keys:
+                pyxel.set_btn(key, True)
+            held_keys = keys
+            pyxel.set_mouse_pos(mouse[0] + 1, mouse[1] + 1)
+            callbacks["update"]()
+            callbacks["draw"]()
+            pyxel.flip()
+            pyxel.screenshot(str(shot), scale=2)
+            with Image.open(shot) as image:
+                frames.append(image.convert("RGB"))
+    if editor == "image":
+        assert pyxel.images[0].pget(9, 0) == pyxel.images[0].pget(15, 0) == 8
+    elif editor == "tilemap":
+        assert pyxel.tilemaps[0].pget(12, 8) == (12, 3)
+        assert pyxel.tilemaps[0].pget(14, 8) == (12, 3)
+    elif editor == "sound":
+        assert audio["start"] == 83
+        assert list(pyxel.sounds[0].notes[27:]) == [28, 28, 28]
+    else:
+        assert list(pyxel.musics[0].seqs[0]) == [0, 0, 1, 1]
+    save_gif(frames, destination)
+
+
+def combine(editors, sources, destination):
+    frames = []
+    durations = []
+    for editor in editors:
+        with Image.open(sources / OUTPUTS[editor]) as image:
+            for index in range(image.n_frames):
+                image.seek(index)
+                frames.append(image.convert("RGB"))
+                durations.append(image.info["duration"])
+    save_gif(frames, destination, durations)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("editors", nargs="*", choices=tuple(OUTPUTS))
+    parser.add_argument("--output-dir", type=Path)
+    parser.add_argument("--worker", choices=tuple(FRAMES), help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    if args.worker:
+        generate(args.worker, args.output_dir / f"{args.worker}_editor.gif")
+        return
+
+    outputs = args.editors or list(OUTPUTS)
+    editors = [
+        editor
+        for editor in FRAMES
+        if editor in outputs
+        or any(editor in COMPOSITES[name] for name in outputs if name in COMPOSITES)
+    ]
+    output_dir = args.output_dir or DOC_IMAGES
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=output_dir) as temp_dir:
+        for editor in editors:
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).resolve()),
+                    "--worker",
+                    editor,
+                    "--output-dir",
+                    temp_dir,
+                ],
+                check=True,
+                timeout=120,
+            )
+        for name in outputs:
+            if name in COMPOSITES:
+                combine(
+                    COMPOSITES[name], Path(temp_dir), Path(temp_dir) / OUTPUTS[name]
+                )
+        for editor in outputs:
+            name = OUTPUTS[editor]
+            source = Path(temp_dir) / name
+            target = output_dir / name
+            target.write_bytes(source.read_bytes())
+            if args.output_dir is None and editor in FRAMES:
+                (MANUAL_IMAGES / name).write_bytes(source.read_bytes())
+            print(f"Generated {name}")
+
+
+if __name__ == "__main__":
+    main()
