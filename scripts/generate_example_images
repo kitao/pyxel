@@ -16,6 +16,7 @@ import tempfile
 from itertools import pairwise
 from pathlib import Path
 
+from _image_capture import save_gif
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,6 +53,7 @@ SETTINGS = {
     5: (0, 1, 2, 1),
     6: (300, 1, 1, 30),
     7: (220, 1, 6, 20),
+    # Intentionally replay sampled updates at 2.5x speed for this demonstration.
     8: (1110, 3, 2, 25),
     9: (280, 1, 2, 30),
     10: (300, 1, 2, 30),
@@ -487,28 +489,6 @@ def generate(number, destination):
                     frames.append(image.convert("RGB"))
 
     save_gif(frames, destination, fps)
-
-
-def save_gif(frames, destination, fps):
-    colors = sorted({color for frame in frames for _, color in frame.getcolors(256)})
-    palette = Image.new("P", (1, 1))
-    palette.putpalette(
-        [channel for color in colors for channel in color]
-        + [0] * (768 - 3 * len(colors))
-    )
-    frames = [
-        frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames
-    ]
-
-    frames[0].save(
-        destination,
-        save_all=True,
-        append_images=frames[1:],
-        duration=round(1000 / fps / 10) * 10,
-        loop=0,
-        disposal=1,
-        optimize=True,
-    )
 
 
 def main():

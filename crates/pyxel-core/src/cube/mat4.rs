@@ -365,10 +365,19 @@ impl Mat4 {
         Self::from_rows(self.inverse_value().data)
     }
 
-    // Adjugate divided by determinant; near-singular matrices fall back to identity.
     #[must_use]
     pub fn inverse_value(&self) -> Self {
+        self.try_inverse_value()
+            .unwrap_or_else(Self::identity_value)
+    }
+
+    // Use wider intermediates for non-affine matrices, determinant cancellation,
+    // or f32 range loss. Matrix magnitude alone does not establish rank loss.
+    pub(crate) fn try_inverse_value(&self) -> Option<Self> {
         let m = &self.data;
+        if m[3] != [0.0, 0.0, 0.0, 1.0] {
+            return self.inverse_wide();
+        }
         let mut inv = [[0.0_f32; 4]; 4];
 
         inv[0][0] =
@@ -465,18 +474,87 @@ impl Mat4 {
 
         let det =
             m[0][0] * inv[0][0] + m[0][1] * inv[1][0] + m[0][2] * inv[2][0] + m[0][3] * inv[3][0];
-        if det.abs() < 1e-12 {
-            return Self::identity_value();
-        }
 
-        let inv_det = 1.0 / det;
-        for row in &mut inv {
-            for value in row {
-                *value *= inv_det;
+        // Bound cancellation in the affine determinant's six signed products.
+        // The 16-epsilon margin covers their f32 products and sums; unlike an
+        // absolute cutoff, it scales with the matrix and only selects precision.
+        let a = m.map(|row| row.map(f64::from));
+        let determinant_bound = a[0][0].abs()
+            * ((a[1][1] * a[2][2]).abs() + (a[1][2] * a[2][1]).abs())
+            + a[0][1].abs() * ((a[1][0] * a[2][2]).abs() + (a[1][2] * a[2][0]).abs())
+            + a[0][2].abs() * ((a[1][0] * a[2][1]).abs() + (a[1][1] * a[2][0]).abs());
+        if det.is_normal()
+            && f64::from(det).abs() > 16.0 * f64::from(f32::EPSILON) * determinant_bound
+        {
+            let inv_det = 1.0 / det;
+            for row in &mut inv {
+                for value in row {
+                    *value *= inv_det;
+                }
+            }
+            if inv.iter().flatten().all(|value| value.is_finite()) {
+                return Some(Self { data: inv });
             }
         }
 
-        Self { data: inv }
+        self.inverse_wide()
+    }
+
+    fn inverse_wide(&self) -> Option<Self> {
+        let mut a = self.data.map(|row| row.map(f64::from));
+        let mut inverse = Self::identity_value().data.map(|row| row.map(f64::from));
+        let mut scales = [0.0_f64; 4];
+        for i in 0..4 {
+            for value in a[i] {
+                if !value.is_finite() {
+                    return None;
+                }
+                scales[i] = scales[i].max(value.abs());
+            }
+            if scales[i] == 0.0 {
+                return None;
+            }
+        }
+
+        // Scaled partial pivoting compares rows independently of their units.
+        // A nonzero pivot is retained even for a small but invertible scale.
+        for col in 0..4 {
+            let mut pivot = col;
+            for row in col + 1..4 {
+                if a[row][col].abs() / scales[row] > a[pivot][col].abs() / scales[pivot] {
+                    pivot = row;
+                }
+            }
+            if a[pivot][col] == 0.0 {
+                return None;
+            }
+
+            a.swap(col, pivot);
+            inverse.swap(col, pivot);
+            scales.swap(col, pivot);
+            let divisor = a[col][col];
+            for i in 0..4 {
+                a[col][i] /= divisor;
+                inverse[col][i] /= divisor;
+            }
+
+            for row in 0..4 {
+                if row == col {
+                    continue;
+                }
+                let factor = a[row][col];
+                for i in 0..4 {
+                    a[row][i] -= factor * a[col][i];
+                    inverse[row][i] -= factor * inverse[col][i];
+                }
+            }
+        }
+
+        let data = inverse.map(|row| row.map(|value| value as f32));
+        data.iter()
+            .flatten()
+            .all(|value| value.is_finite())
+            .then_some(Self { data })
     }
 
     pub fn transpose(&self) -> RcMat4 {
@@ -883,6 +961,58 @@ mod tests {
                 "from_euler vs from_axis_angle disagree on {label}",
             );
         }
+    }
+
+    #[test]
+    fn test_try_inverse_distinguishes_singular_from_extreme_axis_scales() {
+        for scale in [1e-20, 1e20] {
+            let matrix = deref(&Mat4::from_scale(&Vec3 {
+                x: scale,
+                y: -scale,
+                z: scale,
+            }));
+            let inverse = matrix.try_inverse_value().unwrap();
+            assert!(approx_eq_mat(
+                &matrix.mul_mat_value(&inverse),
+                &Mat4::identity_value()
+            ));
+        }
+        let singular = Mat4 {
+            data: [
+                [1.0, 2.0, 3.0, 4.0],
+                [2.0, 4.0, 6.0, 8.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        assert!(singular.try_inverse_value().is_none());
+        assert_eq!(singular.inverse_value(), Mat4::identity_value());
+    }
+
+    #[test]
+    fn test_inverse_retries_when_f32_determinant_hides_dependent_rows() {
+        let rotation = deref(&Mat4::from_euler(&Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 45.0,
+        }));
+        let scale = deref(&Mat4::from_scale(&Vec3 {
+            x: 0.0,
+            y: 100.0,
+            z: 333.0,
+        }));
+        let local = deref(&Mat4::from_euler(&Vec3 {
+            x: 0.0,
+            y: 33.0,
+            z: 72.0,
+        }));
+        let singular = rotation.mul_mat_value(&scale).mul_mat_value(&local);
+        // Opposite rows establish rank loss independently of a computed determinant.
+        for col in 0..4 {
+            assert_eq!(singular.data[0][col], -singular.data[1][col]);
+        }
+        assert!(singular.try_inverse_value().is_none());
+        assert_eq!(singular.inverse_value(), Mat4::identity_value());
     }
 
     #[test]

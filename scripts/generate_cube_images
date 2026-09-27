@@ -16,18 +16,20 @@ from itertools import pairwise
 from math import cos, pi, sin
 from pathlib import Path
 
+from _image_capture import save_gif
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = ROOT / "python" / "pyxel" / "examples" / "cube"
 IMAGES = ROOT / "docs" / "images"
+# Frames, output scale, playback frame rate.
 SETTINGS = {
-    "c01_hello_cube": (180, 2, 33),
-    "c02_basic_shapes": (180, 1, 33),
-    "c03_custom_shapes": (211, 1, 33),
-    "c04_mesh_and_motion": (300, 2, 33),
-    "c05_3d_collision": (300, 2, 33),
-    "c06_3d_physics": (300, 2, 33),
+    "c01_hello_cube": (180, 2, 30),
+    "c02_basic_shapes": (180, 1, 30),
+    "c03_custom_shapes": (211, 1, 30),
+    "c04_mesh_and_motion": (300, 2, 30),
+    "c05_3d_collision": (300, 2, 30),
+    "c06_3d_physics": (300, 2, 30),
 }
 
 
@@ -362,31 +364,10 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
     return keys, mouse
 
 
-def save_gif(frames, destination, duration):
-    colors = sorted({color for frame in frames for _, color in frame.getcolors(256)})
-    palette = Image.new("P", (1, 1))
-    palette.putpalette(
-        [channel for color in colors for channel in color]
-        + [0] * (768 - 3 * len(colors))
-    )
-    frames = [
-        frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames
-    ]
-    frames[0].save(
-        destination,
-        save_all=True,
-        append_images=frames[1:],
-        duration=duration,
-        loop=0,
-        disposal=1,
-        optimize=True,
-    )
-
-
 def generate(name, destination):
     import pyxel
 
-    total, scale, duration = SETTINGS[name]
+    total, scale, fps = SETTINGS[name]
     original_init = pyxel.init
     callbacks = {}
 
@@ -457,9 +438,7 @@ def generate(name, destination):
             with Image.open(shot) as image:
                 frames.append(image.convert("RGB"))
 
-    if name in ("c05_3d_collision", "c06_3d_physics"):
-        duration = [30, 30, 40] * (total // 3)
-    save_gif(frames, destination, duration)
+    save_gif(frames, destination, fps)
 
 
 def main():
@@ -489,6 +468,7 @@ def main():
                 check=True,
                 timeout=120,
             )
+
         for name in names:
             Path(temp_dir, f"{name}.gif").replace(args.output_dir / f"{name}.gif")
             print(f"Generated {name}.gif")

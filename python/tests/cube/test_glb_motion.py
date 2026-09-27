@@ -84,8 +84,8 @@ def test_from_glb_loads_blockbench_profile_motion(tmp_path):
     assert mesh.motions[0].length == 20.0
 
     root.apply_motion(mesh.motions[0], 10.0)
-    body = root.children[0]
-    assert root.transform.pos == Vec3(0.25, 0.0, 0.0)
+    body = root.find_by_name("body")[0]
+    assert root.find_by_name("bb_scene")[0].transform.pos == Vec3(0.25, 0.0, 0.0)
     assert body.transform.scale == Vec3(1.0, 1.5, 1.0)
     assert body.transform.rot.to_euler().z == pytest.approx(45.0, abs=1e-5)
 
@@ -99,7 +99,7 @@ def test_from_glb_loads_blockbench_profile_smooth_motion(tmp_path):
 
     root.apply_motion(mesh.motions[0], 5.0)
     # Asymmetric tangents put the cubic midpoint above the linear value, 0.125.
-    assert root.transform.pos.x == 0.15625
+    assert root.find_by_name("bb_scene")[0].transform.pos.x == 0.15625
 
 
 def test_actor_cube_is_closed_and_outward_wound():
@@ -460,7 +460,7 @@ def test_from_glb_accepts_animation_times_rounded_to_same_frame(tmp_path):
     node = Node.from_mesh(mesh)
     node.apply_motion(mesh.motions[0], 0.0)
     assert mesh.motions[0].length == 0.0
-    assert node.transform.pos == Vec3.ZERO
+    assert node.find_by_name("actor")[0].transform.pos == Vec3.ZERO
 
 
 def test_from_glb_rejects_external_buffer(tmp_path):
@@ -546,7 +546,7 @@ def test_apply_motion_updates_imported_node_tree(tmp_path):
     root = Node.from_mesh(mesh)
 
     root.apply_motion(mesh.motions[0], 15.0)
-    assert root.transform.pos == Vec3(0.5, 0.0, 0.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(0.5, 0.0, 0.0)
 
 
 def test_play_motion_advances_during_update(tmp_path):
@@ -558,7 +558,7 @@ def test_play_motion_advances_during_update(tmp_path):
     root.update()
     # One update advances the playhead by the default speed (1.0), so
     # the linear 0-to-1 slide over 30 frames sits at x = 1 / 30.
-    assert root.transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
 
 
 def test_play_motion_pauses_under_inactive_ancestor(tmp_path):
@@ -570,11 +570,11 @@ def test_play_motion_pauses_under_inactive_ancestor(tmp_path):
 
     parent.active = False
     root.update()
-    assert root.transform.pos == Vec3.ZERO
+    assert root.find_by_name("actor")[0].transform.pos == Vec3.ZERO
 
     parent.active = True
     root.update()
-    assert root.transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
 
 
 def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
@@ -585,10 +585,10 @@ def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
 
     root.play_motion(mesh.motions[0], start_frame=float(2**24))
     root.update()
-    assert root.transform.pos == Vec3(17.0 / 30.0, 0.0, 0.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(17.0 / 30.0, 0.0, 0.0)
 
     root.update()
-    assert root.transform.pos == Vec3(18.0 / 30.0, 0.0, 0.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(18.0 / 30.0, 0.0, 0.0)
 
 
 @pytest.mark.parametrize(
@@ -603,7 +603,9 @@ def test_nonloop_motion_advances_before_clamping_start(
 
     root.play_motion(mesh.motions[0], loop=False, speed=speed, start_frame=start_frame)
     root.update()
-    assert root.transform.pos == Vec3(expected_frame / 30.0, 0.0, 0.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(
+        expected_frame / 30.0, 0.0, 0.0
+    )
 
 
 def test_stop_motion_leaves_current_pose(tmp_path):
@@ -613,12 +615,12 @@ def test_stop_motion_leaves_current_pose(tmp_path):
 
     root.play_motion(mesh.motions[0], start_frame=9.0)
     root.update()
-    assert root.transform.pos == Vec3(1.0 / 3.0, 0.0, 0.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(1.0 / 3.0, 0.0, 0.0)
 
     root.stop_motion()
-    before = root.transform
+    before = root.find_by_name("actor")[0].transform
     root.update()
-    assert root.transform == before
+    assert root.find_by_name("actor")[0].transform == before
 
 
 def test_apply_motion_rejects_unrelated_node_tree(tmp_path):

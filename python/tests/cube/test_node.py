@@ -357,9 +357,12 @@ class TestFromMesh:
         )
 
         root = Node.from_mesh(m)
-        assert root.name == "rig"
-        assert [child.name for child in root.children] == ["body", "arm"]
-        assert root.children[0].parent is root
+        assert root.name == ""
+        assert root.transform == Mat4.IDENTITY
+        rig = root.find_by_name("rig")[0]
+        assert rig.parent is root
+        assert [child.name for child in rig.children] == ["body", "arm"]
+        assert rig.children[0].parent is rig
         assert root.find_by_name("arm")[0].transform.pos == Vec3(0, 1, 0)
 
     def test_from_mesh_allows_garbage_collection_reentry(self):

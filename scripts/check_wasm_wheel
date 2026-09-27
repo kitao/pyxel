@@ -17,7 +17,8 @@ WASM_WHEEL_GLOBS = (
     "pyxel-*-emscripten_*.whl",
     "pyxel-*-pyemscripten_*.whl",
 )
-TARGET_SUFFIXES = (".so", ".wasm", ".js")
+COMPILED_SUFFIXES = (".so", ".wasm")
+HOST_PATH_SUFFIXES = (*COMPILED_SUFFIXES, ".js")
 IGNORED_SOURCE_DIRS = {"__pycache__", ".ruff_cache"}
 IGNORED_SOURCE_NAMES = {".DS_Store"}
 
@@ -96,7 +97,7 @@ def find_violations(wheel_path):
             if Path(name).name == ".DS_Store":
                 violations.append((name, "platform metadata file"))
                 continue
-            if not name.endswith(TARGET_SUFFIXES):
+            if not name.endswith(HOST_PATH_SUFFIXES):
                 continue
 
             data = wheel_zip.read(name)
@@ -120,7 +121,7 @@ def find_source_mismatches(wheel_path, source_dir):
             if (
                 any(part in IGNORED_SOURCE_DIRS for part in relative_path.parts)
                 or source_path.name in IGNORED_SOURCE_NAMES
-                or source_path.suffix in TARGET_SUFFIXES
+                or source_path.suffix in COMPILED_SUFFIXES
             ):
                 continue
 
@@ -143,7 +144,7 @@ def find_source_mismatches(wheel_path, source_dir):
             if (
                 any(part in IGNORED_SOURCE_DIRS for part in relative_path.parts)
                 or relative_path.name in IGNORED_SOURCE_NAMES
-                or relative_path.suffix in TARGET_SUFFIXES
+                or relative_path.suffix in COMPILED_SUFFIXES
             ):
                 continue
             if archive_name not in expected_names:
