@@ -16,6 +16,7 @@ pub struct Node {
     pub transform: RcMat4,
     pub active: bool,
     pub visible: bool,
+    pub opacity: f32,
     pub camera: Option<RcCamera>,
     pub shading: Option<RcShading>,
     pub collider: Option<RcCollider>,
@@ -38,6 +39,7 @@ impl Node {
             transform: Mat4::identity(),
             active: true,
             visible: true,
+            opacity: 1.0,
             camera: None,
             shading: None,
             collider: None,
@@ -210,6 +212,16 @@ impl Node {
             return Some(c);
         }
         Self::parent(node).and_then(|p| Self::effective_camera(&p))
+    }
+
+    pub fn effective_opacity(node: &RcNode) -> f32 {
+        let mut opacity = rc_ref!(node).opacity;
+        let mut parent = Self::parent(node);
+        while let Some(node) = parent {
+            opacity *= rc_ref!(&node).opacity;
+            parent = Self::parent(&node);
+        }
+        opacity
     }
 
     // Active and visible are false if any ancestor disables them.

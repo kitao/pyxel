@@ -195,6 +195,36 @@ class TestTransform:
 
 
 class TestMatrixOps:
+    @pytest.mark.parametrize("scale", [1e-4, 1e-20, 1e20, -1e-20])
+    def test_inverse_keeps_small_and_large_invertible_scales(self, scale):
+        m = Mat4.from_scale(Vec3(scale, scale, scale))
+        inverse = m.inverse()
+        # Diagonal inversion has an independent reciprocal expectation, even
+        # when the determinant underflows or overflows f32.
+        for axis in range(3):
+            assert inverse[axis, axis] == pytest.approx(1 / scale, rel=2e-6)
+        assert tuple(inverse * (m * Vec3(1, 2, 3))) == pytest.approx(
+            (1, 2, 3), abs=1e-6
+        )
+
+    def test_inverse_uses_axis_scales_independently(self):
+        m = Mat4.from_scale(Vec3(1e-8, 1e8, -1))
+        assert tuple(m.inverse() * (m * Vec3(1, 2, 3))) == pytest.approx(
+            (1, 2, 3), abs=1e-6
+        )
+
+    def test_inverse_singular_scale_keeps_identity_fallback(self):
+        assert Mat4.from_scale(Vec3(1, 0, 1)).inverse() == Mat4.IDENTITY
+
+    def test_inverse_singular_composition_keeps_identity_fallback(self):
+        matrix = (
+            Mat4.from_euler(Vec3(0, 0, 45))
+            * Mat4.from_scale(Vec3(0, 100, 333))
+            * Mat4.from_euler(Vec3(0, 33, 72))
+        )
+        assert all(matrix[0, col] == -matrix[1, col] for col in range(4))
+        assert matrix.inverse() == Mat4.IDENTITY
+
     def test_inverse_round_trip(self):
         rot = Quat.from_euler(Vec3(30, 45, 60))
         m = Mat4.compose(Vec3(1, 2, 3), rot, Vec3(1.5, 2, 0.5))

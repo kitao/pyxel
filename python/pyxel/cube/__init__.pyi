@@ -333,6 +333,7 @@ class Node:
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision
     visible: bool  # parent-dominant; False halts drawing
+    opacity: float  # 0-1; multiplied by ancestors and each draw command's dither
     # Camera and shading inherit the closest non-None ancestor value.
     camera: Camera | None
     shading: Shading | None

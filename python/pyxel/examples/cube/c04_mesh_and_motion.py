@@ -25,14 +25,6 @@ class Gazelle(Node):
         )
         self.add_child(self.actor)
 
-        # Save the initial pose for joints omitted by other motions.
-        self.rest_pose = []
-        nodes = [self.actor]
-        while nodes:
-            node = nodes.pop()
-            self.rest_pose.append((node, node.transform))
-            nodes.extend(node.children)
-
         self.joints = [
             self.actor.find_by_name(name)[0]
             for name in ["rightFronLeg", "leftFronLeg", "rightBackLeg", "leftBackLeg"]
@@ -41,9 +33,6 @@ class Gazelle(Node):
 
     def play(self, index):
         self.motion_index = index
-        for node, transform in self.rest_pose:
-            node.transform = transform
-
         self.actor.play_motion(self.motions[index], speed=MOTION_SPEED)
 
 

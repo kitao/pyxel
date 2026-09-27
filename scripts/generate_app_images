@@ -16,14 +16,16 @@ import zipfile
 from collections import deque
 from pathlib import Path
 
+from _image_capture import save_gif
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ROOT / "python" / "pyxel" / "examples" / "apps"
 IMAGES = ROOT / "docs" / "images"
+# Frame budget, output scale, playback frame rate, random seed.
 SETTINGS = {
-    "30sec_of_daylight": (176, 2, 100, 94),
-    "megaball": (650, 2, 33, 0),
+    "30sec_of_daylight": (176, 2, 10, 94),
+    "megaball": (650, 2, 30, 0),
 }
 # Brief held movements alternate with cautious single-tile taps.
 DAYLIGHT_STEP_DELAYS = (1, 1, 3, 3, 4, 2, 2, 3, 4, 2, 1, 1, 3, 3, 4, 2, 3, 4)
@@ -139,31 +141,10 @@ def input_for_frame(name, frame, app, pyxel, controls):
     return keys
 
 
-def save_gif(frames, destination, duration):
-    colors = sorted({color for frame in frames for _, color in frame.getcolors(256)})
-    palette = Image.new("P", (1, 1))
-    palette.putpalette(
-        [channel for color in colors for channel in color]
-        + [0] * (768 - 3 * len(colors))
-    )
-    frames = [
-        frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames
-    ]
-    frames[0].save(
-        destination,
-        save_all=True,
-        append_images=frames[1:],
-        duration=duration,
-        loop=0,
-        disposal=1,
-        optimize=True,
-    )
-
-
 def generate(name, destination):
     import pyxel
 
-    total, scale, duration, seed = SETTINGS[name]
+    total, scale, fps, seed = SETTINGS[name]
     original_init = pyxel.init
     callbacks = {}
 
@@ -218,6 +199,7 @@ def generate(name, destination):
             callbacks["update"]()
             callbacks["draw"]()
             pyxel.flip()
+            # Megaball runs at 60 FPS: retain its final ten seconds at 30 FPS.
             if name != "megaball" or (frame > total - 600 and frame % 2 == 0):
                 pyxel.screenshot(str(shot), scale=scale)
                 with Image.open(shot) as image:
@@ -227,10 +209,7 @@ def generate(name, destination):
             assert app.game.world.current_map.player.weapon == "Club"
         else:
             assert all(target.is_hit for target in app.game.stage.lights[:2])
-        if name == "megaball":
-            # The app runs at 60 FPS: keep its final ten seconds at 30 FPS.
-            duration = [30, 30, 40] * (len(frames) // 3)
-        save_gif(frames, destination, duration)
+        save_gif(frames, destination, fps)
 
 
 def main():
@@ -260,6 +239,7 @@ def main():
                 check=True,
                 timeout=120,
             )
+
         for name in names:
             filename = f"{name}.gif"
             os.replace(Path(temp_dir) / filename, args.output_dir / filename)

@@ -52,10 +52,16 @@ First, download the Pyxel GIMP palette file [pyxel.gpl](https://kitao.github.io/
 - Edit with these 16 colors. The .bbmodel files are the editable projects; .glb files are for loading in Pyxel Cube. For c05, extract garden_models.zip in cube/assets and open a .bbmodel inside. The palette is a Blockbench setting, so import pyxel.gpl again when using a different installation.
 - Use File > Export > Export glTF Model. Select Binary (glb), enable Embed Textures, and disable Armature. Enable Export Animations for animated models. Keep the saved scale when re-exporting a sample project.
 
-## Building the c05 Stage
+## Reusing Models in a Level
 
-Extract garden_models.zip from cube/assets and open garden_parts.bbmodel. Build Example is an L-shaped island assembled from the same parts as garden_stage.bbmodel. Duplicate the part groups to build your own stage.
+For repeated parts, use the bundled [Cube Model References](https://github.com/kitao/pyxel/tree/main/python/pyxel/examples/cube/tools) tool for desktop Blockbench. Place visible references to your original .bbmodel files and duplicate their groups to build a level. The scene keeps the references, so changing an original does not require replacing every copy.
+
+Save the originals, then use Cube: Refresh and Export Scene. It updates the previews and exports ordinary visual and collision GLBs from the same placements. Keep the scene .bbmodel for further editing. Existing groups can be linked without moving them; make a reference unique when only that placement needs its own shape.
+
+## How the c05 Stage Is Built
+
+Extract garden_models.zip from cube/assets and open garden_parts.bbmodel. Build Example is an L-shaped island assembled from the same parts as garden_stage.bbmodel. This sample uses copied parts. For levels where you will keep editing the originals, use the model references described above.
 
 - Grass parts are 48 by 48 units and 32 units high, with their origin at the walking surface center. Stack Cliff parts below in 32-unit steps. Stacking instead of stretching preserves the texture dot size. A/B share the same shape but differ in pattern placement.
 - N/E/S/W identify exposed sides (-Z/+X/+Z/-X). Choose the matching orientation rather than rotating the painted lighting. Place the matching Inner part at inside corners. Ramp rises 24 units over a 48-unit run; Ramp Tall has a deeper foundation. Bridge spans 48 units. Use Joint parts to fill the 1.5-unit side gaps where ramps meet islands.
-- Copy visual parts into garden_stage.bbmodel and a matching-height box from Collision Columns into garden_stage_collision.bbmodel. Align their walking surfaces. Collision boxes cover whole columns without per-part divisions or decorative bevels. Export the two assembled models under their existing .glb names. The parts library itself is not used at runtime.
+- In this sample, visual parts are copied into garden_stage.bbmodel and matching-height boxes from Collision Columns into garden_stage_collision.bbmodel, with their walking surfaces aligned. Collision boxes cover whole columns without per-part divisions or decorative bevels. Export the two assembled models under their existing .glb names. The parts library itself is not used at runtime.

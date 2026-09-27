@@ -464,7 +464,7 @@ Return a new matrix scaled along the matrix's local axes.
 
 ### `inverse()` — function
 
-Return the inverse matrix. A singular matrix returns the identity.
+Return the inverse matrix. Return the identity if no inverse exists or its components cannot be represented as finite 32-bit floats.
 
 **Returns:** `Mat4`
 
@@ -1006,7 +1006,7 @@ mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img
 node = Node.from_mesh(mesh)
 ```
 
-**Note:** Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared.
+**Note:** Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared. Imported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image; col_img exposes the first imported texture, not all material slots.
 
 ### `primitives` — variable
 
@@ -1189,7 +1189,7 @@ Friction. The average of the two contacting values is used.
 
 ### `velocity` — variable
 
-World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response.
+World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. The same rule applies if the inverse or converted local displacement cannot be represented by finite 32-bit floats.
 
 - **Type:** `Vec3`
 
@@ -1235,12 +1235,7 @@ Collision payload passed to Node.on_collide(). It is engine-built and not user-c
 def on_collide(self, other, contact):
     offset = contact.normal * contact.depth
     if self.parent is not None:
-        parent_world = self.parent.world_transform
-        offset = (
-            Vec3.ZERO
-            if abs(parent_world.determinant()) < 1e-12
-            else offset.to_local_dir(parent_world)
-        )
+        offset = offset.to_local_dir(self.parent.world_transform)
 
     push = Mat4.from_translation(offset)
     self.transform = push * self.transform
@@ -1362,6 +1357,12 @@ When False, stops drawing for this node and its descendants.
 
 - **Type:** `bool`
 
+### `opacity` — variable
+
+Dithered coverage, clamped to 0-1; defaults to 1. Multiplies ancestor opacity and each draw command's dither, including when drawing a subtree directly. Does not affect updates or collisions.
+
+- **Type:** `float`
+
 ### `camera` — variable
 
 Camera used for drawing. None inherits from the closest ancestor that has one.
@@ -1442,7 +1443,7 @@ The world transform composed from the root down to this node.
 
 ### `Node.from_mesh(mesh)` — class
 
-Create a Node tree from a Mesh and return its root node. Each call creates independent nodes and motion playback state; Primitive data is shared.
+Create an independent model instance beneath a new identity placement root. Imported part transforms and motions never overwrite this root. Geometry and textures remain shared.
 
 **Parameters:**
 
@@ -1472,7 +1473,7 @@ Flag this node and its descendants for destruction. At the end of update(), on_d
 
 ### `apply_motion(motion, frame, *, loop=True)` — function
 
-Sample a Motion at the given frame, replacing the matching local transforms in this Node.from_mesh() subtree. Keep scene placement and scale on a separate parent.
+Sample a Motion at the given frame, replacing matching local part transforms in this subtree of the same model instance. Other parts and the placement root are unchanged.
 
 **Parameters:**
 
@@ -1490,6 +1491,8 @@ Start per-update playback of a Motion on this Node.from_mesh() subtree.
 - `loop` (*bool*) — When True, wrap playback inside the clip length. Defaults to True.
 - `speed` (*float*) — Frames advanced per update. Defaults to 1.0.
 - `start_frame` (*float*) — Initial frame sampled when playback starts. Defaults to 0.0.
+
+**Note:** Each call restarts playback. Before sampling start_frame, restore the imported translation, rotation and scale of same-instance parts in this subtree targeted by any imported transform clip. This removes previous-clip poses while preserving never-animated parts, attached instances and placement. apply_motion does not perform this reset.
 
 ### `stop_motion()` — function
 
@@ -1798,6 +1801,8 @@ Draw a screen-space string centered at the projected position. Glyphs keep their
 
 Advance this subtree by one frame: on_update hooks, node motion playback, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.
 
+**Note:** on_update: At each hook traversal, visit the nodes present at its start at most once, in the original tree order. Check current subtree membership and ancestor active state before each call. Nodes added during that traversal join the next traversal; existing nodes enabled before their turn can run immediately.
+
 ### `draw(x, y, w, h, target=None)` — function
 
 Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the entire target before rendering.
@@ -1815,6 +1820,8 @@ Render this subtree into the viewport (x, y, w, h), using this node's effective_
 ```python
 scene.draw(0, 0, pyxel.width, pyxel.height)
 ```
+
+**Note:** Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.
 
 ### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
 
@@ -1869,8 +1876,8 @@ Return every node in this subtree whose collider overlaps the given box.
 
 **Parameters:**
 
-- `mat` (*Mat4*) — Box placement in world space.
-- `size` (*Vec3*) — Edge lengths along each axis.
+- `mat` (*Mat4*) — World-space translation, rotation and nonzero scale of the box. Scale is applied to size; reflections are supported. Sheared, non-affine or non-finite matrices raise ValueError.
+- `size` (*Vec3*) — Local edge lengths along each axis. Absolute values are used. Non-finite lengths or scaled dimensions raise ValueError.
 - `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
 - `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
 

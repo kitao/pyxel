@@ -136,6 +136,7 @@ format:
 		"$(ROOT_DIR)/.vscode/settings.json" \
 		"$(ROOT_DIR)/.github/workflows/*.{yml,yaml}" \
 		"$(WASM_DIR)/**/*.{css,html,js,json}" \
+		"$(PYTHON_DIR)/pyxel/examples/cube/tools/*.js" \
 		"$(WEB_DIR)/**/*.{css,html,js,json}" \
 		"!$(WEB_DIR)/styles.css"
 	@$(SCRIPTS_DIR)/format_prose
