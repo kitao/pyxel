@@ -23,7 +23,7 @@ APPS = ROOT / "python" / "pyxel" / "examples" / "apps"
 IMAGES = ROOT / "docs" / "images"
 SETTINGS = {
     "30sec_of_daylight": (176, 2, 100, 94),
-    "megaball": (650, 2, 20, 0),
+    "megaball": (650, 2, 33, 0),
 }
 # Brief held movements alternate with cautious single-tile taps.
 DAYLIGHT_STEP_DELAYS = (1, 1, 3, 3, 4, 2, 2, 3, 4, 2, 1, 1, 3, 3, 4, 2, 3, 4)
@@ -53,14 +53,14 @@ def path_between(game_map, start, target):
     raise ValueError(f"No route from {start} to {target}")
 
 
-def input_for_frame(name, frame, app, pyxel):
+def input_for_frame(name, frame, app, pyxel, controls):
     keys = set()
     if name == "30sec_of_daylight":
         game_map = app.game.world.current_map
         player = game_map.player
-        if not hasattr(app, "capture_path"):
+        if "path" not in controls:
             start = (player.tile_x, player.tile_y)
-            app.capture_path = []
+            controls["path"] = []
             for target in (
                 (7, 6),
                 (5, 6),
@@ -78,24 +78,24 @@ def input_for_frame(name, frame, app, pyxel):
                 (13, 13),
                 (14, 12),
             ):
-                app.capture_path.extend(path_between(game_map, start, target))
+                controls["path"].extend(path_between(game_map, start, target))
                 start = target
-            app.capture_path_index = 0
-            app.capture_next_move_frame = 1
+            controls["path_index"] = 0
+            controls["next_move_frame"] = 1
         position = (player.tile_x, player.tile_y)
         while (
-            app.capture_path_index < len(app.capture_path)
-            and app.capture_path[app.capture_path_index] == position
+            controls["path_index"] < len(controls["path"])
+            and controls["path"][controls["path_index"]] == position
         ):
-            app.capture_path_index += 1
+            controls["path_index"] += 1
         item = game_map.tile_get_any_item(*position)
         if item and item.type == item.TYPE_WEAPON and player.weapon == "None":
-            app.capture_next_move_frame = frame + 2
+            controls["next_move_frame"] = frame + 2
             return {pyxel.KEY_X}
-        if frame >= app.capture_next_move_frame and app.capture_path_index < len(
-            app.capture_path
+        if frame >= controls["next_move_frame"] and controls["path_index"] < len(
+            controls["path"]
         ):
-            next_pos = app.capture_path[app.capture_path_index]
+            next_pos = controls["path"][controls["path_index"]]
             direction = next_pos[0] - position[0], next_pos[1] - position[1]
             direction_keys = {
                 (0, -1): pyxel.KEY_UP,
@@ -105,13 +105,13 @@ def input_for_frame(name, frame, app, pyxel):
             }
             if game_map.tile_get_any_enemy(*next_pos):
                 keys.update((direction_keys[direction], pyxel.KEY_Z))
-                app.capture_next_move_frame = frame + 3
+                controls["next_move_frame"] = frame + 3
             else:
                 keys.add(direction_keys[direction])
-                app.capture_next_move_frame = (
+                controls["next_move_frame"] = (
                     frame
                     + DAYLIGHT_STEP_DELAYS[
-                        app.capture_path_index % len(DAYLIGHT_STEP_DELAYS)
+                        controls["path_index"] % len(DAYLIGHT_STEP_DELAYS)
                     ]
                 )
     else:
@@ -198,6 +198,7 @@ def generate(name, destination):
 
         frames = []
         held_keys = set()
+        controls = {}
         shot = Path(temp_dir) / "frame.png"
         if name == "30sec_of_daylight":
             callbacks["draw"]()
@@ -208,7 +209,7 @@ def generate(name, destination):
             # Hold the opening pose without changing the seeded combat sequence.
             frames.extend([frames[0]] * 6)
         for frame in range(1, total - len(frames) + 1):
-            keys = input_for_frame(name, frame, app, pyxel)
+            keys = input_for_frame(name, frame, app, pyxel, controls)
             for key in held_keys - keys:
                 pyxel.set_btn(key, False)
             for key in keys - held_keys:
@@ -217,14 +218,18 @@ def generate(name, destination):
             callbacks["update"]()
             callbacks["draw"]()
             pyxel.flip()
-            pyxel.screenshot(str(shot), scale=scale)
-            with Image.open(shot) as image:
-                frames.append(image.convert("RGB"))
+            if name != "megaball" or (frame > total - 600 and frame % 2 == 0):
+                pyxel.screenshot(str(shot), scale=scale)
+                with Image.open(shot) as image:
+                    frames.append(image.convert("RGB"))
         if name == "30sec_of_daylight":
             assert app.game.world.current_map.player.hp == 0
             assert app.game.world.current_map.player.weapon == "Club"
         else:
             assert all(target.is_hit for target in app.game.stage.lights[:2])
+        if name == "megaball":
+            # The app runs at 60 FPS: keep its final ten seconds at 30 FPS.
+            duration = [30, 30, 40] * (len(frames) // 3)
         save_gif(frames, destination, duration)
 
 

@@ -1,0 +1,498 @@
+#!/usr/bin/env python3
+"""Generate documentation GIFs for Pyxel Cube examples c01 through c06.
+
+Run without names to regenerate all six GIFs in docs/images, or pass example
+names to regenerate a subset. Use --output-dir to inspect candidates elsewhere.
+"""
+
+import argparse
+import os
+import random
+import runpy
+import subprocess
+import sys
+import tempfile
+from itertools import pairwise
+from math import cos, pi, sin
+from pathlib import Path
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+EXAMPLES = ROOT / "python" / "pyxel" / "examples" / "cube"
+IMAGES = ROOT / "docs" / "images"
+SETTINGS = {
+    "c01_hello_cube": (180, 2, 33),
+    "c02_basic_shapes": (180, 1, 33),
+    "c03_custom_shapes": (211, 1, 33),
+    "c04_mesh_and_motion": (300, 2, 33),
+    "c05_3d_collision": (300, 2, 33),
+    "c06_3d_physics": (300, 2, 33),
+}
+
+
+def interpolate(frame, points, eased=False):
+    for start, end in pairwise(points):
+        if frame < end[0]:
+            ratio = (frame - start[0]) / (end[0] - start[0])
+            if eased:
+                ratio = ratio * ratio * (3 - 2 * ratio)
+            return tuple(round(a + (b - a) * ratio) for a, b in zip(start[1:], end[1:]))
+    return points[-1][1:]
+
+
+def collision_input(frame, app, pyxel, state):
+    from pyxel.cube import Vec3
+
+    stage = state.setdefault("stage", "start")
+    held = state.setdefault("held", set())
+    platform = state.get("platform")
+    if platform is None:
+        platform = next(
+            node for node in app.children if type(node).__name__ == "MovingPlatform"
+        )
+        state["platform"] = platform
+    pos = app.player.transform.pos
+    if stage == "start" and ((pos.x - 21) ** 2 + (pos.z - 33) ** 2) ** 0.5 < 10:
+        stage = "island_jump"
+        state["stage"] = stage
+        state["jump_frame"] = frame + 1
+    elif stage == "island_jump" and app.player.on_floor and pos.y > 50:
+        stage = "island"
+        state["stage"] = stage
+    elif stage == "island" and ((pos.x - 85) ** 2 + (pos.z + 55) ** 2) ** 0.5 < 9:
+        stage = "tower_jump"
+        state["stage"] = stage
+        state["jump_frame"] = frame + 1
+    elif stage == "tower_jump" and app.player.on_floor and pos.y > 110:
+        stage = "board"
+        state["stage"] = stage
+        state["jump_frame"] = frame + 1
+    elif (
+        stage == "board"
+        and app.player.platform is platform
+        and (
+            (pos.x - platform.transform.pos.x) ** 2
+            + (pos.z - platform.transform.pos.z) ** 2
+        )
+        ** 0.5
+        < 8
+    ):
+        stage = "ride"
+        state["stage"] = stage
+        state["ride_frames"] = 0
+    elif stage == "ride":
+        if app.player.platform is platform:
+            state["ride_frames"] += 1
+        if state["ride_frames"] > 39:
+            stage = "goal"
+            state["stage"] = stage
+            state["jump_frame"] = frame + 1
+
+    if stage == "start":
+        x, z = 21, 33
+    elif stage == "island_jump":
+        x, z = 120, -40
+    elif stage == "island":
+        x, z = 85, -55
+    elif stage == "tower_jump":
+        x, z = 150, -110
+    elif stage == "board":
+        x, z = platform.transform.pos.x, platform.transform.pos.z
+    elif stage == "goal" and app.goal.active:
+        x, z = 18, -169
+    else:
+        x = z = None
+
+    jump_frame = state.get("jump_frame")
+    jump_offsets = (0,) if stage in ("board", "goal") else (0, 12)
+    if jump_frame is not None and frame in tuple(
+        jump_frame + offset + 1 for offset in jump_offsets
+    ):
+        return set()
+    if x is None or stage == "ride":
+        held = set()
+        state["held"] = held
+    elif frame % 3 == 0 or (
+        jump_frame is not None
+        and frame in tuple(jump_frame + offset + 2 for offset in jump_offsets)
+    ):
+        desired = Vec3(x - pos.x, 0, z - pos.z).normalize()
+        camera = app.camera.transform
+        right = Vec3(camera[0, 0], 0, camera[2, 0]).normalize()
+        forward = Vec3(-camera[0, 2], 0, -camera[2, 2]).normalize()
+        choices = ((dx, dz) for dx in (-1, 0, 1) for dz in (-1, 0, 1) if dx or dz)
+
+        def score(pair):
+            return (right * pair[0] + forward * pair[1]).normalize().dot(desired)
+
+        best = max(choices, key=score)
+        old = (
+            (pyxel.KEY_RIGHT in held) - (pyxel.KEY_LEFT in held),
+            (pyxel.KEY_UP in held) - (pyxel.KEY_DOWN in held),
+        )
+        dx, dz = old if old != (0, 0) and score(best) < score(old) + 0.13 else best
+        held = set()
+        if dx:
+            held.add(pyxel.KEY_RIGHT if dx > 0 else pyxel.KEY_LEFT)
+        if dz:
+            held.add(pyxel.KEY_UP if dz > 0 else pyxel.KEY_DOWN)
+        state["held"] = held
+    if jump_frame is not None and frame in tuple(
+        jump_frame + offset for offset in jump_offsets
+    ):
+        return held | {pyxel.KEY_SPACE}
+    return held
+
+
+def input_for_frame(name, frame, pyxel, app=None, state=None):
+    keys = set()
+    mouse = None
+    if name == "c02_basic_shapes":
+        # Each sweep is a closed circle through the neutral view.
+        if 1 <= frame <= 61 or 99 <= frame <= 159:
+            start, end, direction = (1, 61, 1) if frame < 80 else (99, 159, -1)
+            phase = 2 * pi * (frame - start) / (end - start)
+            yaw = round(direction * 15 * sin(phase))
+            pitch = round(15 * (cos(phase) - 1))
+        else:
+            yaw, pitch = 0, 0
+        mouse = (120 - 2 * yaw, 120 + 2 * pitch)
+        # The shapes spin 2 degrees per frame, so 180 frames make a full loop.
+        if 98 <= frame <= 159:
+            keys.add(pyxel.KEY_SPACE)
+    elif name == "c03_custom_shapes":
+        # Sparse turning points reproduce the two cursor sweeps and their holds.
+        cursor_path = (
+            (1, 128, 182),
+            (16, 137, 119),
+            (26, 167, 93),
+            (32, 154, 73),
+            (41, 118, 68),
+            (49, 92, 86),
+            (109, 92, 86),
+            (120, 130, 64),
+            (129, 163, 77),
+            (139, 142, 111),
+            (151, 95, 102),
+            (156, 96, 98),
+        )
+        mouse = interpolate(frame, cursor_path)
+        if frame < 61 or 109 <= frame < 164:
+            keys.add(pyxel.MOUSE_BUTTON_LEFT)
+    elif name == "c04_mesh_and_motion":
+        if frame == 101:
+            keys.add(pyxel.KEY_2)
+        elif frame == 201:
+            keys.add(pyxel.KEY_3)
+    elif name == "c05_3d_collision":
+        keys = collision_input(frame, app, pyxel, state)
+    elif name == "c06_3d_physics":
+        from pyxel.cube import Mat4, Vec3
+
+        turns = (
+            (33, None),
+            (55, pyxel.KEY_DOWN),
+            (79, None),
+            (103, pyxel.KEY_UP),
+            (135, None),
+            (169, pyxel.KEY_DOWN),
+            (217, pyxel.KEY_UP),
+            (241, None),
+        )
+        for start, pitch_key in turns:
+            if start <= frame <= start + 19:
+                keys.add(pyxel.KEY_RIGHT)
+            if pitch_key is not None and start <= frame <= start + 8:
+                keys.add(pitch_key)
+        if 266 <= frame <= 275:
+            keys.add(pyxel.KEY_UP)
+        scene = app.scene
+        # Predict the view after the example handles this frame's arrow input.
+        angle = (
+            scene.angle + 2 * (pyxel.KEY_RIGHT in keys) - 2 * (pyxel.KEY_LEFT in keys)
+        )
+        pitch = max(
+            -75,
+            min(
+                75,
+                scene.pitch + 2 * (pyxel.KEY_UP in keys) - 2 * (pyxel.KEY_DOWN in keys),
+            ),
+        )
+        focus = Vec3(0, 470, 0)
+        eye = focus + Mat4.from_euler(Vec3(-pitch, angle, 0)) * Vec3(0, 0, 1100)
+        view = Mat4.look_at(eye, focus)
+        if "shots" not in state:
+            rng = random.Random(60506)
+            # Wait until each group faces the windmill before knocking it down.
+            bridge_target = (-450, 560, 280)
+            target_phases = (
+                (2, (200, 540, 195)),
+                (8, (290, 500, -80)),
+                (12, (0, 660, -125)),
+                (15, (-260, 575, -25)),
+                (18, bridge_target),
+                (20, (-260, 575, -25)),
+                (21, (-340, 420, 220)),
+            )
+            shot_frames = (
+                12,
+                22,
+                38,
+                46,
+                59,
+                69,
+                80,
+                100,
+                106,
+                116,
+                130,
+                141,
+                153,
+                167,
+                179,
+                189,
+                203,
+                215,
+                219,
+                227,
+                245,
+                253,
+                276,
+                287,
+            )
+            support_frame = 227
+            front_targets = ((0, 600, 275), (0, 650, 275))
+
+            def target_for_shot(index):
+                if index < len(front_targets):
+                    return front_targets[index]
+                return next(
+                    target
+                    for first_index, target in reversed(target_phases)
+                    if index >= first_index
+                )
+
+            shots = [
+                (
+                    base + rng.randint(-2, 2),
+                    target_for_shot(index),
+                    (
+                        round(rng.randint(-5, 5) * 0.7),
+                        round(rng.randint(-5, 5) * 0.7),
+                    ),
+                )
+                for index, base in enumerate(shot_frames)
+            ]
+            support_index = shot_frames.index(support_frame)
+            shots[support_index - 1] = (
+                shot_frames[support_index - 1],
+                bridge_target,
+                (0, 0),
+            )
+            shots[support_index] = (support_frame, bridge_target, (0, 0))
+            # Add short bursts as each stack reaches the front of the view.
+            shots.extend(
+                (
+                    (52, (200, 540, 195), (1, 0)),
+                    (90, (200, 540, 195), (1, -1)),
+                    (145, (0, 660, -125), (-1, 1)),
+                    (197, (-260, 575, -25), (1, -1)),
+                    (265, (-340, 420, 220), (-1, 1)),
+                )
+            )
+            state["shots"] = tuple(sorted(shots))
+            state["support_frame"] = support_frame
+        shots = state["shots"]
+        target_points = (
+            (1, *shots[0][1]),
+            *((shot_frame, *target) for shot_frame, target, _ in shots),
+            (300, *shots[-1][1]),
+        )
+        target = Vec3(*interpolate(frame, target_points, eased=True))
+        offset_points = (
+            (1, *shots[0][2]),
+            *((shot_frame, *offset) for shot_frame, _, offset in shots),
+            (300, *shots[-1][2]),
+        )
+        offset_x, offset_y = interpolate(frame, offset_points, eased=True)
+        local = target.to_local(view)
+        scale = 2 * pyxel.sin(scene.camera.fov / 2) / pyxel.cos(scene.camera.fov / 2)
+        scale /= pyxel.height
+        mouse = (
+            round(pyxel.width / 2 + local.x / -local.z / scale) + offset_x,
+            round(pyxel.height / 2 - local.y / -local.z / scale) + offset_y,
+        )
+        if frame in (shot_frame for shot_frame, _, _ in shots):
+            direction = (
+                view.rot
+                * Vec3(
+                    (mouse[0] - pyxel.width / 2) * scale,
+                    (pyxel.height / 2 - mouse[1]) * scale,
+                    -1,
+                ).normalize()
+            )
+            hits = [
+                hit
+                for hit in scene.raycast_all(view.pos, direction)
+                if hit.node not in scene.shots
+            ]
+            assert hits, (
+                frame,
+                target,
+                mouse,
+                tuple(
+                    (body.collider.mass, body.transform.pos)
+                    for body in scene.children
+                    if body.collider.mass in (14, 25)
+                ),
+            )
+            if hits[0].node.collider.mass > 0:
+                state["dynamic_shots"] = state.get("dynamic_shots", 0) + 1
+            if frame == shots[0][0]:
+                assert hits[0].node.collider.mass > 0
+                assert abs(hits[0].node.transform.pos.x) < 100
+            if frame == state["support_frame"]:
+                assert hits[0].node.collider.mass == 14, (
+                    frame,
+                    hits[0].node.collider.mass,
+                    hits[0].node.transform.pos,
+                )
+            keys.add(pyxel.MOUSE_BUTTON_LEFT)
+    return keys, mouse
+
+
+def save_gif(frames, destination, duration):
+    colors = sorted({color for frame in frames for _, color in frame.getcolors(256)})
+    palette = Image.new("P", (1, 1))
+    palette.putpalette(
+        [channel for color in colors for channel in color]
+        + [0] * (768 - 3 * len(colors))
+    )
+    frames = [
+        frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames
+    ]
+    frames[0].save(
+        destination,
+        save_all=True,
+        append_images=frames[1:],
+        duration=duration,
+        loop=0,
+        disposal=1,
+        optimize=True,
+    )
+
+
+def generate(name, destination):
+    import pyxel
+
+    total, scale, duration = SETTINGS[name]
+    original_init = pyxel.init
+    callbacks = {}
+
+    def init_headless(*args, **kwargs):
+        cwd = os.getcwd()
+        # Physics gravity needs the example's normal 30 FPS time step.
+        fps = 30 if name == "c06_3d_physics" else 1_000_000
+        original_init(*args, **{**kwargs, "headless": True, "fps": fps})
+        os.chdir(cwd)
+        random.seed(0)
+        pyxel.rseed(0)
+        pyxel.nseed(0)
+
+    pyxel.init = init_headless
+    pyxel.run = lambda update, draw: callbacks.update(update=update, draw=draw)
+    pyxel.play = lambda *args, **kwargs: None
+    pyxel.stop = lambda *args, **kwargs: None
+
+    os.chdir(EXAMPLES)
+    runpy.run_path(str(EXAMPLES / f"{name}.py"), run_name="__main__")
+    app = callbacks["update"].__self__
+
+    frames = []
+    held_keys = set()
+    state = {}
+    with tempfile.TemporaryDirectory() as temp_dir:
+        shot = Path(temp_dir) / "frame.png"
+        for frame in range(1, total + 1):
+            before = pyxel.frame_count
+            keys, mouse = input_for_frame(name, frame, pyxel, app, state)
+            if mouse is not None:
+                pyxel.set_mouse_pos(*mouse)
+            for key in held_keys - keys:
+                pyxel.set_btn(key, False)
+            for key in keys - held_keys:
+                pyxel.set_btn(key, True)
+            held_keys = keys
+            callbacks["update"]()
+            if name == "c03_custom_shapes" and frame in (61, 164):
+                assert len(app.targets) == 5
+            if name == "c04_mesh_and_motion" and frame in (100, 101, 200, 201, 300):
+                assert app.gazelle.motion_index == (frame - 1) // 100
+            if name == "c05_3d_collision" and frame == total:
+                assert state["ride_frames"] >= 40 and app.player.coins >= 3
+                assert app.player.on_floor
+                assert not app.goal.active
+            if name == "c06_3d_physics" and frame == total:
+                assert app.scene.shot_count == 29
+                assert state["dynamic_shots"] >= 15, state["dynamic_shots"]
+                bridge = next(
+                    body for body in app.scene.children if body.collider.mass == 14
+                )
+                capsule = next(
+                    body for body in app.scene.children if body.collider.mass == 25
+                )
+                assert bridge.transform.pos.y < 500
+                assert (bridge.transform.pos.x + 450) ** 2 + (
+                    bridge.transform.pos.z - 220
+                ) ** 2 > 100**2
+                assert capsule.transform.pos.y < 500, (
+                    bridge.transform.pos.x,
+                    capsule.transform.pos.y,
+                )
+            callbacks["draw"]()
+            pyxel.flip()
+            assert pyxel.frame_count == before + 1
+            pyxel.screenshot(str(shot), scale=scale)
+            with Image.open(shot) as image:
+                frames.append(image.convert("RGB"))
+
+    if name in ("c05_3d_collision", "c06_3d_physics"):
+        duration = [30, 30, 40] * (total // 3)
+    save_gif(frames, destination, duration)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("examples", nargs="*", choices=tuple(SETTINGS))
+    parser.add_argument("--output-dir", type=Path, default=IMAGES)
+    parser.add_argument("--worker", choices=tuple(SETTINGS), help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    args.output_dir = args.output_dir.resolve()
+    if args.worker:
+        generate(args.worker, args.output_dir / f"{args.worker}.gif")
+        return
+
+    names = args.examples or list(SETTINGS)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
+        for name in names:
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).resolve()),
+                    "--worker",
+                    name,
+                    "--output-dir",
+                    temp_dir,
+                ],
+                check=True,
+                timeout=120,
+            )
+        for name in names:
+            Path(temp_dir, f"{name}.gif").replace(args.output_dir / f"{name}.gif")
+            print(f"Generated {name}.gif")
+
+
+if __name__ == "__main__":
+    main()

@@ -74,7 +74,7 @@ class Scene(Node):
     def __init__(self):
         super().__init__()
 
-        self.angle, self.pitch = 35, 10
+        self.angle, self.pitch = 0, 30
         self.shading, self.camera = Shading(pyxel.colors), Camera()
         self.camera.far = 6000
         self.move_camera()

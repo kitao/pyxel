@@ -22,7 +22,10 @@ class MovingPlatform(Node):
         self.delta = Vec3.ZERO
 
     def on_update(self):
-        pos = self.start.lerp(self.end, (1 - pyxel.cos(pyxel.frame_count * 1.5)) / 2)
+        # Start away from the endpoint so the first trip is already underway.
+        pos = self.start.lerp(
+            self.end, (1 - pyxel.cos(pyxel.frame_count * 1.5 + 120)) / 2
+        )
         self.delta = pos - self.transform.pos
         self.transform = Mat4.from_translation(pos)
 

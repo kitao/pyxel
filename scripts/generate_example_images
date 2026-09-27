@@ -46,7 +46,7 @@ NAMES = {
 # Source frames, capture interval, output scale, playback frame rate.
 SETTINGS = {
     1: (30, 1, 2, 30),
-    2: (360, 1, 2, 30),
+    2: (300, 1, 2, 30),
     3: (280, 1, 2, 30),
     4: (180, 1, 2, 30),
     5: (0, 1, 2, 1),
@@ -54,7 +54,7 @@ SETTINGS = {
     7: (220, 1, 6, 20),
     8: (1110, 3, 2, 25),
     9: (280, 1, 2, 30),
-    10: (315, 1, 2, 30),
+    10: (300, 1, 2, 30),
     11: (240, 1, 2, 30),
     12: (300, 1, 4, 30),
     13: (0, 1, 2, 1),
@@ -170,13 +170,15 @@ def input_for_frame(number, frame, app, namespace, controls):
     mouse = None
 
     if number == 2:
-        if frame < 275:
+        if frame < 125:
             target_x = jump_target(app)
             if app.player_x < target_x - 3:
                 keys.add(pyxel.KEY_RIGHT)
             elif app.player_x > target_x + 3:
                 keys.add(pyxel.KEY_LEFT)
-        elif frame < 310:
+        elif 125 <= frame < 155 or 225 <= frame < 240:
+            keys.add(pyxel.KEY_LEFT)
+        elif 155 <= frame < 205 or 240 <= frame < 255:
             keys.add(pyxel.KEY_RIGHT)
     elif number == 3:
         if frame >= 100:
@@ -314,28 +316,21 @@ def input_for_frame(number, frame, app, namespace, controls):
             if frame % 8 == 0:
                 keys.add(pyxel.KEY_SPACE)
     elif number == 10:
-        # Show the fall and a short run before the first jump.
-        action_frame = frame - 15
-        # Wait on the ledge for the patrolling enemy to pass.
-        if not 110 <= action_frame <= 140:
+        # Land first, then let the moving enemy clear the narrow passage.
+        if frame >= 25 and not 174 <= frame <= 198:
             keys.add(pyxel.KEY_RIGHT)
-        if action_frame in (
-            2,
-            16,
-            28,
-            49,
-            64,
-            73,
-            82,
-            99,
-            174,
-            185,
-            201,
-            234,
-            252,
-            265,
-            279,
-            291,
+        if frame in (
+            47,
+            72,
+            83,
+            93,
+            131,
+            137,
+            148,
+            229,
+            242,
+            253,
+            261,
         ):
             keys.add(pyxel.KEY_SPACE)
     elif number == 14:
@@ -469,8 +464,7 @@ def generate(number, destination):
     }
     with tempfile.TemporaryDirectory() as temp_dir:
         shot = Path(temp_dir) / "frame.png"
-        preroll = 21 if number == 10 else 0
-        for frame in range(1 - preroll, total + 1):
+        for frame in range(1, total + 1):
             keys, mouse = input_for_frame(number, frame, app, namespace, controls)
             for key in held_keys - keys:
                 pyxel.set_btn(key, False)
@@ -481,6 +475,10 @@ def generate(number, destination):
                 pyxel.set_mouse_pos(*mouse)
 
             callbacks["update"]()
+            if number == 2 and frame == total:
+                assert not app.is_alive and app.score >= 600, (app.is_alive, app.score)
+            if number == 10 and frame == total:
+                assert namespace["player"].x >= 430
             callbacks["draw"]()
             pyxel.flip()
             if frame >= 1 and (frame == 1 or frame % interval == 0):
