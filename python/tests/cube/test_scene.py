@@ -19,6 +19,33 @@ from pyxel.cube import (
 
 
 class TestUpdate:
+    def test_small_parent_scales_preserve_rigid_world_velocity(self):
+        root, parent, body = Node(), Node(), Node()
+        root.transform = parent.transform = Mat4.from_scale(Vec3(0.01, 0.01, 0.01))
+        body.transform = Mat4.from_scale(Vec3(10000, 10000, 10000))
+        root.add_child(parent)
+        parent.add_child(body)
+        body.collider = Collider(
+            radius=1, velocity=Vec3.RIGHT, gravity=0, linear_damp=0
+        )
+        assert body.world_transform == Mat4.IDENTITY
+        root.update()
+        assert tuple(body.world_transform.pos) == pytest.approx((1, 0, 0), abs=1e-6)
+
+    def test_unrepresentable_parent_local_displacement_does_not_corrupt_pose(self):
+        root, body = Node(), Node()
+        root.transform = Mat4.from_scale(Vec3(1e-38, 1, 1))
+        body.transform = Mat4.from_scale(Vec3(1e38, 1, 1))
+        root.add_child(body)
+        body.collider = Collider(
+            radius=1, velocity=Vec3(10, 0, 0), gravity=0, linear_damp=0
+        )
+        before = body.transform
+        root.update()
+        # The inverse fits f32, but the requested local displacement (~1e39) does not.
+        assert body.transform == before
+        assert body.collider.velocity == Vec3(10, 0, 0)
+
     def test_update_no_children(self):
         Node().update()
 
@@ -588,6 +615,90 @@ class TestRaycast:
 
 
 class TestOverlapQueries:
+    @pytest.mark.parametrize(
+        "scale, center, overlaps",
+        [(0.5, (0.65, 0, 0), True), (2, (2.15, 2.15, 0), False)],
+    )
+    def test_overlap_box_absorbs_query_scale(self, scale, center, overlaps):
+        root, target = Node(), Node()
+        target.transform = Mat4.from_translation(Vec3(*center))
+        target.collider = Collider(radius=0.2)
+        root.add_child(target)
+        # Face distance .15 is inside radius .2; corner distance sqrt(2)*.15 is outside.
+        assert root.overlap_box(
+            Mat4.from_scale(Vec3(scale, scale, scale)), Vec3(2, 2, 2)
+        ) == ([target] if overlaps else [])
+
+    @pytest.mark.parametrize("shape", ["sphere", "capsule", "box", "mesh"])
+    @pytest.mark.parametrize(
+        "reflection", [(1, 1, 1), (-1, 1, 1), (1, -1, 1), (1, 1, -1)]
+    )
+    @pytest.mark.parametrize("distance, overlaps", [(2.1, True), (2.3, False)])
+    def test_overlap_box_rotated_nonuniform_scale_for_every_shape(
+        self, shape, reflection, distance, overlaps
+    ):
+        pose = Mat4.from_translation(Vec3(7, 8, 9)) * Mat4.from_euler(Vec3(23, 41, -17))
+        query = pose.scale_by(
+            Vec3(2 * reflection[0], 3 * reflection[1], 0.5 * reflection[2])
+        )
+        root, target = Node(), Node()
+        target.transform = pose * Mat4.from_translation(Vec3(distance, 0, 0))
+        if shape == "sphere":
+            target.collider = Collider(radius=0.2)
+        elif shape == "capsule":
+            target.collider = Collider(size=Vec3(0, 0.4, 0), radius=0.2)
+        elif shape == "box":
+            target.collider = Collider(size=Vec3(0.4, 0.4, 0.4))
+        else:
+            target.collider = Collider(
+                mesh=Mesh(
+                    primitives=[Primitive.box(Vec3(0.4, 0.4, 0.4))],
+                    transforms=[Mat4.IDENTITY],
+                    parents=[-1],
+                )
+            )
+        root.add_child(target)
+        # Each target extends .2 along the rigid-frame X axis; query ends at X=2.
+        assert root.overlap_box(query, Vec3(2, 2, 2)) == ([target] if overlaps else [])
+
+    @pytest.mark.parametrize(
+        "mat",
+        [
+            Mat4.from_scale(Vec3(1, 0, 1)),
+            Mat4.from_scale(Vec3(2, 1, 1)).rotate_z(30),
+            Mat4.from_translation(Vec3(1, 0, 0)).transpose(),
+            Mat4.from_scale(Vec3(float("inf"), 1, 1)),
+        ],
+    )
+    def test_overlap_box_rejects_unsupported_query_transforms(self, mat):
+        with raises_exact(
+            ValueError,
+            "mat must be a finite affine transform with nonzero, orthogonal axes",
+        ):
+            Node().overlap_box(mat, Vec3.ONE)
+
+    def test_overlap_box_accepts_composed_rotation_rounding(self):
+        mat = Mat4.IDENTITY
+        for _ in range(10000):
+            mat = mat.rotate_x(3).rotate_y(5).rotate_z(7)
+        root, target = Node(), Node()
+        target.collider = Collider(radius=0.2)
+        root.add_child(target)
+        assert root.overlap_box(mat.scale_by(Vec3(0.5, 2, 3)), Vec3.ONE) == [target]
+
+    def test_overlap_box_keeps_signed_and_zero_dimensions(self):
+        root, target = Node(), Node()
+        target.collider = Collider(radius=0.2)
+        root.add_child(target)
+        assert root.overlap_box(Mat4.IDENTITY, Vec3(-1, 0, 1)) == [target]
+
+    @pytest.mark.parametrize("size", [Vec3(float("nan"), 1, 1), Vec3(1e30, 1, 1)])
+    def test_overlap_box_rejects_nonfinite_scaled_dimensions(self, size):
+        with raises_exact(
+            ValueError, "size and mat scale must produce finite box dimensions"
+        ):
+            Node().overlap_box(Mat4.from_scale(Vec3(1e30, 1, 1)), size)
+
     def test_overlap_sphere_finds_overlapping_node(self):
         root = Node()
         inside = _ball(Vec3(0, 0, 0))

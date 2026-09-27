@@ -84,6 +84,27 @@ impl Motion {
         })
     }
 
+    // Only parts with usable transform channels belong to animation. Preserve
+    // authored TRS instead of decomposing matrices with signed or zero scales.
+    pub fn animated_rest_pose(&self) -> Vec<(usize, Mat4)> {
+        let mut animated = vec![false; self.base_components.len()];
+        for channel in &self.channels {
+            if channel.is_usable() {
+                if let Some(target) = animated.get_mut(channel.part_index) {
+                    *target = true;
+                }
+            }
+        }
+
+        self.base_components
+            .iter()
+            .zip(animated)
+            .enumerate()
+            .filter(|(_, (_, animated))| *animated)
+            .map(|(index, ((pos, rot, scale), _))| (index, Mat4::compose_value(pos, rot, scale)))
+            .collect()
+    }
+
     pub fn sample(&self, frame: f32, looping: bool) -> Vec<(usize, Mat4)> {
         let frame = self.resolve_frame(frame, looping);
         let mut sampled_parts: Vec<Option<(Vec3, Quat, Vec3)>> =
@@ -498,6 +519,36 @@ mod tests {
         };
 
         assert_eq!(motion.sample(15.0, false), [] as [(usize, Mat4); 0]);
+        assert_eq!(motion.animated_rest_pose(), [] as [(usize, Mat4); 0]);
+    }
+
+    #[test]
+    fn test_animated_rest_pose_preserves_authored_signed_and_zero_scale() {
+        let mut animated = identity_components();
+        animated.0.x = 3.0;
+        animated.2 = Vec3 {
+            x: -2.0,
+            y: 0.0,
+            z: 4.0,
+        };
+        let motion = Motion {
+            name: String::from("move"),
+            length: 30.0,
+            base_components: vec![animated, identity_components()],
+            channels: vec![translation_channel(MotionInterpolation::Linear)],
+        };
+        let rest = motion.animated_rest_pose();
+        assert_eq!(rest.len(), 1);
+        assert_eq!(rest[0].0, 0);
+        assert_eq!(
+            rest[0].1.data,
+            [
+                [-2.0, 0.0, 0.0, 3.0],
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ]
+        );
     }
 
     #[test]

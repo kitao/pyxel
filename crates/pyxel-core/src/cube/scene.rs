@@ -464,7 +464,7 @@ impl Scene {
                 coll.velocity = Vec3::new(velocity.x, velocity.y, velocity.z);
                 coll.angular_velocity = Vec3::new(spin.x, spin.y, spin.z);
             }
-            let world_velocity = Self::effective_linear_velocity(parent_world, &coll);
+            let (world_velocity, local_displacement) = Self::linear_motion(parent_world, &coll);
             let angular_velocity = if coll.mesh.is_none() {
                 *rc_ref!(&coll.angular_velocity)
             } else {
@@ -510,10 +510,6 @@ impl Scene {
             {
                 let transform_rc = rc_ref!(node).transform.clone();
                 let mut transform = *rc_ref!(&transform_rc);
-                let local_displacement = parent_world.map_or(world_velocity, |parent| {
-                    parent.inverse_value().mul_dir_value(&world_velocity)
-                });
-
                 // Apply the parent-local displacement without assuming the
                 // transform's homogeneous row is canonical.
                 let homogeneous = transform.data[3];
@@ -549,20 +545,32 @@ impl Scene {
         }
     }
 
-    fn effective_linear_velocity(parent_world: Option<&Mat4>, coll: &Collider) -> Vec3 {
-        let parent_is_invertible = parent_world.is_none_or(|parent| {
-            let determinant = parent.determinant();
-            determinant.is_finite() && determinant.abs() >= 1e-12
-        });
-        if coll.mesh.is_some() || !parent_is_invertible {
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            }
-        } else {
-            *rc_ref!(&coll.velocity)
+    // World and parent-local displacement share the same invertibility check.
+    // Stationary and mesh colliders need no parent inverse.
+    fn linear_motion(parent_world: Option<&Mat4>, coll: &Collider) -> (Vec3, Vec3) {
+        let zero = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        if coll.mesh.is_some() {
+            return (zero, zero);
         }
+        let velocity = *rc_ref!(&coll.velocity);
+        if velocity == zero {
+            return (zero, zero);
+        }
+        let Some(parent) = parent_world else {
+            return (velocity, velocity);
+        };
+        let Some(inverse) = parent.try_inverse_value() else {
+            return (zero, zero);
+        };
+        let local = inverse.mul_dir_value(&velocity);
+        if !local.x.is_finite() || !local.y.is_finite() || !local.z.is_finite() {
+            return (zero, zero);
+        }
+        (velocity, local)
     }
 
     // Collision detection: AABB refresh, broad phase, narrow phase, and
@@ -2104,7 +2112,15 @@ impl Scene {
         let world = parent_world.map_or(local, |parent| parent.mul_mat_value(&local));
         if let Some(coll_rc) = &node_ref.collider {
             let coll = rc_ref!(coll_rc);
-            let velocity = Self::effective_linear_velocity(parent_world, &coll);
+            let velocity = if swept {
+                Self::linear_motion(parent_world, &coll).0
+            } else {
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                }
+            };
             let mut aabb = collider_aabb(&coll, &world);
             if swept {
                 aabb = Self::swept_aabb(aabb, velocity);
@@ -3223,7 +3239,9 @@ impl Scene {
         size: Vec3,
         hit_triggers: bool,
         tags_filter: Option<&[String]>,
-    ) -> Vec<RcNode> {
+    ) -> Result<Vec<RcNode>, String> {
+        let (transform, size) = Self::box_query_transform(transform, size)?;
+        let transform = &transform;
         let probe = Aabb::from_rounded_box(transform, size, 0.0);
         let probe_half = Vec3 {
             x: size.x.abs() * 0.5,
@@ -3271,7 +3289,75 @@ impl Scene {
             }
         });
 
-        out
+        Ok(out)
+    }
+
+    fn box_query_transform(transform: &Mat4, size: Vec3) -> Result<(Mat4, Vec3), String> {
+        let invalid_transform =
+            || "mat must be a finite affine transform with nonzero, orthogonal axes".to_string();
+        if !transform
+            .data
+            .iter()
+            .flatten()
+            .all(|value| value.is_finite())
+            || transform.data[3] != [0.0, 0.0, 0.0, 1.0]
+        {
+            return Err(invalid_transform());
+        }
+
+        let mut axes = [[0.0_f64; 3]; 3];
+        let mut lengths = [0.0; 3];
+        for (axis, values) in axes.iter_mut().enumerate() {
+            for (row, value) in values.iter_mut().enumerate() {
+                *value = f64::from(transform.data[row][axis]);
+            }
+            lengths[axis] = values.iter().map(|value| value * value).sum::<f64>().sqrt();
+            if lengths[axis] == 0.0 {
+                return Err(invalid_transform());
+            }
+            for value in values {
+                *value /= lengths[axis];
+            }
+        }
+
+        // Unit-axis dot products make this independent of model size. 1e-4
+        // allows accumulated f32 rotation roundoff (under 0.006 degrees).
+        for (a, b) in [(0, 1), (0, 2), (1, 2)] {
+            let dot: f64 = (0..3).map(|i| axes[a][i] * axes[b][i]).sum();
+            if dot.abs() > 1e-4 {
+                return Err(invalid_transform());
+            }
+        }
+
+        let [x, y, z] = axes;
+        let determinant = x[0] * (y[1] * z[2] - y[2] * z[1]) - y[0] * (x[1] * z[2] - x[2] * z[1])
+            + z[0] * (x[1] * y[2] - x[2] * y[1]);
+        // Reflecting a centered box axis leaves its occupied volume unchanged.
+        if determinant < 0.0 {
+            axes[2] = axes[2].map(|value| -value);
+        }
+
+        let mut rigid = *transform;
+        for (axis, values) in axes.iter().enumerate() {
+            for (row, value) in values.iter().enumerate() {
+                rigid.data[row][axis] = *value as f32;
+            }
+        }
+
+        let dimensions: [f32; 3] = std::array::from_fn(|i| {
+            (f64::from([size.x, size.y, size.z][i]).abs() * lengths[i]) as f32
+        });
+        if !dimensions.iter().all(|value| value.is_finite()) {
+            return Err("size and mat scale must produce finite box dimensions".to_string());
+        }
+        Ok((
+            rigid,
+            Vec3 {
+                x: dimensions[0],
+                y: dimensions[1],
+                z: dimensions[2],
+            },
+        ))
     }
 
     fn mesh_overlaps_sphere(world_mesh: &Mat4, mesh: &RcMesh, center: Vec3, radius: f32) -> bool {
@@ -8166,7 +8252,8 @@ mod tests {
             },
             false,
             None,
-        );
+        )
+        .unwrap();
         assert_eq!(nodes.len(), 1);
         assert!(std::rc::Rc::ptr_eq(&nodes[0], &inside));
     }
@@ -8193,7 +8280,8 @@ mod tests {
             },
             false,
             None,
-        );
+        )
+        .unwrap();
         assert!(nodes.is_empty());
     }
 
@@ -8220,7 +8308,8 @@ mod tests {
             },
             false,
             None,
-        );
+        )
+        .unwrap();
         assert!(nodes.is_empty());
     }
 
@@ -8260,7 +8349,8 @@ mod tests {
             },
             false,
             None,
-        );
+        )
+        .unwrap();
         assert!(!nodes.iter().any(|n| std::rc::Rc::ptr_eq(n, &terrain)));
     }
 

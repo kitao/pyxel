@@ -22,6 +22,7 @@ def test_wasm_wheel_check_rejects_generated_metadata_and_host_paths(tmp_path, ca
         wheel_zip.writestr("pyxel/module.pyo", b"optimized bytecode")
         wheel_zip.writestr("pyxel/examples/.DS_Store", b"metadata")
         wheel_zip.writestr("pyxel/pyxel_binding.abi3.so", b"/Users/example/src")
+        wheel_zip.writestr("pyxel/examples/tool.js", b"/home/example/src")
 
     assert checker.find_violations(wheel_path) == [
         ("pyxel/__pycache__/module.cpython-314.pyc", "generated Python bytecode"),
@@ -29,6 +30,7 @@ def test_wasm_wheel_check_rejects_generated_metadata_and_host_paths(tmp_path, ca
         ("pyxel/module.pyo", "generated Python bytecode"),
         ("pyxel/examples/.DS_Store", "platform metadata file"),
         ("pyxel/pyxel_binding.abi3.so", "host path b'/Users/'"),
+        ("pyxel/examples/tool.js", "host path b'/home/'"),
     ]
 
     checker.DIST_DIR = tmp_path
@@ -40,22 +42,40 @@ def test_wasm_wheel_check_rejects_generated_metadata_and_host_paths(tmp_path, ca
     assert "error: invalid contents detected" in output.err
 
 
-def test_wasm_wheel_check_detects_stale_packaged_sources(tmp_path):
+@pytest.mark.parametrize("filename", ["cli.py", "tool.js"])
+def test_wasm_wheel_check_detects_stale_packaged_sources(tmp_path, filename):
     checker = _load_script("check_wasm_wheel")
     source_dir = tmp_path / "pyxel"
     source_dir.mkdir()
-    (source_dir / "cli.py").write_text("current\n", encoding="utf-8")
+    (source_dir / filename).write_text("current\n", encoding="utf-8")
 
     wheel_path = tmp_path / "pyxel-test-pyemscripten_2026_0_wasm32.whl"
     with zipfile.ZipFile(wheel_path, "w") as wheel_zip:
-        wheel_zip.writestr("pyxel/cli.py", "stale\n")
+        wheel_zip.writestr(f"pyxel/{filename}", "stale\n")
 
     assert checker.find_source_mismatches(wheel_path, source_dir) == [
-        ("pyxel/cli.py", "differs from python/pyxel/cli.py")
+        (f"pyxel/{filename}", f"differs from python/pyxel/{filename}")
     ]
 
 
-def test_wasm_wheel_check_detects_removed_packaged_sources(tmp_path):
+@pytest.mark.parametrize("filename", ["cli.py", "tool.js"])
+def test_wasm_wheel_check_detects_missing_packaged_sources(tmp_path, filename):
+    checker = _load_script("check_wasm_wheel")
+    source_dir = tmp_path / "pyxel"
+    source_dir.mkdir()
+    (source_dir / filename).write_text("current\n", encoding="utf-8")
+
+    wheel_path = tmp_path / "pyxel-test-pyemscripten_2026_0_wasm32.whl"
+    with zipfile.ZipFile(wheel_path, "w"):
+        pass
+
+    assert checker.find_source_mismatches(wheel_path, source_dir) == [
+        (f"pyxel/{filename}", "missing packaged source")
+    ]
+
+
+@pytest.mark.parametrize("filename", ["removed.py", "tool.js"])
+def test_wasm_wheel_check_detects_removed_packaged_sources(tmp_path, filename):
     checker = _load_script("check_wasm_wheel")
     source_dir = tmp_path / "pyxel"
     source_dir.mkdir()
@@ -64,10 +84,10 @@ def test_wasm_wheel_check_detects_removed_packaged_sources(tmp_path):
     wheel_path = tmp_path / "pyxel-test-pyemscripten_2026_0_wasm32.whl"
     with zipfile.ZipFile(wheel_path, "w") as wheel_zip:
         wheel_zip.writestr("pyxel/cli.py", "current\n")
-        wheel_zip.writestr("pyxel/removed.py", "stale\n")
+        wheel_zip.writestr(f"pyxel/{filename}", "stale\n")
 
     assert checker.find_source_mismatches(wheel_path, source_dir) == [
-        ("pyxel/removed.py", "not present in python/pyxel")
+        (f"pyxel/{filename}", "not present in python/pyxel")
     ]
 
 

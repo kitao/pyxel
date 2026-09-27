@@ -2,7 +2,7 @@
 
 ## 3.0.0
 
-- Added the Pyxel Cube software-rendered 3D extension module
+- Added Pyxel Cube software-rendered 3D and Blockbench model references
 - Removed old MML syntax and pre-2.0 resource loading
 - Updated Pyodide to 314.0.6 and WebAssembly wheel platform tags
 - Added an app2exe install extra for PyInstaller
@@ -27,6 +27,7 @@
 - Fixed OpenGL cleanup on application shutdown
 - Improved wheel builds, validation, and SDL2 download verification
 - Fixed Windows development setup and partial version updates
+- Fixed playback timing in documentation GIFs
 - Improved documentation and translations
 
 ## 2.9.9

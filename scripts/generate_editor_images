@@ -13,6 +13,7 @@ import tempfile
 from itertools import pairwise
 from pathlib import Path
 
+from _image_capture import save_gif
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,27 +110,6 @@ def input_for_frame(editor, frame, pyxel):
         if frame == 123:
             keys.add(pyxel.KEY_SPACE)
     return keys, mouse
-
-
-def save_gif(frames, destination, durations=30):
-    colors = sorted({color for frame in frames for _, color in frame.getcolors(256)})
-    palette = Image.new("P", (1, 1))
-    palette.putpalette(
-        [channel for color in colors for channel in color]
-        + [0] * (768 - 3 * len(colors))
-    )
-    frames = [
-        frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames
-    ]
-    frames[0].save(
-        destination,
-        save_all=True,
-        append_images=frames[1:],
-        duration=durations,
-        loop=0,
-        disposal=1,
-        optimize=True,
-    )
 
 
 def generate(editor, destination):
@@ -234,7 +214,7 @@ def combine(editors, sources, destination):
                 image.seek(index)
                 frames.append(image.convert("RGB"))
                 durations.append(image.info["duration"])
-    save_gif(frames, destination, durations)
+    save_gif(frames, destination, durations=durations)
 
 
 def main():
@@ -254,7 +234,7 @@ def main():
         if editor in outputs
         or any(editor in COMPOSITES[name] for name in outputs if name in COMPOSITES)
     ]
-    output_dir = args.output_dir or DOC_IMAGES
+    output_dir = (args.output_dir or DOC_IMAGES).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output_dir) as temp_dir:
         for editor in editors:
@@ -270,18 +250,24 @@ def main():
                 check=True,
                 timeout=120,
             )
+
         for name in outputs:
             if name in COMPOSITES:
                 combine(
                     COMPOSITES[name], Path(temp_dir), Path(temp_dir) / OUTPUTS[name]
                 )
+
         for editor in outputs:
             name = OUTPUTS[editor]
             source = Path(temp_dir) / name
             target = output_dir / name
-            target.write_bytes(source.read_bytes())
             if args.output_dir is None and editor in FRAMES:
-                (MANUAL_IMAGES / name).write_bytes(source.read_bytes())
+                # Stage each manual copy beside its destination for atomic replacement.
+                with tempfile.TemporaryDirectory(dir=MANUAL_IMAGES) as manual_temp:
+                    copy = Path(manual_temp) / name
+                    copy.write_bytes(source.read_bytes())
+                    copy.replace(MANUAL_IMAGES / name)
+            source.replace(target)
             print(f"Generated {name}")
 
 

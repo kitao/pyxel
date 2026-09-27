@@ -114,6 +114,7 @@ class Player(Node):
         if motion != self.motion:
             self.motion = motion
             self.motion_frame = 0
+        # Advance frames manually to speed up the start of the jump animation.
         self.actor.apply_motion(self.motions[motion], self.motion_frame)
         speed = max(1.8 - self.motion_frame / 40, 1)
         self.motion_frame += speed if motion == "jump" else 1

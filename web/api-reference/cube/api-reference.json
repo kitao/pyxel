@@ -2428,18 +2428,18 @@
           "type": "function",
           "signature": "inverse()",
           "description": {
-            "en": "Return the inverse matrix. A singular matrix returns the identity.",
-            "cn": "返回逆矩阵。奇异矩阵会返回单位矩阵。",
-            "de": "Gibt die inverse Matrix zurück. Eine singuläre Matrix gibt die Identitätsmatrix zurück.",
-            "es": "Devuelve la matriz inversa. Una matriz singular devuelve la identidad.",
-            "fr": "Renvoie la matrice inverse. Une matrice singulière renvoie l'identité.",
-            "it": "Restituisce la matrice inversa. Una matrice singolare restituisce l'identità.",
-            "ja": "逆行列を返す。逆行列が存在しない場合は単位行列を返す。",
-            "ko": "역행렬을 반환합니다. 특이 행렬은 항등 행렬을 반환합니다.",
-            "pt": "Retorna a matriz inversa. Uma matriz singular retorna a identidade.",
-            "ru": "Возвращает обратную матрицу. Для сингулярной матрицы возвращается единичная.",
-            "tr": "Ters matrisi döndürür. Tekil bir matris birim matrisi döndürür.",
-            "uk": "Повертає обернену матрицю. Для сингулярної матриці повертається одинична."
+            "en": "Return the inverse matrix. Return the identity if no inverse exists or its components cannot be represented as finite 32-bit floats.",
+            "cn": "返回逆矩阵。若逆矩阵不存在或其分量无法表示为有限的 32 位浮点数，则返回单位矩阵。",
+            "de": "Gibt die inverse Matrix zurück. Existiert sie nicht oder sind ihre Komponenten nicht als endliche 32-Bit-Gleitkommazahlen darstellbar, wird die Identitätsmatrix zurückgegeben.",
+            "es": "Devuelve la matriz inversa. Devuelve la identidad si no existe o sus componentes no se pueden representar como valores finitos de 32 bits.",
+            "fr": "Renvoie la matrice inverse. Renvoie l'identité si elle n'existe pas ou si ses composantes ne peuvent pas être représentées par des flottants finis de 32 bits.",
+            "it": "Restituisce la matrice inversa. Restituisce l'identità se non esiste o le sue componenti non sono rappresentabili come float finiti a 32 bit.",
+            "ja": "逆行列を返す。逆行列が存在しない場合、または各成分を有限の 32 ビット浮動小数点数で表せない場合は単位行列を返す。",
+            "ko": "역행렬을 반환합니다. 역행렬이 없거나 성분을 유한한 32비트 부동소수점 수로 표현할 수 없으면 단위 행렬을 반환합니다.",
+            "pt": "Retorna a matriz inversa. Retorna a identidade se ela não existir ou seus componentes não puderem ser representados como floats finitos de 32 bits.",
+            "ru": "Возвращает обратную матрицу. Если она не существует или её компоненты нельзя представить конечными 32-битными числами с плавающей точкой, возвращает единичную матрицу.",
+            "tr": "Ters matrisi döndürür. Tersi yoksa veya bileşenleri sonlu 32 bit kayan noktalı sayılarla temsil edilemiyorsa birim matrisi döndürür.",
+            "uk": "Повертає обернену матрицю. Якщо вона не існує або її компоненти не можна подати скінченними 32-бітними числами з рухомою комою, повертає одиничну матрицю."
           },
           "returns": {
             "type": "Mat4"
@@ -4739,18 +4739,18 @@
           ],
           "advanced": false,
           "notes": {
-            "en": "Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared.",
-            "cn": "部件列表属性返回副本。修改列表后需将其重新赋给属性；列表中的 Primitive 对象仍然共享。",
-            "de": "Teil-Listenattribute liefern Kopien. Eine bearbeitete Liste muss dem Attribut wieder zugewiesen werden; ihre Primitive-Objekte bleiben gemeinsam genutzt.",
-            "es": "Los atributos de listas de partes devuelven copias. Tras editar una lista, asígnela de nuevo al atributo; sus objetos Primitive siguen compartidos.",
-            "fr": "Les attributs de listes de pièces renvoient des copies. Après modification, réaffectez la liste à l'attribut ; ses objets Primitive restent partagés.",
-            "it": "Gli attributi con liste di parti restituiscono copie. Dopo una modifica, riassegnare la lista all'attributo; gli oggetti Primitive contenuti restano condivisi.",
-            "ja": "部品リストの属性はコピーを返す。リストを編集するときは、変更したリストを属性に代入し直す。中の Primitive は共有される。",
-            "ko": "부품 리스트 속성은 복사본을 반환합니다. 리스트를 수정한 뒤 속성에 다시 대입해야 하며, 안의 Primitive 객체는 계속 공유됩니다.",
-            "pt": "Os atributos de listas de partes retornam cópias. Após editar uma lista, atribua-a novamente ao atributo; seus objetos Primitive continuam compartilhados.",
-            "ru": "Атрибуты списков частей возвращают копии. После изменения списка присвойте его обратно атрибуту; объекты Primitive в нём остаются общими.",
-            "tr": "Parça listesi öznitelikleri kopya döndürür. Listeyi düzenledikten sonra özniteliğe yeniden atayın; içindeki Primitive nesneleri paylaşılmaya devam eder.",
-            "uk": "Атрибути списків частин повертають копії. Після зміни списку присвойте його назад атрибуту; об'єкти Primitive в ньому залишаються спільними."
+            "en": "Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared. Imported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image; col_img exposes the first imported texture, not all material slots.",
+            "cn": "部件列表属性返回副本。修改列表后需将其重新赋给属性；列表中的 Primitive 对象仍然共享。 导入的逐部件材质优先于 col_img 和 colkey。替换这些默认值不会替换导入材质，也不会更新已有节点。编辑共享 Image 的像素会影响该图像的所有使用者；col_img 只暴露第一个导入纹理，并非所有材质槽。",
+            "de": "Teil-Listenattribute liefern Kopien. Eine bearbeitete Liste muss dem Attribut wieder zugewiesen werden; ihre Primitive-Objekte bleiben gemeinsam genutzt. Importierte Teilmaterialien haben Vorrang vor col_img und colkey. Das Ersetzen dieser Standardwerte ersetzt weder importierte Materialien noch aktualisiert es bestehende Nodes. Pixeländerungen einer gemeinsamen Image wirken auf alle ihre Nutzer; col_img stellt nur die erste importierte Textur bereit, nicht alle Materialplätze.",
+            "es": "Los atributos de listas de partes devuelven copias. Tras editar una lista, asígnela de nuevo al atributo; sus objetos Primitive siguen compartidos. Los materiales importados por parte tienen prioridad sobre col_img y colkey. Sustituir estos valores predeterminados no reemplaza materiales importados ni actualiza nodos existentes. Editar píxeles de una Image compartida afecta a todos sus usuarios; col_img expone la primera textura importada, no todos los materiales.",
+            "fr": "Les attributs de listes de pièces renvoient des copies. Après modification, réaffectez la liste à l'attribut ; ses objets Primitive restent partagés. Les matériaux importés par partie priment sur col_img et colkey. Remplacer ces valeurs par défaut ne remplace pas les matériaux importés et ne met pas à jour les nœuds existants. Modifier les pixels d'une Image partagée affecte tous ses utilisateurs ; col_img expose la première texture importée, pas tous les emplacements de matériau.",
+            "it": "Gli attributi con liste di parti restituiscono copie. Dopo una modifica, riassegnare la lista all'attributo; gli oggetti Primitive contenuti restano condivisi. I materiali importati per parte hanno precedenza su col_img e colkey. Sostituire questi valori predefiniti non cambia i materiali importati né aggiorna i nodi esistenti. Modificare i pixel di un'Image condivisa influisce su tutti i suoi utilizzatori; col_img espone la prima texture importata, non tutti gli slot dei materiali.",
+            "ja": "部品リストの属性はコピーを返す。リストを編集するときは、変更したリストを属性に代入し直す。中の Primitive は共有される。 読み込んだパーツ別のマテリアルは col_img と colkey より優先する。これらの既定値を置き換えても、読み込み済みマテリアルや既存ノードは更新されない。共有 Image の画素編集は、その画像を使うすべての個体に反映される。col_img が公開するのは最初の読み込みテクスチャで、すべてのマテリアルではない。",
+            "ko": "부품 리스트 속성은 복사본을 반환합니다. 리스트를 수정한 뒤 속성에 다시 대입해야 하며, 안의 Primitive 객체는 계속 공유됩니다. 가져온 파트별 재질은 col_img와 colkey보다 우선합니다. 이 기본값을 교체해도 가져온 재질이나 기존 노드는 갱신되지 않습니다. 공유 Image의 픽셀을 편집하면 해당 이미지를 쓰는 모든 대상에 반영됩니다. col_img는 첫 번째로 가져온 텍스처만 제공하며 모든 재질 슬롯을 제공하지 않습니다.",
+            "pt": "Os atributos de listas de partes retornam cópias. Após editar uma lista, atribua-a novamente ao atributo; seus objetos Primitive continuam compartilhados. Materiais importados por parte têm prioridade sobre col_img e colkey. Substituir esses padrões não troca materiais importados nem atualiza nós existentes. Editar pixels de uma Image compartilhada afeta todos os seus usuários; col_img expõe a primeira textura importada, não todos os materiais.",
+            "ru": "Атрибуты списков частей возвращают копии. После изменения списка присвойте его обратно атрибуту; объекты Primitive в нём остаются общими. Импортированные материалы частей имеют приоритет над col_img и colkey. Замена этих значений по умолчанию не заменяет импортированные материалы и не обновляет существующие узлы. Изменение пикселей общей Image влияет на всех её пользователей; col_img предоставляет первую импортированную текстуру, а не все слоты материалов.",
+            "tr": "Parça listesi öznitelikleri kopya döndürür. Listeyi düzenledikten sonra özniteliğe yeniden atayın; içindeki Primitive nesneleri paylaşılmaya devam eder. İçe aktarılan parça malzemeleri col_img ve colkey değerlerinden önceliklidir. Bu varsayılanları değiştirmek içe aktarılan malzemeleri değiştirmez veya mevcut düğümleri güncellemez. Paylaşılan bir Image pikselini düzenlemek tüm kullanıcılarını etkiler; col_img tüm malzeme yuvalarını değil ilk içe aktarılan dokuyu sunar.",
+            "uk": "Атрибути списків частин повертають копії. Після зміни списку присвойте його назад атрибуту; об'єкти Primitive в ньому залишаються спільними. Імпортовані матеріали частин мають пріоритет над col_img і colkey. Заміна цих типових значень не змінює імпортовані матеріали та не оновлює наявні вузли. Зміна пікселів спільної Image впливає на всіх її користувачів; col_img надає першу імпортовану текстуру, а не всі слоти матеріалів."
           }
         },
         {
@@ -5377,12 +5377,12 @@
               "type": "float",
               "description": {
                 "en": "Gravity strength in m/s². Defaults to 9.8; 0 disables gravity.",
-                "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。",
                 "cn": "重力强度 (m/s²)，默认为 9.8，0 表示禁用。",
                 "de": "Gravitationsstärke in m/s². Standard: 9.8; 0 deaktiviert die Gravitation.",
                 "es": "Intensidad de la gravedad en m/s². Por defecto, 9.8; 0 la desactiva.",
                 "fr": "Intensité de la gravité en m/s². Par défaut : 9.8 ; 0 désactive la gravité.",
                 "it": "Intensità della gravità in m/s². Valore predefinito: 9.8; 0 la disattiva.",
+                "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。",
                 "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다.",
                 "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade.",
                 "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию.",
@@ -5395,12 +5395,12 @@
               "type": "Vec3",
               "description": {
                 "en": "World-space gravity direction. Defaults to Vec3.DOWN.",
-                "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。",
                 "cn": "世界空间中的重力方向，默认为 Vec3.DOWN。",
                 "de": "Gravitationsrichtung in Weltkoordinaten. Standard: Vec3.DOWN.",
                 "es": "Dirección de la gravedad en el espacio global. Por defecto, Vec3.DOWN.",
                 "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN.",
                 "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN.",
+                "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。",
                 "ko": "월드 공간의 중력 방향. 기본값은 Vec3.DOWN입니다.",
                 "pt": "Direção da gravidade no espaço global. Padrão: Vec3.DOWN.",
                 "ru": "Направление гравитации в мировом пространстве. По умолчанию Vec3.DOWN.",
@@ -5413,12 +5413,12 @@
               "type": "float",
               "description": {
                 "en": "Linear damping per second. Defaults to 0.1.",
-                "ja": "並進の毎秒の減衰係数。既定値は 0.1。",
                 "cn": "线性：每秒阻尼系数，默认为 0.1。",
                 "de": "Linear: Dämpfung pro Sekunde, Standard 0.1.",
                 "es": "Lineal: Amortiguación por segundo, por defecto 0.1.",
                 "fr": "Linéaire : Amortissement par seconde, par défaut 0.1.",
                 "it": "Lineare: Smorzamento al secondo, predefinito 0.1.",
+                "ja": "並進の毎秒の減衰係数。既定値は 0.1。",
                 "ko": "선형: 초당 감쇠 계수이며 기본값은 0.1입니다.",
                 "pt": "Linear: Amortecimento por segundo, padrão 0.1.",
                 "ru": "Линейная скорость: Коэффициент затухания в секунду, по умолчанию 0.1.",
@@ -5431,12 +5431,12 @@
               "type": "float",
               "description": {
                 "en": "Angular damping per second. Defaults to 0.1.",
-                "ja": "回転の毎秒の減衰係数。既定値は 0.1。",
                 "cn": "角速度：每秒阻尼系数，默认为 0.1。",
                 "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1.",
                 "es": "Angular: Amortiguación por segundo, por defecto 0.1.",
                 "fr": "Angulaire : Amortissement par seconde, par défaut 0.1.",
                 "it": "Angolare: Smorzamento al secondo, predefinito 0.1.",
+                "ja": "回転の毎秒の減衰係数。既定値は 0.1。",
                 "ko": "각속도: 초당 감쇠 계수이며 기본값은 0.1입니다.",
                 "pt": "Angular: Amortecimento por segundo, padrão 0.1.",
                 "ru": "Угловая скорость: Коэффициент затухания в секунду, по умолчанию 0.1.",
@@ -5625,18 +5625,18 @@
           "type": "variable",
           "signature": "velocity",
           "description": {
-            "en": "World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response.",
-            "cn": "非 mesh 碰撞体在每次更新时应用的世界空间位移。若父节点的世界变换为奇异矩阵，则不应用该位移，并在扫掠碰撞检测和接触响应中将其按 0 处理。",
-            "de": "Verschiebung im World Space, die bei einem Nicht-Mesh-Collider pro Update angewendet wird. Ist die Welttransformation des Eltern-Nodes singulär, wird diese Verschiebung übersprungen und für die kontinuierliche Kollisionserkennung und Kontaktreaktion als null behandelt.",
-            "es": "Desplazamiento en espacio mundial aplicado a un collider sin mesh en cada actualización. Si el transform mundial del nodo padre es singular, este desplazamiento no se aplica y se considera cero para la detección de colisiones por barrido y la respuesta de contacto.",
-            "fr": "Déplacement en espace monde appliqué à chaque mise à jour à un collider sans mesh. Si la transformation monde du nœud parent est singulière, ce déplacement n'est pas appliqué et vaut zéro pour la détection continue des collisions et la réponse de contact.",
-            "it": "Spostamento nello spazio globale applicato a ogni aggiornamento a un collider senza mesh. Se il transform globale del nodo padre è singolare, lo spostamento non viene applicato ed è considerato zero per il rilevamento continuo delle collisioni e la risposta al contatto.",
-            "ja": "非メッシュコライダーに update ごとに適用されるワールド座標の変位。親ノードのワールド変換が特異行列の場合、この変位は適用されず、スイープ衝突判定と接触応答でも 0 として扱われる。",
-            "ko": "mesh가 없는 collider에 매 업데이트마다 적용되는 월드 공간 변위입니다. 부모 노드의 월드 transform이 특이 행렬이면 이 변위는 적용되지 않으며 스윕 충돌 감지와 접촉 응답에서도 0으로 처리됩니다.",
-            "pt": "Deslocamento em espaço mundial aplicado a um collider sem mesh a cada atualização. Se o transform mundial do nó pai for singular, esse deslocamento não será aplicado e será tratado como zero na detecção de colisão por varredura e na resposta de contato.",
-            "ru": "Смещение в мировом пространстве, применяемое при каждом обновлении к коллайдеру без mesh. Если мировое преобразование родительского узла вырождено, смещение не применяется и считается нулевым при проверке столкновений по траектории и расчёте контактной реакции.",
-            "tr": "Mesh içermeyen bir collider'a her güncellemede uygulanan dünya uzayı yer değiştirmesi. Üst düğümün dünya transform'u tekilse bu yer değiştirme uygulanmaz ve sürekli çarpışma algılama ile temas tepkisinde sıfır kabul edilir.",
-            "uk": "Зміщення у світовому просторі, що застосовується під час кожного оновлення до колайдера без mesh. Якщо світове перетворення батьківського вузла вироджене, зміщення не застосовується й вважається нульовим під час перевірки зіткнень уздовж траєкторії та розрахунку контактної реакції."
+            "en": "World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. The same rule applies if the inverse or converted local displacement cannot be represented by finite 32-bit floats.",
+            "cn": "非 mesh 碰撞体在每次更新时应用的世界空间位移。若父节点的世界变换为奇异矩阵，则不应用该位移，并在扫掠碰撞检测和接触响应中将其按 0 处理。 若逆矩阵或转换后的局部位移无法表示为有限的 32 位浮点数，也采用相同规则。",
+            "de": "Verschiebung im World Space, die bei einem Nicht-Mesh-Collider pro Update angewendet wird. Ist die Welttransformation des Eltern-Nodes singulär, wird diese Verschiebung übersprungen und für die kontinuierliche Kollisionserkennung und Kontaktreaktion als null behandelt. Das gilt auch, wenn die inverse Matrix oder die umgerechnete lokale Verschiebung nicht durch endliche 32-Bit-Gleitkommazahlen darstellbar ist.",
+            "es": "Desplazamiento en espacio mundial aplicado a un collider sin mesh en cada actualización. Si el transform mundial del nodo padre es singular, este desplazamiento no se aplica y se considera cero para la detección de colisiones por barrido y la respuesta de contacto. La misma regla se aplica si la inversa o el desplazamiento local convertido no se pueden representar con valores finitos de 32 bits.",
+            "fr": "Déplacement en espace monde appliqué à chaque mise à jour à un collider sans mesh. Si la transformation monde du nœud parent est singulière, ce déplacement n'est pas appliqué et vaut zéro pour la détection continue des collisions et la réponse de contact. La même règle s'applique si l'inverse ou le déplacement local converti ne peuvent pas être représentés par des flottants finis de 32 bits.",
+            "it": "Spostamento nello spazio globale applicato a ogni aggiornamento a un collider senza mesh. Se il transform globale del nodo padre è singolare, lo spostamento non viene applicato ed è considerato zero per il rilevamento continuo delle collisioni e la risposta al contatto. La stessa regola vale se l'inversa o lo spostamento locale convertito non sono rappresentabili come float finiti a 32 bit.",
+            "ja": "非メッシュコライダーに update ごとに適用されるワールド座標の変位。親ノードのワールド変換が特異行列の場合、この変位は適用されず、スイープ衝突判定と接触応答でも 0 として扱われる。 逆行列または変換後のローカル変位を有限の 32 ビット浮動小数点数で表せない場合も同様。",
+            "ko": "mesh가 없는 collider에 매 업데이트마다 적용되는 월드 공간 변위입니다. 부모 노드의 월드 transform이 특이 행렬이면 이 변위는 적용되지 않으며 스윕 충돌 감지와 접촉 응답에서도 0으로 처리됩니다. 역행렬 또는 변환한 로컬 변위를 유한한 32비트 부동소수점 수로 표현할 수 없을 때도 같은 규칙이 적용됩니다.",
+            "pt": "Deslocamento em espaço mundial aplicado a um collider sem mesh a cada atualização. Se o transform mundial do nó pai for singular, esse deslocamento não será aplicado e será tratado como zero na detecção de colisão por varredura e na resposta de contato. A mesma regra se aplica se a inversa ou o deslocamento local convertido não puderem ser representados como floats finitos de 32 bits.",
+            "ru": "Смещение в мировом пространстве, применяемое при каждом обновлении к коллайдеру без mesh. Если мировое преобразование родительского узла вырождено, смещение не применяется и считается нулевым при проверке столкновений по траектории и расчёте контактной реакции. То же правило действует, если обратную матрицу или преобразованное локальное смещение нельзя представить конечными 32-битными числами с плавающей точкой.",
+            "tr": "Mesh içermeyen bir collider'a her güncellemede uygulanan dünya uzayı yer değiştirmesi. Üst düğümün dünya transform'u tekilse bu yer değiştirme uygulanmaz ve sürekli çarpışma algılama ile temas tepkisinde sıfır kabul edilir. Ters matris veya dönüştürülen yerel yer değiştirme sonlu 32 bit kayan noktalı sayılarla temsil edilemiyorsa aynı kural uygulanır.",
+            "uk": "Зміщення у світовому просторі, що застосовується під час кожного оновлення до колайдера без mesh. Якщо світове перетворення батьківського вузла вироджене, зміщення не застосовується й вважається нульовим під час перевірки зіткнень уздовж траєкторії та розрахунку контактної реакції. Те саме правило діє, якщо обернену матрицю або перетворене локальне зміщення не можна подати скінченними 32-бітними числами з рухомою комою."
           },
           "value_type": "Vec3",
           "advanced": false
@@ -5668,12 +5668,12 @@
           "signature": "gravity",
           "description": {
             "en": "Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.",
-            "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。100 ワールド単位を 1m とし、pyxel.init で設定した fps を使って、更新ごとに正規化した gravity_direction × gravity × 100 / fps² を velocity に加える。mesh がなく mass > 0 のコライダーにのみ適用する。負の値は方向を反転する。 pyxel.init 前の fps は 30。",
             "cn": "重力强度 (m/s²)，默认为 9.8，0 表示禁用。每次更新向 velocity 加上归一化的 gravity_direction × gravity × 100 / fps²，fps 取自 pyxel.init，100 个世界单位对应 1 米。仅作用于未设置 mesh 且 mass > 0 的碰撞体。负值反转方向。 pyxel.init 之前，fps 为 30。",
             "de": "Gravitationsstärke in m/s². Standard: 9.8; 0 deaktiviert die Gravitation. Pro Update wird die normierte gravity_direction × gravity × 100 / fps² zu velocity addiert. fps stammt aus pyxel.init; 100 Welteinheiten entsprechen einem Meter. Gilt nur ohne mesh und mit mass > 0. Negative Werte kehren die Richtung um. Vor pyxel.init beträgt fps 30.",
             "es": "Intensidad de la gravedad en m/s². Por defecto, 9.8; 0 la desactiva. Cada actualización suma a velocity gravity_direction normalizada × gravity × 100 / fps², con el fps de pyxel.init y 100 unidades del mundo por metro. Solo afecta a colliders sin mesh y con mass > 0. Un valor negativo invierte la dirección. Antes de pyxel.init, fps es 30.",
             "fr": "Intensité de la gravité en m/s². Par défaut : 9.8 ; 0 désactive la gravité. Chaque mise à jour ajoute à velocity gravity_direction normalisée × gravity × 100 / fps², avec le fps de pyxel.init et 100 unités du monde par mètre. Ne concerne que les colliders sans mesh avec mass > 0. Une valeur négative inverse la direction. Avant pyxel.init, fps vaut 30.",
             "it": "Intensità della gravità in m/s². Valore predefinito: 9.8; 0 la disattiva. Ogni aggiornamento aggiunge a velocity gravity_direction normalizzata × gravity × 100 / fps², usando fps di pyxel.init e 100 unità del mondo per metro. Si applica solo senza mesh e con mass > 0. Un valore negativo inverte la direzione. Prima di pyxel.init, fps è 30.",
+            "ja": "重力の強さ (m/s²)。既定値は 9.8。0 で重力を無効にする。100 ワールド単位を 1m とし、pyxel.init で設定した fps を使って、更新ごとに正規化した gravity_direction × gravity × 100 / fps² を velocity に加える。mesh がなく mass > 0 のコライダーにのみ適用する。負の値は方向を反転する。 pyxel.init 前の fps は 30。",
             "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다. 매 업데이트마다 정규화한 gravity_direction × gravity × 100 / fps²를 velocity에 더합니다. fps는 pyxel.init의 설정값이며 월드 단위 100이 1m입니다. mesh가 없고 mass > 0인 콜라이더에만 적용됩니다. 음수는 방향을 반전합니다. pyxel.init 전에는 fps가 30입니다.",
             "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade. Cada atualização soma a velocity gravity_direction normalizada × gravity × 100 / fps², usando fps de pyxel.init e 100 unidades do mundo por metro. Aplica-se apenas sem mesh e com mass > 0. Um valor negativo inverte a direção. Antes de pyxel.init, fps é 30.",
             "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию. При каждом обновлении к velocity прибавляется нормализованный gravity_direction × gravity × 100 / fps². fps задаётся в pyxel.init; 100 мировых единиц соответствуют метру. Действует только без mesh и при mass > 0. Отрицательное значение меняет направление на обратное. До pyxel.init значение fps равно 30.",
@@ -5689,12 +5689,12 @@
           "signature": "gravity_direction",
           "description": {
             "en": "World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.",
-            "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。内部で正規化するため、ベクトルの長さは強さに影響しない。Vec3.ZERO なら重力は加わらない。ノードや親の回転には影響されない。",
             "cn": "世界空间中的重力方向，默认为 Vec3.DOWN。内部会归一化，因此长度不影响强度；Vec3.ZERO 不施加重力。不受节点或父节点旋转影响。",
             "de": "Gravitationsrichtung in Weltkoordinaten. Standard: Vec3.DOWN. Wird intern normiert; die Länge beeinflusst die Stärke nicht. Vec3.ZERO bewirkt keine Gravitation. Unabhängig von Knoten- und Elternrotationen.",
             "es": "Dirección de la gravedad en el espacio global. Por defecto, Vec3.DOWN. Se normaliza internamente: su longitud no cambia la intensidad. Vec3.ZERO no aplica gravedad. Independiente de las rotaciones del nodo y sus padres.",
             "fr": "Direction de la gravité dans le monde. Par défaut : Vec3.DOWN. Normalisée en interne : sa longueur ne change pas l'intensité. Vec3.ZERO n'applique aucune gravité. Indépendante des rotations du nœud et de ses parents.",
             "it": "Direzione della gravità nello spazio globale. Valore predefinito: Vec3.DOWN. Normalizzata internamente: la lunghezza non cambia l'intensità. Vec3.ZERO non applica gravità. Indipendente dalle rotazioni del nodo e dei suoi genitori.",
+            "ja": "ワールド空間での重力方向。既定値は Vec3.DOWN。内部で正規化するため、ベクトルの長さは強さに影響しない。Vec3.ZERO なら重力は加わらない。ノードや親の回転には影響されない。",
             "ko": "월드 공간의 중력 방향. 기본값은 Vec3.DOWN입니다. 내부에서 정규화하므로 길이는 세기에 영향을 주지 않습니다. Vec3.ZERO는 중력을 적용하지 않습니다. 노드와 부모의 회전과 무관합니다.",
             "pt": "Direção da gravidade no espaço global. Padrão: Vec3.DOWN. Normalizada internamente: o comprimento não altera a intensidade. Vec3.ZERO não aplica gravidade. Independente das rotações do nó e dos pais.",
             "ru": "Направление гравитации в мировом пространстве. По умолчанию Vec3.DOWN. Нормализуется внутри: длина не влияет на силу. Vec3.ZERO отключает действие гравитации. Не зависит от поворотов узла и его родителей.",
@@ -5710,12 +5710,12 @@
           "signature": "linear_damp",
           "description": {
             "en": "Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
-            "ja": "並進の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
             "cn": "线性：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
             "de": "Linear: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
             "es": "Lineal: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
             "fr": "Linéaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
             "it": "Lineare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
+            "ja": "並進の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
             "ko": "선형: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
             "pt": "Linear: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
             "ru": "Линейная скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
@@ -5731,12 +5731,12 @@
           "signature": "angular_damp",
           "description": {
             "en": "Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
-            "ja": "回転の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
             "cn": "角速度：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
             "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
             "es": "Angular: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
             "fr": "Angulaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
             "it": "Angolare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
+            "ja": "回転の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
             "ko": "각속도: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
             "pt": "Angular: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
             "ru": "Угловая скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
@@ -5787,12 +5787,7 @@
             "def on_collide(self, other, contact):",
             "    offset = contact.normal * contact.depth",
             "    if self.parent is not None:",
-            "        parent_world = self.parent.world_transform",
-            "        offset = (",
-            "            Vec3.ZERO",
-            "            if abs(parent_world.determinant()) < 1e-12",
-            "            else offset.to_local_dir(parent_world)",
-            "        )",
+            "        offset = offset.to_local_dir(self.parent.world_transform)",
             "",
             "    push = Mat4.from_translation(offset)",
             "    self.transform = push * self.transform",
@@ -6167,6 +6162,27 @@
           "advanced": false
         },
         {
+          "name": "opacity",
+          "type": "variable",
+          "signature": "opacity",
+          "value_type": "float",
+          "advanced": false,
+          "description": {
+            "en": "Dithered coverage, clamped to 0-1; defaults to 1. Multiplies ancestor opacity and each draw command's dither, including when drawing a subtree directly. Does not affect updates or collisions.",
+            "cn": "抖动覆盖率，限制为 0～1，默认值为 1。与祖先的 opacity 和每条绘制命令的 dither 相乘，直接绘制子树时也一样。不影响更新或碰撞。",
+            "de": "Geditherte Deckung, auf 0–1 begrenzt; Standardwert 1. Wird mit opacity der Vorfahren und dither jedes Zeichenbefehls multipliziert, auch beim direkten Zeichnen eines Teilbaums. Beeinflusst weder Updates noch Kollisionen.",
+            "es": "Cobertura por tramado, limitada a 0-1; valor predeterminado 1. Se multiplica por opacity de los ancestros y dither de cada dibujo, incluso al dibujar directamente un subárbol. No afecta actualizaciones ni colisiones.",
+            "fr": "Couverture par tramage, limitée à 0-1 ; valeur par défaut 1. Se multiplie par opacity des ancêtres et dither de chaque dessin, même lors du dessin direct d'un sous-arbre. N'affecte ni mises à jour ni collisions.",
+            "it": "Copertura con dithering, limitata a 0-1; valore predefinito 1. Si moltiplica per opacity degli antenati e dither di ogni disegno, anche disegnando direttamente un sottoalbero. Non influisce su aggiornamenti o collisioni.",
+            "ja": "ディザによる被覆率。0〜1 に制限し、デフォルトは 1。祖先の opacity と各描画命令の dither に乗算する。サブツリーを直接描画する場合も同じ。更新や衝突には影響しない。",
+            "ko": "디더링으로 표현하는 피복률로 0~1로 제한되며 기본값은 1입니다. 하위 트리를 직접 그릴 때도 조상의 opacity 및 각 그리기 명령의 dither와 곱합니다. 업데이트나 충돌에는 영향을 주지 않습니다.",
+            "pt": "Cobertura por dithering, limitada a 0-1; padrão 1. Multiplica opacity dos ancestrais e dither de cada desenho, inclusive ao desenhar uma subárvore diretamente. Não afeta atualizações nem colisões.",
+            "ru": "Покрытие дизерингом, ограниченное 0–1; по умолчанию 1. Умножается на opacity предков и dither каждой команды, в том числе при прямом рисовании поддерева. Не влияет на обновления и столкновения.",
+            "tr": "Dither ile kaplama oranı; 0-1 aralığına sınırlanır, varsayılan 1'dir. Alt ağaç doğrudan çizildiğinde de ataların opacity ve her çizim komutunun dither değeriyle çarpılır. Güncellemeleri veya çarpışmaları etkilemez.",
+            "uk": "Покриття дизерингом, обмежене до 0–1; типово 1. Множиться на opacity предків і dither кожної команди, зокрема під час прямого малювання піддерева. Не впливає на оновлення чи зіткнення."
+          }
+        },
+        {
           "name": "camera",
           "type": "variable",
           "signature": "camera",
@@ -6444,18 +6460,18 @@
           "type": "class",
           "signature": "Node.from_mesh(mesh)",
           "description": {
-            "en": "Create a Node tree from a Mesh and return its root node. Each call creates independent nodes and motion playback state; Primitive data is shared.",
-            "cn": "从 Mesh 创建 Node 树，并返回其根节点。每次调用都会创建独立的节点和动画播放状态；Primitive 数据共享。",
-            "de": "Erstellt aus einem Mesh einen Node-Baum und gibt dessen Wurzel-Node zurück. Jeder Aufruf erzeugt unabhängige Nodes und einen eigenen Animationszustand; Primitive-Daten werden gemeinsam genutzt.",
-            "es": "Crea un árbol de Node a partir de un Mesh y devuelve su nodo raíz. Cada llamada crea nodos y un estado de reproducción independientes; los datos de Primitive se comparten.",
-            "fr": "Crée un arbre de Node depuis un Mesh et renvoie son nœud racine. Chaque appel crée des nœuds et un état de lecture d'animation indépendants ; les données Primitive sont partagées.",
-            "it": "Crea un albero di Node da un Mesh e restituisce il nodo radice. Ogni chiamata crea nodi e uno stato di riproduzione indipendenti; i dati Primitive sono condivisi.",
-            "ja": "Mesh から Node ツリーを作り、そのルートノードを返す。呼び出すたびに独立したノードとモーション再生状態を作る。Primitive のデータは共有する。",
-            "ko": "Mesh에서 Node 트리를 만들고 루트 노드를 반환합니다. 호출할 때마다 독립적인 노드와 모션 재생 상태를 만들며 Primitive 데이터는 공유합니다.",
-            "pt": "Cria uma árvore de Node a partir de um Mesh e retorna seu nó raiz. Cada chamada cria nós e um estado de reprodução independentes; os dados Primitive são compartilhados.",
-            "ru": "Создаёт дерево Node из Mesh и возвращает его корневой узел. Каждый вызов создаёт независимые узлы и состояние воспроизведения анимации; данные Primitive используются совместно.",
-            "tr": "Bir Mesh değerinden Node ağacı oluşturur ve kök düğümünü döndürür. Her çağrı bağımsız düğümler ve animasyon oynatma durumu oluşturur; Primitive verileri paylaşılır.",
-            "uk": "Створює дерево Node з Mesh і повертає його кореневий вузол. Кожен виклик створює незалежні вузли та стан відтворення анімації; дані Primitive використовуються спільно."
+            "en": "Create an independent model instance beneath a new identity placement root. Imported part transforms and motions never overwrite this root. Geometry and textures remain shared.",
+            "cn": "在新的单位变换放置根节点下创建独立模型实例。导入部件的变换和动画不会覆盖此根节点。几何数据和纹理仍然共享。",
+            "de": "Erzeugt eine unabhängige Modellinstanz unter einer neuen Platzierungswurzel mit Identitätstransformation. Importierte Teiltransformationen und Animationen überschreiben diese Wurzel nicht. Geometrie und Texturen bleiben gemeinsam genutzt.",
+            "es": "Crea una instancia independiente bajo una nueva raíz de colocación con transformación identidad. Las transformaciones y animaciones importadas no sobrescriben esta raíz. La geometría y las texturas siguen compartidas.",
+            "fr": "Crée une instance indépendante sous une nouvelle racine de placement à transformation identité. Les transformations et animations importées ne modifient pas cette racine. La géométrie et les textures restent partagées.",
+            "it": "Crea un'istanza indipendente sotto una nuova radice di posizionamento con trasformazione identità. Le trasformazioni e animazioni importate non sovrascrivono questa radice. Geometria e texture restano condivise.",
+            "ja": "単位変換の配置用ルートの下に、独立したモデル個体を作る。読み込んだパーツの変換やモーションは、このルートを上書きしない。形状データとテクスチャは共有される。",
+            "ko": "단위 변환을 가진 새 배치 루트 아래에 독립적인 모델 인스턴스를 만듭니다. 가져온 파트의 변환과 모션은 이 루트를 덮어쓰지 않습니다. 기하 데이터와 텍스처는 공유됩니다.",
+            "pt": "Cria uma instância independente sob uma nova raiz de posicionamento com transformação identidade. Transformações e animações importadas não sobrescrevem essa raiz. Geometria e texturas continuam compartilhadas.",
+            "ru": "Создаёт независимый экземпляр под новым корнем размещения с единичным преобразованием. Преобразования и анимации импортированных частей не изменяют этот корень. Геометрия и текстуры остаются общими.",
+            "tr": "Birim dönüşümlü yeni bir yerleşim kökü altında bağımsız bir model örneği oluşturur. İçe aktarılan parça dönüşümleri ve hareketleri bu kökün üzerine yazmaz. Geometri ve dokular paylaşılır.",
+            "uk": "Створює незалежний екземпляр під новим коренем розміщення з одиничним перетворенням. Перетворення й анімації імпортованих частин не змінюють цей корінь. Геометрія та текстури залишаються спільними."
           },
           "params": [
             {
@@ -6610,18 +6626,18 @@
           "type": "function",
           "signature": "apply_motion(motion, frame, *, loop=True)",
           "description": {
-            "en": "Sample a Motion at the given frame, replacing the matching local transforms in this Node.from_mesh() subtree. Keep scene placement and scale on a separate parent.",
-            "cn": "在指定帧采样 Motion，替换此 Node.from_mesh() 子树中匹配的局部变换。场景位置和缩放应放在单独的父节点上。",
-            "de": "Wertet eine Motion im angegebenen Frame aus und ersetzt die passenden lokalen Transformationen dieses Node.from_mesh()-Teilbaums. Szenenplatzierung und Skalierung gehören auf einen separaten Eltern-Node.",
-            "es": "Muestrea un Motion en el fotograma indicado y reemplaza los transforms locales correspondientes de este subárbol Node.from_mesh(). Mantenga la posición y escala en la escena en un padre separado.",
-            "fr": "Échantillonne une Motion à l'image indiquée et remplace les transformations locales correspondantes de ce sous-arbre Node.from_mesh(). Gardez le placement et l'échelle dans la scène sur un parent distinct.",
-            "it": "Campiona una Motion al frame indicato e sostituisce le trasformazioni locali corrispondenti di questo sottoalbero Node.from_mesh(). Tenere posizione e scala nella scena su un genitore separato.",
-            "ja": "指定フレームで Motion をサンプリングし、この Node.from_mesh() 由来のサブツリーの対応するローカル変換を置き換える。シーン内の配置と拡大縮小は別の親ノードに設定する。",
-            "ko": "지정 프레임에서 Motion을 샘플링하여 이 Node.from_mesh() 하위 트리의 해당 로컬 변환을 대체합니다. 장면 배치와 크기 조절은 별도의 부모 노드에 설정하세요.",
-            "pt": "Amostra uma Motion no quadro indicado e substitui as transformações locais correspondentes desta subárvore Node.from_mesh(). Mantenha posição e escala na cena em um pai separado.",
-            "ru": "Вычисляет Motion в указанном кадре, заменяя соответствующие локальные преобразования в этом поддереве Node.from_mesh(). Размещение и масштаб в сцене задавайте отдельному родительскому узлу.",
-            "tr": "Motion değerini belirtilen karede örnekleyerek bu Node.from_mesh() alt ağacındaki ilgili yerel dönüşümleri değiştirir. Sahnedeki konumu ve ölçeği ayrı bir üst düğümde tutun.",
-            "uk": "Обчислює Motion у вказаному кадрі, замінюючи відповідні локальні перетворення в цьому піддереві Node.from_mesh(). Розміщення та масштаб у сцені задавайте окремому батьківському вузлу."
+            "en": "Sample a Motion at the given frame, replacing matching local part transforms in this subtree of the same model instance. Other parts and the placement root are unchanged.",
+            "cn": "在指定帧采样 Motion，替换此子树中属于同一模型实例的匹配部件局部变换。其他部件和放置根节点不变。",
+            "de": "Tastet eine Motion am angegebenen Frame ab und ersetzt passende lokale Teiltransformationen derselben Modellinstanz in diesem Teilbaum. Andere Teile und die Platzierungswurzel bleiben unverändert.",
+            "es": "Muestrea una Motion en el fotograma indicado y sustituye las transformaciones locales coincidentes de la misma instancia en este subárbol. Las demás partes y la raíz de colocación no cambian.",
+            "fr": "Échantillonne une Motion à l'image donnée et remplace les transformations locales correspondantes de la même instance dans ce sous-arbre. Les autres parties et la racine de placement sont inchangées.",
+            "it": "Campiona una Motion al frame indicato, sostituendo le trasformazioni locali corrispondenti della stessa istanza in questo sottoalbero. Le altre parti e la radice di posizionamento restano invariate.",
+            "ja": "指定フレームの Motion をサンプリングし、このサブツリー内で同じモデル個体に属する対象パーツのローカル変換を置き換える。対象外のパーツと配置用ルートは変えない。",
+            "ko": "지정한 프레임에서 Motion을 샘플링하여 이 하위 트리 안의 같은 모델 인스턴스에 속한 대상 파트의 로컬 변환을 교체합니다. 다른 파트와 배치 루트는 바꾸지 않습니다.",
+            "pt": "Amostra uma Motion no frame indicado, substituindo as transformações locais correspondentes da mesma instância nesta subárvore. As demais partes e a raiz de posicionamento não mudam.",
+            "ru": "Выбирает кадр Motion и заменяет соответствующие локальные преобразования частей того же экземпляра в этом поддереве. Остальные части и корень размещения не изменяются.",
+            "tr": "Motion verisini belirtilen karede örnekleyerek bu alt ağaçtaki aynı model örneğine ait eşleşen yerel parça dönüşümlerini değiştirir. Diğer parçalar ve yerleşim kökü değişmez.",
+            "uk": "Семплює Motion у вказаному кадрі й замінює відповідні локальні перетворення частин того самого екземпляра в цьому піддереві. Інші частини та корінь розміщення не змінюються."
           },
           "params": [
             {
@@ -6779,7 +6795,21 @@
           "returns": {
             "type": "None"
           },
-          "advanced": false
+          "advanced": false,
+          "notes": {
+            "en": "Each call restarts playback. Before sampling start_frame, restore the imported translation, rotation and scale of same-instance parts in this subtree targeted by any imported transform clip. This removes previous-clip poses while preserving never-animated parts, attached instances and placement. apply_motion does not perform this reset.",
+            "cn": "每次调用都会重新开始播放。采样 start_frame 前，将此子树中同一实例内被任一导入变换动画指定的部件恢复为导入时的平移、旋转和缩放。这会清除上一动画的姿势，同时保留从未参与动画的部件、附加实例和放置变换。apply_motion 不执行此重置。",
+            "de": "Jeder Aufruf startet neu. Vor start_frame werden importierte Translation, Rotation und Skalierung aller Teile derselben Instanz in diesem Teilbaum wiederhergestellt, die irgendein importierter Transformationsclip anspricht. So entfallen Posen früherer Clips; nie animierte Teile, angehängte Instanzen und die Platzierung bleiben erhalten. apply_motion setzt nichts zurück.",
+            "es": "Cada llamada reinicia la reproducción. Antes de muestrear start_frame, restaura la traslación, rotación y escala importadas de las partes de la misma instancia en este subárbol animadas por cualquier clip de transformación importado. Elimina poses del clip anterior y conserva partes nunca animadas, instancias adjuntas y colocación. apply_motion no hace este reinicio.",
+            "fr": "Chaque appel redémarre la lecture. Avant start_frame, restaure translation, rotation et échelle importées des parties de la même instance dans ce sous-arbre visées par un clip de transformation importé quelconque. Cela efface les poses du clip précédent, en préservant les parties jamais animées, les instances attachées et le placement. apply_motion ne fait pas cette réinitialisation.",
+            "it": "Ogni chiamata riavvia la riproduzione. Prima di campionare start_frame, ripristina traslazione, rotazione e scala importate delle parti della stessa istanza in questo sottoalbero animate da qualsiasi clip di trasformazione importata. Elimina le pose della clip precedente, preservando parti mai animate, istanze collegate e posizionamento. apply_motion non esegue questo ripristino.",
+            "ja": "呼び出すたびに再生を開始し直す。start_frame の適用前に、このサブツリー内の同じ個体に属し、読み込んだいずれかの変換クリップで対象になるパーツの平行移動・回転・拡大縮小を読み込み時の値へ戻す。前のクリップの姿勢を除きつつ、一度もアニメーション対象にならないパーツ、追加した別個体、配置を保つ。apply_motion はこの復元を行わない。",
+            "ko": "호출할 때마다 재생을 다시 시작합니다. start_frame을 적용하기 전에 이 하위 트리의 같은 인스턴스에서 가져온 변환 클립 중 하나라도 대상으로 삼는 파트의 이동, 회전, 배율을 가져올 당시 값으로 복원합니다. 이전 클립의 자세를 제거하면서 애니메이션 대상이 아닌 파트, 연결한 다른 인스턴스와 배치를 보존합니다. apply_motion은 이 복원을 하지 않습니다.",
+            "pt": "Cada chamada reinicia a reprodução. Antes de amostrar start_frame, restaura translação, rotação e escala importadas das partes da mesma instância nesta subárvore visadas por qualquer clipe de transformação importado. Remove poses do clipe anterior, preservando partes nunca animadas, instâncias anexadas e posicionamento. apply_motion não faz essa restauração.",
+            "ru": "Каждый вызов перезапускает воспроизведение. Перед выборкой start_frame восстанавливает импортированные перенос, вращение и масштаб частей того же экземпляра в этом поддереве, затронутых любым импортированным клипом преобразований. Убирает позы предыдущего клипа, сохраняя никогда не анимированные части, присоединённые экземпляры и размещение. apply_motion этого сброса не делает.",
+            "tr": "Her çağrı oynatmayı yeniden başlatır. start_frame örneklenmeden önce, bu alt ağaçta aynı örneğe ait ve içe aktarılan herhangi bir dönüşüm klibinin hedeflediği parçaların içe aktarıldıkları öteleme, dönme ve ölçek değerleri geri yüklenir. Önceki klibin pozları temizlenir; hiç canlandırılmayan parçalar, eklenen örnekler ve yerleşim korunur. apply_motion bu sıfırlamayı yapmaz.",
+            "uk": "Кожен виклик перезапускає відтворення. Перед семплюванням start_frame відновлює імпортовані перенесення, обертання й масштаб частин того самого екземпляра в цьому піддереві, на які діє будь-який імпортований кліп перетворень. Прибирає пози попереднього кліпу, зберігаючи ніколи не анімовані частини, приєднані екземпляри й розміщення. apply_motion цього скидання не робить."
+          }
         },
         {
           "name": "stop_motion",
@@ -9075,7 +9105,21 @@
           "returns": {
             "type": "None"
           },
-          "advanced": false
+          "advanced": false,
+          "notes": {
+            "en": "on_update: At each hook traversal, visit the nodes present at its start at most once, in the original tree order. Check current subtree membership and ancestor active state before each call. Nodes added during that traversal join the next traversal; existing nodes enabled before their turn can run immediately.",
+            "cn": "on_update: 每次钩子遍历按开始时的树顺序访问当时存在的节点，每个最多一次。调用前检查当前子树归属和祖先的 active 状态。遍历期间新增的节点从下次遍历起参与；已有节点若在轮到它之前启用，则可立即执行。",
+            "de": "on_update: Jeder Hook-Durchlauf besucht die anfangs vorhandenen Nodes höchstens einmal in ihrer ursprünglichen Baumreihenfolge. Vor jedem Aufruf werden aktuelle Teilbaumzugehörigkeit und active-Zustand der Vorfahren geprüft. Neue Nodes nehmen am nächsten Durchlauf teil; rechtzeitig aktivierte vorhandene Nodes können sofort laufen.",
+            "es": "on_update: Cada recorrido de hooks visita los nodos presentes al inicio como máximo una vez, en el orden original del árbol. Antes de cada llamada comprueba la pertenencia actual al subárbol y active de los ancestros. Los nuevos nodos participan en el siguiente recorrido; los existentes habilitados antes de su turno pueden ejecutarse de inmediato.",
+            "fr": "on_update: Chaque parcours des hooks visite au plus une fois les nœuds présents au départ, dans l'ordre initial de l'arbre. Avant chaque appel, vérifie l'appartenance actuelle au sous-arbre et active des ancêtres. Les nouveaux nœuds participent au prochain parcours ; les nœuds existants activés avant leur tour peuvent être exécutés immédiatement.",
+            "it": "on_update: Ogni visita degli hook percorre al massimo una volta i nodi presenti all'inizio, nell'ordine originale dell'albero. Prima di ogni chiamata verifica appartenenza attuale al sottoalbero e active degli antenati. I nuovi nodi partecipano dalla visita successiva; quelli esistenti attivati prima del proprio turno possono essere eseguiti subito.",
+            "ja": "on_update: 各フックの巡回は、開始時に存在したノードを元の木の順序で最大一回ずつ処理する。呼び出し前に、現在のサブツリーへの所属と祖先の active を確認する。巡回中に追加したノードは次の巡回から対象になる。既存ノードを順番が来る前に有効化した場合は、その巡回で実行できる。",
+            "ko": "on_update: 각 훅 순회는 시작할 때 존재한 노드를 원래 트리 순서대로 최대 한 번 방문합니다. 호출 전에 현재 하위 트리 소속과 조상의 active 상태를 확인합니다. 순회 중 추가된 노드는 다음 순회부터 참여하고, 기존 노드는 차례 전에 활성화되면 바로 실행될 수 있습니다.",
+            "pt": "on_update: Cada percurso de hooks visita os nós presentes no início no máximo uma vez, na ordem original da árvore. Antes de cada chamada verifica a presença atual na subárvore e active dos ancestrais. Novos nós entram no próximo percurso; nós existentes ativados antes de sua vez podem executar imediatamente.",
+            "ru": "on_update: Каждый обход хуков посещает существовавшие в его начале узлы не более одного раза в исходном порядке дерева. Перед вызовом проверяет текущую принадлежность поддереву и active предков. Добавленные узлы участвуют со следующего обхода; существующий узел, включённый до своей очереди, может выполниться сразу.",
+            "tr": "on_update: Her kanca dolaşımı başlangıçta bulunan düğümleri ilk ağaç sırasıyla en fazla bir kez ziyaret eder. Her çağrıdan önce geçerli alt ağaç üyeliği ve ataların active durumu denetlenir. Dolaşım sırasında eklenen düğümler sonraki dolaşıma katılır; sırası gelmeden etkinleştirilen mevcut düğümler hemen çalışabilir.",
+            "uk": "on_update: Кожен обхід хуків відвідує наявні на його початку вузли щонайбільше один раз у початковому порядку дерева. Перед викликом перевіряє поточну належність піддереву та active предків. Додані вузли беруть участь із наступного обходу; наявний вузол, увімкнений до своєї черги, може виконатися одразу."
+          }
         },
         {
           "name": "draw",
@@ -9191,7 +9235,21 @@
             "type": "None"
           },
           "examples": ["scene.draw(0, 0, pyxel.width, pyxel.height)"],
-          "advanced": false
+          "advanced": false,
+          "notes": {
+            "en": "Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.",
+            "cn": "使用与 update() 相同的遍历规则，但检查 visible 而非 active。每次进入 on_draw 时重置绘制状态；继承的 opacity 仍然生效。",
+            "de": "Verwendet dieselben Durchlaufregeln wie update(), prüft aber visible statt active. Der Zeichenstatus wird bei jedem on_draw zurückgesetzt; geerbte opacity gilt weiterhin.",
+            "es": "Usa las reglas de recorrido de update(), comprobando visible en lugar de active. El estado de dibujo se reinicia al entrar en cada on_draw; opacity heredada sigue aplicándose.",
+            "fr": "Suit les règles de parcours de update(), en vérifiant visible plutôt que active. L'état de dessin est réinitialisé à chaque entrée dans on_draw ; opacity héritée reste appliquée.",
+            "it": "Usa le regole di visita di update(), controllando visible invece di active. Lo stato di disegno si azzera a ogni ingresso in on_draw; opacity ereditata resta applicata.",
+            "ja": "update() と同じ巡回規則を使い、active の代わりに visible を確認する。描画状態は各 on_draw の開始時にリセットするが、継承した opacity は引き続き適用する。",
+            "ko": "update()와 같은 순회 규칙을 사용하되 active 대신 visible을 확인합니다. 각 on_draw 시작 시 그리기 상태가 초기화되지만 상속한 opacity는 계속 적용됩니다.",
+            "pt": "Usa as regras de percurso de update(), verificando visible em vez de active. O estado de desenho é reiniciado em cada on_draw; opacity herdada continua aplicada.",
+            "ru": "Использует правила обхода update(), проверяя visible вместо active. Состояние рисования сбрасывается при входе в каждый on_draw; унаследованная opacity продолжает действовать.",
+            "tr": "update() ile aynı dolaşım kurallarını kullanır; active yerine visible denetlenir. Her on_draw girişinde çizim durumu sıfırlanır; devralınan opacity uygulanmaya devam eder.",
+            "uk": "Використовує правила обходу update(), перевіряючи visible замість active. Стан малювання скидається на вході до кожного on_draw; успадкована opacity продовжує діяти."
+          }
         },
         {
           "name": "raycast",
@@ -9588,36 +9646,36 @@
               "name": "mat",
               "type": "Mat4",
               "description": {
-                "en": "Box placement in world space.",
-                "cn": "世界空间中的盒体放置。",
-                "de": "Box-Platzierung im World Space.",
-                "es": "Colocación de la caja en espacio mundial.",
-                "fr": "Placement de la boîte dans l'espace monde.",
-                "it": "Posizionamento del box nello spazio globale.",
-                "ja": "ボックスの配置（ワールド座標）。",
-                "ko": "월드 공간에서의 박스 배치입니다.",
-                "pt": "Posicionamento da caixa no espaço mundial.",
-                "ru": "Размещение коробки в мировом пространстве.",
-                "tr": "Dünya uzayında kutu yerleşimi.",
-                "uk": "Розміщення коробки у світовому просторі."
+                "en": "World-space translation, rotation and nonzero scale of the box. Scale is applied to size; reflections are supported. Sheared, non-affine or non-finite matrices raise ValueError.",
+                "cn": "盒体在世界空间中的平移、旋转和非零缩放。缩放作用于 size，支持镜像。剪切、非仿射或非有限矩阵会引发 ValueError。",
+                "de": "Translation, Rotation und von null verschiedene Skalierung der Box im World Space. Die Skalierung wirkt auf size; Spiegelungen werden unterstützt. Scherungen, nicht-affine oder nicht-endliche Matrizen lösen ValueError aus.",
+                "es": "Traslación, rotación y escala no nula de la caja en espacio mundial. La escala se aplica a size; se admiten reflexiones. Las matrices con cizallamiento, no afines o no finitas generan ValueError.",
+                "fr": "Translation, rotation et échelle non nulle de la boîte dans l'espace monde. L'échelle s'applique à size ; les symétries sont prises en charge. Les matrices cisaillées, non affines ou non finies lèvent ValueError.",
+                "it": "Traslazione, rotazione e scala non nulla del box nello spazio globale. La scala si applica a size; le riflessioni sono supportate. Matrici con shear, non affini o non finite generano ValueError.",
+                "ja": "ボックスのワールド座標での平行移動・回転・ゼロでない拡大縮小。倍率を size に適用し、反転にも対応する。せん断、非アフィン、非有限の行列は ValueError。",
+                "ko": "월드 공간에서 박스의 이동, 회전 및 0이 아닌 배율입니다. 배율은 size에 적용되며 반전도 지원합니다. 전단, 비아핀 또는 유한하지 않은 행렬은 ValueError를 발생시킵니다.",
+                "pt": "Translação, rotação e escala não nula da caixa no espaço mundial. A escala se aplica a size; reflexões são aceitas. Matrizes com cisalhamento, não afins ou não finitas geram ValueError.",
+                "ru": "Перенос, вращение и ненулевой масштаб коробки в мировых координатах. Масштаб применяется к size; отражения поддерживаются. Сдвиговые, неаффинные матрицы или матрицы с неконечными значениями вызывают ValueError.",
+                "tr": "Kutunun dünya uzayındaki ötelemesi, dönmesi ve sıfır olmayan ölçeği. Ölçek size değerine uygulanır; yansımalar desteklenir. Kesme içeren, afin olmayan veya sonlu olmayan matrisler ValueError üretir.",
+                "uk": "Перенесення, обертання й ненульовий масштаб коробки у світових координатах. Масштаб застосовується до size; відбиття підтримуються. Матриці зі зсувом осей, неафінні або з нескінченними значеннями чи NaN викликають ValueError."
               }
             },
             {
               "name": "size",
               "type": "Vec3",
               "description": {
-                "en": "Edge lengths along each axis.",
-                "cn": "沿各轴的边长。",
-                "de": "Kantenlängen entlang jeder Achse.",
-                "es": "Longitudes de arista a lo largo de cada eje.",
-                "fr": "Longueurs des arêtes le long de chaque axe.",
-                "it": "Lunghezze degli spigoli lungo ciascun asse.",
-                "ja": "各軸の辺の長さ。",
-                "ko": "각 축 방향의 변 길이입니다.",
-                "pt": "Comprimentos das arestas ao longo de cada eixo.",
-                "ru": "Длины рёбер вдоль каждой оси.",
-                "tr": "Her eksen boyunca kenar uzunlukları.",
-                "uk": "Довжини ребер уздовж кожної осі."
+                "en": "Local edge lengths along each axis. Absolute values are used. Non-finite lengths or scaled dimensions raise ValueError.",
+                "cn": "各轴的局部边长，取绝对值。边长或缩放后的尺寸非有限时引发 ValueError。",
+                "de": "Lokale Kantenlängen entlang jeder Achse; es werden Absolutwerte verwendet. Nicht-endliche Längen oder skalierte Abmessungen lösen ValueError aus.",
+                "es": "Longitudes locales por eje, usando valores absolutos. Las longitudes o dimensiones escaladas no finitas generan ValueError.",
+                "fr": "Longueurs locales des arêtes par axe, prises en valeur absolue. Les longueurs ou dimensions mises à l'échelle non finies lèvent ValueError.",
+                "it": "Lunghezze locali degli spigoli per asse, in valore assoluto. Lunghezze o dimensioni scalate non finite generano ValueError.",
+                "ja": "各軸のローカルな辺の長さ。絶対値を使う。長さまたは倍率適用後の寸法が非有限なら ValueError。",
+                "ko": "각 축의 로컬 변 길이로 절댓값을 사용합니다. 길이 또는 배율 적용 후 크기가 유한하지 않으면 ValueError가 발생합니다.",
+                "pt": "Comprimentos locais das arestas por eixo, em valor absoluto. Comprimentos ou dimensões escaladas não finitos geram ValueError.",
+                "ru": "Локальные длины рёбер по осям; используются абсолютные значения. Неконечные длины или размеры после масштабирования вызывают ValueError.",
+                "tr": "Her eksendeki yerel kenar uzunlukları; mutlak değerleri kullanılır. Sonlu olmayan uzunluklar veya ölçeklenmiş boyutlar ValueError üretir.",
+                "uk": "Локальні довжини ребер за осями; використовуються абсолютні значення. Нескінченні значення чи NaN у довжинах або розмірах після масштабування викликають ValueError."
               }
             },
             {

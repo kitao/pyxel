@@ -200,6 +200,7 @@ class Scene(Node):
             shot.primitive = Primitive.sphere(24)
             shot.transforms = [Mat4.from_scale(Vec3(1, 1.75, 1))]
 
+        # Convert gravity at 100 world units per meter and the default 30 FPS.
         acceleration = (
             shot.collider.gravity_direction.normalize()
             * shot.collider.gravity

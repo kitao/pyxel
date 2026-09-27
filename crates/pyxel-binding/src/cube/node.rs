@@ -32,6 +32,11 @@ struct DrawablePrimitive {
     colkey: Option<i32>,
 }
 
+struct MeshInstance {
+    source: pyxel::cube::RcMesh,
+    rest_pose: Vec<Option<pyxel::cube::Mat4>>,
+}
+
 #[derive(Clone)]
 struct MotionPlayer {
     motion: pyxel::cube::RcMotion,
@@ -51,7 +56,7 @@ pub struct Node {
     // by __traverse__ / __clear__ so Python's gc can collect detached
     // subtrees.
     parent: RefCell<Option<Py<Node>>>,
-    mesh_source: RefCell<Option<pyxel::cube::RcMesh>>,
+    mesh_instance: RefCell<Option<Rc<MeshInstance>>>,
     mesh_part_index: RefCell<Option<usize>>,
     motion_player: RefCell<Option<MotionPlayer>>,
 }
@@ -69,7 +74,7 @@ impl Clone for Node {
             ),
             drawable_primitive: RefCell::new(self.drawable_primitive.borrow().clone()),
             parent: RefCell::new(self.parent.borrow().as_ref().map(|p| p.clone_ref(py))),
-            mesh_source: RefCell::new(self.mesh_source.borrow().clone()),
+            mesh_instance: RefCell::new(self.mesh_instance.borrow().clone()),
             mesh_part_index: RefCell::new(*self.mesh_part_index.borrow()),
             motion_player: RefCell::new(self.motion_player.borrow().clone()),
         })
@@ -84,7 +89,7 @@ impl Node {
             children: RefCell::new(Vec::new()),
             drawable_primitive: RefCell::new(None),
             parent: RefCell::new(None),
-            mesh_source: RefCell::new(None),
+            mesh_instance: RefCell::new(None),
             mesh_part_index: RefCell::new(None),
             motion_player: RefCell::new(None),
         }
@@ -124,21 +129,26 @@ impl Node {
         // Resolve the per-Node cascading shading once. The rasterizer will
         // only consult it when ctx.shaded is true.
         let shading_rc = InnerNode::effective_shading(&self.inner);
+        let opacity = InnerNode::effective_opacity(&self.inner);
         with_draw_context(|ctx| {
             let shading_ref = if ctx.shaded {
                 shading_rc.as_ref().map(|s| rc_ref!(s))
             } else {
                 None
             };
+            let local_dither = ctx.dither_alpha;
             let state = DrawState {
                 shaded: ctx.shaded,
-                dither_alpha: ctx.dither_alpha,
+                dither_alpha: local_dither * opacity,
                 depth_test: ctx.depth_test,
                 depth_write: ctx.depth_write,
                 billboard,
                 shading: shading_ref.as_deref(),
             };
             f(ctx, state);
+            // Draw preparation writes the effective alpha into the context.
+            // Keep the local modifier for the next command instead of multiplying twice.
+            ctx.dither_alpha = local_dither;
         });
     }
 
@@ -207,33 +217,33 @@ impl Node {
         }
     }
 
-    fn validate_motion_source(&self, motion: &Motion) -> PyResult<pyxel::cube::RcMesh> {
-        let Some(node_source) = self.mesh_source.borrow().clone() else {
+    fn validate_motion_source(&self, motion: &Motion) -> PyResult<Rc<MeshInstance>> {
+        let Some(instance) = self.mesh_instance.borrow().clone() else {
             return Err(PyValueError::new_err(
                 "Node motion methods require a tree created by Node.from_mesh",
             ));
         };
-        if !Rc::ptr_eq(&node_source, motion.source_mesh()) {
+        if !Rc::ptr_eq(&instance.source, motion.source_mesh()) {
             return Err(PyValueError::new_err(
                 "motion must come from the same Mesh as the Node.from_mesh tree",
             ));
         }
-        Ok(node_source)
+        Ok(instance)
     }
 
     fn collect_mesh_nodes(
         root: &Py<Node>,
         py: Python<'_>,
-        source: &pyxel::cube::RcMesh,
+        instance: &Rc<MeshInstance>,
         out: &mut Vec<(usize, Py<Node>)>,
     ) {
         let bound = root.bind(py);
         let node = bound.borrow();
-        let node_source = node.mesh_source.borrow().clone();
+        let node_instance = node.mesh_instance.borrow().clone();
         let node_index = *node.mesh_part_index.borrow();
-        if node_source
+        if node_instance
             .as_ref()
-            .is_some_and(|node_source| Rc::ptr_eq(node_source, source))
+            .is_some_and(|node_instance| Rc::ptr_eq(node_instance, instance))
         {
             if let Some(index) = node_index {
                 out.push((index, root.clone_ref(py)));
@@ -241,21 +251,32 @@ impl Node {
         }
 
         for child in node.children.borrow().iter() {
-            Self::collect_mesh_nodes(child, py, source, out);
+            Self::collect_mesh_nodes(child, py, instance, out);
+        }
+    }
+
+    fn reset_motion_pose(root: &Py<Node>, py: Python<'_>, instance: &Rc<MeshInstance>) {
+        let mut nodes = Vec::new();
+        Self::collect_mesh_nodes(root, py, instance, &mut nodes);
+        for (index, node) in nodes {
+            if let Some(Some(transform)) = instance.rest_pose.get(index) {
+                node.bind(py).borrow().inner_mut().transform =
+                    pyxel::cube::Mat4::from_rows(transform.data);
+            }
         }
     }
 
     fn apply_motion_inner(
         root: &Py<Node>,
         py: Python<'_>,
-        source: &pyxel::cube::RcMesh,
+        instance: &Rc<MeshInstance>,
         motion: &pyxel::cube::RcMotion,
         frame: f32,
         looping: bool,
     ) {
         let sampled = rc_ref!(motion).sample(frame, looping);
         let mut nodes = Vec::new();
-        Self::collect_mesh_nodes(root, py, source, &mut nodes);
+        Self::collect_mesh_nodes(root, py, instance, &mut nodes);
         nodes.sort_unstable_by_key(|(part_index, _)| *part_index);
 
         let mut node_cursor = 0;
@@ -302,11 +323,25 @@ impl Node {
     #[staticmethod]
     fn from_mesh(py: Python<'_>, mesh: PyRef<'_, super::mesh::Mesh>) -> PyResult<Py<Node>> {
         // Python allocations can trigger GC callbacks that mutate the source mesh.
-        let (nodes, parents) = {
+        let (nodes, parents, instance) = {
             let mesh_inner = mesh.inner_ref();
             mesh_inner.validate().map_err(PyValueError::new_err)?;
 
             let count = mesh_inner.primitives.len();
+            let mut rest_pose = vec![None; count];
+            for motion in &mesh_inner.motions {
+                for (index, transform) in rc_ref!(motion).animated_rest_pose() {
+                    if let Some(rest) = rest_pose.get_mut(index) {
+                        *rest = Some(transform);
+                    }
+                }
+            }
+            // No Python node references: instance identity and authored poses
+            // survive reparenting without retaining detached scene objects.
+            let instance = Rc::new(MeshInstance {
+                source: mesh.inner.clone(),
+                rest_pose,
+            });
             let mut nodes = Vec::with_capacity(count);
             for i in 0..count {
                 let inner = InnerNode::new();
@@ -317,7 +352,7 @@ impl Node {
                 }
 
                 let node = Self::wrap(inner);
-                *node.mesh_source.borrow_mut() = Some(mesh.inner.clone());
+                *node.mesh_instance.borrow_mut() = Some(instance.clone());
                 *node.mesh_part_index.borrow_mut() = Some(i);
                 if let Some(primitive) = &mesh_inner.primitives[i] {
                     let material = mesh_inner.material_for_part(i);
@@ -330,7 +365,7 @@ impl Node {
                 nodes.push(node);
             }
 
-            (nodes, mesh_inner.parents.clone())
+            (nodes, mesh_inner.parents.clone(), instance)
         };
 
         let nodes = nodes
@@ -349,17 +384,13 @@ impl Node {
             }
         }
 
-        if root_indices.len() == 1 {
-            Ok(nodes[root_indices[0]].clone_ref(py))
-        } else {
-            let synthetic_root = Self::wrap(InnerNode::new());
-            *synthetic_root.mesh_source.borrow_mut() = Some(mesh.inner.clone());
-            let root = Py::new(py, synthetic_root)?;
-            for index in root_indices {
-                Self::add_child(root.bind(py).clone(), py, nodes[index].clone_ref(py))?;
-            }
-            Ok(root)
+        let placement = Self::wrap(InnerNode::new());
+        *placement.mesh_instance.borrow_mut() = Some(instance);
+        let root = Py::new(py, placement)?;
+        for index in root_indices {
+            Self::add_child(root.bind(py).clone(), py, nodes[index].clone_ref(py))?;
         }
+        Ok(root)
     }
 
     // Data attributes
@@ -402,6 +433,16 @@ impl Node {
     #[setter]
     fn set_visible(&self, v: bool) {
         self.inner_mut().visible = v;
+    }
+
+    #[getter]
+    fn opacity(&self) -> f32 {
+        self.inner_ref().opacity
+    }
+
+    #[setter]
+    fn set_opacity(&self, v: f32) {
+        self.inner_mut().opacity = v.clamp(0.0, 1.0);
     }
 
     // Calling draw() on this node uses its camera or the nearest ancestor's camera.
@@ -625,10 +666,10 @@ impl Node {
         frame: f32,
         r#loop: bool,
     ) -> PyResult<()> {
-        let source = slf.validate_motion_source(&motion)?;
+        let instance = slf.validate_motion_source(&motion)?;
         let motion_inner = motion.inner.clone();
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
-        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, frame, r#loop);
+        Self::apply_motion_inner(&self_py, py, &instance, &motion_inner, frame, r#loop);
         Ok(())
     }
 
@@ -648,7 +689,7 @@ impl Node {
             return Err(PyValueError::new_err("start_frame must be finite"));
         }
 
-        let source = slf.validate_motion_source(&motion)?;
+        let instance = slf.validate_motion_source(&motion)?;
         let motion_inner = motion.inner.clone();
         // Bound looping playheads before the first increment to retain small steps.
         let start_frame = if r#loop {
@@ -658,7 +699,8 @@ impl Node {
         };
 
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
-        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, start_frame, r#loop);
+        Self::reset_motion_pose(&self_py, py, &instance);
+        Self::apply_motion_inner(&self_py, py, &instance, &motion_inner, start_frame, r#loop);
         *self_py.bind(py).borrow().motion_player.borrow_mut() = Some(MotionPlayer {
             motion: motion_inner,
             frame: start_frame,
@@ -1210,7 +1252,8 @@ impl Node {
             size_v,
             hit_triggers,
             tags.as_deref(),
-        );
+        )
+        .map_err(PyValueError::new_err)?;
         if inner_results.is_empty() {
             return Ok(Vec::new());
         }
@@ -1244,22 +1287,39 @@ fn push_children_reverse(node: &Bound<'_, Node>, py: Python<'_>, stack: &mut Vec
     }
 }
 
-// Pre-order tree traversal that skips inactive subtrees and dispatches updates.
-fn traverse_update(root: &Bound<'_, PyAny>) -> PyResult<()> {
-    let parent = InnerNode::parent(&root.cast::<Node>()?.borrow().inner);
-    if parent.is_some_and(|parent| !InnerNode::effective_active(&parent)) {
-        return Ok(());
-    }
-
+// Snapshot structure before Python callbacks, including disabled branches.
+// Mutations remain immediate, but do not change this phase's visit order.
+fn snapshot_nodes(root: &Bound<'_, PyAny>) -> PyResult<Vec<Py<PyAny>>> {
     let py = root.py();
+    let mut nodes = Vec::new();
     let mut stack = vec![root.clone().unbind()];
     while let Some(node) = stack.pop() {
-        let node = node.bind(py);
-        if !node.getattr("active")?.extract::<bool>()? {
-            continue;
+        push_children_reverse(node.bind(py).cast::<Node>()?, py, &mut stack);
+        nodes.push(node);
+    }
+    Ok(nodes)
+}
+
+fn is_in_subtree(node: &pyxel::cube::RcNode, root: &pyxel::cube::RcNode) -> bool {
+    let mut current = Some(node.clone());
+    while let Some(node) = current {
+        if Rc::ptr_eq(&node, root) {
+            return true;
         }
-        node.call_method0("on_update")?;
-        push_children_reverse(node.cast::<Node>()?, py, &mut stack);
+        current = InnerNode::parent(&node);
+    }
+    false
+}
+
+fn traverse_update(root: &Bound<'_, PyAny>) -> PyResult<()> {
+    let root_inner = root.cast::<Node>()?.borrow().inner.clone();
+    let py = root.py();
+    for node in snapshot_nodes(root)? {
+        let node = node.bind(py);
+        let inner = node.cast::<Node>()?.borrow().inner.clone();
+        if is_in_subtree(&inner, &root_inner) && InnerNode::effective_active(&inner) {
+            node.call_method0("on_update")?;
+        }
     }
     Ok(())
 }
@@ -1282,18 +1342,18 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
 
         let node_bound = node.cast::<Node>()?;
         let node_ref = node_bound.borrow();
-        let source = node_ref.mesh_source.borrow().clone();
+        let instance = node_ref.mesh_instance.borrow().clone();
         let player = node_ref.motion_player.borrow().clone();
         drop(node_ref);
 
-        if let (Some(mut player), Some(source)) = (player, source) {
+        if let (Some(mut player), Some(instance)) = (player, instance) {
             player.frame += player.speed;
             player.frame = rc_ref!(&player.motion).resolve_frame(player.frame, player.looping);
             let node_py = node_bound.clone().unbind();
             Node::apply_motion_inner(
                 &node_py,
                 node.py(),
-                &source,
+                &instance,
                 &player.motion,
                 player.frame,
                 player.looping,
@@ -1306,25 +1366,19 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
     Ok(())
 }
 
-// Pre-order tree traversal that skips hidden subtrees and dispatches draws.
 fn traverse_draw(root: &Bound<'_, PyAny>) -> PyResult<()> {
-    let parent = InnerNode::parent(&root.cast::<Node>()?.borrow().inner);
-    if parent.is_some_and(|parent| !InnerNode::effective_visible(&parent)) {
-        return Ok(());
-    }
-
+    let root_inner = root.cast::<Node>()?.borrow().inner.clone();
     let py = root.py();
-    let mut stack = vec![root.clone().unbind()];
-    while let Some(node) = stack.pop() {
+    for node in snapshot_nodes(root)? {
         let node = node.bind(py);
-        if !node.getattr("visible")?.extract::<bool>()? {
+        let node_bound = node.cast::<Node>()?;
+        let inner = node_bound.borrow().inner.clone();
+        if !is_in_subtree(&inner, &root_inner) || !InnerNode::effective_visible(&inner) {
             continue;
         }
         reset_draw_state();
         node.call_method0("on_draw")?;
-        let node_bound = node.cast::<Node>()?;
         node_bound.borrow().draw_attached_primitive()?;
-        push_children_reverse(node_bound, py, &mut stack);
     }
     Ok(())
 }

@@ -37,6 +37,7 @@
           <section class="card" id="s-overview"></section>
           <section class="card" id="s-getting-started"></section>
           <section class="card" id="s-models"></section>
+          <section class="card" id="s-references"></section>
           <section class="card" id="s-parts"></section>
         `;
         app.appendChild(wrap);
@@ -94,6 +95,11 @@ pyxel.run(update, draw)`,
             <li>${esc(t("models_edit"))}</li>
             <li>${esc(t("models_export"))}</li>
           </ul>`;
+
+        document.getElementById("s-references").innerHTML = `
+          <h2 class="section-title">${esc(t("references_title"))}</h2>
+          <p class="body">${t("references_body").replace("{0}", link("https://github.com/kitao/pyxel/tree/main/python/pyxel/examples/cube/tools", "Cube Model References"))}</p>
+          <p class="body mt-2">${esc(t("references_update"))}</p>`;
 
         document.getElementById("s-parts").innerHTML = `
           <h2 class="section-title">${esc(t("parts_title"))}</h2>
