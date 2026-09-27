@@ -87,6 +87,10 @@ EXAMPLE_RANDOM_SEED = 18
 BASE_MESSAGE_WIDTH = 124
 BASE_MESSAGE_HEIGHT = 50
 BASE_MESSAGE_SCALE = 7
+MESSAGE_LINES = (
+    (10, 29, "Thank you for 18,000 stars", 14, "18,000"),
+    (15, 37, "and 1,700,000 downloads!", 4, "1,700,000"),
+)
 
 MESSAGE_WIDTH = BASE_MESSAGE_WIDTH * BASE_MESSAGE_SCALE
 MESSAGE_HEIGHT = BASE_MESSAGE_HEIGHT * BASE_MESSAGE_SCALE
@@ -121,25 +125,36 @@ def draw_example_images(thanks_image):
         )
         example_images.append(image)
 
-    random.seed(EXAMPLE_RANDOM_SEED)
-    random.shuffle(example_images)
+    for index, x, y in get_example_positions(
+        [image.height for image in example_images]
+    ):
+        thanks_image.paste(example_images[index], (x, y))
 
+
+def get_example_positions(heights):
+    order = list(range(len(heights)))
+    random.Random(EXAMPLE_RANDOM_SEED).shuffle(order)
+
+    positions = []
+    next_index = 0
     example_x = EXAMPLE_X
-    while example_x < THANKS_IMAGE_WIDTH and example_images:
+    while example_x < THANKS_IMAGE_WIDTH and next_index < len(order):
         col_height = 0
         num_col_images = 0
         while col_height < THANKS_IMAGE_HEIGHT + EXAMPLE_MARGIN:
-            if num_col_images >= len(example_images):
+            if next_index + num_col_images >= len(order):
                 break
-            col_height += example_images[num_col_images].height + EXAMPLE_MARGIN
+            index = order[next_index + num_col_images]
+            col_height += heights[index] + EXAMPLE_MARGIN
             num_col_images += 1
 
         example_y = (THANKS_IMAGE_HEIGHT - col_height - EXAMPLE_MARGIN) // 2
-        for _ in range(num_col_images):
-            image = example_images.pop(0)
-            thanks_image.paste(image, (example_x, example_y))
-            example_y += image.height + EXAMPLE_MARGIN
+        for index in order[next_index : next_index + num_col_images]:
+            positions.append((index, example_x, example_y))
+            example_y += heights[index] + EXAMPLE_MARGIN
+        next_index += num_col_images
         example_x += EXAMPLE_WIDTH + EXAMPLE_MARGIN
+    return positions
 
 
 def draw_message_image(thanks_image):
@@ -154,11 +169,9 @@ def draw_message_image(thanks_image):
 
     base_image.load(43, 8, str(LOGO_IMAGE_FILE))
 
-    base_image.text(10, 29, "Thank you for 18,000 stars", 12)
-    base_image.text(10 + 14 * 4, 29, "18,000", 9)
-
-    base_image.text(15, 37, "and 1,700,000 downloads!", 12)
-    base_image.text(15 + 4 * 4, 37, "1,700,000", 9)
+    for x, y, text, accent_index, accent_text in MESSAGE_LINES:
+        base_image.text(x, y, text, 12)
+        base_image.text(x + accent_index * 4, y, accent_text, 9)
 
     if DRAW_LAYOUT_GUIDES:
         x1 = 2

@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+"""Animate the example tiles and lettering in the 18,000-star thank-you image.
+
+Requires the adjacent pyxel-user-examples repository and ffmpeg.
+"""
+
+import random
+import runpy
+import subprocess
+from dataclasses import dataclass
+from pathlib import Path
+
+from PIL import Image
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+IMAGE_SCRIPT = ROOT_DIR / "scripts/generate_thanks_image"
+THANKS_IMAGE_FILE = ROOT_DIR / "docs/images/pyxel_thanks.png"
+THANKS_VIDEO_FILE = ROOT_DIR / "docs/images/pyxel_thanks.mp4"
+FPS = 30
+NUM_FRAMES = 150
+FADE_FRAMES = 20
+SHINE_TIMINGS = ((20, 44), (22, 45))
+SHINE_INTERVAL = NUM_FRAMES // 2
+
+
+@dataclass
+class ExampleTile:
+    gif: Image.Image
+    frame: int
+    x: int
+    y: int
+    first_image: Image.Image
+    phase: int
+    start_frame: int
+    frame_start_ms: int = 0
+
+
+def get_example_tiles(settings):
+    gifs = []
+    for example_id, start_frame in settings["EXAMPLE_IMAGES"]:
+        path = settings["USER_EXAMPLES_IMAGES_DIR"] / f"{example_id}.gif"
+        gif = Image.open(path)
+        gif.seek(start_frame - 1)
+        width = settings["EXAMPLE_WIDTH"]
+        height = int(width * gif.height / gif.width)
+        gifs.append((gif, start_frame - 1, height))
+
+    positions = settings["get_example_positions"]([height for _, _, height in gifs])
+    tiles = []
+    phases = random.Random(18000).sample(range(NUM_FRAMES), len(gifs))
+    for index, x, y in positions:
+        gif, start_frame, height = gifs[index]
+        first_image = (
+            gif.copy()
+            .convert("RGB")
+            .resize(
+                (settings["EXAMPLE_WIDTH"], height), resample=Image.Resampling.NEAREST
+            )
+        )
+        tiles.append(
+            ExampleTile(
+                gif, start_frame, x, y, first_image, phases[len(tiles)], start_frame
+            )
+        )
+    return tiles
+
+
+def advance_tile(tile, phase):
+    if phase == 0:
+        tile.gif.seek(tile.start_frame)
+        tile.frame = tile.start_frame
+        tile.frame_start_ms = 0
+    elapsed_ms = round(phase * 1000 / FPS)
+    while (
+        tile.frame_start_ms + max(tile.gif.info.get("duration", 100), 10) <= elapsed_ms
+    ):
+        tile.frame_start_ms += max(tile.gif.info.get("duration", 100), 10)
+        tile.frame = (tile.frame + 1) % tile.gif.n_frames
+        tile.gif.seek(tile.frame)
+
+
+def get_letter_masks(still, settings):
+    colors = set()
+    for color in (9, 12):
+        value = settings["pyxel"].DEFAULT_COLORS[color]
+        colors.add(((value >> 16) & 255, (value >> 8) & 255, value & 255))
+
+    lines = []
+    scale = settings["BASE_MESSAGE_SCALE"]
+    for (base_x, base_y, text, _, _), (start, end) in zip(
+        settings["MESSAGE_LINES"], SHINE_TIMINGS
+    ):
+        letters = []
+        for index, char in enumerate(text):
+            if char == " ":
+                letters.append(None)
+                continue
+            x = settings["MESSAGE_X"] + (base_x + index * 4) * scale
+            y = settings["MESSAGE_Y"] + base_y * scale
+            box = (x, y, x + 4 * scale, y + 5 * scale)
+            mask = Image.new("L", (4 * scale, 5 * scale))
+            mask.putdata(
+                [
+                    255 if pixel in colors else 0
+                    for pixel in still.crop(box).get_flattened_data()
+                ]
+            )
+            letters.append((box, mask))
+        lines.append((letters, start, end))
+    return lines
+
+
+def shine_letters(frame, lines, index):
+    for letters, start, end in lines:
+        phase = index % SHINE_INTERVAL
+        if not start <= phase <= end:
+            continue
+        position = (phase - start) * (len(letters) + 1) / (end - start)
+        for letter_index, letter in enumerate(letters):
+            if letter is None:
+                continue
+            strength = max(0, 1 - abs(letter_index - position) / 1.4)
+            if strength == 0:
+                continue
+            box, mask = letter
+            frame.paste(
+                (255, 255, 255),
+                box,
+                mask.point(lambda value, strength=strength: round(value * strength)),
+            )
+
+
+def generate_thanks_video():
+    settings = runpy.run_path(str(IMAGE_SCRIPT))
+    still = Image.open(THANKS_IMAGE_FILE).convert("RGB")
+    tiles = get_example_tiles(settings)
+    message_box = (
+        settings["MESSAGE_PAD_X"],
+        settings["MESSAGE_PAD_Y"],
+        settings["MESSAGE_PAD_X"] + settings["MESSAGE_PAD_WIDTH"],
+        settings["MESSAGE_PAD_Y"] + settings["MESSAGE_PAD_HEIGHT"],
+    )
+    message = still.crop(message_box)
+    lines = get_letter_masks(still, settings)
+    width, height = still.size
+    command = [
+        "ffmpeg",
+        "-y",
+        "-loglevel",
+        "error",
+        "-f",
+        "rawvideo",
+        "-pixel_format",
+        "rgb24",
+        "-video_size",
+        f"{width}x{height}",
+        "-framerate",
+        str(FPS),
+        "-i",
+        "-",
+        "-an",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        str(THANKS_VIDEO_FILE),
+    ]
+
+    try:
+        with subprocess.Popen(command, stdin=subprocess.PIPE) as encoder:
+            for index in range(NUM_FRAMES):
+                frame = still.copy()
+                for tile in tiles:
+                    phase = (index + tile.phase) % NUM_FRAMES
+                    advance_tile(tile, phase)
+                    image = tile.gif.copy().convert("RGB")
+                    image = image.resize(
+                        (
+                            settings["EXAMPLE_WIDTH"],
+                            int(settings["EXAMPLE_WIDTH"] * image.height / image.width),
+                        ),
+                        resample=Image.Resampling.NEAREST,
+                    )
+                    if phase >= NUM_FRAMES - FADE_FRAMES:
+                        amount = (phase - (NUM_FRAMES - FADE_FRAMES)) / (
+                            FADE_FRAMES - 1
+                        )
+                        image = Image.blend(image, tile.first_image, amount)
+                    frame.paste(image, (tile.x, tile.y))
+                frame.paste(message, message_box)
+
+                shine_letters(frame, lines, index)
+                encoder.stdin.write(frame.tobytes())
+            encoder.stdin.close()
+            if encoder.wait() != 0:
+                raise RuntimeError("ffmpeg failed to encode the thank-you video")
+    finally:
+        for tile in tiles:
+            tile.gif.close()
+
+
+if __name__ == "__main__":
+    generate_thanks_video()

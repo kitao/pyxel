@@ -779,7 +779,7 @@ pyxel.set_btn(pyxel.KEY_RIGHT, False)
 pyxel.set_btn(pyxel.KEY_UP, False)
 assert (app.scene.camera.transform.pos - camera_start).length() > 200
 assert app.scene.camera.transform.pos.y > camera_start.y
-assert app.scene.angle == 75 and app.scene.pitch == 50
+assert app.scene.angle == 40 and app.scene.pitch == 70
 
 # Aimed fire removes a tower support and drops all its upper floors.
 step(key=pyxel.KEY_R)
