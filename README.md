@@ -68,5 +68,3 @@ Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオ
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c06_3d_physics.gif" alt="3D physics" width="248">
 </a>
 </p>
-
-[Contributing / 開発への参加](https://github.com/kitao/pyxel/blob/main/.github/CONTRIBUTING.md)
