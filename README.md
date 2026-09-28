@@ -58,6 +58,15 @@ Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオ
 <a href="https://kitao.github.io/pyxel/web/showcase/tools/sound-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_music_editor.gif" alt="Sound and music editor" width="256">
 </a>
+<a href="https://kitao.github.io/pyxel/web/showcase/examples/c04-mesh-and-motion.html">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c04_mesh_and_motion.gif" alt="Mesh and motion" width="248">
+</a>
+<a href="https://kitao.github.io/pyxel/web/showcase/examples/c05-3d-collision.html">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c05_3d_collision.gif" alt="3D collision" width="248">
+</a>
+<a href="https://kitao.github.io/pyxel/web/showcase/examples/c06-3d-physics.html">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c06_3d_physics.gif" alt="3D physics" width="248">
+</a>
 </p>
 
 [Contributing / 開発への参加](https://github.com/kitao/pyxel/blob/main/.github/CONTRIBUTING.md)
