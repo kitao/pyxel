@@ -61,6 +61,7 @@
     --color-amber-500: oklch(76.9% 0.188 70.08);
     --color-green-400: oklch(79.2% 0.209 151.711);
     --color-emerald-300: oklch(84.5% 0.143 164.978);
+    --color-emerald-400: oklch(76.5% 0.177 163.223);
     --color-emerald-500: oklch(69.6% 0.17 162.48);
     --color-cyan-700: oklch(52% 0.105 223.128);
     --color-indigo-300: oklch(78.5% 0.115 274.713);
@@ -682,6 +683,85 @@
     margin: 0.75rem 0;
     padding: 0.625rem 1rem;
     overflow-x: auto;
+  }
+  .code-block-wrap {
+    margin: 0.75rem 0;
+    position: relative;
+  }
+  .code-block-wrap .code-block {
+    margin: 0;
+  }
+  .code-copy-btn {
+    top: calc(var(--spacing) * 1.5);
+    right: calc(var(--spacing) * 1.5);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+    border-color: var(--color-gray-700);
+    background-color: #1e2939cc;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    position: absolute;
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .code-copy-btn {
+      background-color: color-mix(
+        in oklab,
+        var(--color-gray-800) 80%,
+        transparent
+      );
+    }
+  }
+  .code-copy-btn {
+    padding: calc(var(--spacing) * 1);
+    color: var(--color-gray-400);
+    transition-property:
+      color, background-color, border-color, outline-color,
+      text-decoration-color, fill, stroke, --tw-gradient-from,
+      --tw-gradient-via, --tw-gradient-to;
+    transition-timing-function: var(
+      --tw-ease,
+      var(--default-transition-timing-function)
+    );
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+    --tw-outline-style: none;
+    outline-style: none;
+  }
+  @media (hover: hover) {
+    .code-copy-btn:hover {
+      border-color: var(--color-gray-500);
+      color: var(--color-gray-100);
+    }
+  }
+  .code-copy-btn:focus-visible {
+    border-color: var(--color-indigo-300);
+    color: var(--color-gray-100);
+  }
+  .code-copy-btn .code-copied-icon {
+    display: none;
+  }
+  .code-copy-btn.copied {
+    border-color: #00d29466;
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .code-copy-btn.copied {
+      border-color: color-mix(
+        in oklab,
+        var(--color-emerald-400) 40%,
+        transparent
+      );
+    }
+  }
+  .code-copy-btn.copied {
+    color: var(--color-emerald-400);
+  }
+  .code-copy-btn.copied .code-copy-icon {
+    display: none;
+  }
+  .code-copy-btn.copied .code-copied-icon {
+    display: block;
   }
   :where(.link-list > :not(:last-child)) {
     --tw-space-y-reverse: 0;

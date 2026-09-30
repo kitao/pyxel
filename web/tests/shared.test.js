@@ -10,15 +10,16 @@ const loadShared = (overrides = {}) => {
   const context = {
     URL,
     console,
-    document: { documentElement: {} },
+    document: { documentElement: {}, addEventListener: () => {} },
     fetch,
+    lang: "en",
     localStorage: { getItem: () => null, setItem: () => {} },
     navigator: { language: "en" },
     setTimeout,
     ...overrides,
   };
   vm.runInNewContext(
-    `${source}\n;globalThis.__test = { initPage, resolveGitHubBlobUrl };`,
+    `${source}\n;globalThis.__test = { code, handleCodeCopyClick, initPage, resolveGitHubBlobUrl, writeClipboardText };`,
     context,
   );
   return context;
@@ -151,4 +152,122 @@ test("initPage reports malformed JSON without building", async () => {
 
   assert.equal(buildCount, 0);
   assert.equal(errors[0][1].message, "invalid JSON");
+});
+
+test("code renders a copy button with localized labels and escaped text", () => {
+  const html = loadShared({ lang: "ja" }).__test.code('print("hi")', "python");
+  assert.match(html, /class="code-block-wrap"/);
+  assert.match(html, /class="code-copy-btn"/);
+  assert.match(html, /aria-label="コードをコピー"/);
+  assert.match(html, /data-copied-label="コピーしました！"/);
+  assert.match(html, /language-python/);
+  assert.match(html, /print\(&quot;hi&quot;\)/);
+});
+
+test("code copy labels fall back to English", () => {
+  const html = loadShared({ lang: "xx" }).__test.code("pyxel", "sh");
+  assert.match(html, /aria-label="Copy code"/);
+  assert.match(html, /data-copied-label="Copied!"/);
+});
+
+test("writeClipboardText uses the async clipboard API when available", async () => {
+  let written = null;
+  const { writeClipboardText } = loadShared({
+    navigator: {
+      language: "en",
+      clipboard: {
+        writeText: async (text) => {
+          written = text;
+        },
+      },
+    },
+  }).__test;
+
+  assert.equal(await writeClipboardText("pyxel run game.py"), true);
+  assert.equal(written, "pyxel run game.py");
+});
+
+test("writeClipboardText falls back to execCommand when the API is missing", async () => {
+  const calls = [];
+  const el = {
+    value: "",
+    style: {},
+    setAttribute: () => {},
+    select: () => calls.push("select"),
+    remove: () => calls.push("remove"),
+  };
+  const { writeClipboardText } = loadShared({
+    document: {
+      documentElement: {},
+      addEventListener: () => {},
+      createElement: (tag) => {
+        calls.push(`create:${tag}`);
+        return el;
+      },
+      body: {
+        appendChild: () => calls.push("append"),
+      },
+      execCommand: (cmd) => {
+        calls.push(`exec:${cmd}`);
+        return cmd === "copy";
+      },
+    },
+  }).__test;
+
+  assert.equal(await writeClipboardText("text"), true);
+  assert.equal(el.value, "text");
+  assert.deepEqual(calls, [
+    "create:textarea",
+    "append",
+    "select",
+    "exec:copy",
+    "remove",
+  ]);
+});
+
+test("handleCodeCopyClick copies code text and resets its feedback", async () => {
+  const written = [];
+  const classes = new Set();
+  const attrs = {};
+  const resetFns = [];
+  const btn = {
+    classList: {
+      add: (name) => classes.add(name),
+      remove: (name) => classes.delete(name),
+    },
+    dataset: { copyLabel: "Copy code", copiedLabel: "Copied!" },
+    title: "Copy code",
+    setAttribute: (name, value) => {
+      attrs[name] = value;
+    },
+    parentElement: {
+      querySelector: (selector) =>
+        selector === "pre code" ? { textContent: "pyxel run game.py" } : null,
+    },
+  };
+  const { handleCodeCopyClick } = loadShared({
+    navigator: {
+      language: "en",
+      clipboard: {
+        writeText: async (text) => {
+          written.push(text);
+        },
+      },
+    },
+    setTimeout: (fn) => {
+      resetFns.push(fn);
+      return 0;
+    },
+  }).__test;
+
+  await handleCodeCopyClick({ target: { closest: () => btn } });
+  assert.deepEqual(written, ["pyxel run game.py"]);
+  assert.equal(classes.has("copied"), true);
+  assert.equal(btn.title, "Copied!");
+  assert.equal(attrs["aria-label"], "Copied!");
+
+  resetFns[0]();
+  assert.equal(classes.has("copied"), false);
+  assert.equal(btn.title, "Copy code");
+  assert.equal(attrs["aria-label"], "Copy code");
 });
