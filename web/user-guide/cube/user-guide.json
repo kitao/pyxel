@@ -71,7 +71,7 @@
       "es": "Guía de usuario de la extensión 3D Cube de {0}.",
       "fr": "Guide utilisateur de l'extension 3D Cube de {0}.",
       "it": "Guida utente per l'estensione 3D Cube di {0}.",
-      "ja": "{0} の 3D 拡張モジュール Cube のユーザーガイド",
+      "ja": "{0} で 3D ゲームを作るためのユーザーガイド",
       "ko": "{0}의 Cube 3D 확장 사용자 가이드",
       "pt": "Guia do usuário da extensão 3D Cube do {0}.",
       "ru": "Руководство пользователя для 3D-расширения Cube в {0}.",
@@ -85,7 +85,7 @@
       "es": "Descripción general",
       "fr": "Présentation",
       "it": "Panoramica",
-      "ja": "概要",
+      "ja": "Pyxel Cube とは",
       "ko": "개요",
       "pt": "Visão geral",
       "ru": "Обзор",
@@ -93,32 +93,46 @@
       "uk": "Огляд"
     },
     "overview_body": {
-      "en": "{0} is the software-rendered 3D extension of Pyxel.",
-      "cn": "{0} 是 Pyxel 的软件渲染 3D 扩展。",
-      "de": "{0} ist die softwaregerenderte 3D-Erweiterung von Pyxel.",
-      "es": "{0} es la extensión 3D renderizada por software de Pyxel.",
-      "fr": "{0} est l'extension 3D à rendu logiciel de Pyxel.",
-      "it": "{0} è l'estensione 3D di Pyxel con rendering software.",
-      "ja": "{0} は Pyxel のソフトウェアレンダリングによる 3D 拡張モジュールです。",
-      "ko": "{0}는 Pyxel의 소프트웨어 렌더링 3D 확장입니다.",
-      "pt": "{0} é a extensão 3D do Pyxel com renderização por software.",
-      "ru": "{0} — это 3D-расширение Pyxel с программным рендерингом.",
-      "tr": "{0}, Pyxel'in yazılımla işlenen 3D uzantısıdır.",
-      "uk": "{0} — це 3D-розширення Pyxel із програмним рендерингом."
+      "en": "{0} is an extension for making retro 3D games with Pyxel. This guide introduces its basic usage, as well as creating and loading 3D models.",
+      "cn": "{0} 是用于在 Pyxel 中制作复古 3D 游戏的扩展。本指南介绍其基本用法，以及 3D 模型的制作和加载。",
+      "de": "{0} ist eine Erweiterung zum Erstellen von Retro-3D-Spielen mit Pyxel. Dieses Handbuch stellt die grundlegende Verwendung sowie das Erstellen und Laden von 3D-Modellen vor.",
+      "es": "{0} es una extensión para crear juegos retro en 3D con Pyxel. Esta guía presenta su uso básico, así como la creación y carga de modelos 3D.",
+      "fr": "{0} est une extension permettant de créer des jeux rétro en 3D avec Pyxel. Ce guide présente son utilisation de base, ainsi que la création et le chargement de modèles 3D.",
+      "it": "{0} è un'estensione per creare giochi retro in 3D con Pyxel. Questa guida ne presenta l'uso di base, oltre alla creazione e al caricamento di modelli 3D.",
+      "ja": "{0} は、Pyxel 3.0 以降に含まれるサブモジュールです。<code class=\"chip\">pyxel.cube</code> を追加で読み込むと、従来の 2D 機能に加えて 3D 機能を使えるようになり、3D レトロゲームを手軽に作れます。",
+      "ko": "{0}는 Pyxel로 레트로 3D 게임을 만들기 위한 확장 모듈입니다. 이 가이드에서는 기본 사용법부터 3D 모델의 제작과 불러오기까지 소개합니다.",
+      "pt": "{0} é uma extensão para criar jogos retro em 3D com Pyxel. Este guia apresenta seu uso básico, além da criação e do carregamento de modelos 3D.",
+      "ru": "{0} — это расширение для создания ретро-игр в 3D с помощью Pyxel. Это руководство знакомит с основами использования, а также с созданием и загрузкой 3D-моделей.",
+      "tr": "{0}, Pyxel ile retro 3D oyunlar oluşturmak için bir uzantıdır. Bu kılavuz, temel kullanımın yanı sıra 3D modellerin oluşturulmasını ve yüklenmesini tanıtır.",
+      "uk": "{0} — це розширення для створення ретроігор у 3D за допомогою Pyxel. Цей посібник знайомить з основами використання, а також зі створенням і завантаженням 3D-моделей."
     },
-    "wip": {
-      "en": "This guide is a work in progress; the Cube API is still being finalized.",
-      "cn": "本指南仍在编写中；Cube API 仍在最终确定。",
-      "de": "Dieses Handbuch ist noch in Arbeit; die Cube API wird noch finalisiert.",
-      "es": "Esta guía está en curso; la API de Cube aún se está finalizando.",
-      "fr": "Ce guide est en cours de rédaction ; l'API Cube est encore en cours de finalisation.",
-      "it": "Questa guida è in lavorazione; l'API Cube è ancora in fase di finalizzazione.",
-      "ja": "本ガイドは作成中で、Cube API はまだ確定していません。",
-      "ko": "이 가이드는 아직 작성 중이며, Cube API는 아직 최종 확정 중입니다.",
-      "pt": "Este guia ainda está em andamento; a API Cube ainda está sendo finalizada.",
-      "ru": "Это руководство еще находится в работе; API Cube все еще дорабатывается.",
-      "tr": "Bu kılavuz hâlâ hazırlanıyor; Cube API henüz son haline getiriliyor.",
-      "uk": "Цей посібник ще в роботі; API Cube досі фіналізується."
+    "overview_beginner": {
+      "en": "If you are new to Pyxel, first read the {0} to set up your environment and learn the basics.",
+      "cn": "如果您是初次使用 Pyxel，请先阅读 {0}，了解运行环境的准备和基本用法。",
+      "de": "Wenn Sie Pyxel zum ersten Mal verwenden, lesen Sie zuerst das {0}, um Ihre Umgebung einzurichten und die Grundlagen kennenzulernen.",
+      "es": "Si utiliza Pyxel por primera vez, lea primero la {0} para preparar su entorno y conocer los conceptos básicos.",
+      "fr": "Si vous débutez avec Pyxel, consultez d'abord le {0} pour préparer votre environnement et apprendre les bases.",
+      "it": "Se si usa Pyxel per la prima volta, leggere prima la {0} per preparare l'ambiente e apprendere le basi.",
+      "ja": "Pyxel を初めて使う方は、まず {0} で、実行環境の準備と基本的な使い方を確認してください。",
+      "ko": "Pyxel을 처음 사용하신다면 먼저 {0}에서 실행 환경 준비와 기본 사용법을 확인하세요.",
+      "pt": "Se você está começando com Pyxel, leia primeiro o {0} para preparar seu ambiente e aprender o básico.",
+      "ru": "Если вы впервые используете Pyxel, сначала прочитайте {0}, чтобы подготовить среду и изучить основы.",
+      "tr": "Pyxel kullanmaya yeni başlıyorsanız ortamınızı hazırlamak ve temel kullanımı öğrenmek için önce {0} sayfasını okuyun.",
+      "uk": "Якщо ви вперше використовуєте Pyxel, спочатку прочитайте {0}, щоб підготувати середовище та ознайомитися з основами."
+    },
+    "base_guide": {
+      "en": "Pyxel User Guide",
+      "cn": "Pyxel 用户指南",
+      "de": "Pyxel Benutzerhandbuch",
+      "es": "Guía de usuario de Pyxel",
+      "fr": "Guide utilisateur de Pyxel",
+      "it": "Guida utente di Pyxel",
+      "ja": "Pyxel ユーザーガイド",
+      "ko": "Pyxel 사용자 가이드",
+      "pt": "Guia do Usuário Pyxel",
+      "ru": "Руководство пользователя Pyxel",
+      "tr": "Pyxel Kullanım Kılavuzu",
+      "uk": "Посібник користувача Pyxel"
     },
     "start_title": {
       "en": "Getting Started",
@@ -330,5 +344,472 @@
       "tr": "Bu örnekte görsel parçalar garden_stage.bbmodel dosyasına, Collision Columns içindeki uygun yükseklikteki kutular garden_stage_collision.bbmodel dosyasına kopyalanmış ve yürüme yüzeyleri hizalanmıştır. Çarpışma kutuları, parça bölünmeleri veya dekoratif pahlara gerek duymadan tüm sütunu kapsar. Birleştirilmiş iki modeli mevcut .glb adlarıyla dışa aktarın. Parça kütüphanesinin kendisi çalışma sırasında kullanılmaz.",
       "uk": "У цьому прикладі видимі частини скопійовано в garden_stage.bbmodel, а коробки відповідної висоти з Collision Columns — у garden_stage_collision.bbmodel; поверхні для ходьби вирівняно. Колізії задаються цілими колонами без поділу на деталі та декоративних фасок. Експортуйте дві складені моделі з наявними іменами .glb. Сама бібліотека деталей під час гри не використовується."
     }
-  }
+  },
+  "guides": [
+    {
+      "language": "ja",
+      "sections": [
+        {
+          "id": "s-play",
+          "title": "サンプルを実行する",
+          "blocks": [
+            {
+              "text": "<p>Pyxel Cube のサンプルは、<code class=\"chip\">pyxel_examples</code> 内の <code class=\"chip\">cube</code> ディレクトリにあります。</p>"
+            },
+            {
+              "text": "<p>ローカル環境では以下のコマンドでサンプルを実行できます。</p>"
+            },
+            {
+              "code": "cd pyxel_examples/cube\npyxel run c01_hello_cube.py",
+              "syntax": "sh"
+            },
+            {
+              "text": "<p>サンプルの一覧は <a class=\"link\" href=\"../../showcase/\" target=\"_blank\" rel=\"noopener noreferrer\">Pyxel Showcase</a> の「Cube サンプル」をご覧ください。ブラウザ上でサンプルを実行することもできます。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-usage",
+          "title": "基本的な使い方",
+          "blocks": [
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-import\">Pyxel Cube のクラスをインポートする</h3>"
+            },
+            {
+              "text": "<p><code class=\"chip\">pyxel.cube</code> から必要なクラスをインポートします。</p>"
+            },
+            {
+              "code": "import pyxel\nfrom pyxel.cube import Node, Vec3",
+              "syntax": "python"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-node-behavior\">ノードを定義する</h3>"
+            },
+            {
+              "text": "<p><code class=\"chip\">Node</code> クラスを継承し、ノードの更新・描画の処理を定義します。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-app-flow\">ノードツリーを作成する</h3>"
+            },
+            {
+              "text": "<p>定義したクラスからノードのインスタンスを生成し、まとめ役のノードに登録して<strong>ノードツリー</strong>を作成します。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-scene-loop\">ノードツリーを更新・描画する</h3>"
+            },
+            {
+              "text": "<p>アプリの <code class=\"chip\">update()</code> と <code class=\"chip\">draw()</code> から、ノードツリーを更新・描画します。登録した各ノードの処理が実行され、カメラから見た画像が Pyxel の 2D 画面に描かれます。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-creating",
+          "title": "ノード",
+          "blocks": [
+            {
+              "text": "<p>Pyxel Cube の<strong>ノード</strong>は、3D 空間に配置する物体や、そのグループを表します。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-node-class\">ノードの定義</h3>"
+            },
+            {
+              "text": "<p><code class=\"chip\">Node</code> クラスを継承し、<code class=\"chip\">on_update()</code> に更新処理、<code class=\"chip\">on_draw()</code> に描画処理を書きます。</p>"
+            },
+            {
+              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c01_hello_cube.py\">入門サンプル</a>では、箱を次のように描きます。</p>"
+            },
+            {
+              "code": "def on_draw(self):\n    self.box(Mat4.IDENTITY, Vec3(15.6, 15.6, 15.6), self.color)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p><code class=\"chip\">Mat4.IDENTITY</code> はノードの位置にそのまま描く指定、<code class=\"chip\">Vec3</code> の 3 値は幅・高さ・奥行き、<code class=\"chip\">self.color</code> は色番号です。真ん中の値を増やすと縦長になります。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-nodes\">ノードの作成と登録</h3>"
+            },
+            {
+              "text": "<p>定義したクラスからノードのインスタンスを生成します。親となるノードの <code class=\"chip\">add_child()</code> に、子となるノードを渡して登録します。</p>"
+            },
+            {
+              "text": "<p>生成したノードを <code class=\"chip\">node</code> とすると、アプリ側では以下のように登録できます。</p>"
+            },
+            {
+              "code": "self.root = Node()\nself.root.add_child(node)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>子ノードの位置や向きは、親ノードを基準に指定します。親を動かしたり回転させたりすると、子も一緒に動きます。</p>"
+            },
+            {
+              "text": "<p>例えば、持ち物をプレイヤーの子にすると、プレイヤーの移動や回転に持ち物もついてきます。</p>"
+            },
+            {
+              "text": "<figure class=\"mt-4\"><img class=\"mx-auto w-full max-w-[420px] h-auto rounded\" src=\"images/node-tree.svg\" alt=\"root の子に field と player があり、player の子に item がある。player を動かすと item も一緒に動く。\"></figure>"
+            },
+            {
+              "text": "<p><code class=\"chip\">player.add_child(item)</code> は、持ち物をプレイヤーの子にします。形を描かず、子をまとめるためだけのノードも作れます。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-getting-started\">ノードツリーの更新と描画</h3>"
+            },
+            {
+              "text": "<p>アプリの <code class=\"chip\">update()</code> と <code class=\"chip\">draw()</code> から、ノードツリーの最上位にあるノードの <code class=\"chip\">update()</code> と <code class=\"chip\">draw()</code> を実行します。</p>"
+            },
+            {
+              "code": "def update(self):\n    self.root.update()\n\ndef draw(self):\n    self.root.draw(0, 0, pyxel.width, pyxel.height)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>ノードの <code class=\"chip\">update()</code> は、各ノードの <code class=\"chip\">on_update()</code> を実行します。<code class=\"chip\">draw()</code> は、各ノードの <code class=\"chip\">on_draw()</code> を実行し、カメラから見た画像を Pyxel の 2D 画面に描きます。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-coordinates",
+          "title": "ベクトルと行列",
+          "blocks": [
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-vectors\">ベクトル（Vec3 クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>ベクトル</strong>は、X・Y・Z の 3 つの値で位置や移動量を表すものです。Pyxel Cube では <code class=\"chip\">Vec3</code> クラスで扱います。Cube では <strong>Y の正方向が上</strong>、地面の上の移動には X と Z を使います。</p>"
+            },
+            {
+              "text": "<figure class=\"mt-4\"><img class=\"mx-auto w-full max-w-[420px] h-auto rounded\" src=\"images/coordinates.svg\" alt=\"原点から X が右、Y が上、Z が斜め手前へ伸びる座標軸。位置 (30, 20, 0) は X 方向に 30、上に 20。\"></figure>"
+            },
+            {
+              "text": "<p>位置に移動量を足すと物体を動かせます。たとえば、弾を目標に向かって進めるには、次のように書けます。</p>"
+            },
+            {
+              "code": "pos = Vec3(0, 0, 0)\ntarget = Vec3(40, 0, -30)\ndirection = (target - pos).normalize()\npos += direction * 2",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>目標から現在地を引いて向きを求め、<code class=\"chip\">normalize()</code> で長さを 1 にそろえます。速さを掛ければ移動量です。</p>"
+            },
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><code class=\"chip\">pos.x</code>・<code class=\"chip\">pos.y</code>・<code class=\"chip\">pos.z</code>：各座標。変更するときは新しい <code class=\"chip\">Vec3</code> を代入します。</li><li><code class=\"chip\">Vec3.ZERO</code>：<code class=\"chip\">Vec3(0, 0, 0)</code>。</li></ul>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-transform\">行列（Mat4 クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>行列</strong>は、移動・回転・拡大などの変換をまとめて表します。Pyxel Cube では <code class=\"chip\">Mat4</code> クラスで扱います。次の例は、回転と移動を組み合わせてノードの <code class=\"chip\">transform</code> に設定しています。</p>"
+            },
+            {
+              "code": "spin = Mat4.from_euler(Vec3(frame * 3.0, frame * 5.0, 0.0))\nself.transform = Mat4.from_translation(position) * spin",
+              "syntax": "python"
+            },
+            {
+              "text": "<p><code class=\"chip\">from_euler()</code> は X・Y・Z 軸まわりの回転角（度）を指定します。右側の変換から適用されるので、この例は回転してから <code class=\"chip\">position</code> へ移動します。</p>"
+            },
+            {
+              "code": "Mat4.from_scale(Vec3(2, 2, 2))  # 大きさを 2 倍にする\nMat4.IDENTITY  # 移動・回転・拡大をしない",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>子の配置は親が基準です（<strong>ローカル座標</strong>）。3D 空間全体を基準にした位置（<strong>ワールド座標</strong>）は <code class=\"chip\">node.world_transform.pos</code> で取得できます。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-view",
+          "title": "カメラとシェーディング",
+          "blocks": [
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-camera\">カメラ（Camera クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>カメラ</strong>は、場面をどこからどちらへ見るかを決めるものです。<code class=\"chip\">Camera</code> クラスで作ってルートノードに設定し、<code class=\"chip\">look_at(カメラの位置, 見る位置)</code> で構図を指定します。</p>"
+            },
+            {
+              "code": "self.root.camera = Camera()\nself.root.camera.transform = Mat4.look_at(Vec3(0.0, 78.0, 104.0), Vec3.ZERO)",
+              "syntax": "python"
+            },
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li>通常（透視投影）：遠い物ほど小さく映ります。</li><li><code class=\"chip\">ortho_size</code> を設定（平行投影）：距離で大きさが変わりません。</li></ul>"
+            },
+            {
+              "text": "<p>プレイヤーを追うカメラは、プレイヤーの移動に合わせて位置と見る先を更新します。<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py\">アクションゲームのサンプル</a>の <code class=\"chip\">update_camera()</code> で確認できます。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-shading\">シェーディング（Shading クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>シェーディング</strong>は、面の向きに応じて陰影を付ける処理です。<code class=\"chip\">Shading</code> クラスで設定を作り、ルートノードに持たせます。</p>"
+            },
+            {
+              "code": "self.root.shading = Shading(pyxel.colors)\nself.root.shading.direction = Vec3(0.4, -1.0, -0.5)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p><code class=\"chip\">direction</code> は光の進む方向です。設定は親から子へ引き継がれます。<a class=\"link\" href=\"../../showcase/examples/c04-mesh-and-motion.html\">モデルとモーションのサンプル</a>では、S キーで陰影の有無を見比べられます。</p>"
+            },
+            {
+              "code": "self.shaded(False)  # on_draw() 内で陰影を使わずに描く",
+              "syntax": "python"
+            }
+          ]
+        },
+        {
+          "id": "s-rendering",
+          "title": "描画とプリミティブ",
+          "blocks": [
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-drawing\">描画メソッド</h3>"
+            },
+            {
+              "text": "<p><code class=\"chip\">on_draw()</code> では、2D と同じように描画メソッドを呼びます。3D の位置には <code class=\"chip\">Vec3</code> を使います。</p>"
+            },
+            {
+              "code": "pyxel.line(0, 0, 30, 20, 8)  # 2D\nself.line(Vec3(0, 0, 0), Vec3(30, 20, 0), 8)  # 3D",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>箱の <code class=\"chip\">box()</code>、球の <code class=\"chip\">sphere()</code> などもあります。<a class=\"link\" href=\"../../showcase/examples/c02-basic-shapes.html\">基本形状のサンプル</a>では、マウスで視点、スペースキーで輪郭表示を変えて形を確認できます。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-textures\">テクスチャとスプライト</h3>"
+            },
+            {
+              "text": "<p>物体の表面に貼る画像が<strong>テクスチャ</strong>です。<code class=\"chip\">box()</code> や <code class=\"chip\">sphere()</code> には、色番号の代わりに Pyxel の <code class=\"chip\">Image</code> を渡せます。</p>"
+            },
+            {
+              "code": "self.box(Mat4.IDENTITY, Vec3(29.75, 29.75, 29.75), cat_image)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>ここで渡している <code class=\"chip\">cat_image</code> は、PNG から読み込んだ猫の画像です。</p>"
+            },
+            {
+              "text": "<p><code class=\"chip\">plane()</code> は向きを指定できる板、<code class=\"chip\">sprite()</code> は常にカメラを向く画像です。スプライトなら、ドット絵のキャラクターや爆発などを 3D 空間に置けます。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">プリミティブ（Primitive クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>プリミティブ</strong>は、形の頂点とその結び方を持つデータです。<code class=\"chip\">Primitive</code> クラスで作ります。頂点を動かすと、物体全体の配置を変えずに形を変えられます。</p>"
+            },
+            {
+              "text": "<figure class=\"mt-4\"><img class=\"mx-auto w-full max-w-[420px] h-auto rounded\" src=\"images/primitive.svg\" alt=\"板の左上の頂点を上げると、その頂点につながる面の形が変わる。\"></figure>"
+            },
+            {
+              "text": "<p><code class=\"chip\">positions</code> は X・Y・Z を頂点順に並べたリストです。最初の頂点の高さなら、添字 1 で変更できます。</p>"
+            },
+            {
+              "code": "shape = Primitive.plane(20, 20)\nshape.positions[1] += 10\nshape.compute_normals()  # 変形後の陰影用に面の向きを更新",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>作った形は <code class=\"chip\">on_draw()</code> で <code class=\"chip\">prim()</code> に渡します。</p>"
+            },
+            {
+              "code": "self.prim(Mat4.IDENTITY, shape, 8)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c03_custom_shapes.py\">カスタム形状のサンプル</a>では、球の頂点を毎フレーム動かし、敵の体が波打つ形にしています。面を構成する頂点番号は <code class=\"chip\">indices</code>、画像の貼り方は <code class=\"chip\">uvs</code> に入っています。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-overlay\">3D と 2D の合成</h3>"
+            },
+            {
+              "text": "<p>ルートノードの <code class=\"chip\">draw(x, y, w, h)</code> は、カメラから見た画像を Pyxel の画面に描きます。左上の位置と幅・高さは、いつもの画面座標（ピクセル）です。</p>"
+            },
+            {
+              "code": "pyxel.cls(0)\nself.root.draw(0, 0, pyxel.width, pyxel.height)\npyxel.text(8, 8, \"SCORE: 0\", 7)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>この例は画面全体に 3D を描き、その後にスコアを重ねます。3D の物体どうしは奥行きで重なり、2D は描いた順に重なります。</p>"
+            },
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><code class=\"chip\">x, y, w, h</code>：3D を描く領域（ビューポート）。画面の一部にも描けます。</li><li><code class=\"chip\">Camera.clear_color</code>：描画先全体を塗る背景色。2D の背景を残すなら <code class=\"chip\">None</code>。</li><li><code class=\"chip\">target</code>：<code class=\"chip\">Image</code> を渡すと画面の代わりに画像へ描けます。</li></ul>"
+            },
+            {
+              "text": "<p>3D の敵に 2D の照準を重ねるには、<code class=\"chip\">project_to_screen()</code> で敵の位置を画面座標に変換します。<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c03_custom_shapes.py\">カスタム形状のサンプル</a>の <code class=\"chip\">draw_game()</code> がこの処理を行っています。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-model-runtime",
+          "title": "メッシュとモーション",
+          "blocks": [
+            {
+              "text": "<p>モデルの形・テクスチャ・動きをまとめた GLB ファイルも使えます。<a class=\"link\" href=\"../../showcase/examples/c04-mesh-and-motion.html\">モデルとモーションのサンプル</a>では、ガゼルを表示し、歩く・走る・食べる動きを切り替えられます。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-models\">メッシュ（Mesh クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>メッシュ</strong>は、モデルの形状や階層などをまとめたデータです。<code class=\"chip\">Mesh</code> クラスで扱います。<code class=\"chip\">Mesh.from_glb()</code> で読み込み、<code class=\"chip\">Node.from_mesh()</code> で場面に置けるノードにします。読み込んだデータから複数のノードを作ることもできます。</p>"
+            },
+            {
+              "code": "mesh = Mesh.from_glb(\"assets/gazelle.glb\")\nactor = Node.from_mesh(mesh)\nself.root.add_child(actor)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>パスは Python ファイルが基準です。ノードの <code class=\"chip\">transform</code> で大きさや位置を調整できます。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-motion\">モーション（Motion クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>モーション</strong>は、歩く・走るといったアニメーションのデータです。<code class=\"chip\">Motion</code> クラスで扱います。モデルに含まれるモーションは <code class=\"chip\">mesh.motions</code> に入り、<code class=\"chip\">play_motion()</code> で再生します。モーションのないモデルは読み込んで配置するだけで使えます。</p>"
+            },
+            {
+              "code": "actor.play_motion(mesh.motions[0])",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>ガゼルのモデルには <code class=\"chip\">move</code>・<code class=\"chip\">run</code>・<code class=\"chip\">eat</code> のモーションがあり、サンプルでは 1〜3 キーで切り替えられます。</p>"
+            },
+            {
+              "text": "<p>移動するノードの子にモデルを置けば、移動とアニメーションを組み合わせられます。<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py\">アクションゲームのサンプル</a>の <code class=\"chip\">Player.animate()</code> では、着地しているか・移動しているかに応じて、モデルの動きを切り替えています。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-interaction",
+          "title": "物理エンジン",
+          "blocks": [
+            {
+              "text": "<p>物体を落下させる、床で止める、ぶつかって跳ね返す、といった動きには Cube の物理エンジンを使えます。物体に衝突用の形と重さなどを設定すると、速度・重力による移動と衝突を計算します。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-collision\">コライダー（Collider クラス）</h3>"
+            },
+            {
+              "text": "<p><strong>コライダー</strong>は、衝突用の形と物理的な性質を持つものです。<code class=\"chip\">Collider</code> クラスで作り、ノードの <code class=\"chip\">collider</code> に設定します。見た目のモデルとは別に、球・カプセル・箱などで形を指定できます。複雑な地形には、コライダーの <code class=\"chip\">mesh</code> に地形のメッシュを指定します。</p>"
+            },
+            {
+              "code": "self.collider = Collider(size=Vec3(26, 26, 26), mass=1)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p><code class=\"chip\">mass</code> は質量、<code class=\"chip\">gravity</code> は重力、<code class=\"chip\">velocity</code> は速度（1 回の更新で進む量）です。質量が正の球や箱などには重力が作用します。</p>"
+            },
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><code class=\"chip\">mass=0</code>：衝突で押されない床や、コードで動かす足場。</li><li><code class=\"chip\">gravity=0</code>：ジャンプなどの動きを自分で制御するキャラクター。</li><li><code class=\"chip\">mass=0, trigger=True</code>：コインやゴールなど、接触だけを調べる範囲。</li></ul>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-movement\">キャラクターの移動</h3>"
+            },
+            {
+              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py\">アクションゲームのサンプル</a>では、<code class=\"chip\">Player.on_update()</code> で入力に応じた移動・ジャンプの速度を決め、<code class=\"chip\">on_collide()</code> で着地やコインの取得を処理します。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-physics-response\">衝突への応答</h3>"
+            },
+            {
+              "text": "<p>Cube は移動と衝突を計算し、<code class=\"chip\">on_collide()</code> に接触情報を渡します。<code class=\"chip\">normal</code> は押し戻す方向、<code class=\"chip\">depth</code> は食い込みの深さです。</p>"
+            },
+            {
+              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">物理シミュレーションのサンプル</a> の <code class=\"chip\">Body.on_collide()</code> は、位置・速度・回転速度の補正を適用して、押し戻しや反発を実現します。</p>"
+            },
+            {
+              "code": "def on_collide(self, other, contact):\n    if self.collider.mass:\n        shift = Mat4.from_translation(contact.normal * contact.depth)\n        self.transform = shift * self.transform\n        self.collider.velocity += contact.delta_velocity\n        self.collider.angular_velocity += contact.delta_angular_velocity",
+              "syntax": "python"
+            },
+            {
+              "text": "<p>反発の強さは <code class=\"chip\">restitution</code>、滑りにくさは <code class=\"chip\">friction</code> で変えられます。衝突による回転も計算するときは <code class=\"chip\">rolls=True</code> を指定します。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-raycast\">レイキャスト</h3>"
+            },
+            {
+              "text": "<p>空間に線を伸ばし、当たる物体や位置を調べるのが<strong>レイキャスト</strong>です。たとえば、キャラクターの位置から下向きに調べると、影を描く地面の位置が分かります。</p>"
+            },
+            {
+              "code": "hit = self.parent.raycast(\n    self.transform.pos, Vec3.DOWN, tags={\"ground\"}\n)",
+              "syntax": "python"
+            },
+            {
+              "text": "<p><code class=\"chip\">raycast()</code> は最初の接触、<code class=\"chip\">raycast_all()</code> は複数の接触を調べます。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-resources",
+          "title": "リソースの作り方",
+          "blocks": [
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-authoring\">モデル・テクスチャ・モーション</h3>"
+            },
+            {
+              "text": "<p>おすすめの制作ツールは <a class=\"link\" href=\"https://www.blockbench.net/\">Blockbench</a> です。箱を組み合わせて形を作り、表面に色を塗り、動きを付けられます。</p>"
+            },
+            {
+              "text": "<table class=\"w-full text-left\"><thead><tr><th class=\"th whitespace-nowrap\">作るもの</th><th class=\"th\">考え方</th></tr></thead><tbody><tr><td class=\"td whitespace-nowrap\">モデル</td><td class=\"td\">箱を組み合わせます。腕や脚はグループに分け、回転の中心（ピボット）を関節に置きます。</td></tr><tr><td class=\"td whitespace-nowrap\">テクスチャ</td><td class=\"td\">表面に貼る画像です。面と画像の対応が UV マッピングです。Paint ではモデル上に直接描けます。</td></tr><tr><td class=\"td whitespace-nowrap\">モーション</td><td class=\"td\">時刻ごとに姿勢を記録します（キーフレーム）。間の動きは補間されます。</td></tr></tbody></table>"
+            },
+            {
+              "text": "<p>ガゼルの編集用データ <code class=\"chip\">assets/gazelle.bbmodel</code> には、形・画像・動きが入っています。編集用のファイルとゲームで読むファイルの関係は次の通りです。</p>"
+            },
+            {
+              "code": "Blockbench (.bbmodel) → 書き出し (.glb) → Mesh.from_glb()",
+              "syntax": "text"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-export\">GLB への書き出し</h3>"
+            },
+            {
+              "text": "<p>Generic Model で制作し、<strong>File → Export → Export glTF Model</strong> から <strong>Binary (glb)</strong> で書き出します。</p>"
+            },
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>：有効</li><li><strong>Export Groups as Armature</strong>：無効</li><li><strong>Export Animations</strong>：モーションを含める場合は有効</li></ul>"
+            },
+            {
+              "text": "<p>付属モデルを編集するときは、保存済みの書き出しスケールを保つと元のゲームと大きさが合います。色は <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">Pyxel パレット</a>を読み込めます。</p>"
+            },
+            {
+              "text": "<p>詳しい制作操作は <a class=\"link\" href=\"https://www.blockbench.net/wiki/guides/blockbench-overview-tips/\">Blockbench の公式ガイド</a>を参照してください。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-stage-assets\">ステージのモデル</h3>"
+            },
+            {
+              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py\">アクションゲームのサンプル</a>では、見た目のモデルと、歩く面や壁を単純化した衝突用モデルを分けています。編集用データは <code class=\"chip\">assets/garden_models.zip</code> にあります。</p>"
+            },
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/tree/main/python/pyxel/examples/cube/tools\">Cube Model References</a>：パーツを配置・複製し、表示用と衝突用の GLB を書き出すツール。</li><li>音・音楽・2D 画像：<a class=\"link\" href=\"../#s-resources\">Pyxel ユーザーガイドのリソースの作り方</a>。</li></ul>"
+            }
+          ]
+        },
+        {
+          "id": "s-dist",
+          "title": "アプリケーションの配布方法",
+          "blocks": [
+            {
+              "text": "<p>配布方法は通常の Pyxel と共通です。モデルや画像をアプリのディレクトリに入れて、<code class=\"chip\">pyxel package</code> でまとめます。</p>"
+            },
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-dist\">アプリケーションの配布方法</a></li><li><a class=\"link\" href=\"../../web-usage/\">Web 版 Pyxel の使い方</a></li></ul>"
+            }
+          ]
+        },
+        {
+          "id": "s-apiref",
+          "title": "API リファレンス",
+          "blocks": [
+            {
+              "text": "<p>各クラスや引数の詳細は <a class=\"link\" href=\"../../api-reference/cube/\">Pyxel Cube API リファレンス</a>を参照してください。</p><p class=\"mt-2\">リファレンスページの「上級者向け」にチェックを入れると、高度な機能の API も表示されます。</p>"
+            },
+            {
+              "text": "<p>入力・音・2D 描画などの共通機能は <a class=\"link\" href=\"../../api-reference/\">Pyxel API リファレンス</a>を参照してください。</p>"
+            }
+          ]
+        },
+        {
+          "id": "s-links",
+          "title": "リンク集",
+          "blocks": [
+            {
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel ユーザーガイド</a>：関連マニュアルやツール、コミュニティ。ライセンスやコントリビューション方法も掲載しています。</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">よくある質問</a>：操作や環境についての質問。</li></ul>"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

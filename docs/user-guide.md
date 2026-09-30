@@ -102,7 +102,7 @@ cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-Examples can also be viewed and run in the browser from [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
+You can browse the example list and run examples in your browser at [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
 
 ## Creating Applications
 
@@ -225,7 +225,7 @@ Pyxel sounds and music can also be created using the following method:
 
 - Create them with the `Sound.set` or `Music.set` functions
 
-Refer to the API reference for the use of these functions.
+Refer to the [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/) for details on these functions.
 
 ## Distributing Applications
 
