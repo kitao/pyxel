@@ -81,6 +81,28 @@
     padding: 0.625rem 1rem;
     margin: 0.75rem 0;
   }
+  .code-block-wrap {
+    @apply relative;
+    margin: 0.75rem 0;
+  }
+  .code-block-wrap .code-block {
+    margin: 0;
+  }
+  .code-copy-btn {
+    @apply absolute top-1.5 right-1.5 flex items-center justify-center rounded-md border border-gray-700 bg-gray-800/80 p-1 text-gray-400 hover:text-gray-100 hover:border-gray-500 focus-visible:border-indigo-300 focus-visible:text-gray-100 outline-none cursor-pointer transition-colors;
+  }
+  .code-copy-btn .code-copied-icon {
+    display: none;
+  }
+  .code-copy-btn.copied {
+    @apply text-emerald-400 border-emerald-400/40;
+  }
+  .code-copy-btn.copied .code-copy-icon {
+    display: none;
+  }
+  .code-copy-btn.copied .code-copied-icon {
+    display: block;
+  }
   .link-list {
     @apply text-sm leading-relaxed space-y-1.5;
   }

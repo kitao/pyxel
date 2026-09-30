@@ -99,8 +99,48 @@ const t = (o) => {
   return o[lang] ?? o.en ?? "";
 };
 
-const code = (s, syntax = "plaintext") =>
-  `<pre class="code-block"><code class="language-${syntax}">${esc(s)}</code></pre>`;
+// Localized copy-button labels and icons for code blocks
+const codeCopyLabels = {
+  copy: {
+    en: "Copy code",
+    cn: "复制代码",
+    de: "Code kopieren",
+    es: "Copiar código",
+    fr: "Copier le code",
+    it: "Copia il codice",
+    ja: "コードをコピー",
+    ko: "코드 복사",
+    pt: "Copiar código",
+    ru: "Копировать код",
+    tr: "Kodu kopyala",
+    uk: "Копіювати код",
+  },
+  copied: {
+    en: "Copied!",
+    cn: "已复制！",
+    de: "Kopiert!",
+    es: "¡Copiado!",
+    fr: "Copié !",
+    it: "Copiato!",
+    ja: "コピーしました！",
+    ko: "복사되었습니다!",
+    pt: "Copiado!",
+    ru: "Скопировано!",
+    tr: "Kopyalandı!",
+    uk: "Скопійовано!",
+  },
+};
+
+const codeCopyIcons = {
+  copy: `<svg class="code-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+  copied: `<svg class="code-copied-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`,
+};
+
+const code = (s, syntax = "plaintext") => {
+  const copyLabel = t(codeCopyLabels.copy);
+  const copiedLabel = t(codeCopyLabels.copied);
+  return `<div class="code-block-wrap"><pre class="code-block"><code class="language-${syntax}">${esc(s)}</code></pre><button type="button" class="code-copy-btn" title="${esc(copyLabel)}" aria-label="${esc(copyLabel)}" data-copy-label="${esc(copyLabel)}" data-copied-label="${esc(copiedLabel)}">${codeCopyIcons.copy}${codeCopyIcons.copied}</button></div>`;
+};
 
 const btnChip = (s) => `<span class="btn-chip">${esc(s)}</span>`;
 
@@ -206,3 +246,45 @@ const initPage = (jsonFile, buildFn) => {
     })
     .catch((e) => console.error("Failed to load data:", e));
 };
+
+// Clipboard writes for the code-block copy buttons
+
+const CODE_COPY_RESET_MS = 2000;
+
+const writeClipboardText = async (text) => {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fall through to the legacy path when the API is unavailable.
+    }
+  }
+  const el = document.createElement("textarea");
+  el.value = text;
+  el.setAttribute("readonly", "");
+  el.style.position = "fixed";
+  el.style.opacity = "0";
+  document.body.appendChild(el);
+  el.select();
+  const ok = document.execCommand("copy");
+  el.remove();
+  return ok;
+};
+
+const handleCodeCopyClick = async (e) => {
+  const btn = e.target.closest?.(".code-copy-btn");
+  if (!btn) return;
+  const text = btn.parentElement?.querySelector("pre code")?.textContent ?? "";
+  if (!(await writeClipboardText(text))) return;
+  btn.classList.add("copied");
+  btn.title = btn.dataset.copiedLabel;
+  btn.setAttribute("aria-label", btn.dataset.copiedLabel);
+  setTimeout(() => {
+    btn.classList.remove("copied");
+    btn.title = btn.dataset.copyLabel;
+    btn.setAttribute("aria-label", btn.dataset.copyLabel);
+  }, CODE_COPY_RESET_MS);
+};
+
+document.addEventListener("click", handleCodeCopyClick);
