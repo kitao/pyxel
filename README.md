@@ -17,6 +17,8 @@ Also, this project is developed by one person, kept going by your GitHub stars. 
 
 **[▸ User Guide](https://kitao.github.io/pyxel/web/user-guide/)**
 
+**[▸ Pyxel Cube Guide — Making 3D Games](https://kitao.github.io/pyxel/web/user-guide/cube/)**
+
 **[▸ User Examples](https://kitao.github.io/pyxel-user-examples/)**
 
 **[▸ Share Your Work](https://github.com/kitao/pyxel/discussions/new?category=user-examples)**
@@ -32,6 +34,8 @@ Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオ
 また、このプロジェクトは GitHub のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！
 
 **[▸ ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
+
+**[▸ Pyxel Cube ガイド — 3D ゲームを作る](https://kitao.github.io/pyxel/web/user-guide/cube/)**
 
 **[▸ ユーザー作品集](https://kitao.github.io/pyxel-user-examples/)**
 

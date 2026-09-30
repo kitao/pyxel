@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="340" viewBox="0 0 420 340" role="img">
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="#94a3b8" /></marker></defs>
+<rect width="420" height="340" rx="12" fill="#111827" />
+<g font-family="system-ui, sans-serif" font-size="18" fill="#e5e7eb">
+ <path d="M160 220 L340 220 L268 268 L88 268 Z" fill="#1e293b" stroke="#475569" />
+ <g stroke="#94a3b8" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+  <path d="M160 220 H355" /><path d="M160 220 V60" /><path d="M160 220 L55 290" />
+ </g>
+ <text x="363" y="227">+X</text><text x="177" y="66">+Y</text><text x="28" y="313">+Z</text>
+ <path d="M280 140 V220" stroke="#facc15" stroke-width="2" stroke-dasharray="5 5" />
+ <circle cx="160" cy="220" r="5" fill="#fff" /><text x="169" y="244" font-size="16">原点</text>
+ <circle cx="280" cy="140" r="6" fill="#facc15" /><text x="280" y="114" text-anchor="middle" fill="#facc15" font-size="17">(30, 20, 0)</text>
+ <text x="210" y="323" text-anchor="middle" font-size="16" fill="#94a3b8">X・Z が地面、Y が高さ</text>
+</g></svg>

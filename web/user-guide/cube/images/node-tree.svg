@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="340" viewBox="0 0 420 340" role="img">
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="#94a3b8" /></marker></defs>
+<rect width="420" height="340" rx="12" fill="#111827" />
+<g font-family="system-ui, sans-serif" font-size="18" fill="#e5e7eb" text-anchor="middle">
+ <g stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)"><path d="M210 86 V112 H100 V138" /><path d="M210 112 H320 V138" /><path d="M320 194 V250" /></g>
+ <g fill="#1e293b" stroke="#64748b"><rect x="140" y="30" width="140" height="56" rx="8" /><rect x="30" y="138" width="140" height="56" rx="8" /><rect x="250" y="138" width="140" height="56" rx="8" /><rect x="250" y="250" width="140" height="56" rx="8" /></g>
+ <text x="210" y="53">root</text><text x="210" y="75" font-size="15" fill="#94a3b8">ルートノード</text>
+ <text x="100" y="161">field</text><text x="100" y="183" font-size="15" fill="#94a3b8">マップ</text>
+ <text x="320" y="161">player</text><text x="320" y="183" font-size="15" fill="#94a3b8">プレイヤー</text>
+ <text x="320" y="273">item</text><text x="320" y="295" font-size="15" fill="#94a3b8">持ち物</text>
+ <text x="130" y="271" font-size="16">player を動かすと</text><text x="130" y="297" font-size="16">item も一緒に動く</text>
+</g></svg>

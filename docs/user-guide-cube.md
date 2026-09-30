@@ -6,9 +6,9 @@
 
 ## Overview
 
-**Pyxel Cube** is the software-rendered 3D extension of Pyxel.
+**Pyxel Cube** is an extension for making retro 3D games with Pyxel. This guide introduces its basic usage, as well as creating and loading 3D models.
 
-This guide is a work in progress; the Cube API is still being finalized.
+If you are new to Pyxel, first read the [Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/) to set up your environment and learn the basics.
 
 ## Getting Started
 

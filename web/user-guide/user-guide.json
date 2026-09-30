@@ -569,18 +569,18 @@
       "uk": "У локальному середовищі приклади можна виконати за допомогою таких команд."
     },
     "usage_examples_showcase": {
-      "en": "Examples can also be viewed and run in the browser from {0}.",
-      "cn": "示例也可以在 {0} 上通过浏览器查看和运行。",
-      "de": "Die Beispiele können auch auf {0} im Browser angesehen und ausgeführt werden.",
-      "es": "Los ejemplos también se pueden ver y ejecutar en el navegador desde {0}.",
-      "fr": "Les exemples peuvent également être consultés et exécutés dans le navigateur depuis {0}.",
-      "it": "Gli esempi possono anche essere visualizzati ed eseguiti nel browser da {0}.",
-      "ja": "サンプル一覧は {0} からブラウザでも確認・実行できます。",
-      "ko": "예제 목록은 {0}에서 브라우저로도 확인하고 실행할 수 있습니다.",
-      "pt": "Os exemplos também podem ser visualizados e executados no navegador a partir do {0}.",
-      "ru": "Примеры также можно просмотреть и запустить в браузере на {0}.",
-      "tr": "Örnek listesi {0} üzerinden tarayıcıda da görüntülenebilir ve çalıştırılabilir.",
-      "uk": "Список прикладів також можна переглянути та запустити у браузері на {0}."
+      "en": "You can browse the example list and run examples in your browser at {0}.",
+      "cn": "在 {0} 可以查看示例列表，并在浏览器中运行示例。",
+      "de": "Auf {0} können Sie die Beispielliste ansehen und Beispiele im Browser ausführen.",
+      "es": "En {0} puede consultar la lista de ejemplos y ejecutarlos en el navegador.",
+      "fr": "Sur {0}, vous pouvez consulter la liste des exemples et les exécuter dans votre navigateur.",
+      "it": "Su {0} è possibile consultare l'elenco degli esempi ed eseguirli nel browser.",
+      "ja": "サンプルの一覧は {0} をご覧ください。ブラウザ上でサンプルを実行することもできます。",
+      "ko": "{0}에서 예제 목록을 확인하고 브라우저에서 예제를 실행할 수 있습니다.",
+      "pt": "No {0}, você pode consultar a lista de exemplos e executá-los no navegador.",
+      "ru": "На {0} можно просмотреть список примеров и запустить их в браузере.",
+      "tr": "{0} üzerinden örnek listesini inceleyebilir ve örnekleri tarayıcıda çalıştırabilirsiniz.",
+      "uk": "На {0} можна переглянути список прикладів і запустити їх у браузері."
     },
     "creating_title": {
       "en": "Creating Applications",
@@ -947,18 +947,18 @@
       "uk": "Створюйте їх за допомогою функцій {0} або {1}"
     },
     "resources_other_refer": {
-      "en": "Refer to the API reference for the use of these functions.",
-      "cn": "有关这些函数的用法，请参阅 API 参考。",
-      "de": "Bitte beachten Sie die API-Referenz für die Verwendung dieser Funktionen.",
-      "es": "Consulte la referencia de la API para el uso de estas funciones.",
-      "fr": "Référez-vous à la documentation de l'API pour l'utilisation de ces fonctions.",
-      "it": "Fare riferimento alla documentazione dell'API per l'uso di queste funzioni.",
-      "ja": "各関数の使い方については API リファレンスを参照してください。",
-      "ko": "이 함수의 사용법은 API 레퍼런스를 참조하세요.",
-      "pt": "Consulte a referência da API para o uso dessas funções.",
-      "ru": "См. справочник API, чтобы узнать, как использовать эти функции.",
-      "tr": "Bu fonksiyonların kullanımı için API referansına bakın.",
-      "uk": "Зверніться до документації API для використання цих функцій."
+      "en": "Refer to the {0} for details on these functions.",
+      "cn": "有关这些函数的用法，请参阅 {0}。",
+      "de": "Informationen zur Verwendung dieser Funktionen finden Sie in der {0}.",
+      "es": "Consulte {0} para obtener información sobre estas funciones.",
+      "fr": "Consultez {0} pour savoir comment utiliser ces fonctions.",
+      "it": "Consultare {0} per informazioni sull'uso di queste funzioni.",
+      "ja": "各関数の使い方については {0} を参照してください。",
+      "ko": "각 함수의 사용법은 {0}를 참조하세요.",
+      "pt": "Consulte {0} para saber como usar essas funções.",
+      "ru": "Описание этих функций приведено в разделе {0}.",
+      "tr": "Bu fonksiyonların kullanımı için {0} sayfasına bakın.",
+      "uk": "Опис цих функцій наведено в розділі {0}."
     },
     "dist_title": {
       "en": "Distributing Applications",

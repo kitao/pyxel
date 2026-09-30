@@ -278,7 +278,10 @@ pyxel.show()`,
           <ul class="list mt-1">
             <li>${t("resources_other_sound_set").replace("{0}", chip("Sound.set")).replace("{1}", chip("Music.set"))}</li>
           </ul>
-          <p class="body mt-3">${esc(t("resources_other_refer"))}</p>`;
+          <p class="body mt-3">${t("resources_other_refer").replace(
+            "{0}",
+            link("../api-reference/", t("doc_api_reference")),
+          )}</p>`;
 
         document.getElementById("s-dist").innerHTML = `
           <h2 class="section-title">${esc(t("dist_title"))}</h2>
