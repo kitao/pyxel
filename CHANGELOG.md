@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.9.10
+
+- Exposed AudioRenderer for pulling audio samples in headless mode
+
 ## 2.9.9
 
 - Updated Rust to version nightly-2026-08-12
