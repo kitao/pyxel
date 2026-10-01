@@ -33,7 +33,7 @@ fn with_platform_mut<T>(f: impl FnOnce(&mut Platform) -> T) -> T {
     })
 }
 
-fn is_headless() -> bool {
+pub fn is_headless() -> bool {
     HEADLESS.load(Ordering::Relaxed)
 }
 

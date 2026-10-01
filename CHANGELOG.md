@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.9.10
+
+- Added opt-in Cargo feature to skip Audio::start() in headless mode
+
 ## 2.9.9
 
 - Updated Rust to version nightly-2026-08-12

@@ -63,6 +63,18 @@ impl AudioStreamRenderer {
 
 impl Audio {
     pub fn start() {
+        // Opt-in only (see `no_headless_audio` in Cargo.toml): crates that
+        // drive render_samples() externally themselves can ask not to also
+        // start this SDL2 callback thread, which would otherwise race with
+        // their own manual calls on the same channel/voice state — observed
+        // in practice as roughly-doubled playback speed and audio
+        // noise/distortion when both ran at once. Without the feature,
+        // audio output starts even in headless mode, as before.
+        #[cfg(feature = "no_headless_audio")]
+        if platform::is_headless() {
+            return;
+        }
+
         let mut stream_renderer = AudioStreamRenderer::new();
 
         platform::start_audio(
