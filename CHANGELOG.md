@@ -2,7 +2,7 @@
 
 ## 2.9.10
 
-- Exposed public access to Audio::render_samples() for headless use
+- Exposed AudioRenderer for pulling audio samples in headless mode
 
 ## 2.9.9
 

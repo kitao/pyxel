@@ -22,7 +22,7 @@ pub struct Audio;
 
 pub struct AudioLock;
 
-struct AudioStreamRenderer {
+pub struct AudioRenderer {
     blip_buf: BlipBuf,
 }
 
@@ -43,8 +43,8 @@ impl Drop for AudioLock {
 
 // Stream rendering
 
-impl AudioStreamRenderer {
-    fn new() -> Self {
+impl AudioRenderer {
+    pub fn new() -> Self {
         let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SAMPLES);
         blip_buf
             .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
@@ -53,9 +53,15 @@ impl AudioStreamRenderer {
         Self { blip_buf }
     }
 
-    fn render(&mut self, out: &mut [i16]) {
+    pub fn render(&mut self, out: &mut [i16]) {
         let channels = pyxel::channels();
         Audio::render_samples(&channels, &mut self.blip_buf, out);
+    }
+}
+
+impl Default for AudioRenderer {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -63,13 +69,13 @@ impl AudioStreamRenderer {
 
 impl Audio {
     pub fn start() {
-        let mut stream_renderer = AudioStreamRenderer::new();
+        let mut renderer = AudioRenderer::new();
 
         platform::start_audio(
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SAMPLES,
             move |out: &mut [i16]| {
-                stream_renderer.render(out);
+                renderer.render(out);
             },
         );
     }
