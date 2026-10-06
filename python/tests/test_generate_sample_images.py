@@ -3,10 +3,11 @@
 import runpy
 import subprocess
 import sys
+from itertools import zip_longest
 from pathlib import Path
 
 import pytest
-from PIL import Image, ImageSequence
+from PIL import GifImagePlugin, Image, ImageChops, ImageSequence
 
 ROOT = Path(__file__).parents[2]
 SCRIPTS = ROOT / "scripts"
@@ -107,20 +108,176 @@ def test_documentation_generator_full_pipeline(family, tmp_path, monkeypatch):
     assert {path.name for path in output.iterdir()} == set(OUTPUTS[family])
 
     for filename, (size, duration) in OUTPUTS[family].items():
-        with Image.open(output / filename) as image:
+        actual = output / filename
+        with Image.open(actual) as image:
             assert image.size == size, filename
-            if duration is None:
-                assert image.format == "PNG", filename
-                image.load()
-                continue
-            assert image.format == "GIF", filename
-            assert image.info["loop"] == 0, filename
-            elapsed = 0
-            for frame in ImageSequence.Iterator(image):
-                frame.load()
-                assert frame.info["duration"] > 0, filename
-                elapsed += frame.info["duration"]
-            assert elapsed == duration, filename
+            assert image.format == ("PNG" if duration is None else "GIF"), filename
+            if duration is not None:
+                assert image.info["loop"] == 0, filename
+        # Published recordings are the baseline; ordinary tests never rewrite them.
+        elapsed = _compare_recording(actual, ROOT / "docs" / "images" / filename)
+        assert elapsed == (duration or 0), filename
+
+
+def _compare_recording(actual_path, reference_path):
+    with Image.open(actual_path) as actual, Image.open(reference_path) as reference:
+        assert actual.size == reference.size, f"{actual_path.name}: size changed"
+        assert actual.format == reference.format, f"{actual_path.name}: format changed"
+        assert actual.info.get("loop") == reference.info.get("loop"), (
+            f"{actual_path.name}: loop changed"
+        )
+        elapsed = 0
+        for actual_frame, reference_frame in zip_longest(
+            _recording_frames(actual), _recording_frames(reference)
+        ):
+            assert actual_frame is not None and reference_frame is not None, (
+                f"{actual_path.name}: recording length changed at {elapsed} ms"
+            )
+            actual_pixels, actual_duration = actual_frame
+            reference_pixels, reference_duration = reference_frame
+            if actual_pixels != reference_pixels:
+                diff_path = actual_path.with_name(f"{actual_path.stem}_diff.png")
+                ImageChops.difference(
+                    Image.frombytes("RGB", actual.size, actual_pixels),
+                    Image.frombytes("RGB", reference.size, reference_pixels),
+                ).save(diff_path)
+                pytest.fail(
+                    f"{actual_path.name}: pixels changed at {elapsed} ms; "
+                    f"difference image: {diff_path}"
+                )
+            assert actual_duration == reference_duration, (
+                f"{actual_path.name}: timing changed at "
+                f"{elapsed + min(actual_duration, reference_duration)} ms "
+                f"({actual_duration} ms instead of {reference_duration} ms)"
+            )
+            elapsed += actual_duration
+        return elapsed
+
+
+def _recording_frames(image):
+    # Adjacent identical frames describe one display interval, regardless of encoding.
+    pixels = None
+    duration = 0
+    for frame in ImageSequence.Iterator(image):
+        frame_pixels = frame.convert("RGB").tobytes()
+        frame_duration = frame.info.get("duration", 0) if image.format == "GIF" else 0
+        if image.format == "GIF":
+            assert frame_duration > 0, f"{image.filename}: nonpositive frame duration"
+        if pixels is not None and frame_pixels != pixels:
+            yield pixels, duration
+            duration = 0
+        pixels = frame_pixels
+        duration += frame_duration
+    if pixels is not None:
+        yield pixels, duration
+
+
+class TestRecordingComparison:
+    def test_equivalent_frame_splits_and_palette_encodings(self, tmp_path):
+        actual = tmp_path / "actual.gif"
+        reference = tmp_path / "reference.gif"
+        _write_recording(actual, [1, 1, 2], [20, 30, 40])
+        _write_recording(reference, [1, 2], [50, 40], reverse_palette=True)
+        with Image.open(actual) as image:
+            assert image.n_frames == 3
+        assert actual.read_bytes() != reference.read_bytes()
+        assert _compare_recording(actual, reference) == 90
+        assert _compare_recording(reference, actual) == 90
+
+    def test_one_pixel_change_reports_first_time_and_diff(self, tmp_path):
+        actual = tmp_path / "actual.gif"
+        reference = tmp_path / "reference.gif"
+        _write_recording(actual, [1, 2], [50, 40], changed_pixel=True)
+        _write_recording(reference, [1, 2], [50, 40])
+        with pytest.raises(pytest.fail.Exception, match="pixels changed at 50 ms"):
+            _compare_recording(actual, reference)
+        with Image.open(tmp_path / "actual_diff.png") as diff:
+            assert diff.getpixel((0, 0)) == (0, 0, 255)
+            assert diff.getpixel((1, 0)) == (0, 0, 0)
+
+    def test_frame_order_change_with_equal_total_duration(self, tmp_path):
+        actual = tmp_path / "actual.gif"
+        reference = tmp_path / "reference.gif"
+        _write_recording(actual, [1, 2, 3], [50, 40, 30])
+        _write_recording(reference, [1, 3, 2], [50, 30, 40])
+        with pytest.raises(pytest.fail.Exception, match="pixels changed at 50 ms"):
+            _compare_recording(actual, reference)
+
+    def test_shifted_transition_with_equal_total_duration(self, tmp_path):
+        actual = tmp_path / "actual.gif"
+        reference = tmp_path / "reference.gif"
+        _write_recording(actual, [1, 2], [40, 50])
+        _write_recording(reference, [1, 2], [50, 40])
+        with pytest.raises(AssertionError, match="timing changed at 40 ms"):
+            _compare_recording(actual, reference)
+
+    @pytest.mark.parametrize("extra_frame", [False, True])
+    def test_added_or_removed_tail(self, tmp_path, extra_frame):
+        actual = tmp_path / "actual.gif"
+        reference = tmp_path / "reference.gif"
+        _write_recording(actual, [1, 2], [50, 40])
+        _write_recording(reference, [1], [50])
+        if not extra_frame:
+            actual, reference = reference, actual
+        with pytest.raises(AssertionError, match="recording length changed at 50 ms"):
+            _compare_recording(actual, reference)
+
+    def test_loop_change(self, tmp_path):
+        actual = tmp_path / "actual.gif"
+        reference = tmp_path / "reference.gif"
+        _write_recording(actual, [1, 2], [50, 40], loop=1)
+        _write_recording(reference, [1, 2], [50, 40])
+        with pytest.raises(AssertionError, match="loop changed"):
+            _compare_recording(actual, reference)
+
+    def test_nonpositive_duration(self, tmp_path):
+        actual = tmp_path / "actual.gif"
+        reference = tmp_path / "reference.gif"
+        _write_recording(actual, [1, 2], [50, 0])
+        _write_recording(reference, [1, 2], [50, 40])
+        with pytest.raises(AssertionError, match="nonpositive frame duration"):
+            _compare_recording(actual, reference)
+
+    def test_static_image_pixels(self, tmp_path):
+        actual = tmp_path / "actual.png"
+        reference = tmp_path / "reference.png"
+        Image.new("RGB", (2, 1), "red").save(actual)
+        Image.new("RGB", (2, 1), "red").convert("P").save(reference)
+        assert _compare_recording(actual, reference) == 0
+        Image.new("RGB", (2, 1), "blue").save(actual)
+        with pytest.raises(pytest.fail.Exception, match="pixels changed at 0 ms"):
+            _compare_recording(actual, reference)
+
+    def test_size_change(self, tmp_path):
+        actual = tmp_path / "actual.png"
+        reference = tmp_path / "reference.png"
+        Image.new("RGB", (2, 1), "red").save(actual)
+        Image.new("RGB", (1, 1), "red").save(reference)
+        with pytest.raises(AssertionError, match="size changed"):
+            _compare_recording(actual, reference)
+
+
+def _write_recording(
+    path, pixels, durations, *, reverse_palette=False, changed_pixel=False, loop=0
+):
+    colors = [(0, 0, 0), (255, 0, 0), (0, 0, 255), (0, 255, 0)]
+    if reverse_palette:
+        colors.reverse()
+        pixels = [len(colors) - 1 - pixel for pixel in pixels]
+    palette = [channel for color in colors for channel in color]
+    palette += [0] * (768 - len(palette))
+    frames = [Image.new("P", (2, 1), pixel) for pixel in pixels]
+    for frame in frames:
+        frame.putpalette(palette)
+    if changed_pixel:
+        frames[-1].putpixel((0, 0), 0)
+
+    # Write frame blocks directly so Pillow's saver cannot merge the split-frame case.
+    with path.open("wb") as output:
+        output.writelines(GifImagePlugin.getheader(frames[0], info={"loop": loop})[0])
+        for frame, duration in zip(frames, durations, strict=True):
+            output.writelines(GifImagePlugin.getdata(frame, duration=duration))
+        output.write(b";")
 
 
 @pytest.mark.parametrize("stream", ["stdout", "stderr"])
