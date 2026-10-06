@@ -75,6 +75,13 @@ fn close_gamepad(gamepad: &mut GamepadSlot) {
 }
 
 impl PlatformSdl2 {
+    pub(super) fn close_gamepads(&mut self) {
+        for gamepad in &mut self.gamepads {
+            close_gamepad(gamepad);
+        }
+        self.gamepads.clear();
+    }
+
     pub fn poll_events(&mut self, pyxel_events: &mut Vec<Event>) {
         // SAFETY: SDL_Event is a C union used here only as an output buffer.
         let mut sdl_event: SDL_Event = unsafe { zeroed() };
@@ -171,6 +178,15 @@ impl PlatformSdl2 {
                 // Gamepad
                 SDL_CONTROLLERDEVICEADDED => {
                     let device_index = unsafe { sdl_event.cdevice.which };
+                    let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
+                    // SDL queues add events for controllers already opened during init.
+                    if self
+                        .gamepads
+                        .iter()
+                        .any(|g| matches!(g, Some((id, _)) if *id == instance_id))
+                    {
+                        continue;
+                    }
                     if let Some(gamepad) = open_gamepad(device_index) {
                         match self.gamepads.iter_mut().find(|g| g.is_none()) {
                             Some(slot) => *slot = Some(gamepad),

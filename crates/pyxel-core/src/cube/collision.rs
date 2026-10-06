@@ -4,7 +4,7 @@
 use crate::cube::collider::Collider;
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
-use crate::cube::vec3::Vec3;
+use crate::cube::vec3::{sum_wide_products, Vec3};
 
 const CONTACT_EPSILON: f32 = 1e-6;
 
@@ -241,7 +241,16 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
     let dz = c_a.z - c_b.z;
     let dist_sq = dx * dx + dy * dy + dz * dz;
     let r_sum = r_a + r_b;
-    if dist_sq >= r_sum * r_sum {
+    let r_sum_sq = r_sum * r_sum;
+    if !(dist_sq.is_finite() && r_sum_sq.is_finite())
+        && vec_is_finite(c_a)
+        && vec_is_finite(c_b)
+        && r_a.is_finite()
+        && r_b.is_finite()
+    {
+        return sphere_vs_sphere_wide(c_a, r_a, c_b, r_b);
+    }
+    if dist_sq >= r_sum_sq {
         return None;
     }
 
@@ -270,6 +279,40 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
         point,
         normal,
         depth,
+    })
+}
+
+// Finite world coordinates can overflow squared distances in f32. Keep the
+// contact calculation wide until the final point, normal, and depth are stored.
+#[cold]
+fn sphere_vs_sphere_wide(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<ContactGeom> {
+    let dx = f64::from(c_a.x) - f64::from(c_b.x);
+    let dy = f64::from(c_a.y) - f64::from(c_b.y);
+    let dz = f64::from(c_a.z) - f64::from(c_b.z);
+    let dist_sq = dx * dx + dy * dy + dz * dz;
+    let r_sum = f64::from(r_a) + f64::from(r_b);
+    if dist_sq >= r_sum * r_sum {
+        return None;
+    }
+
+    let dist = dist_sq.sqrt();
+    let (nx, ny, nz) = if dist > f64::from(1e-12_f32) {
+        (dx / dist, dy / dist, dz / dist)
+    } else {
+        (0.0, 1.0, 0.0)
+    };
+    Some(ContactGeom {
+        point: Vec3 {
+            x: (f64::from(c_b.x) + nx * f64::from(r_b)) as f32,
+            y: (f64::from(c_b.y) + ny * f64::from(r_b)) as f32,
+            z: (f64::from(c_b.z) + nz * f64::from(r_b)) as f32,
+        },
+        normal: Vec3 {
+            x: nx as f32,
+            y: ny as f32,
+            z: nz as f32,
+        },
+        depth: (r_sum - dist) as f32,
     })
 }
 
@@ -311,6 +354,10 @@ pub fn sphere_vs_rounded_obb(
     let reach = r_sphere + box_r;
 
     if dist2 > f32::EPSILON {
+        // Keep ordinary f32 rounding; finite geometry can exceed its squared range.
+        if !dist2.is_finite() || !reach.is_finite() {
+            return sphere_vs_rounded_obb_outside_wide(p, q, r_sphere, box_r, box_world);
+        }
         // Center outside the core box.
         let dist = dist2.sqrt();
         let depth = reach - dist;
@@ -406,6 +453,42 @@ pub fn sphere_vs_rounded_obb(
         point,
         normal: n_world,
         depth: margin + reach,
+    })
+}
+
+#[cold]
+fn sphere_vs_rounded_obb_outside_wide(
+    p: Vec3,
+    q: Vec3,
+    r_sphere: f32,
+    box_r: f32,
+    box_world: &Mat4,
+) -> Option<ContactGeom> {
+    let dx = f64::from(p.x) - f64::from(q.x);
+    let dy = f64::from(p.y) - f64::from(q.y);
+    let dz = f64::from(p.z) - f64::from(q.z);
+    let dist = (dx * dx + dy * dy + dz * dz).sqrt();
+    let depth = f64::from(r_sphere) + f64::from(box_r) - dist;
+    if depth <= f64::from(CONTACT_EPSILON) {
+        return None;
+    }
+    let nx = dx / dist;
+    let ny = dy / dist;
+    let nz = dz / dist;
+    let normal = box_world.mul_dir_value(&Vec3 {
+        x: nx as f32,
+        y: ny as f32,
+        z: nz as f32,
+    });
+    let point = box_world.mul_vec_value(&Vec3 {
+        x: (f64::from(q.x) + nx * f64::from(box_r)) as f32,
+        y: (f64::from(q.y) + ny * f64::from(box_r)) as f32,
+        z: (f64::from(q.z) + nz * f64::from(box_r)) as f32,
+    });
+    Some(ContactGeom {
+        point,
+        normal,
+        depth: depth as f32,
     })
 }
 
@@ -525,6 +608,21 @@ pub fn capsule_vs_rounded_obb(
 
         for [nx, ny, nz] in axes {
             let len = (nx * nx + ny * ny + nz * nz).sqrt();
+            if !len.is_finite()
+                && [top, bot, half].into_iter().all(vec_is_finite)
+                && cap_r.is_finite()
+                && box_r.is_finite()
+            {
+                return capsule_box_core_wide(
+                    top,
+                    bot,
+                    half,
+                    cap_r,
+                    box_r,
+                    box_world,
+                    on_seg_world,
+                );
+            }
             if len <= f32::EPSILON {
                 continue;
             }
@@ -534,6 +632,21 @@ pub fn capsule_vs_rounded_obb(
             let bot_distance = bot.x * nx + bot.y * ny + bot.z * nz;
             let forward = extent - top_distance.min(bot_distance) + reach;
             let backward = extent + top_distance.max(bot_distance) + reach;
+            if (!forward.is_finite() || !backward.is_finite())
+                && [top, bot, half].into_iter().all(vec_is_finite)
+                && cap_r.is_finite()
+                && box_r.is_finite()
+            {
+                return capsule_box_core_wide(
+                    top,
+                    bot,
+                    half,
+                    cap_r,
+                    box_r,
+                    box_world,
+                    on_seg_world,
+                );
+            }
             let (candidate, sign) = if backward < forward {
                 (backward, -1.0)
             } else {
@@ -561,6 +674,77 @@ pub fn capsule_vs_rounded_obb(
 
     // sphere_vs_rounded_obb's normal points box → "sphere" = box → capsule.
     sphere_vs_rounded_obb(on_seg_world, cap_r.max(0.0), box_world, half, box_r)
+}
+
+// Rebuild projections from the finite endpoints before axis products overflow.
+fn capsule_box_core_wide(
+    top: Vec3,
+    bot: Vec3,
+    half: Vec3,
+    cap_r: f32,
+    box_r: f32,
+    world: &Mat4,
+    point: Vec3,
+) -> Option<ContactGeom> {
+    let (dx, dy, dz) = (
+        f64::from(top.x) - f64::from(bot.x),
+        f64::from(top.y) - f64::from(bot.y),
+        f64::from(top.z) - f64::from(bot.z),
+    );
+    let reach = cap_r.max(0.0) + box_r.max(0.0);
+    let reach = if reach.is_finite() {
+        f64::from(reach)
+    } else {
+        f64::from(cap_r.max(0.0)) + f64::from(box_r.max(0.0))
+    };
+    let mut depth = f64::INFINITY;
+    let mut normal = Vec3 {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+    };
+    for [nx, ny, nz] in [
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 1.0],
+        [0.0, dz, -dy],
+        [-dz, 0.0, dx],
+        [dy, -dx, 0.0],
+    ] {
+        let len = (nx * nx + ny * ny + nz * nz).sqrt();
+        if len <= f64::from(f32::EPSILON) {
+            continue;
+        }
+        let (nx, ny, nz) = (nx / len, ny / len, nz / len);
+        let extent = f64::from(half.x) * nx.abs()
+            + f64::from(half.y) * ny.abs()
+            + f64::from(half.z) * nz.abs();
+        let distance = |p: Vec3| f64::from(p.x) * nx + f64::from(p.y) * ny + f64::from(p.z) * nz;
+        let (a, b) = (distance(top), distance(bot));
+        let (forward, backward) = (extent - a.min(b) + reach, extent + a.max(b) + reach);
+        let (candidate, sign) = if backward < forward {
+            (backward, -1.0)
+        } else {
+            (forward, 1.0)
+        };
+        if candidate < depth {
+            depth = candidate;
+            normal = Vec3 {
+                x: (nx * sign) as f32,
+                y: (ny * sign) as f32,
+                z: (nz * sign) as f32,
+            };
+        }
+    }
+    let depth = depth as f32;
+    if !depth.is_finite() || depth <= CONTACT_EPSILON {
+        return None;
+    }
+    Some(ContactGeom {
+        point,
+        normal: world.mul_dir_value(&normal),
+        depth,
+    })
 }
 
 // Exact core distance from edge/box closest points in both directions.
@@ -608,7 +792,7 @@ impl ObbPairDistance {
         let offset_b = self.inv_b.mul_dir_value(&offset);
         let offset_a = self.inv_a.mul_dir_value(&offset);
         let mut best = (self.world_a.pos_value(), self.world_b.pos_value());
-        let mut best_dist2 = f32::INFINITY;
+        let mut best_dist2 = f64::INFINITY;
         for (vertices, half, shift, world, reverse) in [
             (&self.a_in_b, self.half_b, offset_b, &self.world_b, false),
             (
@@ -638,10 +822,7 @@ impl ObbPairDistance {
                         shifted(vertices[i | bit]),
                         half,
                     );
-                    let dx = on_edge.x - on_box.x;
-                    let dy = on_edge.y - on_box.y;
-                    let dz = on_edge.z - on_box.z;
-                    let dist2 = dx * dx + dy * dy + dz * dz;
+                    let dist2 = point_dist2_ordering(on_edge, on_box);
                     if dist2 < best_dist2 {
                         best_dist2 = dist2;
                         let mut edge = world.mul_vec_value(&on_edge);
@@ -835,7 +1016,17 @@ pub fn rounded_obb_vs_rounded_obb(
             y: on_a.y - on_b.y,
             z: on_a.z - on_b.z,
         };
-        let distance = dot(&delta, &delta).sqrt();
+        let distance_squared = dot(&delta, &delta);
+        if !distance_squared.is_normal()
+            && on_a != on_b
+            && vec_is_finite(on_a)
+            && vec_is_finite(on_b)
+            && r_a.is_finite()
+            && r_b.is_finite()
+        {
+            return rounded_obb_separated_wide(on_a, on_b, r_a, r_b);
+        }
+        let distance = distance_squared.sqrt();
         if distance >= r_sum {
             return None;
         }
@@ -871,6 +1062,41 @@ pub fn rounded_obb_vs_rounded_obb(
         point,
         normal: min_axis,
         depth: min_overlap,
+    })
+}
+
+// The core points are f32, but their Euclidean distance can need wider squares.
+fn rounded_obb_separated_wide(a: Vec3, b: Vec3, r_a: f32, r_b: f32) -> Option<ContactGeom> {
+    let delta = [
+        f64::from(a.x) - f64::from(b.x),
+        f64::from(a.y) - f64::from(b.y),
+        f64::from(a.z) - f64::from(b.z),
+    ];
+    let distance = delta.iter().map(|v| v * v).sum::<f64>().sqrt();
+    let radius = r_a.max(0.0) + r_b.max(0.0);
+    let radius = if radius.is_finite() {
+        f64::from(radius)
+    } else {
+        f64::from(r_a.max(0.0)) + f64::from(r_b.max(0.0))
+    };
+    if distance >= radius {
+        return None;
+    }
+    let normal = delta.map(|v| v / distance);
+    let depth = radius - distance;
+    let reach = f64::from(r_b.max(0.0)) - depth * 0.5;
+    Some(ContactGeom {
+        point: Vec3 {
+            x: (f64::from(b.x) + normal[0] * reach) as f32,
+            y: (f64::from(b.y) + normal[1] * reach) as f32,
+            z: (f64::from(b.z) + normal[2] * reach) as f32,
+        },
+        normal: Vec3 {
+            x: normal[0] as f32,
+            y: normal[1] as f32,
+            z: normal[2] as f32,
+        },
+        depth: depth as f32,
     })
 }
 
@@ -910,6 +1136,15 @@ pub(crate) fn ray_vs_sphere_filtered(
     let b = 2.0 * (oc.x * dir.x + oc.y * dir.y + oc.z * dir.z);
     let c = oc.x * oc.x + oc.y * oc.y + oc.z * oc.z - radius * radius;
     let disc = b * b - 4.0 * a * c;
+    if (!(a.is_finite() && b.is_finite() && c.is_finite() && disc.is_finite())
+        || disc.abs() <= 8.0 * f32::EPSILON * (b * b + (4.0 * a * c).abs()))
+        && vec_is_finite(origin)
+        && vec_is_finite(dir)
+        && vec_is_finite(center)
+        && radius.is_finite()
+    {
+        return ray_vs_sphere_filtered_wide(origin, dir, center, radius, max_distance, accepts);
+    }
     if disc < 0.0 {
         return None;
     }
@@ -936,11 +1171,128 @@ pub(crate) fn ray_vs_sphere_filtered(
         let ny = point.y - center.y;
         let nz = point.z - center.z;
         let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
-        let normal = if nlen > 1e-12 {
+        let normal = if !nlen.is_finite()
+            && vec_is_finite(point)
+            && vec_is_finite(center)
+            && vec_is_finite(origin)
+            && vec_is_finite(dir)
+            && radius.is_finite()
+        {
+            let nx = f64::from(point.x) - f64::from(center.x);
+            let ny = f64::from(point.y) - f64::from(center.y);
+            let nz = f64::from(point.z) - f64::from(center.z);
+            let length = (nx * nx + ny * ny + nz * nz).sqrt();
+            Vec3 {
+                x: (nx / length) as f32,
+                y: (ny / length) as f32,
+                z: (nz / length) as f32,
+            }
+        } else if nlen > 1e-12 {
             Vec3 {
                 x: nx / nlen,
                 y: ny / nlen,
                 z: nz / nlen,
+            }
+        } else {
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            }
+        };
+        return Some((t, point, normal));
+    }
+    None
+}
+
+// Near cancellation or overflow, find the chord relative to the center so a
+// distant ray does not lose the radius or reconstruct its normal from large sums.
+#[cold]
+fn ray_vs_sphere_filtered_wide(
+    origin: Vec3,
+    dir: Vec3,
+    center: Vec3,
+    radius: f32,
+    max_distance: f32,
+    accepts: impl Fn(Vec3) -> bool,
+) -> Option<(f32, Vec3, Vec3)> {
+    let (dx, dy, dz) = (f64::from(dir.x), f64::from(dir.y), f64::from(dir.z));
+    let (ox, oy, oz) = (
+        f64::from(origin.x),
+        f64::from(origin.y),
+        f64::from(origin.z),
+    );
+    let (cx, cy, cz) = (
+        f64::from(center.x),
+        f64::from(center.y),
+        f64::from(center.z),
+    );
+    let (x, y, z) = (ox - cx, oy - cy, oz - cz);
+    let radius = f64::from(radius);
+    let a = dx * dx + dy * dy + dz * dz;
+    if a < f64::from(1e-12_f32) {
+        return None;
+    }
+    let midpoint = -(x * dx + y * dy + z * dz) / a;
+    // Cross before subtracting the center; a distant origin can erase that offset.
+    let cross = [
+        sum_wide_products([
+            (origin.y, dir.z),
+            (-origin.z, dir.y),
+            (-center.y, dir.z),
+            (center.z, dir.y),
+        ]),
+        sum_wide_products([
+            (origin.z, dir.x),
+            (-origin.x, dir.z),
+            (-center.z, dir.x),
+            (center.x, dir.z),
+        ]),
+        sum_wide_products([
+            (origin.x, dir.y),
+            (-origin.y, dir.x),
+            (-center.x, dir.y),
+            (center.y, dir.x),
+        ]),
+    ];
+    let closest = [
+        (dy * cross[2] - dz * cross[1]) / a,
+        (dz * cross[0] - dx * cross[2]) / a,
+        (dx * cross[1] - dy * cross[0]) / a,
+    ];
+    let chord_squared = radius * radius - closest.iter().map(|v| v * v).sum::<f64>();
+    if chord_squared < 0.0 {
+        return None;
+    }
+    let half_chord = (chord_squared / a).sqrt();
+    for offset in [-half_chord, half_chord] {
+        let root = midpoint + offset;
+        if root < 0.0 {
+            continue;
+        }
+        let t = root as f32;
+        if t > max_distance {
+            return None;
+        }
+        let (nx, ny, nz) = (
+            closest[0] + dx * offset,
+            closest[1] + dy * offset,
+            closest[2] + dz * offset,
+        );
+        let point = Vec3 {
+            x: (cx + nx) as f32,
+            y: (cy + ny) as f32,
+            z: (cz + nz) as f32,
+        };
+        if !accepts(point) {
+            continue;
+        }
+        let length = (nx * nx + ny * ny + nz * nz).sqrt();
+        let normal = if length > f64::from(1e-12_f32) {
+            Vec3 {
+                x: (nx / length) as f32,
+                y: (ny / length) as f32,
+                z: (nz / length) as f32,
             }
         } else {
             Vec3 {
@@ -1042,6 +1394,13 @@ pub fn ray_vs_triangle(
     v2: Vec3,
     max_distance: f32,
 ) -> Option<(f32, Vec3, Vec3)> {
+    let finite_inputs = || {
+        vec_is_finite(origin)
+            && vec_is_finite(dir)
+            && vec_is_finite(v0)
+            && vec_is_finite(v1)
+            && vec_is_finite(v2)
+    };
     let edge1 = Vec3 {
         x: v1.x - v0.x,
         y: v1.y - v0.y,
@@ -1059,6 +1418,9 @@ pub fn ray_vs_triangle(
         z: dir.x * edge2.y - dir.y * edge2.x,
     };
     let a = edge1.x * h.x + edge1.y * h.y + edge1.z * h.z;
+    if !a.is_finite() && finite_inputs() {
+        return ray_vs_triangle_wide(origin, dir, v0, v1, v2, max_distance);
+    }
     if a.abs() < 1e-9 {
         return None;
     }
@@ -1070,6 +1432,9 @@ pub fn ray_vs_triangle(
         z: origin.z - v0.z,
     };
     let u = f * (s.x * h.x + s.y * h.y + s.z * h.z);
+    if !u.is_finite() && finite_inputs() {
+        return ray_vs_triangle_wide(origin, dir, v0, v1, v2, max_distance);
+    }
     if !(0.0..=1.0).contains(&u) {
         return None;
     }
@@ -1080,11 +1445,17 @@ pub fn ray_vs_triangle(
         z: s.x * edge1.y - s.y * edge1.x,
     };
     let v = f * (dir.x * q.x + dir.y * q.y + dir.z * q.z);
+    if !v.is_finite() && finite_inputs() {
+        return ray_vs_triangle_wide(origin, dir, v0, v1, v2, max_distance);
+    }
     if v < 0.0 || u + v > 1.0 {
         return None;
     }
 
     let t = f * (edge2.x * q.x + edge2.y * q.y + edge2.z * q.z);
+    if !t.is_finite() && finite_inputs() {
+        return ray_vs_triangle_wide(origin, dir, v0, v1, v2, max_distance);
+    }
     if t < 0.0 || t > max_distance {
         return None;
     }
@@ -1099,7 +1470,18 @@ pub fn ray_vs_triangle(
     let mut ny = edge1.z * edge2.x - edge1.x * edge2.z;
     let mut nz = edge1.x * edge2.y - edge1.y * edge2.x;
     let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
-    if nlen > 1e-12 {
+    if !nlen.is_finite() && finite_inputs() {
+        if !(nx.is_finite() && ny.is_finite() && nz.is_finite()) {
+            return ray_vs_triangle_wide(origin, dir, v0, v1, v2, max_distance);
+        }
+        let length = (f64::from(nx) * f64::from(nx)
+            + f64::from(ny) * f64::from(ny)
+            + f64::from(nz) * f64::from(nz))
+        .sqrt();
+        nx = (f64::from(nx) / length) as f32;
+        ny = (f64::from(ny) / length) as f32;
+        nz = (f64::from(nz) / length) as f32;
+    } else if nlen > 1e-12 {
         nx /= nlen;
         ny /= nlen;
         nz /= nlen;
@@ -1122,6 +1504,79 @@ pub fn ray_vs_triangle(
     ))
 }
 
+// Keep the determinant cutoff and barycentric tests when finite products need more range.
+#[cold]
+fn ray_vs_triangle_wide(
+    origin: Vec3,
+    dir: Vec3,
+    v0: Vec3,
+    v1: Vec3,
+    v2: Vec3,
+    max_distance: f32,
+) -> Option<(f32, Vec3, Vec3)> {
+    let difference = |a: Vec3, b: Vec3| {
+        [
+            f64::from(a.x) - f64::from(b.x),
+            f64::from(a.y) - f64::from(b.y),
+            f64::from(a.z) - f64::from(b.z),
+        ]
+    };
+    let cross = |a: [f64; 3], b: [f64; 3]| {
+        [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0],
+        ]
+    };
+    let dot = |a: [f64; 3], b: [f64; 3]| a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    let edge1 = difference(v1, v0);
+    let edge2 = difference(v2, v0);
+    let direction = [f64::from(dir.x), f64::from(dir.y), f64::from(dir.z)];
+    let h = cross(direction, edge2);
+    let a = dot(edge1, h);
+    if a.abs() < f64::from(1e-9_f32) {
+        return None;
+    }
+    let f = 1.0 / a;
+    let s = difference(origin, v0);
+    let u = f * dot(s, h);
+    if !(0.0..=1.0).contains(&u) {
+        return None;
+    }
+    let q = cross(s, edge1);
+    let v = f * dot(direction, q);
+    if v < 0.0 || u + v > 1.0 {
+        return None;
+    }
+    let root = f * dot(edge2, q);
+    let t = root as f32;
+    if t < 0.0 || t > max_distance {
+        return None;
+    }
+    let point = Vec3 {
+        x: (f64::from(origin.x) + direction[0] * root) as f32,
+        y: (f64::from(origin.y) + direction[1] * root) as f32,
+        z: (f64::from(origin.z) + direction[2] * root) as f32,
+    };
+    let mut normal = cross(edge1, edge2);
+    let length = dot(normal, normal).sqrt();
+    if length > f64::from(1e-12_f32) {
+        normal = normal.map(|v| v / length);
+    }
+    if dot(normal, direction) > 0.0 {
+        normal = normal.map(|v| -v);
+    }
+    Some((
+        t,
+        point,
+        Vec3 {
+            x: normal[0] as f32,
+            y: normal[1] as f32,
+            z: normal[2] as f32,
+        },
+    ))
+}
+
 // Shape-vs-triangle tests
 
 // Sphere-vs-triangle: find the closest point on the triangle to the
@@ -1134,7 +1589,19 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
     let dy = c.y - closest.y;
     let dz = c.z - closest.z;
     let dist_sq = dx * dx + dy * dy + dz * dz;
-    if dist_sq >= r * r {
+    let radius_sq = r * r;
+    if ((!dist_sq.is_normal() && (dx != 0.0 || dy != 0.0 || dz != 0.0))
+        || (!radius_sq.is_normal() && r != 0.0))
+        && vec_is_finite(c)
+        && vec_is_finite(closest)
+        && r.is_finite()
+        && vec_is_finite(v0)
+        && vec_is_finite(v1)
+        && vec_is_finite(v2)
+    {
+        return sphere_vs_triangle_wide(c, r, v0, v1, v2, closest, face_normal);
+    }
+    if dist_sq >= radius_sq {
         return None;
     }
 
@@ -1190,6 +1657,74 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
     })
 }
 
+#[cold]
+fn sphere_vs_triangle_wide(
+    c: Vec3,
+    r: f32,
+    v0: Vec3,
+    v1: Vec3,
+    v2: Vec3,
+    closest: Vec3,
+    face_normal: Option<Vec3>,
+) -> Option<ContactGeom> {
+    let (dx, dy, dz) = (
+        f64::from(c.x) - f64::from(closest.x),
+        f64::from(c.y) - f64::from(closest.y),
+        f64::from(c.z) - f64::from(closest.z),
+    );
+    let dist_sq = dx * dx + dy * dy + dz * dz;
+    let radius = f64::from(r);
+    if dist_sq >= radius * radius {
+        return None;
+    }
+    let dist = dist_sq.sqrt();
+    let normal = if let Some(n) = face_normal {
+        let (nx, ny, nz) = (f64::from(n.x), f64::from(n.y), f64::from(n.z));
+        let length = (nx * nx + ny * ny + nz * nz).sqrt();
+        let sign = if dx * nx + dy * ny + dz * nz < 0.0 {
+            -1.0
+        } else {
+            1.0
+        };
+        Vec3 {
+            x: (sign * nx / length) as f32,
+            y: (sign * ny / length) as f32,
+            z: (sign * nz / length) as f32,
+        }
+    } else if dist > f64::from(1e-9_f32) {
+        Vec3 {
+            x: (dx / dist) as f32,
+            y: (dy / dist) as f32,
+            z: (dz / dist) as f32,
+        }
+    } else {
+        let (ax, ay, az) = (
+            f64::from(v1.x) - f64::from(v0.x),
+            f64::from(v1.y) - f64::from(v0.y),
+            f64::from(v1.z) - f64::from(v0.z),
+        );
+        let (bx, by, bz) = (
+            f64::from(v2.x) - f64::from(v0.x),
+            f64::from(v2.y) - f64::from(v0.y),
+            f64::from(v2.z) - f64::from(v0.z),
+        );
+        let (nx, ny, nz) = (ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
+        let length = (nx * nx + ny * ny + nz * nz)
+            .sqrt()
+            .max(f64::from(1e-9_f32));
+        Vec3 {
+            x: (nx / length) as f32,
+            y: (ny / length) as f32,
+            z: (nz / length) as f32,
+        }
+    };
+    Some(ContactGeom {
+        point: closest,
+        normal,
+        depth: (radius - dist) as f32,
+    })
+}
+
 // Capsule vs triangle. A crossing axis needs enough face-normal pushout
 // to clear both ends; otherwise the closest pair gives a sphere contact.
 pub fn capsule_vs_triangle(
@@ -1222,6 +1757,12 @@ pub fn capsule_vs_triangle(
         let (bx, by, bz) = (v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
         let (nx, ny, nz) = (ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
         let len = (nx * nx + ny * ny + nz * nz).sqrt();
+        if !len.is_finite()
+            && [top, bot, v0, v1, v2].into_iter().all(vec_is_finite)
+            && cap_r.is_finite()
+        {
+            return capsule_triangle_core_wide(top, bot, cap_r, v0, v1, v2, on_tri);
+        }
         if len > 1e-9 {
             let mut normal = Vec3 {
                 x: nx / len,
@@ -1236,6 +1777,12 @@ pub fn capsule_vs_triangle(
             let bot_distance = distance(bot);
             let forward = cap_r - top_distance.min(bot_distance);
             let backward = cap_r + top_distance.max(bot_distance);
+            if (!forward.is_finite() || !backward.is_finite())
+                && [top, bot, v0, v1, v2].into_iter().all(vec_is_finite)
+                && cap_r.is_finite()
+            {
+                return capsule_triangle_core_wide(top, bot, cap_r, v0, v1, v2, on_tri);
+            }
             let depth = if backward < forward {
                 normal.x = -normal.x;
                 normal.y = -normal.y;
@@ -1253,6 +1800,59 @@ pub fn capsule_vs_triangle(
     }
 
     sphere_vs_triangle(on_seg, cap_r, v0, v1, v2)
+}
+
+fn capsule_triangle_core_wide(
+    top: Vec3,
+    bot: Vec3,
+    radius: f32,
+    v0: Vec3,
+    v1: Vec3,
+    v2: Vec3,
+    point: Vec3,
+) -> Option<ContactGeom> {
+    // Reconstruct the face before its cross product loses direction.
+    let a = [
+        f64::from(v1.x) - f64::from(v0.x),
+        f64::from(v1.y) - f64::from(v0.y),
+        f64::from(v1.z) - f64::from(v0.z),
+    ];
+    let b = [
+        f64::from(v2.x) - f64::from(v0.x),
+        f64::from(v2.y) - f64::from(v0.y),
+        f64::from(v2.z) - f64::from(v0.z),
+    ];
+    let mut normal = [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    ];
+    let length = normal.iter().map(|v| v * v).sum::<f64>().sqrt();
+    if length <= f64::from(1e-9_f32) {
+        return sphere_vs_triangle(point, radius, v0, v1, v2);
+    }
+    normal = normal.map(|v| v / length);
+    let distance = |p: Vec3| {
+        (f64::from(p.x) - f64::from(v0.x)) * normal[0]
+            + (f64::from(p.y) - f64::from(v0.y)) * normal[1]
+            + (f64::from(p.z) - f64::from(v0.z)) * normal[2]
+    };
+    let (a, b) = (distance(top), distance(bot));
+    let (forward, backward) = (f64::from(radius) - a.min(b), f64::from(radius) + a.max(b));
+    let (depth, sign) = if backward < forward {
+        (backward, -1.0)
+    } else {
+        (forward, 1.0)
+    };
+    Some(ContactGeom {
+        point,
+        normal: Vec3 {
+            x: (normal[0] * sign) as f32,
+            y: (normal[1] * sign) as f32,
+            z: (normal[2] * sign) as f32,
+        },
+        depth: depth as f32,
+    })
 }
 
 // Closest-point helpers
@@ -1274,9 +1874,9 @@ pub(crate) fn closest_points_segment_triangle(
     }
 
     let mut best = (a0, closest_point_on_triangle(a0, v0, v1, v2));
-    let mut best_dist_sq = point_dist2(best.0, best.1);
+    let mut best_dist_sq = point_dist2_ordering(best.0, best.1);
     let on_tri = closest_point_on_triangle(a1, v0, v1, v2);
-    let dist_sq = point_dist2(a1, on_tri);
+    let dist_sq = point_dist2_ordering(a1, on_tri);
     if dist_sq < best_dist_sq {
         best = (a1, on_tri);
         best_dist_sq = dist_sq;
@@ -1284,7 +1884,7 @@ pub(crate) fn closest_points_segment_triangle(
 
     for (edge0, edge1) in [(v0, v1), (v1, v2), (v2, v0)] {
         let candidate = closest_points_segment_segment(a0, a1, edge0, edge1);
-        let dist_sq = point_dist2(candidate.0, candidate.1);
+        let dist_sq = point_dist2_ordering(candidate.0, candidate.1);
         if dist_sq < best_dist_sq {
             best = candidate;
             best_dist_sq = dist_sq;
@@ -1379,6 +1979,28 @@ fn closest_triangle_point_and_normal(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> (Vec
     let nx = ab[1] * ac[2] - ab[2] * ac[1];
     let ny = ab[2] * ac[0] - ab[0] * ac[2];
     let nz = ab[0] * ac[1] - ab[1] * ac[0];
+    let mut normal = Vec3 {
+        x: nx as f32,
+        y: ny as f32,
+        z: nz as f32,
+    };
+    let length_sq = normal.x * normal.x + normal.y * normal.y + normal.z * normal.z;
+    // The face direction must survive narrowing before a contact normalizes it.
+    if (!length_sq.is_finite() || length_sq == 0.0)
+        && vec_is_finite(p)
+        && vec_is_finite(a)
+        && vec_is_finite(b)
+        && vec_is_finite(c)
+    {
+        let length = (nx * nx + ny * ny + nz * nz).sqrt();
+        if length > 0.0 {
+            normal = Vec3 {
+                x: (nx / length) as f32,
+                y: (ny / length) as f32,
+                z: (nz / length) as f32,
+            };
+        }
+    }
     let distance = (ap[0] * nx + ap[1] * ny + ap[2] * nz) / (nx * nx + ny * ny + nz * nz);
     (
         Vec3 {
@@ -1386,11 +2008,7 @@ fn closest_triangle_point_and_normal(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> (Vec
             y: (f64::from(p.y) - ny * distance) as f32,
             z: (f64::from(p.z) - nz * distance) as f32,
         },
-        Some(Vec3 {
-            x: nx as f32,
-            y: ny as f32,
-            z: nz as f32,
-        }),
+        Some(normal),
     )
 }
 
@@ -1411,11 +2029,41 @@ fn closest_point_on_segment(p: Vec3, a: Vec3, b: Vec3) -> Vec3 {
         y: p.y - a.y,
         z: p.z - a.z,
     };
-    let t = ((ap.x * ab.x + ap.y * ab.y + ap.z * ab.z) / ab_len2).clamp(0.0, 1.0);
+    let projection = ap.x * ab.x + ap.y * ab.y + ap.z * ab.z;
+    if !(ab_len2.is_finite() && projection.is_finite())
+        && vec_is_finite(p)
+        && vec_is_finite(a)
+        && vec_is_finite(b)
+    {
+        return closest_point_on_segment_wide(p, a, b);
+    }
+    let t = (projection / ab_len2).clamp(0.0, 1.0);
     Vec3 {
         x: a.x + ab.x * t,
         y: a.y + ab.y * t,
         z: a.z + ab.z * t,
+    }
+}
+
+// A long axis or distant point can overflow the projection before clamping.
+#[cold]
+fn closest_point_on_segment_wide(p: Vec3, a: Vec3, b: Vec3) -> Vec3 {
+    let ab = (
+        f64::from(b.x) - f64::from(a.x),
+        f64::from(b.y) - f64::from(a.y),
+        f64::from(b.z) - f64::from(a.z),
+    );
+    let ap = (
+        f64::from(p.x) - f64::from(a.x),
+        f64::from(p.y) - f64::from(a.y),
+        f64::from(p.z) - f64::from(a.z),
+    );
+    let ab_len2 = ab.0 * ab.0 + ab.1 * ab.1 + ab.2 * ab.2;
+    let t = ((ap.0 * ab.0 + ap.1 * ab.1 + ap.2 * ab.2) / ab_len2).clamp(0.0, 1.0);
+    Vec3 {
+        x: (f64::from(a.x) + ab.0 * t) as f32,
+        y: (f64::from(a.y) + ab.1 * t) as f32,
+        z: (f64::from(a.z) + ab.2 * t) as f32,
     }
 }
 
@@ -1535,6 +2183,21 @@ fn point_dist2(a: Vec3, b: Vec3) -> f32 {
     (a.x - b.x).powi(2) + (a.y - b.y).powi(2) + (a.z - b.z).powi(2)
 }
 
+// Keep ordinary rounded distances and ties; recover ordering when a square loses range.
+pub(crate) fn point_dist2_ordering(a: Vec3, b: Vec3) -> f64 {
+    let distance = point_dist2(a, b);
+    if !distance.is_normal() && a != b && vec_is_finite(a) && vec_is_finite(b) {
+        let (dx, dy, dz) = (
+            f64::from(a.x) - f64::from(b.x),
+            f64::from(a.y) - f64::from(b.y),
+            f64::from(a.z) - f64::from(b.z),
+        );
+        dx * dx + dy * dy + dz * dz
+    } else {
+        f64::from(distance)
+    }
+}
+
 fn push_segment_param(params: &mut [f32; 8], len: &mut usize, t: f32) {
     if t > 0.0 && t < 1.0 && t.is_finite() {
         params[*len] = t;
@@ -1614,8 +2277,12 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
         y: b.y - a.y,
         z: b.z - a.z,
     };
-    if d.x * d.x + d.y * d.y + d.z * d.z <= f32::EPSILON {
+    let len2 = d.x * d.x + d.y * d.y + d.z * d.z;
+    if len2 <= f32::EPSILON {
         return (a, clamp_point_to_aabb(a, half));
+    }
+    if !len2.is_finite() && vec_is_finite(a) && vec_is_finite(b) && vec_is_finite(half) {
+        return closest_points_segment_aabb_wide(a, b, half);
     }
 
     let mut enter: f32 = 0.0;
@@ -1656,6 +2323,10 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
         consider_segment_aabb_candidate(a, d, half, t, &mut best_t, &mut best_dist2);
     }
 
+    if !best_dist2.is_finite() && vec_is_finite(a) && vec_is_finite(b) && vec_is_finite(half) {
+        return closest_points_segment_aabb_wide(a, b, half);
+    }
+
     for i in 0..param_len - 1 {
         let lo = params[i];
         let hi = params[i + 1];
@@ -1670,6 +2341,13 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
         add_segment_aabb_axis_quadratic(a.x, d.x, mid.x, half.x, &mut denom, &mut numer);
         add_segment_aabb_axis_quadratic(a.y, d.y, mid.y, half.y, &mut denom, &mut numer);
         add_segment_aabb_axis_quadratic(a.z, d.z, mid.z, half.z, &mut denom, &mut numer);
+        if (!denom.is_finite() || !numer.is_finite())
+            && vec_is_finite(a)
+            && vec_is_finite(b)
+            && vec_is_finite(half)
+        {
+            return closest_points_segment_aabb_wide(a, b, half);
+        }
         if denom > f32::EPSILON {
             let t = (-numer / denom).clamp(lo, hi);
             consider_segment_aabb_candidate(a, d, half, t, &mut best_t, &mut best_dist2);
@@ -1679,6 +2357,123 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
     let on_seg = segment_point(a, d, best_t);
     let on_box = clamp_point_to_aabb(on_seg, half);
     (on_seg, on_box)
+}
+
+// The same slab intervals and quadratic minima, with finite-input products
+// widened before they overflow. Narrow only the selected point pair.
+#[cold]
+fn closest_points_segment_aabb_wide(a: Vec3, b: Vec3, half: Vec3) -> (Vec3, Vec3) {
+    let a = [f64::from(a.x), f64::from(a.y), f64::from(a.z)];
+    let b = [f64::from(b.x), f64::from(b.y), f64::from(b.z)];
+    let half = [f64::from(half.x), f64::from(half.y), f64::from(half.z)];
+    let d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+    let point = |t: f64| [a[0] + d[0] * t, a[1] + d[1] * t, a[2] + d[2] * t];
+    let clamp = |p: [f64; 3]| {
+        [
+            p[0].clamp(-half[0], half[0]),
+            p[1].clamp(-half[1], half[1]),
+            p[2].clamp(-half[2], half[2]),
+        ]
+    };
+    let narrow = |p: [f64; 3]| Vec3 {
+        x: p[0] as f32,
+        y: p[1] as f32,
+        z: p[2] as f32,
+    };
+    let epsilon = f64::from(f32::EPSILON);
+
+    let mut enter: f64 = 0.0;
+    let mut exit: f64 = 1.0;
+    let mut intersects = true;
+    for axis in 0..3 {
+        if d[axis].abs() <= epsilon {
+            if a[axis] < -half[axis] || a[axis] > half[axis] {
+                intersects = false;
+                break;
+            }
+        } else {
+            let inv = 1.0 / d[axis];
+            let t0 = (-half[axis] - a[axis]) * inv;
+            let t1 = (half[axis] - a[axis]) * inv;
+            enter = enter.max(t0.min(t1));
+            exit = exit.min(t0.max(t1));
+            if enter > exit {
+                intersects = false;
+                break;
+            }
+        }
+    }
+    if intersects {
+        let on_seg = narrow(point((enter + exit) * 0.5));
+        return (on_seg, on_seg);
+    }
+
+    let mut params = [0.0; 8];
+    params[1] = 1.0;
+    let mut len = 2;
+    for axis in 0..3 {
+        if d[axis].abs() > epsilon {
+            for bound in [-half[axis], half[axis]] {
+                let t = (bound - a[axis]) / d[axis];
+                if t > 0.0 && t < 1.0 {
+                    params[len] = t;
+                    len += 1;
+                }
+            }
+        }
+    }
+    params[..len].sort_unstable_by(f64::total_cmp);
+    let param_epsilon = f64::from(1e-6_f32);
+    let mut unique_len = 0;
+    for i in 0..len {
+        if unique_len == 0 || (params[i] - params[unique_len - 1]).abs() > param_epsilon {
+            params[unique_len] = params[i];
+            unique_len += 1;
+        }
+    }
+    let mut best_t = 0.0;
+    let mut best_dist2 = f64::INFINITY;
+    let tie_epsilon = f64::from(1e-7_f32);
+    let mut consider = |t: f64| {
+        let p = point(t);
+        let q = clamp(p);
+        let dist2 = (p[0] - q[0]).powi(2) + (p[1] - q[1]).powi(2) + (p[2] - q[2]).powi(2);
+        if dist2 < best_dist2 - tie_epsilon
+            || ((dist2 - best_dist2).abs() <= tie_epsilon && t < best_t)
+        {
+            best_t = t;
+            best_dist2 = dist2;
+        }
+    };
+    for &t in params.iter().take(unique_len) {
+        consider(t);
+    }
+    for i in 0..unique_len - 1 {
+        let lo = params[i];
+        let hi = params[i + 1];
+        if hi - lo <= param_epsilon {
+            continue;
+        }
+        let mid = point((lo + hi) * 0.5);
+        let mut denom = 0.0;
+        let mut numer = 0.0;
+        for axis in 0..3 {
+            let bound = if mid[axis] < -half[axis] {
+                -half[axis]
+            } else if mid[axis] > half[axis] {
+                half[axis]
+            } else {
+                continue;
+            };
+            denom += d[axis] * d[axis];
+            numer += d[axis] * (a[axis] - bound);
+        }
+        if denom > epsilon {
+            consider((-numer / denom).clamp(lo, hi));
+        }
+    }
+    let p = point(best_t);
+    (narrow(p), narrow(clamp(p)))
 }
 
 // Box-triangle SAT core
@@ -1725,6 +2520,12 @@ pub fn local_box_vs_triangle(
     };
     let length_squared = |a: Vec3| a.x * a.x + a.y * a.y + a.z * a.z;
     let face_normal = cross(edges[0], edges[1]);
+    if !length_squared(face_normal).is_finite()
+        && [p0, p1, p2, half].into_iter().all(vec_is_finite)
+        && r.is_finite()
+    {
+        return local_box_vs_triangle_wide(half, r.max(0.0), p0, p1, p2);
+    }
     if length_squared(face_normal) < 1e-18 {
         return None;
     }
@@ -1773,6 +2574,61 @@ pub fn local_box_vs_triangle(
     })
 }
 
+// Rebuild all thirteen axes from finite vertices before cross products overflow.
+fn local_box_vs_triangle_wide(
+    half: Vec3,
+    radius: f32,
+    p0: Vec3,
+    p1: Vec3,
+    p2: Vec3,
+) -> Option<ContactGeom> {
+    let points = [p0, p1, p2].map(|p| [f64::from(p.x), f64::from(p.y), f64::from(p.z)]);
+    let edges: [[f64; 3]; 3] =
+        std::array::from_fn(|i| std::array::from_fn(|j| points[(i + 1) % 3][j] - points[i][j]));
+    let cross = |a: [f64; 3], b: [f64; 3]| {
+        [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0],
+        ]
+    };
+    let length_squared = |a: [f64; 3]| a.iter().map(|v| v * v).sum::<f64>();
+    let face = cross(edges[0], edges[1]);
+    if length_squared(face) < f64::from(1e-18_f32) {
+        return None;
+    }
+    let mut best = box_triangle_axis_wide(face, p0, p1, p2, half, radius)?;
+    for axis in [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]] {
+        for candidate in std::iter::once(axis).chain(edges.map(|edge| cross(axis, edge))) {
+            if length_squared(candidate) < f64::from(1e-18_f32) {
+                continue;
+            }
+            let hit = box_triangle_axis_wide(candidate, p0, p1, p2, half, radius)?;
+            if hit.0 < best.0 {
+                best = hit;
+            }
+        }
+    }
+    Some(ContactGeom {
+        point: closest_point_on_triangle(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            p0,
+            p1,
+            p2,
+        ),
+        normal: Vec3 {
+            x: best.1[0] as f32,
+            y: best.1[1] as f32,
+            z: best.1[2] as f32,
+        },
+        depth: best.0 as f32,
+    })
+}
+
 // Return the distance and direction needed to separate the projections.
 // Unlike interval intersection length, this also handles a thin triangle
 // whose face-normal projection is a point inside the box's projection.
@@ -1791,6 +2647,31 @@ fn box_triangle_axis(
         half.x * axis.x.abs() + half.y * axis.y.abs() + half.z * axis.z.abs() + radius * length;
     let positive = a.max(b).max(c) + extent;
     let negative = extent - a.min(b).min(c);
+    if ![a, b, c, length, extent, positive, negative]
+        .into_iter()
+        .all(f32::is_finite)
+        && [axis, p0, p1, p2, half].into_iter().all(vec_is_finite)
+        && radius.is_finite()
+    {
+        return box_triangle_axis_wide(
+            [f64::from(axis.x), f64::from(axis.y), f64::from(axis.z)],
+            p0,
+            p1,
+            p2,
+            half,
+            radius,
+        )
+        .map(|(depth, normal)| {
+            (
+                depth as f32,
+                Vec3 {
+                    x: normal[0] as f32,
+                    y: normal[1] as f32,
+                    z: normal[2] as f32,
+                },
+            )
+        });
+    }
     if positive < 0.0 || negative < 0.0 {
         return None;
     }
@@ -1807,6 +2688,34 @@ fn box_triangle_axis(
             z: axis.z * sign / length,
         },
     ))
+}
+
+fn box_triangle_axis_wide(
+    axis: [f64; 3],
+    p0: Vec3,
+    p1: Vec3,
+    p2: Vec3,
+    half: Vec3,
+    radius: f32,
+) -> Option<(f64, [f64; 3])> {
+    let dot =
+        |p: Vec3| f64::from(p.x) * axis[0] + f64::from(p.y) * axis[1] + f64::from(p.z) * axis[2];
+    let (a, b, c) = (dot(p0), dot(p1), dot(p2));
+    let length = axis.iter().map(|v| v * v).sum::<f64>().sqrt();
+    let extent = f64::from(half.x) * axis[0].abs()
+        + f64::from(half.y) * axis[1].abs()
+        + f64::from(half.z) * axis[2].abs()
+        + f64::from(radius) * length;
+    let (positive, negative) = (a.max(b).max(c) + extent, extent - a.min(b).min(c));
+    if positive < 0.0 || negative < 0.0 {
+        return None;
+    }
+    let (depth, sign) = if positive <= negative {
+        (positive, 1.0)
+    } else {
+        (negative, -1.0)
+    };
+    Some((depth / length, axis.map(|v| v * sign / length)))
 }
 
 fn vec_is_finite(v: Vec3) -> bool {
@@ -1961,6 +2870,51 @@ mod tests {
             1.0,
         );
         assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_distant_sphere_ray_preserves_radius_and_surface_normal() {
+        let center = vec3(0.0, 0.0, 0.0);
+        let direction = vec3(-1.0, 0.0, 0.0);
+        for distance in [10000.0, 1e20] {
+            let origin = vec3(distance, 0.0, 0.0);
+            let (t, point, normal) =
+                ray_vs_sphere(origin, direction, center, 1.0, f32::INFINITY).unwrap();
+            assert_eq!(t, distance - 1.0);
+            assert_eq!(point, vec3(1.0, 0.0, 0.0));
+            assert_eq!(normal, vec3(1.0, 0.0, 0.0));
+        }
+
+        let origin = vec3(10000.0, 0.0, 0.0);
+        assert!(ray_vs_sphere(origin, direction, center, 1.0, 9998.0).is_none());
+        let (t, point, normal) =
+            ray_vs_sphere_filtered(origin, direction, center, 1.0, f32::INFINITY, |p| p.x < 0.0)
+                .unwrap();
+        assert_eq!(t, 10001.0);
+        assert_eq!(point, vec3(-1.0, 0.0, 0.0));
+        assert_eq!(normal, vec3(-1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_distant_sphere_ray_preserves_transverse_center_offset() {
+        let center = vec3(0.5, -0.5, 0.0);
+        let direction = vec3(-1.0, -1.0, 0.0);
+        for distance in [10000.0, 1e20] {
+            let origin = vec3(distance, distance, 0.0);
+
+            let (_, point, normal) =
+                ray_vs_sphere(origin, direction, center, 1.0, f32::INFINITY).unwrap();
+            // On x=y, (x-.5)^2+(y+.5)^2=1 has its near root at (.5,.5).
+            assert_eq!(point, vec3(0.5, 0.5, 0.0));
+            assert_eq!(normal, vec3(0.0, 1.0, 0.0));
+            let (_, point, normal) =
+                ray_vs_sphere_filtered(origin, direction, center, 1.0, f32::INFINITY, |p| {
+                    p.x < 0.0
+                })
+                .unwrap();
+            assert_eq!(point, vec3(-0.5, -0.5, 0.0));
+            assert_eq!(normal, vec3(-1.0, 0.0, 0.0));
+        }
     }
 
     #[test]

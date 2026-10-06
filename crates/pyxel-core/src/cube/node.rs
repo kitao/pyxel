@@ -150,6 +150,18 @@ impl Node {
         if len_sq < 1e-24 {
             return Vec3::forward();
         }
+        let axis = Vec3 {
+            x: t.data[0][2],
+            y: t.data[1][2],
+            z: t.data[2][2],
+        };
+        if let Some(len) = axis.wide_length(len_sq) {
+            return Vec3::new(
+                (-f64::from(axis.x) / len) as f32,
+                (-f64::from(axis.y) / len) as f32,
+                (-f64::from(axis.z) / len) as f32,
+            );
+        }
         let inv = 1.0 / len_sq.sqrt();
         Vec3::new(
             -t.data[0][2] * inv,
@@ -165,6 +177,18 @@ impl Node {
         if len_sq < 1e-24 {
             return Vec3::right();
         }
+        let axis = Vec3 {
+            x: t.data[0][0],
+            y: t.data[1][0],
+            z: t.data[2][0],
+        };
+        if let Some(len) = axis.wide_length(len_sq) {
+            return Vec3::new(
+                (f64::from(axis.x) / len) as f32,
+                (f64::from(axis.y) / len) as f32,
+                (f64::from(axis.z) / len) as f32,
+            );
+        }
         let inv = 1.0 / len_sq.sqrt();
         Vec3::new(t.data[0][0] * inv, t.data[1][0] * inv, t.data[2][0] * inv)
     }
@@ -175,6 +199,18 @@ impl Node {
         let len_sq = t.data[0][1].powi(2) + t.data[1][1].powi(2) + t.data[2][1].powi(2);
         if len_sq < 1e-24 {
             return Vec3::up();
+        }
+        let axis = Vec3 {
+            x: t.data[0][1],
+            y: t.data[1][1],
+            z: t.data[2][1],
+        };
+        if let Some(len) = axis.wide_length(len_sq) {
+            return Vec3::new(
+                (f64::from(axis.x) / len) as f32,
+                (f64::from(axis.y) / len) as f32,
+                (f64::from(axis.z) / len) as f32,
+            );
         }
         let inv = 1.0 / len_sq.sqrt();
         Vec3::new(t.data[0][1] * inv, t.data[1][1] * inv, t.data[2][1] * inv)

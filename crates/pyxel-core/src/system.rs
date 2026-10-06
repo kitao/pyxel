@@ -180,10 +180,14 @@ impl Pyxel {
 
     pub fn restart() {
         #[cfg(not(target_os = "emscripten"))]
-        if let Some(mut callback) = pyxel::reset_callback().take() {
-            let window_state = pyxel::pyxel().system.window_watcher.state_string();
-            platform::close_audio();
-            callback(window_state);
+        {
+            // Release the callback-slot borrow before Python restarts the process.
+            let callback = pyxel::reset_callback().take();
+            if let Some(mut callback) = callback {
+                let window_state = pyxel::pyxel().system.window_watcher.state_string();
+                platform::close_audio();
+                callback(window_state);
+            }
         }
 
         #[cfg(target_os = "emscripten")]

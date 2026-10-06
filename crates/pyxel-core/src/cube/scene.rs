@@ -1,22 +1,23 @@
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 
+use crate::cube::bvh::Bvh;
 use crate::cube::camera::RcCamera;
 use crate::cube::collider::{Collider, RcCollider};
 use crate::cube::collision::{
     capsule_vs_capsule, capsule_vs_rounded_obb, capsule_vs_sphere, capsule_vs_triangle,
     classify_shape, closest_points_segment_aabb, closest_points_segment_segment,
-    closest_points_segment_triangle, collider_aabb, local_box_vs_triangle, ray_vs_aabb,
-    ray_vs_sphere, ray_vs_sphere_filtered, ray_vs_triangle, rounded_obb_vs_rounded_obb,
-    sphere_vs_rounded_obb, sphere_vs_sphere, sphere_vs_triangle, Aabb, ColliderShape, ContactGeom,
-    ObbPairDistance,
+    closest_points_segment_triangle, collider_aabb, local_box_vs_triangle, point_dist2_ordering,
+    ray_vs_aabb, ray_vs_sphere, ray_vs_sphere_filtered, ray_vs_triangle,
+    rounded_obb_vs_rounded_obb, sphere_vs_rounded_obb, sphere_vs_sphere, sphere_vs_triangle, Aabb,
+    ColliderShape, ContactGeom, ObbPairDistance,
 };
 use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::RcMesh;
 use crate::cube::node::{Node, RcNode};
 use crate::cube::raster::{ClipRect, Mat4x4};
-use crate::cube::vec3::Vec3;
+use crate::cube::vec3::{sum_wide_products, Vec3};
 use crate::image::RcImage;
 
 // Per-frame rasterizer context shared across a Node::draw traversal
@@ -125,6 +126,7 @@ struct ColliderEntry {
     node: RcNode,
     world: Mat4,
     inverse: Mat4,
+    inverse_available: bool,
     aabb: Aabb,
     collider: RcCollider,
     velocity: Vec3,
@@ -453,12 +455,28 @@ impl Scene {
                 let spin = vec_mul(*rc_ref!(&coll.angular_velocity), angular);
                 let gravity_step = 100.0 * frame_seconds * frame_seconds;
                 let direction = *rc_ref!(&coll.gravity_direction);
-                let length = vec_len(direction);
-                if length > 0.0 {
+                let len_sq = vec_len_sq(direction);
+                if let Some(length) = direction
+                    .wide_length(len_sq)
+                    .filter(|_| coll.gravity.is_finite())
+                {
+                    let scale = f64::from(coll.gravity * gravity_step) / length;
                     velocity = vec_add(
                         velocity,
-                        vec_mul(direction, coll.gravity * gravity_step / length),
+                        Vec3 {
+                            x: (f64::from(direction.x) * scale) as f32,
+                            y: (f64::from(direction.y) * scale) as f32,
+                            z: (f64::from(direction.z) * scale) as f32,
+                        },
                     );
+                } else {
+                    let length = len_sq.sqrt();
+                    if length > 0.0 {
+                        velocity = vec_add(
+                            velocity,
+                            vec_mul(direction, coll.gravity * gravity_step / length),
+                        );
+                    }
                 }
                 // Vec3 values can be shared with callers and constants; replace their handles.
                 coll.velocity = Vec3::new(velocity.x, velocity.y, velocity.z);
@@ -520,7 +538,10 @@ impl Scene {
                 }
 
                 if angular_len_sq > 1e-12 {
-                    let len = angular_len_sq.sqrt();
+                    // A finite spin angle can fit f32 even when its squared norm overflows.
+                    let len = angular_velocity
+                        .wide_length(angular_len_sq)
+                        .map_or_else(|| angular_len_sq.sqrt(), |length| length as f32);
                     let axis = Vec3 {
                         x: angular_velocity.x / len,
                         y: angular_velocity.y / len,
@@ -1854,11 +1875,13 @@ impl Scene {
         };
         let mesh = rc_ref!(&terrain.collider).mesh.clone()?;
         let inverse = body.inverse;
-        let query = transform_aabb_to_local(&terrain.inverse, &body.aabb);
+        let query = terrain
+            .inverse_available
+            .then(|| transform_aabb_to_local(&terrain.inverse, &body.aabb));
         let mesh = rc_ref!(&mesh);
         let mut points = Vec::new();
         mesh.with_collision_bvh(|bvh| {
-            bvh.query_aabb(&query, |indices| {
+            query_mesh_aabb(bvh, query.as_ref(), |indices| {
                 let vertices = indices
                     .map(|index| terrain.world.mul_vec_value(&bvh.positions[index as usize]));
                 let face = vec_cross(
@@ -1930,12 +1953,14 @@ impl Scene {
         }
         let ends = ends.map(|p| vec_sub(p, vec_mul(normal, vec_dot(vec_sub(p, point), normal))));
         let direction = vec_sub(ends[1], ends[0]);
-        let query = transform_aabb_to_local(&terrain.inverse, &body.aabb);
+        let query = terrain
+            .inverse_available
+            .then(|| transform_aabb_to_local(&terrain.inverse, &body.aabb));
         let mut interval: Option<(f32, f32)> = None;
         // The capsule can bridge several triangles with both end caps outside
         // the platform. Keep the extreme supported points of its contact line.
         rc_ref!(&mesh).with_collision_bvh(|bvh| {
-            bvh.query_aabb(&query, |indices| {
+            query_mesh_aabb(bvh, query.as_ref(), |indices| {
                 let vertices =
                     indices.map(|i| terrain.world.mul_vec_value(&bvh.positions[i as usize]));
                 let Some(face_normal) = normalize_axis(vec_cross(
@@ -2038,10 +2063,12 @@ impl Scene {
                 swept,
                 &mut |node, world, aabb, collider, velocity| {
                     let collider_ref = rc_ref!(collider);
+                    let inverse = world.try_inverse_value();
                     entries.push(ColliderEntry {
                         node: node.clone(),
                         world: *world,
-                        inverse: world.inverse_value(),
+                        inverse: inverse.unwrap_or_else(Mat4::identity_value),
+                        inverse_available: inverse.is_some(),
                         aabb: *aabb,
                         collider: collider.clone(),
                         velocity,
@@ -2334,6 +2361,18 @@ impl Scene {
         let r_sum = r_a + r_b;
         let b = 2.0 * (d0.x * rel.x + d0.y * rel.y + d0.z * rel.z);
         let c = d0.x * d0.x + d0.y * d0.y + d0.z * d0.z - r_sum * r_sum;
+        // Keep ordinary f32 rounding; only lost quadratic range needs f64.
+        let finite_inputs = || {
+            c_a.is_finite()
+                && c_b.is_finite()
+                && vel_a.is_finite()
+                && vel_b.is_finite()
+                && r_a.is_finite()
+                && r_b.is_finite()
+        };
+        if !(a.is_finite() && b.is_finite() && c.is_finite()) && finite_inputs() {
+            return swept_spheres_wide(c_a, r_a, vel_a, c_b, r_b, vel_b);
+        }
         if c <= 0.0 {
             let distance = vec_len(d0);
             let normal = normalize_axis(d0)?;
@@ -2345,6 +2384,9 @@ impl Scene {
             });
         }
         let disc = b * b - 4.0 * a * c;
+        if !disc.is_finite() && finite_inputs() {
+            return swept_spheres_wide(c_a, r_a, vel_a, c_b, r_b, vel_b);
+        }
         if disc < 0.0 {
             return None;
         }
@@ -2440,7 +2482,7 @@ impl Scene {
             y: (previous_local.y.abs() - half.y).max(0.0),
             z: (previous_local.z.abs() - half.z).max(0.0),
         };
-        if vec_len_sq(offset) <= reach * reach {
+        if within_sweep_radius(offset, reach) {
             let core_point = Vec3 {
                 x: previous_local.x.clamp(-half.x, half.x),
                 y: previous_local.y.clamp(-half.y, half.y),
@@ -2520,7 +2562,7 @@ impl Scene {
         let reach = r_sphere + cap_r.max(0.0);
         let (_, on_axis) = closest_points_segment_segment(previous, previous, top, bot);
         let offset = vec_sub(previous, on_axis);
-        if vec_len_sq(offset) <= reach * reach {
+        if within_sweep_radius(offset, reach) {
             let normal = normalize_axis(offset)?;
             let closing = -vec_dot(rel_vel, normal);
             return (closing > 1e-6).then(|| ContactGeom {
@@ -2780,13 +2822,14 @@ impl Scene {
         };
 
         let tolerance = 4.0 * f32::EPSILON * (vec_len(previous) + r);
-        let mesh_inv = world_mesh.inverse_value();
-        let query_local = transform_aabb_to_local(&mesh_inv, &swept_world);
+        let query_local = world_mesh
+            .try_inverse_value()
+            .map(|inverse| transform_aabb_to_local(&inverse, &swept_world));
         let m = rc_ref!(mesh);
         let mut best: Option<(f32, ContactGeom)> = None;
 
         m.with_collision_bvh(|bvh| {
-            bvh.query_aabb(&query_local, |tri| {
+            query_mesh_aabb(bvh, query_local.as_ref(), |tri| {
                 let v0 = world_mesh.mul_vec_value(&bvh.positions[tri[0] as usize]);
                 let v1 = world_mesh.mul_vec_value(&bvh.positions[tri[1] as usize]);
                 let v2 = world_mesh.mul_vec_value(&bvh.positions[tri[2] as usize]);
@@ -2864,13 +2907,14 @@ impl Scene {
         };
 
         let tolerance = 4.0 * f32::EPSILON * (vec_len(prev_top).max(vec_len(prev_bot)) + r);
-        let mesh_inv = world_mesh.inverse_value();
-        let query_local = transform_aabb_to_local(&mesh_inv, &swept_world);
+        let query_local = world_mesh
+            .try_inverse_value()
+            .map(|inverse| transform_aabb_to_local(&inverse, &swept_world));
         let m = rc_ref!(mesh);
         let mut best: Option<(f32, ContactGeom)> = None;
 
         m.with_collision_bvh(|bvh| {
-            bvh.query_aabb(&query_local, |tri| {
+            query_mesh_aabb(bvh, query_local.as_ref(), |tri| {
                 let v0 = world_mesh.mul_vec_value(&bvh.positions[tri[0] as usize]);
                 let v1 = world_mesh.mul_vec_value(&bvh.positions[tri[1] as usize]);
                 let v2 = world_mesh.mul_vec_value(&bvh.positions[tri[2] as usize]);
@@ -2919,13 +2963,14 @@ impl Scene {
         let tolerance = 4.0
             * f32::EPSILON
             * (vec_len(world_box.pos_value()) + vec_len(half) + r + vec_len(rel_vel));
-        let mesh_inv = world_mesh.inverse_value();
-        let query_local = transform_aabb_to_local(&mesh_inv, &swept_world);
+        let query_local = world_mesh
+            .try_inverse_value()
+            .map(|inverse| transform_aabb_to_local(&inverse, &swept_world));
         let m = rc_ref!(mesh);
         let mut best: Option<(f32, ContactGeom)> = None;
 
         m.with_collision_bvh(|bvh| {
-            bvh.query_aabb(&query_local, |tri| {
+            query_mesh_aabb(bvh, query_local.as_ref(), |tri| {
                 let v0 = world_mesh.mul_vec_value(&bvh.positions[tri[0] as usize]);
                 let v1 = world_mesh.mul_vec_value(&bvh.positions[tri[1] as usize]);
                 let v2 = world_mesh.mul_vec_value(&bvh.positions[tri[2] as usize]);
@@ -3119,6 +3164,24 @@ impl Scene {
             direction.x * direction.x + direction.y * direction.y + direction.z * direction.z;
         if len_sq < 1e-12 {
             return None;
+        }
+        if len_sq.is_infinite()
+            && direction.x.is_finite()
+            && direction.y.is_finite()
+            && direction.z.is_finite()
+        {
+            // Finite components can overflow their f32 squared norm.
+            let (x, y, z) = (
+                f64::from(direction.x),
+                f64::from(direction.y),
+                f64::from(direction.z),
+            );
+            let inv_len = 1.0 / (x * x + y * y + z * z).sqrt();
+            return Some(Vec3 {
+                x: (x * inv_len) as f32,
+                y: (y * inv_len) as f32,
+                z: (z * inv_len) as f32,
+            });
         }
         let inv_len = 1.0 / len_sq.sqrt();
         Some(Vec3 {
@@ -3405,13 +3468,30 @@ impl Scene {
     ) -> Option<(f32, Vec3, Vec3)> {
         let mesh_rc = rc_ref!(coll).mesh.clone()?;
         let mesh = rc_ref!(&mesh_rc);
-        let inv = world.inverse_value();
-        let local_origin = inv.mul_vec_value(&origin);
-        let local_direction = inv.mul_dir_value(&direction);
+        let local_ray = world.try_inverse_value().and_then(|inverse| {
+            let local_origin = inverse.mul_vec_value(&origin);
+            let local_direction = inverse.mul_dir_value(&direction);
+            // A nonzero component rounded to zero must not become a parallel BVH ray.
+            for (row, component) in [local_direction.x, local_direction.y, local_direction.z]
+                .into_iter()
+                .enumerate()
+            {
+                if component == 0.0 {
+                    let m = inverse.data[row];
+                    let wide = f64::from(m[0]) * f64::from(direction.x)
+                        + f64::from(m[1]) * f64::from(direction.y)
+                        + f64::from(m[2]) * f64::from(direction.z);
+                    if wide != 0.0 {
+                        return None;
+                    }
+                }
+            }
+            Some((local_origin, local_direction))
+        });
         let mut best: Option<(f32, Vec3, Vec3)> = None;
 
         mesh.with_collision_bvh(|bvh| {
-            bvh.query_ray(local_origin, local_direction, max_distance, |tri| {
+            let visit = |tri: [u32; 3]| {
                 let v0 = world.mul_vec_value(&bvh.positions[tri[0] as usize]);
                 let v1 = world.mul_vec_value(&bvh.positions[tri[1] as usize]);
                 let v2 = world.mul_vec_value(&bvh.positions[tri[2] as usize]);
@@ -3419,7 +3499,22 @@ impl Scene {
                 if let Some(hit) = ray_vs_triangle(origin, direction, v0, v1, v2, cur_max) {
                     best = Some(hit);
                 }
-            });
+            };
+            match local_ray {
+                Some((local_origin, local_direction))
+                    if local_origin.is_finite()
+                        && local_direction.is_finite()
+                        && !local_direction.x.is_subnormal()
+                        && !local_direction.y.is_subnormal()
+                        && !local_direction.z.is_subnormal() =>
+                {
+                    bvh.query_ray(local_origin, local_direction, max_distance, visit);
+                }
+                _ => {
+                    // An unavailable inverse or rounded local ray cannot reject world triangles.
+                    bvh.query_ray_unpruned(visit);
+                }
+            }
         });
 
         best
@@ -3466,9 +3561,7 @@ impl Scene {
                 },
             ) {
                 let hit = (t, world.mul_vec_value(&point), world.mul_dir_value(&normal));
-                if best.as_ref().is_none_or(|(best_t, _, _)| t < *best_t) {
-                    best = Some(hit);
-                }
+                set_nearer_hit(&mut best, hit, direction);
             }
         }
 
@@ -3478,6 +3571,43 @@ impl Scene {
             let b = 2.0 * (local_origin.x * local_direction.x + local_origin.z * local_direction.z);
             let c = local_origin.x * local_origin.x + local_origin.z * local_origin.z - r * r;
             let disc = b * b - 4.0 * a * c;
+            if (!(a.is_finite() && b.is_finite() && c.is_finite() && disc.is_finite())
+                || disc.abs() <= 8.0 * f32::EPSILON * (b * b + (4.0 * a * c).abs()))
+                && local_origin.is_finite()
+                && local_direction.is_finite()
+                && r.is_finite()
+                && half_h.is_finite()
+            {
+                if let Some((t, point, normal)) = ray_vs_cylinder_side_wide(
+                    local_origin,
+                    local_direction,
+                    Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    1,
+                    r,
+                    max_distance,
+                    |point, radial| {
+                        let length = (radial.x * radial.x + radial.z * radial.z).sqrt();
+                        (-half_h..=half_h).contains(&point.y) && length >= 1e-12
+                    },
+                ) {
+                    let length = (f64::from(normal.x).powi(2) + f64::from(normal.z).powi(2)).sqrt();
+                    let normal = Vec3 {
+                        x: (f64::from(normal.x) / length) as f32,
+                        y: 0.0,
+                        z: (f64::from(normal.z) / length) as f32,
+                    };
+                    set_nearer_hit(
+                        &mut best,
+                        (t, world.mul_vec_value(&point), world.mul_dir_value(&normal)),
+                        direction,
+                    );
+                }
+                return best;
+            }
             if disc >= 0.0 {
                 let sqrt_disc = disc.sqrt();
                 for t in [(-b - sqrt_disc) / (2.0 * a), (-b + sqrt_disc) / (2.0 * a)] {
@@ -3499,19 +3629,33 @@ impl Scene {
                     if normal_len < 1e-12 {
                         continue;
                     }
-                    let local_normal = Vec3 {
-                        x: local_point.x / normal_len,
-                        y: 0.0,
-                        z: local_point.z / normal_len,
+                    let local_normal = if !normal_len.is_finite()
+                        && local_point.is_finite()
+                        && local_direction.is_finite()
+                        && r.is_finite()
+                        && half_h.is_finite()
+                    {
+                        let normal_x = f64::from(local_point.x);
+                        let normal_z = f64::from(local_point.z);
+                        let length = (normal_x * normal_x + normal_z * normal_z).sqrt();
+                        Vec3 {
+                            x: (normal_x / length) as f32,
+                            y: 0.0,
+                            z: (normal_z / length) as f32,
+                        }
+                    } else {
+                        Vec3 {
+                            x: local_point.x / normal_len,
+                            y: 0.0,
+                            z: local_point.z / normal_len,
+                        }
                     };
                     let hit = (
                         t,
                         world.mul_vec_value(&local_point),
                         world.mul_dir_value(&local_normal),
                     );
-                    if best.as_ref().is_none_or(|(best_t, _, _)| t < *best_t) {
-                        best = Some(hit);
-                    }
+                    set_nearer_hit(&mut best, hit, direction);
                 }
             }
         }
@@ -3556,7 +3700,7 @@ fn ray_vs_rounded_box(
             if let Some(hit) =
                 ray_vs_rounded_box_face(origin, direction, half, r, axis, sign, max_distance)
             {
-                set_nearer_hit(&mut best, hit);
+                set_nearer_hit(&mut best, hit, direction);
             }
         }
     }
@@ -3591,7 +3735,7 @@ fn ray_vs_rounded_box(
                             && component(point, other1) * sign1 >= component(half, other1)
                     })
                 {
-                    set_nearer_hit(&mut best, hit);
+                    set_nearer_hit(&mut best, hit, direction);
                 }
             }
         }
@@ -3614,12 +3758,36 @@ fn ray_vs_rounded_box_face(
         return None;
     }
     let plane = sign * (component(half, axis) + radius);
-    let t = (plane - component(origin, axis)) / denom;
+    let mut t = (plane - component(origin, axis)) / denom;
+    let mut point = vec_add(origin, vec_mul(direction, t));
+    let plane_lost = plane.abs() <= 2.0 * f32::EPSILON * component(origin, axis).abs();
+    if (!t.is_finite() || !point.is_finite() || plane_lost)
+        && origin.is_finite()
+        && direction.is_finite()
+        && half.is_finite()
+        && radius.is_finite()
+    {
+        // Intersect the plane directly; reconstructing from a distant ray loses its offset.
+        let plane = f64::from(sign) * (f64::from(component(half, axis)) + f64::from(radius));
+        t = ((plane - f64::from(component(origin, axis))) / f64::from(denom)) as f32;
+        for other in 0..3 {
+            let value = if other == axis {
+                plane as f32
+            } else {
+                (sum_wide_products([
+                    (component(origin, other), denom),
+                    (-component(direction, other), component(origin, axis)),
+                    (component(direction, other), sign * component(half, axis)),
+                    (component(direction, other), sign * radius),
+                ]) / f64::from(denom)) as f32
+            };
+            set_axis(&mut point, other, value);
+        }
+    }
     if !(0.0..=max_distance).contains(&t) {
         return None;
     }
 
-    let point = vec_add(origin, vec_mul(direction, t));
     for other in 0..3 {
         if other != axis && component(point, other).abs() > component(half, other) + 1e-6 {
             return None;
@@ -3645,12 +3813,59 @@ fn ray_vs_segment_capsule(
                 vec_dot(vec_sub(point, center), axis) * sign >= 0.0 && accepts(point)
             })
         {
-            set_nearer_hit(&mut best, hit);
+            set_nearer_hit(&mut best, hit, direction);
         }
     }
 
     let len_sq = vec_len_sq(axis);
     if len_sq < 1e-12 {
+        return best;
+    }
+    // Rounded-box edges follow coordinate axes, so their side wall uses a 2D chord.
+    let wide_side = || {
+        let edge_axis = (0..3).find(|&i| component(a, i) != component(b, i))?;
+        let low = component(a, edge_axis);
+        let high = component(b, edge_axis);
+        let (t, point, mut normal) = ray_vs_cylinder_side_wide(
+            origin,
+            direction,
+            a,
+            edge_axis,
+            radius,
+            max_distance,
+            |point, mut radial| {
+                let along = component(point, edge_axis);
+                set_axis(&mut radial, edge_axis, along - along.clamp(low, high));
+                along >= low - 1e-5
+                    && along <= high + 1e-5
+                    && vec_len_sq(radial) >= 1e-12
+                    && accepts(point)
+            },
+        )?;
+        let along = component(point, edge_axis);
+        let offset = along - along.clamp(low, high);
+        set_axis(&mut normal, edge_axis, offset);
+        normal = normalize_axis(normal)?;
+        Some((t, point, normal))
+    };
+    let finite_inputs = || {
+        origin.is_finite()
+            && direction.is_finite()
+            && a.is_finite()
+            && b.is_finite()
+            && radius.is_finite()
+    };
+    if !len_sq.is_finite() && finite_inputs() {
+        let edge_axis = (0..3).find(|&i| component(a, i) != component(b, i))?;
+        let transverse = [
+            component(direction, (edge_axis + 1) % 3),
+            component(direction, (edge_axis + 2) % 3),
+        ];
+        if transverse[0] * transverse[0] + transverse[1] * transverse[1] >= 1e-12 {
+            if let Some(hit) = wide_side() {
+                set_nearer_hit(&mut best, hit, direction);
+            }
+        }
         return best;
     }
     let len = len_sq.sqrt();
@@ -3668,6 +3883,15 @@ fn ray_vs_segment_capsule(
     let qb = 2.0 * vec_dot(q0, qv);
     let qc = vec_len_sq(q0) - radius * radius;
     let disc = qb * qb - 4.0 * qa * qc;
+    if (!(qa.is_finite() && qb.is_finite() && qc.is_finite() && disc.is_finite())
+        || disc.abs() <= 8.0 * f32::EPSILON * (qb * qb + (4.0 * qa * qc).abs()))
+        && finite_inputs()
+    {
+        if let Some(hit) = wide_side() {
+            set_nearer_hit(&mut best, hit, direction);
+        }
+        return best;
+    }
     if disc < 0.0 {
         return best;
     }
@@ -3693,14 +3917,91 @@ fn ray_vs_segment_capsule(
         let Some(normal) = normalize_axis(vec_sub(point, axis_point)) else {
             continue;
         };
-        set_nearer_hit(&mut best, (t, point, normal));
+        set_nearer_hit(&mut best, (t, point, normal), direction);
     }
 
     best
 }
 
-fn set_nearer_hit(best: &mut Option<(f32, Vec3, Vec3)>, hit: (f32, Vec3, Vec3)) {
-    if best.as_ref().is_none_or(|(best_t, _, _)| hit.0 < *best_t) {
+// Recover a distant ray's chord in the plane perpendicular to a coordinate axis.
+// Keep the axis coordinate through cross products rather than origin + direction * t;
+// callers own their normal cutoffs and normalize the returned radial vector.
+#[cold]
+fn ray_vs_cylinder_side_wide(
+    origin: Vec3,
+    direction: Vec3,
+    center: Vec3,
+    axis: usize,
+    radius: f32,
+    max_distance: f32,
+    accepts: impl Fn(Vec3, Vec3) -> bool,
+) -> Option<(f32, Vec3, Vec3)> {
+    let i = (axis + 1) % 3;
+    let j = (axis + 2) % 3;
+    let (oi, oj) = (component(origin, i), component(origin, j));
+    let (di, dj) = (component(direction, i), component(direction, j));
+    let (ci, cj) = (component(center, i), component(center, j));
+    let (di_wide, dj_wide) = (f64::from(di), f64::from(dj));
+    let qa = di_wide * di_wide + dj_wide * dj_wide;
+    // Each caller applies its own f32 cutoff; only an exactly parallel ray divides by zero here.
+    if qa == 0.0 {
+        return None;
+    }
+    let cross = sum_wide_products([(oi, dj), (-oj, di), (-ci, dj), (cj, di)]);
+    let closest = [dj_wide * cross / qa, -di_wide * cross / qa];
+    let chord_squared = f64::from(radius).powi(2) - closest.iter().map(|v| v * v).sum::<f64>();
+    if chord_squared < 0.0 {
+        return None;
+    }
+    let midpoint = -((f64::from(oi) - f64::from(ci)) * di_wide
+        + (f64::from(oj) - f64::from(cj)) * dj_wide)
+        / qa;
+    let oa = component(origin, axis);
+    let da = component(direction, axis);
+    let axis_midpoint = (sum_wide_products([(oa, di), (-oi, da), (ci, da), (0.0, 0.0)]) * di_wide
+        + sum_wide_products([(oa, dj), (-oj, da), (cj, da), (0.0, 0.0)]) * dj_wide)
+        / qa;
+    let half_chord = (chord_squared / qa).sqrt();
+
+    for offset in [-half_chord, half_chord] {
+        let root = midpoint + offset;
+        let t = root as f32;
+        if !(0.0..=max_distance).contains(&t) {
+            continue;
+        }
+        let radial = [closest[0] + di_wide * offset, closest[1] + dj_wide * offset];
+        let mut point = center;
+        set_axis(&mut point, i, (f64::from(ci) + radial[0]) as f32);
+        set_axis(&mut point, j, (f64::from(cj) + radial[1]) as f32);
+        set_axis(
+            &mut point,
+            axis,
+            (axis_midpoint + f64::from(da) * offset) as f32,
+        );
+        let mut normal = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        set_axis(&mut normal, i, radial[0] as f32);
+        set_axis(&mut normal, j, radial[1] as f32);
+        if !accepts(point, normal) {
+            continue;
+        }
+        return Some((t, point, normal));
+    }
+    None
+}
+
+fn set_nearer_hit(best: &mut Option<(f32, Vec3, Vec3)>, hit: (f32, Vec3, Vec3), direction: Vec3) {
+    if best.as_ref().is_none_or(|(best_t, best_point, _)| {
+        hit.0 < *best_t
+            // Entry and exit distances can round alike for a distant ray.
+            || (hit.0 == *best_t
+                && (f64::from(hit.1.x) - f64::from(best_point.x)) * f64::from(direction.x)
+                    + (f64::from(hit.1.y) - f64::from(best_point.y)) * f64::from(direction.y)
+                    + (f64::from(hit.1.z) - f64::from(best_point.z)) * f64::from(direction.z) < 0.0)
+    }) {
         *best = Some(hit);
     }
 }
@@ -3874,14 +4175,15 @@ fn narrow_phase_mesh_vs_dynamic(
     r_dyn: f32,
 ) -> Option<ContactGeom> {
     let shape_dyn = classify_shape(size_dyn, r_dyn);
-    let mesh_inv = world_mesh.inverse_value();
     // Map the dynamic body's AABB into the mesh-local BVH as a broad filter.
     let dyn_aabb_world = if matches!(shape_dyn, ColliderShape::Sphere { .. }) {
         Aabb::from_sphere(world_dyn.pos_value(), r_dyn)
     } else {
         Aabb::from_rounded_box(world_dyn, size_dyn, r_dyn)
     };
-    let query_local = transform_aabb_to_local(&mesh_inv, &dyn_aabb_world);
+    let query_local = world_mesh
+        .try_inverse_value()
+        .map(|inverse| transform_aabb_to_local(&inverse, &dyn_aabb_world));
 
     // Body-local inverse (rounded-box arm) and world center (sphere arm),
     // computed once outside the per-triangle callback.
@@ -3891,7 +4193,7 @@ fn narrow_phase_mesh_vs_dynamic(
     let mut best: Option<ContactGeom> = None;
 
     m.with_collision_bvh(|bvh| {
-        bvh.query_aabb(&query_local, |tri| {
+        query_mesh_aabb(bvh, query_local.as_ref(), |tri| {
             let v0_local = bvh.positions[tri[0] as usize];
             let v1_local = bvh.positions[tri[1] as usize];
             let v2_local = bvh.positions[tri[2] as usize];
@@ -3933,6 +4235,14 @@ fn narrow_phase_mesh_vs_dynamic(
     });
 
     best
+}
+
+// A missing inverse leaves world-triangle narrow tests authoritative.
+fn query_mesh_aabb(bvh: &Bvh, query: Option<&Aabb>, visit: impl FnMut([u32; 3])) {
+    match query {
+        Some(query) => bvh.query_aabb(query, visit),
+        None => bvh.query_all(visit),
+    }
 }
 
 fn transform_aabb_to_local(inv: &Mat4, aabb: &Aabb) -> Aabb {
@@ -4410,10 +4720,27 @@ fn swept_obb_vs_obb(
     if r_sum > 0.0 {
         let pair = ObbPairDistance::new(world_a, half_a, world_b, half_b);
         let points_at = |t: f32| pair.closest_points(vec_mul(velocity, t - 1.0));
+        let radius_squared = r_sum * r_sum;
+        let radius_squared = if !radius_squared.is_normal() && r_sum.is_finite() {
+            f64::from(r_sum).powi(2)
+        } else {
+            f64::from(radius_squared)
+        };
+        // Preserve ordinary distance/dot rounding; recover comparison signs before overflow hides a real entry.
+        let derivative = |a: Vec3, b: Vec3| {
+            let result = vec_dot(velocity, vec_sub(a, b));
+            if !result.is_finite() && velocity.is_finite() && a.is_finite() && b.is_finite() {
+                f64::from(velocity.x) * (f64::from(a.x) - f64::from(b.x))
+                    + f64::from(velocity.y) * (f64::from(a.y) - f64::from(b.y))
+                    + f64::from(velocity.z) * (f64::from(a.z) - f64::from(b.z))
+            } else {
+                f64::from(result)
+            }
+        };
         let (on_a, on_b) = points_at(entry);
-        if vec_len_sq(vec_sub(on_a, on_b)) <= r_sum * r_sum {
+        if point_dist2_ordering(on_a, on_b) <= radius_squared {
             // Initial contact blocks approach, but never an exit or a slide.
-            if entry == 0.0 && vec_dot(velocity, vec_sub(on_a, on_b)) >= 0.0 {
+            if entry == 0.0 && derivative(on_a, on_b) >= 0.0 {
                 return None;
             }
         } else {
@@ -4429,12 +4756,11 @@ fn swept_obb_vs_obb(
                     break;
                 }
                 let (on_a, on_b) = points_at(mid);
-                let delta = vec_sub(on_a, on_b);
-                if vec_len_sq(delta) <= r_sum * r_sum {
+                if point_dist2_ordering(on_a, on_b) <= radius_squared {
                     hi = mid;
                     break; // A real contact already brackets the first hit.
                 }
-                if vec_dot(velocity, delta) < 0.0 {
+                if derivative(on_a, on_b) < 0.0 {
                     lo = mid;
                 } else {
                     hi = mid;
@@ -4442,10 +4768,10 @@ fn swept_obb_vs_obb(
             }
             let (lo_a, lo_b) = points_at(lo);
             let (hi_a, hi_b) = points_at(hi);
-            let lo_dist2 = vec_len_sq(vec_sub(lo_a, lo_b));
-            let hi_dist2 = vec_len_sq(vec_sub(hi_a, hi_b));
+            let lo_dist2 = point_dist2_ordering(lo_a, lo_b);
+            let hi_dist2 = point_dist2_ordering(hi_a, hi_b);
             let minimum = if lo_dist2 < hi_dist2 { lo } else { hi };
-            if lo_dist2.min(hi_dist2) > r_sum * r_sum {
+            if lo_dist2.min(hi_dist2) > radius_squared {
                 return None;
             }
 
@@ -4460,7 +4786,7 @@ fn swept_obb_vs_obb(
                     break;
                 }
                 let (on_a, on_b) = points_at(mid);
-                if vec_len_sq(vec_sub(on_a, on_b)) <= r_sum * r_sum {
+                if point_dist2_ordering(on_a, on_b) <= radius_squared {
                     hi = mid;
                 } else {
                     lo = mid;
@@ -4684,6 +5010,13 @@ fn normalize_axis(v: Vec3) -> Option<Vec3> {
     if len_sq < 1e-12 {
         return None;
     }
+    if let Some(length) = v.wide_length(len_sq) {
+        return Some(Vec3 {
+            x: (f64::from(v.x) / length) as f32,
+            y: (f64::from(v.y) / length) as f32,
+            z: (f64::from(v.z) / length) as f32,
+        });
+    }
     Some(vec_mul(v, 1.0 / len_sq.sqrt()))
 }
 
@@ -4724,7 +5057,7 @@ fn vec_cross(a: Vec3, b: Vec3) -> Vec3 {
 }
 
 fn vec_len(v: Vec3) -> f32 {
-    vec_len_sq(v).sqrt()
+    v.length()
 }
 
 fn vec_len_sq(v: Vec3) -> f32 {
@@ -4732,6 +5065,98 @@ fn vec_len_sq(v: Vec3) -> f32 {
 }
 
 // Swept-sphere intersection helpers
+
+// Squared distances may overflow even when the offset and radius fit f32.
+fn within_sweep_radius(offset: Vec3, radius: f32) -> bool {
+    let distance_sq = vec_len_sq(offset);
+    let radius_sq = radius * radius;
+    if !(distance_sq.is_finite() && radius_sq.is_finite())
+        && offset.is_finite()
+        && radius.is_finite()
+    {
+        let (x, y, z) = (
+            f64::from(offset.x),
+            f64::from(offset.y),
+            f64::from(offset.z),
+        );
+        return x * x + y * y + z * z <= f64::from(radius).powi(2);
+    }
+    distance_sq <= radius_sq
+}
+
+// Reconstruct before subtracting: finite inputs can lose range in the quadratic.
+#[cold]
+fn swept_spheres_wide(
+    c_a: Vec3,
+    r_a: f32,
+    vel_a: Vec3,
+    c_b: Vec3,
+    r_b: f32,
+    vel_b: Vec3,
+) -> Option<ContactGeom> {
+    let coordinates = |v: Vec3| [f64::from(v.x), f64::from(v.y), f64::from(v.z)];
+    let a_center = coordinates(c_a);
+    let b_center = coordinates(c_b);
+    let a_motion = coordinates(vel_a);
+    let b_motion = coordinates(vel_b);
+    let start = std::array::from_fn(|i| a_center[i] - a_motion[i] - (b_center[i] - b_motion[i]));
+    let motion = std::array::from_fn(|i| a_motion[i] - b_motion[i]);
+    let dot = |a: [f64; 3], b: [f64; 3]| a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    let a = dot(motion, motion);
+    if a < f64::from(1e-12_f32) {
+        return None;
+    }
+    let radius = f64::from(r_a) + f64::from(r_b);
+    let b = 2.0 * dot(start, motion);
+    let start_sq = dot(start, start);
+    let c = start_sq - radius * radius;
+    let toi = if c <= 0.0 {
+        if start_sq < f64::from(1e-12_f32) {
+            return None;
+        }
+        0.0
+    } else {
+        let disc = b * b - 4.0 * a * c;
+        if disc < 0.0 {
+            return None;
+        }
+        (-b - disc.sqrt()) / (2.0 * a)
+    };
+    if !(0.0..=1.0).contains(&toi) {
+        return None;
+    }
+    let offset = std::array::from_fn(|i| start[i] + motion[i] * toi);
+    let length = dot(offset, offset).sqrt();
+    if length < f64::from(1e-12_f32) {
+        return None;
+    }
+    let normal: [f64; 3] = offset.map(|v| v / length);
+    let closing = -dot(motion, normal);
+    let depth = if c <= 0.0 {
+        if closing <= f64::from(1e-6_f32) {
+            return None;
+        }
+        (radius - length).max(0.0) + closing
+    } else {
+        (closing * (1.0 - toi)).max(0.0)
+    };
+    let point: [f64; 3] = std::array::from_fn(|i| {
+        b_center[i] - b_motion[i] + b_motion[i] * toi + normal[i] * f64::from(r_b)
+    });
+    Some(ContactGeom {
+        point: Vec3 {
+            x: point[0] as f32,
+            y: point[1] as f32,
+            z: point[2] as f32,
+        },
+        normal: Vec3 {
+            x: normal[0] as f32,
+            y: normal[1] as f32,
+            z: normal[2] as f32,
+        },
+        depth: depth as f32,
+    })
+}
 
 // A zero-time hit already supports the body. Reconstructing its start point
 // and normal after sliding introduces coordinate rounding; that tiny correction
@@ -4804,10 +5229,37 @@ fn swept_sphere_vs_triangle_face(
         return None;
     }
 
-    let mut normal = Vec3 {
-        x: nx / nlen,
-        y: ny / nlen,
-        z: nz / nlen,
+    let mut normal = if !nlen.is_finite() && v0.is_finite() && v1.is_finite() && v2.is_finite() {
+        // Normalize the face before narrowing its cross product back to f32.
+        let edge = |a: Vec3, b: Vec3| {
+            [
+                f64::from(a.x) - f64::from(b.x),
+                f64::from(a.y) - f64::from(b.y),
+                f64::from(a.z) - f64::from(b.z),
+            ]
+        };
+        let a = edge(v1, v0);
+        let b = edge(v2, v0);
+        let n = [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0],
+        ];
+        let length = (n[0] * n[0] + n[1] * n[1] + n[2] * n[2]).sqrt();
+        if length < f64::from(1e-12_f32) {
+            return None;
+        }
+        Vec3 {
+            x: (n[0] / length) as f32,
+            y: (n[1] / length) as f32,
+            z: (n[2] / length) as f32,
+        }
+    } else {
+        Vec3 {
+            x: nx / nlen,
+            y: ny / nlen,
+            z: nz / nlen,
+        }
     };
     let side = (previous_center.x - v0.x) * normal.x
         + (previous_center.y - v0.y) * normal.y
@@ -4966,10 +5418,39 @@ fn swept_sphere_vs_point(
 
     let b = 2.0 * (rel.x * velocity.x + rel.y * velocity.y + rel.z * velocity.z);
     let c = rel.x * rel.x + rel.y * rel.y + rel.z * rel.z - radius * radius;
+    let disc = b * b - 4.0 * a * c;
+    if !(a.is_finite() && b.is_finite() && c.is_finite() && disc.is_finite())
+        && previous_center.is_finite()
+        && velocity.is_finite()
+        && point.is_finite()
+        && radius.is_finite()
+    {
+        // A point sweep excludes an already touching or overlapping start.
+        let offset = [
+            f64::from(previous_center.x) - f64::from(point.x),
+            f64::from(previous_center.y) - f64::from(point.y),
+            f64::from(previous_center.z) - f64::from(point.z),
+        ];
+        let distance_sq = offset[0] * offset[0] + offset[1] * offset[1] + offset[2] * offset[2];
+        if distance_sq <= f64::from(radius).powi(2) || radius.abs() < 1e-12 {
+            return None;
+        }
+        return ray_vs_sphere(previous_center, velocity, point, radius, 1.0).map(
+            |(toi, _, normal)| {
+                (
+                    toi,
+                    ContactGeom {
+                        point,
+                        normal,
+                        depth: 0.0,
+                    },
+                )
+            },
+        );
+    }
     if c <= 0.0 {
         return None;
     }
-    let disc = b * b - 4.0 * a * c;
     if disc < 0.0 {
         return None;
     }
@@ -5029,15 +5510,54 @@ fn point_in_triangle(point: Vec3, tri_a: Vec3, tri_b: Vec3, tri_c: Vec3) -> bool
     let dot11 = edge_ab.x * edge_ab.x + edge_ab.y * edge_ab.y + edge_ab.z * edge_ab.z;
     let dot12 = edge_ab.x * rel.x + edge_ab.y * rel.y + edge_ab.z * rel.z;
     let denom = dot00 * dot11 - dot01 * dot01;
+    let numerator_u = dot11 * dot02 - dot01 * dot12;
+    let numerator_v = dot00 * dot12 - dot01 * dot02;
+    if !(denom.is_finite() && numerator_u.is_finite() && numerator_v.is_finite())
+        && point.is_finite()
+        && tri_a.is_finite()
+        && tri_b.is_finite()
+        && tri_c.is_finite()
+    {
+        return point_in_triangle_wide(point, tri_a, tri_b, tri_c);
+    }
     if denom.abs() < 1e-12 {
         return false;
     }
 
     let inv = 1.0 / denom;
-    let bary_u = (dot11 * dot02 - dot01 * dot12) * inv;
-    let bary_v = (dot00 * dot12 - dot01 * dot02) * inv;
+    let bary_u = numerator_u * inv;
+    let bary_v = numerator_v * inv;
     let eps = 1e-5;
     bary_u >= -eps && bary_v >= -eps && bary_u + bary_v <= 1.0 + eps
+}
+
+// Barycentric products grow to the fourth power of a finite triangle's size.
+#[cold]
+fn point_in_triangle_wide(point: Vec3, tri_a: Vec3, tri_b: Vec3, tri_c: Vec3) -> bool {
+    let edge = |a: Vec3| {
+        [
+            f64::from(a.x) - f64::from(tri_a.x),
+            f64::from(a.y) - f64::from(tri_a.y),
+            f64::from(a.z) - f64::from(tri_a.z),
+        ]
+    };
+    let ac = edge(tri_c);
+    let ab = edge(tri_b);
+    let relative = edge(point);
+    let dot = |a: [f64; 3], b: [f64; 3]| a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    let dot00 = dot(ac, ac);
+    let dot01 = dot(ac, ab);
+    let dot02 = dot(ac, relative);
+    let dot11 = dot(ab, ab);
+    let dot12 = dot(ab, relative);
+    let denom = dot00 * dot11 - dot01 * dot01;
+    if denom.abs() < f64::from(1e-12_f32) {
+        return false;
+    }
+    let u = (dot11 * dot02 - dot01 * dot12) / denom;
+    let v = (dot00 * dot12 - dot01 * dot02) / denom;
+    let eps = f64::from(1e-5_f32);
+    u >= -eps && v >= -eps && u + v <= 1.0 + eps
 }
 
 #[cfg(test)]
@@ -5117,6 +5637,147 @@ mod tests {
                 .is_none());
             }
         }
+    }
+
+    #[test]
+    fn test_distant_capsule_raycast_preserves_side_point_and_normal() {
+        let root = Node::new();
+        let capsule = Node::new();
+        rc_mut!(&capsule).collider = Some(box_family_collider(Vec3::new(0.0, 2.0, 0.0), 1.0, 1.0));
+        Node::add_child(&root, &capsule);
+
+        for distance in [10.0, 10000.0, 1e20] {
+            let hit = Scene::raycast(
+                &root,
+                vec3(distance, 0.0, 0.0),
+                vec3(-1.0, 0.0, 0.0),
+                f32::INFINITY,
+                false,
+                None,
+            )
+            .unwrap();
+            assert_eq!(hit.point, vec3(1.0, 0.0, 0.0));
+            assert_eq!(hit.normal, vec3(1.0, 0.0, 0.0));
+            assert_eq!(hit.distance, distance - 1.0);
+        }
+    }
+
+    #[test]
+    fn test_distant_rounded_box_raycast_selects_near_surface() {
+        let root = Node::new();
+        let wall = Node::new();
+        rc_mut!(&wall).collider = Some(box_family_collider(Vec3::new(2.0, 2.0, 2.0), 1.0, 1.0));
+        Node::add_child(&root, &wall);
+
+        for distance in [10.0, 10000.0, 1e20] {
+            for axes in [(0, 1), (1, 2), (2, 0)] {
+                let mut origin = vec3(0.0, 0.0, 0.0);
+                let mut direction = origin;
+                set_axis(&mut origin, axes.0, distance);
+                set_axis(&mut origin, axes.1, distance);
+                set_axis(&mut direction, axes.0, -1.0);
+                set_axis(&mut direction, axes.1, -1.0);
+
+                let hit =
+                    Scene::raycast(&root, origin, direction, f32::INFINITY, false, None).unwrap();
+                // The unit circle meets its diagonal at 1/sqrt(2); allow accumulated f32 ulps.
+                let expected_normal = 1.0 / 2.0_f32.sqrt();
+                for axis in [axes.0, axes.1] {
+                    assert!((component(hit.point, axis) - (1.0 + expected_normal)).abs() < 2e-6);
+                    assert!((component(hit.normal, axis) - expected_normal).abs() < 2e-6);
+                }
+                let other = 3 - axes.0 - axes.1;
+                assert_eq!(component(hit.point, other), 0.0);
+                assert_eq!(component(hit.normal, other), 0.0);
+            }
+        }
+    }
+
+    #[test]
+    fn test_capsule_raycast_preserves_f32_normal_length_cutoff() {
+        let root = Node::new();
+        let capsule = Node::new();
+        rc_mut!(&capsule).collider =
+            Some(box_family_collider(Vec3::new(0.0, 2.0, 0.0), 1e-12, 1.0));
+        Node::add_child(&root, &capsule);
+
+        let hit = Scene::raycast(
+            &root,
+            vec3(1.0239998e-9, 0.0, 6.433981e-13),
+            vec3(-0.9999998, 0.0, -0.00062831846),
+            f32::INFINITY,
+            false,
+            None,
+        )
+        .unwrap();
+        // The chord's radial length rounds to the inclusive f32 cutoff.
+        assert_eq!(
+            (hit.point.x * hit.point.x + hit.point.z * hit.point.z).sqrt(),
+            1e-12
+        );
+        assert!((hit.normal.x - 0.9999998).abs() < 2e-6);
+        assert!((hit.normal.z - 0.0006283346).abs() < 2e-6);
+        assert_eq!(hit.normal.y, 0.0);
+    }
+
+    #[test]
+    fn test_segment_capsule_preserves_inclusive_transverse_cutoff() {
+        let (t, point, normal) = ray_vs_segment_capsule(
+            vec3(1000.0, -999e6, 0.0),
+            vec3(-1e-6, 1.0, 0.0),
+            vec3(0.0, -2e9, 0.0),
+            vec3(0.0, 2e9, 0.0),
+            1.0,
+            2e9,
+            |_| true,
+        )
+        .unwrap();
+        assert!(t < 2e9);
+        assert_eq!(point.x, 1.0);
+        assert_eq!(normal, vec3(1.0, 0.0, 0.0));
+        assert!(point.y.abs() < 2e9);
+    }
+
+    #[test]
+    fn test_segment_capsule_preserves_inclusive_normal_cutoff() {
+        let radius = 1e-6_f32;
+        let (_, point, normal) = ray_vs_segment_capsule(
+            vec3(radius * 1024.0, 0.0, 1.0),
+            vec3(-1.0, 0.0, 0.0),
+            vec3(0.0, -1.0, 1.0),
+            vec3(0.0, 1.0, 1.0),
+            radius,
+            f32::INFINITY,
+            |_| true,
+        )
+        .unwrap();
+        assert_eq!(point, vec3(radius, 0.0, 1.0));
+        assert_eq!(normal, vec3(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_segment_capsule_axial_margin_keeps_clamped_endpoint_normal() {
+        let radius = 5e-7_f32;
+        let y = 1.0 + 5e-6_f32;
+        let origin = vec3(radius * 1024.0, y, 0.0);
+
+        let (_, point, normal) = ray_vs_segment_capsule(
+            origin,
+            vec3(-1.0, 0.0, 0.0),
+            vec3(0.0, -1.0, 0.0),
+            vec3(0.0, 1.0, 0.0),
+            radius,
+            f32::INFINITY,
+            |_| true,
+        )
+        .unwrap();
+        assert_eq!(point, vec3(radius, y, 0.0));
+        // Within the existing axial margin, the clamped endpoint defines the normal.
+        let offset = f64::from(y) - 1.0;
+        let length = (f64::from(radius).powi(2) + offset * offset).sqrt();
+        assert!((f64::from(normal.x) - f64::from(radius) / length).abs() < 2e-6);
+        assert!((f64::from(normal.y) - offset / length).abs() < 2e-6);
+        assert_eq!(normal.z, 0.0);
     }
 
     #[test]
@@ -5537,6 +6198,7 @@ mod tests {
                         let velocity = rc_ref!(&collider).velocity.clone();
                         rc_mut!(&velocity).y -= 0.01;
                     }
+
                     Scene::integrate_motion(&root, 1.0 / 30.0);
 
                     let pairs = Scene::detect_contacts(&root);
@@ -5605,6 +6267,7 @@ mod tests {
             let mut spin = rc_mut!(&spin);
             *spin = vec_mul(*spin, angular_damping);
         }
+
         Scene::integrate_motion(root, 1.0 / 30.0);
         for pair in Scene::detect_contacts(root) {
             for (node, contact) in [
@@ -6065,6 +6728,7 @@ mod tests {
                     *rc_mut!(&velocity) = damped_velocity;
                     *rc_mut!(&spin) = damped_spin;
                 }
+
                 Scene::integrate_motion(&root, 1.0 / 30.0);
                 for pair in Scene::detect_contacts(&root) {
                     for (node, contact) in [
@@ -6087,6 +6751,7 @@ mod tests {
                         *rc_mut!(&spin) = updated;
                     }
                 }
+
                 if frame >= 60 {
                     for (body, start) in &bodies {
                         let pos = Node::world_transform_value(body).pos_value();
@@ -8190,6 +8855,30 @@ mod tests {
         ));
         Node::add_child(&root, &terrain);
         (root, terrain)
+    }
+
+    #[test]
+    fn test_mesh_raycast_does_not_prune_direction_rounded_to_zero() {
+        let (root, terrain) = sparse_triangle_mesh_root();
+        let collider = rc_ref!(&terrain).collider.clone().unwrap();
+        let mesh = rc_ref!(&collider).mesh.clone().unwrap();
+        let primitive = rc_ref!(&mesh).primitives[0].clone().unwrap();
+        let local_x = f32::from_bits(2);
+        rc_mut!(&primitive).positions =
+            vec![local_x, -1.0, 0.0, local_x, 1.0, 0.0, local_x, 0.0, 1000.0];
+        rc_mut!(&terrain).transform = Mat4::from_scale(&vec3(f32::MAX, 1.0, 1.0));
+        let origin = vec3(0.0, 0.0, 0.0);
+        let direction = vec3(1e-8, 0.0, 1.0);
+        // The world plane is x = local_x * MAX; a normalized ray has this exact direction.
+        let expected = (f64::from(local_x) * f64::from(f32::MAX) / f64::from(direction.x)) as f32;
+
+        let hit = Scene::raycast(&root, origin, direction, 200.0, false, None).unwrap();
+        assert!(std::rc::Rc::ptr_eq(&hit.node, &terrain));
+        assert_eq!(hit.distance, expected);
+        let hits = Scene::raycast_all(&root, origin, direction, 200.0, false, None);
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].distance, expected);
+        assert!(Scene::raycast(&root, origin, direction, 90.0, false, None).is_none());
     }
 
     #[test]

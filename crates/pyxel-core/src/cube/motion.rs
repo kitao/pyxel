@@ -291,11 +291,7 @@ impl MotionChannel {
 
         match self.interpolation {
             MotionInterpolation::CubicSpline | MotionInterpolation::Step => *from,
-            MotionInterpolation::Linear => Vec3 {
-                x: from.x + (to.x - from.x) * t,
-                y: from.y + (to.y - from.y) * t,
-                z: from.z + (to.z - from.z) * t,
-            },
+            MotionInterpolation::Linear => from.lerp_value(to, t),
         }
     }
 }
@@ -320,11 +316,42 @@ fn cubic_vec3(
     dt: f32,
 ) -> Vec3 {
     let (h00, h10, h01, h11) = cubic_basis(t);
-    Vec3 {
+    let value = Vec3 {
         x: h00 * from.x + h10 * dt * out_tangent.x + h01 * to.x + h11 * dt * in_tangent.x,
         y: h00 * from.y + h10 * dt * out_tangent.y + h01 * to.y + h11 * dt * in_tangent.y,
         z: h00 * from.z + h10 * dt * out_tangent.z + h01 * to.z + h11 * dt * in_tangent.z,
+    };
+    if !value.is_finite()
+        && from.is_finite()
+        && to.is_finite()
+        && out_tangent.is_finite()
+        && in_tangent.is_finite()
+        && t.is_finite()
+        && dt.is_finite()
+    {
+        let (h00, h10, h01, h11, dt) = (
+            f64::from(h00),
+            f64::from(h10),
+            f64::from(h01),
+            f64::from(h11),
+            f64::from(dt),
+        );
+        return Vec3 {
+            x: (h00 * f64::from(from.x)
+                + h10 * dt * f64::from(out_tangent.x)
+                + h01 * f64::from(to.x)
+                + h11 * dt * f64::from(in_tangent.x)) as f32,
+            y: (h00 * f64::from(from.y)
+                + h10 * dt * f64::from(out_tangent.y)
+                + h01 * f64::from(to.y)
+                + h11 * dt * f64::from(in_tangent.y)) as f32,
+            z: (h00 * f64::from(from.z)
+                + h10 * dt * f64::from(out_tangent.z)
+                + h01 * f64::from(to.z)
+                + h11 * dt * f64::from(in_tangent.z)) as f32,
+        };
     }
+    value
 }
 
 fn cubic_quat(
@@ -342,6 +369,49 @@ fn cubic_quat(
         z: h00 * from.z + h10 * dt * out_tangent.z + h01 * to.z + h11 * dt * in_tangent.z,
         w: h00 * from.w + h10 * dt * out_tangent.w + h01 * to.w + h11 * dt * in_tangent.w,
     };
+    if !quat.is_finite()
+        && from.is_finite()
+        && to.is_finite()
+        && out_tangent.is_finite()
+        && in_tangent.is_finite()
+        && t.is_finite()
+        && dt.is_finite()
+    {
+        // A cubic quaternion component may exceed f32 even when its unit result fits.
+        let (h00, h10, h01, h11, dt) = (
+            f64::from(h00),
+            f64::from(h10),
+            f64::from(h01),
+            f64::from(h11),
+            f64::from(dt),
+        );
+        let qx = h00 * f64::from(from.x)
+            + h10 * dt * f64::from(out_tangent.x)
+            + h01 * f64::from(to.x)
+            + h11 * dt * f64::from(in_tangent.x);
+        let qy = h00 * f64::from(from.y)
+            + h10 * dt * f64::from(out_tangent.y)
+            + h01 * f64::from(to.y)
+            + h11 * dt * f64::from(in_tangent.y);
+        let qz = h00 * f64::from(from.z)
+            + h10 * dt * f64::from(out_tangent.z)
+            + h01 * f64::from(to.z)
+            + h11 * dt * f64::from(in_tangent.z);
+        let qw = h00 * f64::from(from.w)
+            + h10 * dt * f64::from(out_tangent.w)
+            + h01 * f64::from(to.w)
+            + h11 * dt * f64::from(in_tangent.w);
+        let len = (qx * qx + qy * qy + qz * qz + qw * qw).sqrt();
+        if len == 0.0 {
+            return identity_quat();
+        }
+        return Quat {
+            x: (qx / len) as f32,
+            y: (qy / len) as f32,
+            z: (qz / len) as f32,
+            w: (qw / len) as f32,
+        };
+    }
     quat.normalize_value()
 }
 

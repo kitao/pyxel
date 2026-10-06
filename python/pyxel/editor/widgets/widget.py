@@ -192,7 +192,8 @@ class Widget:
         ):
             self.trigger_event("mouse_repeat", capture_info.key, x, y)
 
-        if pyxel.btnr(capture_info.key):
+        # A quick click can release before capture is processed on the next frame.
+        if pyxel.btnr(capture_info.key) or not pyxel.btn(capture_info.key):
             self.trigger_event("mouse_up", capture_info.key, x, y)
             press_x, press_y = capture_info.press_pos
             if (

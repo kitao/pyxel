@@ -31,12 +31,16 @@ impl Quat {
     }
 
     pub fn mul_quat(&self, other: &Self) -> RcQuat {
+        new_rc_type!(self.mul_quat_value(other))
+    }
+
+    fn mul_quat_value(&self, other: &Self) -> Self {
         // Hamilton product
         let x = self.w * other.x + self.x * other.w + self.y * other.z - self.z * other.y;
         let y = self.w * other.y - self.x * other.z + self.y * other.w + self.z * other.x;
         let z = self.w * other.z + self.x * other.y - self.y * other.x + self.z * other.w;
         let w = self.w * other.w - self.x * other.x - self.y * other.y - self.z * other.z;
-        Self::new(x, y, z, w)
+        Self { x, y, z, w }
     }
 
     pub fn mul_vec(&self, v: &Vec3) -> RcVec3 {
@@ -55,19 +59,61 @@ impl Quat {
         let rx = v.x + qw * tx + (qy * tz - qz * ty);
         let ry = v.y + qw * ty + (qz * tx - qx * tz);
         let rz = v.z + qw * tz + (qx * ty - qy * tx);
+        if !(rx.is_finite() && ry.is_finite() && rz.is_finite())
+            && self.is_finite()
+            && v.is_finite()
+        {
+            let (qx, qy, qz, qw) = (f64::from(qx), f64::from(qy), f64::from(qz), f64::from(qw));
+            let (x, y, z) = (f64::from(v.x), f64::from(v.y), f64::from(v.z));
+            let (tx, ty, tz) = (
+                2.0 * (qy * z - qz * y),
+                2.0 * (qz * x - qx * z),
+                2.0 * (qx * y - qy * x),
+            );
+            return Vec3::new(
+                (x + qw * tx + (qy * tz - qz * ty)) as f32,
+                (y + qw * ty + (qz * tx - qx * tz)) as f32,
+                (z + qw * tz + (qx * ty - qy * tx)) as f32,
+            );
+        }
         Vec3::new(rx, ry, rz)
     }
 
     // Factories
 
     pub fn from_axis_angle(axis: &Vec3, deg: f32) -> RcQuat {
-        let len = (axis.x * axis.x + axis.y * axis.y + axis.z * axis.z).sqrt();
+        new_rc_type!(Self::from_axis_angle_value(axis, deg))
+    }
+
+    fn from_axis_angle_value(axis: &Vec3, deg: f32) -> Self {
+        let len_sq = axis.length_squared();
+        if let Some(len) = axis.wide_length(len_sq) {
+            let half = deg.to_radians() * 0.5;
+            let scale = f64::from(half.sin()) / len;
+            return Self {
+                x: (f64::from(axis.x) * scale) as f32,
+                y: (f64::from(axis.y) * scale) as f32,
+                z: (f64::from(axis.z) * scale) as f32,
+                w: half.cos(),
+            };
+        }
+        let len = len_sq.sqrt();
         if len == 0.0 {
-            return Self::identity();
+            return Self {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                w: 1.0,
+            };
         }
         let half = deg.to_radians() * 0.5;
         let s = half.sin() / len;
-        Self::new(axis.x * s, axis.y * s, axis.z * s, half.cos())
+        Self {
+            x: axis.x * s,
+            y: axis.y * s,
+            z: axis.z * s,
+            w: half.cos(),
+        }
     }
 
     pub fn from_euler(euler: &Vec3) -> RcQuat {
@@ -88,17 +134,23 @@ impl Quat {
             z: 1.0,
         };
 
-        let qx = Self::from_axis_angle(&x_axis, euler.x);
-        let qy = Self::from_axis_angle(&y_axis, euler.y);
-        let qz = Self::from_axis_angle(&z_axis, euler.z);
-        let zy = rc_ref!(&qz).mul_quat(&rc_ref!(&qy));
-        let result = rc_ref!(&zy).mul_quat(&rc_ref!(&qx));
-        result
+        let qx = Self::from_axis_angle_value(&x_axis, euler.x);
+        let qy = Self::from_axis_angle_value(&y_axis, euler.y);
+        let qz = Self::from_axis_angle_value(&z_axis, euler.z);
+        let zy = qz.mul_quat_value(&qy);
+        new_rc_type!(zy.mul_quat_value(&qx))
     }
 
     pub fn from_two_vectors(a: &Vec3, b: &Vec3) -> RcQuat {
-        let len_ab =
-            (a.x * a.x + a.y * a.y + a.z * a.z).sqrt() * (b.x * b.x + b.y * b.y + b.z * b.z).sqrt();
+        let a_len_sq = a.length_squared();
+        let b_len_sq = b.length_squared();
+        let len_ab = a_len_sq.sqrt() * b_len_sq.sqrt();
+        if (!a_len_sq.is_normal() || !b_len_sq.is_normal() || !len_ab.is_normal())
+            && a.is_finite()
+            && b.is_finite()
+        {
+            return Self::from_two_vectors_wide(a, b);
+        }
         if len_ab == 0.0 {
             return Self::identity();
         }
@@ -133,8 +185,41 @@ impl Quat {
         let cross_y = a.z * b.x - a.x * b.z;
         let cross_z = a.x * b.y - a.y * b.x;
         let s = len_ab + dot;
-        let len = (cross_x * cross_x + cross_y * cross_y + cross_z * cross_z + s * s).sqrt();
+        let len_sq = cross_x * cross_x + cross_y * cross_y + cross_z * cross_z + s * s;
+        if !len_sq.is_normal() && a.is_finite() && b.is_finite() {
+            return Self::from_two_vectors_wide(a, b);
+        }
+        let len = len_sq.sqrt();
         Self::new(cross_x / len, cross_y / len, cross_z / len, s / len)
+    }
+
+    fn from_two_vectors_wide(a: &Vec3, b: &Vec3) -> RcQuat {
+        let (ax, ay, az) = (f64::from(a.x), f64::from(a.y), f64::from(a.z));
+        let (bx, by, bz) = (f64::from(b.x), f64::from(b.y), f64::from(b.z));
+        let a_len = a.length_f64();
+        let len_ab = a_len * b.length_f64();
+        if len_ab == 0.0 {
+            return Self::identity();
+        }
+        let dot = ax * bx + ay * by + az * bz;
+        if (dot / len_ab).clamp(-1.0, 1.0) < f64::from(-0.999_999_f32) {
+            let (x, y, z) = if ax.abs() < f64::from(0.9_f32) * a_len {
+                (0.0, az, -ay)
+            } else {
+                (-az, 0.0, ax)
+            };
+            let len = (x * x + y * y + z * z).sqrt();
+            return Self::new((x / len) as f32, (y / len) as f32, (z / len) as f32, 0.0);
+        }
+        let (x, y, z) = (ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
+        let w = len_ab + dot;
+        let len = (x * x + y * y + z * z + w * w).sqrt();
+        Self::new(
+            (x / len) as f32,
+            (y / len) as f32,
+            (z / len) as f32,
+            (w / len) as f32,
+        )
     }
 
     pub fn from_matrix(mat: &Mat4) -> RcQuat {
@@ -184,10 +269,16 @@ impl Quat {
         if f_len_sq < 1e-12 {
             return Self::identity();
         }
-        let inv_f = 1.0 / f_len_sq.sqrt();
-        let fx = forward.x * inv_f;
-        let fy = forward.y * inv_f;
-        let fz = forward.z * inv_f;
+        let (fx, fy, fz) = if let Some(len) = forward.wide_length(f_len_sq) {
+            (
+                (f64::from(forward.x) / len) as f32,
+                (f64::from(forward.y) / len) as f32,
+                (f64::from(forward.z) / len) as f32,
+            )
+        } else {
+            let inv_f = 1.0 / f_len_sq.sqrt();
+            (forward.x * inv_f, forward.y * inv_f, forward.z * inv_f)
+        };
 
         // right = forward × up (matches look_at convention, right-handed).
         let rx0 = fy * up.z - fz * up.y;
@@ -210,10 +301,29 @@ impl Quat {
                 },
             );
         }
-        let inv_r = 1.0 / r_len_sq.sqrt();
-        let rx = rx0 * inv_r;
-        let ry = ry0 * inv_r;
-        let rz = rz0 * inv_r;
+        let right = Vec3 {
+            x: rx0,
+            y: ry0,
+            z: rz0,
+        };
+        let f = Vec3 {
+            x: fx,
+            y: fy,
+            z: fz,
+        };
+        let (rx, ry, rz) = if !right.is_finite() && f.is_finite() && up.is_finite() {
+            let right = f.cross_normalized_wide(up);
+            (right.x, right.y, right.z)
+        } else if let Some(len) = right.wide_length(r_len_sq) {
+            (
+                (f64::from(rx0) / len) as f32,
+                (f64::from(ry0) / len) as f32,
+                (f64::from(rz0) / len) as f32,
+            )
+        } else {
+            let inv_r = 1.0 / r_len_sq.sqrt();
+            (rx0 * inv_r, ry0 * inv_r, rz0 * inv_r)
+        };
 
         // up' = right × forward (so up' aligns with the up hint as
         // closely as the constraint allows).
@@ -257,7 +367,16 @@ impl Quat {
     }
 
     pub(crate) fn normalize_value(&self) -> Self {
-        let len = self.length();
+        let len_sq = self.length_squared();
+        if let Some(len) = self.wide_length(len_sq) {
+            return Self {
+                x: (f64::from(self.x) / len) as f32,
+                y: (f64::from(self.y) / len) as f32,
+                z: (f64::from(self.z) / len) as f32,
+                w: (f64::from(self.w) / len) as f32,
+            };
+        }
+        let len = len_sq.sqrt();
         if len == 0.0 {
             return Self {
                 x: 0.0,
@@ -275,7 +394,30 @@ impl Quat {
     }
 
     pub fn length(&self) -> f32 {
-        self.length_squared().sqrt()
+        let len_sq = self.length_squared();
+        self.wide_length(len_sq)
+            .map_or_else(|| len_sq.sqrt(), |len| len as f32)
+    }
+
+    pub(crate) fn is_finite(&self) -> bool {
+        self.x.is_finite() && self.y.is_finite() && self.z.is_finite() && self.w.is_finite()
+    }
+
+    // Match Vec3's finite-range fallback without changing four-component storage.
+    fn wide_length(&self, len_sq: f32) -> Option<f64> {
+        if len_sq.is_normal()
+            || (self.x == 0.0 && self.y == 0.0 && self.z == 0.0 && self.w == 0.0)
+            || !self.is_finite()
+        {
+            return None;
+        }
+        let (x, y, z, w) = (
+            f64::from(self.x),
+            f64::from(self.y),
+            f64::from(self.z),
+            f64::from(self.w),
+        );
+        Some((x * x + y * y + z * z + w * w).sqrt())
     }
 
     pub fn length_squared(&self) -> f32 {
@@ -285,7 +427,14 @@ impl Quat {
     // Binary operations
 
     pub fn dot(&self, other: &Self) -> f32 {
-        self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
+        let dot = self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w;
+        if !dot.is_finite() && self.is_finite() && other.is_finite() {
+            return (f64::from(self.x) * f64::from(other.x)
+                + f64::from(self.y) * f64::from(other.y)
+                + f64::from(self.z) * f64::from(other.z)
+                + f64::from(self.w) * f64::from(other.w)) as f32;
+        }
+        dot
     }
 
     pub fn angle_to(&self, other: &Self) -> f32 {
@@ -426,7 +575,7 @@ mod tests {
         *rc_ref!(rc)
     }
 
-    // 1e-4 exceeds the f32 rounding of these unit-scale values and stays below any expected difference
+    // 1e-4 allows a few f32 ulps at the Euler angles used here, up to 180 degrees.
     fn approx_eq_v(a: &Vec3, b: &Vec3) -> bool {
         (a.x - b.x).abs() < 1e-4 && (a.y - b.y).abs() < 1e-4 && (a.z - b.z).abs() < 1e-4
     }
@@ -501,10 +650,13 @@ mod tests {
         for y in [0.00001, 0.0001, 0.001] {
             let target = Vec3 { x: 1.0, y, z: 0.0 };
             let turn = Quat::from_two_vectors(&from, &target);
-            let actual = rc_ref!(&turn).mul_vec(&from);
-            let expected = target.normalize();
-            assert!(approx_eq_v(&rc_ref!(&actual), &rc_ref!(&expected)));
-            assert!(rc_ref!(&actual).y > 0.0);
+            let actual = deref_v(&rc_ref!(&turn).mul_vec(&from));
+            let length = (1.0 + f64::from(y).powi(2)).sqrt();
+            let expected_y = f64::from(y) / length;
+            // Relative 2e-6 allows accumulated f32 rounding while detecting loss of the tiny turn.
+            assert!((f64::from(actual.y) / expected_y - 1.0).abs() < 2e-6);
+            assert!((f64::from(actual.x) - 1.0 / length).abs() < 2e-6);
+            assert_eq!(actual.z, 0.0);
         }
     }
 

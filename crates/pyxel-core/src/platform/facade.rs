@@ -69,7 +69,9 @@ pub fn init(headless: bool) {
 }
 
 pub fn quit() {
-    if let Some(mut callback) = crate::quit_callback().take() {
+    // Release the callback-slot borrow before invoking Python exit hooks.
+    let callback = crate::quit_callback().take();
+    if let Some(mut callback) = callback {
         callback();
     }
     with_platform_mut(Platform::quit);

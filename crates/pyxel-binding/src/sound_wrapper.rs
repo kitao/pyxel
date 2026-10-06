@@ -81,10 +81,15 @@ impl Sound {
         effects: &str,
         speed: pyxel::SoundSpeed,
     ) -> PyResult<()> {
-        pyxel::Sound::validate_speed(speed).map_err(PyValueError::new_err)?;
         self.inner_mut()
             .set(notes, tones, volumes, effects, speed)
-            .map_err(PyException::new_err)
+            .map_err(|message| {
+                if speed == 0 {
+                    PyValueError::new_err(message)
+                } else {
+                    PyException::new_err(message)
+                }
+            })
     }
 
     fn set_notes(&self, notes: &str) -> PyResult<()> {

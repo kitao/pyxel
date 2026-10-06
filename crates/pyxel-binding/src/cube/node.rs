@@ -95,14 +95,16 @@ impl Node {
         }
     }
 
-    pub(crate) fn detach_from_parent_py(&self, py: Python<'_>) {
+    // Retain the old parent until both native and Python tree updates finish.
+    pub(crate) fn detach_from_parent_py(&self, py: Python<'_>) -> Option<Py<Node>> {
         let parent = self.parent.borrow_mut().take();
-        if let Some(parent_py) = parent {
+        if let Some(parent_py) = parent.as_ref() {
             let pb = parent_py.bind(py).borrow();
             pb.children
                 .borrow_mut()
                 .retain(|c| !Rc::ptr_eq(&c.bind(py).borrow().inner, &self.inner));
         }
+        parent
     }
 
     pub(crate) fn inner_ref(&self) -> std::cell::Ref<'_, pyxel::cube::Node> {
@@ -627,10 +629,11 @@ impl Node {
         if !InnerNode::add_child(&slf.borrow().inner, &node_inner) {
             return Err(PyValueError::new_err("add_child would create a cycle"));
         }
-        node.bind(py).borrow().detach_from_parent_py(py);
+        let previous_parent = node.bind(py).borrow().detach_from_parent_py(py);
         let self_py: Py<Node> = slf.clone().unbind();
         *node.bind(py).borrow().parent.borrow_mut() = Some(self_py);
         slf.borrow().children.borrow_mut().push(node);
+        drop(previous_parent);
         Ok(())
     }
 
@@ -1047,10 +1050,10 @@ impl Node {
             }
 
             for inner in &destroyed {
-                if let Some(py_node) = find_indexed_py_node(&node_index, inner, py) {
-                    py_node.bind(py).borrow().detach_from_parent_py(py);
-                }
+                let previous_parent = find_indexed_py_node(&node_index, inner, py)
+                    .and_then(|node| node.bind(py).borrow().detach_from_parent_py(py));
                 pyxel::cube::Scene::detach_destroyed(inner);
+                drop(previous_parent);
             }
         }
         Ok(())

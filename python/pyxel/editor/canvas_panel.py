@@ -16,9 +16,6 @@ from .settings import (
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
-# Sentinel tile that marks cells touched by tilemap-mode drawing primitives.
-_EMPTY_TILE = (255, 255)
-
 
 class CanvasPanel(Widget):
     # Variables:
@@ -69,6 +66,7 @@ class CanvasPanel(Widget):
         self._edit_canvas = (
             pyxel.Tilemap(16, 16, 0) if self._is_tilemap_mode else pyxel.Image(16, 16)
         )
+        self._draw_mask = pyxel.Image(16, 16) if self._is_tilemap_mode else None
 
         self.add_history = parent.add_history
         self.copy_var("color_var", parent)
@@ -180,13 +178,31 @@ class CanvasPanel(Widget):
         if self._is_tilemap_mode:
             self._edit_canvas.imgsrc = self.canvas_var.imgsrc
 
+    def _draw_edit_canvas(self, method, *args):
+        if not self._is_tilemap_mode:
+            getattr(self._edit_canvas, method)(*args, self.color_var)
+            return
+
+        # Drawing coverage is independent of every admitted tile payload.
+        mask = self._draw_mask
+        mask.cls(0)
+        if method == "fill":
+            tile = self._edit_canvas.pget(*args)
+            for y in range(16):
+                for x in range(16):
+                    if self._edit_canvas.pget(x, y) != tile:
+                        mask.pset(x, y, 2)
+
+        getattr(mask, method)(*args, 1)
+        self._finish_edit_canvas()
+
     def _finish_edit_canvas(self):
         if not self._is_tilemap_mode:
             return
 
         for y in range(16):
             for x in range(16):
-                if self._edit_canvas.pget(x, y) != _EMPTY_TILE:
+                if self._draw_mask.pget(x, y) != 1:
                     continue
                 tile = (
                     self.tile_x_var + (x - self._press_x) % self.tile_w_var,
@@ -235,15 +251,13 @@ class CanvasPanel(Widget):
 
         elif TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._reset_edit_canvas()
-            self._edit_canvas.pset(x, y, self.color_var)
-            self._finish_edit_canvas()
+            self._draw_edit_canvas("pset", x, y)
 
         # Flood fill commits on mouse-down; other drawing tools commit on release.
         elif self.tool_var == TOOL_BUCKET:
             self._add_pre_history()
             self._reset_edit_canvas()
-            self._edit_canvas.fill(x, y, self.color_var)
-            self._finish_edit_canvas()
+            self._draw_edit_canvas("fill", x, y)
 
             self.canvas_var.blt(
                 self.focus_x_var * 8,
@@ -298,33 +312,25 @@ class CanvasPanel(Widget):
             elif self.tool_var == TOOL_PENCIL:
                 if self._is_assist_mode:
                     self._reset_edit_canvas()
-                    self._edit_canvas.line(x1, y1, x2, y2, self.color_var)
-                    self._finish_edit_canvas()
+                    self._draw_edit_canvas("line", x1, y1, x2, y2)
                 else:
-                    self._edit_canvas.line(
-                        self._last_x, self._last_y, x2, y2, self.color_var
-                    )
-                    self._finish_edit_canvas()
+                    self._draw_edit_canvas("line", self._last_x, self._last_y, x2, y2)
 
             elif self.tool_var == TOOL_RECTB:
                 self._reset_edit_canvas()
-                self._edit_canvas.rectb2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("rectb2", x1, y1, x2, y2)
 
             elif self.tool_var == TOOL_RECT:
                 self._reset_edit_canvas()
-                self._edit_canvas.rect2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("rect2", x1, y1, x2, y2)
 
             elif self.tool_var == TOOL_CIRCB:
                 self._reset_edit_canvas()
-                self._edit_canvas.ellib2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("ellib2", x1, y1, x2, y2)
 
             elif self.tool_var == TOOL_CIRC:
                 self._reset_edit_canvas()
-                self._edit_canvas.elli2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("elli2", x1, y1, x2, y2)
 
             self._last_x = x2
             self._last_y = y2

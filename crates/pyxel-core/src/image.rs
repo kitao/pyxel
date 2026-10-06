@@ -400,6 +400,9 @@ impl Image {
         let borrowed;
         let copied_canvas;
         let src = if ptr::eq(image.as_ptr(), self) {
+            if utils::f32_to_i32(width) == 0 || utils::f32_to_i32(height) == 0 {
+                return;
+            }
             copied_canvas = self.canvas.clone();
             &copied_canvas
         } else {
@@ -759,6 +762,9 @@ impl Image {
         let borrowed;
         let copied_canvas;
         let src = if ptr::eq(image.as_ptr(), self) {
+            if utils::f32_to_i32(width) == 0 || utils::f32_to_i32(height) == 0 {
+                return;
+            }
             copied_canvas = self.canvas.clone();
             &copied_canvas
         } else {

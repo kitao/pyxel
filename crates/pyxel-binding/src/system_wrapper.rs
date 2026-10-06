@@ -83,18 +83,18 @@ fn init(
                 locals.set_item("watch_reset_exit_code", pyxel::WATCH_RESET_EXIT_CODE)?;
 
                 py.run(
-                    c"
-import os, subprocess, sys
+                    c"import os
+import subprocess
+import sys
 
 if os.environ.get(watch_state_file_env):
     os._exit(watch_reset_exit_code)
 
-if sys.platform == 'darwin':
+if sys.platform == \"darwin\":
     # Silence child stderr while the parent process is being replaced.
     try:
-        f = open(os.devnull, 'wb')
-        os.dup2(f.fileno(), 2)
-        f.close()
+        with open(os.devnull, \"wb\") as f:
+            os.dup2(f.fileno(), 2)
     except OSError:
         pass
 

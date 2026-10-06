@@ -22,11 +22,11 @@
 # Models
 *.glb binary
 
-# Video
-*.mp4 binary
-
 # Pyxel assets
 *.pyxapp binary
 # Pyxel palette is a plain-text file with one hex color per line.
 *.pyxpal text
 *.pyxres binary
+
+# Video
+*.mp4 binary

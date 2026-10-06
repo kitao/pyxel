@@ -23,6 +23,7 @@ pub struct AudioLock;
 
 struct AudioStreamRenderer {
     blip_buf: BlipBuf,
+    // Per-channel sample offsets within a render step; usize::MAX skips PCM mixing.
     pcm_mix_starts: Vec<usize>,
 }
 

@@ -167,7 +167,7 @@ impl Primitive {
             let pa = read_vec3(&self.positions, a);
             let pb = read_vec3(&self.positions, b);
             let pc = read_vec3(&self.positions, c);
-            let face_normal = vec_normalize(vec_cross(vec_sub(pb, pa), vec_sub(pc, pa)));
+            let face_normal = face_normal(pa, pb, pc);
             write_vec3(&mut out, f, face_normal);
         }
 
@@ -587,9 +587,45 @@ fn vec_cross(a: Vec3, b: Vec3) -> Vec3 {
     }
 }
 
-fn vec_normalize(v: Vec3) -> Vec3 {
+// Minimum squared triangle cross-product magnitude for stored face normals.
+const FACE_NORMAL_EPS_SQ: f32 = 1e-20;
+
+fn face_normal(p0: Vec3, p1: Vec3, p2: Vec3) -> Vec3 {
+    let v = vec_cross(vec_sub(p1, p0), vec_sub(p2, p0));
     let len_sq = v.x * v.x + v.y * v.y + v.z * v.z;
-    if len_sq < 1e-20 {
+    if !len_sq.is_finite() && p0.is_finite() && p1.is_finite() && p2.is_finite() {
+        // Recover from original endpoints before narrowing overflowed edges or products.
+        let e1 = [
+            f64::from(p1.x) - f64::from(p0.x),
+            f64::from(p1.y) - f64::from(p0.y),
+            f64::from(p1.z) - f64::from(p0.z),
+        ];
+        let e2 = [
+            f64::from(p2.x) - f64::from(p0.x),
+            f64::from(p2.y) - f64::from(p0.y),
+            f64::from(p2.z) - f64::from(p0.z),
+        ];
+        let v = [
+            e1[1] * e2[2] - e1[2] * e2[1],
+            e1[2] * e2[0] - e1[0] * e2[2],
+            e1[0] * e2[1] - e1[1] * e2[0],
+        ];
+        let len_sq = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+        if len_sq < f64::from(FACE_NORMAL_EPS_SQ) {
+            return Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            };
+        }
+        let inv = 1.0 / len_sq.sqrt();
+        return Vec3 {
+            x: (v[0] * inv) as f32,
+            y: (v[1] * inv) as f32,
+            z: (v[2] * inv) as f32,
+        };
+    }
+    if len_sq < FACE_NORMAL_EPS_SQ {
         return Vec3 {
             x: 0.0,
             y: 0.0,

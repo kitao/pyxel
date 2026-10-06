@@ -10,6 +10,7 @@
 - Fixed blit clipping, primitive and text drawing, and tilemap collisions
 - Fixed capture and image saving with large images or extended palettes
 - Fixed key repeat, modifier states, and mouse positioning
+- Fixed duplicate gamepad startup registration and hotplug key mapping
 - Fixed frame timing during long-running sessions
 - Fixed MML timing, sound playback, audio exports, and BGM generation hangs
 - Fixed resource saving, version parsing, and TMX imports
@@ -25,6 +26,7 @@
 - Fixed local web preview serving and restricted access to public files
 - Improved rendering, audio, tilemap collision, and editor performance
 - Fixed OpenGL cleanup on application shutdown
+- Fixed gamepad cleanup during resets and application shutdown
 - Improved wheel builds, validation, and SDL2 download verification
 - Fixed Windows development setup and partial version updates
 - Fixed playback timing in documentation GIFs
