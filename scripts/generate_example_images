@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Generate documentation previews for examples 01 through 19 and 99.
-
-Run without numbers to regenerate all supported files in docs/images, or pass example
-numbers to regenerate a subset. Use --output-dir to inspect images elsewhere.
-"""
 
 import argparse
 import heapq
@@ -18,6 +13,12 @@ from pathlib import Path
 
 from _image_capture import save_gif
 from PIL import Image
+
+_DESCRIPTION = """Generate documentation previews for examples 01 through 19 and 99.
+
+Run without numbers to regenerate all supported files in docs/images, or pass example
+numbers to regenerate a subset. Use --output-dir to inspect images elsewhere.
+"""
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = ROOT / "python" / "pyxel" / "examples"
@@ -71,6 +72,9 @@ SETTINGS = {
 
 
 SEEDS = {2: 2, 7: 72, 9: 2}
+
+
+# Input planning
 
 
 def snake_route(app):
@@ -151,6 +155,7 @@ def smooth_cursor(path, frame):
             sign = 1 if speed > 0 else -1
             before = (end[axis] - previous[axis]) / (end[0] - previous[0])
             after = (following[axis] - start[axis]) / (following[0] - start[0])
+            # Limit endpoint slopes to avoid overshooting the cursor waypoints.
             before = sign * max(0, min(3 * abs(speed), sign * before))
             after = sign * max(0, min(3 * abs(speed), sign * after))
         else:
@@ -400,6 +405,9 @@ def input_for_frame(number, frame, app, namespace, controls):
     return keys, mouse
 
 
+# Image generation
+
+
 def generate(number, destination):
     import pyxel
 
@@ -492,7 +500,7 @@ def generate(number, destination):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=_DESCRIPTION)
     parser.add_argument("numbers", nargs="*", type=int, default=list(NAMES))
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--worker", type=int, help=argparse.SUPPRESS)
@@ -504,12 +512,13 @@ def main():
         generate(args.worker, args.output_dir / f"{NAMES[args.worker]}.{suffix}")
         return
 
-    for number in args.numbers:
+    numbers = list(dict.fromkeys(args.numbers))
+    for number in numbers:
         if number not in NAMES:
             parser.error(f"unsupported example: {number}")
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
-        for number in args.numbers:
+        for number in numbers:
             subprocess.run(
                 [
                     sys.executable,
@@ -523,7 +532,7 @@ def main():
                 timeout=120,
             )
 
-        for number in args.numbers:
+        for number in numbers:
             name = NAMES[number]
             suffix = "png" if number in (5, 13) else "gif"
             filename = f"{name}.{suffix}"

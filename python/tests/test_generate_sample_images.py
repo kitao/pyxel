@@ -180,3 +180,33 @@ def test_editor_default_output_updates_both_documentation_copies(
     for directory in (docs, manual):
         assert (directory / "image_editor.gif").read_bytes() == b"new complete output"
         assert len(list(directory.iterdir())) == 1
+
+
+@pytest.mark.parametrize(
+    ("family", "name", "filename"),
+    [
+        ("app", "megaball", "megaball.gif"),
+        ("cube", "c01_hello_cube", "c01_hello_cube.gif"),
+        ("editor", "image", "image_editor.gif"),
+        ("example", "1", "01_hello_pyxel.gif"),
+    ],
+)
+def test_repeated_selection_generates_and_publishes_once(
+    family, name, filename, tmp_path, monkeypatch, capture_scripts
+):
+    generator = runpy.run_path(str(SCRIPTS / f"generate_{family}_images"))
+    calls = []
+
+    def worker(command, **kwargs):
+        calls.append(command)
+        staging = Path(command[command.index("--output-dir") + 1])
+        (staging / filename).write_bytes(b"complete output")
+
+    monkeypatch.setattr(subprocess, "run", worker)
+    monkeypatch.setattr(
+        sys, "argv", ["generator", name, name, "--output-dir", str(tmp_path)]
+    )
+    generator["main"]()
+    assert len(calls) == 1
+    assert (tmp_path / filename).read_bytes() == b"complete output"
+    assert list(tmp_path.iterdir()) == [tmp_path / filename]

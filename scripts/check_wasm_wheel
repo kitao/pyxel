@@ -34,11 +34,7 @@ HOST_PATH_PATTERNS = (
 def main() -> int:
     try:
         wheel_path = find_wheel(DIST_DIR, PYPROJECT_PATH)
-        _name, version = _project_name_and_version(PYPROJECT_PATH)
-        violations = find_violations(wheel_path)
-        violations.extend(find_source_mismatches(wheel_path, PYXEL_SOURCE_DIR))
-        violations.extend(find_metadata_mismatches(wheel_path, PYPROJECT_PATH))
-        violations.extend(find_wheel_tag_mismatches(wheel_path, version))
+        violations = find_wheel_mismatches(wheel_path, PYPROJECT_PATH, PYXEL_SOURCE_DIR)
     except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
@@ -51,6 +47,15 @@ def main() -> int:
 
     print(f"ok: {wheel_path.name}")
     return 0
+
+
+def find_wheel_mismatches(wheel_path, pyproject_path, source_dir):
+    _name, version = _project_name_and_version(pyproject_path)
+    mismatches = find_violations(wheel_path)
+    mismatches.extend(find_source_mismatches(wheel_path, source_dir))
+    mismatches.extend(find_metadata_mismatches(wheel_path, pyproject_path))
+    mismatches.extend(find_wheel_tag_mismatches(wheel_path, version))
+    return mismatches
 
 
 def _project_name_and_version(pyproject_path):

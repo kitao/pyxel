@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import PIL.Image
 import pyxel
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -51,12 +52,12 @@ class App:
             cross_image.blt(
                 0, 0, pyxel.screen, CROSS_AREA_X, 0, CROSS_AREA_WIDTH, CROSS_AREA_WIDTH
             )
-            cross_image.save(
-                str(
+            save_gamepad_image(
+                cross_image,
+                (
                     OUTPUT_DIR
                     / f"gamepad_cross_{CROSS_AREA_WIDTH}x{CROSS_AREA_WIDTH}.png"
                 ),
-                1,
             )
 
             menu_image = pyxel.Image(MENU_AREA_WIDTH, MENU_AREA_HEIGHT)
@@ -69,12 +70,9 @@ class App:
                 MENU_AREA_WIDTH,
                 MENU_AREA_HEIGHT,
             )
-            menu_image.save(
-                str(
-                    OUTPUT_DIR
-                    / f"gamepad_menu_{MENU_AREA_WIDTH}x{MENU_AREA_HEIGHT}.png"
-                ),
-                1,
+            save_gamepad_image(
+                menu_image,
+                (OUTPUT_DIR / f"gamepad_menu_{MENU_AREA_WIDTH}x{MENU_AREA_HEIGHT}.png"),
             )
 
             button_image = pyxel.Image(BUTTON_AREA_WIDTH, BUTTON_AREA_WIDTH)
@@ -87,12 +85,12 @@ class App:
                 BUTTON_AREA_WIDTH,
                 BUTTON_AREA_WIDTH,
             )
-            button_image.save(
-                str(
+            save_gamepad_image(
+                button_image,
+                (
                     OUTPUT_DIR
                     / f"gamepad_button_{BUTTON_AREA_WIDTH}x{BUTTON_AREA_WIDTH}.png"
                 ),
-                1,
             )
 
     def draw(self):
@@ -223,6 +221,26 @@ class App:
             )
 
             pyxel.camera()
+
+
+def save_gamepad_image(image, path):
+    image.save(str(path), 1)
+    with PIL.Image.open(path) as saved:
+        rgba = saved.convert("RGBA")
+
+    # The web overlays use the black backdrop as transparent space.
+    alpha = PIL.Image.new("L", rgba.size)
+    alpha.putdata(
+        [
+            0 if rgb == (0, 0, 0) else 255
+            for rgb in rgba.convert("RGB").get_flattened_data()
+        ]
+    )
+    rgba.putalpha(alpha)
+    rgba.save(path)
+
+
+# Drawing
 
 
 def draw_gamepad_cross(x, y, color):
