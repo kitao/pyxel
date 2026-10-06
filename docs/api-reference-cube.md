@@ -1,6 +1,6 @@
 <!-- This file is generated from web/api-reference/cube/api-reference.json. -->
 
-# Pyxel Cube API Reference
+# Pyxel API Reference
 
 *[Read online in other languages](https://kitao.github.io/pyxel/web/api-reference/cube/).*
 
@@ -101,7 +101,7 @@ Return the dot product with another vector.
 
 - `other` (*Vec3*) — The other vector.
 
-**Returns:** `float` — The dot product.
+**Returns:** `float`
 
 ### `cross(other)` — function
 
@@ -111,19 +111,19 @@ Return the cross product with another vector.
 
 - `other` (*Vec3*) — The other vector.
 
-**Returns:** `Vec3` — The cross product vector.
+**Returns:** `Vec3`
 
 ### `length()` — function
 
 Return the length (magnitude) of the vector.
 
-**Returns:** `float` — The length of the vector.
+**Returns:** `float`
 
 ### `length_squared()` — function
 
 Return the squared length. Cheaper than length() for comparisons.
 
-**Returns:** `float` — The squared length.
+**Returns:** `float`
 
 ### `distance_to(other)` — function
 
@@ -133,7 +133,7 @@ Return the distance to another vector.
 
 - `other` (*Vec3*) — The other vector.
 
-**Returns:** `float` — The distance.
+**Returns:** `float`
 
 ### `distance_squared_to(other)` — function
 
@@ -143,7 +143,7 @@ Return the squared distance to another vector.
 
 - `other` (*Vec3*) — The other vector.
 
-**Returns:** `float` — The squared distance.
+**Returns:** `float`
 
 ### `angle_to(other)` — function
 
@@ -159,7 +159,7 @@ Return the angle to another vector in degrees.
 
 Return a unit vector pointing in the same direction. A zero vector returns Vec3.ZERO.
 
-**Returns:** `Vec3` — The normalized vector.
+**Returns:** `Vec3`
 
 ### `clamp_length(max_length)` — function
 
@@ -169,7 +169,7 @@ Return a copy whose length is clamped to max_length.
 
 - `max_length` (*float*) — Maximum allowed length.
 
-**Returns:** `Vec3` — The clamped vector.
+**Returns:** `Vec3`
 
 ### `min(other)` — function
 
@@ -179,7 +179,7 @@ Return the component-wise minimum with another vector.
 
 - `other` (*Vec3*) — The other vector.
 
-**Returns:** `Vec3` — The component-wise minimum.
+**Returns:** `Vec3`
 
 ### `max(other)` — function
 
@@ -189,7 +189,7 @@ Return the component-wise maximum with another vector.
 
 - `other` (*Vec3*) — The other vector.
 
-**Returns:** `Vec3` — The component-wise maximum.
+**Returns:** `Vec3`
 
 ### `lerp(other, t)` — function
 
@@ -200,7 +200,7 @@ Linearly interpolate toward another vector.
 - `other` (*Vec3*) — The target vector.
 - `t` (*float*) — Interpolation factor from 0.0 to 1.0.
 
-**Returns:** `Vec3` — The interpolated vector.
+**Returns:** `Vec3`
 
 ### `slerp(other, t)` — function
 
@@ -211,7 +211,7 @@ Spherically interpolate toward another vector. Both vectors should be unit lengt
 - `other` (*Vec3*) — The target unit vector.
 - `t` (*float*) — Interpolation factor from 0.0 to 1.0.
 
-**Returns:** `Vec3` — The interpolated vector.
+**Returns:** `Vec3`
 
 ### `reflect(normal)` — function
 
@@ -221,7 +221,7 @@ Return the reflection of the vector against a surface with the given unit normal
 
 - `normal` (*Vec3*) — The unit surface normal.
 
-**Returns:** `Vec3` — The reflected vector.
+**Returns:** `Vec3`
 
 ### `project(other)` — function
 
@@ -231,7 +231,7 @@ Return the projection of the vector onto another vector.
 
 - `other` (*Vec3*) — The vector to project onto.
 
-**Returns:** `Vec3` — The projected vector.
+**Returns:** `Vec3`
 
 ### `to_local(mat)` — function *(Advanced)*
 
@@ -241,7 +241,7 @@ Convert a world-space position into mat's local space.
 
 - `mat` (*Mat4*) — The reference transform.
 
-**Returns:** `Vec3` — The position in local space.
+**Returns:** `Vec3`
 
 ### `to_world(mat)` — function *(Advanced)*
 
@@ -251,7 +251,7 @@ Convert a local-space position into world space through mat.
 
 - `mat` (*Mat4*) — The reference transform.
 
-**Returns:** `Vec3` — The position in world space.
+**Returns:** `Vec3`
 
 ### `to_local_dir(mat)` — function *(Advanced)*
 
@@ -261,7 +261,7 @@ Convert a world-space direction into mat's local space, ignoring translation.
 
 - `mat` (*Mat4*) — The reference transform.
 
-**Returns:** `Vec3` — The direction in local space.
+**Returns:** `Vec3`
 
 ### `to_world_dir(mat)` — function *(Advanced)*
 
@@ -271,7 +271,7 @@ Convert a local-space direction into world space, ignoring translation.
 
 - `mat` (*Mat4*) — The reference transform.
 
-**Returns:** `Vec3` — The direction in world space.
+**Returns:** `Vec3`
 
 ## Mat4
 
@@ -693,7 +693,7 @@ Convert the rotation to Euler angles in degrees (same convention as Quat.from_eu
 
 Convert the rotation to an axis and an angle in degrees.
 
-**Returns:** `(Vec3, float)` — A tuple of the axis and the angle in degrees.
+**Returns:** `tuple[Vec3, float]` — A tuple of the axis and the angle in degrees.
 
 ### `slerp(other, t)` — function
 
@@ -704,7 +704,580 @@ Spherically interpolate toward another rotation.
 - `other` (*Quat*) — The target rotation.
 - `t` (*float*) — Interpolation factor from 0.0 to 1.0.
 
-**Returns:** `Quat` — The interpolated rotation.
+**Returns:** `Quat`
+
+## Node
+
+### `Node()` — class
+
+A scene-graph node. Subclass it and implement on_update / on_draw, instantiate Mesh assets with Node.from_mesh(), then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.
+
+**Example:**
+
+```python
+from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
+
+
+class Scene(Node):
+    def on_draw(self):
+        self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)
+
+
+scene = Scene()
+scene.shading = Shading(pyxel.colors)
+scene.camera = Camera()
+scene.camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO)
+```
+
+### `name` — variable
+
+Node name, searchable with find_by_name().
+
+- **Type:** `str`
+
+### `transform` — variable
+
+Local transform relative to the parent.
+
+- **Type:** `Mat4`
+
+### `active` — variable
+
+When False, stops update and collision for this node and its descendants.
+
+- **Type:** `bool`
+
+### `visible` — variable
+
+When False, stops drawing for this node and its descendants.
+
+- **Type:** `bool`
+
+### `opacity` — variable
+
+Dithered coverage, clamped to 0-1; defaults to 1. Multiplies ancestor opacity and each draw command's dither, including when drawing a subtree directly. Does not affect updates or collisions.
+
+- **Type:** `float`
+
+### `camera` — variable
+
+Camera used for drawing. None inherits from the closest ancestor that has one.
+
+- **Type:** `Camera | None`
+
+### `shading` — variable
+
+Face-brightness table used for drawing. None inherits from the closest ancestor that has one.
+
+- **Type:** `Shading | None`
+
+### `collider` — variable
+
+Collision shape and motion state. None keeps the node out of collision.
+
+- **Type:** `Collider | None`
+
+### `tags` — variable
+
+A set of tag strings. Edits apply directly to this node. Used by find_by_tags() and the tags filter of spatial queries.
+
+- **Type:** `set[str]`
+
+### `parent` — variable
+
+The parent node, or None for a root.
+
+- **Type:** `Node | None`
+
+### `children` — variable
+
+The child nodes as a tuple.
+
+- **Type:** `tuple`
+
+### `destroyed` — variable
+
+True once destroy() has been called. Remains True after the node is detached.
+
+- **Type:** `bool`
+
+### `forward` — variable
+
+The transform's forward direction (-Z axis) as a unit vector.
+
+- **Type:** `Vec3`
+
+### `right` — variable
+
+The transform's right direction (+X axis) as a unit vector.
+
+- **Type:** `Vec3`
+
+### `up` — variable
+
+The transform's up direction (+Y axis) as a unit vector.
+
+- **Type:** `Vec3`
+
+### `effective_camera` — variable *(Advanced)*
+
+This node's camera, or the camera of the closest ancestor that has one.
+
+- **Type:** `Camera | None`
+
+### `effective_shading` — variable *(Advanced)*
+
+This node's shading table, or the table of the closest ancestor that has one.
+
+- **Type:** `Shading | None`
+
+### `world_transform` — variable *(Advanced)*
+
+The world transform composed from the root down to this node.
+
+- **Type:** `Mat4`
+
+### `Node.from_mesh(mesh)` — class
+
+Create an independent model instance beneath a new identity placement root. Imported part transforms and motions never overwrite this root. Geometry and textures remain shared.
+
+**Parameters:**
+
+- `mesh` (*Mesh*) — The mesh asset to instantiate.
+
+**Returns:** `Node`
+
+### `add_child(node)` — function
+
+Add a node as a child. A node that already has a parent is reparented.
+
+**Parameters:**
+
+- `node` (*Node*) — The node to add.
+
+### `remove_child(node)` — function
+
+Remove a child node.
+
+**Parameters:**
+
+- `node` (*Node*) — The node to remove.
+
+### `destroy()` — function
+
+Flag this node and its descendants for destruction. At the end of update(), on_destroy() fires on each flagged node and it is detached from the tree.
+
+### `apply_motion(motion, frame, *, loop=True)` — function
+
+Sample a Motion at the given frame, replacing matching local part transforms in this subtree of the same model instance. Other parts and the placement root are unchanged.
+
+**Parameters:**
+
+- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
+- `frame` (*float*) — Frame to sample.
+- `loop` (*bool*) — When True, wrap the frame inside the clip length. Defaults to True.
+
+### `play_motion(motion, *, loop=True, speed=1.0, start_frame=0.0)` — function
+
+Start per-update playback of a Motion on this Node.from_mesh() subtree.
+
+**Parameters:**
+
+- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
+- `loop` (*bool*) — When True, wrap playback inside the clip length. Defaults to True.
+- `speed` (*float*) — Frames advanced per update. Defaults to 1.0.
+- `start_frame` (*float*) — Initial frame sampled when playback starts. Defaults to 0.0.
+
+**Note:** Each call restarts playback. Before sampling start_frame, restore the imported translation, rotation and scale of same-instance parts in this subtree targeted by any imported transform clip. This removes previous-clip poses while preserving never-animated parts, attached instances and placement. apply_motion does not perform this reset.
+
+### `stop_motion()` — function
+
+Stop Motion playback on this node.
+
+### `find_by_name(name)` — function
+
+Return every node in this subtree whose name matches.
+
+**Parameters:**
+
+- `name` (*str*) — The name to search for.
+
+**Returns:** `list`
+
+### `find_by_tags(tags)` — function
+
+Return every node in this subtree carrying any of the given tags.
+
+**Parameters:**
+
+- `tags` (*set[str]*) — Tags to search for.
+
+**Returns:** `list`
+
+### `on_update()` — function
+
+Per-frame update hook, called by update() in tree order. Override it in a subclass.
+
+### `on_draw()` — function
+
+Per-frame draw hook, called by draw() in tree order. Call draw commands from here.
+
+### `on_collide(other, contact)` — function
+
+Collision hook called by update(). A solid mesh can report multiple contacts with the same node; apply contact.depth and contact.delta_velocity in callback order. Triggers report once per contacting pair.
+
+**Parameters:**
+
+- `other` (*Node*) — The other node of the contact.
+- `contact` (*Contact*) — The contact information for this side.
+
+### `on_destroy()` — function
+
+Destruction hook, called once per node at the end of update(), just before detachment.
+
+### `dither(alpha)` — function
+
+Apply dithered transparency to the following draw commands in this on_draw. Resets to 1.0 at the start of every node's on_draw.
+
+**Parameters:**
+
+- `alpha` (*float*) — Opacity from 0.0 to 1.0.
+
+### `depth_test(on)` — function
+
+Toggle the depth test for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
+
+**Parameters:**
+
+- `on` (*bool*) — False draws over everything regardless of depth.
+
+### `depth_write(on)` — function *(Advanced)*
+
+Toggle depth-buffer writes for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
+
+**Parameters:**
+
+- `on` (*bool*) — False leaves the depth buffer untouched.
+
+### `depth_offset(offset)` — function *(Advanced)*
+
+Shift only the depth of the following draw commands along the view direction, in world units. Negative is toward the camera. The screen position and size never change. Resets to 0.0 at the start of every node's on_draw.
+
+**Parameters:**
+
+- `offset` (*float*) — Depth shift in world units. Negative is toward the camera.
+
+### `decal(distance)` — function *(Advanced)*
+
+Project shapes and images onto already drawn surfaces when drawing. Applies to rect(), elli(), and plane().
+
+**Parameters:**
+
+- `distance` (*float*) — Projection distance in local units, along mat's −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.
+
+**Note:** These draw filled planar shapes or images whose position and orientation are specified by a matrix. Borders draw lines and are not included. Other draw commands are unchanged.
+
+Paints already drawn, camera-visible surfaces within the projection range, without changing their depth. Draw receivers first; no collider is needed. Does not stop at the first surface along the projection direction. Dithering, shading, and colkey still apply; depth_test, depth_write, and depth_offset do not affect decal drawing. Resets at each node's on_draw entry.
+
+### `decal()` — function *(Advanced)*
+
+Restore normal drawing. Passing None has the same effect.
+
+### `shaded(on)` — function
+
+Toggle directional shading for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
+
+**Parameters:**
+
+- `on` (*bool*) — False draws with the base color only.
+
+### `pset(pos, col)` — function
+
+Draw a single pixel at a position.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Position in node-local coordinates.
+- `col` (*int*) — Color number.
+
+### `line(p1, p2, col)` — function
+
+Draw a 1-pixel-wide line segment.
+
+**Parameters:**
+
+- `p1` (*Vec3*) — Start position.
+- `p2` (*Vec3*) — End position.
+- `col` (*int*) — Color number.
+
+### `tri(p1, p2, p3, col)` — function
+
+Draw a filled triangle.
+
+**Parameters:**
+
+- `p1` (*Vec3*) — First vertex.
+- `p2` (*Vec3*) — Second vertex.
+- `p3` (*Vec3*) — Third vertex.
+- `col` (*int*) — Color number.
+
+### `trib(p1, p2, p3, col)` — function
+
+Draw a triangle outline.
+
+**Parameters:**
+
+- `p1` (*Vec3*) — First vertex.
+- `p2` (*Vec3*) — Second vertex.
+- `p3` (*Vec3*) — Third vertex.
+- `col` (*int*) — Color number.
+
+### `rect(mat, w, h, col)` — function
+
+Draw a filled rectangle of size w x h on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `rectb(mat, w, h, col)` — function
+
+Draw a rectangle outline on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `circ(pos, r, col)` — function
+
+Draw a filled circle that always faces the camera.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in world units.
+- `col` (*int*) — Color number.
+
+### `circb(pos, r, col)` — function
+
+Draw a circle outline that always faces the camera.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in world units.
+- `col` (*int*) — Color number.
+
+### `elli(mat, w, h, col)` — function
+
+Draw a filled ellipse of size w x h on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `ellib(mat, w, h, col)` — function
+
+Draw an ellipse outline on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `box(mat, size, col_img=7, *, colkey=None)` — function
+
+Draw a filled box. When col_img is an Image, every face is textured with the whole image.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `size` (*Vec3*) — Edge lengths along each axis.
+- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
+- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+
+**Example:**
+
+```python
+self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)
+```
+
+### `boxb(mat, size, col)` — function
+
+Draw the 12 edges of a box.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `size` (*Vec3*) — Edge lengths along each axis.
+- `col` (*int*) — Color number.
+
+### `sphere(pos, r, col_img=7, *, colkey=None)` — function
+
+Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in node-local units; the node's transform scales it.
+- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
+- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+
+### `sphereb(pos, r, col)` — function
+
+Draw the wireframe edges of a sphere.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in node-local units; the node's transform scales it.
+- `col` (*int*) — Color number.
+
+### `plane(mat, img, uvs, w, h, *, colkey=None)` — function
+
+Draw a textured rectangle of size w x h on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `img` (*Image*) — Texture image.
+- `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `colkey` (*int | None*) — Transparent color. Defaults to None.
+
+### `sprite(pos, img, uvs, w, h, *, colkey=None, rotate=0.0)` — function
+
+Draw a textured rectangle that always faces the camera. Sprites render unshaded.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `img` (*Image*) — Texture image.
+- `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
+- `w` (*float*) — Width in world units.
+- `h` (*float*) — Height in world units.
+- `colkey` (*int | None*) — Transparent color. Defaults to None.
+- `rotate` (*float*) — Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.
+
+### `prim(mat, primitive, col_img=7, *, colkey=None)` — function
+
+Draw a Primitive asset with its own mode and culling.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `primitive` (*Primitive*) — The vertex data to draw.
+- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
+- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+
+### `text(pos, s, col, *, font=None)` — function
+
+Draw a screen-space string centered at the projected position. Glyphs keep their pixel size at any distance; the depth test still applies.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Anchor position.
+- `s` (*str*) — The string to draw.
+- `col` (*int*) — Color number.
+- `font` (*Font | None*) — Font to use. Defaults to None (the built-in font).
+
+### `update()` — function
+
+Advance this subtree by one frame: on_update hooks, node motion playback, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.
+
+**Note:** on_update: At each hook traversal, visit the nodes present at its start at most once, in the original tree order. Check current subtree membership and ancestor active state before each call. Nodes added during that traversal join the next traversal; existing nodes enabled before their turn can run immediately.
+
+### `draw(x, y, w, h, target=None)` — function
+
+Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the entire target before rendering.
+
+**Parameters:**
+
+- `x` (*int*) — Left edge of the viewport.
+- `y` (*int*) — Top edge of the viewport.
+- `w` (*int*) — Viewport width in pixels.
+- `h` (*int*) — Viewport height in pixels.
+- `target` (*Image | None*) — Render target. Defaults to None (the screen).
+
+**Example:**
+
+```python
+scene.draw(0, 0, pyxel.width, pyxel.height)
+```
+
+**Note:** Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.
+
+### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
+
+Cast a ray against the colliders in this subtree and return the closest hit.
+
+**Parameters:**
+
+- `origin` (*Vec3*) — Ray origin in world space.
+- `direction` (*Vec3*) — Ray direction.
+- `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
+- `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `RaycastHit | None` — The closest hit, or None.
+
+**Example:**
+
+```python
+hit = scene.raycast(self.world_transform.pos, Vec3.DOWN, max_distance=2.0)
+```
+
+### `raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
+
+Cast a ray and return the nearest hit for each collider hit, sorted by distance.
+
+**Parameters:**
+
+- `origin` (*Vec3*) — Ray origin in world space.
+- `direction` (*Vec3*) — Ray direction.
+- `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
+- `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `list`
+
+### `overlap_sphere(center, radius, *, hit_triggers=False, tags=None)` — function
+
+Return every node in this subtree whose collider overlaps the given sphere.
+
+**Parameters:**
+
+- `center` (*Vec3*) — Sphere center in world space.
+- `radius` (*float*) — Sphere radius.
+- `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `list`
+
+### `overlap_box(mat, size, *, hit_triggers=False, tags=None)` — function
+
+Return every node in this subtree whose collider overlaps the given box.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — World-space translation, rotation and nonzero scale of the box. Scale is applied to size; reflections are supported. Sheared, non-affine or non-finite matrices raise ValueError.
+- `size` (*Vec3*) — Local edge lengths along each axis. Absolute values are used. Non-finite lengths or scaled dimensions raise ValueError.
+- `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `list`
 
 ## Camera
 
@@ -1060,7 +1633,7 @@ Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube p
 - `colkey` (*int | None*) — Transparent palette color for the imported texture. Defaults to None.
 - `fps` (*float*) — Frames per second used to convert glTF animation times into Pyxel frames. Defaults to 30.0.
 
-**Returns:** `Mesh` — The loaded mesh.
+**Returns:** `Mesh`
 
 **Example:**
 
@@ -1069,7 +1642,7 @@ mesh = Mesh.from_glb("actor.glb", colkey=0)
 actor = Node.from_mesh(mesh)
 ```
 
-**Note:** This targets Blockbench's GLTF Model export with Binary (.glb), embedded textures, and armature off; it is not a general glTF loader. Supported vertex attributes are POSITION, NORMAL, and TEXCOORD_0, and LINEAR, STEP, and CUBICSPLINE transform animation channels are supported. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted or collides with opaque pixels, an unused current palette color is selected when possible. Unsupported display features such as non-base-color material textures, alpha blending, skins, morph targets, material animation, matrix transforms, missing materials, and other vertex attributes print console warnings and fall back to the closest displayable base mesh or material. External files, invalid buffers, missing POSITION, missing TEXCOORD_0 for textured primitives, invalid indices, and malformed triangle data still raise errors.
+**Note:** This targets Blockbench's GLTF Model export with Binary (.glb), embedded textures, and armature off; it is not a general glTF loader. Supported vertex attributes are POSITION, NORMAL, and TEXCOORD_0, and LINEAR, STEP, and CUBICSPLINE transform animation channels are supported. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted or collides with opaque pixels, an unused current palette color is selected when possible. Unsupported display features such as non-base-color material textures, alpha blending, skins, morph targets, material animation, matrix transforms, missing materials, and other vertex attributes print console warnings and fall back to the closest displayable base mesh or material. External files, invalid buffers, missing POSITION, missing TEXCOORD_0 for textured primitives, invalid indices, non-triangle primitive modes, morph-target weight animations, and malformed triangle data still raise errors.
 
 ### `descendants(i)` — function *(Advanced)*
 
@@ -1079,7 +1652,7 @@ Return the indices of every part under part i.
 
 - `i` (*int*) — The root part index.
 
-**Returns:** `list` — Descendant part indices.
+**Returns:** `list`
 
 ## Motion
 
@@ -1309,576 +1882,3 @@ World-space surface normal. Points toward the ray origin for meshes, outward for
 The distance from the ray origin to the hit.
 
 - **Type:** `float`
-
-## Node
-
-### `Node()` — class
-
-A scene-graph node. Subclass it and implement on_update / on_draw, instantiate Mesh assets with Node.from_mesh(), then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.
-
-**Example:**
-
-```python
-from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
-
-
-class Scene(Node):
-    def on_draw(self):
-        self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)
-
-
-scene = Scene()
-scene.shading = Shading(pyxel.colors)
-scene.camera = Camera()
-scene.camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO)
-```
-
-### `name` — variable
-
-Node name, searchable with find_by_name().
-
-- **Type:** `str`
-
-### `transform` — variable
-
-Local transform relative to the parent.
-
-- **Type:** `Mat4`
-
-### `active` — variable
-
-When False, stops update and collision for this node and its descendants.
-
-- **Type:** `bool`
-
-### `visible` — variable
-
-When False, stops drawing for this node and its descendants.
-
-- **Type:** `bool`
-
-### `opacity` — variable
-
-Dithered coverage, clamped to 0-1; defaults to 1. Multiplies ancestor opacity and each draw command's dither, including when drawing a subtree directly. Does not affect updates or collisions.
-
-- **Type:** `float`
-
-### `camera` — variable
-
-Camera used for drawing. None inherits from the closest ancestor that has one.
-
-- **Type:** `Camera | None`
-
-### `shading` — variable
-
-Face-brightness table used for drawing. None inherits from the closest ancestor that has one.
-
-- **Type:** `Shading | None`
-
-### `collider` — variable
-
-Collision shape and motion state. None keeps the node out of collision.
-
-- **Type:** `Collider | None`
-
-### `tags` — variable
-
-A set of tag strings. Edits apply directly to this node. Used by find_by_tags() and the tags filter of spatial queries.
-
-- **Type:** `set[str]`
-
-### `parent` — variable
-
-The parent node, or None for a root.
-
-- **Type:** `Node | None`
-
-### `children` — variable
-
-The child nodes as a tuple.
-
-- **Type:** `tuple`
-
-### `destroyed` — variable
-
-True once destroy() has been called. Remains True after the node is detached.
-
-- **Type:** `bool`
-
-### `forward` — variable
-
-The transform's forward direction (-Z axis) as a unit vector.
-
-- **Type:** `Vec3`
-
-### `right` — variable
-
-The transform's right direction (+X axis) as a unit vector.
-
-- **Type:** `Vec3`
-
-### `up` — variable
-
-The transform's up direction (+Y axis) as a unit vector.
-
-- **Type:** `Vec3`
-
-### `effective_camera` — variable *(Advanced)*
-
-This node's camera, or the camera of the closest ancestor that has one.
-
-- **Type:** `Camera | None`
-
-### `effective_shading` — variable *(Advanced)*
-
-This node's shading table, or the table of the closest ancestor that has one.
-
-- **Type:** `Shading | None`
-
-### `world_transform` — variable *(Advanced)*
-
-The world transform composed from the root down to this node.
-
-- **Type:** `Mat4`
-
-### `Node.from_mesh(mesh)` — class
-
-Create an independent model instance beneath a new identity placement root. Imported part transforms and motions never overwrite this root. Geometry and textures remain shared.
-
-**Parameters:**
-
-- `mesh` (*Mesh*) — The mesh asset to instantiate.
-
-**Returns:** `Node` — The generated root node.
-
-### `add_child(node)` — function
-
-Add a node as a child. A node that already has a parent is reparented.
-
-**Parameters:**
-
-- `node` (*Node*) — The node to add.
-
-### `remove_child(node)` — function
-
-Remove a child node.
-
-**Parameters:**
-
-- `node` (*Node*) — The node to remove.
-
-### `destroy()` — function
-
-Flag this node and its descendants for destruction. At the end of update(), on_destroy() fires on each flagged node and it is detached from the tree.
-
-### `apply_motion(motion, frame, *, loop=True)` — function
-
-Sample a Motion at the given frame, replacing matching local part transforms in this subtree of the same model instance. Other parts and the placement root are unchanged.
-
-**Parameters:**
-
-- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
-- `frame` (*float*) — Frame to sample.
-- `loop` (*bool*) — When True, wrap the frame inside the clip length. Defaults to True.
-
-### `play_motion(motion, *, loop=True, speed=1.0, start_frame=0.0)` — function
-
-Start per-update playback of a Motion on this Node.from_mesh() subtree.
-
-**Parameters:**
-
-- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
-- `loop` (*bool*) — When True, wrap playback inside the clip length. Defaults to True.
-- `speed` (*float*) — Frames advanced per update. Defaults to 1.0.
-- `start_frame` (*float*) — Initial frame sampled when playback starts. Defaults to 0.0.
-
-**Note:** Each call restarts playback. Before sampling start_frame, restore the imported translation, rotation and scale of same-instance parts in this subtree targeted by any imported transform clip. This removes previous-clip poses while preserving never-animated parts, attached instances and placement. apply_motion does not perform this reset.
-
-### `stop_motion()` — function
-
-Stop Motion playback on this node.
-
-### `find_by_name(name)` — function
-
-Return every node in this subtree whose name matches.
-
-**Parameters:**
-
-- `name` (*str*) — The name to search for.
-
-**Returns:** `list` — The matching nodes.
-
-### `find_by_tags(tags)` — function
-
-Return every node in this subtree carrying any of the given tags.
-
-**Parameters:**
-
-- `tags` (*set[str]*) — Tags to search for.
-
-**Returns:** `list` — The matching nodes.
-
-### `on_update()` — function
-
-Per-frame update hook, called by update() in tree order. Override it in a subclass.
-
-### `on_draw()` — function
-
-Per-frame draw hook, called by draw() in tree order. Call draw commands from here.
-
-### `on_collide(other, contact)` — function
-
-Collision hook called by update(). A solid mesh can report multiple contacts with the same node; apply contact.depth and contact.delta_velocity in callback order. Triggers report once per contacting pair.
-
-**Parameters:**
-
-- `other` (*Node*) — The other node of the contact.
-- `contact` (*Contact*) — The contact information for this side.
-
-### `on_destroy()` — function
-
-Destruction hook, called once per node at the end of update(), just before detachment.
-
-### `dither(alpha)` — function
-
-Apply dithered transparency to the following draw commands in this on_draw. Resets to 1.0 at the start of every node's on_draw.
-
-**Parameters:**
-
-- `alpha` (*float*) — Opacity from 0.0 to 1.0.
-
-### `depth_test(on)` — function
-
-Toggle the depth test for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
-
-**Parameters:**
-
-- `on` (*bool*) — False draws over everything regardless of depth.
-
-### `depth_write(on)` — function *(Advanced)*
-
-Toggle depth-buffer writes for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
-
-**Parameters:**
-
-- `on` (*bool*) — False leaves the depth buffer untouched.
-
-### `depth_offset(offset)` — function *(Advanced)*
-
-Shift only the depth of the following draw commands along the view direction, in world units. Negative is toward the camera. The screen position and size never change. Resets to 0.0 at the start of every node's on_draw.
-
-**Parameters:**
-
-- `offset` (*float*) — Depth shift in world units. Negative is toward the camera.
-
-### `decal(distance)` — function *(Advanced)*
-
-Project shapes and images onto already drawn surfaces when drawing. Applies to rect(), elli(), and plane().
-
-**Parameters:**
-
-- `distance` (*float*) — Projection distance in local units, along mat's −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.
-
-**Note:** These draw filled planar shapes or images whose position and orientation are specified by a matrix. Borders draw lines and are not included. Other draw commands are unchanged.
-
-Paints already drawn, camera-visible surfaces within the projection range, without changing their depth. Draw receivers first; no collider is needed. Does not stop at the first surface along the projection direction. Dithering, shading, and colkey still apply; depth_test, depth_write, and depth_offset do not affect decal drawing. Resets at each node's on_draw entry.
-
-### `decal()` — function *(Advanced)*
-
-Restore normal drawing. Passing None has the same effect.
-
-### `shaded(on)` — function
-
-Toggle directional shading for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
-
-**Parameters:**
-
-- `on` (*bool*) — False draws with the base color only.
-
-### `pset(pos, col)` — function
-
-Draw a single pixel at a position.
-
-**Parameters:**
-
-- `pos` (*Vec3*) — Position in node-local coordinates.
-- `col` (*int*) — Color number.
-
-### `line(p1, p2, col)` — function
-
-Draw a 1-pixel-wide line segment.
-
-**Parameters:**
-
-- `p1` (*Vec3*) — Start position.
-- `p2` (*Vec3*) — End position.
-- `col` (*int*) — Color number.
-
-### `tri(p1, p2, p3, col)` — function
-
-Draw a filled triangle.
-
-**Parameters:**
-
-- `p1` (*Vec3*) — First vertex.
-- `p2` (*Vec3*) — Second vertex.
-- `p3` (*Vec3*) — Third vertex.
-- `col` (*int*) — Color number.
-
-### `trib(p1, p2, p3, col)` — function
-
-Draw a triangle outline.
-
-**Parameters:**
-
-- `p1` (*Vec3*) — First vertex.
-- `p2` (*Vec3*) — Second vertex.
-- `p3` (*Vec3*) — Third vertex.
-- `col` (*int*) — Color number.
-
-### `rect(mat, w, h, col)` — function
-
-Draw a filled rectangle of size w x h on mat's local XY plane.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width along mat's local X axis.
-- `h` (*float*) — Height along mat's local Y axis.
-- `col` (*int*) — Color number.
-
-### `rectb(mat, w, h, col)` — function
-
-Draw a rectangle outline on mat's local XY plane.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width along mat's local X axis.
-- `h` (*float*) — Height along mat's local Y axis.
-- `col` (*int*) — Color number.
-
-### `circ(pos, r, col)` — function
-
-Draw a filled circle that always faces the camera.
-
-**Parameters:**
-
-- `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in world units.
-- `col` (*int*) — Color number.
-
-### `circb(pos, r, col)` — function
-
-Draw a circle outline that always faces the camera.
-
-**Parameters:**
-
-- `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in world units.
-- `col` (*int*) — Color number.
-
-### `elli(mat, w, h, col)` — function
-
-Draw a filled ellipse of size w x h on mat's local XY plane.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width along mat's local X axis.
-- `h` (*float*) — Height along mat's local Y axis.
-- `col` (*int*) — Color number.
-
-### `ellib(mat, w, h, col)` — function
-
-Draw an ellipse outline on mat's local XY plane.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `w` (*float*) — Width along mat's local X axis.
-- `h` (*float*) — Height along mat's local Y axis.
-- `col` (*int*) — Color number.
-
-### `box(mat, size, col_img=7, *, colkey=None)` — function
-
-Draw a filled box. When col_img is an Image, every face is textured with the whole image.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `size` (*Vec3*) — Edge lengths along each axis.
-- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
-- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
-
-**Example:**
-
-```python
-self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)
-```
-
-### `boxb(mat, size, col)` — function
-
-Draw the 12 edges of a box.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `size` (*Vec3*) — Edge lengths along each axis.
-- `col` (*int*) — Color number.
-
-### `sphere(pos, r, col_img=7, *, colkey=None)` — function
-
-Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.
-
-**Parameters:**
-
-- `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in node-local units; the node's transform scales it.
-- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
-- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
-
-### `sphereb(pos, r, col)` — function
-
-Draw the wireframe edges of a sphere.
-
-**Parameters:**
-
-- `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in node-local units; the node's transform scales it.
-- `col` (*int*) — Color number.
-
-### `plane(mat, img, uvs, w, h, *, colkey=None)` — function
-
-Draw a textured rectangle of size w x h on mat's local XY plane.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `img` (*Image*) — Texture image.
-- `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
-- `w` (*float*) — Width along mat's local X axis.
-- `h` (*float*) — Height along mat's local Y axis.
-- `colkey` (*int | None*) — Transparent color. Defaults to None.
-
-### `sprite(pos, img, uvs, w, h, *, colkey=None, rotate=0.0)` — function
-
-Draw a textured rectangle that always faces the camera. Sprites render unshaded.
-
-**Parameters:**
-
-- `pos` (*Vec3*) — Center position.
-- `img` (*Image*) — Texture image.
-- `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
-- `w` (*float*) — Width in world units.
-- `h` (*float*) — Height in world units.
-- `colkey` (*int | None*) — Transparent color. Defaults to None.
-- `rotate` (*float*) — Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.
-
-### `prim(mat, primitive, col_img=7, *, colkey=None)` — function
-
-Draw a Primitive asset with its own mode and culling.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `primitive` (*Primitive*) — The vertex data to draw.
-- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
-- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
-
-### `text(pos, s, col, *, font=None)` — function
-
-Draw a screen-space string centered at the projected position. Glyphs keep their pixel size at any distance; the depth test still applies.
-
-**Parameters:**
-
-- `pos` (*Vec3*) — Anchor position.
-- `s` (*str*) — The string to draw.
-- `col` (*int*) — Color number.
-- `font` (*Font | None*) — Font to use. Defaults to None (the built-in font).
-
-### `update()` — function
-
-Advance this subtree by one frame: on_update hooks, node motion playback, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.
-
-**Note:** on_update: At each hook traversal, visit the nodes present at its start at most once, in the original tree order. Check current subtree membership and ancestor active state before each call. Nodes added during that traversal join the next traversal; existing nodes enabled before their turn can run immediately.
-
-### `draw(x, y, w, h, target=None)` — function
-
-Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the entire target before rendering.
-
-**Parameters:**
-
-- `x` (*int*) — Left edge of the viewport.
-- `y` (*int*) — Top edge of the viewport.
-- `w` (*int*) — Viewport width in pixels.
-- `h` (*int*) — Viewport height in pixels.
-- `target` (*Image | None*) — Render target. Defaults to None (the screen).
-
-**Example:**
-
-```python
-scene.draw(0, 0, pyxel.width, pyxel.height)
-```
-
-**Note:** Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.
-
-### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
-
-Cast a ray against the colliders in this subtree and return the closest hit.
-
-**Parameters:**
-
-- `origin` (*Vec3*) — Ray origin in world space.
-- `direction` (*Vec3*) — Ray direction.
-- `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
-- `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
-
-**Returns:** `RaycastHit | None` — The closest hit, or None.
-
-**Example:**
-
-```python
-hit = scene.raycast(self.world_transform.pos, Vec3.DOWN, max_distance=2.0)
-```
-
-### `raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
-
-Cast a ray and return every hit sorted by distance.
-
-**Parameters:**
-
-- `origin` (*Vec3*) — Ray origin in world space.
-- `direction` (*Vec3*) — Ray direction.
-- `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
-- `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
-
-**Returns:** `list` — Every hit sorted by distance.
-
-### `overlap_sphere(center, radius, *, hit_triggers=False, tags=None)` — function
-
-Return every node in this subtree whose collider overlaps the given sphere.
-
-**Parameters:**
-
-- `center` (*Vec3*) — Sphere center in world space.
-- `radius` (*float*) — Sphere radius.
-- `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
-
-**Returns:** `list` — The overlapping nodes.
-
-### `overlap_box(mat, size, *, hit_triggers=False, tags=None)` — function
-
-Return every node in this subtree whose collider overlaps the given box.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — World-space translation, rotation and nonzero scale of the box. Scale is applied to size; reflections are supported. Sheared, non-affine or non-finite matrices raise ValueError.
-- `size` (*Vec3*) — Local edge lengths along each axis. Absolute values are used. Non-finite lengths or scaled dimensions raise ValueError.
-- `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
-
-**Returns:** `list` — The overlapping nodes.

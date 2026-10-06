@@ -56,72 +56,7 @@
           <p class="body mt-2">${t("overview_beginner").replace("{0}", link("https://kitao.github.io/pyxel/web/user-guide/", t("base_guide")))}</p>`;
 
         const guide = data.guides.find((guide) => guide.language === lang);
-        document.getElementById("guide").innerHTML = guide
-          ? renderGuide(guide)
-          : `
-              <section class="card" id="s-getting-started"></section>
-              <section class="card" id="s-models"></section>
-              <section class="card" id="s-references"></section>
-              <section class="card" id="s-parts"></section>
-            `;
-
-        if (guide) {
-          setDocLang(lang);
-          hljs.highlightAll();
-          return;
-        }
-
-        document.getElementById("s-getting-started").innerHTML = `
-          <h2 class="section-title">${esc(t("start_title"))}</h2>
-          <p class="body">${esc(t("start_body"))}</p>
-          ${code(
-            `import pyxel
-from pyxel.cube import Camera, Mat4, Node, Vec3
-
-class Scene(Node):
-    def __init__(self):
-        super().__init__()
-        self.camera = Camera()
-        self.camera.transform = Mat4.look_at(Vec3(0.0, 78.0, 104.0), Vec3.ZERO)
-
-    def on_draw(self):
-        self.box(Mat4.IDENTITY, Vec3(26.0, 26.0, 26.0), 11)
-
-pyxel.init(200, 150)
-scene = Scene()
-
-def update():
-    scene.update()
-
-def draw():
-    scene.draw(0, 0, pyxel.width, pyxel.height)
-
-pyxel.run(update, draw)`,
-            "python",
-          )}`;
-
-        document.getElementById("s-models").innerHTML = `
-          <h2 class="section-title">${esc(t("models_title"))}</h2>
-          <p class="body">${t("models_palette").replace("{0}", link("https://kitao.github.io/pyxel/docs/pyxel.gpl", "pyxel.gpl"))}</p>
-          <ul class="list-disc pl-6 space-y-2 body mt-2">
-            <li>${esc(t("models_import"))}</li>
-            <li>${esc(t("models_edit"))}</li>
-            <li>${esc(t("models_export"))}</li>
-          </ul>`;
-
-        document.getElementById("s-references").innerHTML = `
-          <h2 class="section-title">${esc(t("references_title"))}</h2>
-          <p class="body">${t("references_body").replace("{0}", link("https://github.com/kitao/pyxel/tree/main/python/pyxel/examples/cube/tools", "Cube Model References"))}</p>
-          <p class="body mt-2">${esc(t("references_update"))}</p>`;
-
-        document.getElementById("s-parts").innerHTML = `
-          <h2 class="section-title">${esc(t("parts_title"))}</h2>
-          <p class="body">${esc(t("parts_open"))}</p>
-          <ul class="list-disc pl-6 space-y-2 body mt-2">
-            <li>${esc(t("parts_grid"))}</li>
-            <li>${esc(t("parts_join"))}</li>
-            <li>${esc(t("parts_collision"))}</li>
-          </ul>`;
+        document.getElementById("guide").innerHTML = renderGuide(guide);
 
         setDocLang(lang);
         hljs.highlightAll();

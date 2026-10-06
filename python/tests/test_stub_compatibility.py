@@ -92,6 +92,7 @@ def test_cube_stub_exposes_primitive_lists(tmp_path):
     source.write_text(
         "import pyxel\n"
         "from pyxel.cube import Primitive, Shading\n"
+        "\n"
         "primitive = Primitive(Primitive.MODE_TRIANGLES, [], [])\n"
         "positions: list[float] = primitive.positions\n"
         "indices: list[int] = primitive.indices\n"
@@ -171,8 +172,12 @@ def test_cube_stub_rejects_read_only_property_assignment(tmp_path):
     source = tmp_path / "invalid_cube_operations.py"
     source.write_text(
         "from pyxel.cube import (\n"
-        "    Mat4, Primitive, Quat, Vec3,\n"
+        "    Mat4,\n"
+        "    Primitive,\n"
+        "    Quat,\n"
+        "    Vec3,\n"
         ")\n"
+        "\n"
         "Vec3().x = 1.0\n"
         "Mat4().pos = Vec3.ZERO\n"
         "Quat().w = 0.0\n"
@@ -198,12 +203,13 @@ def test_cube_stub_accepts_tag_sets(tmp_path):
     source = tmp_path / "tag_sets.py"
     source.write_text(
         "from pyxel.cube import Mat4, Node, Vec3\n"
+        "\n"
         "node = Node()\n"
-        "node.tags = {'enemy', 'boss'}\n"
+        'node.tags = {"enemy", "boss"}\n'
         "tags: set[str] = node.tags\n"
-        "tags.add('flying')\n"
-        "tags.discard('boss')\n"
-        "node.tags |= {'visible'}\n"
+        'tags.add("flying")\n'
+        'tags.discard("boss")\n'
+        'node.tags |= {"visible"}\n'
         "node.find_by_tags(tags)\n"
         "node.raycast(Vec3.ZERO, Vec3.FORWARD, tags=tags)\n"
         "node.raycast_all(Vec3.ZERO, Vec3.FORWARD, tags=tags)\n"

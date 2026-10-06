@@ -1189,21 +1189,7 @@
             }
           ],
           "returns": {
-            "type": "str",
-            "description": {
-              "en": "Path to the user data directory",
-              "cn": "用户数据目录的路径",
-              "de": "Pfad zum Benutzerdatenverzeichnis",
-              "es": "Ruta al directorio de datos del usuario",
-              "fr": "Chemin du répertoire de données utilisateur",
-              "it": "Percorso della directory dati utente",
-              "ja": "ユーザーデータディレクトリのパス",
-              "ko": "사용자 데이터 디렉터리 경로",
-              "pt": "Caminho do diretório de dados do usuário",
-              "ru": "Путь к каталогу данных пользователя",
-              "tr": "Kullanıcı verileri dizininin yolu",
-              "uk": "Шлях до каталогу даних користувача"
-            }
+            "type": "str"
           },
           "examples": [
             "pyxel.user_data_dir(\"Takashi Kitao\", \"Pyxel Shooter\")"
@@ -1328,7 +1314,7 @@
         {
           "name": "screenshot",
           "type": "function",
-          "signature": "screenshot(filename=None, scale=2)",
+          "signature": "screenshot(filename=None, scale=None)",
           "description": {
             "en": "Take a screenshot.",
             "cn": "截取屏幕截图。",
@@ -1364,7 +1350,7 @@
             },
             {
               "name": "scale",
-              "type": "int",
+              "type": "int | None",
               "description": {
                 "en": "Scale factor. Defaults to capture_scale.",
                 "cn": "缩放倍率。默认为 capture_scale。",
@@ -1389,7 +1375,7 @@
         {
           "name": "screencast",
           "type": "function",
-          "signature": "screencast(filename=None, scale=2)",
+          "signature": "screencast(filename=None, scale=None)",
           "description": {
             "en": "Save the screen recording as a GIF file.",
             "cn": "保存屏幕录制为 GIF 文件。",
@@ -1425,7 +1411,7 @@
             },
             {
               "name": "scale",
-              "type": "int",
+              "type": "int | None",
               "description": {
                 "en": "Scale factor. Defaults to capture_scale.",
                 "cn": "缩放倍率。默认为 capture_scale。",
@@ -1740,21 +1726,7 @@
             }
           ],
           "returns": {
-            "type": "bool",
-            "description": {
-              "en": "True if pressed",
-              "cn": "按下时为 True",
-              "de": "True, wenn gedrückt",
-              "es": "True si está presionado",
-              "fr": "True si pressé",
-              "it": "True se premuto",
-              "ja": "押されていれば True",
-              "ko": "눌려 있으면 True",
-              "pt": "True se pressionado",
-              "ru": "True, если нажата",
-              "tr": "Basılıysa True",
-              "uk": "True, якщо натиснута"
-            }
+            "type": "bool"
           },
           "advanced": false
         },
@@ -1833,21 +1805,7 @@
             }
           ],
           "returns": {
-            "type": "bool",
-            "description": {
-              "en": "True if pressed in that frame",
-              "cn": "该帧按下时为 True",
-              "de": "True, wenn in dem Frame gedrückt",
-              "es": "True si se presionó en ese fotograma",
-              "fr": "True si pressé dans cette image",
-              "it": "True se premuto in quel frame",
-              "ja": "そのフレームで押されたら True",
-              "ko": "해당 프레임에서 눌렸으면 True",
-              "pt": "True se pressionado nesse quadro",
-              "ru": "True, если нажата в этом кадре",
-              "tr": "O karede basıldıysa True",
-              "uk": "True, якщо натиснута в цьому кадрі"
-            }
+            "type": "bool"
           },
           "advanced": false
         },
@@ -1890,21 +1848,7 @@
             }
           ],
           "returns": {
-            "type": "bool",
-            "description": {
-              "en": "True if released in that frame",
-              "cn": "该帧释放时为 True",
-              "de": "True, wenn in dem Frame losgelassen",
-              "es": "True si se soltó en ese fotograma",
-              "fr": "True si relâché dans cette image",
-              "it": "True se rilasciato in quel frame",
-              "ja": "そのフレームで離されたら True",
-              "ko": "해당 프레임에서 떼어졌으면 True",
-              "pt": "True se solto nesse quadro",
-              "ru": "True, если отпущена в этом кадре",
-              "tr": "O karede bırakıldıysa True",
-              "uk": "True, якщо відпущена в цьому кадрі"
-            }
+            "type": "bool"
           },
           "advanced": false
         },
@@ -1990,21 +1934,7 @@
             }
           ],
           "returns": {
-            "type": "int",
-            "description": {
-              "en": "Analog value of the key",
-              "cn": "按键的模拟值",
-              "de": "Analogwert der Taste",
-              "es": "Valor analógico de la tecla",
-              "fr": "Valeur analogique de la touche",
-              "it": "Valore analogico del tasto",
-              "ja": "キーのアナログ値",
-              "ko": "키의 아날로그 값",
-              "pt": "Valor analógico da tecla",
-              "ru": "Аналоговое значение клавиши",
-              "tr": "Tuşun analog değeri",
-              "uk": "Аналогове значення клавіші"
-            }
+            "type": "int"
           },
           "advanced": true
         },
@@ -3495,21 +3425,7 @@
             }
           ],
           "returns": {
-            "type": "int",
-            "description": {
-              "en": "Color of the pixel",
-              "cn": "像素的颜色",
-              "de": "Farbe des Pixels",
-              "es": "Color del píxel",
-              "fr": "Couleur du pixel",
-              "it": "Colore del pixel",
-              "ja": "ピクセルの色",
-              "ko": "픽셀의 색상",
-              "pt": "Cor do pixel",
-              "ru": "Цвет пикселя",
-              "tr": "Pikselin rengi",
-              "uk": "Колір пікселя"
-            }
+            "type": "int"
           },
           "advanced": false
         },
@@ -5263,7 +5179,7 @@
             },
             {
               "name": "pos",
-              "type": "(float, float, float)",
+              "type": "tuple[float, float, float]",
               "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
                 "cn": "相机位置 (x, y, z)。x, y 与 2D 坐标一致，z 为高度",
@@ -5281,7 +5197,7 @@
             },
             {
               "name": "rot",
-              "type": "(float, float, float)",
+              "type": "tuple[float, float, float]",
               "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
                 "cn": "旋转角度 (度)。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
@@ -5450,7 +5366,7 @@
             },
             {
               "name": "pos",
-              "type": "(float, float, float)",
+              "type": "tuple[float, float, float]",
               "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
                 "cn": "相机位置 (x, y, z)。x, y 与 2D 坐标一致，z 为高度",
@@ -5468,7 +5384,7 @@
             },
             {
               "name": "rot",
-              "type": "(float, float, float)",
+              "type": "tuple[float, float, float]",
               "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
                 "cn": "旋转角度 (度)。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
@@ -6585,21 +6501,7 @@
             }
           ],
           "returns": {
-            "type": "list[str]",
-            "description": {
-              "en": "List of MML strings",
-              "cn": "MML 字符串列表",
-              "de": "Liste von MML-Zeichenketten",
-              "es": "Lista de cadenas MML",
-              "fr": "Liste de chaînes MML",
-              "it": "Lista di stringhe MML",
-              "ja": "MML 文字列のリスト",
-              "ko": "MML 문자열 리스트",
-              "pt": "Lista de strings MML",
-              "ru": "Список строк MML",
-              "tr": "MML dizesi listesi",
-              "uk": "Список рядків MML"
-            }
+            "type": "list[str]"
           },
           "advanced": false
         }
@@ -6957,21 +6859,7 @@
             }
           ],
           "returns": {
-            "type": "int",
-            "description": {
-              "en": "Smallest integer >= x",
-              "cn": "不小于 x 的最小整数",
-              "de": "Kleinste Ganzzahl >= x",
-              "es": "Menor entero >= x",
-              "fr": "Plus petit entier >= x",
-              "it": "Intero più piccolo >= x",
-              "ja": "x 以上の最小の整数",
-              "ko": "x 이상의 최소 정수",
-              "pt": "Menor inteiro >= x",
-              "ru": "Наименьшее целое >= x",
-              "tr": "x'e eşit veya büyük en küçük tamsayı",
-              "uk": "Найменше ціле >= x"
-            }
+            "type": "int"
           },
           "advanced": false
         },
@@ -7014,21 +6902,7 @@
             }
           ],
           "returns": {
-            "type": "int",
-            "description": {
-              "en": "Largest integer <= x",
-              "cn": "不超过 x 的最大整数",
-              "de": "Größte Ganzzahl <= x",
-              "es": "Mayor entero <= x",
-              "fr": "Plus grand entier <= x",
-              "it": "Intero più grande <= x",
-              "ja": "x 以下の最大の整数",
-              "ko": "x 이하의 최대 정수",
-              "pt": "Maior inteiro <= x",
-              "ru": "Наибольшее целое <= x",
-              "tr": "x'e eşit veya küçük en büyük tamsayı",
-              "uk": "Найбільше ціле <= x"
-            }
+            "type": "int"
           },
           "advanced": false
         },
@@ -7107,21 +6981,7 @@
             }
           ],
           "returns": {
-            "type": "int | float",
-            "description": {
-              "en": "Clamped value",
-              "cn": "限制后的值",
-              "de": "Begrenzter Wert",
-              "es": "Valor limitado",
-              "fr": "Valeur bornée",
-              "it": "Valore limitato",
-              "ja": "範囲内に収めた値",
-              "ko": "클램프된 값",
-              "pt": "Valor limitado",
-              "ru": "Ограниченное значение",
-              "tr": "Sınırlanmış değer",
-              "uk": "Обмежене значення"
-            }
+            "type": "int | float"
           },
           "advanced": false
         },
@@ -7164,21 +7024,7 @@
             }
           ],
           "returns": {
-            "type": "int | float",
-            "description": {
-              "en": "Sign of the value (1, 0, or -1)",
-              "cn": "值的符号 (1, 0, -1)",
-              "de": "Vorzeichen des Werts (1, 0 oder -1)",
-              "es": "Signo del valor (1, 0 o -1)",
-              "fr": "Signe de la valeur (1, 0 ou -1)",
-              "it": "Segno del valore (1, 0 o -1)",
-              "ja": "値の符号 (1, 0, -1)",
-              "ko": "값의 부호 (1, 0 또는 -1)",
-              "pt": "Sinal do valor (1, 0 ou -1)",
-              "ru": "Знак значения (1, 0 или -1)",
-              "tr": "Değerin işareti (1, 0 veya -1)",
-              "uk": "Знак значення (1, 0 або -1)"
-            }
+            "type": "int | float"
           },
           "advanced": false
         },
@@ -7221,21 +7067,7 @@
             }
           ],
           "returns": {
-            "type": "float",
-            "description": {
-              "en": "Square root of x",
-              "cn": "x 的平方根",
-              "de": "Quadratwurzel von x",
-              "es": "Raíz cuadrada de x",
-              "fr": "Racine carrée de x",
-              "it": "Radice quadrata di x",
-              "ja": "x の平方根",
-              "ko": "x의 제곱근",
-              "pt": "Raiz quadrada de x",
-              "ru": "Квадратный корень из x",
-              "tr": "x'in karekökü",
-              "uk": "Квадратний корінь з x"
-            }
+            "type": "float"
           },
           "advanced": false
         },
@@ -7278,21 +7110,7 @@
             }
           ],
           "returns": {
-            "type": "float",
-            "description": {
-              "en": "Sine value",
-              "cn": "正弦值",
-              "de": "Sinuswert",
-              "es": "Valor del seno",
-              "fr": "Valeur du sinus",
-              "it": "Valore del seno",
-              "ja": "正弦の値",
-              "ko": "사인 값",
-              "pt": "Valor do seno",
-              "ru": "Значение синуса",
-              "tr": "Sinüs değeri",
-              "uk": "Значення синуса"
-            }
+            "type": "float"
           },
           "advanced": false
         },
@@ -7335,21 +7153,7 @@
             }
           ],
           "returns": {
-            "type": "float",
-            "description": {
-              "en": "Cosine value",
-              "cn": "余弦值",
-              "de": "Kosinuswert",
-              "es": "Valor del coseno",
-              "fr": "Valeur du cosinus",
-              "it": "Valore del coseno",
-              "ja": "余弦の値",
-              "ko": "코사인 값",
-              "pt": "Valor do cosseno",
-              "ru": "Значение косинуса",
-              "tr": "Kosinüs değeri",
-              "uk": "Значення косинуса"
-            }
+            "type": "float"
           },
           "advanced": false
         },
@@ -7528,21 +7332,7 @@
             }
           ],
           "returns": {
-            "type": "int",
-            "description": {
-              "en": "Random integer from a to b",
-              "cn": "a 到 b 的随机整数",
-              "de": "Zufällige Ganzzahl von a bis b",
-              "es": "Número entero aleatorio de a a b",
-              "fr": "Nombre entier aléatoire de a à b",
-              "it": "Numero intero casuale da a a b",
-              "ja": "a 以上 b 以下のランダムな整数",
-              "ko": "a에서 b 사이의 랜덤 정수",
-              "pt": "Número inteiro aleatório de a a b",
-              "ru": "Случайное целое число от a до b",
-              "tr": "a ile b arasında rastgele tamsayı",
-              "uk": "Випадкове ціле число від a до b"
-            }
+            "type": "int"
           },
           "advanced": false
         },
@@ -7603,21 +7393,7 @@
             }
           ],
           "returns": {
-            "type": "float",
-            "description": {
-              "en": "Random float from a to b",
-              "cn": "a 到 b 的随机浮点数",
-              "de": "Zufällige Gleitkommazahl von a bis b",
-              "es": "Número decimal aleatorio de a a b",
-              "fr": "Nombre décimal aléatoire de a à b",
-              "it": "Numero decimale casuale da a a b",
-              "ja": "a 以上 b 以下のランダムな小数",
-              "ko": "a에서 b 사이의 랜덤 부동소수점 수",
-              "pt": "Número decimal aleatório de a a b",
-              "ru": "Случайное дробное число от a до b",
-              "tr": "a ile b arasında rastgele ondalık sayı",
-              "uk": "Випадкове дробове число від a до b"
-            }
+            "type": "float"
           },
           "advanced": false
         },
@@ -7739,21 +7515,7 @@
             }
           ],
           "returns": {
-            "type": "float",
-            "description": {
-              "en": "Perlin noise value",
-              "cn": "Perlin 噪声值",
-              "de": "Perlin-Rauschwert",
-              "es": "Valor de ruido Perlin",
-              "fr": "Valeur de bruit Perlin",
-              "it": "Valore rumore Perlin",
-              "ja": "Perlin ノイズ値",
-              "ko": "Perlin 노이즈 값",
-              "pt": "Valor de ruído Perlin",
-              "ru": "Значение шума Перлина",
-              "tr": "Perlin gürültü değeri",
-              "uk": "Значення шуму Перліна"
-            }
+            "type": "float"
           },
           "advanced": false
         }
@@ -7833,21 +7595,7 @@
             }
           ],
           "returns": {
-            "type": "Font",
-            "description": {
-              "en": "New Font instance",
-              "cn": "新 Font 实例",
-              "de": "Neue Font-Instanz",
-              "es": "Nueva instancia Font",
-              "fr": "Nouvelle instance Font",
-              "it": "Nuova istanza Font",
-              "ja": "新しい Font インスタンス",
-              "ko": "새 Font 인스턴스",
-              "pt": "Nova instância Font",
-              "ru": "Новый экземпляр Font",
-              "tr": "Yeni Font örneği",
-              "uk": "Новий екземпляр Font"
-            }
+            "type": "Font"
           },
           "advanced": true
         },
@@ -7984,21 +7732,7 @@
             }
           ],
           "returns": {
-            "type": "Image",
-            "description": {
-              "en": "New Image instance",
-              "cn": "新 Image 实例",
-              "de": "Neue Image-Instanz",
-              "es": "Nueva instancia Image",
-              "fr": "Nouvelle instance Image",
-              "it": "Nuova istanza Image",
-              "ja": "新しい Image インスタンス",
-              "ko": "새 Image 인스턴스",
-              "pt": "Nova instância Image",
-              "ru": "Новый экземпляр Image",
-              "tr": "Yeni Image örneği",
-              "uk": "Новий екземпляр Image"
-            }
+            "type": "Image"
           },
           "advanced": true
         },
@@ -8059,21 +7793,7 @@
             }
           ],
           "returns": {
-            "type": "Image",
-            "description": {
-              "en": "Image instance from file",
-              "cn": "从文件创建的 Image 实例",
-              "de": "Image-Instanz aus Datei",
-              "es": "Instancia Image desde archivo",
-              "fr": "Instance Image depuis un fichier",
-              "it": "Istanza Image da file",
-              "ja": "ファイルから作成した Image インスタンス",
-              "ko": "파일로부터 생성된 Image 인스턴스",
-              "pt": "Instância Image a partir de arquivo",
-              "ru": "Экземпляр Image из файла",
-              "tr": "Dosyadan oluşturulan Image örneği",
-              "uk": "Екземпляр Image з файлу"
-            }
+            "type": "Image"
           },
           "advanced": true
         },
@@ -8355,21 +8075,7 @@
             }
           ],
           "returns": {
-            "type": "int",
-            "description": {
-              "en": "Color of the pixel",
-              "cn": "像素的颜色",
-              "de": "Farbe des Pixels",
-              "es": "Color del píxel",
-              "fr": "Couleur du pixel",
-              "it": "Colore del pixel",
-              "ja": "ピクセルの色",
-              "ko": "픽셀의 색상",
-              "pt": "Cor do pixel",
-              "ru": "Цвет пикселя",
-              "tr": "Pikselin rengi",
-              "uk": "Колір пікселя"
-            }
+            "type": "int"
           },
           "advanced": false
         },
@@ -8491,21 +8197,7 @@
             "uk": "Повертає вказівник на необроблені дані зображення у вигляді масиву ctypes c_uint8."
           },
           "returns": {
-            "type": "Any",
-            "description": {
-              "en": "Raw data pointer",
-              "cn": "原始数据指针",
-              "de": "Rohdatenzeiger",
-              "es": "Puntero a datos sin procesar",
-              "fr": "Pointeur de données brutes",
-              "it": "Puntatore ai dati grezzi",
-              "ja": "生データポインター",
-              "ko": "원시 데이터 포인터",
-              "pt": "Ponteiro de dados brutos",
-              "ru": "Указатель на необработанные данные",
-              "tr": "Ham veri işaretçisi",
-              "uk": "Вказівник на необроблені дані"
-            }
+            "type": "Any"
           },
           "advanced": true
         },
@@ -8664,21 +8356,7 @@
             }
           ],
           "returns": {
-            "type": "Tilemap",
-            "description": {
-              "en": "New Tilemap instance",
-              "cn": "新 Tilemap 实例",
-              "de": "Neue Tilemap-Instanz",
-              "es": "Nueva instancia Tilemap",
-              "fr": "Nouvelle instance Tilemap",
-              "it": "Nuova istanza Tilemap",
-              "ja": "新しい Tilemap インスタンス",
-              "ko": "새 Tilemap 인스턴스",
-              "pt": "Nova instância Tilemap",
-              "ru": "Новый экземпляр Tilemap",
-              "tr": "Yeni Tilemap örneği",
-              "uk": "Новий екземпляр Tilemap"
-            }
+            "type": "Tilemap"
           },
           "advanced": true
         },
@@ -8739,21 +8417,7 @@
             }
           ],
           "returns": {
-            "type": "Tilemap",
-            "description": {
-              "en": "Tilemap instance from TMX file",
-              "cn": "从 TMX 文件创建的 Tilemap 实例",
-              "de": "Tilemap-Instanz aus TMX-Datei",
-              "es": "Instancia Tilemap desde archivo TMX",
-              "fr": "Instance Tilemap depuis un fichier TMX",
-              "it": "Istanza Tilemap da file TMX",
-              "ja": "TMX ファイルから作成した Tilemap インスタンス",
-              "ko": "TMX 파일로부터 생성된 Tilemap 인스턴스",
-              "pt": "Instância Tilemap a partir de arquivo TMX",
-              "ru": "Экземпляр Tilemap из TMX-файла",
-              "tr": "TMX dosyasından oluşturulan Tilemap örneği",
-              "uk": "Екземпляр Tilemap з TMX-файлу"
-            }
+            "type": "Tilemap"
           },
           "advanced": true
         },
@@ -9357,21 +9021,7 @@
             "uk": "Повертає вказівник на необроблені дані тайлової карти у вигляді масиву ctypes c_uint16 (4 байти на тайл: image_tx, image_ty)."
           },
           "returns": {
-            "type": "Any",
-            "description": {
-              "en": "Raw data pointer",
-              "cn": "原始数据指针",
-              "de": "Rohdatenzeiger",
-              "es": "Puntero a datos sin procesar",
-              "fr": "Pointeur de données brutes",
-              "it": "Puntatore ai dati grezzi",
-              "ja": "生データポインター",
-              "ko": "원시 데이터 포인터",
-              "pt": "Ponteiro de dados brutos",
-              "ru": "Указатель на необработанные данные",
-              "tr": "Ham veri işaretçisi",
-              "uk": "Вказівник на необроблені дані"
-            }
+            "type": "Any"
           },
           "advanced": true
         }
@@ -9413,21 +9063,7 @@
             "uk": "Створює новий екземпляр Sound."
           },
           "returns": {
-            "type": "Sound",
-            "description": {
-              "en": "New Sound instance",
-              "cn": "新 Sound 实例",
-              "de": "Neue Sound-Instanz",
-              "es": "Nueva instancia Sound",
-              "fr": "Nouvelle instance de Sound",
-              "it": "Nuova istanza Sound",
-              "ja": "新しい Sound インスタンス",
-              "ko": "새 Sound 인스턴스",
-              "pt": "Nova instância Sound",
-              "ru": "Новый экземпляр Sound",
-              "tr": "Yeni Sound örneği",
-              "uk": "Новий екземпляр Sound"
-            }
+            "type": "Sound"
           },
           "advanced": true
         },
@@ -10117,21 +9753,7 @@
             "uk": "Створює новий екземпляр Music."
           },
           "returns": {
-            "type": "Music",
-            "description": {
-              "en": "New Music instance",
-              "cn": "新 Music 实例",
-              "de": "Neue Music-Instanz",
-              "es": "Nueva instancia Music",
-              "fr": "Nouvelle instance Music",
-              "it": "Nuova istanza Music",
-              "ja": "新しい Music インスタンス",
-              "ko": "새 Music 인스턴스",
-              "pt": "Nova instância Music",
-              "ru": "Новый экземпляр Music",
-              "tr": "Yeni Music örneği",
-              "uk": "Новий екземпляр Music"
-            }
+            "type": "Music"
           },
           "advanced": true
         },
@@ -10317,21 +9939,7 @@
             "uk": "Створює новий екземпляр Channel."
           },
           "returns": {
-            "type": "Channel",
-            "description": {
-              "en": "New Channel instance",
-              "cn": "新 Channel 实例",
-              "de": "Neue Channel-Instanz",
-              "es": "Nueva instancia Channel",
-              "fr": "Nouvelle instance Channel",
-              "it": "Nuova istanza Channel",
-              "ja": "新しい Channel インスタンス",
-              "ko": "새 Channel 인스턴스",
-              "pt": "Nova instância Channel",
-              "ru": "Новый экземпляр Channel",
-              "tr": "Yeni Channel örneği",
-              "uk": "Новий екземпляр Channel"
-            }
+            "type": "Channel"
           },
           "advanced": true
         },
@@ -10572,21 +10180,7 @@
             "uk": "Створює новий екземпляр Tone."
           },
           "returns": {
-            "type": "Tone",
-            "description": {
-              "en": "New Tone instance",
-              "cn": "新 Tone 实例",
-              "de": "Neue Tone-Instanz",
-              "es": "Nueva instancia Tone",
-              "fr": "Nouvelle instance Tone",
-              "it": "Nuova istanza Tone",
-              "ja": "新しい Tone インスタンス",
-              "ko": "새 Tone 인스턴스",
-              "pt": "Nova instância Tone",
-              "ru": "Новый экземпляр Tone",
-              "tr": "Yeni Tone örneği",
-              "uk": "Новий екземпляр Tone"
-            }
+            "type": "Tone"
           },
           "advanced": true
         },

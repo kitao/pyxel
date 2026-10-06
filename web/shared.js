@@ -253,6 +253,15 @@ const initPage = (jsonFile, buildFn) => {
       data = json;
       lang = detectLang(data.languages);
       buildFn();
+
+      const anchor = document.location?.hash.slice(1);
+      if (anchor) {
+        const target = document.getElementById(anchor);
+        if (target) {
+          if (target.tagName === "DETAILS") target.open = true;
+          target.scrollIntoView();
+        }
+      }
     })
     .catch((e) => console.error("Failed to load data:", e));
 };

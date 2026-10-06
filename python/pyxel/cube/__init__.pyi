@@ -239,7 +239,7 @@ class Mesh:
     transforms: list[Mat4]
     parents: list[int]  # -1 = root; parents[i] < i invariant
     names: list[str]
-    col_img: int | Image  # default flat color or texture
+    col_img: int | Image
     colkey: int | None  # transparent color when col_img is Image
 
     @property
@@ -328,7 +328,6 @@ class RaycastHit:
     def distance(self) -> float: ...
 
 class Node:
-    # Data attributes
     name: str
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision
@@ -340,7 +339,6 @@ class Node:
     collider: Collider | None
     tags: set[str]
 
-    # Properties
     @property
     def parent(self) -> Node | None: ...
     @property
@@ -353,7 +351,6 @@ class Node:
     def right(self) -> Vec3: ...
     @property
     def up(self) -> Vec3: ...
-    # Resolved values, including inheritance
     @property
     def effective_camera(self) -> Camera | None: ...
     @property
@@ -391,7 +388,7 @@ class Node:
     def on_collide(self, other: Node, contact: Contact) -> None: ...
     def on_destroy(self) -> None: ...
 
-    # Per-draw state setters; called from on_draw, reset at each Node's on_draw entry.
+    # Drawing state: set in on_draw, reset at each node's on_draw entry
     def dither(self, alpha: float) -> None: ...
     def depth_test(self, on: bool) -> None: ...
     def depth_write(self, on: bool) -> None: ...
@@ -403,13 +400,13 @@ class Node:
     def pset(self, pos: Vec3, col: int) -> None: ...
     def line(self, p1: Vec3, p2: Vec3, col: int) -> None: ...
 
-    # 2D polygons
+    # Polygons
     def tri(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
     def trib(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
     def rect(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
     def rectb(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
 
-    # 2D curves
+    # Curves
     def circ(self, pos: Vec3, r: float, col: int) -> None: ...
     def circb(self, pos: Vec3, r: float, col: int) -> None: ...
     def elli(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
@@ -468,7 +465,7 @@ class Node:
         rotate: float = 0.0,
     ) -> None: ...
 
-    # Asset-based
+    # Primitives and text
     def prim(
         self,
         mat: Mat4,
@@ -486,7 +483,7 @@ class Node:
         font: Font | None = None,
     ) -> None: ...
 
-    # Frame-level pipeline
+    # Update and draw
     def update(self) -> None: ...
     def draw(
         self,

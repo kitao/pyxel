@@ -372,6 +372,66 @@ test("initPage builds after a successful JSON response", async () => {
   assert.equal(context.lang, "en");
 });
 
+for (const tagName of ["SECTION", "DETAILS"]) {
+  test(`initPage reaches a linked ${tagName} created by the page builder`, async () => {
+    const events = [];
+    let target;
+    const context = loadShared({
+      document: {
+        location: { hash: "#linked-section" },
+        getElementById: (id) => {
+          assert.equal(id, "linked-section");
+          return target;
+        },
+      },
+      fetch: async () => ({
+        ok: true,
+        json: async () => ({ languages: [{ code: "en", name: "English" }] }),
+      }),
+    });
+
+    context.__test.initPage("data.json", () => {
+      events.push("build");
+      target = {
+        tagName,
+        open: false,
+        scrollIntoView() {
+          events.push("scroll");
+        },
+      };
+    });
+    assert.deepEqual(events, []);
+    await settlePromises();
+
+    assert.deepEqual(events, ["build", "scroll"]);
+    assert.equal(target.open, tagName === "DETAILS");
+  });
+}
+
+test("initPage leaves an absent fragment target alone", async () => {
+  let buildCount = 0;
+  const errors = [];
+  const context = loadShared({
+    console: { error: (...args) => errors.push(args) },
+    document: {
+      location: { hash: "#missing" },
+      getElementById: () => null,
+    },
+    fetch: async () => ({
+      ok: true,
+      json: async () => ({ languages: [{ code: "en", name: "English" }] }),
+    }),
+  });
+
+  context.__test.initPage("data.json", () => {
+    buildCount += 1;
+  });
+  await settlePromises();
+
+  assert.equal(buildCount, 1);
+  assert.deepEqual(errors, []);
+});
+
 test("initPage rejects an HTTP error before decoding JSON", async () => {
   let jsonCount = 0;
   let buildCount = 0;

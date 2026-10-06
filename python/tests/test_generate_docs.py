@@ -87,6 +87,141 @@ def test_string_concatenation_preserves_literal_contents(expression, expected):
     assert evaluator.eval(expression) == expected
 
 
+@pytest.mark.parametrize(
+    ("web_path", "url", "expected"),
+    [
+        (
+            "user-guide/cube",
+            "../#s-dist",
+            "https://kitao.github.io/pyxel/web/user-guide/#s-dist",
+        ),
+        (
+            "user-guide/cube",
+            "../../showcase/",
+            "https://kitao.github.io/pyxel/web/showcase/",
+        ),
+        (
+            "user-guide/cube",
+            "images/coordinates-en.svg",
+            "https://kitao.github.io/pyxel/web/user-guide/cube/images/coordinates-en.svg",
+        ),
+        (
+            "user-guide/cube",
+            "#s-models",
+            "https://kitao.github.io/pyxel/web/user-guide/cube/#s-models",
+        ),
+        ("user-guide/cube", "../../../docs/pyxel.gpl", "pyxel.gpl"),
+        ("user-guide", "../../docs/images/palette.png", "images/palette.png"),
+        (
+            "editor-manual",
+            "../api-reference/",
+            "https://kitao.github.io/pyxel/web/api-reference/",
+        ),
+        (
+            "user-guide/cube",
+            "https://example.com/model.glb",
+            "https://example.com/model.glb",
+        ),
+    ],
+)
+def test_relative_links_resolve_from_the_containing_page(web_path, url, expected):
+    generate_docs = _load_generate_docs()
+    assert generate_docs._transform_url(url, web_path) == expected
+
+
+def test_detailed_guide_selection_preserves_content(tmp_path):
+    generate_docs = _load_generate_docs()
+    generate_docs.ROOT_DIR = tmp_path
+    generate_docs.DOCS_DIR = tmp_path / "docs"
+    generate_docs.DOCS_DIR.mkdir()
+    html_path = tmp_path / "page.html"
+    html_path.write_text(
+        """function updateTexts() {
+          document.getElementById("overview").innerHTML = `<p>${t("intro")}</p>`;
+          const guide = data.guides.find((guide) => guide.language === lang);
+          document.getElementById("guide").innerHTML = renderGuide(guide);
+        }""",
+        encoding="utf-8",
+    )
+    program = 'def draw():\n    text = "<p>literal</p>"\n    return text'
+    guide = {
+        "language": "en",
+        "sections": [
+            {
+                "title": "Detailed guide",
+                "blocks": [
+                    {"text": "<h3>Subtopic</h3><h4>Detail</h4>"},
+                    {
+                        "text": '<ul><li><a href="../#s-dist">Package</a> <code>pyxel package</code></li></ul>'
+                    },
+                    {
+                        "text": "<table><tr><th>Asset</th><th>Setting</th></tr><tr><td>Motion</td><td>Enabled when animated</td></tr></table>"
+                    },
+                    {"text": '<img src="images/mesh.svg" alt="Mesh hierarchy">'},
+                    {"code": program, "syntax": "python"},
+                ],
+            }
+        ],
+    }
+    json_path = tmp_path / "page.json"
+    json_path.write_text(
+        json.dumps(
+            {
+                "ui": {"title": {"en": "Example"}, "intro": {"en": "Overview"}},
+                "guides": [guide],
+            }
+        ),
+        encoding="utf-8",
+    )
+    generate_docs.generate_from_html(html_path, json_path, "guide", "user-guide/cube")
+    result = (generate_docs.DOCS_DIR / "guide.md").read_text()
+    assert "Overview" in result
+    assert "## Detailed guide" in result
+    assert "### Subtopic\n" in result
+    assert "#### Detail\n" in result
+    assert (
+        "- [Package](https://kitao.github.io/pyxel/web/user-guide/#s-dist) `pyxel package`"
+        in result
+    )
+    assert (
+        "| Asset | Setting |\n| --- | --- |\n| Motion | Enabled when animated |"
+        in result
+    )
+    assert (
+        "![Mesh hierarchy](https://kitao.github.io/pyxel/web/user-guide/cube/images/mesh.svg)"
+        in result
+    )
+    assert f"```python\n{program}\n```" in result
+
+
+def test_linked_images_follow_the_existing_illustration_selection():
+    generate_docs = _load_generate_docs()
+    source = (
+        '<a href="https://example.com/book"><img src="../../docs/images/pyxel_book.png" alt="Book"></a>'
+        '<a href="../api-reference/"><img src="../../docs/images/palette.png" alt="Palette"></a>'
+        '<a href="../editor-manual/">Editor</a>'
+    )
+    result = generate_docs._html_to_markdown(source, "user-guide", "user-guide")
+    assert "example.com/book" not in result
+    assert "Book" not in result
+    assert (
+        "[![Palette](images/palette.png)](https://kitao.github.io/pyxel/web/api-reference/)"
+        in result
+    )
+    assert "[Editor](https://kitao.github.io/pyxel/web/editor-manual/)" in result
+
+
+def test_ordered_instructions_preserve_steps_and_inline_code():
+    generate_docs = _load_generate_docs()
+    result = generate_docs._html_to_markdown(
+        '<ol class="steps"><li>Open <code>model.bbmodel</code>.</li>'
+        "<li>Choose <strong>Export</strong>.</li></ol>",
+        "user-guide-cube",
+        "user-guide/cube",
+    )
+    assert result == "\n1. Open `model.bbmodel`.\n2. Choose **Export**.\n"
+
+
 def _load_generate_docs():
     loader = SourceFileLoader("generate_docs_test", str(MODULE_PATH))
     spec = importlib.util.spec_from_loader(loader.name, loader)

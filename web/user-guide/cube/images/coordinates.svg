@@ -6,9 +6,10 @@
  <g stroke="#94a3b8" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
   <path d="M160 220 H355" /><path d="M160 220 V60" /><path d="M160 220 L55 290" />
  </g>
- <text x="363" y="227">+X</text><text x="177" y="66">+Y</text><text x="28" y="313">+Z</text>
- <path d="M280 140 V220" stroke="#facc15" stroke-width="2" stroke-dasharray="5 5" />
- <circle cx="160" cy="220" r="5" fill="#fff" /><text x="169" y="244" font-size="16">原点</text>
- <circle cx="280" cy="140" r="6" fill="#facc15" /><text x="280" y="114" text-anchor="middle" fill="#facc15" font-size="17">(30, 20, 0)</text>
- <text x="210" y="323" text-anchor="middle" font-size="16" fill="#94a3b8">X・Z が地面、Y が高さ</text>
+ <text x="363" y="227">X</text><text x="177" y="66">Y</text><text x="28" y="313">Z</text>
+ <path d="M160 220 H280 L260 233.333 V153.333" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="5 5" />
+ <circle cx="260" cy="233.333" r="3" fill="#facc15" />
+ <text x="220" y="212" text-anchor="middle" fill="#facc15" font-size="15">30</text><text x="286" y="243" fill="#facc15" font-size="15">5</text><text x="271" y="198" fill="#facc15" font-size="15">20</text>
+ <circle cx="160" cy="220" r="5" fill="#fff" /><text x="169" y="244" font-size="16">O</text>
+ <circle cx="260" cy="153.333" r="6" fill="#facc15" /><text x="260" y="127.333" text-anchor="middle" fill="#facc15" font-size="17">(30, 20, 5)</text>
 </g></svg>

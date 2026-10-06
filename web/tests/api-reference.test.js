@@ -145,3 +145,43 @@ test("API reference restores the Advanced preference after reload", () => {
   second.change();
   assert.equal(loadToolbar().checked, false);
 });
+
+test("API categories expose stable targets for class links", () => {
+  const elements = new Map();
+  const app = { appendChild() {} };
+  const context = vm.createContext({
+    document: {
+      getElementById: (id) => (id === "app" ? app : elements.get(id)),
+      createElement: (tagName) => ({
+        tagName: tagName.toUpperCase(),
+        dataset: {},
+        set id(value) {
+          elements.set(value, this);
+        },
+        appendChild() {},
+        setAttribute() {},
+        addEventListener() {},
+      }),
+    },
+    localStorage: { getItem: () => null },
+    buildPageHeader() {},
+    buildVariantSwitch() {},
+  });
+  vm.runInContext(apiReferenceSource, context);
+  vm.runInContext(
+    `
+    data = { categories: [
+      { id: "vec3", items: [] },
+      { id: "camera", collapsed: true, items: [] },
+    ] };
+    cacheDomRefs = () => {};
+    updateTexts = () => {};
+    updateVisibility = () => {};
+    buildPage();
+  `,
+    context,
+  );
+  assert.ok(elements.has("vec3"));
+  assert.ok(elements.has("camera"));
+  assert.equal(elements.get("camera").open, false);
+});

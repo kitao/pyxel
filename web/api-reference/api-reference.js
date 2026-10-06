@@ -71,6 +71,7 @@ function buildPage() {
 
   for (const cat of data.categories) {
     const section = document.createElement("details");
+    section.id = cat.id;
     section.open = !cat.collapsed;
     section.className = "mt-6";
     section.dataset.catId = cat.id;

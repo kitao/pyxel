@@ -1451,18 +1451,18 @@
       "uk": "Подання запитів на витягування"
     },
     "contrib_pr_body": {
-      "en": "Patches and fixes are welcome as pull requests (PRs). Before submitting, check the Issue Tracker for related open or resolved issues.",
-      "cn": "欢迎通过拉取请求 (PR) 提交补丁和修复。提交前，请在问题跟踪器中查找相关的未解决或已解决问题。",
-      "de": "Patches und Fehlerbehebungen sind als Pull Requests (PRs) willkommen. Prüfen Sie vor dem Einreichen im Issue Tracker, ob es verwandte offene oder bereits gelöste Issues gibt.",
-      "es": "Los parches y correcciones son bienvenidos como solicitudes de extracción (PRs). Antes de enviarlos, consulte el Issue Tracker para comprobar si hay incidencias relacionadas, abiertas o resueltas.",
-      "fr": "Les correctifs et modifications sont les bienvenus sous forme de pull requests (PR). Avant de les soumettre, consultez l'Issue Tracker pour rechercher les problèmes connexes ouverts ou résolus.",
-      "it": "Patch e correzioni sono benvenuti sotto forma di pull request (PR). Prima di inviarli, controllare nell'Issue Tracker se esistono problemi correlati aperti o risolti.",
+      "en": "Patches and fixes are welcome as pull requests (PRs). Before submitting, check the Issue Tracker to see whether the issue has already been resolved.",
+      "cn": "欢迎通过拉取请求 (PR) 提交补丁和修复。提交前，请在问题跟踪器中确认问题是否已解决。",
+      "de": "Patches und Fehlerbehebungen sind als Pull Requests (PRs) willkommen. Prüfen Sie vor dem Einreichen im Issue Tracker, ob das Problem bereits gelöst wurde.",
+      "es": "Los parches y correcciones son bienvenidos como solicitudes de extracción (PRs). Antes de enviarlos, consulte el Issue Tracker para comprobar si el problema ya se ha resuelto.",
+      "fr": "Les correctifs et modifications sont les bienvenus sous forme de pull requests (PR). Avant de les soumettre, consultez l'Issue Tracker pour vérifier si le problème a déjà été résolu.",
+      "it": "Patch e correzioni sono benvenuti sotto forma di pull request (PR). Prima di inviarli, controllare nell'Issue Tracker se il problema è già stato risolto.",
       "ja": "パッチや修正はプルリクエスト (PR) として受け付けています。提出前に、問題がすでに解決済みでないか Issue Tracker で確認をお願いします。",
-      "ko": "패치와 수정 사항은 풀 리퀘스트(PR)로 제출해 주세요. 제출하기 전에 이슈 트래커에서 관련된 미해결 또는 해결된 이슈를 확인하세요.",
-      "pt": "Patches e correções são bem-vindos como pull requests (PRs). Antes de enviar, consulte o Rastreador de Problemas para verificar se há problemas relacionados, abertos ou resolvidos.",
-      "ru": "Патчи и исправления приветствуются в виде запросов на изменение (PR). Перед отправкой проверьте в Трекере проблем связанные открытые или решённые задачи.",
-      "tr": "Yama ve düzeltmeler pull isteği (PR) olarak memnuniyetle karşılanır. Göndermeden önce Sorun Takip Sistemi'nde ilgili açık veya çözülmüş sorunları kontrol edin.",
-      "uk": "Патчі та виправлення вітаються у вигляді запитів на витягування (PR). Перед надсиланням перевірте в Трекері проблем пов'язані відкриті або вирішені завдання."
+      "ko": "패치와 수정 사항은 풀 리퀘스트(PR)로 제출해 주세요. 제출하기 전에 이슈 트래커에서 문제가 이미 해결되었는지 확인해 주세요.",
+      "pt": "Patches e correções são bem-vindos como pull requests (PRs). Antes de enviar, consulte o Rastreador de Problemas para verificar se o problema já foi resolvido.",
+      "ru": "Патчи и исправления приветствуются в виде запросов на изменение (PR). Перед отправкой проверьте в Трекере проблем, не решена ли проблема уже.",
+      "tr": "Yama ve düzeltmeler pull isteği (PR) olarak memnuniyetle karşılanır. Göndermeden önce Sorun Takip Sistemi'nde sorunun daha önce çözülüp çözülmediğini kontrol edin.",
+      "uk": "Патчі та виправлення вітаються у вигляді запитів на витягування (PR). Перед надсиланням перевірте в Трекері проблем, чи проблему вже вирішено."
     },
     "contrib_pr_license": {
       "en": "Submitting a pull request implies that you agree to license your contribution under the {0}.",

@@ -200,3 +200,42 @@ class TestJsonFormatting:
             path.read_text(encoding="utf-8")
             == '{\n  "items": [\n    {"ja": "画面 640"},\n    {"ja": "画面 640"}\n  ]\n}\n'
         )
+
+
+def test_language_tagged_guides_preserve_code_and_untargeted_peers(tmp_path):
+    import json
+
+    prose = '<p data-label="Ａ（原文）">调用<code class="chip">f(Ａ)</code>（坐标）</p>'
+    document = {
+        "guides": [
+            {"language": "en", "sections": [{"title": "API指南", "text": prose}]},
+            {
+                "language": "cn",
+                "sections": [{"title": "API指南", "text": prose, "code": "f(Ａ)"}],
+            },
+        ]
+    }
+    path = tmp_path / "page.json"
+    path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n")
+
+    format_prose._format_json(path)
+
+    actual = json.loads(path.read_text())
+    assert actual["guides"][0] == document["guides"][0]
+    assert actual["guides"][1]["sections"] == [
+        {
+            "title": "API 指南",
+            "text": '<p data-label="Ａ（原文）">调用 <code class="chip">f(Ａ)</code> (坐标)</p>',
+            "code": "f(Ａ)",
+        }
+    ]
+    settled = path.read_bytes()
+    format_prose._format_json(path)
+    assert path.read_bytes() == settled
+
+
+def test_guide_markup_placeholder_collision_and_japanese_code_spacing():
+    text = "<p>\ue0000\ue000と<code>Ａ()</code>を使う</p>"
+    assert format_prose._format_guide_text(text, "ja") == (
+        "<p>\ue0000\ue000と <code>Ａ()</code> を使う</p>"
+    )
