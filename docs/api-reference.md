@@ -163,7 +163,7 @@ Return the user data directory created based on vendor_name and app_name. If the
 - `vendor_name` (*str*) — Vendor name
 - `app_name` (*str*) — Application name
 
-**Returns:** `str` — Path to the user data directory
+**Returns:** `str`
 
 **Example:**
 
@@ -183,23 +183,23 @@ Save the resource file (.pyxres). If an option is set to True, the corresponding
 - `exclude_sounds` (*bool*) — Exclude sounds. Defaults to False.
 - `exclude_musics` (*bool*) — Exclude music tracks. Defaults to False.
 
-### `screenshot(filename=None, scale=2)` — function *(Advanced)*
+### `screenshot(filename=None, scale=None)` — function *(Advanced)*
 
 Take a screenshot.
 
 **Parameters:**
 
 - `filename` (*str | None*) — File name. If omitted, saved to desktop.
-- `scale` (*int*) — Scale factor. Defaults to capture_scale.
+- `scale` (*int | None*) — Scale factor. Defaults to capture_scale.
 
-### `screencast(filename=None, scale=2)` — function *(Advanced)*
+### `screencast(filename=None, scale=None)` — function *(Advanced)*
 
 Save the screen recording as a GIF file.
 
 **Parameters:**
 
 - `filename` (*str | None*) — File name. If omitted, saved to desktop.
-- `scale` (*int*) — Scale factor. Defaults to capture_scale.
+- `scale` (*int | None*) — Scale factor. Defaults to capture_scale.
 
 ### `reset_screencast()` — function *(Advanced)*
 
@@ -267,7 +267,7 @@ Return True if the key is pressed, otherwise return False.
 
 - `key` (*int*) — Key code
 
-**Returns:** `bool` — True if pressed
+**Returns:** `bool`
 
 ### `btnp(key, hold=0, repeat=0)` — function
 
@@ -279,7 +279,7 @@ Return True if the key is pressed in that frame. When hold and repeat are specif
 - `hold` (*int*) — Frames to hold before repeat starts. Defaults to 0.
 - `repeat` (*int*) — Repeat interval in frames. If 0, no repeat.
 
-**Returns:** `bool` — True if pressed in that frame
+**Returns:** `bool`
 
 ### `btnr(key)` — function
 
@@ -289,7 +289,7 @@ Return True if the key is released in that frame, otherwise return False.
 
 - `key` (*int*) — Key code
 
-**Returns:** `bool` — True if released in that frame
+**Returns:** `bool`
 
 ### `mouse(visible)` — function
 
@@ -307,7 +307,7 @@ Return the analog value of the specified key (e.g., gamepad axis value).
 
 - `key` (*int*) — Key code
 
-**Returns:** `int` — Analog value of the key
+**Returns:** `int`
 
 ### `set_btn(key, state)` — function *(Advanced)*
 
@@ -535,7 +535,7 @@ Get the color of the pixel at (x, y). The coordinates are absolute and not affec
 - `x` (*float*) — X coordinate
 - `y` (*float*) — Y coordinate
 
-**Returns:** `int` — Color of the pixel
+**Returns:** `int`
 
 ### `pset(x, y, col)` — function
 
@@ -712,8 +712,8 @@ Draw the image bank img (0-2 or Image instance) with perspective projection onto
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
 - `img` (*int | Image*) — Image bank number (0-2) or Image instance
-- `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
-- `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
+- `pos` (*tuple[float, float, float]*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
+- `rot` (*tuple[float, float, float]*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
@@ -728,8 +728,8 @@ Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto t
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
 - `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
-- `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
-- `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
+- `pos` (*tuple[float, float, float]*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
+- `rot` (*tuple[float, float, float]*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
@@ -863,7 +863,7 @@ Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, ins
 - `seed` (*int*) — Random seed
 - `play` (*bool*) — Play the generated MML. Defaults to False.
 
-**Returns:** `list[str]` — List of MML strings
+**Returns:** `list[str]`
 
 ### Tone & Effect Constants
 
@@ -900,7 +900,7 @@ Return the smallest integer greater than or equal to x.
 
 - `x` (*float*) — Value
 
-**Returns:** `int` — Smallest integer >= x
+**Returns:** `int`
 
 ### `floor(x)` — function
 
@@ -910,7 +910,7 @@ Return the largest integer less than or equal to x.
 
 - `x` (*float*) — Value
 
-**Returns:** `int` — Largest integer <= x
+**Returns:** `int`
 
 ### `clamp(x, lower, upper)` — function
 
@@ -922,7 +922,7 @@ Return x clamped between lower and upper.
 - `lower` (*int | float*) — Minimum value
 - `upper` (*int | float*) — Maximum value
 
-**Returns:** `int | float` — Clamped value
+**Returns:** `int | float`
 
 ### `sgn(x)` — function
 
@@ -932,7 +932,7 @@ Return 1 when x is positive, 0 when it is 0, and -1 when it is negative.
 
 - `x` (*int | float*) — Value
 
-**Returns:** `int | float` — Sign of the value (1, 0, or -1)
+**Returns:** `int | float`
 
 ### `sqrt(x)` — function
 
@@ -942,7 +942,7 @@ Return the square root of x.
 
 - `x` (*float*) — Value
 
-**Returns:** `float` — Square root of x
+**Returns:** `float`
 
 ### `sin(deg)` — function
 
@@ -952,7 +952,7 @@ Return the sine of deg degrees.
 
 - `deg` (*float*) — Angle in degrees
 
-**Returns:** `float` — Sine value
+**Returns:** `float`
 
 ### `cos(deg)` — function
 
@@ -962,7 +962,7 @@ Return the cosine of deg degrees.
 
 - `deg` (*float*) — Angle in degrees
 
-**Returns:** `float` — Cosine value
+**Returns:** `float`
 
 ### `atan2(y, x)` — function
 
@@ -992,7 +992,7 @@ Return a random integer from a to b (inclusive).
 - `a` (*int*) — Minimum value (inclusive)
 - `b` (*int*) — Maximum value (inclusive)
 
-**Returns:** `int` — Random integer from a to b
+**Returns:** `int`
 
 ### `rndf(a, b)` — function
 
@@ -1003,7 +1003,7 @@ Return a random float from a to b (inclusive).
 - `a` (*float*) — Minimum value (inclusive)
 - `b` (*float*) — Maximum value (inclusive)
 
-**Returns:** `float` — Random float from a to b
+**Returns:** `float`
 
 ### `nseed(seed)` — function
 
@@ -1023,7 +1023,7 @@ Return the Perlin noise value for the specified coordinates.
 - `y` (*float*) — Y coordinate. Defaults to 0.
 - `z` (*float*) — Z coordinate. Defaults to 0.
 
-**Returns:** `float` — Perlin noise value
+**Returns:** `float`
 
 ## Font Class
 
@@ -1036,7 +1036,7 @@ Create a Font instance from a font file (BDF/OTF/TTF/TTC).
 - `filename` (*str*) — Font file name (BDF/OTF/TTF/TTC)
 - `font_size` (*float*) — Font size. Defaults to 10.0. Not used for BDF.
 
-**Returns:** `Font` — New Font instance
+**Returns:** `Font`
 
 ### `Font.text_width(s)` — function *(Advanced)*
 
@@ -1059,7 +1059,7 @@ Create a new Image instance with the specified size.
 - `width` (*int*) — Image width
 - `height` (*int*) — Image height
 
-**Returns:** `Image` — New Image instance
+**Returns:** `Image`
 
 ### `Image.from_image(filename, include_colors=False)` — class *(Advanced)*
 
@@ -1070,7 +1070,7 @@ Create an Image instance from an image file.
 - `filename` (*str*) — Image file name
 - `include_colors` (*bool*) — Include palette colors from file. Defaults to False.
 
-**Returns:** `Image` — Image instance from file
+**Returns:** `Image`
 
 ### `Image.width` — variable
 
@@ -1120,7 +1120,7 @@ Get the color of the pixel at (x, y). The coordinates are absolute and not affec
 - `x` (*float*) — X coordinate
 - `y` (*float*) — Y coordinate
 
-**Returns:** `int` — Color of the pixel
+**Returns:** `int`
 
 ### `Image.pset(x, y, col)` — function
 
@@ -1140,7 +1140,7 @@ Image instances support all drawing functions from the Graphics section. They wo
 
 Return the raw data pointer of the image as a ctypes c_uint8 array.
 
-**Returns:** `Any` — Raw data pointer
+**Returns:** `Any`
 
 ### `Image.save(filename, scale)` — function *(Advanced)*
 
@@ -1163,7 +1163,7 @@ Create a new Tilemap instance.
 - `height` (*int*) — Tilemap height
 - `img` (*int | Image*) — Image bank number (0-2) or Image instance
 
-**Returns:** `Tilemap` — New Tilemap instance
+**Returns:** `Tilemap`
 
 ### `Tilemap.from_tmx(filename, layer)` — class *(Advanced)*
 
@@ -1174,7 +1174,7 @@ Create a Tilemap instance from a TMX file.
 - `filename` (*str*) — TMX file name
 - `layer` (*int*) — Zero-based layer number
 
-**Returns:** `Tilemap` — Tilemap instance from TMX file
+**Returns:** `Tilemap`
 
 ### `Tilemap.width` — variable
 
@@ -1266,7 +1266,7 @@ Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle
 
 Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
 
-**Returns:** `Any` — Raw data pointer
+**Returns:** `Any`
 
 ## Sound Class
 
@@ -1274,7 +1274,7 @@ Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes p
 
 Create a new Sound instance.
 
-**Returns:** `Sound` — New Sound instance
+**Returns:** `Sound`
 
 ### `Sound.notes` — variable
 
@@ -1432,7 +1432,7 @@ Return the playback time in seconds. Return None for infinite loops.
 
 Create a new Music instance.
 
-**Returns:** `Music` — New Music instance
+**Returns:** `Music`
 
 ### `Music.seqs` — variable
 
@@ -1470,7 +1470,7 @@ Create a WAV file from the music with the specified duration in seconds.
 
 Create a new Channel instance.
 
-**Returns:** `Channel` — New Channel instance
+**Returns:** `Channel`
 
 ### `Channel.gain` — variable *(Advanced)*
 
@@ -1511,7 +1511,7 @@ Get the playback position as a tuple of (sound_index, sec). Return None when pla
 
 Create a new Tone instance.
 
-**Returns:** `Tone` — New Tone instance
+**Returns:** `Tone`
 
 ### `Tone.mode` — variable *(Advanced)*
 

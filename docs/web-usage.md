@@ -12,10 +12,10 @@ There are four ways to use Pyxel for Web.
 
 | Method | Description |
 | --- | --- |
-| Pyxel Code Maker | An online development environment for writing and running code in the browser |
-| Pyxel Web Launcher | Run a GitHub repository in the browser by specifying its URL |
-| app2html Command | Convert a Pyxel application file (.pyxapp) to an HTML file |
-| HTML Custom Elements | Add HTML custom elements to run Pyxel apps on any HTML page |
+| [Pyxel Code Maker](https://kitao.github.io/pyxel/web/web-usage/#s-code-maker) | An online development environment for writing and running code in the browser |
+| [Pyxel Web Launcher](https://kitao.github.io/pyxel/web/web-usage/#s-launcher) | Run a GitHub repository in the browser by specifying its URL |
+| [app2html Command](https://kitao.github.io/pyxel/web/web-usage/#s-app2html) | Convert a Pyxel application file (.pyxapp) to an HTML file |
+| [HTML Custom Elements](https://kitao.github.io/pyxel/web/web-usage/#s-custom-elements) | Add HTML custom elements to run Pyxel apps on any HTML page |
 
 ## Pyxel Code Maker
 

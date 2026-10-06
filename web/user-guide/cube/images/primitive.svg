@@ -1,11 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="420" height="230" viewBox="0 0 420 230" role="img">
-<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="#e5e7eb"/></marker></defs>
-<rect width="420" height="230" rx="12" fill="#111827"/>
-<g font-family="system-ui, sans-serif" fill="#e5e7eb" font-size="16" text-anchor="middle">
- <text x="210" y="30">頂点を動かすと、形が変わる</text>
- <g stroke="#9bdac2" stroke-width="2"><path d="M42 103 H150 L42 183 Z" fill="#65b68d"/><path d="M150 103 V183 H42 Z" fill="#418064"/><path d="M262 63 L370 103 L262 183 Z" fill="#65b68d"/><path d="M370 103 V183 H262 Z" fill="#418064"/></g>
- <g fill="#f4b860"><circle cx="42" cy="103" r="4"/><circle cx="262" cy="63" r="4"/></g>
- <path d="M174 141 H235" fill="none" stroke="#e5e7eb" stroke-width="2" marker-end="url(#arrow)"/>
- <text x="96" y="213">元の板</text><text x="316" y="213">左上の頂点を上へ</text>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="240" viewBox="0 0 420 240" role="img">
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <path d="M0 0 L7 3.5 L0 7" fill="#eeeeee"/>
+    </marker>
+  </defs>
+  <rect width="420" height="240" rx="12" fill="#111827"/>
+  <g fill="#586b81" stroke="#eeeeee" stroke-width="2" stroke-linejoin="round">
+    <path d="M36 100 H132 V196 H36 Z"/>
+    <path d="M288 52 L384 100 V196 H288 Z"/>
+  </g>
+  <g fill="none" stroke="#eeeeee" stroke-width="2">
+    <path d="M132 100 L36 196 M384 100 L288 196"/>
+    <path d="M164 160 H240" marker-end="url(#arrow)"/>
+  </g>
+  <g fill="#111827" stroke="#eeeeee" stroke-width="2">
+    <circle cx="132" cy="100" r="4"/>
+    <circle cx="36" cy="196" r="4"/>
+    <circle cx="132" cy="196" r="4"/>
+    <circle cx="384" cy="100" r="4"/>
+    <circle cx="288" cy="196" r="4"/>
+    <circle cx="384" cy="196" r="4"/>
+  </g>
+  <g fill="#eeeeee">
+    <circle cx="36" cy="100" r="7"/>
+    <circle cx="288" cy="52" r="7"/>
+  </g>
+  <g fill="#eeeeee" font-family="system-ui, sans-serif" font-size="15">
+    <text x="16" y="78">(-10, 10, 0)</text>
+    <text x="270" y="26">(-10, 20, 0)</text>
+  </g>
 </svg>

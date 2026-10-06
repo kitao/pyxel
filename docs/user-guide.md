@@ -307,7 +307,7 @@ Anyone who manually tests the code and reports bugs or suggestions for enhanceme
 
 ### Submitting Pull Requests
 
-Patches and fixes are welcome as pull requests (PRs). Before submitting, check the Issue Tracker for related open or resolved issues.
+Patches and fixes are welcome as pull requests (PRs). Before submitting, check the Issue Tracker to see whether the issue has already been resolved.
 
 Submitting a pull request implies that you agree to license your contribution under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE).
 

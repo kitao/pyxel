@@ -380,9 +380,6 @@ class Font:
         Args:
             filename: Font file name (BDF/OTF/TTF/TTC)
             font_size: Font size. Defaults to 10.0. Not used for BDF.
-
-        Returns:
-            New Font instance
         """
     def text_width(self, s: str) -> int:
         """Return the display width of the string s in this font.
@@ -408,9 +405,6 @@ class Image:
         Args:
             width: Image width
             height: Image height
-
-        Returns:
-            New Image instance
         """
     @staticmethod
     def from_image(
@@ -422,16 +416,9 @@ class Image:
         Args:
             filename: Image file name
             include_colors: Include palette colors from file. Defaults to False.
-
-        Returns:
-            Image instance from file
         """
     def data_ptr(self) -> Any:
-        """Return the raw data pointer of the image as a ctypes c_uint8 array.
-
-        Returns:
-            Raw data pointer
-        """
+        """Return the raw data pointer of the image as a ctypes c_uint8 array."""
     def set(self, x: int, y: int, data: list[str]) -> None:
         """Set the image at (x, y) using a list of hex-digit strings. Each character represents a color index (0-f).
 
@@ -521,9 +508,6 @@ class Image:
         Args:
             x: X coordinate
             y: Y coordinate
-
-        Returns:
-            Color of the pixel
         """
     def pset(self, x: float, y: float, col: int) -> None:
         """Draw a pixel with the color col at (x, y).
@@ -771,9 +755,6 @@ class Tilemap:
             width: Tilemap width
             height: Tilemap height
             img: Image bank number (0-2) or Image instance
-
-        Returns:
-            New Tilemap instance
         """
     @staticmethod
     def from_tmx(filename: str, layer: int) -> Tilemap:
@@ -782,16 +763,9 @@ class Tilemap:
         Args:
             filename: TMX file name
             layer: Zero-based layer number
-
-        Returns:
-            Tilemap instance from TMX file
         """
     def data_ptr(self) -> Any:
-        """Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
-
-        Returns:
-            Raw data pointer
-        """
+        """Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty)."""
     def set(self, x: int, y: int, data: list[str]) -> None:
         """Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.
 
@@ -1051,11 +1025,7 @@ class Channel:
     """Pitch detune in cents (100 cents = 1 semitone). Defaults to 0."""
 
     def __init__(self) -> None:
-        """Create a new Channel instance.
-
-        Returns:
-            New Channel instance
-        """
+        """Create a new Channel instance."""
     def play(
         self,
         snd: int | list[int] | Sound | list[Sound] | str,
@@ -1092,11 +1062,7 @@ class Tone:
     """Tone gain. Defaults to 1.0."""
 
     def __init__(self) -> None:
-        """Create a new Tone instance.
-
-        Returns:
-            New Tone instance
-        """
+        """Create a new Tone instance."""
 
 class Sound:
     @property
@@ -1115,11 +1081,7 @@ class Sound:
     """Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, one note equals 1 second."""
 
     def __init__(self) -> None:
-        """Create a new Sound instance.
-
-        Returns:
-            New Sound instance
-        """
+        """Create a new Sound instance."""
     def set(
         self,
         notes: str,
@@ -1212,11 +1174,7 @@ class Music:
         """A two-dimensional list of sounds (0-63) across multiple channels."""
 
     def __init__(self) -> None:
-        """Create a new Music instance.
-
-        Returns:
-            New Music instance
-        """
+        """Create a new Music instance."""
     def set(
         self,
         *seqs: list[int],
@@ -1398,7 +1356,7 @@ def save_pal(filename: str) -> None:
         filename: Palette file name
     """
 
-def screenshot(filename: str | None = None, scale: int = 2) -> None:
+def screenshot(filename: str | None = None, scale: int | None = None) -> None:
     """Take a screenshot.
 
     Args:
@@ -1406,7 +1364,7 @@ def screenshot(filename: str | None = None, scale: int = 2) -> None:
         scale: Scale factor. Defaults to capture_scale.
     """
 
-def screencast(filename: str | None = None, scale: int = 2) -> None:
+def screencast(filename: str | None = None, scale: int | None = None) -> None:
     """Save the screen recording as a GIF file.
 
     Args:
@@ -1423,9 +1381,6 @@ def user_data_dir(vendor_name: str, app_name: str) -> str:
     Args:
         vendor_name: Vendor name
         app_name: Application name
-
-    Returns:
-        Path to the user data directory
 
     Example::
         pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter")
@@ -1450,9 +1405,6 @@ def btn(key: int) -> bool:
 
     Args:
         key: Key code
-
-    Returns:
-        True if pressed
     """
 
 def btnp(key: int, hold: int = 0, repeat: int = 0) -> bool:
@@ -1462,9 +1414,6 @@ def btnp(key: int, hold: int = 0, repeat: int = 0) -> bool:
         key: Key code
         hold: Frames to hold before repeat starts. Defaults to 0.
         repeat: Repeat interval in frames. If 0, no repeat.
-
-    Returns:
-        True if pressed in that frame
     """
 
 def btnr(key: int) -> bool:
@@ -1472,9 +1421,6 @@ def btnr(key: int) -> bool:
 
     Args:
         key: Key code
-
-    Returns:
-        True if released in that frame
     """
 
 def btnv(key: int) -> int:
@@ -1482,9 +1428,6 @@ def btnv(key: int) -> int:
 
     Args:
         key: Key code
-
-    Returns:
-        Analog value of the key
     """
 
 def mouse(visible: bool) -> None:
@@ -1606,9 +1549,6 @@ def pget(x: float, y: float) -> int:
     Args:
         x: X coordinate
         y: Y coordinate
-
-    Returns:
-        Color of the pixel
     """
 
 def pset(x: float, y: float, col: int) -> None:
@@ -1933,9 +1873,6 @@ def gen_bgm(
         instr: Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch).
         seed: Random seed
         play: Play the generated MML. Defaults to False.
-
-    Returns:
-        List of MML strings
     """
 
 # Math
@@ -1944,9 +1881,6 @@ def ceil(x: float) -> int:
 
     Args:
         x: Value
-
-    Returns:
-        Smallest integer >= x
     """
 
 def floor(x: float) -> int:
@@ -1954,9 +1888,6 @@ def floor(x: float) -> int:
 
     Args:
         x: Value
-
-    Returns:
-        Largest integer <= x
     """
 
 def clamp(x: float, lower: float, upper: float) -> int | float:
@@ -1966,9 +1897,6 @@ def clamp(x: float, lower: float, upper: float) -> int | float:
         x: Value to clamp
         lower: Minimum value
         upper: Maximum value
-
-    Returns:
-        Clamped value
     """
 
 def sgn(x: float) -> int | float:
@@ -1976,9 +1904,6 @@ def sgn(x: float) -> int | float:
 
     Args:
         x: Value
-
-    Returns:
-        Sign of the value (1, 0, or -1)
     """
 
 def sqrt(x: float) -> float:
@@ -1986,9 +1911,6 @@ def sqrt(x: float) -> float:
 
     Args:
         x: Value
-
-    Returns:
-        Square root of x
     """
 
 def sin(deg: float) -> float:
@@ -1996,9 +1918,6 @@ def sin(deg: float) -> float:
 
     Args:
         deg: Angle in degrees
-
-    Returns:
-        Sine value
     """
 
 def cos(deg: float) -> float:
@@ -2006,9 +1925,6 @@ def cos(deg: float) -> float:
 
     Args:
         deg: Angle in degrees
-
-    Returns:
-        Cosine value
     """
 
 def atan2(y: float, x: float) -> float:
@@ -2035,9 +1951,6 @@ def rndi(a: int, b: int) -> int:
     Args:
         a: Minimum value (inclusive)
         b: Maximum value (inclusive)
-
-    Returns:
-        Random integer from a to b
     """
 
 def rndf(a: float, b: float) -> float:
@@ -2046,9 +1959,6 @@ def rndf(a: float, b: float) -> float:
     Args:
         a: Minimum value (inclusive)
         b: Maximum value (inclusive)
-
-    Returns:
-        Random float from a to b
     """
 
 def nseed(seed: int) -> None:
@@ -2065,7 +1975,4 @@ def noise(x: float, y: float = 0, z: float = 0) -> float:
         x: X coordinate
         y: Y coordinate. Defaults to 0.
         z: Z coordinate. Defaults to 0.
-
-    Returns:
-        Perlin noise value
     """

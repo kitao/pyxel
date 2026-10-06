@@ -5,6 +5,7 @@ import json
 import re
 import subprocess
 from pathlib import Path
+from urllib.parse import urljoin
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "web"
@@ -586,10 +587,21 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     ev.extract_variables(body)
 
     lines = []
+    guide = next(
+        (guide for guide in data.get("guides", []) if guide["language"] == "en"),
+        None,
+    )
+    guide_match = re.search(
+        r'document\.getElementById\("guide"\)\.innerHTML\s*=\s*'
+        r"renderGuide\(guide\)",
+        body,
+    )
     innerhtml_pattern = (
         r'(?:\$|document\.getElementById)\("([^"]+)"\)\.innerHTML\s*=\s*`'
     )
     for sm in re.finditer(innerhtml_pattern, body):
+        if guide is not None and guide_match and sm.start() > guide_match.start():
+            break
         sec_id = sm.group(1)
         if sec_id in ("page-title", "page-subtitle"):
             continue
@@ -617,48 +629,10 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
 
         evaluated = ev.eval_template(body[start:i])
 
-        # Convert HTML structure to Markdown
-        evaluated = re.sub(
-            r"<h2[^>]*>(.*?)</h2>",
-            lambda m: f"\n## {_strip_html(m.group(1))}\n",
-            evaluated,
-        )
-        evaluated = re.sub(
-            r"<h3[^>]*>(.*?)</h3>",
-            lambda m: f"\n### {_strip_html(m.group(1))}\n",
-            evaluated,
-        )
-        evaluated = re.sub(
-            r"<h4[^>]*>(.*?)</h4>",
-            lambda m: f"\n#### {_strip_html(m.group(1))}\n",
-            evaluated,
-        )
+        lines.append(_html_to_markdown(evaluated, output_name, web_path))
 
-        def markdown_image(match):
-            url = _transform_url(match.group(1), web_path)
-            if url in MARKDOWN_IMAGE_EXCLUDE_URLS.get(output_name, set()):
-                return ""
-            return f"\n![{match.group(2)}]({url})\n"
-
-        evaluated = re.sub(
-            r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
-            markdown_image,
-            evaluated,
-        )
-        evaluated = re.sub(
-            r"<ul[^>]*>(.*?)</ul>",
-            lambda m: (
-                "\n"
-                + "".join(
-                    f"- {_strip_html(li)}\n"
-                    for li in re.findall(r"<li>(.*?)</li>", m.group(1), re.DOTALL)
-                )
-            ),
-            evaluated,
-            flags=re.DOTALL,
-        )
-        evaluated = re.sub(r"<strong>(.*?)</strong>", r"**\1**", evaluated)
-        lines.append(evaluated)
+    if guide is not None and guide_match:
+        lines.append(_html_to_markdown(_guide_html(guide), output_name, web_path))
 
     title = localize(data["ui"].get("title", ""))
     url = f"{PYXEL_WEB}/{web_path}/"
@@ -968,21 +942,111 @@ def _split_plus(expr):
 def _transform_url(url, web_path=None):
     if url.startswith(("http://", "https://")):
         return url
+    if web_path:
+        resolved = urljoin(f"{PYXEL_WEB}/{web_path}/", url)
+        docs_url = f"{PYXEL_WEB.removesuffix('/web')}/docs/"
+        if resolved.startswith(docs_url):
+            return resolved.removeprefix(docs_url)
+        return resolved
     if url.startswith("../../docs/images/"):
         return url.replace("../../docs/images/", "images/")
     if url.startswith("../../docs/"):
         return url.replace("../../docs/", "")
     if url.startswith("../"):
         return f"{PYXEL_WEB}/{url[3:]}"
-    if web_path:
-        return f"{PYXEL_WEB}/{web_path}/{url}"
     return url
 
 
 # Markdown conversion helpers
 
 
+def _guide_html(guide):
+    sections = []
+    for section in guide["sections"]:
+        blocks = [f"<h2>{html.escape(section['title'])}</h2>"]
+        for block in section["blocks"]:
+            if "code" in block:
+                syntax = block.get("syntax") or "python"
+                blocks.append(f"\n```{syntax}\n{block['code']}\n```\n")
+            else:
+                blocks.append(block["text"])
+        sections.append("\n".join(blocks))
+    return "\n".join(sections)
+
+
+def _html_to_markdown(text, output_name, web_path):
+    saved_blocks = []
+
+    def save_block(match):
+        saved_blocks.append(match.group(0))
+        return BLOCK_MARKER.format(idx=len(saved_blocks) - 1)
+
+    # Embedded programs can contain HTML-looking literals.
+    text = re.sub(r"\n```[^\n]*\n.*?\n```\n", save_block, text, flags=re.DOTALL)
+
+    def markdown_image(match):
+        url = _transform_url(html.unescape(match[1]), web_path)
+        if url in MARKDOWN_IMAGE_EXCLUDE_URLS.get(output_name, set()):
+            return ""
+        return f"\n![{match[2]}]({url})\n"
+
+    text = re.sub(
+        r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
+        markdown_image,
+        text,
+    )
+
+    def markdown_link(match):
+        label = _strip_html(match[2])
+        if not label:
+            return ""
+        return f"[{label}]({_transform_url(html.unescape(match[1]), web_path)})"
+
+    text = re.sub(
+        r'<a\b[^>]*href="([^"]*)"[^>]*>(.*?)</a>',
+        markdown_link,
+        text,
+        flags=re.DOTALL,
+    )
+    text = re.sub(r"<code[^>]*>(.*?)</code>", r"`\1`", text)
+    for level in (2, 3, 4):
+        text = re.sub(
+            rf"<h{level}[^>]*>(.*?)</h{level}>",
+            lambda match, level=level: f"\n{'#' * level} {_strip_html(match[1])}\n",
+            text,
+        )
+
+    def markdown_table(match):
+        rows = []
+        for row in re.findall(r"<tr[^>]*>(.*?)</tr>", match[1], re.DOTALL):
+            cells = re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.DOTALL)
+            rows.append([_strip_html(cell).replace("|", r"\|") for cell in cells])
+        if not rows:
+            return ""
+        lines = ["| " + " | ".join(rows[0]) + " |"]
+        lines.append("| " + " | ".join("---" for _ in rows[0]) + " |")
+        lines.extend("| " + " | ".join(row) + " |" for row in rows[1:])
+        return "\n" + "\n".join(lines) + "\n"
+
+    text = re.sub(r"<table[^>]*>(.*?)</table>", markdown_table, text, flags=re.DOTALL)
+
+    def markdown_list(match):
+        items = re.findall(r"<li\b[^>]*>(.*?)</li>", match[2], re.DOTALL)
+        lines = []
+        for index, item in enumerate(items, 1):
+            marker = f"{index}." if match[1] == "ol" else "-"
+            lines.append(f"{marker} {_strip_html(item)}\n")
+        return "\n" + "".join(lines)
+
+    text = re.sub(r"<(ul|ol)\b[^>]*>(.*?)</\1>", markdown_list, text, flags=re.DOTALL)
+    text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
+    for index, block in enumerate(saved_blocks):
+        text = text.replace(BLOCK_MARKER.format(idx=index), block)
+    return text
+
+
 def _strip_html(text):
+    text = re.sub(r"<code[^>]*>(.*?)</code>", r"`\1`", text)
     text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
     text = re.sub(
         r"</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead"
