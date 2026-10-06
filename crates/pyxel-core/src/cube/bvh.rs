@@ -140,7 +140,7 @@ impl Bvh {
         origin: Vec3,
         direction: Vec3,
         max_t: f32,
-        mut visit: impl FnMut([u32; 3]),
+        visit: impl FnMut([u32; 3]),
     ) {
         if self.nodes.is_empty() {
             return;
@@ -151,6 +151,38 @@ impl Bvh {
             y: 1.0 / direction.y,
             z: 1.0 / direction.z,
         };
+        // Select recovery once: a finite nonzero component can overflow its reciprocal.
+        if (direction.x != 0.0 && direction.x.is_finite() && inv_dir.x.is_infinite())
+            || (direction.y != 0.0 && direction.y.is_finite() && inv_dir.y.is_infinite())
+            || (direction.z != 0.0 && direction.z.is_finite() && inv_dir.z.is_infinite())
+        {
+            self.query_ray_nodes(
+                |aabb| ray_reaches_aabb_wide(origin, direction, inv_dir, aabb, max_t),
+                visit,
+            );
+        } else {
+            self.query_ray_nodes(
+                |aabb| ray_reaches_aabb(origin, direction, inv_dir, aabb, max_t),
+                visit,
+            );
+        }
+    }
+
+    // Preserve ray visitation order when the caller cannot safely prune a transformed ray.
+    #[cold]
+    pub fn query_ray_unpruned(&self, visit: impl FnMut([u32; 3])) {
+        self.query_all(visit);
+    }
+
+    // Retain tree visitation order when a caller has no valid local query.
+    #[cold]
+    pub fn query_all(&self, visit: impl FnMut([u32; 3])) {
+        if !self.nodes.is_empty() {
+            self.query_ray_nodes(|_| true, visit);
+        }
+    }
+
+    fn query_ray_nodes(&self, reaches: impl Fn(&Aabb) -> bool, mut visit: impl FnMut([u32; 3])) {
         // stack[0] == 0 seeds the root.
         let mut stack = [0_i32; QUERY_STACK_CAPACITY];
         let mut top = 1_usize;
@@ -158,7 +190,7 @@ impl Bvh {
         while top > 0 {
             top -= 1;
             let node = self.nodes[stack[top] as usize];
-            if !ray_reaches_aabb(origin, inv_dir, &node.aabb, max_t) {
+            if !reaches(&node.aabb) {
                 continue;
             }
 
@@ -178,19 +210,93 @@ impl Bvh {
 }
 
 // Conservative slab test for BVH pruning within [0, max_t].
-fn ray_reaches_aabb(origin: Vec3, inv_dir: Vec3, aabb: &Aabb, max_t: f32) -> bool {
-    let (tx_enter, tx_exit) = ray_slab_interval(origin.x, inv_dir.x, aabb.min.x, aabb.max.x);
-    let (ty_enter, ty_exit) = ray_slab_interval(origin.y, inv_dir.y, aabb.min.y, aabb.max.y);
-    let (tz_enter, tz_exit) = ray_slab_interval(origin.z, inv_dir.z, aabb.min.z, aabb.max.z);
+fn ray_reaches_aabb(origin: Vec3, direction: Vec3, inv_dir: Vec3, aabb: &Aabb, max_t: f32) -> bool {
+    let dmin = Vec3 {
+        x: aabb.min.x - origin.x,
+        y: aabb.min.y - origin.y,
+        z: aabb.min.z - origin.z,
+    };
+    let dmax = Vec3 {
+        x: aabb.max.x - origin.x,
+        y: aabb.max.y - origin.y,
+        z: aabb.max.z - origin.z,
+    };
+    if !(dmin.x.is_finite()
+        && dmin.y.is_finite()
+        && dmin.z.is_finite()
+        && dmax.x.is_finite()
+        && dmax.y.is_finite()
+        && dmax.z.is_finite())
+    {
+        return ray_reaches_aabb_wide(origin, direction, inv_dir, aabb, max_t);
+    }
+    let (tx_enter, tx_exit) = ray_product_interval(dmin.x * inv_dir.x, dmax.x * inv_dir.x);
+    let (ty_enter, ty_exit) = ray_product_interval(dmin.y * inv_dir.y, dmax.y * inv_dir.y);
+    let (tz_enter, tz_exit) = ray_product_interval(dmin.z * inv_dir.z, dmax.z * inv_dir.z);
+    let t_enter = tx_enter.max(ty_enter).max(tz_enter).max(0.0);
+    let t_exit = tx_exit.min(ty_exit).min(tz_exit).min(max_t);
+    t_enter <= t_exit
+}
+
+// Keep finite-range recovery out of the ordinary traversal's arithmetic path.
+#[cold]
+fn ray_reaches_aabb_wide(
+    origin: Vec3,
+    direction: Vec3,
+    inv_dir: Vec3,
+    aabb: &Aabb,
+    max_t: f32,
+) -> bool {
+    let (tx_enter, tx_exit) =
+        ray_slab_interval(origin.x, direction.x, inv_dir.x, aabb.min.x, aabb.max.x);
+    let (ty_enter, ty_exit) =
+        ray_slab_interval(origin.y, direction.y, inv_dir.y, aabb.min.y, aabb.max.y);
+    let (tz_enter, tz_exit) =
+        ray_slab_interval(origin.z, direction.z, inv_dir.z, aabb.min.z, aabb.max.z);
     let t_enter = tx_enter.max(ty_enter).max(tz_enter).max(0.0);
     let t_exit = tx_exit.min(ty_exit).min(tz_exit).min(max_t);
     t_enter <= t_exit
 }
 
 #[inline]
-fn ray_slab_interval(origin: f32, inv_dir: f32, min: f32, max: f32) -> (f32, f32) {
-    let t1 = (min - origin) * inv_dir;
-    let t2 = (max - origin) * inv_dir;
+fn ray_slab_interval(origin: f32, direction: f32, inv_dir: f32, min: f32, max: f32) -> (f32, f32) {
+    let d1 = min - origin;
+    let d2 = max - origin;
+    let (t1, t2) = if direction != 0.0
+        && direction.is_finite()
+        && inv_dir.is_infinite()
+        && origin.is_finite()
+        && min.is_finite()
+        && max.is_finite()
+    {
+        // Keep the original direction: an overflowing reciprocal has lost the finite ratio.
+        let origin = f64::from(origin);
+        let direction = f64::from(direction);
+        (
+            ((f64::from(min) - origin) / direction) as f32,
+            ((f64::from(max) - origin) / direction) as f32,
+        )
+    } else if (!d1.is_finite() || !d2.is_finite())
+        && origin.is_finite()
+        && min.is_finite()
+        && max.is_finite()
+        && inv_dir.is_finite()
+    {
+        // Mesh-local endpoint differences can overflow while the world ray parameter fits.
+        let origin = f64::from(origin);
+        let inv_dir = f64::from(inv_dir);
+        (
+            ((f64::from(min) - origin) * inv_dir) as f32,
+            ((f64::from(max) - origin) * inv_dir) as f32,
+        )
+    } else {
+        (d1 * inv_dir, d2 * inv_dir)
+    };
+    ray_product_interval(t1, t2)
+}
+
+#[inline]
+fn ray_product_interval(t1: f32, t2: f32) -> (f32, f32) {
     // A zero-direction ray on a slab face has a NaN product but stays in the slab.
     if t1.is_nan() || t2.is_nan() {
         (f32::NEG_INFINITY, f32::INFINITY)

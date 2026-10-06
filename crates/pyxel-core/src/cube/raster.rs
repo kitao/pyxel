@@ -168,23 +168,64 @@ pub fn world_to_screen(
 
 // Geometry helpers
 
-// Unscaled face normal of the CCW triangle (cross product of two edges).
+// CCW face normal. Preserve ordinary area vectors; recover direction
+// before finite edge/cross intermediates overflow or underflow.
 pub fn tri_normal(p0: &Vec3, p1: &Vec3, p2: &Vec3) -> Vec3 {
-    let e1 = Vec3 {
-        x: p1.x - p0.x,
-        y: p1.y - p0.y,
-        z: p1.z - p0.z,
+    let e1 = [p1.x - p0.x, p1.y - p0.y, p1.z - p0.z];
+    let e2 = [p2.x - p0.x, p2.y - p0.y, p2.z - p0.z];
+    let factors = [
+        (e1[1], e2[2]),
+        (e1[2], e2[1]),
+        (e1[2], e2[0]),
+        (e1[0], e2[2]),
+        (e1[0], e2[1]),
+        (e1[1], e2[0]),
+    ];
+    let products = factors.map(|(a, b)| a * b);
+    let normal = Vec3 {
+        x: products[0] - products[1],
+        y: products[2] - products[3],
+        z: products[4] - products[5],
     };
-    let e2 = Vec3 {
-        x: p2.x - p0.x,
-        y: p2.y - p0.y,
-        z: p2.z - p0.z,
-    };
+    let needs_width = !normal.is_finite()
+        || products
+            .iter()
+            .zip(factors)
+            .any(|(product, (a, b))| !product.is_normal() && a != 0.0 && b != 0.0);
+    if needs_width && p0.is_finite() && p1.is_finite() && p2.is_finite() {
+        let e1 = [
+            f64::from(p1.x) - f64::from(p0.x),
+            f64::from(p1.y) - f64::from(p0.y),
+            f64::from(p1.z) - f64::from(p0.z),
+        ];
+        let e2 = [
+            f64::from(p2.x) - f64::from(p0.x),
+            f64::from(p2.y) - f64::from(p0.y),
+            f64::from(p2.z) - f64::from(p0.z),
+        ];
+        return narrow_face_normal([
+            e1[1] * e2[2] - e1[2] * e2[1],
+            e1[2] * e2[0] - e1[0] * e2[2],
+            e1[0] * e2[1] - e1[1] * e2[0],
+        ]);
+    }
+    normal
+}
 
+// Face shading consumes direction: rescale the finite wide result before narrowing it.
+pub(crate) fn narrow_face_normal(normal: [f64; 3]) -> Vec3 {
+    let scale = normal.iter().map(|v| v.abs()).fold(0.0_f64, f64::max);
+    if scale == 0.0 {
+        return Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+    }
     Vec3 {
-        x: e1.y * e2.z - e1.z * e2.y,
-        y: e1.z * e2.x - e1.x * e2.z,
-        z: e1.x * e2.y - e1.y * e2.x,
+        x: (normal[0] / scale) as f32,
+        y: (normal[1] / scale) as f32,
+        z: (normal[2] / scale) as f32,
     }
 }
 
@@ -307,14 +348,34 @@ pub fn dither_pick(primary: i32, secondary: i32, x: i32, y: i32) -> u8 {
 pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
     let dot_factor = match normal {
         Some(n) => {
-            let n_len = (n.x * n.x + n.y * n.y + n.z * n.z).sqrt();
-            let d_len =
-                (direction.x * direction.x + direction.y * direction.y + direction.z * direction.z)
-                    .sqrt();
-            if n_len == 0.0 || d_len == 0.0 {
-                return 0;
+            let n_len_sq = n.x * n.x + n.y * n.y + n.z * n.z;
+            let d_len_sq =
+                direction.x * direction.x + direction.y * direction.y + direction.z * direction.z;
+            let n_len = n_len_sq.sqrt();
+            let d_len = d_len_sq.sqrt();
+            let length_product = n_len * d_len;
+            let dot = n.x * direction.x + n.y * direction.y + n.z * direction.z;
+            if (!n_len_sq.is_normal()
+                || !d_len_sq.is_normal()
+                || !length_product.is_normal()
+                || !dot.is_finite())
+                && n.is_finite()
+                && direction.is_finite()
+            {
+                let length_product = n.length_f64() * direction.length_f64();
+                if length_product == 0.0 {
+                    return 0;
+                }
+                let dot = f64::from(n.x) * f64::from(direction.x)
+                    + f64::from(n.y) * f64::from(direction.y)
+                    + f64::from(n.z) * f64::from(direction.z);
+                (-dot / length_product) as f32
+            } else {
+                if n_len == 0.0 || d_len == 0.0 {
+                    return 0;
+                }
+                -dot / length_product
             }
-            -(n.x * direction.x + n.y * direction.y + n.z * direction.z) / (n_len * d_len)
         }
         None => return 0,
     };
@@ -1077,6 +1138,18 @@ fn clip_screen_line_to_rect(
     p1: ScreenPoint,
     clip: ClipRect,
 ) -> Option<(ScreenPoint, ScreenPoint)> {
+    // Above one-pixel f32 spacing, clipping parameters can collapse the span.
+    // Keep ordinary rounding and the original nonfinite-input path unchanged.
+    if [p0.0, p0.1, p1.0, p1.1]
+        .iter()
+        .any(|value| value.abs() > (1 << 23) as f32)
+        && [p0.0, p0.1, p0.2, p1.0, p1.1, p1.2]
+            .iter()
+            .all(|value| value.is_finite())
+    {
+        return clip_screen_line_to_rect_wide(p0, p1, clip);
+    }
+
     let min_x = clip.left as f32;
     let max_x = clip.right as f32 + 1.0;
     let min_y = clip.top as f32;
@@ -1095,6 +1168,54 @@ fn clip_screen_line_to_rect(
     }
 
     Some((lerp_screen_point(p0, p1, t0), lerp_screen_point(p0, p1, t1)))
+}
+
+fn clip_screen_line_to_rect_wide(
+    p0: ScreenPoint,
+    p1: ScreenPoint,
+    clip: ClipRect,
+) -> Option<(ScreenPoint, ScreenPoint)> {
+    let origin = [f64::from(p0.0), f64::from(p0.1), f64::from(p0.2)];
+    let end = [f64::from(p1.0), f64::from(p1.1), f64::from(p1.2)];
+    let delta = [end[0] - origin[0], end[1] - origin[1], end[2] - origin[2]];
+    let determinant = origin[0] * end[1] - end[0] * origin[1];
+    let mut points = [origin, end];
+
+    for (axis, boundary, minimum) in [
+        (0, f64::from(clip.left), true),
+        (0, f64::from(clip.right) + 1.0, false),
+        (1, f64::from(clip.top), true),
+        (1, f64::from(clip.bottom) + 1.0, false),
+    ] {
+        let inside = points.map(|point| {
+            if minimum {
+                point[axis] >= boundary
+            } else {
+                point[axis] <= boundary
+            }
+        });
+        if !inside[0] && !inside[1] {
+            return None;
+        }
+        if inside[0] == inside[1] {
+            continue;
+        }
+
+        // Even f64 t/lerp can lose a viewport-sized interval on a long line.
+        // Pin the crossed boundary; the original determinant retains the
+        // other coordinate without subtracting two large interpolated values.
+        let t = (boundary - origin[axis]) / delta[axis];
+        let z = origin[2] + delta[2] * t;
+        let intersection = if axis == 0 {
+            [boundary, (delta[1] * boundary - determinant) / delta[0], z]
+        } else {
+            [(delta[0] * boundary + determinant) / delta[1], boundary, z]
+        };
+        points[usize::from(inside[0])] = intersection;
+    }
+
+    let [start, end] = points.map(|point| (point[0] as f32, point[1] as f32, point[2] as f32));
+    Some((start, end))
 }
 
 #[inline]

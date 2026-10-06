@@ -101,7 +101,7 @@ impl PlatformSdl2 {
         self.is_wayland =
             !driver.is_null() && unsafe { CStr::from_ptr(driver) }.to_bytes() == b"wayland";
 
-        self.gamepads.clear();
+        self.close_gamepads();
         let num_joysticks = unsafe { SDL_NumJoysticks() };
         self.gamepads.extend((0..num_joysticks).map(open_gamepad));
     }
@@ -497,6 +497,7 @@ impl PlatformSdl2 {
 
 impl Drop for PlatformSdl2 {
     fn drop(&mut self) {
+        self.close_gamepads();
         #[cfg(not(target_os = "emscripten"))]
         {
             self.close_audio();

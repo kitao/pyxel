@@ -4,7 +4,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::RcImage;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::simplify_string;
+use crate::utils::{f32_to_i32, simplify_string};
 
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -268,6 +268,9 @@ impl Tilemap {
         let borrowed;
         let copied_canvas;
         let src = if ptr::eq(tilemap.as_ptr(), self) {
+            if f32_to_i32(width) == 0 || f32_to_i32(height) == 0 {
+                return;
+            }
             copied_canvas = self.canvas.clone();
             &copied_canvas
         } else {

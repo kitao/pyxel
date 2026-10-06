@@ -287,6 +287,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         y3: f32,
         value: T,
     ) {
+        if self.clip_rect.is_empty() {
+            return;
+        }
+
         let x1 = i64::from(f32_to_i32(x1)) - i64::from(self.camera_x);
         let y1 = i64::from(f32_to_i32(y1)) - i64::from(self.camera_y);
         let x2 = i64::from(f32_to_i32(x2)) - i64::from(self.camera_x);

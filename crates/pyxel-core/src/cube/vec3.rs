@@ -73,19 +73,81 @@ impl Vec3 {
     // Math
 
     pub fn dot(&self, other: &Self) -> f32 {
-        self.x * other.x + self.y * other.y + self.z * other.z
+        let dot = self.x * other.x + self.y * other.y + self.z * other.z;
+        if !dot.is_finite() && self.is_finite() && other.is_finite() {
+            return self.dot_f64(other) as f32;
+        }
+        dot
+    }
+
+    fn dot_f64(&self, other: &Self) -> f64 {
+        f64::from(self.x) * f64::from(other.x)
+            + f64::from(self.y) * f64::from(other.y)
+            + f64::from(self.z) * f64::from(other.z)
     }
 
     pub fn cross(&self, other: &Self) -> RcVec3 {
-        Self::new(
+        let (x, y, z) = (
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x,
-        )
+        );
+        if !(x.is_finite() && y.is_finite() && z.is_finite())
+            && self.is_finite()
+            && other.is_finite()
+        {
+            let (x, y, z) = self.cross_f64(other);
+            return Self::new(x as f32, y as f32, z as f32);
+        }
+        Self::new(x, y, z)
+    }
+
+    fn cross_f64(&self, other: &Self) -> (f64, f64, f64) {
+        let (x, y, z) = (f64::from(self.x), f64::from(self.y), f64::from(self.z));
+        let (ox, oy, oz) = (f64::from(other.x), f64::from(other.y), f64::from(other.z));
+        (y * oz - z * oy, z * ox - x * oz, x * oy - y * ox)
+    }
+
+    // Basis consumers must normalize a wide cross product before narrowing it.
+    pub(crate) fn cross_normalized_wide(&self, other: &Self) -> Self {
+        let (x, y, z) = self.cross_f64(other);
+        let len = (x * x + y * y + z * z).sqrt();
+        if len == 0.0 {
+            return Self {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            };
+        }
+        Self {
+            x: (x / len) as f32,
+            y: (y / len) as f32,
+            z: (z / len) as f32,
+        }
     }
 
     pub fn length(&self) -> f32 {
-        self.length_squared().sqrt()
+        let len_sq = self.length_squared();
+        self.wide_length(len_sq)
+            .map_or_else(|| len_sq.sqrt(), |len| len as f32)
+    }
+
+    // Finite components can lose range when squared in f32. Keep ordinary
+    // rounding and true-zero/nonfinite behavior at each consuming operation.
+    pub(crate) fn wide_length(&self, len_sq: f32) -> Option<f64> {
+        (!len_sq.is_normal()
+            && (self.x != 0.0 || self.y != 0.0 || self.z != 0.0)
+            && self.is_finite())
+        .then(|| self.length_f64())
+    }
+
+    pub(crate) fn length_f64(&self) -> f64 {
+        let (x, y, z) = (f64::from(self.x), f64::from(self.y), f64::from(self.z));
+        (x * x + y * y + z * z).sqrt()
+    }
+
+    pub(crate) fn is_finite(&self) -> bool {
+        self.x.is_finite() && self.y.is_finite() && self.z.is_finite()
     }
 
     pub fn length_squared(&self) -> f32 {
@@ -93,7 +155,14 @@ impl Vec3 {
     }
 
     pub fn distance_to(&self, other: &Self) -> f32 {
-        self.distance_squared_to(other).sqrt()
+        let distance_sq = self.distance_squared_to(other);
+        if !distance_sq.is_normal() && self != other && self.is_finite() && other.is_finite() {
+            let dx = f64::from(self.x) - f64::from(other.x);
+            let dy = f64::from(self.y) - f64::from(other.y);
+            let dz = f64::from(self.z) - f64::from(other.z);
+            return (dx * dx + dy * dy + dz * dz).sqrt() as f32;
+        }
+        distance_sq.sqrt()
     }
 
     pub fn distance_squared_to(&self, other: &Self) -> f32 {
@@ -104,7 +173,20 @@ impl Vec3 {
     }
 
     pub fn angle_to(&self, other: &Self) -> f32 {
-        let len_product = self.length() * other.length();
+        let self_len_sq = self.length_squared();
+        let other_len_sq = other.length_squared();
+        let len_product = self_len_sq.sqrt() * other_len_sq.sqrt();
+        if (!self_len_sq.is_normal() || !other_len_sq.is_normal() || !len_product.is_normal())
+            && self.is_finite()
+            && other.is_finite()
+        {
+            let len_product = self.length_f64() * other.length_f64();
+            if len_product == 0.0 {
+                return 0.0;
+            }
+            let dot = self.dot_f64(other);
+            return (dot / len_product).clamp(-1.0, 1.0).acos().to_degrees() as f32;
+        }
         if len_product == 0.0 {
             0.0
         } else {
@@ -116,7 +198,15 @@ impl Vec3 {
     }
 
     pub fn normalize(&self) -> RcVec3 {
-        let len = self.length();
+        let len_sq = self.length_squared();
+        if let Some(len) = self.wide_length(len_sq) {
+            return Self::new(
+                (f64::from(self.x) / len) as f32,
+                (f64::from(self.y) / len) as f32,
+                (f64::from(self.z) / len) as f32,
+            );
+        }
+        let len = len_sq.sqrt();
         if len == 0.0 {
             Self::zero()
         } else {
@@ -125,7 +215,21 @@ impl Vec3 {
     }
 
     pub fn clamp_length(&self, max_length: f32) -> RcVec3 {
-        let len = self.length();
+        let len_sq = self.length_squared();
+        if max_length.is_finite() {
+            if let Some(len) = self.wide_length(len_sq) {
+                if len > f64::from(max_length) {
+                    let scale = f64::from(max_length) / len;
+                    return Self::new(
+                        (f64::from(self.x) * scale) as f32,
+                        (f64::from(self.y) * scale) as f32,
+                        (f64::from(self.z) * scale) as f32,
+                    );
+                }
+                return Self::new(self.x, self.y, self.z);
+            }
+        }
+        let len = len_sq.sqrt();
         if len > max_length {
             let scale = max_length / len;
             Self::new(self.x * scale, self.y * scale, self.z * scale)
@@ -151,11 +255,25 @@ impl Vec3 {
     }
 
     pub fn lerp(&self, other: &Self, t: f32) -> RcVec3 {
-        Self::new(
-            self.x + (other.x - self.x) * t,
-            self.y + (other.y - self.y) * t,
-            self.z + (other.z - self.z) * t,
-        )
+        let value = self.lerp_value(other, t);
+        Self::new(value.x, value.y, value.z)
+    }
+
+    pub(crate) fn lerp_value(&self, other: &Self, t: f32) -> Self {
+        let value = Self {
+            x: self.x + (other.x - self.x) * t,
+            y: self.y + (other.y - self.y) * t,
+            z: self.z + (other.z - self.z) * t,
+        };
+        if !value.is_finite() && self.is_finite() && other.is_finite() && t.is_finite() {
+            let t = f64::from(t);
+            return Self {
+                x: (f64::from(self.x) + (f64::from(other.x) - f64::from(self.x)) * t) as f32,
+                y: (f64::from(self.y) + (f64::from(other.y) - f64::from(self.y)) * t) as f32,
+                z: (f64::from(self.z) + (f64::from(other.z) - f64::from(self.z)) * t) as f32,
+            };
+        }
+        value
     }
 
     pub fn slerp(&self, other: &Self, t: f32) -> RcVec3 {
@@ -235,19 +353,44 @@ impl Vec3 {
 
     pub fn reflect(&self, normal: &Self) -> RcVec3 {
         let d = self.dot(normal) * 2.0;
-        Self::new(
-            self.x - normal.x * d,
-            self.y - normal.y * d,
-            self.z - normal.z * d,
-        )
+        let value = Self {
+            x: self.x - normal.x * d,
+            y: self.y - normal.y * d,
+            z: self.z - normal.z * d,
+        };
+        if !value.is_finite() && self.is_finite() && normal.is_finite() {
+            let d = self.dot_f64(normal) * 2.0;
+            return Self::new(
+                (f64::from(self.x) - f64::from(normal.x) * d) as f32,
+                (f64::from(self.y) - f64::from(normal.y) * d) as f32,
+                (f64::from(self.z) - f64::from(normal.z) * d) as f32,
+            );
+        }
+        Self::new(value.x, value.y, value.z)
     }
 
     pub fn project(&self, other: &Self) -> RcVec3 {
         let other_len_sq = other.length_squared();
+        let dot = self.dot(other);
+        let scale = dot / other_len_sq;
+        let dot_underflows = !dot.is_normal()
+            && (dot != 0.0
+                || [(self.x, other.x), (self.y, other.y), (self.z, other.z)]
+                    .iter()
+                    .any(|&(a, b)| a != 0.0 && b != 0.0 && !(a * b).is_normal()));
+        if (!other_len_sq.is_normal() || !dot.is_finite() || !scale.is_finite() || dot_underflows)
+            && self.is_finite()
+            && other.is_finite()
+            && (other.x != 0.0 || other.y != 0.0 || other.z != 0.0)
+        {
+            let (x, y, z) = (f64::from(other.x), f64::from(other.y), f64::from(other.z));
+            let dot = self.dot_f64(other);
+            let scale = dot / (x * x + y * y + z * z);
+            return Self::new((x * scale) as f32, (y * scale) as f32, (z * scale) as f32);
+        }
         if other_len_sq == 0.0 {
             Self::zero()
         } else {
-            let scale = self.dot(other) / other_len_sq;
             Self::new(other.x * scale, other.y * scale, other.z * scale)
         }
     }
@@ -273,6 +416,31 @@ impl Vec3 {
     pub fn to_world_dir(&self, mat: &Mat4) -> RcVec3 {
         mat.mul_dir(self)
     }
+}
+
+// Finite f32 products fit exactly in f64. TwoSum retains cancellation residuals
+// before rounding their sum, including a small offset between large products.
+pub(super) fn sum_wide_products(terms: [(f32, f32); 4]) -> f64 {
+    let mut expansion = [0.0_f64; 4];
+    let mut len = 0;
+    for (a, b) in terms {
+        let mut sum = f64::from(a) * f64::from(b);
+        let mut next_len = 0;
+        for index in 0..len {
+            let value = expansion[index];
+            let combined = sum + value;
+            let value_part = combined - sum;
+            let error = (sum - (combined - value_part)) + (value - value_part);
+            if error != 0.0 {
+                expansion[next_len] = error;
+                next_len += 1;
+            }
+            sum = combined;
+        }
+        expansion[next_len] = sum;
+        len = next_len + 1;
+    }
+    expansion[..len].iter().sum()
 }
 
 #[cfg(test)]

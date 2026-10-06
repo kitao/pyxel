@@ -11,13 +11,14 @@ use crate::cube::primitive::{
     self, Primitive, CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
 use crate::cube::raster::{
-    dither_pick, face_shade_level, lookup_ramp, rasterize_border_line, rasterize_circle_border,
-    rasterize_circle_filled, rasterize_line, rasterize_textured_triangle, rasterize_triangle,
-    screen_circle, sprite_corners, tri_normal, world_to_screen, write_pixel, ScreenPlane,
+    dither_pick, face_shade_level, lookup_ramp, narrow_face_normal, rasterize_border_line,
+    rasterize_circle_border, rasterize_circle_filled, rasterize_line, rasterize_textured_triangle,
+    rasterize_triangle, screen_circle, sprite_corners, tri_normal, world_to_screen, write_pixel,
+    ScreenPlane,
 };
 use crate::cube::scene::DrawContext;
 use crate::cube::shading::Shading;
-use crate::cube::vec3::Vec3;
+use crate::cube::vec3::{sum_wide_products, Vec3};
 use crate::font::Font;
 use crate::image::{Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
@@ -156,20 +157,55 @@ fn clip_front(pos: &Vec3, clip_row: &[f32; 4]) -> f32 {
 }
 
 fn lerp_world(a: &Vec3, b: &Vec3, t: f32) -> Vec3 {
-    Vec3 {
-        x: a.x + (b.x - a.x) * t,
-        y: a.y + (b.y - a.y) * t,
-        z: a.z + (b.z - a.z) * t,
-    }
+    a.lerp_value(b, t)
 }
 
 fn lerp_clip_vertex(a: ClipVertex, b: ClipVertex, t: f32) -> ClipVertex {
+    let lerp_uv = |from: f32, to: f32| {
+        let value = from + (to - from) * t;
+        if !value.is_finite() && from.is_finite() && to.is_finite() && t.is_finite() {
+            (f64::from(from) + (f64::from(to) - f64::from(from)) * f64::from(t)) as f32
+        } else {
+            value
+        }
+    };
+
     ClipVertex {
         world: lerp_world(&a.world, &b.world, t),
-        uv: (
-            a.uv.0 + (b.uv.0 - a.uv.0) * t,
-            a.uv.1 + (b.uv.1 - a.uv.1) * t,
-        ),
+        uv: (lerp_uv(a.uv.0, b.uv.0), lerp_uv(a.uv.1, b.uv.1)),
+    }
+}
+
+fn clip_edge_to_near(
+    a: ClipVertex,
+    b: ClipVertex,
+    front_a: f32,
+    front_b: f32,
+    near: f32,
+) -> ClipVertex {
+    let offset = near - front_a;
+    let delta = front_b - front_a;
+    // Subtraction and fraction rounding can erase near within the endpoints' f32 spacing.
+    let near_lost =
+        near != 0.0 && near.abs() <= 2.0 * f32::EPSILON * front_a.abs().max(front_b.abs());
+    if (offset.is_finite() && delta.is_finite() && !near_lost)
+        || !(front_a.is_finite() && front_b.is_finite() && near.is_finite())
+    {
+        return lerp_clip_vertex(a, b, offset / delta);
+    }
+
+    // Compute the intersection directly; even a f64 fraction can lose near here.
+    let intersect = |from: f32, to: f32| {
+        (sum_wide_products([(from, front_b), (-to, front_a), (to, near), (-from, near)])
+            / (f64::from(front_b) - f64::from(front_a))) as f32
+    };
+    ClipVertex {
+        world: Vec3 {
+            x: intersect(a.world.x, b.world.x),
+            y: intersect(a.world.y, b.world.y),
+            z: intersect(a.world.z, b.world.z),
+        },
+        uv: (intersect(a.uv.0, b.uv.0), intersect(a.uv.1, b.uv.1)),
     }
 }
 
@@ -194,8 +230,8 @@ fn clip_triangle_to_near(
         let curr_inside = curr_front >= near;
 
         if prev_inside != curr_inside {
-            let t = (near - prev_front) / (curr_front - prev_front);
-            clipped.vertices[clipped.len] = lerp_clip_vertex(prev, curr, t);
+            clipped.vertices[clipped.len] =
+                clip_edge_to_near(prev, curr, prev_front, curr_front, near);
             clipped.len += 1;
         }
         if curr_inside {
@@ -451,12 +487,26 @@ fn project_line_segment(
 
     let mut q0 = *p0;
     let mut q1 = *p1;
+    let clipped_endpoint = || {
+        clip_edge_to_near(
+            ClipVertex {
+                world: *p0,
+                uv: (0.0, 0.0),
+            },
+            ClipVertex {
+                world: *p1,
+                uv: (0.0, 0.0),
+            },
+            front0,
+            front1,
+            near,
+        )
+        .world
+    };
     if front0 < near {
-        let t = (near - front0) / (front1 - front0);
-        q0 = lerp_world(p0, p1, t);
+        q0 = clipped_endpoint();
     } else if front1 < near {
-        let t = (near - front0) / (front1 - front0);
-        q1 = lerp_world(p0, p1, t);
+        q1 = clipped_endpoint();
     }
 
     let s0 = project_offset(
@@ -513,18 +563,8 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
         y: world_mat.data[1][3],
         z: world_mat.data[2][3],
     };
-    let scale_x = (world_mat.data[0][0].powi(2)
-        + world_mat.data[1][0].powi(2)
-        + world_mat.data[2][0].powi(2))
-    .sqrt();
-    let scale_y = (world_mat.data[0][1].powi(2)
-        + world_mat.data[1][1].powi(2)
-        + world_mat.data[2][1].powi(2))
-    .sqrt();
-    let scale_z = (world_mat.data[0][2].powi(2)
-        + world_mat.data[1][2].powi(2)
-        + world_mat.data[2][2].powi(2))
-    .sqrt();
+    let scale = world_mat.scale_vec_value();
+    let (scale_x, scale_y, scale_z) = (scale.x, scale.y, scale.z.abs());
 
     // Spherical (BILLBOARD_ON): adopt camera basis directly.
     let mut out = Mat4::identity_value();
@@ -537,6 +577,29 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
     out.data[0][2] = cam_z.x * scale_z;
     out.data[1][2] = cam_z.y * scale_z;
     out.data[2][2] = cam_z.z * scale_z;
+
+    // A column length can exceed f32 even when each oriented component fits.
+    for (column, (basis, scale)) in [(cam_x, scale_x), (cam_y, scale_y), (cam_z, scale_z)]
+        .into_iter()
+        .enumerate()
+    {
+        if !scale.is_finite()
+            && basis.is_finite()
+            && world_mat.data[..3]
+                .iter()
+                .all(|row| row[column].is_finite())
+        {
+            let length = world_mat.data[..3]
+                .iter()
+                .map(|row| f64::from(row[column]).powi(2))
+                .sum::<f64>()
+                .sqrt();
+            for (row, component) in [basis.x, basis.y, basis.z].into_iter().enumerate() {
+                out.data[row][column] = (f64::from(component) * length) as f32;
+            }
+        }
+    }
+
     out.data[0][3] = pos.x;
     out.data[1][3] = pos.y;
     out.data[2][3] = pos.z;
@@ -584,6 +647,93 @@ fn make_shaded_sampler<'a>(
             let (primary, secondary) = shading.get(base_idx, level);
             Some(i32::from(dither_pick(primary, secondary, x, y)))
         }
+    }
+}
+
+// Cofactors preserve oriented normals through reflection and singular scale.
+// Keep exceptional cofactors wide until the supplied face direction is selected.
+struct FaceNormalTransform {
+    matrix: Mat4,
+    wide_matrix: Option<[[f64; 3]; 3]>,
+}
+
+impl FaceNormalTransform {
+    fn new(world: &Mat4) -> Self {
+        let m = &world.data;
+        let factors = [
+            [
+                [m[1][1], m[2][2], m[1][2], m[2][1]],
+                [m[1][2], m[2][0], m[1][0], m[2][2]],
+                [m[1][0], m[2][1], m[1][1], m[2][0]],
+            ],
+            [
+                [m[0][2], m[2][1], m[0][1], m[2][2]],
+                [m[0][0], m[2][2], m[0][2], m[2][0]],
+                [m[0][1], m[2][0], m[0][0], m[2][1]],
+            ],
+            [
+                [m[0][1], m[1][2], m[0][2], m[1][1]],
+                [m[0][2], m[1][0], m[0][0], m[1][2]],
+                [m[0][0], m[1][1], m[0][1], m[1][0]],
+            ],
+        ];
+        let mut matrix = Mat4::identity_value();
+        let mut needs_width = false;
+        for (row, row_factors) in factors.iter().enumerate() {
+            for (col, &[a, b, c, d]) in row_factors.iter().enumerate() {
+                let positive = a * b;
+                let negative = c * d;
+                let value = positive - negative;
+                needs_width |= !value.is_finite()
+                    || (!positive.is_normal() && a != 0.0 && b != 0.0)
+                    || (!negative.is_normal() && c != 0.0 && d != 0.0);
+                matrix.data[row][col] = value;
+            }
+        }
+        let wide_matrix = (needs_width
+            && m[..3]
+                .iter()
+                .all(|row| row[..3].iter().all(|v| v.is_finite())))
+        .then(|| {
+            factors.map(|row| {
+                row.map(|[a, b, c, d]| f64::from(a) * f64::from(b) - f64::from(c) * f64::from(d))
+            })
+        });
+        Self {
+            matrix,
+            wide_matrix,
+        }
+    }
+
+    fn transform(&self, normal: &Vec3) -> Vec3 {
+        if let Some(matrix) = &self.wide_matrix {
+            if normal.is_finite() {
+                return narrow_face_normal(matrix.map(|row| {
+                    row[0] * f64::from(normal.x)
+                        + row[1] * f64::from(normal.y)
+                        + row[2] * f64::from(normal.z)
+                }));
+            }
+        }
+        let transformed = self.matrix.mul_dir_value(normal);
+        if (!transformed.is_finite()
+            || (!transformed.x.is_normal()
+                && !transformed.y.is_normal()
+                && !transformed.z.is_normal()))
+            && normal.is_finite()
+            && self.matrix.data[..3]
+                .iter()
+                .all(|row| row[..3].iter().all(|v| v.is_finite()))
+        {
+            // Selecting a face direction can lose range even with finite cofactors.
+            let [x, y, z, _] = self.matrix.data;
+            return narrow_face_normal([x, y, z].map(|row| {
+                f64::from(row[0]) * f64::from(normal.x)
+                    + f64::from(row[1]) * f64::from(normal.y)
+                    + f64::from(row[2]) * f64::from(normal.z)
+            }));
+        }
+        transformed
     }
 }
 
@@ -698,34 +848,8 @@ pub fn prim(
                 .map(|image| new_rc_type!(rc_ref!(image).clone()));
             let col_image = texture_snapshot.as_ref().or(col_image);
 
-            // Cofactors carry oriented face normals through reflections and
-            // singular scales: cross(Mu, Mv) = cofactor(M) cross(u, v).
-            let normal_mat = (lit && normals.is_some()).then(|| {
-                let m = &world_mat.data;
-                Mat4 {
-                    data: [
-                        [
-                            m[1][1] * m[2][2] - m[1][2] * m[2][1],
-                            m[1][2] * m[2][0] - m[1][0] * m[2][2],
-                            m[1][0] * m[2][1] - m[1][1] * m[2][0],
-                            0.0,
-                        ],
-                        [
-                            m[0][2] * m[2][1] - m[0][1] * m[2][2],
-                            m[0][0] * m[2][2] - m[0][2] * m[2][0],
-                            m[0][1] * m[2][0] - m[0][0] * m[2][1],
-                            0.0,
-                        ],
-                        [
-                            m[0][1] * m[1][2] - m[0][2] * m[1][1],
-                            m[0][2] * m[1][0] - m[0][0] * m[1][2],
-                            m[0][0] * m[1][1] - m[0][1] * m[1][0],
-                            0.0,
-                        ],
-                        [0.0, 0.0, 0.0, 1.0],
-                    ],
-                }
-            });
+            let normal_mat =
+                (lit && normals.is_some()).then(|| FaceNormalTransform::new(&world_mat));
 
             for f in 0..face_count {
                 let i0 = resolve_vertex_index(f * 3)?;
@@ -737,7 +861,7 @@ pub fn prim(
 
                 let face_normal = || -> Vec3 {
                     match (normals, normal_mat.as_ref()) {
-                        (Some(n), Some(mat)) => mat.mul_dir_value(&Vec3 {
+                        (Some(n), Some(mat)) => mat.transform(&Vec3 {
                             x: n[f * 3],
                             y: n[f * 3 + 1],
                             z: n[f * 3 + 2],
@@ -2565,6 +2689,58 @@ mod tests {
     }
 
     #[test]
+    fn test_near_clipping_preserves_small_plane_offset_between_large_distances() {
+        let from = clip_vertex(-1.0, 0.0, 2e38, -2e38, 0.0);
+        let to = clip_vertex(1.0, 0.0, -2e38, 2e38, 0.0);
+        for near in [1.0, 1e38] {
+            let actual = clip_edge_to_near(from, to, -2e38, 2e38, near);
+            assert_eq!(actual.world.z, -near);
+            assert_eq!(actual.uv.0, near);
+            assert_eq!(actual.world.y, 0.0);
+            assert_eq!(actual.uv.1, 0.0);
+            let expected_x = (f64::from(near) / f64::from(2e38_f32)) as f32;
+            assert_eq!(actual.world.x, expected_x);
+
+            let vertices = [from, to, clip_vertex(0.0, 1.0, -2e38, 0.0, 1.0)];
+            let clipped = clip_triangle_to_near(vertices, &near_clip_test_row(), near);
+            assert_eq!(clipped.len, 4);
+            assert!(clipped.vertices[..clipped.len]
+                .iter()
+                .all(|v| v.world.z <= -near));
+        }
+
+        let from = clip_vertex(-1.0, 0.0, 1e10, -1e10, 0.0);
+        let to = clip_vertex(1.0, 0.0, -1e10, 1e10, 0.0);
+        let actual = clip_edge_to_near(from, to, -1e10, 1e10, 1.0);
+        assert_eq!(actual.world.z, -1.0);
+        assert_eq!(actual.uv.0, 1.0);
+    }
+
+    #[test]
+    fn test_near_clipping_preserves_finite_large_world_and_uv_midpoint() {
+        let vertices = [
+            clip_vertex(-2e38, 0.0, 1.0, -2e38, 0.0),
+            clip_vertex(2e38, 0.0, -3.0, 2e38, 0.0),
+            clip_vertex(0.0, 1.0, -3.0, 0.0, 1.0),
+        ];
+        let clipped = clip_triangle_to_near(vertices, &near_clip_test_row(), 1.0);
+        assert_eq!(clipped.len, 4);
+        for vertex in &clipped.vertices[..clipped.len] {
+            assert!(vertex.world.is_finite());
+            assert!(vertex.uv.0.is_finite() && vertex.uv.1.is_finite());
+        }
+        assert!(clipped.vertices[..clipped.len].iter().any(|vertex| {
+            vertex.world
+                == Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: -1.0,
+                }
+                && vertex.uv == (0.0, 0.0)
+        }));
+    }
+
+    #[test]
     fn test_clip_triangle_to_near_keeps_all_inside_vertices() {
         let clip_row = near_clip_test_row();
         let vertices = [
@@ -2913,6 +3089,99 @@ mod tests {
         )
         .unwrap();
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
+    }
+
+    #[test]
+    fn test_billboard_preserves_extreme_finite_nonnegative_column_lengths() {
+        let target = Image::new(64, 64);
+        let camera = Camera::new();
+        let ctx = draw_context_64(&target, &camera, false);
+        for scale in [1e-30, 2.0, 1e20] {
+            let world = Mat4 {
+                data: [
+                    [scale, 0.0, 0.0, 1.0],
+                    [0.0, scale, 0.0, 2.0],
+                    [0.0, 0.0, -scale, 3.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ],
+            };
+
+            let actual = apply_billboard(&world, &ctx, BILLBOARD_ON);
+            assert_eq!(
+                actual.data,
+                [
+                    [scale, 0.0, 0.0, 1.0],
+                    [0.0, scale, 0.0, 2.0],
+                    [0.0, 0.0, scale, 3.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ]
+            );
+        }
+    }
+
+    #[test]
+    fn test_billboard_preserves_finite_components_of_unrepresentable_column_length() {
+        let camera = Camera::new();
+        let d = 1.0 / 3.0_f32.sqrt();
+        let s = 1.0 / 2.0_f32.sqrt();
+        let q = 1.0 / 6.0_f32.sqrt();
+        rc_mut!(&camera).transform = Mat4::from_rows([
+            [d, -s, q, 0.0],
+            [d, s, q, 0.0],
+            [d, 0.0, -2.0 * q, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        let target = Image::new(64, 64);
+        let ctx = draw_context_64(&target, &camera, false);
+        let world = Mat4 {
+            data: [
+                [2e38, 0.0, 0.0, 0.0],
+                [2e38, 1.0, 0.0, 0.0],
+                [2e38, 0.0, 1.0, -2.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+
+        let actual = apply_billboard(&world, &ctx, BILLBOARD_ON);
+        // The unit camera axis cancels sqrt(3), within f32 axis rounding.
+        for row in &actual.data[..3] {
+            assert!(row[0].is_finite());
+            assert!((row[0] / 2e38 - 1.0).abs() <= 2.0 * f32::EPSILON);
+        }
+        assert_eq!(actual.data[2][3], -2.0);
+    }
+
+    #[test]
+    fn test_face_normal_direction_survives_selected_product_underflow() {
+        let world = Mat4 {
+            data: [
+                [0.01, 0.0, 0.0, 0.0],
+                [0.0, 0.01, 0.0, 0.0],
+                [0.0, 0.0, 0.01, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        let transform = FaceNormalTransform::new(&world);
+        assert!(transform.wide_matrix.is_none());
+
+        let actual = transform.transform(&Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 1e-42,
+        });
+        assert!(actual.is_finite());
+        assert!(actual.z > 0.0);
+        assert_eq!(
+            face_shade_level(
+                &Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: -1.0
+                },
+                Some(&actual)
+            ),
+            7
+        );
     }
 
     #[test]
