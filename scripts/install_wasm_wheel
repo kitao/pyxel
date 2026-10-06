@@ -1,30 +1,33 @@
 #!/usr/bin/env python3
 
+import importlib.util
 import re
 import shutil
 import sys
 import zipfile
-from email.parser import Parser
+from importlib.machinery import SourceFileLoader
 from pathlib import Path
-
-import tomllib
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DIST_DIR = ROOT_DIR / "dist"
 WASM_DIR = ROOT_DIR / "wasm"
 PYPROJECT_PATH = ROOT_DIR / "python" / "pyproject.toml"
-EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
-WASM_WHEEL_GLOBS = (
-    "pyxel-*-emscripten_*.whl",
-    "pyxel-*-pyemscripten_*.whl",
-)
 WHEEL_PATH_PATTERN = re.compile(r'(?m)^(const PYXEL_WHEEL_PATH\s*=\s*")[^"]+(";)$')
 
 
 def main() -> int:
     try:
-        wheel_path, version = _find_wheel(DIST_DIR, PYPROJECT_PATH)
-        _validate_wheel_tag(wheel_path, version)
+        checker_path = Path(__file__).with_name("check_wasm_wheel")
+        loader = SourceFileLoader("_pyxel_wheel_checker", str(checker_path))
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        checker = importlib.util.module_from_spec(spec)
+        loader.exec_module(checker)
+        wheel_path = checker.find_wheel(DIST_DIR, PYPROJECT_PATH)
+        violations = checker.find_wheel_mismatches(
+            wheel_path, PYPROJECT_PATH, PYPROJECT_PATH.parent / "pyxel"
+        )
+        if violations:
+            raise ValueError(f"wheel contents failed validation: {violations}")
     except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
         print(f"error: invalid WebAssembly wheel: {error}", file=sys.stderr)
         return 1
@@ -53,51 +56,11 @@ def main() -> int:
         wheel_temp_path.unlink(missing_ok=True)
         script_temp_path.unlink(missing_ok=True)
 
-    for pattern in WASM_WHEEL_GLOBS:
+    for pattern in checker.WASM_WHEEL_GLOBS:
         for old_wheel_path in WASM_DIR.glob(pattern):
             if old_wheel_path != installed_wheel_path:
                 old_wheel_path.unlink()
     return 0
-
-
-def _project_name_and_version(pyproject_path):
-    try:
-        project = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))["project"]
-        name = project["name"]
-        version = project["version"]
-        if not all(isinstance(value, str) for value in (name, version)):
-            raise TypeError("project name and version must be strings")
-    except (KeyError, OSError, TypeError, tomllib.TOMLDecodeError) as error:
-        raise ValueError(f"invalid project identity: {error}") from error
-    return name, version
-
-
-def _find_wheel(dist_dir, pyproject_path):
-    name, version = _project_name_and_version(pyproject_path)
-    distribution = name.replace("-", "_")
-    expected_name = f"{distribution}-{version}-{EXPECTED_WHEEL_TAG}.whl"
-    wheel_paths = sorted(
-        {path for pattern in WASM_WHEEL_GLOBS for path in dist_dir.glob(pattern)}
-    )
-    if [path.name for path in wheel_paths] != [expected_name]:
-        actual_names = ", ".join(path.name for path in wheel_paths) or "none"
-        raise ValueError(
-            f"expected WebAssembly wheel {expected_name}, found {actual_names}"
-        )
-    return wheel_paths[0], version
-
-
-def _validate_wheel_tag(wheel_path, version):
-    wheel_metadata_name = f"pyxel-{version}.dist-info/WHEEL"
-    with zipfile.ZipFile(wheel_path) as wheel_zip:
-        if wheel_zip.namelist().count(wheel_metadata_name) != 1:
-            raise ValueError(f"expected wheel metadata member {wheel_metadata_name}")
-        wheel_metadata = Parser().parsestr(
-            wheel_zip.read(wheel_metadata_name).decode("utf-8", errors="strict")
-        )
-
-    if wheel_metadata.get_all("Tag", []) != [EXPECTED_WHEEL_TAG]:
-        raise ValueError(f"WHEEL Tag fields do not match {EXPECTED_WHEEL_TAG}")
 
 
 if __name__ == "__main__":

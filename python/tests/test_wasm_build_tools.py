@@ -203,6 +203,9 @@ def test_install_wasm_wheel_updates_prettier_formatted_path(tmp_path):
 
     installer = scripts_dir / "install_wasm_wheel"
     shutil.copy2(ROOT_DIR / "scripts" / "install_wasm_wheel", installer)
+    shutil.copy2(
+        ROOT_DIR / "scripts" / "check_wasm_wheel", scripts_dir / "check_wasm_wheel"
+    )
     wheel_name = "pyxel-3.1.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl"
     _write_wasm_wheel(dist_dir / wheel_name, "3.1.0")
     (wasm_dir / "pyxel-old-cp311-abi3-emscripten_5_0_3_wasm32.whl").write_bytes(b"old")
@@ -229,6 +232,9 @@ def test_install_wasm_wheel_preserves_current_wheel_on_ambiguous_input(tmp_path)
 
     installer = scripts_dir / "install_wasm_wheel"
     shutil.copy2(ROOT_DIR / "scripts" / "install_wasm_wheel", installer)
+    shutil.copy2(
+        ROOT_DIR / "scripts" / "check_wasm_wheel", scripts_dir / "check_wasm_wheel"
+    )
     for version in ("3.1.0", "3.1.1"):
         _write_wasm_wheel(
             dist_dir / f"pyxel-{version}-cp311-abi3-pyemscripten_2026_0_wasm32.whl",
@@ -257,6 +263,9 @@ def test_install_wasm_wheel_preserves_current_wheel_on_invalid_loader(tmp_path):
 
     installer = scripts_dir / "install_wasm_wheel"
     shutil.copy2(ROOT_DIR / "scripts" / "install_wasm_wheel", installer)
+    shutil.copy2(
+        ROOT_DIR / "scripts" / "check_wasm_wheel", scripts_dir / "check_wasm_wheel"
+    )
     new_wheel = dist_dir / "pyxel-3.1.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl"
     _write_wasm_wheel(new_wheel, "3.1.0")
 
@@ -336,6 +345,9 @@ def test_install_wasm_wheel_rejects_wrong_wheel_contract_before_changes(
 
     installer = scripts_dir / "install_wasm_wheel"
     shutil.copy2(ROOT_DIR / "scripts" / "install_wasm_wheel", installer)
+    shutil.copy2(
+        ROOT_DIR / "scripts" / "check_wasm_wheel", scripts_dir / "check_wasm_wheel"
+    )
     _write_wasm_wheel(dist_dir / wheel_name, "3.1.0", internal_tag)
     current_wheel = wasm_dir / f"pyxel-3.0.0-{EXPECTED_WHEEL_TAG}.whl"
     current_wheel.write_bytes(b"current")
@@ -346,6 +358,46 @@ def test_install_wasm_wheel_rejects_wrong_wheel_contract_before_changes(
     assert result.returncode == 1
     assert current_wheel.read_bytes() == b"current"
     assert (wasm_dir / "pyxel.js").read_text(encoding="utf-8") == script
+
+
+@pytest.mark.parametrize("defect", ["source", "metadata", "cache", "host-path"])
+def test_installer_uses_complete_wheel_validation_before_changes(tmp_path, defect):
+    scripts, dist, wasm = (tmp_path / name for name in ("scripts", "dist", "wasm"))
+    for directory in (scripts, dist, wasm):
+        directory.mkdir()
+    _write_project_version(tmp_path, "3.0.0")
+    for name in ("check_wasm_wheel", "install_wasm_wheel"):
+        shutil.copy2(ROOT_DIR / "scripts" / name, scripts)
+    source = tmp_path / "python/pyxel"
+    source.mkdir()
+    (source / "cli.py").write_text("current\n")
+    wheel = dist / f"pyxel-3.0.0-{EXPECTED_WHEEL_TAG}.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr(
+            "pyxel/cli.py", "stale\n" if defect == "source" else "current\n"
+        )
+        metadata = "Metadata-Version: 2.4\nName: pyxel\nVersion: 3.0.0\nRequires-Python: >=3.11\n"
+        if defect == "metadata":
+            metadata = metadata.replace(">=3.11", ">=3.12")
+        archive.writestr("pyxel-3.0.0.dist-info/METADATA", metadata)
+        archive.writestr(
+            "pyxel-3.0.0.dist-info/WHEEL",
+            f"Wheel-Version: 1.0\nRoot-Is-Purelib: false\nTag: {EXPECTED_WHEEL_TAG}\n",
+        )
+        if defect == "cache":
+            archive.writestr("pyxel/__pycache__/cli.pyc", b"cache")
+        if defect == "host-path":
+            archive.writestr("pyxel/binding.so", b"/Users/builder/source")
+    (wasm / "previous.whl").write_bytes(b"previous wheel")
+    (wasm / "pyxel.js").write_text('const PYXEL_WHEEL_PATH = "previous.whl";\n')
+    originals = {p.name: p.read_bytes() for p in wasm.iterdir()}
+
+    result = subprocess.run(
+        [scripts / "install_wasm_wheel"], capture_output=True, text=True, check=False
+    )
+    assert result.returncode == 1
+    assert result.stderr.startswith("error: invalid WebAssembly wheel:")
+    assert {p.name: p.read_bytes() for p in wasm.iterdir()} == originals
 
 
 def _load_script(name):
@@ -369,6 +421,10 @@ def _write_project_version(root: Path, version: str) -> None:
 
 def _write_wasm_wheel(path: Path, version: str, tag: str = EXPECTED_WHEEL_TAG) -> None:
     with zipfile.ZipFile(path, "w") as wheel_zip:
+        wheel_zip.writestr(
+            f"pyxel-{version}.dist-info/METADATA",
+            f"Metadata-Version: 2.4\nName: pyxel\nVersion: {version}\nRequires-Python: >=3.11\n",
+        )
         wheel_zip.writestr(
             f"pyxel-{version}.dist-info/WHEEL",
             f"Wheel-Version: 1.0\nRoot-Is-Purelib: false\nTag: {tag}\n",

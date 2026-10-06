@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Generate documentation GIFs for Pyxel Cube examples c01 through c06.
-
-Run without names to regenerate all six GIFs in docs/images, or pass example
-names to regenerate a subset. Use --output-dir to inspect candidates elsewhere.
-"""
 
 import argparse
 import os
@@ -19,6 +14,12 @@ from pathlib import Path
 from _image_capture import save_gif
 from PIL import Image
 
+_DESCRIPTION = """Generate documentation GIFs for Pyxel Cube examples c01 through c06.
+
+Run without names to regenerate all six GIFs in docs/images, or pass example
+names to regenerate a subset. Use --output-dir to inspect candidates elsewhere.
+"""
+
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = ROOT / "python" / "pyxel" / "examples" / "cube"
 IMAGES = ROOT / "docs" / "images"
@@ -31,6 +32,9 @@ SETTINGS = {
     "c05_3d_collision": (300, 2, 30),
     "c06_3d_physics": (300, 2, 30),
 }
+
+
+# Input planning
 
 
 def interpolate(frame, points, eased=False):
@@ -133,6 +137,7 @@ def collision_input(frame, app, pyxel, state):
             (pyxel.KEY_RIGHT in held) - (pyxel.KEY_LEFT in held),
             (pyxel.KEY_UP in held) - (pyxel.KEY_DOWN in held),
         )
+        # Use an alignment margin to avoid jitter between adjacent directions.
         dx, dz = old if old != (0, 0) and score(best) < score(old) + 0.13 else best
         held = set()
         if dx:
@@ -224,6 +229,7 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
         focus = Vec3(0, 470, 0)
         eye = focus + Mat4.from_euler(Vec3(-pitch, angle, 0)) * Vec3(0, 0, 1100)
         view = Mat4.look_at(eye, focus)
+
         if "shots" not in state:
             rng = random.Random(60506)
             # Wait until each group faces the windmill before knocking it down.
@@ -305,6 +311,7 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
             )
             state["shots"] = tuple(sorted(shots))
             state["support_frame"] = support_frame
+
         shots = state["shots"]
         target_points = (
             (1, *shots[0][1]),
@@ -325,6 +332,7 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
             round(pyxel.width / 2 + local.x / -local.z / scale) + offset_x,
             round(pyxel.height / 2 - local.y / -local.z / scale) + offset_y,
         )
+
         if frame in (shot_frame for shot_frame, _, _ in shots):
             direction = (
                 view.rot
@@ -362,6 +370,9 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
                 )
             keys.add(pyxel.MOUSE_BUTTON_LEFT)
     return keys, mouse
+
+
+# Image generation
 
 
 def generate(name, destination):
@@ -442,7 +453,7 @@ def generate(name, destination):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=_DESCRIPTION)
     parser.add_argument("examples", nargs="*", choices=tuple(SETTINGS))
     parser.add_argument("--output-dir", type=Path, default=IMAGES)
     parser.add_argument("--worker", choices=tuple(SETTINGS), help=argparse.SUPPRESS)
@@ -452,7 +463,7 @@ def main():
         generate(args.worker, args.output_dir / f"{args.worker}.gif")
         return
 
-    names = args.examples or list(SETTINGS)
+    names = list(dict.fromkeys(args.examples or SETTINGS))
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
         for name in names:

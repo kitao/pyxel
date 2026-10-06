@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Recreate Pyxel Editor GIFs from the bundled sample resource.
-
-Run without arguments to regenerate the documentation and editor manual copies.
-Pass editor names to select GIFs, or --output-dir to inspect them elsewhere.
-"""
 
 import argparse
 import os
@@ -15,6 +10,12 @@ from pathlib import Path
 
 from _image_capture import save_gif
 from PIL import Image
+
+_DESCRIPTION = """Recreate Pyxel Editor GIFs from the bundled sample resource.
+
+Run without arguments to regenerate the documentation and editor manual copies.
+Pass editor names to select GIFs, or --output-dir to inspect them elsewhere.
+"""
 
 ROOT = Path(__file__).resolve().parents[1]
 RESOURCE = ROOT / "python" / "pyxel" / "examples" / "assets" / "sample.pyxres"
@@ -32,12 +33,16 @@ OUTPUTS = {
 }
 
 
+# Input planning
+
+
 def cursor_at(frame, points):
     if frame <= points[0][0]:
         return points[0][1:]
     for (start, x1, y1), (end, x2, y2) in pairwise(points):
         if frame <= end:
             t = (frame - start) / (end - start)
+            # The fractional power advances the eased cursor sooner toward its target.
             t = (t * t * (3 - 2 * t)) ** 0.75
             return round(x1 + (x2 - x1) * t), round(y1 + (y2 - y1) * t)
     return points[-1][1:]
@@ -110,6 +115,9 @@ def input_for_frame(editor, frame, pyxel):
         if frame == 123:
             keys.add(pyxel.KEY_SPACE)
     return keys, mouse
+
+
+# Image generation
 
 
 def generate(editor, destination):
@@ -218,7 +226,7 @@ def combine(editors, sources, destination):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=_DESCRIPTION)
     parser.add_argument("editors", nargs="*", choices=tuple(OUTPUTS))
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--worker", choices=tuple(FRAMES), help=argparse.SUPPRESS)
@@ -227,7 +235,7 @@ def main():
         generate(args.worker, args.output_dir / f"{args.worker}_editor.gif")
         return
 
-    outputs = args.editors or list(OUTPUTS)
+    outputs = list(dict.fromkeys(args.editors or OUTPUTS))
     editors = [
         editor
         for editor in FRAMES

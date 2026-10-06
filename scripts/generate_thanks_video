@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Animate the example tiles and lettering in the 18,000-star thank-you image.
-
-Requires the adjacent pyxel-user-examples repository and ffmpeg.
-"""
+# Animate the example tiles and lettering in the 18,000-star thank-you image.
+#
+# Requires the adjacent pyxel-user-examples repository and ffmpeg.
 
 import random
 import runpy

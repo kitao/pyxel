@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Recreate the 30 Seconds of Daylight and Megaball documentation GIFs.
-
-Run without names to regenerate both GIFs in docs/images. Use --output-dir to
-review candidates without changing the documentation images.
-"""
 
 import argparse
 import os
@@ -19,6 +14,12 @@ from pathlib import Path
 from _image_capture import save_gif
 from PIL import Image
 
+_DESCRIPTION = """Recreate the 30 Seconds of Daylight and Megaball documentation GIFs.
+
+Run without names to regenerate both GIFs in docs/images. Use --output-dir to
+review candidates without changing the documentation images.
+"""
+
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ROOT / "python" / "pyxel" / "examples" / "apps"
 IMAGES = ROOT / "docs" / "images"
@@ -29,6 +30,9 @@ SETTINGS = {
 }
 # Brief held movements alternate with cautious single-tile taps.
 DAYLIGHT_STEP_DELAYS = (1, 1, 3, 3, 4, 2, 2, 3, 4, 2, 1, 1, 3, 3, 4, 2, 3, 4)
+
+
+# Input planning
 
 
 def path_between(game_map, start, target):
@@ -141,6 +145,9 @@ def input_for_frame(name, frame, app, pyxel, controls):
     return keys
 
 
+# Image generation
+
+
 def generate(name, destination):
     import pyxel
 
@@ -213,7 +220,7 @@ def generate(name, destination):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=_DESCRIPTION)
     parser.add_argument("apps", nargs="*", choices=tuple(SETTINGS))
     parser.add_argument("--output-dir", type=Path, default=IMAGES)
     parser.add_argument("--worker", choices=tuple(SETTINGS), help=argparse.SUPPRESS)
@@ -223,7 +230,7 @@ def main():
         generate(args.worker, args.output_dir / f"{args.worker}.gif")
         return
 
-    names = args.apps or list(SETTINGS)
+    names = list(dict.fromkeys(args.apps or SETTINGS))
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
         for name in names:
