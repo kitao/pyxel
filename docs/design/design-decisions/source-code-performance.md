@@ -147,8 +147,11 @@ parents and BVH child links use signed indices to represent `-1` sentinels,
 while array access uses `usize`. These distinctions should survive any local
 change in width.
 
-Widen intermediates when the calculation needs it. Circle precision and `i64`
-offsets until clipping follow the [primitive raster
+Widen intermediates when the calculation needs it. Judge intermediate range
+against the operation's required result: preserving a direction can require
+scaling or normalizing a wide intermediate before storing it in `f32`, even
+when the unnormalized magnitude is outside `f32` range. Circle precision and
+`i64` offsets until clipping follow the [primitive raster
 decision](#primitive-raster-precision-and-clipping). Representation choices do
 not add parameter restrictions.
 

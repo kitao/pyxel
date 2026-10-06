@@ -74,6 +74,20 @@ proportion to its purpose. Its share-link generation guard instead protects
 later asynchronous encoding results; it does not preserve typing during initial
 restoration. These operations have distinct responsibilities.
 
+### Playback requests during reset
+
+**Decision:** In an initialized MML Studio session, a PLAY request remains
+available while the runtime reset prepares playback. Finishing the button's
+brief visual feedback does not cancel it. STOP cancels pending playback, and
+completion of an earlier PLAY must not erase a later request.
+
+**Reason:** Runtime reset can wait for asynchronous audio work while visual
+feedback ends sooner. Users still expect their requested playback to start,
+and expect their later PLAY or STOP action to take precedence. The [page
+controller](../../../web/mml-studio/index.html), [playback
+App](../../../web/mml-studio/mml_studio.py), and [runtime
+reset](../../../wasm/pyxel.js) cooperate across that boundary.
+
 ## Runtime and Pages
 
 ### Runtime error presentation
