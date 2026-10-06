@@ -89,6 +89,63 @@ const _registerCustomElements = () => {
   window.customElements.define("pyxel-edit", PyxelEditElement);
 };
 
+// Public API
+
+async function launchPyxel(params) {
+  const pyxelVersion = PYXEL_WHEEL_PATH.split("-")[1];
+  const pyodideVersion = PYODIDE_URL.match(/v([\d.]+)\//)[1];
+  console.log(`Launch Pyxel ${pyxelVersion} with Pyodide ${pyodideVersion}`);
+  console.log(params);
+
+  _suppressTouchZoomGestures();
+  _allowGamepadConnection();
+
+  const canvas = await _createScreenElements();
+  const pyodide = await _loadPyodideAndPyxel(canvas);
+
+  _hookPythonError(pyodide);
+  _hookFileOperations(pyodide, params.root || ".");
+  await _waitForInput();
+
+  window.pyxelContext.initialized = true;
+  window.pyxelContext.canvas = canvas;
+  window.pyxelContext.pyodide = pyodide;
+  window.pyxelContext.params = params;
+  window.pyxelContext.hasFatalError = false;
+
+  try {
+    await _executePyxelCommand(pyodide, params);
+  } catch (error) {
+    _displayFatalErrorOverlay(error);
+  }
+}
+
+async function resetPyxel() {
+  const context = window.pyxelContext;
+  const previous = context.resetPromise ?? Promise.resolve();
+  const pending = previous.then(_resetPyxel);
+  context.resetPromise = pending;
+  try {
+    await pending;
+  } finally {
+    if (context.resetPromise === pending) {
+      context.resetPromise = null;
+    }
+  }
+}
+
+function dropFileToPyxel(name, data) {
+  if (!window.pyxelContext.initialized) {
+    return;
+  }
+  const path = `/tmp/${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const pyodide = window.pyxelContext.pyodide;
+  pyodide.FS.writeFile(path, new Uint8Array(data));
+  pyodide.runPython(
+    `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`,
+  );
+}
+
 // Shared runtime state and input workarounds
 
 window.pyxelContext = {
@@ -218,63 +275,6 @@ document.addEventListener(
   },
   true,
 );
-
-// Public API
-
-async function launchPyxel(params) {
-  const pyxelVersion = PYXEL_WHEEL_PATH.split("-")[1];
-  const pyodideVersion = PYODIDE_URL.match(/v([\d.]+)\//)[1];
-  console.log(`Launch Pyxel ${pyxelVersion} with Pyodide ${pyodideVersion}`);
-  console.log(params);
-
-  _suppressTouchZoomGestures();
-  _allowGamepadConnection();
-
-  const canvas = await _createScreenElements();
-  const pyodide = await _loadPyodideAndPyxel(canvas);
-
-  _hookPythonError(pyodide);
-  _hookFileOperations(pyodide, params.root || ".");
-  await _waitForInput();
-
-  window.pyxelContext.initialized = true;
-  window.pyxelContext.canvas = canvas;
-  window.pyxelContext.pyodide = pyodide;
-  window.pyxelContext.params = params;
-  window.pyxelContext.hasFatalError = false;
-
-  try {
-    await _executePyxelCommand(pyodide, params);
-  } catch (error) {
-    _displayFatalErrorOverlay(error);
-  }
-}
-
-async function resetPyxel() {
-  const context = window.pyxelContext;
-  const previous = context.resetPromise ?? Promise.resolve();
-  const pending = previous.then(_resetPyxel);
-  context.resetPromise = pending;
-  try {
-    await pending;
-  } finally {
-    if (context.resetPromise === pending) {
-      context.resetPromise = null;
-    }
-  }
-}
-
-function dropFileToPyxel(name, data) {
-  if (!window.pyxelContext.initialized) {
-    return;
-  }
-  const path = `/tmp/${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const pyodide = window.pyxelContext.pyodide;
-  pyodide.FS.writeFile(path, new Uint8Array(data));
-  pyodide.runPython(
-    `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`,
-  );
-}
 
 // Initialization
 

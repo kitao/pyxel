@@ -578,6 +578,18 @@ mod tests {
     }
 
     #[test]
+    fn test_query_ray_unpruned_preserves_visit_order_and_empty_mesh() {
+        let bvh = two_separated_triangles();
+        let mut hits = Vec::new();
+        bvh.query_ray_unpruned(|tri| hits.push(tri));
+        // The ray traversal visits the right leaf before the left leaf.
+        assert_eq!(hits, [[3, 4, 5], [0, 1, 2]]);
+
+        let empty = Bvh::build(Vec::new(), Vec::new());
+        empty.query_ray_unpruned(|_| panic!("empty mesh visited a triangle"));
+    }
+
+    #[test]
     fn test_query_ray_prunes_off_axis_leaf() {
         let bvh = two_separated_triangles();
         let mut hits = Vec::new();
@@ -832,6 +844,88 @@ mod tests {
                 );
                 assert_eq!(hits, 0, "y={y}, zero={zero}");
             }
+        }
+    }
+
+    #[test]
+    fn test_query_ray_preserves_nonzero_direction_with_overflowing_reciprocal() {
+        for axis in 0..3 {
+            let mut min = [-1.0; 3];
+            let mut max = [1.0; 3];
+            min[axis] = 0.0;
+            max[axis] = 0.0;
+            let min = Vec3 {
+                x: min[0],
+                y: min[1],
+                z: min[2],
+            };
+            let max = Vec3 {
+                x: max[0],
+                y: max[1],
+                z: max[2],
+            };
+            let bvh = Bvh::build(vec![min, max, min], vec![[0, 1, 2]]);
+
+            for magnitude in [
+                f32::from_bits(1),
+                f32::from_bits(1 << 19),
+                f32::MIN_POSITIVE,
+            ] {
+                for sign in [1.0, -1.0] {
+                    for zero in [0.0, -0.0] {
+                        let mut origin = [0.0; 3];
+                        let mut direction = [zero; 3];
+                        direction[axis] = magnitude * sign;
+                        // Exact powers of two put the slab at t=1024 even for subnormals.
+                        origin[axis] = -1024.0 * direction[axis];
+                        let origin = Vec3 {
+                            x: origin[0],
+                            y: origin[1],
+                            z: origin[2],
+                        };
+                        let direction = Vec3 {
+                            x: direction[0],
+                            y: direction[1],
+                            z: direction[2],
+                        };
+
+                        for (max_t, expected) in [(512.0, 0), (1024.0, 1), (2048.0, 1)] {
+                            let mut hits = 0;
+                            bvh.query_ray(origin, direction, max_t, |_| hits += 1);
+                            assert_eq!(hits, expected, "axis={axis}, magnitude={magnitude}, sign={sign}, zero={zero}, max_t={max_t}");
+                        }
+
+                        let mut hits = 0;
+                        bvh.query_ray(
+                            origin,
+                            Vec3 {
+                                x: -direction.x,
+                                y: -direction.y,
+                                z: -direction.z,
+                            },
+                            2048.0,
+                            |_| hits += 1,
+                        );
+                        assert_eq!(hits, 0);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_ray_slab_preserves_finite_parameter_after_wide_difference() {
+        for sign in [1.0, -1.0] {
+            let (enter, exit) = ray_slab_interval(
+                -2e38 * sign,
+                1e38 * sign,
+                1e-38 * sign,
+                2e38 * sign,
+                2e38 * sign,
+            );
+            // The stored f32 endpoints and reciprocal allow a few ulps around t=4.
+            assert!((enter - 4.0).abs() < 1e-6, "sign={sign}, enter={enter}");
+            assert!((exit - 4.0).abs() < 1e-6, "sign={sign}, exit={exit}");
         }
     }
 

@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -223,12 +224,14 @@ for interruption in (3, 13, 14, 17, 22, 23, 30):
                 code,
                 str(EXAMPLES_DIR / "cube" / "c03_custom_shapes.py"),
             ],
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
             capture_output=True,
             text=True,
             timeout=15,
             check=False,
         )
         assert result.returncode == 0, result.stderr
+        assert "Failed to initialize audio device" not in result.stdout
 
     def test_collision_example_movement_and_camera(self):
         code = """
@@ -311,7 +314,10 @@ for eye in (Vec3(0, 0, 30), Vec3(0, 20, 30), Vec3(12, 30, 30)):
 
 step(2)
 start_y = player.transform.pos.y
-wings = player.actor.find_by_name("LeftWing") + player.actor.find_by_name("RightWing")
+left_wings = player.actor.find_by_name("LeftWing")
+right_wings = player.actor.find_by_name("RightWing")
+assert left_wings and right_wings
+wings = left_wings + right_wings
 rest_wings = [wing.transform.rot for wing in wings]
 step(jump=True)
 takeoff_wings = [wing.transform.rot for wing in wings]
@@ -696,12 +702,14 @@ pyxel.play = play
                 code,
                 str(EXAMPLES_DIR / "cube" / "c05_3d_collision.py"),
             ],
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
             capture_output=True,
             text=True,
             timeout=10,
             check=False,
         )
         assert result.returncode == 0, result.stderr
+        assert "Failed to initialize audio device" not in result.stdout
 
     def test_physics_example_demonstrations_and_controls(self, tmp_path):
         code = """
@@ -732,25 +740,36 @@ def step(frames=1, key=None):
 
 
 def bodies():
-    return [b for b in app.scene.children if isinstance(b, body_type) and b.collider.mass > 0]
+    return [
+        b
+        for b in app.scene.children
+        if isinstance(b, body_type) and b.collider.mass > 0
+    ]
 
 
 def aim(point):
     local = app.scene.camera.transform.inverse() * point
     scale = 2 * math.tan(math.radians(app.scene.camera.fov / 2)) / pyxel.height
-    pyxel.set_mouse_pos(round(pyxel.width / 2 - local.x / local.z / scale),
-                        round(pyxel.height / 2 + local.y / local.z / scale))
+    pyxel.set_mouse_pos(
+        round(pyxel.width / 2 - local.x / local.z / scale),
+        round(pyxel.height / 2 + local.y / local.z / scale),
+    )
 
 
 # Static terrain remains at multiple heights; moving arms turn in two planes.
 initial_bodies = bodies()
 initial_poses = [b.transform for b in initial_bodies]
-paddles = [b for b in app.scene.children if b.collider.mass == 0
-           and b.collider.angular_velocity != Vec3.ZERO]
+paddles = [
+    b
+    for b in app.scene.children
+    if b.collider.mass == 0 and b.collider.angular_velocity != Vec3.ZERO
+]
 assert any(abs((b.transform.rot * b.collider.angular_velocity).y) > 1 for b in paddles)
 assert any(abs((b.transform.rot * b.collider.angular_velocity).z) > 1 for b in paddles)
 paddle_start = [b.transform for b in paddles]
-assert any(b.collider.size == Vec3.ZERO and b.collider.radius > 0 for b in initial_bodies)
+assert any(
+    b.collider.size == Vec3.ZERO and b.collider.radius > 0 for b in initial_bodies
+)
 assert any(b.collider.size.x > 0 and b.collider.radius == 0 for b in initial_bodies)
 assert any(b.collider.size.x == 0 and b.collider.size.y > 0 for b in initial_bodies)
 assert all(isinstance(b.paint, pyxel.Image) for b in initial_bodies)
@@ -768,8 +787,9 @@ for _ in range(3):
     standing = bodies()
     step(120)
     assert len(standing) == len(initial_bodies)
-    assert all((b.transform.pos - p.pos).length() < 2
-               for b, p in zip(standing, initial_poses))
+    assert all(
+        (b.transform.pos - p.pos).length() < 2 for b, p in zip(standing, initial_poses)
+    )
 
 # The arrows choose the firing viewpoint; the pointer chooses its target.
 pyxel.set_btn(pyxel.KEY_RIGHT, True)
@@ -784,8 +804,12 @@ assert app.scene.angle == 40 and app.scene.pitch == 70
 # Aimed fire removes a tower support and drops all its upper floors.
 step(key=pyxel.KEY_R)
 standing = bodies()
-floors = [b for b in standing if b.collider.size == Vec3(180, 15, 160)
-          and b.transform.pos.x == 290]
+floors = [
+    b
+    for b in standing
+    if b.collider.size == Vec3(180, 15, 160) and b.transform.pos.x == 290
+]
+assert floors
 initial = [b.transform.pos for b in floors]
 app.scene.angle = 115
 app.scene.pitch = 20
@@ -816,18 +840,24 @@ step(key=pyxel.KEY_R)
 standing = bodies()
 initial = [b.transform.pos for b in standing]
 beams = [b for b in standing if b.collider.size == Vec3(64, 14, 180)]
+assert beams
 beam_heights = [b.transform.pos.y for b in beams]
 arm_contacts = set()
 first_contacts = {}
 on_collide = body_type.on_collide
 
+
 def record_contact(self, other, contact):
-    if self in standing and other.collider.mass == 0:
-        if other.collider.angular_velocity != Vec3.ZERO:
-            arm_contacts.add(other)
-            if abs((other.transform.rot * other.collider.angular_velocity).z) > 1:
-                first_contacts.setdefault(self, pyxel.frame_count)
+    if (
+        self in standing
+        and other.collider.mass == 0
+        and other.collider.angular_velocity != Vec3.ZERO
+    ):
+        arm_contacts.add(other)
+        if abs((other.transform.rot * other.collider.angular_velocity).z) > 1:
+            first_contacts.setdefault(self, pyxel.frame_count)
     on_collide(self, other, contact)
+
 
 body_type.on_collide = record_contact
 app.scene.angle = 90
@@ -837,12 +867,12 @@ aim(Vec3(280, 561, 195))
 step(key=pyxel.MOUSE_BUTTON_LEFT)
 step(800)
 body_type.on_collide = on_collide
-assert any(abs((b.transform.rot * b.collider.angular_velocity).z) > 1
-           for b in arm_contacts)
+assert any(
+    abs((b.transform.rot * b.collider.angular_velocity).z) > 1 for b in arm_contacts
+)
 # Losing half the pillar height establishes collapse, even onto a lower deck.
 assert all(b.transform.pos.y < y - 32 for b, y in zip(beams, beam_heights))
-assert any(p.y > 500 and b.transform.pos.y < 200
-           for b, p in zip(standing, initial))
+assert any(p.y > 500 and b.transform.pos.y < 200 for b, p in zip(standing, initial))
 assert all(b in app.scene.children for b in standing)
 assert all(math.isfinite(v) for b in bodies() for v in b.transform.pos)
 assert app.scene.shot_count == 1
@@ -852,13 +882,19 @@ for index, shot in enumerate(app.scene.shots):
     if index == 0:
         assert shot.collider.size == Vec3.ZERO and shot.collider.radius > 0
     elif index == 1:
-        assert shot.collider.size.x == 0 and shot.collider.size.y > 0 and shot.collider.radius > 0
+        assert (
+            shot.collider.size.x == 0
+            and shot.collider.size.y > 0
+            and shot.collider.radius > 0
+        )
     else:
         assert shot.collider.size.x > 0 and shot.collider.radius == 0
 
 # One wall shot should send a burst of original debris onto the central rotor.
-for angle, pitch, target in [(270, 15, Vec3(-235, 625, -25)),
-                             (70, 15, Vec3(200, 565, 145))]:
+for angle, pitch, target in [
+    (270, 15, Vec3(-235, 625, -25)),
+    (70, 15, Vec3(200, 565, 145)),
+]:
     step(key=pyxel.KEY_R)
     standing, first_contacts = bodies(), {}
     body_type.on_collide = record_contact
@@ -930,12 +966,14 @@ callbacks["draw"]()
                 str(EXAMPLES_DIR / "cube" / "c06_3d_physics.py"),
             ],
             cwd=tmp_path,
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
             capture_output=True,
             text=True,
             timeout=300,
             check=False,
         )
         assert result.returncode == 0, result.stderr
+        assert "Failed to initialize audio device" not in result.stdout
 
     def test_shooter_consumes_each_collision_once(self):
         code = """
@@ -976,12 +1014,14 @@ for enemy_count, bullet_count, player_x in [(1, 2, 30), (2, 1, 90)]:
 
         result = subprocess.run(
             [sys.executable, "-c", code, str(EXAMPLES_DIR / "09_shooter.py")],
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
             capture_output=True,
             text=True,
             timeout=10,
             check=False,
         )
         assert result.returncode == 0, result.stderr
+        assert "Failed to initialize audio device" not in result.stdout
 
     def test_wavetable_strokes_start_at_click_and_fill_dragged_columns(self):
         code = """
@@ -1027,12 +1067,14 @@ assert list(wave) == expected, list(wave)
 
         result = subprocess.run(
             [sys.executable, "-c", code, str(EXAMPLES_DIR / "14_synthesizer.py")],
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
             capture_output=True,
             text=True,
             timeout=10,
             check=False,
         )
         assert result.returncode == 0, result.stderr
+        assert "Failed to initialize audio device" not in result.stdout
 
     def test_numbered_examples_have_capture_plans(self):
         planned = set(CAPTURE_PLANS)

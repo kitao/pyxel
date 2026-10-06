@@ -966,7 +966,7 @@ Return the cosine of deg degrees.
 
 ### `atan2(y, x)` — function
 
-Return the arctangent of y/x in degrees.
+Return the two-argument arctangent of y and x in degrees, accounting for the quadrant.
 
 **Parameters:**
 

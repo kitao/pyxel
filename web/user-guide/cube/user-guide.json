@@ -4459,7 +4459,7 @@
               "text": "<p>Pyxel Cube 예제는 <code class=\"chip\">cube</code> 디렉터리에 있으며, 이 디렉터리는 <code class=\"chip\">pyxel_examples</code> 안에 있습니다.</p>"
             },
             {
-              "text": "<p>다음 명령으로 로컬에서 예제를 실행하세요.</p>"
+              "text": "<p>다음 명령어로 로컬에서 예제를 실행하세요.</p>"
             },
             {
               "code": "cd pyxel_examples/cube\npyxel run c01_hello_cube.py",

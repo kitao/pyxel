@@ -2436,18 +2436,18 @@
           "type": "class",
           "signature": "Quat(x=0.0, y=0.0, z=0.0, w=1.0)",
           "description": {
-            "en": "A quaternion representing a rotation. The default is the identity rotation. Values are immutable; methods return a new Quat.",
-            "cn": "表示旋转的四元数。默认值是单位旋转。值不可变；方法会返回新的 Quat。",
-            "de": "Ein Quaternion, das eine Rotation darstellt. Standardwert ist die Identitätsrotation. Werte sind unveränderlich; Methoden geben einen neuen Quat zurück.",
-            "es": "Un cuaternión que representa una rotación. El valor predeterminado es la rotación identidad. Los valores son inmutables; los métodos devuelven un nuevo Quat.",
-            "fr": "Un quaternion représentant une rotation. La valeur par défaut est la rotation identité. Les valeurs sont immuables ; les méthodes renvoient un nouveau Quat.",
-            "it": "Un quaternione che rappresenta una rotazione. Il valore predefinito è la rotazione identità. I valori sono immutabili; i metodi restituiscono un nuovo Quat.",
-            "ja": "回転を表すクォータニオン。デフォルトは恒等回転。値は不変で、メソッドは新しい Quat を返す。",
-            "ko": "회전을 나타내는 쿼터니언입니다. 기본값은 항등 회전입니다. 값은 불변이며, 메서드는 새 Quat를 반환합니다.",
-            "pt": "Um quatérnio que representa uma rotação. O padrão é a rotação identidade. Os valores são imutáveis; métodos retornam um novo Quat.",
-            "ru": "Кватернион, представляющий вращение. По умолчанию используется тождественное вращение. Значения неизменяемы; методы возвращают новый Quat.",
-            "tr": "Bir dönmeyi temsil eden kuaterniyon. Varsayılan değer birim dönmedir. Değerler değişmezdir; metotlar yeni bir Quat döndürür.",
-            "uk": "Кватерніон, що представляє обертання. Типове значення — тотожне обертання. Значення незмінні; методи повертають новий Quat."
+            "en": "A quaternion representing a rotation. The default is the identity rotation. Values are immutable; operations that change the rotation return a new Quat.",
+            "cn": "表示旋转的四元数。默认值是单位旋转。值不可变；改变旋转的运算会返回新的 Quat。",
+            "de": "Ein Quaternion, das eine Rotation darstellt. Standardwert ist die Identitätsrotation. Werte sind unveränderlich; Operationen, die die Rotation ändern, geben einen neuen Quat zurück.",
+            "es": "Un cuaternión que representa una rotación. El valor predeterminado es la rotación identidad. Los valores son inmutables; las operaciones que cambian la rotación devuelven un nuevo Quat.",
+            "fr": "Un quaternion représentant une rotation. La valeur par défaut est la rotation identité. Les valeurs sont immuables ; les opérations qui modifient la rotation renvoient un nouveau Quat.",
+            "it": "Un quaternione che rappresenta una rotazione. Il valore predefinito è la rotazione identità. I valori sono immutabili; le operazioni che modificano la rotazione restituiscono un nuovo Quat.",
+            "ja": "回転を表すクォータニオン。デフォルトは恒等回転。値は不変で、回転を変更する演算は新しい Quat を返す。",
+            "ko": "회전을 나타내는 쿼터니언입니다. 기본값은 항등 회전입니다. 값은 불변이며, 회전을 변경하는 연산은 새 Quat를 반환합니다.",
+            "pt": "Um quatérnio que representa uma rotação. O padrão é a rotação identidade. Os valores são imutáveis; operações que alteram a rotação retornam um novo Quat.",
+            "ru": "Кватернион, представляющий вращение. По умолчанию используется тождественное вращение. Значения неизменяемы; операции, изменяющие вращение, возвращают новый Quat.",
+            "tr": "Bir dönmeyi temsil eden kuaterniyon. Varsayılan değer birim dönmedir. Değerler değişmezdir; dönmeyi değiştiren işlemler yeni bir Quat döndürür.",
+            "uk": "Кватерніон, що представляє обертання. Типове значення — тотожне обертання. Значення незмінні; операції, що змінюють обертання, повертають новий Quat."
           },
           "params": [
             {

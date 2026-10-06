@@ -4,14 +4,13 @@ import argparse
 import os
 import random
 import runpy
-import subprocess
 import sys
 import tempfile
 import zipfile
 from collections import deque
 from pathlib import Path
 
-from _image_capture import save_gif
+from _image_capture import run_worker, save_gif
 from PIL import Image
 
 _DESCRIPTION = """Recreate the 30 Seconds of Daylight and Megaball documentation GIFs.
@@ -88,12 +87,14 @@ def input_for_frame(name, frame, app, pyxel, controls):
                 start = target
             controls["path_index"] = 0
             controls["next_move_frame"] = 1
+
         position = (player.tile_x, player.tile_y)
         while (
             controls["path_index"] < len(controls["path"])
             and controls["path"][controls["path_index"]] == position
         ):
             controls["path_index"] += 1
+
         item = game_map.tile_get_any_item(*position)
         if item and item.type == item.TYPE_WEAPON and player.weapon == "None":
             controls["next_move_frame"] = frame + 2
@@ -196,6 +197,7 @@ def generate(name, destination):
                 frames.append(image.convert("RGB"))
             # Hold the opening pose without changing the seeded combat sequence.
             frames.extend([frames[0]] * 6)
+
         for frame in range(1, total - len(frames) + 1):
             keys = input_for_frame(name, frame, app, pyxel, controls)
             for key in held_keys - keys:
@@ -211,6 +213,7 @@ def generate(name, destination):
                 pyxel.screenshot(str(shot), scale=scale)
                 with Image.open(shot) as image:
                     frames.append(image.convert("RGB"))
+
         if name == "30sec_of_daylight":
             assert app.game.world.current_map.player.hp == 0
             assert app.game.world.current_map.player.weapon == "Club"
@@ -234,7 +237,7 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
         for name in names:
-            subprocess.run(
+            run_worker(
                 [
                     sys.executable,
                     str(Path(__file__).resolve()),
@@ -242,9 +245,7 @@ def main():
                     name,
                     "--output-dir",
                     temp_dir,
-                ],
-                check=True,
-                timeout=120,
+                ]
             )
 
         for name in names:

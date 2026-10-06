@@ -175,7 +175,7 @@ def test_tracked_wasm_wheel_matches_packaged_python_sources():
     assert checker.find_wheel_tag_mismatches(wheel_paths[0], version) == []
 
 
-def test_tracked_wasm_wheel_has_reproducible_sbom():
+def test_tracked_wasm_wheel_omits_serial_number_and_fixes_timestamp():
     wheel_paths = sorted((ROOT_DIR / "wasm").glob("pyxel-*-pyemscripten_*.whl"))
     assert len(wheel_paths) == 1
 

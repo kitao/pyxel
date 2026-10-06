@@ -164,6 +164,28 @@ def test_from_glb_uses_authored_normals_when_present(tmp_path):
     assert tuple(primitive.normals) == (0.0, 0.0, -1.0)
 
 
+@pytest.mark.parametrize(
+    "positions,expected",
+    [
+        ((0, 0, 0, 3, 0, 0, 0, 4, 0), [0, 0, 1]),
+        ((0, 0, 0, 3e20, 0, 0, 0, 4e20, 0), [0, 0, 1]),
+        ((-2e38, 0, 0, 2e38, 0, 0, 0, 1e38, 0), [0, 0, 1]),
+        ((0, 0, 0, 3e-6, 0, 0, 0, 4e-6, 0), [0, 0, 0]),
+    ],
+)
+def test_from_glb_uses_geometry_when_authored_normals_cancel(
+    tmp_path, positions, expected
+):
+    # Three unit directions at 120 degrees sum to zero, selecting geometry normals.
+    normals = (1, 0, 0, -0.5, math.sqrt(3) / 2, 0, -0.5, -math.sqrt(3) / 2, 0)
+    path = write_authored_normals_glb(
+        tmp_path / "cancelled_normals.glb", positions=positions, normals=normals
+    )
+    mesh = Mesh.from_glb(str(path))
+    primitive = next(p for p in mesh.primitives if p is not None)
+    assert list(primitive.normals) == expected
+
+
 def test_from_glb_loads_motion(tmp_path):
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")
     mesh = Mesh.from_glb(str(path), fps=30.0)

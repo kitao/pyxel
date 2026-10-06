@@ -1,8 +1,35 @@
-# Write palette-preserving documentation GIFs at their intended playback rate.
+# Run documentation capture workers and write palette-preserving GIFs.
 
+import os
+import subprocess
+import sys
 from itertools import pairwise
 
 from PIL import Image
+
+
+def run_worker(command):
+    # Unattended capture must not depend on the host's audio device.
+    try:
+        result = subprocess.run(
+            command,
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as error:
+        # TimeoutExpired retains captured bytes even with text=True.
+        print((error.stdout or b"").decode(errors="replace"), end="")
+        print((error.stderr or b"").decode(errors="replace"), end="", file=sys.stderr)
+        raise
+
+    print(result.stdout, end="")
+    print(result.stderr, end="", file=sys.stderr)
+    result.check_returncode()
+    if "Failed to initialize audio device" in result.stdout + result.stderr:
+        raise RuntimeError("Failed to initialize audio device in capture worker")
 
 
 def save_gif(frames, destination, fps=30, *, durations=None):

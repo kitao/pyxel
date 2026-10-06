@@ -229,6 +229,7 @@ def test_language_tagged_guides_preserve_code_and_untargeted_peers(tmp_path):
             "code": "f(Ａ)",
         }
     ]
+
     settled = path.read_bytes()
     format_prose._format_json(path)
     assert path.read_bytes() == settled

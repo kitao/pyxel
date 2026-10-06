@@ -417,10 +417,16 @@ class TestSystemFlow:
                 sys.executable,
                 "-c",
                 (
-                    "import atexit, pyxel; "
-                    "atexit.register(print, 'atexit completed', flush=True); "
-                    "pyxel.init(64, 64, headless=True); pyxel.quit(); "
-                    "raise AssertionError('quit() returned')"
+                    """
+import atexit
+
+import pyxel
+
+atexit.register(print, "atexit completed", flush=True)
+pyxel.init(64, 64, headless=True)
+pyxel.quit()
+raise AssertionError("quit() returned")
+"""
                 ),
             ],
             env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
@@ -431,6 +437,65 @@ class TestSystemFlow:
         assert result.returncode == 0, result.stderr.decode()
         assert result.stdout == b"atexit completed\n"
 
+    @pytest.mark.parametrize(
+        ("code", "expected"),
+        [
+            (
+                """
+import atexit
+
+import pyxel
+
+
+@atexit.register
+def goodbye():
+    print("exit hook entered", flush=True)
+    pyxel.quit()
+
+
+pyxel.init(64, 64, headless=True)
+pyxel.quit()
+raise AssertionError("quit() returned")
+""",
+                b"exit hook entered\n",
+            ),
+            (
+                """
+import subprocess
+
+import pyxel
+
+
+def restart_process(*args, **kwargs):
+    pyxel.reset()
+    print("reset hook completed", flush=True)
+
+
+# Observe reset reentry without launching another process.
+subprocess.Popen = restart_process
+pyxel.init(64, 64, headless=True)
+pyxel.reset()
+raise AssertionError("reset() returned")
+""",
+                b"reset hook completed\n",
+            ),
+        ],
+        ids=["quit", "reset"],
+    )
+    def test_lifecycle_callbacks_can_reenter(self, code, expected):
+        env = {**os.environ, "SDL_AUDIODRIVER": "dummy"}
+        env.pop(pyxel.WATCH_STATE_FILE_ENV, None)
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            env=env,
+            capture_output=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr.decode()
+        assert result.stdout == expected
+        assert result.stderr == b""
+
     @pytest.mark.parametrize("watching", [False, True])
     def test_reset(self, watching):
         env = os.environ.copy()
@@ -440,18 +505,22 @@ class TestSystemFlow:
         if watching:
             env[pyxel.WATCH_STATE_FILE_ENV] = "watch-state"
 
-        code = (
-            "import os, sys\n"
-            "if os.environ.pop('PYXEL_RESET_TEST_DONE', None) == '1':\n"
-            "    print('reset completed', flush=True)\n"
-            "    sys.exit(0)\n"
-            "\n"
-            "os.environ['PYXEL_RESET_TEST_DONE'] = '1'\n"
-            "import pyxel\n"
-            "pyxel.init(64, 64, headless=True)\n"
-            "pyxel.reset()\n"
-            "raise AssertionError('reset() returned')\n"
-        )
+        code = """
+import os
+import sys
+
+if os.environ.pop("PYXEL_RESET_TEST_DONE", None) == "1":
+    print("reset completed", flush=True)
+    sys.exit(0)
+
+os.environ["PYXEL_RESET_TEST_DONE"] = "1"
+# Import Pyxel only in the process that performs the reset.
+import pyxel
+
+pyxel.init(64, 64, headless=True)
+pyxel.reset()
+raise AssertionError("reset() returned")
+"""
 
         result = subprocess.run(
             [sys.executable, "-c", code],

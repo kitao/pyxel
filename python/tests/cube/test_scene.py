@@ -1,4 +1,5 @@
 import gc
+import math
 import subprocess
 import sys
 import weakref
@@ -45,6 +46,32 @@ class TestUpdate:
         # The inverse fits f32, but the requested local displacement (~1e39) does not.
         assert body.transform == before
         assert body.collider.velocity == Vec3(10, 0, 0)
+
+    @pytest.mark.parametrize("amount", [90, 1e20])
+    @pytest.mark.parametrize("axis", [0, 1, 2])
+    @pytest.mark.parametrize("sign", [1, -1])
+    @pytest.mark.parametrize("mass", [0, 1])
+    def test_update_preserves_finite_prescribed_spin(self, amount, axis, sign, mass):
+        unit = [0, 0, 0]
+        unit[axis] = sign
+        spin = Vec3(*(value * amount for value in unit))
+        body = Node()
+        initial = Mat4.from_translation(Vec3(1, 2, 3)).rotate_z(45)
+        body.transform = initial
+        body.collider = Collider(
+            mass=mass, gravity=0, linear_damp=0, angular_damp=0, angular_velocity=spin
+        )
+        rotation = Mat4.from_axis_angle(Vec3(*unit), amount)
+        assert rotation != Mat4.IDENTITY
+        expected = initial * rotation
+
+        body.update()
+        actual = body.transform
+        for row in range(4):
+            for col in range(4):
+                assert actual[row, col] == pytest.approx(expected[row, col], abs=2e-6)
+        assert actual.pos == Vec3(1, 2, 3)
+        assert body.collider.angular_velocity == spin
 
     def test_update_no_children(self):
         Node().update()
@@ -133,6 +160,7 @@ class TestGravity:
         assert a.gravity == pytest.approx(9.8)
         assert a.gravity_direction == Vec3.DOWN
         assert a.linear_damp == a.angular_damp == pytest.approx(0.1)
+
         a.gravity, a.gravity_direction = 1.62, Vec3.RIGHT
         a.linear_damp, a.angular_damp = 0.3, 0.4
         assert a.gravity == pytest.approx(1.62)
@@ -153,36 +181,47 @@ class TestGravity:
         assert velocity == saved == other.velocity == Vec3(3, 0, 0)
         assert spin == other.angular_velocity == Vec3(0, 3, 0)
         assert body.collider.velocity != saved
+
         body.collider.velocity = body.collider.angular_velocity = Vec3.ZERO
         body.update()
         assert Vec3.ZERO == Vec3(0, 0, 0)
 
     @pytest.mark.parametrize("fps", [0, 30, 60])
     def test_free_fall_and_damping_use_configured_time_step(self, fps):
-        code = """
-import sys
+        code = """import sys
+
 import pyxel
-from pyxel.cube import Collider, Mat4, Node, Vec3
+from pyxel.cube import Collider, Node, Vec3
+
 fps = int(sys.argv[1])
 if fps:
     pyxel.init(16, 16, fps=fps, headless=True)
 else:
     fps = 30  # Scene updates without init retain the default time step.
+
 # One second in free fall reaches 9.8 m/s regardless of mass or update rate.
 for mass in (1, 100):
     body = Node()
     body.collider = Collider(mass=mass, linear_damp=0)
+
     for _ in range(fps):
         body.update()
+
     assert abs(body.collider.velocity.y * fps / 100 + 9.8) < 1e-4
+
     # Semi-implicit Euler falls an extra half-step compared with g*t*t/2.
     expected = -490 * (fps + 1) / fps
     assert abs(body.transform.pos.y - expected) < 0.002
+
 # About 9.5 percent of both speeds is lost in one second at damping 0.1.
 body = Node()
-body.collider = Collider(gravity=0, velocity=Vec3(3, 0, 0), angular_velocity=Vec3(0, 3, 0))
+body.collider = Collider(
+    gravity=0, velocity=Vec3(3, 0, 0), angular_velocity=Vec3(0, 3, 0)
+)
+
 for _ in range(fps):
     body.update()
+
 assert 0.903 < body.collider.velocity.x / 3 < 0.906
 assert 0.903 < body.collider.angular_velocity.y / 3 < 0.906
 """
@@ -203,6 +242,7 @@ assert 0.903 < body.collider.angular_velocity.y / 3 < 0.906
         parent.update()
         assert tuple(body.collider.velocity) == pytest.approx((980 / 900, 0, 0))
         assert tuple(body.transform.pos) == pytest.approx((0, -980 / 900, 0), abs=1e-6)
+
         body.collider.gravity_direction = Vec3.ZERO
         parent.update()
         assert tuple(body.collider.velocity) == pytest.approx((980 / 900, 0, 0))
@@ -216,11 +256,30 @@ assert 0.903 < body.collider.angular_velocity.y / 3 < 0.906
         assert body.transform.pos == Vec3.RIGHT
         assert body.collider.velocity == Vec3.RIGHT
         assert body.collider.angular_velocity == Vec3.UP
+
         body.collider.mass = 1
         body.active = False
         body.update()
         assert body.transform.pos == Vec3.RIGHT
         assert body.collider.velocity == Vec3.RIGHT
+
+
+class TestFiniteGravityDirection:
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_strength_is_independent_of_direction_magnitude(self, scale):
+        direction = Vec3(3 * scale, 4 * scale, 0)
+        assert all(math.isfinite(value) for value in direction)
+        body = Node()
+        body.collider = Collider(
+            gravity=9.8, gravity_direction=direction, linear_damp=0
+        )
+        before = tuple(direction)
+        body.update()
+        # World centimeters per frame at the default 30 fps; direction is a 3-4-5 triangle.
+        expected = (0.6 * 980 / 900, 0.8 * 980 / 900, 0)
+        assert tuple(body.collider.velocity) == pytest.approx(expected, abs=1e-6)
+        assert tuple(body.transform.pos) == pytest.approx(expected, abs=1e-6)
+        assert tuple(direction) == before
 
 
 class _CollisionCounter(Node):
@@ -269,7 +328,188 @@ class _RoundedBox(Node):
         self.contacts.append((contact.depth, tuple(contact.normal)))
 
 
+class _ContactRecorder(Node):
+    def __init__(self):
+        super().__init__()
+        self.contacts = []
+
+    def on_collide(self, other, contact):
+        del other
+        self.contacts.append(
+            (contact.depth, tuple(contact.normal), tuple(contact.point))
+        )
+
+
 class TestCollisionPipeline:
+    @staticmethod
+    def _assert_scaled_contacts(body, scale, depth, normal):
+        assert body.contacts
+        # Normalizing by shape scale leaves only a few ulps of f32 input/output rounding.
+        assert body.contacts[0][0] / scale == pytest.approx(depth, rel=4e-6, abs=4e-6)
+        for actual_depth, actual_normal, point in body.contacts:
+            assert all(
+                math.isfinite(value) for value in (actual_depth, *actual_normal, *point)
+            )
+            assert actual_normal == pytest.approx(normal, abs=4e-6)
+
+    @staticmethod
+    def _plane_mesh(scale, reverse):
+        primitive = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [-10 * scale, 0, -10 * scale, 10 * scale, 0, -10 * scale, 0, 0, 10 * scale],
+            [0, 2, 1] if reverse else [0, 1, 2],
+        )
+        return Mesh([primitive], [Mat4.IDENTITY], [-1])
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20])
+    @pytest.mark.parametrize(
+        "target", ["sphere", "capsule", "box", "plane", "capsule_end"]
+    )
+    def test_sphere_sweep_preserves_scaled_contact(self, scale, target):
+        root, body, wall = Node(), _ContactRecorder(), Node()
+        if target == "plane":
+            start, velocity = Vec3(0, 1.5 * scale, 0), Vec3(0, -3 * scale, 0)
+            wall.collider = Collider(mesh=self._plane_mesh(scale, False), mass=0)
+            depth, normal, point = 1.75, (0, 1, 0), (0, 0, 0)
+        elif target == "capsule_end":
+            start, velocity = Vec3(0, 2.5 * scale, 0), Vec3(0, -5 * scale, 0)
+            wall.collider = Collider(
+                size=Vec3(0, 2 * scale, 0), radius=0.25 * scale, mass=0
+            )
+            depth, normal, point = 4, (0, 1, 0), (0, 1.25, 0)
+        else:
+            start, velocity = Vec3(-1.5 * scale, 0, 0), Vec3(3 * scale, 0, 0)
+            if target == "box":
+                wall.collider = Collider(
+                    size=Vec3(0.5 * scale, 2 * scale, 2 * scale), mass=0
+                )
+            else:
+                size = Vec3(0, 2 * scale, 0) if target == "capsule" else Vec3.ZERO
+                wall.collider = Collider(size=size, radius=0.25 * scale, mass=0)
+            depth, normal, point = 2, (-1, 0, 0), (-0.25, 0, 0)
+
+        body.transform = Mat4.from_translation(start)
+        body.collider = Collider(
+            radius=0.25 * scale,
+            velocity=velocity,
+            gravity=0,
+            linear_damp=0,
+            angular_damp=0,
+            friction=0,
+        )
+        root.add_child(body)
+        root.add_child(wall)
+
+        root.update()
+
+        # Entry needs one shape-scale unit of motion (1.25 for the plane).
+        # The remaining normal motion gives depth; point lies on the static surface.
+        self._assert_scaled_contacts(body, scale, depth, normal)
+        assert tuple(value / scale for value in body.contacts[0][2]) == pytest.approx(
+            point, abs=4e-6
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30, 1e37])
+    @pytest.mark.parametrize("x", [0, 0.25, -0.25])
+    def test_capsule_box_core_contact_finite_range(self, scale, x):
+        root, body, wall = Node(), _ContactRecorder(), Node()
+        body.transform = Mat4.from_translation(Vec3(x * scale, 0, 0))
+        body.collider = Collider(
+            size=Vec3(0, 8 * scale, 0),
+            radius=0.1 * scale,
+            mass=1,
+            gravity=0,
+            linear_damp=0,
+            angular_damp=0,
+        )
+        wall.collider = Collider(
+            size=Vec3(2 * scale, 6 * scale, 4 * scale), radius=0.2 * scale, mass=0
+        )
+        root.add_child(body)
+        root.add_child(wall)
+
+        root.update()
+
+        self._assert_scaled_contacts(
+            body, scale, 1.3 - abs(x), (1 if x >= 0 else -1, 0, 0)
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30, 1e37])
+    @pytest.mark.parametrize("y", [0, 0.25, -0.25])
+    @pytest.mark.parametrize("reverse", [False, True])
+    def test_capsule_triangle_core_contact_finite_range(self, scale, y, reverse):
+        root, body, wall = Node(), _ContactRecorder(), Node()
+        body.transform = Mat4.from_translation(Vec3(0, y * scale, 0))
+        body.collider = Collider(
+            size=Vec3(0, 2 * scale, 0),
+            radius=0.1 * scale,
+            mass=1,
+            gravity=0,
+            linear_damp=0,
+            angular_damp=0,
+        )
+        wall.collider = Collider(mesh=self._plane_mesh(scale, reverse), mass=0)
+        root.add_child(body)
+        root.add_child(wall)
+
+        root.update()
+
+        normal_y = (1 if reverse else -1) if y == 0 else (1 if y > 0 else -1)
+        self._assert_scaled_contacts(body, scale, 1.1 - abs(y), (0, normal_y, 0))
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30, 1e37])
+    @pytest.mark.parametrize("height, hits", [(0.5, True), (1.25, False)])
+    def test_box_triangle_contact_finite_range(self, scale, height, hits):
+        root, body, wall = Node(), _ContactRecorder(), Node()
+        body.transform = Mat4.from_translation(Vec3(0, height * scale, 0))
+        body.collider = Collider(
+            size=Vec3(2 * scale, 2 * scale, 2 * scale),
+            mass=1,
+            gravity=0,
+            linear_damp=0,
+            angular_damp=0,
+        )
+        wall.collider = Collider(mesh=self._plane_mesh(scale, False), mass=0)
+        root.add_child(body)
+        root.add_child(wall)
+
+        root.update()
+
+        if hits:
+            self._assert_scaled_contacts(body, scale, 0.5, (0, 1, 0))
+        else:
+            assert body.contacts == []
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30, 1e37])
+    @pytest.mark.parametrize("dimensions", [1, 2, 3])
+    @pytest.mark.parametrize("reverse", [False, True])
+    def test_rounded_box_contact_finite_range(self, scale, dimensions, reverse):
+        root, body, wall = Node(), _ContactRecorder(), Node()
+        center = [2.1 * scale if i < dimensions else 0 for i in range(3)]
+        target = Mat4.from_translation(Vec3(*center))
+        body.transform, wall.transform = (
+            (target, Mat4.IDENTITY) if reverse else (Mat4.IDENTITY, target)
+        )
+        size = Vec3(2 * scale, 2 * scale, 2 * scale)
+        body.collider = Collider(
+            size=size,
+            radius=0.1 * scale,
+            mass=1,
+            gravity=0,
+            linear_damp=0,
+            angular_damp=0,
+        )
+        wall.collider = Collider(size=size, radius=0.1 * scale, mass=0)
+        root.add_child(body)
+        root.add_child(wall)
+
+        root.update()
+
+        length = math.sqrt(dimensions)
+        sign = 1 if reverse else -1
+        normal = tuple(sign / length if i < dimensions else 0 for i in range(3))
+        self._assert_scaled_contacts(body, scale, 0.2 - 0.1 * length, normal)
+
     def test_overlapping_spheres_fire_on_collide(self):
         # Two spheres at distance 0.5 with radius 0.5 each → overlap.
         root = Node()
@@ -347,26 +587,31 @@ class TestCollisionPipeline:
             )
             assert wall.contacts[0][0] == 0.0
 
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30, 1e37])
     @pytest.mark.parametrize(
         "offset, body_speed, wall_speed, hits",
         [(3.5, 10, 0, False), (3, 10, 0, True), (3, 8, -2, True)],
     )
     def test_swept_rounded_boxes_use_corner_distance(
-        self, offset, body_speed, wall_speed, hits
+        self, scale, offset, body_speed, wall_speed, hits
     ):
         root = Node()
         body = _RoundedBox(
-            Mat4.from_translation(Vec3(-5, offset, offset)),
-            velocity=Vec3(body_speed, 0, 0),
+            Mat4.from_translation(Vec3(-5 * scale, offset * scale, offset * scale)),
+            velocity=Vec3(body_speed * scale, 0, 0),
         )
-        wall = _RoundedBox(Mat4.IDENTITY, mass=0, velocity=Vec3(wall_speed, 0, 0))
+        wall = _RoundedBox(
+            Mat4.IDENTITY, mass=0, velocity=Vec3(wall_speed * scale, 0, 0)
+        )
+        body.collider.size = wall.collider.size = Vec3(2 * scale, 2 * scale, 2 * scale)
+        body.collider.radius = wall.collider.radius = scale
         root.add_child(body)
         root.add_child(wall)
 
         root.update()
 
-        # Both endpoints are separated. Relative x motion is 10 in all cases;
-        # the transverse gap is sqrt(2) * (offset - 2), with combined radius 2.
+        # Both endpoints are separated. Relative x motion is 10 * scale;
+        # the transverse gap is sqrt(2) * (offset - 2) * scale, with combined radius 2 * scale.
         if not hits:
             assert body.contacts == []
             assert wall.contacts == []
@@ -474,6 +719,221 @@ class TestMeshColliderRobustness:
 
 
 class TestRaycast:
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("scale", [0.5, 2**-128])
+    def test_mesh_unavailable_inverse_keeps_world_ray_and_cache(self, method, scale):
+        primitive, target, root = _inverse_fallback_mesh_scene(scale)
+        query = getattr(root, method)
+        result = query(Vec3(-1, 0.25, 0.25), Vec3.RIGHT, max_distance=1.25)
+        hit = result[0] if method == "raycast_all" else result
+        assert hit is not None and hit.node is target
+        plane = (target.world_transform * Vec3(1, 0, 0)).x
+        assert hit.distance == pytest.approx(plane + 1, abs=1e-6)
+        assert tuple(hit.point) == pytest.approx((plane, 0.25, 0.25), abs=1e-6)
+
+        assert query(Vec3(-1, 0.25, 0.25), Vec3.RIGHT, max_distance=0.25) == (
+            [] if method == "raycast_all" else None
+        )
+
+        primitive.positions[1::3] = [y + 10 for y in primitive.positions[1::3]]
+        assert query(Vec3(-1, 0.25, 0.25), Vec3.RIGHT, max_distance=1.25) == (
+            [] if method == "raycast_all" else None
+        )
+
+    @pytest.mark.parametrize("scale", [0.5, 2**-128])
+    def test_mesh_unavailable_inverse_keeps_sphere_geometry_and_cache(self, scale):
+        primitive, target, root = _inverse_fallback_mesh_scene(scale)
+        plane = (target.world_transform * Vec3(1, 0, 0)).x
+        for center in [
+            (plane + 0.125, 0.25, 0.25),
+            (plane + 0.125, -0.1, 0.25),
+            (plane + 0.125, -0.1, -0.1),
+        ]:
+            assert root.overlap_sphere(Vec3(*center), 0.25) == [target]
+
+        # This point is in the triangle AABB but beyond its diagonal edge by more than the radius.
+        assert root.overlap_sphere(Vec3(plane + 0.125, 0.9, 0.9), 0.25) == []
+
+        primitive.positions[1::3] = [y + 10 for y in primitive.positions[1::3]]
+        assert root.overlap_sphere(Vec3(plane + 0.125, 0.25, 0.25), 0.25) == []
+
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("scale", [1, 1e35, 1e38])
+    @pytest.mark.parametrize("axis", [0, 1, 2])
+    @pytest.mark.parametrize("sign", [1, -1])
+    def test_raycast_preserves_mesh_hit_when_local_reciprocal_overflows(
+        self, method, scale, axis, sign
+    ):
+        vertices = []
+        for values in [(0, -10, 0), (0, 10, 0), (0, 0, -2000)]:
+            point = [0.0] * 3
+            for i, value in enumerate(values):
+                point[(axis + i) % 3] = value
+            vertices.append(Vec3(*point))
+        primitive = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [value for vertex in vertices for value in vertex],
+            [0, 1, 2],
+        )
+        root, target = Node(), Node()
+        diagonal = [1.0] * 3
+        diagonal[axis] = scale
+        target.transform = Mat4.from_scale(Vec3(*diagonal))
+        target.collider = Collider(mesh=Mesh([primitive], [Mat4.IDENTITY], [-1]))
+        root.add_child(target)
+        # Scaling the identically zero normal-axis coordinates leaves every world vertex exact.
+        assert all(target.world_transform * vertex == vertex for vertex in vertices)
+        origin, direction, point = ([0.0] * 3 for _ in range(3))
+        origin[axis], direction[axis] = -sign, 0.001 * sign
+        direction[(axis + 2) % 3], point[(axis + 2) % 3] = -1, -1000
+        query = getattr(root, method)
+
+        for max_distance in [1000.001, 1000.01, 1000.1, 2000]:
+            result = query(Vec3(*origin), Vec3(*direction), max_distance=max_distance)
+            if method == "raycast_all":
+                assert len(result) == 1
+                hit = result[0]
+            else:
+                hit = result
+                assert hit is not None
+            assert hit.node is target
+            # The interior point has barycentric weights (1/4, 1/4, 1/2); allow f32 ulps at 1000.
+            assert hit.distance == pytest.approx(math.sqrt(1000001), abs=0.001)
+            assert tuple(hit.point) == pytest.approx(point, abs=0.001)
+
+        for max_distance in [900, 1000.0001]:
+            assert query(
+                Vec3(*origin), Vec3(*direction), max_distance=max_distance
+            ) == ([] if method == "raycast_all" else None)
+
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    def test_raycast_empty_mesh_with_subnormal_local_direction(self, method):
+        target = Node()
+        target.transform = Mat4.from_scale(Vec3(1e38, 1, 1))
+        target.collider = Collider(mesh=Mesh([], [], []))
+        assert getattr(target, method)(Vec3(-1, 0, 0), Vec3(0.001, 0, -1)) == (
+            [] if method == "raycast_all" else None
+        )
+
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("scale", [1, 1e-38])
+    @pytest.mark.parametrize("axis", [0, 1, 2])
+    @pytest.mark.parametrize("sign", [1, -1])
+    def test_raycast_scaled_mesh_preserves_world_distance(
+        self, method, scale, axis, sign
+    ):
+        positions = []
+        for a, b in [(-1, -1), (1, -1), (0, 1)]:
+            point = [0.0] * 3
+            point[axis] = 2 * sign / scale
+            point[(axis + 1) % 3] = a / scale
+            point[(axis + 2) % 3] = b / scale
+            positions.extend(point)
+        primitive = Primitive(Primitive.MODE_TRIANGLES, positions, [0, 1, 2])
+        root, target = Node(), Node()
+        target.transform = Mat4.from_scale(Vec3(scale, scale, scale))
+        target.collider = Collider(mesh=Mesh([primitive], [Mat4.IDENTITY], [-1]))
+        root.add_child(target)
+        origin, direction, point, normal = ([0.0] * 3 for _ in range(4))
+        origin[axis], direction[axis] = -2 * sign, sign
+        point[axis], normal[axis] = 2 * sign, -sign
+        query = getattr(root, method)
+        result = query(Vec3(*origin), Vec3(*direction), max_distance=5)
+        if method == "raycast_all":
+            assert len(result) == 1
+            hit = result[0]
+        else:
+            hit = result
+            assert hit is not None
+        assert hit.node is target
+        # The world plane is four units away; scaling allows a few stored f32 ulps.
+        assert hit.distance == pytest.approx(4, rel=2e-6)
+        assert tuple(hit.point) == pytest.approx(point, abs=2e-6)
+        assert tuple(hit.normal) == pytest.approx(normal, abs=2e-6)
+        assert query(Vec3(*origin), Vec3(*direction), max_distance=3) == (
+            [] if method == "raycast_all" else None
+        )
+
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e37])
+    @pytest.mark.parametrize(
+        "surface",
+        ["sphere", "capsule_body", "capsule_cap", "capsule_hemisphere", "mesh"],
+    )
+    def test_raycast_finite_geometry_range(self, method, scale, surface):
+        root, target = Node(), Node()
+        if surface == "mesh":
+            primitive = Primitive(
+                Primitive.MODE_TRIANGLES,
+                [-scale, 0, -scale, scale, 0, -scale, 0, 0, scale],
+                [0, 1, 2],
+            )
+            target.collider = Collider(mesh=Mesh([primitive], [Mat4.IDENTITY], [-1]))
+            origin, direction = Vec3(0, 5 * scale, 0), Vec3.DOWN
+            distance, point, normal = 5 * scale, (0, 0, 0), (0, 1, 0)
+        else:
+            target.collider = Collider(
+                size=Vec3(0, 2 * scale, 0)
+                if surface.startswith("capsule")
+                else Vec3.ZERO,
+                radius=scale,
+            )
+            if surface == "capsule_cap":
+                origin, direction = Vec3(0, 5 * scale, 0), Vec3.DOWN
+                distance, point, normal = 3 * scale, (0, 2 * scale, 0), (0, 1, 0)
+            elif surface == "capsule_hemisphere":
+                chord = math.sqrt(0.75)
+                origin, direction = Vec3(0, 1.5 * scale, 5 * scale), Vec3(0, 0, -1)
+                distance, point, normal = (
+                    (5 - chord) * scale,
+                    (0, 1.5 * scale, chord * scale),
+                    (0, 0.5, chord),
+                )
+            else:
+                origin, direction = Vec3(5 * scale, 0, 0), Vec3.LEFT
+                distance, point, normal = 4 * scale, (scale, 0, 0), (1, 0, 0)
+        root.add_child(target)
+
+        query = getattr(root, method)
+        result = query(origin, direction)
+        if method == "raycast_all":
+            assert len(result) == 1
+            hit = result[0]
+        else:
+            hit = result
+            assert hit is not None
+        assert hit.node is target
+        # Analytic surface coordinates allow a few ulps of the stored scale.
+        assert hit.distance == pytest.approx(distance, rel=2e-6)
+        assert all(math.isfinite(x) for x in (*hit.point, *hit.normal))
+        assert tuple(hit.point) == pytest.approx(point, rel=2e-6, abs=2e-6 * scale)
+        assert tuple(hit.normal) == pytest.approx(normal, rel=2e-6, abs=2e-6)
+
+        assert query(origin, direction, max_distance=0.9 * distance) == (
+            [] if method == "raycast_all" else None
+        )
+
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e37])
+    @pytest.mark.parametrize("capsule", [False, True])
+    def test_raycast_inside_finite_geometry_range(self, method, scale, capsule):
+        target = Node()
+        target.collider = Collider(
+            size=Vec3(0, 2 * scale, 0) if capsule else Vec3.ZERO, radius=scale
+        )
+        result = getattr(target, method)(Vec3.ZERO, Vec3.RIGHT)
+        if method == "raycast_all":
+            assert len(result) == 1
+            hit = result[0]
+        else:
+            hit = result
+            assert hit is not None
+        assert hit.node is target
+        assert all(math.isfinite(x) for x in (*hit.point, *hit.normal))
+        assert hit.distance == pytest.approx(scale, rel=2e-6)
+        assert tuple(hit.point) == pytest.approx((scale, 0, 0), rel=2e-6)
+        assert tuple(hit.normal) == (1, 0, 0)
+
     def test_raycast_hits_nearer_sphere(self):
         root = Node()
         near = _ball(Vec3(0, 0, 0))
@@ -495,6 +955,34 @@ class TestRaycast:
         assert hit is not None
         assert hit.distance == 4.5
         assert root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -2), max_distance=3.0) is None
+
+    @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
+    @pytest.mark.parametrize("origin", [(0, 0, 5), (3, 0, 4)])
+    @pytest.mark.parametrize("magnitude", [1, 2, 1e20, 1e30, 6e37])
+    def test_raycast_preserves_finite_direction_scale(self, method, origin, magnitude):
+        root, target = Node(), _ball(Vec3.ZERO)
+        root.add_child(target)
+        origin = Vec3(*origin)
+        direction = origin * -magnitude
+        assert all(math.isfinite(value) for value in direction)
+        query = getattr(root, method)
+
+        result = query(origin, direction, max_distance=5)
+        if method == "raycast_all":
+            assert len(result) == 1
+            hit = result[0]
+        else:
+            hit = result
+            assert hit is not None
+        assert hit.node is target
+        # Both origins have length 5; the radius .5 sphere is entered at 4.5.
+        # Diagonal normalization and intersection use unit-scale f32 geometry.
+        assert hit.distance == pytest.approx(4.5, abs=1e-5)
+        assert tuple(hit.point) == pytest.approx(tuple(origin * 0.1), abs=1e-5)
+        assert tuple(hit.normal) == pytest.approx(tuple(origin * 0.2), abs=1e-5)
+        assert query(origin, direction, max_distance=4) == (
+            [] if method == "raycast_all" else None
+        )
 
     @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
     @pytest.mark.parametrize("rotated", [False, True])
@@ -615,6 +1103,115 @@ class TestRaycast:
 
 
 class TestOverlapQueries:
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30, 1e37])
+    @pytest.mark.parametrize("height, overlaps", [(0.5, True), (1.25, False)])
+    def test_sphere_triangle_finite_geometry_range(self, scale, height, overlaps):
+        root, target = Node(), Node()
+        primitive = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [-scale, 0, -scale, scale, 0, -scale, 0, 0, scale],
+            [0, 1, 2],
+        )
+        target.collider = Collider(mesh=Mesh([primitive], [Mat4.IDENTITY], [-1]))
+        root.add_child(target)
+        # A radius scale sphere crosses the plane at height .5 scale, but not 1.25 scale.
+        assert root.overlap_sphere(Vec3(0, height * scale, 0), scale) == (
+            [target] if overlaps else []
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e30])
+    @pytest.mark.parametrize("axis", [0, 1, 2])
+    @pytest.mark.parametrize("rounded", [False, True])
+    @pytest.mark.parametrize(
+        "center, sharp_hit, rounded_hit",
+        [
+            ((1.5, 0, 0), True, True),
+            ((2.5, 0, 0), False, False),
+            ((2, 0, 0), False, True),
+            ((1.75, 1.75, 0), False, True),
+            ((2, 2, 0), False, False),
+            ((1.5, 1.5, 1.5), True, True),
+            ((1.75, 1.75, 1.75), False, False),
+            ((0, 0, 0), True, True),
+        ],
+    )
+    def test_sphere_box_finite_range(
+        self, scale, axis, rounded, center, sharp_hit, rounded_hit
+    ):
+        root, target = Node(), Node()
+        target.collider = Collider(
+            size=Vec3(2 * scale, 2 * scale, 2 * scale),
+            radius=0.25 * scale if rounded else 0,
+        )
+        root.add_child(target)
+        center = center[axis:] + center[:axis]
+        # Distance is the Euclidean excess past each core face; reach is 1 or 1.25.
+        overlaps = rounded_hit if rounded else sharp_hit
+        assert root.overlap_sphere(Vec3(*(x * scale for x in center)), scale) == (
+            [target] if overlaps else []
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e30])
+    @pytest.mark.parametrize("radius", [0.5, 0.75])
+    @pytest.mark.parametrize(
+        "center, overlaps",
+        [
+            ((1.25, 0, 0), True),
+            ((1.9, 0, 0), False),
+            ((1.25, 2.25, 0), True),
+            ((1.6, 2.6, 0), False),
+            ((0, 2.25, 0), True),
+            ((0, 0, 0), True),
+            ((1.5, 2.5, 1.5), False),
+            ((1.25, 2.25, 1.25), True),
+        ],
+    )
+    def test_box_capsule_finite_range(self, scale, radius, center, overlaps):
+        root, target = Node(), Node()
+        target.transform = Mat4.from_translation(Vec3(*(x * scale for x in center)))
+        target.collider = Collider(size=Vec3(0, 2 * scale, 0), radius=radius * scale)
+        root.add_child(target)
+        # Axis y spans +/-scale; the nearest endpoint extends face y=scale to 2*scale.
+        assert root.overlap_box(
+            Mat4.IDENTITY, Vec3(2 * scale, 2 * scale, 2 * scale)
+        ) == ([target] if overlaps else [])
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e38])
+    @pytest.mark.parametrize("axis", [0, 1, 2])
+    @pytest.mark.parametrize(
+        "distance, overlaps", [(1.5, True), (2, False), (2.5, False)]
+    )
+    def test_sphere_query_finite_range(self, scale, axis, distance, overlaps):
+        root, target = Node(), Node()
+        target.collider = Collider(radius=scale)
+        root.add_child(target)
+        center = [0, 0, 0]
+        center[axis] = distance * scale
+        assert root.overlap_sphere(Vec3(*center), scale) == (
+            [target] if overlaps else []
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e38])
+    @pytest.mark.parametrize(
+        "x, y, overlaps",
+        [
+            (1.25, 0.5, True),
+            (1.25, 2.25, False),
+            (0, 2.25, True),
+            (0, -2.25, True),
+            (1.25, -2.25, False),
+        ],
+    )
+    def test_capsule_query_finite_projection(self, scale, x, y, overlaps):
+        root, target = Node(), Node()
+        target.collider = Collider(size=Vec3(0, 2 * scale, 0), radius=0.5 * scale)
+        root.add_child(target)
+        # Axis ends at y=+/-scale; diagonal cap gap is hypot(1.25,1.25)*scale,
+        # greater than the total radius 1.5*scale although the AABBs overlap.
+        assert root.overlap_sphere(Vec3(x * scale, y * scale, 0), scale) == (
+            [target] if overlaps else []
+        )
+
     @pytest.mark.parametrize(
         "scale, center, overlaps",
         [(0.5, (0.65, 0, 0), True), (2, (2.15, 2.15, 0), False)],
@@ -765,6 +1362,20 @@ class TestOverlapQueries:
 
         nodes_with_triggers = root.overlap_sphere(Vec3.ZERO, 1.0, hit_triggers=True)
         assert nodes_with_triggers == [trigger]
+
+
+def _inverse_fallback_mesh_scene(scale):
+    primitive = Primitive(
+        Primitive.MODE_TRIANGLES, [1, 0, 0, 1, 1, 0, 1, 0, 1], [0, 1, 2]
+    )
+    target = Node()
+    target.transform = Mat4.from_translation(Vec3(-0.5, 0, 0)) * Mat4.from_scale(
+        Vec3(scale, 1, 1)
+    )
+    target.collider = Collider(mesh=Mesh([primitive], [Mat4.IDENTITY], [-1]))
+    root = Node()
+    root.add_child(target)
+    return primitive, target, root
 
 
 class _ColoredBox(Node):

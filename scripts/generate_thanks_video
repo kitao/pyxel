@@ -142,6 +142,7 @@ def generate_thanks_video():
     message = still.crop(message_box)
     lines = get_letter_masks(still, settings)
     width, height = still.size
+
     command = [
         "ffmpeg",
         "-y",
@@ -192,10 +193,12 @@ def generate_thanks_video():
                         )
                         image = Image.blend(image, tile.first_image, amount)
                     frame.paste(image, (tile.x, tile.y))
+
                 frame.paste(message, message_box)
 
                 shine_letters(frame, lines, index)
                 encoder.stdin.write(frame.tobytes())
+
             encoder.stdin.close()
             if encoder.wait() != 0:
                 raise RuntimeError("ffmpeg failed to encode the thank-you video")

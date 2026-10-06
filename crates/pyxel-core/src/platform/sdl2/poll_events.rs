@@ -378,9 +378,14 @@ fn controller_button_to_key(button: i32) -> Key {
 #[cfg(all(test, not(target_os = "emscripten")))]
 mod tests {
     use super::*;
+    use crate::key::{GAMEPAD3_AXIS_LEFTX, GAMEPAD3_BUTTON_A};
+
+    // SDL shares the event queue and virtual devices across test threads.
+    static SDL_TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
     #[test]
     fn test_combined_modifiers_follow_either_side() {
+        let _guard = SDL_TEST_LOCK.lock().unwrap();
         // Push real SDL events without opening a window or using the OS keyboard.
         assert_eq!(unsafe { SDL_InitSubSystem(SDL_INIT_EVENTS) }, 0);
 
@@ -443,5 +448,169 @@ mod tests {
         }
 
         unsafe { SDL_QuitSubSystem(SDL_INIT_EVENTS) };
+    }
+
+    #[test]
+    fn test_gamepad_platform_replacement_releases_each_open_reference() {
+        let _guard = SDL_TEST_LOCK.lock().unwrap();
+        assert_eq!(unsafe { SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) }, 0);
+        let device_index =
+            unsafe { SDL_JoystickAttachVirtual(SDL_JOYSTICK_TYPE_GAMECONTROLLER, 6, 16, 0) };
+        assert!(device_index >= 0);
+        let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
+        let mut released = Vec::new();
+
+        for cycle in 0..3 {
+            let mut previous = PlatformSdl2::new();
+            previous.gamepads = vec![None, open_gamepad(device_index)];
+            assert!(previous.gamepads[1].is_some());
+            let mut replacement = PlatformSdl2::new();
+            replacement.gamepads.push(open_gamepad(device_index));
+            assert!(replacement.gamepads[0].is_some());
+
+            drop(previous);
+            // The replacement owns a separate open reference to the same handle.
+            assert!(!unsafe { SDL_GameControllerFromInstanceID(instance_id) }.is_null());
+            if cycle == 1 {
+                replacement.close_gamepads();
+                replacement.close_gamepads();
+                assert_eq!(replacement.gamepads, []);
+            }
+            drop(replacement);
+            released.push(unsafe { SDL_GameControllerFromInstanceID(instance_id) }.is_null());
+        }
+
+        assert_eq!(unsafe { SDL_JoystickDetachVirtual(device_index) }, 0);
+        unsafe { SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER) };
+        assert_eq!(released, [true, true, true]);
+    }
+
+    #[test]
+    fn test_gamepad_startup_events_preserve_slots_and_open_references() {
+        const CHILD_ENV: &str = "PYXEL_TEST_GAMEPAD_STARTUP";
+        if std::env::var_os(CHILD_ENV).is_none() {
+            // Isolate SDL video, device state, and hints from the other tests.
+            let mut child = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "platform::sdl2::poll_events::tests::test_gamepad_startup_events_preserve_slots_and_open_references",
+                    "--nocapture",
+                ])
+                .env(CHILD_ENV, "1")
+                .env("SDL_VIDEODRIVER", "dummy")
+                .env("SDL_AUDIODRIVER", "dummy")
+                .spawn()
+                .unwrap();
+            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+            loop {
+                if let Some(status) = child.try_wait().unwrap() {
+                    assert!(
+                        status.success(),
+                        "gamepad startup subprocess failed: {status}"
+                    );
+                    return;
+                }
+                if std::time::Instant::now() >= deadline {
+                    child.kill().unwrap();
+                    child.wait().unwrap();
+                    panic!("gamepad startup subprocess exceeded 30 seconds");
+                }
+                std::thread::sleep(std::time::Duration::from_millis(10));
+            }
+        }
+
+        unsafe {
+            SDL_SetHint(
+                SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS.as_ptr().cast(),
+                c"1".as_ptr(),
+            )
+        };
+        assert_eq!(unsafe { SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) }, 0);
+        let attach = || {
+            let index =
+                unsafe { SDL_JoystickAttachVirtual(SDL_JOYSTICK_TYPE_GAMECONTROLLER, 6, 16, 0) };
+            assert!(index >= 0);
+            (index, unsafe { SDL_JoystickGetDeviceInstanceID(index) })
+        };
+        let (first_index, first_id) = attach();
+        let (second_index, second_id) = attach();
+
+        let mut platform = PlatformSdl2::new();
+        platform.init(false);
+        let ids = |platform: &PlatformSdl2| {
+            platform
+                .gamepads
+                .iter()
+                .map(|g| g.map(|(id, _)| id))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(ids(&platform), [Some(first_id), Some(second_id)]);
+        platform.poll_events(&mut Vec::new());
+        assert_eq!(ids(&platform), [Some(first_id), Some(second_id)]);
+
+        let (third_index, third_id) = attach();
+        platform.poll_events(&mut Vec::new());
+        assert_eq!(
+            ids(&platform),
+            [Some(first_id), Some(second_id), Some(third_id)]
+        );
+
+        for index in [third_index, -1] {
+            let mut event: SDL_Event = unsafe { zeroed() };
+            event.cdevice.type_ = SDL_CONTROLLERDEVICEADDED;
+            event.cdevice.which = index;
+            assert_eq!(unsafe { SDL_PushEvent(&raw mut event) }, 1);
+        }
+        platform.poll_events(&mut Vec::new());
+        assert_eq!(
+            ids(&platform),
+            [Some(first_id), Some(second_id), Some(third_id)]
+        );
+
+        let controller = unsafe { SDL_GameControllerFromInstanceID(third_id) };
+        let joystick = unsafe { SDL_GameControllerGetJoystick(controller) };
+        assert_eq!(unsafe { SDL_JoystickSetVirtualButton(joystick, 0, 1) }, 0);
+        assert_eq!(unsafe { SDL_JoystickSetVirtualAxis(joystick, 0, 12345) }, 0);
+        let mut events = Vec::new();
+        platform.poll_events(&mut events);
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, Event::KeyPressed { key } if *key == GAMEPAD3_BUTTON_A)));
+        assert!(events.iter().any(|e| matches!(e, Event::KeyValueChanged { key, value } if *key == GAMEPAD3_AXIS_LEFTX && *value == 12345)));
+
+        assert_eq!(unsafe { SDL_JoystickDetachVirtual(first_index) }, 0);
+        platform.poll_events(&mut Vec::new());
+        assert_eq!(ids(&platform), [None, Some(second_id), Some(third_id)]);
+        assert!(unsafe { SDL_GameControllerFromInstanceID(first_id) }.is_null());
+
+        let (fourth_index, fourth_id) = attach();
+        platform.poll_events(&mut Vec::new());
+        assert_eq!(
+            ids(&platform),
+            [Some(fourth_id), Some(second_id), Some(third_id)]
+        );
+
+        platform.close_gamepads();
+        platform.close_gamepads();
+        for id in [second_id, third_id, fourth_id] {
+            assert!(unsafe { SDL_GameControllerFromInstanceID(id) }.is_null());
+        }
+
+        platform.init(false);
+        platform.poll_events(&mut Vec::new());
+        assert_eq!(
+            ids(&platform),
+            [Some(second_id), Some(third_id), Some(fourth_id)]
+        );
+        drop(platform);
+        for id in [second_id, third_id, fourth_id] {
+            assert!(unsafe { SDL_GameControllerFromInstanceID(id) }.is_null());
+        }
+
+        // Removing a device shifts the remaining SDL device indices.
+        for index in [fourth_index, third_index - 1, second_index - 1] {
+            assert_eq!(unsafe { SDL_JoystickDetachVirtual(index) }, 0);
+        }
+        unsafe { SDL_Quit() };
     }
 }

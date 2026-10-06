@@ -647,31 +647,17 @@ def write_non_indexed_glb(path: Path, *, vertex_count: int = 6) -> Path:
     return _write_glb(path, gltf, positions)
 
 
-def write_authored_normals_glb(path: Path) -> Path:
-    positions = struct.pack(
-        "<fffffffff",
-        -0.5,
-        -0.5,
-        0.0,
-        0.5,
-        -0.5,
-        0.0,
-        0.0,
-        0.5,
-        0.0,
-    )
-    normals = struct.pack(
-        "<fffffffff",
-        0.0,
-        0.0,
-        -1.0,
-        0.0,
-        0.0,
-        -1.0,
-        0.0,
-        0.0,
-        -1.0,
-    )
+def write_authored_normals_glb(
+    path: Path,
+    *,
+    positions: tuple[float, ...] = (-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0),
+    normals: tuple[float, ...] = (0.0, 0.0, -1.0) * 3,
+) -> Path:
+    positions = struct.pack("<fffffffff", *positions)
+    coords = struct.unpack("<fffffffff", positions)
+    min_pos = [min(coords[axis::3]) for axis in range(3)]
+    max_pos = [max(coords[axis::3]) for axis in range(3)]
+    normals = struct.pack("<fffffffff", *normals)
     bin_blob, offsets = _pack_chunks([positions, normals])
 
     gltf = {
@@ -704,8 +690,8 @@ def write_authored_normals_glb(path: Path) -> Path:
                 "componentType": 5126,
                 "count": 3,
                 "type": "VEC3",
-                "min": [-0.5, -0.5, 0.0],
-                "max": [0.5, 0.5, 0.0],
+                "min": min_pos,
+                "max": max_pos,
             },
             {"bufferView": 1, "componentType": 5126, "count": 3, "type": "VEC3"},
         ],

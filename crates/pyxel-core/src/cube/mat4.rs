@@ -684,6 +684,39 @@ mod tests {
     }
 
     #[test]
+    fn test_determinant_retains_mixed_axis_scales() {
+        let small = 2.0_f32.powi(-80);
+        let large = 2.0_f32.powi(80);
+        for large_axis in 0..3 {
+            let mut axes = [small; 3];
+            axes[large_axis] = large;
+            let matrix = Mat4::from_scale(&Vec3 {
+                x: axes[0],
+                y: axes[1],
+                z: axes[2],
+            });
+            // The diagonal product is exactly 2^-80 in every axis order.
+            assert_eq!(rc_ref!(&matrix).determinant(), small);
+        }
+    }
+
+    #[test]
+    fn test_determinant_of_collapsed_axis_is_zero_at_finite_scales() {
+        for exponent in [-80, 0, 80] {
+            for zero_axis in 0..3 {
+                let mut axes = [2.0_f32.powi(exponent); 3];
+                axes[zero_axis] = 0.0;
+                let matrix = Mat4::from_scale(&Vec3 {
+                    x: axes[0],
+                    y: axes[1],
+                    z: axes[2],
+                });
+                assert_eq!(rc_ref!(&matrix).determinant(), 0.0);
+            }
+        }
+    }
+
+    #[test]
     fn test_get() {
         let m = deref(&Mat4::from_rows([
             [1.0, 2.0, 3.0, 4.0],
@@ -977,6 +1010,7 @@ mod tests {
                 &Mat4::identity_value()
             ));
         }
+
         let singular = Mat4 {
             data: [
                 [1.0, 2.0, 3.0, 4.0],

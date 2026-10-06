@@ -85,7 +85,9 @@ def test_gif_writer_preserves_colors_order_and_repeated_frame_time(
 
 
 @pytest.mark.parametrize("family", OUTPUTS)
-def test_documentation_generator_full_pipeline(family, tmp_path):
+def test_documentation_generator_full_pipeline(family, tmp_path, monkeypatch):
+    # Unattended recording selects its own audio driver in every worker family.
+    monkeypatch.setenv("SDL_AUDIODRIVER", "pyxel_test_invalid")
     output = tmp_path / family
     result = subprocess.run(
         [
@@ -101,6 +103,7 @@ def test_documentation_generator_full_pipeline(family, tmp_path):
         timeout=300,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+    assert "Failed to initialize audio device" not in result.stdout + result.stderr
     assert {path.name for path in output.iterdir()} == set(OUTPUTS[family])
 
     for filename, (size, duration) in OUTPUTS[family].items():
@@ -118,6 +121,45 @@ def test_documentation_generator_full_pipeline(family, tmp_path):
                 assert frame.info["duration"] > 0, filename
                 elapsed += frame.info["duration"]
             assert elapsed == duration, filename
+
+
+@pytest.mark.parametrize("stream", ["stdout", "stderr"])
+def test_worker_rejects_audio_initialization_warning(capture_scripts, stream):
+    command = [
+        sys.executable,
+        "-c",
+        f"import sys; print('Failed to initialize audio device', file=sys.{stream})",
+    ]
+    with pytest.raises(RuntimeError, match="Failed to initialize audio device"):
+        capture_scripts["run_worker"](command)
+
+
+def test_worker_preserves_failure_output_and_status(capture_scripts, capsys):
+    command = [
+        sys.executable,
+        "-c",
+        "import sys; print('capture failed', file=sys.stderr); sys.exit(3)",
+    ]
+    with pytest.raises(subprocess.CalledProcessError) as error:
+        capture_scripts["run_worker"](command)
+    assert error.value.returncode == 3
+    assert capsys.readouterr().err == "capture failed\n"
+
+
+def test_worker_preserves_timeout_output(capture_scripts, capsys, monkeypatch):
+    command = [sys.executable, "capture.py"]
+
+    def worker(*args, **kwargs):
+        raise subprocess.TimeoutExpired(
+            command, 120, output=b"capture started\n", stderr=b"capture stalled\n"
+        )
+
+    monkeypatch.setattr(subprocess, "run", worker)
+    with pytest.raises(subprocess.TimeoutExpired):
+        capture_scripts["run_worker"](command)
+    output = capsys.readouterr()
+    assert output.out == "capture started\n"
+    assert output.err == "capture stalled\n"
 
 
 @pytest.mark.parametrize(
@@ -147,6 +189,7 @@ def test_failed_worker_preserves_existing_outputs(
         (staging / "partial.gif").write_bytes(b"incomplete candidate")
         if calls == 2:
             raise subprocess.CalledProcessError(1, command)
+        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
 
     monkeypatch.setattr(subprocess, "run", worker)
     monkeypatch.setattr(
@@ -171,6 +214,7 @@ def test_editor_default_output_updates_both_documentation_copies(
     def worker(command, **kwargs):
         staging = Path(command[command.index("--output-dir") + 1])
         (staging / "image_editor.gif").write_bytes(b"new complete output")
+        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
 
     monkeypatch.setitem(generator["main"].__globals__, "DOC_IMAGES", docs)
     monkeypatch.setitem(generator["main"].__globals__, "MANUAL_IMAGES", manual)
@@ -201,6 +245,7 @@ def test_repeated_selection_generates_and_publishes_once(
         calls.append(command)
         staging = Path(command[command.index("--output-dir") + 1])
         (staging / filename).write_bytes(b"complete output")
+        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
 
     monkeypatch.setattr(subprocess, "run", worker)
     monkeypatch.setattr(

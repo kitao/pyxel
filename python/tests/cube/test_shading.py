@@ -95,6 +95,132 @@ def test_texture_colkey_uses_source_color(source, mapped, shaded):
     assert target.pget(32, 32) == expected
 
 
+def _shaded_triangle_center(normal, light, scale=1, reflection=1):
+    sx, sy, sz = (scale, scale, scale) if isinstance(scale, (int, float)) else scale
+    sx *= reflection
+    primitive = Primitive(
+        Primitive.MODE_TRIANGLES,
+        [
+            -1.7 / sx,
+            -1.6 / sy,
+            -4.25 / sz,
+            1.7 / sx,
+            -1.6 / sy,
+            -4.25 / sz,
+            0,
+            1.7 / sy,
+            -4.25 / sz,
+        ],
+        [0, 1, 2],
+        cull=Primitive.CULL_NONE,
+        **({} if normal is None else {"normals": normal}),
+    )
+    transform = Mat4.from_scale(Vec3(sx, sy, sz))
+
+    class Surface(Node):
+        def on_draw(self):
+            self.prim(transform, primitive, 7)
+
+    scene = Surface()
+    scene.camera = Camera()
+    scene.camera.clear_color = 0
+    scene.shading = Shading(palette())
+    scene.shading.direction = Vec3(*light)
+    # Distinct flat colors isolate shade quantization from the palette's dither.
+    for level in range(Shading.LEVEL_COUNT):
+        scene.shading[7, level] = (level + 1, level + 1)
+
+    target = pyxel.Image(32, 32)
+    scene.draw(0, 0, 32, 32, target)
+    return target.pget(16, 16)
+
+
+@pytest.mark.parametrize("scale", [2, 2e19])
+def test_unit_normal_selected_sum_keeps_geometric_shading(scale):
+    rotation = Mat4.from_axis_angle(Vec3(1, 1, 1), 60)
+    transform = rotation * Mat4.from_scale(Vec3(scale, scale, scale))
+    world_points = [(-1.7, -1.6, -4.25), (1.7, -1.6, -4.25), (0, 1.7, -4.25)]
+    positions = [
+        sum(rotation[row, column] * point[row] for row in range(3)) / scale
+        for point in world_points
+        for column in range(3)
+    ]
+    normal = [rotation[2, column] for column in range(3)]
+    length = sum(component**2 for component in normal) ** 0.5
+    primitive = Primitive(
+        Primitive.MODE_TRIANGLES,
+        positions,
+        [0, 1, 2],
+        normals=[component / length for component in normal],
+        cull=Primitive.CULL_NONE,
+    )
+
+    class Surface(Node):
+        def on_draw(self):
+            self.prim(transform, primitive, 7)
+
+    scene = Surface()
+    scene.camera = Camera()
+    scene.camera.clear_color = 0
+    scene.shading = Shading(palette())
+    # The world-space triangle faces +Z; opposite unit light must select the brightest level.
+    scene.shading.direction = Vec3(0, 0, -1)
+    for level in range(Shading.LEVEL_COUNT):
+        scene.shading[7, level] = (level + 1, level + 1)
+
+    target = pyxel.Image(32, 32)
+    scene.draw(0, 0, 32, 32, target)
+    assert target.pget(16, 16) == 8
+
+
+@pytest.mark.parametrize("normal_scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+@pytest.mark.parametrize("light_scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+def test_shading_finite_magnitudes(normal_scale, light_scale):
+    assert _shaded_triangle_center([0, 0, normal_scale], [0, 0, -light_scale]) == 8
+
+
+@pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+@pytest.mark.parametrize(
+    "normal,reflection,light,expected",
+    [
+        (None, 1, [0, 0, -1], 8),
+        ([0, 0, 1], 1, [0, 0, -1], 8),
+        ([0, 0, 1], -1, [0, 0, -1], 1),
+        ([0, 0, 1], -1, [0, 0, 1], 8),
+    ],
+)
+def test_shading_oriented_cofactors(scale, normal, reflection, light, expected):
+    # Local positions cancel the transform scale; reflection reverses the supplied normal.
+    assert _shaded_triangle_center(normal, light, scale, reflection) == expected
+
+
+@pytest.mark.parametrize(
+    "normal,light,expected",
+    [
+        ([0, 0, 0], [0, 0, -1], 1),
+        ([0, 0, 1], [0, 0, 0], 1),
+        ([0, 0, -1], [0, 0, -1], 1),
+        ([0, 0, 1], [0, -1, 0], 1),
+        ([1, 1, 0], [0, -1, 0], 6),
+    ],
+)
+def test_shading_degenerate_orientation(normal, light, expected):
+    assert _shaded_triangle_center(normal, light) == expected
+
+
+@pytest.mark.parametrize(
+    "scale", [(1e30, 1e30, 1e-30), (1e-30, 1e-30, 1e30), (1e30, 1e-30, 1e30)]
+)
+@pytest.mark.parametrize("axis", [0, 1, 2])
+def test_shading_nonuniform_cofactor_range(scale, axis):
+    normal = [0, 0, 0]
+    light = [0, 0, 0]
+    normal[axis] = 1
+    light[axis] = -1
+    # Every positive diagonal cofactor preserves its selected axis, even when other axes need more range.
+    assert _shaded_triangle_center(normal, light, scale) == 8
+
+
 class TestBuild:
     def test_build_resets_modifications(self):
         pal = palette()

@@ -21,7 +21,7 @@ Launch Pyxel Editor with the following command:
 pyxel edit [PYXEL_RESOURCE_FILE]
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file with the specified name will be created. If the filename is omitted, `my_resource.pyxres` will be created.
+If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, `my_resource.pyxres` is used.
 
 ## Common Operations
 
@@ -234,7 +234,7 @@ A mode for editing sounds used for melodies and sound effects.
 ### Specifications
 
 - **Sounds:** 0-63 (64 sounds)
-- **Pitch Range:** C0–B4
+- **Pitch Range:** C0-B4
 - **Max Length:** 48 notes
 - **Polyphony:** 1 note (or rest)
 - **Per-Note Settings:** Tone, volume, effect

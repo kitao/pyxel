@@ -42,6 +42,7 @@ class TestChannel:
         ch.stop()
         assert ch.play_pos() is None
 
+    # Exact playback positions include integer audio-clock and f32 rounding.
     def test_play_loop_wraps_seek(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2", "sss", "777", "nnn", 10)

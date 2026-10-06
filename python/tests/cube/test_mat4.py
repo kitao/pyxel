@@ -1,4 +1,4 @@
-from math import isclose
+from math import fsum, isclose, sqrt
 
 import pytest
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
@@ -257,6 +257,76 @@ class TestCoordinateConversions:
         local = inner.to_local(outer)
         assert local.pos == Vec3(5, 0, 0)
         assert local.to_world(outer) == inner
+
+
+@pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30])
+class TestFiniteDirections:
+    def test_axis_angle_retains_quarter_turn(self, scale):
+        matrix = Mat4.from_axis_angle(Vec3(0, scale, 0), 90)
+        assert tuple(Vec3.RIGHT.to_world_dir(matrix)) == pytest.approx(
+            (0, 0, -1), abs=1e-6
+        )
+
+    def test_look_at_retains_requested_forward(self, scale):
+        matrix = Mat4.look_at(Vec3.ZERO, Vec3(-3 * scale, 0, -4 * scale))
+        assert tuple(Vec3.FORWARD.to_world_dir(matrix)) == pytest.approx(
+            (-0.6, 0, -0.8), abs=1e-6
+        )
+
+    def test_look_at_with_scaled_up_retains_basis(self, scale):
+        matrix = Mat4.look_at(Vec3.ZERO, Vec3.FORWARD, Vec3(0, scale, 0))
+        assert matrix == Mat4.IDENTITY
+
+
+class TestFiniteIntermediates:
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    @pytest.mark.parametrize("operation", ["position", "direction", "matrix"])
+    def test_products_retain_representable_cancellation(self, scale, operation):
+        rotation = Mat4.from_euler(Vec3(0, 0, 45))
+        left = Mat4.from_scale(Vec3(scale, 1, 1)) * rotation
+        if operation == "matrix":
+            right = rotation * Mat4.from_scale(Vec3(3, 0, 1))
+            product = left * right
+            actual = tuple(product[i, j] for i in range(4) for j in range(4))
+            # Accumulate stored entries independently with Python's wider float.
+            expected = tuple(
+                fsum(left[i, k] * right[k, j] for k in range(4))
+                for i in range(4)
+                for j in range(4)
+            )
+        else:
+            vector = Vec3(3, 3, 0)
+            actual = tuple(
+                left * vector if operation == "position" else vector.to_world_dir(left)
+            )
+            expected = tuple(
+                fsum(left[i, j] * vector[j] for j in range(3)) for i in range(3)
+            )
+        assert actual == pytest.approx(expected, rel=2e-6, abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    @pytest.mark.parametrize("diagonal", [False, True])
+    def test_look_at_retains_wide_eye_target_difference(self, scale, diagonal):
+        eye = Vec3(scale, -scale, 0) if diagonal else Vec3(-scale, 0, 0)
+        target = -eye
+        expected = (-sqrt(0.5), sqrt(0.5), 0) if diagonal else (1, 0, 0)
+        matrix = Mat4.look_at(eye, target)
+        assert matrix.pos == eye
+        assert tuple(Vec3.FORWARD.to_world_dir(matrix)) == pytest.approx(
+            expected, abs=1e-6
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_finite_up_hint_retains_oblique_basis(self, scale):
+        matrix = Mat4.look_at(Vec3.ZERO, Vec3(0.6, 0, -0.8), Vec3(scale, scale, scale))
+        right = (0.8 / sqrt(2.96), -1.4 / sqrt(2.96), 0.6 / sqrt(2.96))
+        up = (-0.8 * right[1], 0.6 * right[2] + 0.8 * right[0], -0.6 * right[1])
+        for axis, expected in [
+            (Vec3.FORWARD, (0.6, 0, -0.8)),
+            (Vec3.RIGHT, right),
+            (Vec3.UP, up),
+        ]:
+            assert tuple(axis.to_world_dir(matrix)) == pytest.approx(expected, abs=1e-6)
 
 
 # 1e-4 exceeds the f32 rounding of unit-scale values and stays below any expected difference

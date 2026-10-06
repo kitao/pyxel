@@ -251,6 +251,27 @@ class TestSaveLoad:
         assert data[bank_name] == []
         assert data["sounds"][0]["notes"] == [24, 28, 31]
 
+    @pytest.mark.parametrize("bank_name", ["images", "tilemaps"])
+    @pytest.mark.parametrize(("width", "height"), [(0, 1), (1, 0)])
+    def test_save_included_empty_graphics_preserves_destination(
+        self, tmp_path, panic_exception, bank_name, width, height
+    ):
+        bank = getattr(pyxel, bank_name)
+        original = bank[0]
+        path = tmp_path / "included.pyxres"
+        path.write_bytes(b"original destination")
+        try:
+            bank[0] = (
+                pyxel.Image(width, height)
+                if bank_name == "images"
+                else pyxel.Tilemap(width, height, 0)
+            )
+            with pytest.raises(panic_exception):
+                pyxel.save(str(path))
+            assert path.read_bytes() == b"original destination"
+        finally:
+            bank[0] = original
+
     def test_excl_aliases_deprecated(self, capfd, tmp_path):
         # Save and load share a once-per-session deprecation warning.
         pyxel.images[0].cls(0)

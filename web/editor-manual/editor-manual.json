@@ -149,18 +149,18 @@
       "uk": "Запуск"
     },
     "starting_body": {
-      "en": "Launch Pyxel Editor with the following command:\n{0}\nIf the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file with the specified name will be created. If the filename is omitted, {1} will be created.",
-      "cn": "Pyxel Editor 通过以下命令启动：\n{0}\n如果指定的 Pyxel 资源文件 (.pyxres) 已存在，则加载该文件；不存在则以指定名称新建。省略文件名时将创建 {1}。",
-      "de": "Pyxel Editor wird mit folgendem Befehl gestartet:\n{0}\nFalls die angegebene Pyxel-Ressourcendatei (.pyxres) existiert, wird sie geladen. Andernfalls wird eine neue Datei mit dem angegebenen Namen erstellt. Wird kein Dateiname angegeben, wird {1} erstellt.",
-      "es": "Pyxel Editor se inicia con el siguiente comando:\n{0}\nSi el archivo de recursos Pyxel (.pyxres) especificado existe, se cargará; si no existe, se creará uno nuevo con el nombre indicado. Si se omite el nombre del archivo, se creará {1}.",
-      "fr": "Pyxel Editor se lance avec la commande suivante :\n{0}\nSi le fichier de ressources Pyxel (.pyxres) spécifié existe, il sera chargé. Sinon, un nouveau fichier sera créé avec le nom indiqué. Si aucun nom de fichier n'est spécifié, {1} sera créé.",
-      "it": "Pyxel Editor si avvia con il seguente comando:\n{0}\nSe il file di risorse Pyxel (.pyxres) specificato esiste, verrà caricato; in caso contrario, verrà creato un nuovo file con il nome indicato. Se il nome del file viene omesso, verrà creato {1}.",
-      "ja": "Pyxel Editor は次のコマンドで起動します：\n{0}\n指定した Pyxel リソースファイル (.pyxres) が存在する場合はそのファイルが読み込まれ、存在しない場合は指定した名前で新規作成されます。ファイル名を省略した場合は {1} が作成されます。",
-      "ko": "Pyxel Editor는 다음 명령어로 실행합니다:\n{0}\n지정한 Pyxel 리소스 파일(.pyxres)이 존재하면 해당 파일을 불러오고, 존재하지 않으면 지정한 이름으로 새로 생성됩니다. 파일명을 생략하면 {1}가 생성됩니다.",
-      "pt": "O Pyxel Editor é iniciado com o seguinte comando:\n{0}\nSe o arquivo de recursos Pyxel (.pyxres) especificado existir, ele será carregado; caso contrário, um novo arquivo será criado com o nome especificado. Se o nome do arquivo for omitido, {1} será criado.",
-      "ru": "Pyxel Editor запускается командой:\n{0}\nЕсли указанный файл ресурсов Pyxel (.pyxres) существует, он будет загружен. В противном случае будет создан новый файл с указанным именем. Если имя файла не указано, будет создан файл {1}.",
-      "tr": "Pyxel Editor şu komutla başlatılır:\n{0}\nBelirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa yüklenir, yoksa belirtilen adla yeni bir dosya oluşturulur. Dosya adı belirtilmezse {1} oluşturulur.",
-      "uk": "Pyxel Editor запускається командою:\n{0}\nЯкщо вказаний файл ресурсів Pyxel (.pyxres) існує, він буде завантажений. Інакше буде створено новий файл із зазначеним іменем. Якщо ім'я файлу не вказано, буде створено файл {1}."
+      "en": "Launch Pyxel Editor with the following command:\n{0}\nIf the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, {1} is used.",
+      "cn": "通过以下命令启动 Pyxel Editor：\n{0}\n如果指定的 Pyxel 资源文件 (.pyxres) 已存在，则加载该文件；如果不存在，则开始编辑新资源，保存时才创建文件。省略文件名时使用 {1}。",
+      "de": "Starten Sie Pyxel Editor mit folgendem Befehl:\n{0}\nFalls die angegebene Pyxel-Ressourcendatei (.pyxres) existiert, wird sie geladen. Andernfalls können Sie eine neue Ressource bearbeiten; die Datei wird erst beim Speichern erstellt. Wird kein Dateiname angegeben, wird {1} verwendet.",
+      "es": "Inicie Pyxel Editor con el siguiente comando:\n{0}\nSi el archivo de recursos Pyxel (.pyxres) especificado existe, se cargará. Si no existe, puede editar un nuevo recurso; el archivo se creará al guardar. Si se omite el nombre del archivo, se usará {1}.",
+      "fr": "Lancez Pyxel Editor avec la commande suivante :\n{0}\nSi le fichier de ressources Pyxel (.pyxres) spécifié existe, il sera chargé. Sinon, vous pouvez modifier une nouvelle ressource ; le fichier sera créé lors de la sauvegarde. Si aucun nom de fichier n'est spécifié, {1} sera utilisé.",
+      "it": "Avviare Pyxel Editor con il seguente comando:\n{0}\nSe il file di risorse Pyxel (.pyxres) specificato esiste, verrà caricato. Altrimenti puoi modificare una nuova risorsa; il file verrà creato al salvataggio. Se il nome del file viene omesso, verrà usato {1}.",
+      "ja": "Pyxel Editor は次のコマンドで起動します：\n{0}\n指定した Pyxel リソースファイル (.pyxres) が存在する場合は、そのファイルが読み込まれます。存在しない場合は新しいリソースを編集し、保存するとファイルが作成されます。ファイル名を省略した場合は {1} を使用します。",
+      "ko": "다음 명령어로 Pyxel Editor를 실행하세요:\n{0}\n지정한 Pyxel 리소스 파일(.pyxres)이 존재하면 해당 파일을 불러옵니다. 존재하지 않으면 새 리소스를 편집할 수 있으며, 저장할 때 파일이 생성됩니다. 파일명을 생략하면 {1}를 사용합니다.",
+      "pt": "Inicie o Pyxel Editor com o seguinte comando:\n{0}\nSe o arquivo de recursos Pyxel (.pyxres) especificado existir, ele será carregado. Caso contrário, você pode editar um novo recurso; o arquivo será criado ao salvar. Se o nome do arquivo for omitido, será usado {1}.",
+      "ru": "Запустите Pyxel Editor командой:\n{0}\nЕсли указанный файл ресурсов Pyxel (.pyxres) существует, он будет загружен. Если его нет, можно редактировать новый ресурс; файл будет создан при сохранении. Если имя файла не указано, используется {1}.",
+      "tr": "Pyxel Editor'ü şu komutla başlatın:\n{0}\nBelirtilen Pyxel kaynak dosyası (.pyxres) varsa yüklenir. Yoksa yeni bir kaynağı düzenleyebilirsiniz; dosya kaydettiğinizde oluşturulur. Dosya adı belirtilmezse {1} kullanılır.",
+      "uk": "Запустіть Pyxel Editor командою:\n{0}\nЯкщо вказаний файл ресурсів Pyxel (.pyxres) існує, його буде завантажено. Якщо його немає, можна редагувати новий ресурс; файл буде створено під час збереження. Якщо ім'я файлу не вказано, використовується {1}."
     },
     "common_title": {
       "en": "Common Operations",
@@ -1829,7 +1829,7 @@
         "es": "Cambiar número o valor en unidades de ±10",
         "fr": "Modifier la valeur ou le numéro par pas de ±10",
         "it": "Modificare il numero o il valore di ±10",
-        "ja": "番号や値を±10 単位で変更する",
+        "ja": "番号や値を ±10 単位で変更する",
         "ko": "번호나 값을 ±10 단위로 변경",
         "pt": "Alterar número ou valor em incrementos de ±10",
         "ru": "Изменить номер или значение на ±10",
@@ -2629,7 +2629,20 @@
         "tr": "Ses aralığı",
         "uk": "Діапазон"
       },
-      "value": "C0–B4"
+      "value": {
+        "en": "C0-B4",
+        "cn": "C0～B4",
+        "de": "C0–B4",
+        "es": "C0-B4",
+        "fr": "C0-B4",
+        "it": "C0-B4",
+        "ja": "C0〜B4",
+        "ko": "C0~B4",
+        "pt": "C0-B4",
+        "ru": "C0–B4",
+        "tr": "C0-B4",
+        "uk": "C0–B4"
+      }
     },
     {
       "label": {

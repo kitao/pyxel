@@ -495,8 +495,14 @@ mod tests {
             samples: vec![30_000; 256],
         });
 
+        // Silent PCM isolates the transition from the synthesizer's tail.
+        let baseline = render(vec![note_sound(), silent_pcm_sound(256)], 512);
         let samples = render(vec![note_sound(), pcm], 512);
-        let pcm_start = samples.iter().position(|&sample| sample > 2_000).unwrap();
+        let pcm_start = samples
+            .iter()
+            .zip(&baseline)
+            .position(|(sample, silent)| sample != silent)
+            .unwrap();
         let note_clocks = AUDIO_CLOCK_RATE / crate::settings::SOUND_TICKS_PER_SECOND;
         let expected_start = (u64::from(note_clocks) * u64::from(AUDIO_SAMPLE_RATE))
             .div_ceil(u64::from(AUDIO_CLOCK_RATE)) as usize;

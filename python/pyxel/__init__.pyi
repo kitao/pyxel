@@ -1928,7 +1928,7 @@ def cos(deg: float) -> float:
     """
 
 def atan2(y: float, x: float) -> float:
-    """Return the arctangent of y/x in degrees.
+    """Return the two-argument arctangent of y and x in degrees, accounting for the quadrant.
 
     Args:
         y: Y value
