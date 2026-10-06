@@ -156,6 +156,26 @@ class TestTilemapDrawing:
 
 
 class TestTilemapBlt:
+    @pytest.mark.parametrize("bank_source", [False, True])
+    @pytest.mark.parametrize("extent", [0.0, 0.49, -0.49, float("nan")])
+    @pytest.mark.parametrize("zero_height", [False, True])
+    def test_empty_self_blit_preserves_tiles(self, bank_source, extent, zero_height):
+        tilemap = pyxel.Tilemap(8, 8, 0)
+        tilemap.pset(0, 0, (1, 2))
+        tilemap.pset(1, 0, (3, 4))
+        expected = list(tilemap.data_ptr())
+        previous = pyxel.tilemaps[0]
+        try:
+            if bank_source:
+                pyxel.tilemaps[0] = tilemap
+            source = 0 if bank_source else tilemap
+            width, height = (8, extent) if zero_height else (extent, 8)
+            for rotate in (0, 30):
+                tilemap.blt(0, 0, source, 0, 0, width, height, rotate=rotate)
+            assert list(tilemap.data_ptr()) == expected
+        finally:
+            pyxel.tilemaps[0] = previous
+
     @pytest.mark.parametrize("rotate", [0, 30])
     @pytest.mark.parametrize("source_pos", [0, -1])
     def test_self_blit_matches_source_snapshot(self, rotate, source_pos):

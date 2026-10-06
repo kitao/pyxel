@@ -12,7 +12,9 @@ class App:
         for i in range(pyxel.NUM_CHANNELS):
             pyxel.sounds[i].mml(_get_js_var(f"js_ch{i + 1}_mml", ""))
 
-        if _get_js_var("js_play", False):
+        if _get_js_var("js_stop", False):
+            window.js_stop = False
+        elif _get_js_var("js_play", False):
             self.start_playback()
 
         pyxel.run(self.update, self.draw)
@@ -26,6 +28,7 @@ class App:
     def update(self):
         if _get_js_var("js_stop", False):
             pyxel.stop()
+            window.js_stop = False
 
         is_playing = any(
             pyxel.play_pos(i) is not None for i in range(pyxel.NUM_CHANNELS)

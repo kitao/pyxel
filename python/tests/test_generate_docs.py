@@ -173,6 +173,7 @@ def test_detailed_guide_selection_preserves_content(tmp_path):
         ),
         encoding="utf-8",
     )
+
     generate_docs.generate_from_html(html_path, json_path, "guide", "user-guide/cube")
     result = (generate_docs.DOCS_DIR / "guide.md").read_text()
     assert "Overview" in result

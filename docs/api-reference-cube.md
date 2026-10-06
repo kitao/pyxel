@@ -524,7 +524,7 @@ Convert a local-space transform into world space, ignoring translation.
 
 ### `Quat(x=0.0, y=0.0, z=0.0, w=1.0)` — class
 
-A quaternion representing a rotation. The default is the identity rotation. Values are immutable; methods return a new Quat.
+A quaternion representing a rotation. The default is the identity rotation. Values are immutable; operations that change the rotation return a new Quat.
 
 **Parameters:**
 

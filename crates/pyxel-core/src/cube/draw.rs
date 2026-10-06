@@ -2137,6 +2137,7 @@ mod tests {
                     (bx - ax) * (py - ay) - (by - ay) * (px - ax) > 0.0
                 })
             };
+
             let fill_target = Image::new(64, 64);
             rc_mut!(&fill_target).clear(2);
             let mut fill_ctx = draw_context_64(&fill_target, &camera, false);
@@ -2149,6 +2150,7 @@ mod tests {
                 None,
                 DrawState::unshaded(),
             );
+
             for y in 0..64 {
                 for x in 0..64 {
                     // Quarter-pixel shifts keep every pixel center off the hull
@@ -2181,6 +2183,7 @@ mod tests {
                         );
                     }
                 }
+
                 let image = rc_ref!(&target);
                 // A filled convex box and its touching outline occupy a single
                 // interval in every row and column, including outside edge pixels.
@@ -2200,6 +2203,7 @@ mod tests {
                         }
                     }
                 }
+
                 for y in 0..64 {
                     for x in 0..64 {
                         let color = image.canvas.read_data(x, y);
@@ -2220,6 +2224,7 @@ mod tests {
                         }
                     }
                 }
+
                 // Every silhouette edge has a visible witness near its midpoint.
                 for (x, y) in [
                     (6.0, 1.0),
@@ -2238,6 +2243,7 @@ mod tests {
                         "shift={shift} missing silhouette edge near ({x},{y})"
                     );
                 }
+
                 if let Some(ref expected) = previous {
                     assert_eq!(&image.canvas.data, expected, "shift={shift} drawing order");
                 } else {
@@ -2907,6 +2913,64 @@ mod tests {
         )
         .unwrap();
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
+    }
+
+    #[test]
+    fn test_face_normal_direction_survives_selected_sum_overflow() {
+        let a = 1.2e19_f32;
+        let world = Mat4 {
+            data: [
+                [a, 0.0, 0.0, 0.0],
+                [a, -a, 0.0, 0.0],
+                [a, a, -a, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        let unit = 1.0 / 6.0_f32.sqrt();
+        let normal = Vec3 {
+            x: unit,
+            y: unit,
+            z: 2.0 * unit,
+        };
+        let transform = FaceNormalTransform::new(&world);
+        assert!(transform.wide_matrix.is_none());
+
+        let actual = transform.transform(&normal);
+        assert!(actual.is_finite());
+        // The transformed triangle edges (1, 2, 0) and (1, 0, 3) cross to (6, -3, -2).
+        let expected = Vec3 {
+            x: 6.0 / 7.0,
+            y: -3.0 / 7.0,
+            z: -2.0 / 7.0,
+        };
+        let length = actual.length_f64();
+        for (component, expected) in [
+            (actual.x, expected.x),
+            (actual.y, expected.y),
+            (actual.z, expected.z),
+        ] {
+            assert!((f64::from(component) / length - f64::from(expected)).abs() < 1.0e-6);
+        }
+
+        let light = Vec3 {
+            x: -expected.x,
+            y: -expected.y,
+            z: -expected.z,
+        };
+        assert_eq!(face_shade_level(&light, Some(&actual)), 7);
+
+        let ordinary = FaceNormalTransform::new(&Mat4 {
+            data: [
+                [2.0, 0.0, 0.0, 0.0],
+                [2.0, -2.0, 0.0, 0.0],
+                [2.0, 2.0, -2.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        });
+        assert_eq!(
+            ordinary.transform(&normal),
+            ordinary.matrix.mul_dir_value(&normal)
+        );
     }
 
     #[test]

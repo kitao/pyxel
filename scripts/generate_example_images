@@ -5,13 +5,12 @@ import heapq
 import os
 import random
 import runpy
-import subprocess
 import sys
 import tempfile
 from itertools import pairwise
 from pathlib import Path
 
-from _image_capture import save_gif
+from _image_capture import run_worker, save_gif
 from PIL import Image
 
 _DESCRIPTION = """Generate documentation previews for examples 01 through 19 and 99.
@@ -69,7 +68,6 @@ SETTINGS = {
     19: (165, 1, 2, 30),
     99: (30, 1, 2, 30),
 }
-
 
 SEEDS = {2: 2, 7: 72, 9: 2}
 
@@ -144,6 +142,7 @@ def smooth_cursor(path, frame):
     for index, (start, end) in enumerate(pairwise(path)):
         if start[0] <= frame < end[0]:
             break
+
     previous = path[max(index - 1, 0)]
     following = path[min(index + 2, len(path) - 1)]
     span = end[0] - start[0]
@@ -254,11 +253,13 @@ def input_for_frame(number, frame, app, namespace, controls):
                     change_y *= 1.5 / change
                 vx += change_x
                 vy += change_y
+
                 speed = (vx * vx + vy * vy) ** 0.5
                 limit = min(6, max(1, distance / 2))
                 if speed > limit:
                     vx *= limit / speed
                     vy *= limit / speed
+
         if controls["target"] is None:
             vx *= 0.65
             vy *= 0.65
@@ -489,6 +490,7 @@ def generate(number, destination):
                 assert not app.is_alive and app.score >= 600, (app.is_alive, app.score)
             if number == 10 and frame == total:
                 assert namespace["player"].x >= 430
+
             callbacks["draw"]()
             pyxel.flip()
             if frame >= 1 and (frame == 1 or frame % interval == 0):
@@ -519,7 +521,7 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
         for number in numbers:
-            subprocess.run(
+            run_worker(
                 [
                     sys.executable,
                     str(Path(__file__).resolve()),
@@ -527,9 +529,7 @@ def main():
                     str(number),
                     "--output-dir",
                     temp_dir,
-                ],
-                check=True,
-                timeout=120,
+                ]
             )
 
         for number in numbers:

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 
 class TestSound:
@@ -14,6 +15,20 @@ class TestSound:
         assert len(snd.tones) == 0
         assert len(snd.volumes) == 0
         assert len(snd.effects) == 0
+
+    @pytest.mark.parametrize(
+        ("speed", "error_type", "message"),
+        [
+            (0, ValueError, "speed must be greater than 0"),
+            (30, Exception, "Invalid sound note 'z'"),
+        ],
+    )
+    def test_set_preserves_error_class_and_speed_priority(
+        self, speed, error_type, message
+    ):
+        snd = pyxel.Sound()
+        with raises_exact(error_type, message):
+            snd.set("z", "t", "7", "n", speed)
 
     def test_set_notes_values(self):
         snd = pyxel.Sound()

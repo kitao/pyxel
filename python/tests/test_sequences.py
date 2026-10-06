@@ -480,6 +480,66 @@ class TestSeqValueOps:
 
 
 class TestSeqReentry:
+    @pytest.mark.parametrize("method", ["__iter__", "__reversed__"])
+    def test_resource_results_retain_owners_during_garbage_collection(self, method):
+        code = """
+import gc
+
+import pyxel
+
+seq = pyxel.images
+owners = [pyxel.Image(width, 1) for width in (1, 2, 3)]
+seq[:] = owners
+# Bind the native reader before enabling collection.
+read = getattr(seq, METHOD)
+active = False
+collected = False
+
+
+def collect(phase, info):
+    global collected
+    if active and phase == "start":
+        seq.clear()
+        collected = True
+
+
+gc.callbacks.append(collect)
+gc.collect()
+gc.disable()
+# Exhaust the list free list so the result allocation can collect the source bank.
+retained = [[] for _ in range(1000)]
+gc.set_threshold(1, 1000000, 1000000)
+active = True
+gc.enable()
+
+result = read()
+active = False
+gc.callbacks.remove(collect)
+
+assert collected
+assert len(seq) == 0
+result = list(result)
+expected = owners[::-1] if REVERSED else owners
+assert [image.width for image in result] == [image.width for image in expected]
+
+# Returned resources share the retained owners rather than copying their pixels.
+owners[0].pset(0, 0, 7)
+assert [image.pget(0, 0) for image in result] == [
+    image.pget(0, 0) for image in expected
+]
+"""
+        code = code.replace("METHOD", repr(method)).replace(
+            "REVERSED", repr(method == "__reversed__")
+        )
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
     @pytest.mark.parametrize(
         ("operation", "expected"),
         [

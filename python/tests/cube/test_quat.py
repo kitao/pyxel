@@ -1,4 +1,4 @@
-from math import isclose, sqrt
+from math import isclose, isfinite, sqrt
 
 import pytest
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
@@ -199,6 +199,77 @@ class TestInterpolation:
         # 45 deg rotation of (1, 0, 0) → (cos45, 0, -sin45)
         s = sqrt(0.5)
         assert approx_v(mid * Vec3(1, 0, 0), Vec3(s, 0, -s))
+
+
+class TestFiniteInputs:
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_length_retains_representable_magnitude(self, scale):
+        quat = Quat(scale, 2 * scale, 2 * scale, 4 * scale)
+        assert all(isfinite(value) for value in quat)
+        assert quat.length() == pytest.approx(5 * scale, rel=2e-6, abs=0)
+
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_normalize_retains_unit_components(self, scale):
+        quat = Quat(0, scale, 0, scale).normalize()
+        assert tuple(quat) == pytest.approx((0, sqrt(0.5), 0, sqrt(0.5)), abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_axis_angle_retains_quarter_turn(self, scale):
+        quat = Quat.from_axis_angle(Vec3(0, scale, 0), 90)
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3.RIGHT) == pytest.approx((0, 0, -1), abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_from_two_vectors_retains_shortest_perpendicular_rotation(self, scale):
+        quat = Quat.from_two_vectors(
+            Vec3(3 * scale, 4 * scale, 0), Vec3(-4 * scale, 3 * scale, 0)
+        )
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3(0.6, 0.8, 0)) == pytest.approx(
+            (-0.8, 0.6, 0), abs=1e-6
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30])
+    def test_from_direction_retains_requested_forward(self, scale):
+        quat = Quat.from_direction(Vec3(-3 * scale, 0, -4 * scale))
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3.FORWARD) == pytest.approx((-0.6, 0, -0.8), abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30])
+    def test_from_direction_with_scaled_up_returns_unit_rotation(self, scale):
+        quat = Quat.from_direction(Vec3.FORWARD, Vec3(0, scale, 0))
+        # A nonunit scalar quaternion can leave UP unchanged, so check its norm too.
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3.UP) == pytest.approx((0, 1, 0), abs=1e-6)
+
+
+class TestFiniteIntermediates:
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_dot_cancellation_is_zero(self, scale):
+        assert Quat(scale, scale, 0, 0).dot(Quat(2, -2, 0, 0)) == 0
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_unit_rotation_preserves_large_vector(self, scale):
+        vector = Vec3(scale, 0, 0)
+        rotation = Quat.from_axis_angle(Vec3.UP, 90)
+        assert rotation.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(rotation * vector) == pytest.approx(
+            (0, 0, -vector.x), rel=2e-6, abs=abs(vector.x) * 1e-6
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_finite_up_hint_retains_oblique_basis(self, scale):
+        rotation = Quat.from_direction(Vec3(0.6, 0, -0.8), Vec3(scale, scale, scale))
+        # Analytic basis: right = forward cross (1,1,1), then up = right cross forward.
+        right = (0.8 / sqrt(2.96), -1.4 / sqrt(2.96), 0.6 / sqrt(2.96))
+        up = (-0.8 * right[1], 0.6 * right[2] + 0.8 * right[0], -0.6 * right[1])
+        assert rotation.length() == pytest.approx(1, abs=1e-6)
+        for axis, expected in [
+            (Vec3.FORWARD, (0.6, 0, -0.8)),
+            (Vec3.RIGHT, right),
+            (Vec3.UP, up),
+        ]:
+            assert tuple(rotation * axis) == pytest.approx(expected, abs=1e-6)
 
 
 # 1e-4 exceeds the f32 rounding of unit-scale values and stays below any expected difference

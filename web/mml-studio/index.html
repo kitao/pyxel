@@ -280,6 +280,8 @@
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
 
+      // Page controls
+
       function handleButtonPress(button) {
         const action = button.dataset.action;
         const varName = `js_${action}`;
@@ -290,7 +292,6 @@
           setButtonStyle(button, true);
           setTimeout(() => {
             setButtonStyle(button, false);
-            runtimeScreen.contentWindow[varName] = false;
           }, 150);
         } else {
           button.dataset.state = button.dataset.state !== "true";
@@ -299,9 +300,25 @@
           button.setAttribute("aria-pressed", String(isActive));
         }
 
-        runtimeScreen.contentWindow[varName] = isActive;
-        if (action === "play") {
-          runtimeScreen.contentWindow.resetPyxel();
+        const runtime = runtimeScreen.contentWindow;
+        runtime[varName] = isActive;
+        if (action === "stop") {
+          runtime.js_play = false;
+          runtime.js_play_request = (runtime.js_play_request ?? 0) + 1;
+        } else if (action === "play") {
+          runtime.js_stop = false;
+          const request = (runtime.js_play_request ?? 0) + 1;
+          runtime.js_play_request = request;
+          const finish = () => {
+            if (runtime.js_play_request === request) {
+              runtime.js_play = false;
+            }
+          };
+
+          runtime.resetPyxel().then(finish, (error) => {
+            finish();
+            console.error("Playback reset failed", error);
+          });
         }
       }
 
@@ -349,6 +366,8 @@
         clearTimeout(shareUrlUpdateTimer);
         shareUrlUpdateTimer = setTimeout(updateShareUrl, 300);
       }
+
+      // URL encoding
 
       async function encodeMmlToUrl(mml) {
         const compressed = await compressDeflateRaw(mml);

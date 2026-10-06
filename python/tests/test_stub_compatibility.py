@@ -187,7 +187,6 @@ def test_cube_stub_rejects_read_only_property_assignment(tmp_path):
     )
 
     result = _run_mypy(source)
-
     assert result.returncode == 1
     assert result.stdout.count("error:") == 4, result.stdout
     for message in (

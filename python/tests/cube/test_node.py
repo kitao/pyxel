@@ -103,6 +103,32 @@ class TestColliderContactBasics:
 
 
 class TestHierarchy:
+    @pytest.mark.parametrize("operation", ["reparent", "destroy"])
+    def test_parent_finalizer_reentry_keeps_hierarchy_consistent(self, operation):
+        destination, redirected, child = Node(), Node(), Node()
+        finalizer_calls = []
+
+        class PreviousParent(Node):
+            def __del__(self):
+                redirected.add_child(child)
+                finalizer_calls.append("redirected")
+
+        previous = PreviousParent()
+        previous.add_child(child)
+        del previous
+        if operation == "reparent":
+            destination.add_child(child)
+        else:
+            child.destroy()
+            child.update()
+            assert child.destroyed
+
+        assert finalizer_calls == ["redirected"]
+        parent = child.parent
+        assert parent is not None
+        assert child in parent.children
+        assert sum(child in node.children for node in (destination, redirected)) == 1
+
     def test_add_child_and_remove_child_keep_canonical_signature(self):
         assert str(inspect.signature(Node.add_child)) == "(self, /, node)"
         assert str(inspect.signature(Node.remove_child)) == "(self, /, node)"
@@ -429,6 +455,30 @@ assert all(child.parent is root for child in root.children)
         assert isinstance(Node.from_mesh(m), Node)
 
 
+class TestLineRasterization:
+    @pytest.mark.parametrize("scale", [8, 1e8, 1e20])
+    @pytest.mark.parametrize("vertical", [False, True])
+    def test_long_line_crosses_viewport(self, scale, vertical):
+        class Probe(Node):
+            def on_draw(self):
+                self.shaded(False)
+                start = Vec3(0, -scale, 0) if vertical else Vec3(-scale, 0, 0)
+                end = Vec3(0, scale, 0) if vertical else Vec3(scale, 0, 0)
+                self.line(start, end, 7)
+
+        probe = Probe()
+        probe.camera = Camera()
+        probe.camera.transform = Mat4.from_translation(Vec3(0, 0, 4))
+        probe.camera.ortho_size = 4
+        target = Image(16, 16)
+        probe.draw(0, 0, 16, 16, target)
+
+        # The orthographic axis crosses every cell in the center row or column.
+        for y in range(16):
+            for x in range(16):
+                assert target.pget(x, y) == (7 if (x if vertical else y) == 8 else 0)
+
+
 class TestStateSetters:
     @staticmethod
     def _draw(probe, shading=None):
@@ -516,12 +566,12 @@ class TestStateSetters:
         assert self._draw(Probe(), shading) == (7 if all(size) else 0)
 
 
-class TestBoxSphereTexturing:
-    def test_box_textured(self):
+class TestBoxSphereArguments:
+    def test_box_accepts_image(self):
         img = pyxel.images[0]
         Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), img)
 
-    def test_box_textured_with_colkey(self):
+    def test_box_accepts_image_with_colkey(self):
         img = pyxel.images[0]
         Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), img, colkey=0)
 
@@ -529,11 +579,11 @@ class TestBoxSphereTexturing:
         with raises_exact(TypeError, "col_img must be int or Image"):
             Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), "7")
 
-    def test_sphere_textured(self):
+    def test_sphere_accepts_image(self):
         img = pyxel.images[0]
         Node().sphere(Vec3.ZERO, 1.0, img)
 
-    def test_sphere_textured_with_colkey(self):
+    def test_sphere_accepts_image_with_colkey(self):
         img = pyxel.images[0]
         Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
 
@@ -594,3 +644,14 @@ class TestCameraCascade:
 
 def palette() -> list[int]:
     return [pyxel.colors[i] for i in range(16)]
+
+
+class TestFiniteBasis:
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30, 6e37])
+    @pytest.mark.parametrize("axis", ["forward", "right", "up"])
+    def test_nonuniform_scale_retains_unit_direction(self, scale, axis):
+        node = Node()
+        node.transform = Mat4.from_scale(Vec3(scale, 2 * scale, 3 * scale))
+        assert all(math.isfinite(node.transform[i, i]) for i in range(3))
+        expected = {"forward": (0, 0, -1), "right": (1, 0, 0), "up": (0, 1, 0)}[axis]
+        assert tuple(getattr(node, axis)) == pytest.approx(expected, abs=1e-6)

@@ -114,8 +114,16 @@ class TestImageDrawing:
         code = """
 import pyxel
 
-rows = ["11111111", "10010001", "10010001", "10000001",
-        "11111111", "10000001", "10000001", "11111111"]
+rows = [
+    "11111111",
+    "10010001",
+    "10010001",
+    "10000001",
+    "11111111",
+    "10000001",
+    "10000001",
+    "11111111",
+]
 
 for alpha in (0.0, 0.25, 0.5, 1.0, float("nan")):
     actual, expected = pyxel.Image(8, 8), pyxel.Image(8, 8)
@@ -151,6 +159,31 @@ for alpha in (0.0, 0.25, 0.5, 1.0, float("nan")):
 
 
 class TestImageBlt:
+    @pytest.mark.parametrize("method", ["blt", "blt3d"])
+    @pytest.mark.parametrize("bank_source", [False, True])
+    @pytest.mark.parametrize("extent", [0.0, 0.49, -0.49, float("nan")])
+    @pytest.mark.parametrize("zero_height", [False, True])
+    def test_empty_self_blit_preserves_pixels(
+        self, method, bank_source, extent, zero_height
+    ):
+        image = pyxel.Image(8, 8)
+        image.set(0, 0, ["01234567", "76543210"])
+        expected = list(image.data_ptr())
+        previous = pyxel.images[0]
+        try:
+            if bank_source:
+                pyxel.images[0] = image
+            source = 0 if bank_source else image
+            width, height = (8, extent) if zero_height else (extent, 8)
+            if method == "blt3d":
+                image.blt3d(0, 0, width, height, source, (0, 0, 1), (0, 30, 0))
+            else:
+                for rotate in (0, 30):
+                    image.blt(0, 0, source, 0, 0, width, height, rotate=rotate)
+            assert list(image.data_ptr()) == expected
+        finally:
+            pyxel.images[0] = previous
+
     @pytest.mark.parametrize(
         ("method", "rotate", "source_pos"),
         [

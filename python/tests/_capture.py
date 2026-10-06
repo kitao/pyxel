@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -15,7 +16,6 @@ APP_REFS_DIR = REFERENCES_DIR / "apps"
 EDITOR_REFS_DIR = REFERENCES_DIR / "editor"
 
 _RUNNER = Path(__file__).parent / "_runner.py"
-
 
 # Capture subprocess wrappers
 
@@ -37,7 +37,16 @@ def run_editor_subprocess(editor, resource_file, out_dir):
 
 
 def _run_subprocess(*args):
-    subprocess.run([sys.executable, str(_RUNNER), *args], check=True, timeout=60)
+    result = subprocess.run(
+        [sys.executable, str(_RUNNER), *args],
+        env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "Failed to initialize audio device" not in result.stdout
 
 
 # Captured-result collection

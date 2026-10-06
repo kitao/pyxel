@@ -450,6 +450,129 @@ mod tests {
     }
 
     #[test]
+    fn test_finite_intermediate_linear_sampling_preserves_midpoint() {
+        for scale in [1.0, 1e20, 3e38] {
+            for target in [MotionTarget::Translation, MotionTarget::Scale] {
+                let mut channel = translation_channel(MotionInterpolation::Linear);
+                channel.inputs = vec![0.0, 10.0];
+                channel.target = target;
+                let values = vec![
+                    Vec3 {
+                        x: scale,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    Vec3 {
+                        x: -scale,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                ];
+                channel.values = if target == MotionTarget::Translation {
+                    MotionValues::Translations(values)
+                } else {
+                    MotionValues::Scales(values)
+                };
+
+                assert_eq!(
+                    channel.sample_vec3(5.0),
+                    zero_vec3(),
+                    "scale={scale} target={target:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_finite_intermediate_cubic_sampling_preserves_tangent_cancellation() {
+        for scale in [1.0, 1e20, 3e38] {
+            let tangent = Vec3 {
+                x: scale,
+                y: 0.0,
+                z: 0.0,
+            };
+            let mut channel = cubic_translation_channel();
+            channel.inputs = vec![0.0, 10.0];
+            let keys = vec![
+                CubicVec3Key {
+                    in_tangent: zero_vec3(),
+                    value: zero_vec3(),
+                    out_tangent: tangent,
+                },
+                CubicVec3Key {
+                    in_tangent: tangent,
+                    value: zero_vec3(),
+                    out_tangent: zero_vec3(),
+                },
+            ];
+
+            for target in [MotionTarget::Translation, MotionTarget::Scale] {
+                channel.target = target;
+                channel.values = if target == MotionTarget::Translation {
+                    MotionValues::CubicTranslations(keys.clone())
+                } else {
+                    MotionValues::CubicScales(keys.clone())
+                };
+                // At midpoint the equal tangents have opposite Hermite weights.
+                assert_eq!(
+                    channel.sample_vec3(5.0),
+                    zero_vec3(),
+                    "scale={scale} target={target:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_finite_intermediate_cubic_rotation_normalizes_before_narrowing() {
+        let zero = Quat {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 0.0,
+        };
+        for scale in [1.0, 1e20, 3e38] {
+            let tangent = Quat {
+                x: 0.0,
+                y: scale,
+                z: 0.0,
+                w: 0.0,
+            };
+            for cancel in [false, true] {
+                let channel = MotionChannel {
+                    part_index: 0,
+                    target: MotionTarget::Rotation,
+                    inputs: vec![0.0, 10.0],
+                    values: MotionValues::CubicRotations(vec![
+                        CubicQuatKey {
+                            in_tangent: zero,
+                            value: identity_quat(),
+                            out_tangent: tangent,
+                        },
+                        CubicQuatKey {
+                            in_tangent: if cancel { tangent } else { zero },
+                            value: identity_quat(),
+                            out_tangent: zero,
+                        },
+                    ]),
+                    interpolation: MotionInterpolation::CubicSpline,
+                };
+
+                let q = channel.sample_quat(5.0);
+                // Unit keys contribute w=1; midpoint tangent weight is dt/8.
+                let y = if cancel { 0.0 } else { f64::from(scale) * 1.25 };
+                let len = y.hypot(1.0);
+                assert_eq!((q.x, q.z), (0.0, 0.0));
+                assert!((f64::from(q.y) - y / len).abs() < 1e-6);
+                assert!(
+                    (f64::from(q.w) - 1.0 / len).abs()
+                        <= (1.0 / len) * 2e-6 + f64::from(f32::from_bits(1))
+                );
+            }
+        }
+    }
+
+    #[test]
     fn test_cubic_rotation_normalizes_midpoint() {
         let zero = Quat {
             x: 0.0,

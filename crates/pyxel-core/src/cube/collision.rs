@@ -1912,6 +1912,39 @@ mod tests {
     }
 
     #[test]
+    fn test_sphere_contact_finite_range_geometry() {
+        for scale in [1e20_f32, 1e38_f32] {
+            for center in [
+                vec3(1.5 * scale, 0.0, 0.0),
+                vec3(0.0, 1.5 * scale, 0.0),
+                vec3(0.0, 0.0, 1.5 * scale),
+            ] {
+                let contact = sphere_vs_sphere(center, scale, vec3(0.0, 0.0, 0.0), scale).unwrap();
+                let component = center.x.max(center.y).max(center.z);
+                let expected_depth = 2.0 * f64::from(scale) - f64::from(component);
+                // f32 final storage permits relative rounding, while axis normals are exact.
+                assert!((f64::from(contact.depth) / expected_depth - 1.0).abs() < 1e-6);
+                assert_eq!(
+                    contact.normal,
+                    vec3(
+                        center.x / component,
+                        center.y / component,
+                        center.z / component
+                    )
+                );
+                assert_eq!(
+                    contact.point,
+                    vec3(
+                        contact.normal.x * scale,
+                        contact.normal.y * scale,
+                        contact.normal.z * scale
+                    )
+                );
+            }
+        }
+    }
+
+    #[test]
     fn test_sphere_vs_sphere_miss() {
         let r = sphere_vs_sphere(
             Vec3 {
@@ -1928,6 +1961,140 @@ mod tests {
             1.0,
         );
         assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_ray_sphere_finite_range_geometry() {
+        for scale in [1e20, 1e37] {
+            let origin = vec3(0.0, 0.0, -5.0 * scale);
+            let dir = vec3(0.0, 0.0, 1.0);
+            let (t, point, normal) =
+                ray_vs_sphere(origin, dir, vec3(0.0, 0.0, 0.0), scale, f32::INFINITY).unwrap();
+            // Normalized coordinates allow a few ulps of the stored f32 scale.
+            assert!((t / scale - 4.0).abs() < 2e-6);
+            assert_vec3_close(
+                vec3(point.x / scale, point.y / scale, point.z / scale),
+                vec3(0.0, 0.0, -1.0),
+            );
+            assert_eq!(normal, vec3(0.0, 0.0, -1.0));
+
+            let (t, point, normal) = ray_vs_sphere_filtered(
+                origin,
+                dir,
+                vec3(0.0, 0.0, 0.0),
+                scale,
+                f32::INFINITY,
+                |p| p.z > 0.0,
+            )
+            .unwrap();
+            assert!((t / scale - 6.0).abs() < 2e-6);
+            assert_vec3_close(
+                vec3(point.x / scale, point.y / scale, point.z / scale),
+                vec3(0.0, 0.0, 1.0),
+            );
+            assert_eq!(normal, vec3(0.0, 0.0, 1.0));
+
+            assert!(ray_vs_sphere_filtered(
+                origin,
+                dir,
+                vec3(0.0, 0.0, 0.0),
+                scale,
+                4.0 * scale,
+                |p| p.z > 0.0,
+            )
+            .is_none());
+        }
+    }
+
+    #[test]
+    fn test_ray_triangle_finite_range_geometry() {
+        for scale in [1e10, 1e20, 1e37] {
+            let vertices = [
+                vec3(-scale, 0.0, -scale),
+                vec3(scale, 0.0, -scale),
+                vec3(0.0, 0.0, scale),
+            ];
+            for sign in [-1.0, 1.0] {
+                let origin = vec3(0.0, sign * 5.0 * scale, 0.0);
+                let dir = vec3(0.0, -sign, 0.0);
+                let (t, point, normal) = ray_vs_triangle(
+                    origin,
+                    dir,
+                    vertices[0],
+                    vertices[1],
+                    vertices[2],
+                    f32::INFINITY,
+                )
+                .unwrap();
+                // Transform and intersection rounding stays within a few source-scale ulps.
+                assert!((t / scale - 5.0).abs() < 2e-6);
+                assert_vec3_close(
+                    vec3(point.x / scale, point.y / scale, point.z / scale),
+                    vec3(0.0, 0.0, 0.0),
+                );
+                assert_eq!(normal, vec3(0.0, sign, 0.0));
+                assert!(ray_vs_triangle(
+                    origin,
+                    dir,
+                    vertices[0],
+                    vertices[1],
+                    vertices[2],
+                    4.0 * scale,
+                )
+                .is_none());
+            }
+        }
+
+        // A small triangle still follows the existing absolute determinant cutoff.
+        assert!(ray_vs_triangle(
+            vec3(0.0, 1.0, 0.0),
+            vec3(0.0, -1.0, 0.0),
+            vec3(-1e-6, 0.0, -1e-6),
+            vec3(1e-6, 0.0, -1e-6),
+            vec3(0.0, 0.0, 1e-6),
+            f32::INFINITY,
+        )
+        .is_none());
+    }
+
+    #[test]
+    fn test_sphere_triangle_finite_range_geometry() {
+        for scale in [1e-30, 1e-20, 1e20, 1e37] {
+            let vertices = [
+                vec3(-scale, 0.0, -scale),
+                vec3(scale, 0.0, -scale),
+                vec3(0.0, 0.0, scale),
+            ];
+            for sign in [-1.0, 1.0] {
+                let hit = sphere_vs_triangle(
+                    vec3(0.0, sign * 0.5 * scale, 0.0),
+                    scale,
+                    vertices[0],
+                    vertices[1],
+                    vertices[2],
+                )
+                .unwrap();
+                // The f64 face projection can leave a few intermediate-rounding ulps.
+                assert!([hit.point.x, hit.point.y, hit.point.z]
+                    .iter()
+                    .all(|x| (f64::from(*x) / f64::from(scale)).abs() < 2e-15));
+                assert_eq!(hit.normal, vec3(0.0, sign, 0.0));
+                // Distance and penetration are scaled f32 outputs, with a few ulps allowed.
+                assert!(
+                    (hit.depth / scale - 0.5).abs() < 2e-6,
+                    "scale={scale} depth={}",
+                    hit.depth
+                );
+                assert!(sphere_vs_triangle(
+                    vec3(0.0, sign * scale, 0.0),
+                    scale,
+                    vertices[0],
+                    vertices[1],
+                    vertices[2],
+                )
+                .is_none());
+            }
+        }
     }
 
     #[test]
@@ -2753,6 +2920,40 @@ mod tests {
     }
 
     #[test]
+    fn test_segment_triangle_nearest_finite_range_geometry() {
+        for scale in [1.0_f32, 1e10, 1e20, 1e30, 1e37] {
+            let a0 = vec3(0.0, 3.0 * scale, 0.0);
+            let a1 = vec3(0.0, 1.5 * scale, 0.0);
+            let (on_seg, on_tri) = closest_points_segment_triangle(
+                a0,
+                a1,
+                vec3(-10.0 * scale, 0.0, -10.0 * scale),
+                vec3(10.0 * scale, 0.0, -10.0 * scale),
+                vec3(0.0, 0.0, 10.0 * scale),
+            );
+            assert_eq!(on_seg, a1);
+            assert!(vec_is_finite(on_tri));
+            for component in [on_tri.x, on_tri.y, on_tri.z] {
+                assert!((component / scale).abs() < 4e-6);
+            }
+        }
+    }
+
+    #[test]
+    fn test_segment_projection_finite_range_geometry() {
+        for scale in [1e20_f32, 1e38_f32] {
+            let a = vec3(0.0, -scale, 0.0);
+            let b = vec3(0.0, scale, 0.0);
+            for (y, expected_y) in [(0.5, 0.5), (2.25, 1.0), (-2.25, -1.0)] {
+                let point = closest_point_on_segment(vec3(1.25 * scale, y * scale, 0.0), a, b);
+                assert_eq!((point.x, point.z), (0.0, 0.0));
+                // Axis projection and endpoint clamping precede f32 final storage.
+                assert!((point.y / scale - expected_y).abs() < 1e-6);
+            }
+        }
+    }
+
+    #[test]
     fn test_segment_segment_crossing_and_parallel() {
         // Perpendicular cross at distance 1 on Z.
         let (p, q) = closest_points_segment_segment(
@@ -3073,6 +3274,93 @@ mod tests {
     }
 
     #[test]
+    fn test_sphere_box_finite_range_geometry() {
+        for scale in [1e20, 1e38] {
+            for axis in 0..3 {
+                let rotate = |v: Vec3| match axis {
+                    0 => v,
+                    1 => vec3(v.z, v.x, v.y),
+                    _ => vec3(v.y, v.z, v.x),
+                };
+                let hit = sphere_vs_rounded_obb(
+                    rotate(vec3(1.5 * scale, 0.0, 0.0)),
+                    scale,
+                    &Mat4::identity_value(),
+                    vec3(scale, scale, scale),
+                    0.25 * scale,
+                )
+                .unwrap();
+                assert_eq!(hit.normal, rotate(vec3(1.0, 0.0, 0.0)));
+                let expected = rotate(vec3(1.25 * scale, 0.0, 0.0));
+                // f32 source products and final narrowing account for a few ulps.
+                for (actual, expected) in [
+                    (hit.point.x, expected.x),
+                    (hit.point.y, expected.y),
+                    (hit.point.z, expected.z),
+                    (hit.depth, 0.75 * scale),
+                ] {
+                    assert!(
+                        actual.is_finite()
+                            && ((f64::from(actual) - f64::from(expected)) / f64::from(scale)).abs()
+                                < 1e-6
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_segment_box_finite_range_geometry() {
+        for scale in [1e20, 1e38] {
+            let half = vec3(scale, scale, scale);
+            for (a, b, expected_seg, expected_box) in [
+                (
+                    vec3(1.5 * scale, -0.5 * scale, 0.0),
+                    vec3(1.5 * scale, 0.5 * scale, 0.0),
+                    vec3(1.5 * scale, -0.5 * scale, 0.0),
+                    vec3(scale, -0.5 * scale, 0.0),
+                ),
+                (
+                    vec3(0.0, 2.0 * scale, scale),
+                    vec3(0.0, 0.0, 2.0 * scale),
+                    vec3(0.0, 1.2 * scale, 1.4 * scale),
+                    vec3(0.0, scale, scale),
+                ),
+                (
+                    vec3(-2.0 * scale, 0.0, 0.0),
+                    vec3(2.0 * scale, 0.0, 0.0),
+                    vec3(0.0, 0.0, 0.0),
+                    vec3(0.0, 0.0, 0.0),
+                ),
+            ] {
+                let (on_seg, on_box) = closest_points_segment_aabb(a, b, half);
+                // Coordinates stay f32; normalize the few-ulp bound by source scale.
+                for (actual, expected) in [
+                    (on_seg.x, expected_seg.x),
+                    (on_seg.y, expected_seg.y),
+                    (on_seg.z, expected_seg.z),
+                    (on_box.x, expected_box.x),
+                    (on_box.y, expected_box.y),
+                    (on_box.z, expected_box.z),
+                ] {
+                    assert!(
+                        actual.is_finite()
+                            && ((f64::from(actual) - f64::from(expected)) / f64::from(scale)).abs()
+                                < 1e-6,
+                        "actual={actual} expected={expected}"
+                    );
+                }
+            }
+        }
+
+        let a = vec3(2e20, -1.0, 0.0);
+        let (on_seg, on_box) =
+            closest_points_segment_aabb(a, vec3(2e20, 1.0, 0.0), vec3(1.0, 1.0, 1.0));
+        assert_eq!(on_seg, a);
+        assert_eq!(on_box, vec3(1.0, -1.0, 0.0));
+    }
+
+    #[test]
     fn test_segment_vs_local_aabb_parallel_face() {
         // Vertical segment beside the +X face: closest box point x = 1.
         let (on_seg, on_box) = closest_points_segment_aabb(
@@ -3139,6 +3427,32 @@ mod tests {
         );
         assert_eq!(on_seg, vec3(2.0, 0.5, -2.0));
         assert_eq!(on_box, vec3(1.0, 0.5, -1.0));
+    }
+
+    #[test]
+    fn test_capsule_box_core_finite_range_geometry() {
+        let identity = Mat4::identity_value();
+        for scale in [1.0_f32, 1e10, 1e20, 1e30, 1e37] {
+            for x in [0.0_f32, 0.25, -0.25] {
+                let cap = translation(vec3(x * scale, 0.0, 0.0));
+                let hit = capsule_vs_rounded_obb(
+                    &cap,
+                    4.0 * scale,
+                    0.1 * scale,
+                    &identity,
+                    vec3(scale, 3.0 * scale, 2.0 * scale),
+                    0.2 * scale,
+                )
+                .unwrap();
+                // Full-axis clearance is box half-width plus both radii minus the offset.
+                assert!((hit.depth / scale - (1.3 - x.abs())).abs() < 4e-6);
+                assert_vec3_close(
+                    hit.normal,
+                    vec3(if x >= 0.0 { 1.0 } else { -1.0 }, 0.0, 0.0),
+                );
+                assert!(vec_is_finite(hit.point));
+            }
+        }
     }
 
     #[test]
@@ -3373,6 +3687,44 @@ mod tests {
     }
 
     #[test]
+    fn test_rounded_obb_core_finite_range_geometry() {
+        let identity = Mat4::identity_value();
+        for scale in [1.0_f32, 1e10, 1e20, 1e30, 1e37] {
+            let half = vec3(scale, scale, scale);
+            for dimensions in [1, 2, 3] {
+                let center = vec3(
+                    2.1 * scale,
+                    if dimensions >= 2 { 2.1 * scale } else { 0.0 },
+                    if dimensions == 3 { 2.1 * scale } else { 0.0 },
+                );
+                let target = translation(center);
+                for reverse in [false, true] {
+                    let (a, b) = if reverse {
+                        (&target, &identity)
+                    } else {
+                        (&identity, &target)
+                    };
+                    let hit =
+                        rounded_obb_vs_rounded_obb(a, half, 0.1 * scale, b, half, 0.1 * scale)
+                            .unwrap();
+                    let length = (dimensions as f32).sqrt();
+                    let sign = if reverse { 1.0 } else { -1.0 };
+                    assert!((hit.depth / scale - (0.2 - 0.1 * length)).abs() < 4e-6);
+                    assert_vec3_close(
+                        hit.normal,
+                        vec3(
+                            sign / length,
+                            if dimensions >= 2 { sign / length } else { 0.0 },
+                            if dimensions == 3 { sign / length } else { 0.0 },
+                        ),
+                    );
+                    assert!(vec_is_finite(hit.point));
+                }
+            }
+        }
+    }
+
+    #[test]
     fn test_rounded_obb_separated_core_features() {
         let identity = Mat4::identity_value();
         let half = vec3(1.0, 1.0, 1.0);
@@ -3406,6 +3758,7 @@ mod tests {
                 vec3(-contact.normal.x, -contact.normal.y, -contact.normal.z),
             );
         }
+
         for center in [vec3(2.15, 2.15, 0.0), vec3(2.12, 2.12, 2.12)] {
             assert!(rounded_obb_vs_rounded_obb(
                 &identity,
@@ -3417,6 +3770,7 @@ mod tests {
             )
             .is_none());
         }
+
         // Exact face touching stays excluded from discrete overlap.
         assert!(rounded_obb_vs_rounded_obb(
             &identity,
@@ -3472,6 +3826,27 @@ mod tests {
     }
 
     #[test]
+    fn test_box_triangle_finite_range_geometry() {
+        for scale in [1.0_f32, 1e10, 1e20, 1e30, 1e37] {
+            for (height, intersects) in [(0.5, true), (1.25, false)] {
+                let hit = local_box_vs_triangle(
+                    vec3(scale, scale, scale),
+                    0.0,
+                    vec3(-10.0 * scale, -height * scale, -10.0 * scale),
+                    vec3(10.0 * scale, -height * scale, -10.0 * scale),
+                    vec3(0.0, -height * scale, 10.0 * scale),
+                );
+                assert_eq!(hit.is_some(), intersects);
+                if let Some(hit) = hit {
+                    assert!((hit.depth / scale - 0.5).abs() < 4e-6);
+                    assert_vec3_close(hit.normal, vec3(0.0, 1.0, 0.0));
+                    assert!(vec_is_finite(hit.point));
+                }
+            }
+        }
+    }
+
+    #[test]
     fn test_local_box_vs_triangle_radius_extends_reach() {
         // Triangle plane at x = 1.2 beside a unit-half box: sharp box (r=0)
         // misses; r=0.3 reaches → depth = (1 + 0.3) - 1.2 = 0.1.
@@ -3499,6 +3874,36 @@ mod tests {
         assert!(local_box_vs_triangle(half, 0.0, v0, v1, v2).is_none());
         let geom = local_box_vs_triangle(half, 0.3, v0, v1, v2).unwrap();
         assert!(approx_eq(geom.depth, 0.1));
+    }
+
+    #[test]
+    fn test_capsule_triangle_core_finite_range_geometry() {
+        for scale in [1.0_f32, 1e10, 1e20, 1e30, 1e37] {
+            let v0 = vec3(-10.0 * scale, 0.0, -10.0 * scale);
+            let v1 = vec3(10.0 * scale, 0.0, -10.0 * scale);
+            let v2 = vec3(0.0, 0.0, 10.0 * scale);
+            for reverse in [false, true] {
+                let (a, b) = if reverse { (v2, v1) } else { (v1, v2) };
+                for y in [0.0_f32, 0.25, -0.25] {
+                    let cap = translation(vec3(0.0, y * scale, 0.0));
+                    let hit = capsule_vs_triangle(&cap, scale, 0.1 * scale, v0, a, b).unwrap();
+                    let sign = if y == 0.0 {
+                        if reverse {
+                            1.0
+                        } else {
+                            -1.0
+                        }
+                    } else if y > 0.0 {
+                        1.0
+                    } else {
+                        -1.0
+                    };
+                    assert!((hit.depth / scale - (1.1 - y.abs())).abs() < 4e-6);
+                    assert_vec3_close(hit.normal, vec3(0.0, sign, 0.0));
+                    assert!(vec_is_finite(hit.point));
+                }
+            }
+        }
     }
 
     #[test]

@@ -2,13 +2,12 @@
 
 import argparse
 import os
-import subprocess
 import sys
 import tempfile
 from itertools import pairwise
 from pathlib import Path
 
-from _image_capture import save_gif
+from _image_capture import run_worker, save_gif
 from PIL import Image
 
 _DESCRIPTION = """Recreate Pyxel Editor GIFs from the bundled sample resource.
@@ -200,6 +199,7 @@ def generate(editor, destination):
             pyxel.screenshot(str(shot), scale=2)
             with Image.open(shot) as image:
                 frames.append(image.convert("RGB"))
+
     if editor == "image":
         assert pyxel.images[0].pget(9, 0) == pyxel.images[0].pget(15, 0) == 8
     elif editor == "tilemap":
@@ -222,6 +222,7 @@ def combine(editors, sources, destination):
                 image.seek(index)
                 frames.append(image.convert("RGB"))
                 durations.append(image.info["duration"])
+
     save_gif(frames, destination, durations=durations)
 
 
@@ -246,7 +247,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output_dir) as temp_dir:
         for editor in editors:
-            subprocess.run(
+            run_worker(
                 [
                     sys.executable,
                     str(Path(__file__).resolve()),
@@ -254,9 +255,7 @@ def main():
                     editor,
                     "--output-dir",
                     temp_dir,
-                ],
-                check=True,
-                timeout=120,
+                ]
             )
 
         for name in outputs:

@@ -170,6 +170,89 @@ assert [list(seq) for seq in pyxel.musics[0].seqs] == expected
         )
         assert result.returncode == 0, result.stderr
 
+    @pytest.mark.parametrize(
+        "tool,changed_cell,assist",
+        [
+            ("TOOL_PENCIL", (1, 1), False),
+            ("TOOL_PENCIL", (1, 1), True),
+            ("TOOL_RECTB", (1, 1), False),
+            ("TOOL_RECT", (1, 1), False),
+            ("TOOL_CIRCB", (2, 1), False),
+            ("TOOL_CIRC", (2, 2), False),
+            ("TOOL_BUCKET", (1, 1), False),
+        ],
+    )
+    def test_tilemap_drawing_preserves_marker_valued_tile_and_history(
+        self, tool, changed_cell, assist, tmp_path
+    ):
+        code = """
+import sys
+
+import pyxel
+from pyxel.editor import settings
+from pyxel.editor.app import App
+
+path, tool_name, cx, cy, assist = (
+    sys.argv[1],
+    sys.argv[2],
+    int(sys.argv[3]),
+    int(sys.argv[4]),
+    sys.argv[5] == "1",
+)
+tool = getattr(settings, tool_name)
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+
+app = App(path, "tilemap")
+editor = app._editor
+canvas = editor.canvas_var
+canvas.pset(15, 15, (255, 255))
+pyxel.save(path)
+pyxel.load(path)
+canvas = editor.canvas_var
+assert canvas.pget(15, 15) == (255, 255)
+
+editor.tile_x_var, editor.tile_y_var = 2, 3
+editor.tool_var = tool
+panel = editor._canvas_panel
+press = (panel.x + 9, panel.y + 9)
+release = (panel.x + 25, panel.y + 25)
+panel.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, *press)
+panel._is_assist_mode = assist
+if tool != settings.TOOL_BUCKET:
+    panel.trigger_event("mouse_drag", pyxel.MOUSE_BUTTON_LEFT, *release, 16, 16)
+    panel.trigger_event("mouse_up", pyxel.MOUSE_BUTTON_LEFT, *release)
+assert canvas.pget(cx, cy) == (2, 3), (tool, canvas.pget(cx, cy))
+assert canvas.pget(15, 15) == (255, 255)
+assert editor.can_undo
+
+editor.undo()
+assert canvas.pget(cx, cy) == (0, 0)
+assert canvas.pget(15, 15) == (255, 255)
+
+editor.redo()
+assert canvas.pget(cx, cy) == (2, 3)
+assert canvas.pget(15, 15) == (255, 255)
+"""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                "-c",
+                code,
+                str(tmp_path / "drawing.pyxres"),
+                tool,
+                *map(str, changed_cell),
+                "1" if assist else "0",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
     def test_failed_save_preserves_edits_and_allows_retry(self, tmp_path):
         code = """
 import sys
@@ -186,12 +269,14 @@ app = App(str(path), "image")
 editor = app._editor
 old_canvas = pyxel.images[0].get_slice(0, 0, 16, 16)
 pyxel.images[0].pset(0, 0, 7)
-editor.add_history({
-    "image_index": 0,
-    "focus_pos": (0, 0),
-    "old_canvas": old_canvas,
-    "new_canvas": pyxel.images[0].get_slice(0, 0, 16, 16),
-})
+editor.add_history(
+    {
+        "image_index": 0,
+        "focus_pos": (0, 0),
+        "old_canvas": old_canvas,
+        "new_canvas": pyxel.images[0].get_slice(0, 0, 16, 16),
+    }
+)
 
 # A directory at the destination causes a real file-creation failure.
 path.mkdir()
@@ -250,8 +335,7 @@ if case == "music":
 else:
     sound.set("c2" * 48, "p" * 48, "7" * 48, "n" * 48, 30)
 app.draw_all()
-before = [[pyxel.pget(x, y) for x in range(pyxel.width)]
-          for y in range(pyxel.height)]
+before = [[pyxel.pget(x, y) for x in range(pyxel.width)] for y in range(pyxel.height)]
 
 if case == "music":
     pyxel.musics[0].seqs[3].extend([0] * 16)
@@ -305,7 +389,7 @@ pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
 pyxel.run = lambda update, draw: None
 
 app = App(str(folder / "empty.pyxres"), "image")
-system = list(pyxel.colors[:pyxel.NUM_COLORS])
+system = list(pyxel.colors[: pyxel.NUM_COLORS])
 editor = app._editors[0]
 picker = editor._color_picker
 
@@ -314,7 +398,7 @@ for count in (64, 8, None):
     path = str(folder / f"colors-{count}.pyxres")
     pyxel.save(path)
     colors = list(pyxel.colors)
-    expected = colors[pyxel.NUM_COLORS:]
+    expected = colors[pyxel.NUM_COLORS :]
     if count is not None:
         expected = [0x010101 * i for i in range(count)]
         pyxel.colors[:] = expected
@@ -331,10 +415,13 @@ for count in (64, 8, None):
     cw = 4 if len(expected) > 16 else 8
     ch = 4 if len(expected) > 32 else 8
     last = len(expected) - 1
-    assert picker.check_value(
-        picker.x + 1 + last % (64 // cw) * cw,
-        picker.y + 1 + last // (64 // cw) * ch,
-    ) == last
+    assert (
+        picker.check_value(
+            picker.x + 1 + last % (64 // cw) * cw,
+            picker.y + 1 + last // (64 // cw) * ch,
+        )
+        == last
+    )
 
     editor.color_var = last
     app.draw_all()
@@ -518,6 +605,83 @@ class TestSoundEditor:
         sound_editor._speed_picker.dec_button.trigger_event("press")
         assert pyxel.sounds[0].speed == 98
         assert sound_editor.speed_var == 98
+
+
+class TestWidget:
+    @pytest.mark.parametrize(
+        "button",
+        [pyxel.MOUSE_BUTTON_LEFT, pyxel.MOUSE_BUTTON_RIGHT, pyxel.MOUSE_BUTTON_MIDDLE],
+    )
+    def test_quick_click_releases_capture_for_the_next_widget(self, button):
+        saved_pos = (pyxel.mouse_x, pyxel.mouse_y)
+        root = Widget(None, 0, 0, 20, 10)
+        widgets = [Widget(root, 0, 0, 10, 10), Widget(root, 10, 0, 10, 10)]
+        events = []
+        for widget in widgets:
+            for name in ("mouse_down", "mouse_up", "mouse_click"):
+                widget.add_event_listener(
+                    name,
+                    lambda *args, target=widget, event=name: events.append(
+                        (target, event, args)
+                    ),
+                )
+
+        try:
+            for index, widget in enumerate(widgets):
+                x = index * 10 + 2
+                pyxel.set_mouse_pos(x, 2)
+                pyxel.set_btn(button, True)
+                pyxel.set_btn(button, False)
+                assert pyxel.btnp(button) and pyxel.btnr(button)
+                root.update_all()
+                pyxel.flip()
+                root.update_all()
+                assert Widget._mouse_capture_info.widget is None
+                assert events[index * 3 :] == [
+                    (widget, "mouse_down", (button, x, 2)),
+                    (widget, "mouse_up", (button, x, 2)),
+                    (widget, "mouse_click", (button, x, 2)),
+                ]
+
+                pyxel.flip()
+                root.update_all()
+                assert len(events) == (index + 1) * 3
+        finally:
+            pyxel.set_btn(button, False)
+            pyxel.set_mouse_pos(*saved_pos)
+            pyxel.flip()
+            root._end_capture()
+
+    def test_held_click_keeps_capture_until_release(self):
+        saved_pos = (pyxel.mouse_x, pyxel.mouse_y)
+        root = Widget(None, 0, 0, 10, 10)
+        events = []
+        for name in ("mouse_down", "mouse_up", "mouse_click"):
+            root.add_event_listener(
+                name, lambda *args, event=name: events.append(event)
+            )
+
+        try:
+            pyxel.set_mouse_pos(2, 2)
+            pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, True)
+            root.update_all()
+            pyxel.flip()
+            root.update_all()
+            assert Widget._mouse_capture_info.widget is root
+            assert events == ["mouse_down"]
+
+            pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, False)
+            root.update_all()
+            assert Widget._mouse_capture_info.widget is None
+            assert events == ["mouse_down", "mouse_up", "mouse_click"]
+            pyxel.flip()
+            root.update_all()
+            assert events == ["mouse_down", "mouse_up", "mouse_click"]
+        finally:
+            pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, False)
+            pyxel.set_mouse_pos(*saved_pos)
+            pyxel.flip()
+            root._end_capture()
 
 
 class TestNumberPicker:

@@ -9,6 +9,8 @@ let searchQuery = "";
 // visibility updates must not scan the whole document per entry.
 const domCache = {};
 
+// Page rendering
+
 function buildPage() {
   const app = document.getElementById("app");
   app.innerHTML = "";
@@ -218,6 +220,7 @@ function buildPage() {
 
             card.appendChild(secWrap);
           }
+
           groupWrap.appendChild(card);
         }
 
@@ -396,6 +399,8 @@ function updateVisibility() {
     .classList.toggle("hidden", totalVisible > 0);
 }
 
+// DOM lookup
+
 function cacheDomRefs() {
   for (const attr of [
     "item-key",
@@ -444,6 +449,8 @@ function badgeColor(type) {
   }
 }
 
+// Visibility filtering
+
 function isVisible(item) {
   if (!showAdvanced && item.advanced) return false;
   return matchesSearch(item);
@@ -458,6 +465,8 @@ function matchesSearch(item) {
     t(item.description).toLowerCase().includes(q)
   );
 }
+
+// Detail rendering
 
 function hasDetails(item) {
   return (

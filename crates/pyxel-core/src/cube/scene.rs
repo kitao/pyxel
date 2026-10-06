@@ -5061,6 +5061,65 @@ mod tests {
     }
 
     #[test]
+    fn test_capsule_ray_finite_range_geometry() {
+        for scale in [1e20, 1e37] {
+            for (origin, dir, distance, point, normal) in [
+                (
+                    vec3(5.0 * scale, 0.0, 0.0),
+                    vec3(-1.0, 0.0, 0.0),
+                    4.0,
+                    vec3(1.0, 0.0, 0.0),
+                    vec3(1.0, 0.0, 0.0),
+                ),
+                (
+                    vec3(0.0, 5.0 * scale, 0.0),
+                    vec3(0.0, -1.0, 0.0),
+                    3.0,
+                    vec3(0.0, 2.0, 0.0),
+                    vec3(0.0, 1.0, 0.0),
+                ),
+                (
+                    vec3(0.0, 0.0, 0.0),
+                    vec3(1.0, 0.0, 0.0),
+                    1.0,
+                    vec3(1.0, 0.0, 0.0),
+                    vec3(1.0, 0.0, 0.0),
+                ),
+            ] {
+                let (t, actual_point, actual_normal) = Scene::ray_vs_capsule_collider(
+                    origin,
+                    dir,
+                    &Mat4::identity_value(),
+                    scale,
+                    scale,
+                    f32::INFINITY,
+                )
+                .unwrap();
+                // Normalized source-scale coordinates allow only a few f32 ulps.
+                assert!((t / scale - distance).abs() < 2e-6);
+                assert_vec3_close(
+                    vec3(
+                        actual_point.x / scale,
+                        actual_point.y / scale,
+                        actual_point.z / scale,
+                    ),
+                    point,
+                );
+                assert_eq!(actual_normal, normal);
+                assert!(Scene::ray_vs_capsule_collider(
+                    origin,
+                    dir,
+                    &Mat4::identity_value(),
+                    scale,
+                    scale,
+                    0.9 * distance * scale,
+                )
+                .is_none());
+            }
+        }
+    }
+
+    #[test]
     fn test_contact_reduction_keeps_corners_when_triangles_split_edges() {
         let corners = [
             vec3(-8.0, 0.0, -3.0),
@@ -5158,6 +5217,55 @@ mod tests {
                 );
                 let collider = rc_ref!(body).collider.clone().unwrap();
                 assert!(vec_len(*rc_ref!(&rc_ref!(&collider).velocity)) < 1e-5);
+            }
+        }
+    }
+
+    #[test]
+    fn test_scene_vectors_finite_range_geometry() {
+        for scale in [1.0_f32, 1e10, 1e20, 1e30, 1e37] {
+            let vector = vec3(3.0 * scale, 4.0 * scale, 0.0);
+            assert!((vec_len(vector) / scale - 5.0).abs() < 4e-6);
+            assert_vec3_close(normalize_axis(vector).unwrap(), vec3(0.6, 0.8, 0.0));
+        }
+
+        assert!(normalize_axis(vec3(0.0, 0.0, 0.0)).is_none());
+        assert!(normalize_axis(vec3(1e-7, 0.0, 0.0)).is_none());
+        assert_vec3_close(
+            normalized_or(vec3(0.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0)).unwrap(),
+            vec3(1.0, 0.0, 0.0),
+        );
+    }
+
+    #[test]
+    fn test_rounded_obb_sweep_finite_range_geometry() {
+        let target = Mat4::identity_value();
+        for scale in [1.0_f32, 1e10, 1e20, 1e30, 1e37] {
+            let half = vec3(scale, scale, scale);
+            for (offset, hits) in [(3.0, true), (3.5, false)] {
+                let mut end = target;
+                end.data[0][3] = 5.0 * scale;
+                end.data[1][3] = offset * scale;
+                end.data[2][3] = offset * scale;
+                let contact = swept_obb_vs_obb(
+                    &end,
+                    half,
+                    scale,
+                    vec3(10.0 * scale, 0.0, 0.0),
+                    &target,
+                    half,
+                    scale,
+                );
+                assert_eq!(contact.is_some(), hits, "scale={scale} offset={offset}");
+                if let Some(contact) = contact {
+                    assert_vec3_close(contact.normal, vec3(-0.5_f32.sqrt(), 0.5, 0.5));
+                    // First core gap is (-sqrt(2),1,1); remaining travel supplies pushout.
+                    assert!((contact.depth / scale - (1.0 + 7.0 * 0.5_f32.sqrt())).abs() < 4e-6);
+                    assert_vec3_close(
+                        vec_mul(contact.point, 1.0 / scale),
+                        vec3(-1.0 - 0.5_f32.sqrt(), 1.5, 1.5),
+                    );
+                }
             }
         }
     }
@@ -5430,9 +5538,17 @@ mod tests {
                         rc_mut!(&velocity).y -= 0.01;
                     }
                     Scene::integrate_motion(&root, 1.0 / 30.0);
+
                     let pairs = Scene::detect_contacts(&root);
                     // Solver passes must not become duplicate collision callbacks.
                     assert!(pairs.len() <= 4);
+                    let mut unique_pairs = std::collections::HashSet::new();
+                    for pair in &pairs {
+                        let a = pair.node_a.as_ptr() as usize;
+                        let b = pair.node_b.as_ptr() as usize;
+                        assert!(unique_pairs.insert((a.min(b), a.max(b))));
+                    }
+
                     for pair in pairs {
                         for (node, contact) in [
                             (&pair.node_a, &pair.contact_a),
@@ -5448,15 +5564,20 @@ mod tests {
                             );
                         }
                     }
+
                     if frame < 60 {
                         continue;
                     }
+
                     for (level, block) in blocks.iter().enumerate() {
                         let pos = Node::world_transform_value(block).pos_value();
                         let collider = rc_ref!(block).collider.clone().unwrap();
                         let velocity = *rc_ref!(&rc_ref!(&collider).velocity);
-                        assert!((pos.y - (0.5 + level as f32)).abs() < 0.003,
-                            "mesh={mesh_floor}, reverse={reverse}, frame={frame}, level={level}, y={}", pos.y);
+                        assert!(
+                            (pos.y - (0.5 + level as f32)).abs() < 0.003,
+                            "mesh={mesh_floor}, reverse={reverse}, frame={frame}, level={level}, y={}",
+                            pos.y
+                        );
                         assert!(velocity.y.abs() < 0.003, "{velocity:?}");
                     }
                 }
@@ -5625,7 +5746,12 @@ mod tests {
                         }
                         let velocity = *rc_ref!(&rc_ref!(&collider).velocity);
                         let normal_speed = vec_dot(velocity, normal);
-                        assert!(normal_speed.abs() < 0.001, "damping={damping}, capsule={capsule}, slope={slope}, frame={frame}, normal_speed={normal_speed}, pos={:?}, spin={:?}", Node::world_transform_value(&body).pos_value(), *rc_ref!(&rc_ref!(&collider).angular_velocity));
+                        assert!(
+                            normal_speed.abs() < 0.001,
+                            "damping={damping}, capsule={capsule}, slope={slope}, frame={frame}, normal_speed={normal_speed}, pos={:?}, spin={:?}",
+                            Node::world_transform_value(&body).pos_value(),
+                            *rc_ref!(&rc_ref!(&collider).angular_velocity)
+                        );
                         let distance =
                             vec_dot(Node::world_transform_value(&body).pos_value(), normal);
                         assert!(
@@ -5725,6 +5851,7 @@ mod tests {
 
         advance_rigid_bodies(&root, std::slice::from_ref(&ball));
         assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 6.0);
+
         rc_mut!(&collider).velocity = Vec3::new(0.0, -2.0, 0.0);
         advance_rigid_bodies(&root, std::slice::from_ref(&ball));
         assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 1.0);
@@ -5737,6 +5864,7 @@ mod tests {
         rc_mut!(&collider).velocity = Vec3::new(0.0, -10.0, 0.0);
         advance_rigid_bodies(&root, std::slice::from_ref(&ball));
         assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 6.0);
+
         rc_mut!(&collider).velocity = Vec3::new(0.0, -6.0, 0.0);
         advance_rigid_bodies(&root, std::slice::from_ref(&ball));
         assert!(rc_ref!(&rc_ref!(&collider).velocity).y > 3.9);
@@ -5784,6 +5912,7 @@ mod tests {
             for _ in 0..600 {
                 advance_rigid_bodies(&root, &bodies);
             }
+
             for (body, start) in bodies.iter().zip(starts) {
                 // Settling stays within one twentieth of a beam's thickness.
                 let pos = Node::world_transform_value(body).pos_value();
@@ -5792,6 +5921,7 @@ mod tests {
                     "reverse={reverse}, {pos:?}"
                 );
             }
+
             let resting: Vec<_> = bodies.iter().map(Node::world_transform_value).collect();
             for _ in 0..2400 {
                 advance_rigid_bodies(&root, &bodies);
@@ -6446,6 +6576,105 @@ mod tests {
         assert_vec3_close(position, vec3(-2.0, 10.0, 0.0));
         let energy = 0.5 * vec_len_sq(velocity) + 0.2 * vec_len_sq(spin);
         assert!((energy - 250.0 / 7.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_swept_sphere_retains_start_overlap_rules_at_finite_scale() {
+        for scale in [1.0, 1e20] {
+            let zero = vec3(0.0, 0.0, 0.0);
+            let radius = 0.25 * scale;
+            let hit = Scene::swept_sphere_vs_sphere(
+                vec3(-0.1 * scale, 0.0, 0.0),
+                radius,
+                vec3(0.3 * scale, 0.0, 0.0),
+                zero,
+                radius,
+                zero,
+            )
+            .unwrap();
+            // Start penetration is .1, followed by .3 inward motion.
+            assert!((hit.depth / scale - 0.4).abs() < 2e-6);
+            assert_vec3_close(hit.normal, vec3(-1.0, 0.0, 0.0));
+            assert_vec3_close(vec_mul(hit.point, 1.0 / scale), vec3(-0.25, 0.0, 0.0));
+
+            assert!(Scene::swept_sphere_vs_sphere(
+                vec3(-0.7 * scale, 0.0, 0.0),
+                radius,
+                vec3(-0.3 * scale, 0.0, 0.0),
+                zero,
+                radius,
+                zero,
+            )
+            .is_none());
+
+            // Coincident starts have no contact axis; point sweeps exclude overlap.
+            assert!(Scene::swept_sphere_vs_sphere(
+                vec3(0.3 * scale, 0.0, 0.0),
+                radius,
+                vec3(0.3 * scale, 0.0, 0.0),
+                zero,
+                radius,
+                zero,
+            )
+            .is_none());
+            assert!(swept_sphere_vs_point(
+                vec3(0.25 * scale, 0.0, 0.0),
+                vec3(3.0 * scale, 0.0, 0.0),
+                0.5 * scale,
+                zero,
+            )
+            .is_none());
+        }
+    }
+
+    #[test]
+    fn test_swept_triangle_face_preserves_finite_scaled_bounds() {
+        for scale in [1.0, 1e10, 1e20] {
+            let a = vec3(-10.0 * scale, 0.0, -10.0 * scale);
+            let b = vec3(10.0 * scale, 0.0, -10.0 * scale);
+            let c = vec3(0.0, 0.0, 10.0 * scale);
+            let velocity = vec3(0.0, -3.0 * scale, 0.0);
+            let (toi, hit) = swept_sphere_vs_triangle_face(
+                vec3(0.0, 1.5 * scale, 0.0),
+                velocity,
+                0.25 * scale,
+                a,
+                b,
+                c,
+            )
+            .unwrap();
+            // Center travels 1.25 of the three units before its surface reaches Y=0.
+            assert!((toi - 5.0 / 12.0).abs() < 1e-6);
+            assert_vec3_close(hit.normal, vec3(0.0, 1.0, 0.0));
+            assert_vec3_close(vec_mul(hit.point, 1.0 / scale), vec3(0.0, 0.0, 0.0));
+            assert!(point_in_triangle(a, a, b, c));
+            assert!(swept_sphere_vs_triangle_face(
+                vec3(20.0 * scale, 1.5 * scale, 0.0),
+                velocity,
+                0.25 * scale,
+                a,
+                b,
+                c,
+            )
+            .is_none());
+        }
+    }
+
+    #[test]
+    fn test_point_sweep_preserves_finite_scaled_entry() {
+        for scale in [1.0, 1e10, 1e20] {
+            let (toi, hit) = swept_sphere_vs_point(
+                vec3(0.0, 2.5 * scale, 0.0),
+                vec3(0.0, -5.0 * scale, 0.0),
+                0.5 * scale,
+                vec3(0.0, scale, 0.0),
+            )
+            .unwrap();
+            // The radius reaches the endpoint after one fifth of the five-unit step.
+            assert!((toi - 0.2).abs() < 1e-6);
+            assert_vec3_close(hit.normal, vec3(0.0, 1.0, 0.0));
+            assert_eq!(hit.point, vec3(0.0, scale, 0.0));
+        }
     }
 
     #[test]
@@ -7138,6 +7367,7 @@ mod tests {
                     Node::add_child(&root, &body);
                     bodies.push(body);
                 }
+
                 let trigger = Node::new();
                 rc_mut!(&trigger).collider = Some(trigger_sphere_collider(2.0, 100.0));
                 Node::add_child(&root, &trigger);
@@ -7169,6 +7399,7 @@ mod tests {
                         }
                     }
                 }
+
                 let momentum: f32 = masses
                     .iter()
                     .zip(speeds)
@@ -7646,6 +7877,193 @@ mod tests {
         let contact = rc_ref!(&pairs[0].contact_b);
         let delta = rc_ref!(&contact.delta_velocity);
         assert_eq!((delta.x, delta.y, delta.z), (0.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_mesh_consumers_keep_world_triangles_when_inverse_is_unavailable() {
+        use crate::cube::mesh::Mesh;
+        use crate::cube::primitive::Primitive;
+
+        for scale in [0.5_f32, f32::from_bits(0x0020_0000)] {
+            let world = Mat4 {
+                data: [
+                    [scale, 0.0, 0.0, -0.5],
+                    [0.0, 1.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ],
+            };
+            let plane = scale - 0.5;
+            let primitive = Primitive::new();
+            rc_mut!(&primitive).positions = vec![1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0];
+            rc_mut!(&primitive).indices = vec![0, 1, 2];
+            let mesh = Mesh::new();
+            {
+                let mut mesh = rc_mut!(&mesh);
+                mesh.primitives = vec![Some(primitive)];
+                mesh.transforms = vec![Mat4::identity()];
+                mesh.parents = vec![-1];
+            }
+            let collider = |size, radius, mesh| {
+                Collider::new(
+                    size,
+                    radius,
+                    mesh,
+                    false,
+                    false,
+                    1.0,
+                    0.0,
+                    0.5,
+                    Vec3::zero(),
+                    Vec3::zero(),
+                    0.0,
+                    Vec3::zero(),
+                    0.0,
+                    0.0,
+                )
+            };
+            let root = Node::new();
+            let terrain = Node::new();
+            rc_mut!(&terrain).transform = Mat4::from_rows(world.data);
+            rc_mut!(&terrain).collider = Some(collider(Vec3::zero(), 0.0, Some(mesh.clone())));
+            Node::add_child(&root, &terrain);
+            let body = Node::new();
+            let center = Vec3 {
+                x: plane + 0.125,
+                y: 0.25,
+                z: 0.25,
+            };
+            rc_mut!(&body).transform = Mat4::from_translation(&center);
+            rc_mut!(&body).collider = Some(collider(Vec3::new(0.5, 0.5, 0.5), 0.0, None));
+            Node::add_child(&root, &body);
+            let point = Vec3 {
+                x: plane,
+                y: 0.25,
+                z: 0.25,
+            };
+            let normal = Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            };
+
+            Scene::with_collider_entries(&root, false, |entries| {
+                let terrain = entries
+                    .iter()
+                    .find(|e| rc_ref!(&e.collider).mesh.is_some())
+                    .unwrap();
+                let body = entries
+                    .iter()
+                    .find(|e| rc_ref!(&e.collider).mesh.is_none())
+                    .unwrap();
+                assert_eq!(terrain.inverse_available, scale == 0.5);
+                let points =
+                    Scene::mesh_contact_patch(body, terrain, normal, point, 1.0e-5).unwrap();
+                assert_ne!(points, [] as [Vec3; 0]);
+                assert!(points.iter().all(|p| (p.x - plane).abs() < 1.0e-5));
+            });
+
+            {
+                let body_collider = rc_ref!(&body).collider.clone().unwrap();
+                rc_mut!(&body_collider).size = Vec3::new(0.0, 0.5, 0.0);
+                rc_mut!(&body_collider).radius = 0.125;
+            }
+            Scene::with_collider_entries(&root, false, |entries| {
+                let terrain = entries
+                    .iter()
+                    .find(|e| rc_ref!(&e.collider).mesh.is_some())
+                    .unwrap();
+                let body = entries
+                    .iter()
+                    .find(|e| rc_ref!(&e.collider).mesh.is_none())
+                    .unwrap();
+                let points =
+                    Scene::capsule_mesh_contact_patch(body, terrain, normal, point, 1.0e-5)
+                        .unwrap();
+                assert_eq!(points.len(), 2);
+                assert!(points.iter().all(|p| (p.x - plane).abs() < 1.0e-5));
+            });
+
+            let current = *rc_ref!(&Mat4::from_translation(&Vec3 {
+                x: plane + 0.5,
+                y: 0.25,
+                z: 0.25
+            }));
+            let velocity = Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            };
+            assert!(Scene::swept_sphere_vs_mesh(
+                &world,
+                &mesh,
+                &current,
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0
+                },
+                0.125,
+                velocity
+            )
+            .is_some());
+            assert!(Scene::swept_capsule_vs_mesh(
+                &world,
+                &mesh,
+                &current,
+                Vec3 {
+                    x: 0.0,
+                    y: 0.5,
+                    z: 0.0
+                },
+                0.125,
+                velocity
+            )
+            .is_some());
+            assert!(Scene::swept_rounded_obb_vs_mesh(
+                &world,
+                &mesh,
+                &current,
+                Vec3 {
+                    x: 0.5,
+                    y: 0.5,
+                    z: 0.5
+                },
+                0.0,
+                velocity
+            )
+            .is_some());
+
+            let terrain_collider = rc_ref!(&terrain).collider.clone().unwrap();
+            let hit = Scene::ray_vs_mesh_collider(
+                Vec3 {
+                    x: plane - 0.5,
+                    y: 0.25,
+                    z: 0.25,
+                },
+                velocity,
+                &world,
+                &terrain_collider,
+                1.0,
+            )
+            .unwrap();
+            assert!((hit.0 - 0.5).abs() < 1.0e-6);
+
+            let overlap = *rc_ref!(&Mat4::from_translation(&center));
+            let contact = narrow_phase_mesh_vs_dynamic(
+                &world,
+                &mesh,
+                &overlap,
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                0.25,
+            )
+            .unwrap();
+            assert!((contact.depth - 0.125).abs() < 1.0e-6);
+        }
     }
 
     // Two-triangle floor fixture for mesh contact and raycast tests
@@ -8399,6 +8817,56 @@ mod tests {
     }
 
     #[test]
+    fn test_integrate_motion_preserves_finite_prescribed_spin() {
+        let unit = 2.0_f32.powi(64);
+        for (spin, axis, angle) in [
+            (vec3(0.0, 90.0, 0.0), vec3(0.0, 1.0, 0.0), 90.0),
+            (vec3(0.0, 1e20, 0.0), vec3(0.0, 1.0, 0.0), 1e20),
+            (
+                vec3(3.0 * unit, 4.0 * unit, 0.0),
+                vec3(0.6, 0.8, 0.0),
+                5.0 * unit,
+            ),
+        ] {
+            for mass in [0.0, 1.0] {
+                let node = Node::new();
+                let mut initial = Mat4::from_axis_angle_value(&vec3(0.0, 0.0, 1.0), 45.0);
+                initial.data[0][3] = 1.0;
+                initial.data[1][3] = 2.0;
+                initial.data[2][3] = 3.0;
+                rc_mut!(&node).transform = Mat4::from_rows(initial.data);
+                let collider = sphere_collider(0.5, mass);
+                {
+                    let mut collider = rc_mut!(&collider);
+                    collider.gravity = 0.0;
+                    collider.linear_damp = 0.0;
+                    collider.angular_damp = 0.0;
+                    collider.angular_velocity = Vec3::new(spin.x, spin.y, spin.z);
+                }
+                rc_mut!(&node).collider = Some(collider.clone());
+                let rotation = Mat4::from_axis_angle_value(&axis, angle);
+                assert_ne!(rotation.data, Mat4::identity_value().data);
+                let expected = initial.mul_mat_value(&rotation);
+
+                Scene::integrate_motion(&node, 1.0 / 30.0);
+                let actual = Node::world_transform_value(&node);
+                for row in 0..4 {
+                    for col in 0..4 {
+                        assert!(
+                            (actual.data[row][col] - expected.data[row][col]).abs() < 2e-6,
+                            "spin={spin:?}, mass={mass}, row={row}, col={col}, actual={}, expected={}",
+                            actual.data[row][col],
+                            expected.data[row][col]
+                        );
+                    }
+                }
+                assert_eq!(*rc_ref!(&rc_ref!(&collider).angular_velocity), spin);
+                assert_eq!(actual.pos_value(), initial.pos_value());
+            }
+        }
+    }
+
+    #[test]
     fn test_integrate_motion_preserves_world_translation_and_local_rotation() {
         let node = Node::new();
         rc_mut!(&node).transform = Mat4::from_translation(&Vec3 {
@@ -8539,7 +9007,16 @@ mod tests {
             }
         );
         assert!(local.data.iter().flatten().all(|value| value.is_finite()));
-        assert!(local.data[0][0].abs() < 1e-6);
+        // Local +Y spin is a quarter turn even when the parent transform is singular.
+        let expected = [
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [-1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ];
+        for (actual, expected) in local.data.iter().flatten().zip(expected.iter().flatten()) {
+            assert!((actual - expected).abs() < 1e-6);
+        }
     }
 
     #[test]

@@ -146,3 +146,41 @@ def test_capsule_zero_radius_remains_finite(height, radius):
     assert all(math.isfinite(v) for v in [*p.positions, *p.uvs, *p.normals])
     assert all(v == 0 for v in p.positions[0::3])
     assert all(v == 0 for v in p.positions[2::3])
+
+
+@pytest.mark.parametrize("scale", [1, 1e5, 1e10, 1e20, 1e30, 1e37])
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("oblique", [False, True])
+def test_compute_normals_finite_orientation(scale, reverse, oblique):
+    positions = (
+        [0, 0, 0, scale, 0, scale, 0, scale, 2 * scale]
+        if oblique
+        else [0, 0, 0, 3 * scale, 0, 0, 0, 4 * scale, 0]
+    )
+    primitive = Primitive(
+        Primitive.MODE_TRIANGLES, positions, [0, 2, 1] if reverse else [0, 1, 2]
+    )
+    normals = primitive.normals
+    primitive.compute_normals()
+    sign = -1 if reverse else 1
+    expected = (
+        [-sign / math.sqrt(6), -2 * sign / math.sqrt(6), sign / math.sqrt(6)]
+        if oblique
+        else [0, 0, sign]
+    )
+    # Cross((1,0,1),(0,1,2)) = (-1,-2,1); few f32 ulps cover normalization.
+    assert list(normals) == pytest.approx(expected, abs=1e-6, rel=0)
+
+
+@pytest.mark.parametrize(
+    "positions,expected",
+    [
+        ([0, 0, 0, 3e-6, 0, 0, 0, 4e-6, 0], [0, 0, 0]),
+        ([0, 0, 0, 1, 0, 0, 2, 0, 0], [0, 0, 0]),
+        ([-2e38, 0, 0, 2e38, 0, 0, 0, 1e38, 0], [0, 0, 1]),
+    ],
+)
+def test_compute_normals_keeps_area_cutoff_and_wide_edges(positions, expected):
+    primitive = Primitive(Primitive.MODE_TRIANGLES, positions, [0, 1, 2])
+    primitive.compute_normals()
+    assert list(primitive.normals) == expected

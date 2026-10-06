@@ -1,5 +1,6 @@
-from math import isclose, sqrt
+from math import isclose, isfinite, isinf, sqrt
 
+import pytest
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel.cube import Mat4, Vec3
 
@@ -208,6 +209,93 @@ class TestCoordinateConversions:
     def test_to_local_dir_ignores_translation(self):
         local_origin = Mat4.from_translation(Vec3(10, 0, 0))
         assert Vec3(1, 0, 0).to_local_dir(local_origin) == Vec3(1, 0, 0)
+
+
+@pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+class TestFiniteInputs:
+    def test_length_and_distance_retain_representable_magnitude(self, scale):
+        vector = Vec3(3 * scale, 4 * scale, 0)
+        assert all(isfinite(value) for value in vector)
+        # The 3-4-5 triangle supplies the expected magnitude independently.
+        assert vector.length() == pytest.approx(5 * scale, rel=2e-6, abs=0)
+        assert vector.distance_to(Vec3.ZERO) == pytest.approx(
+            5 * scale, rel=2e-6, abs=0
+        )
+
+    def test_normalize_retains_direction(self, scale):
+        vector = Vec3(3 * scale, 4 * scale, 0)
+        assert tuple(vector.normalize()) == pytest.approx((0.6, 0.8, 0), abs=1e-6)
+
+    def test_clamp_retains_direction_and_requested_magnitude(self, scale):
+        vector = Vec3(3 * scale, 4 * scale, 0)
+        assert tuple(vector.clamp_length(scale)) == pytest.approx(
+            (0.6 * scale, 0.8 * scale, 0), rel=2e-6, abs=0
+        )
+
+    def test_perpendicular_angle_is_independent_of_magnitude(self, scale):
+        vector = Vec3(3 * scale, 4 * scale, 0)
+        perpendicular = Vec3(-4 * scale, 3 * scale, 0)
+        assert vector.angle_to(perpendicular) == pytest.approx(90, abs=1e-5)
+
+    def test_projection_is_independent_of_target_magnitude(self, scale):
+        vector = Vec3(3 * scale, 4 * scale, 0)
+        assert tuple(vector.project(Vec3(scale, 0, 0))) == pytest.approx(
+            (3 * scale, 0, 0), rel=2e-6, abs=0
+        )
+
+
+class TestNormRangeDependencies:
+    def test_unrepresentable_length_still_has_representable_unit_direction(self):
+        vector = Vec3(2e38, 2e38, 2e38)
+        assert all(isfinite(value) for value in vector)
+        assert isinf(vector.length())
+        expected = (1 / sqrt(3),) * 3
+        assert tuple(vector.normalize()) == pytest.approx(expected, abs=1e-6)
+        assert tuple(vector.clamp_length(1)) == pytest.approx(expected, abs=1e-6)
+
+    @pytest.mark.parametrize("epsilon", [1e-30, 1e-20])
+    def test_unit_slerp_retains_near_opposite_interpolation_plane(self, epsilon):
+        target = Vec3(-1, epsilon, 0)
+        assert target.length() == 1
+        midpoint = Vec3.RIGHT.slerp(target, 0.5)
+        assert tuple(midpoint) == pytest.approx((0, 1, 0), abs=1e-6)
+        assert midpoint.z == 0
+
+
+class TestFiniteIntermediates:
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_dot_cancellation_is_zero(self, scale):
+        assert Vec3(scale, scale, 0).dot(Vec3(2, -2, 0)) == 0
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_parallel_cross_product_is_zero(self, scale):
+        assert Vec3(scale, scale, 0).cross(Vec3(2, 2, 0)) == Vec3.ZERO
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    @pytest.mark.parametrize("t", [0, 0.25, 0.5, 1])
+    def test_lerp_retains_endpoints_and_interior(self, scale, t):
+        start = Vec3(scale, 0, 0)
+        expected = (start.x * (1 - 2 * t), 0, 0)
+        assert tuple(start.lerp(-start, t)) == pytest.approx(expected, rel=2e-6, abs=0)
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_reflect_in_unit_axis_retains_magnitude(self, scale):
+        vector = Vec3(scale, 0, 0)
+        assert vector.reflect(Vec3.RIGHT) == -vector
+
+    @pytest.mark.parametrize("small", [1, 1e-20, 1e-23, 1e-30])
+    def test_angle_with_mixed_norms_is_45_degrees(self, small):
+        assert Vec3(1e10, 1e10, 0).angle_to(Vec3(small, 0, 0)) == pytest.approx(
+            45, abs=1e-5
+        )
+
+    @pytest.mark.parametrize("small", [1, 1e-30, 1e-35, 1e-38])
+    @pytest.mark.parametrize("target", [1, -1e-10, 1e-10])
+    def test_x_projection_with_mixed_norms_retains_stored_value(self, small, target):
+        vector = Vec3(small, 0, 0)
+        assert tuple(vector.project(Vec3(target, 0, 0))) == pytest.approx(
+            tuple(vector), rel=2e-6, abs=0
+        )
 
 
 # 1e-5 exceeds the f32 rounding of unit-scale values and stays below any expected difference

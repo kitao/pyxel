@@ -1263,6 +1263,10 @@ mod tests {
         assert_eq!(face_shade_level(&light, None), 0);
         assert_eq!(face_shade_level(&light, Some(&zero)), 0);
         assert_eq!(face_shade_level(&zero, Some(&light)), 0);
+        assert_eq!(
+            face_shade_level(&vec3(0.0, 0.0, f32::INFINITY), Some(&vec3(0.0, 0.0, -1.0))),
+            0
+        );
     }
 
     fn make_target_and_depth(w: u32, h: u32) -> (RcImage, Vec<f32>, ClipRect) {
@@ -1488,6 +1492,55 @@ mod tests {
 
         let result = world_to_screen(&vec3(0.0, 0.0, 5.0), &vp, &clip, 0.0, 0.0, 256.0, 192.0);
         assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_face_shade_finite_magnitudes() {
+        for normal_scale in [1e-30_f32, 1e-20, 1.0, 1e10, 1e20, 1e30] {
+            for light_scale in [1e-30_f32, 1e-20, 1.0, 1e10, 1e20, 1e30] {
+                assert_eq!(
+                    face_shade_level(
+                        &vec3(0.0, 0.0, -light_scale),
+                        Some(&vec3(0.0, 0.0, normal_scale))
+                    ),
+                    LEVEL_COUNT - 1,
+                    "normal={normal_scale} light={light_scale}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_tri_normal_finite_range_orientation() {
+        let origin = vec3(0.0, 0.0, 0.0);
+        for scale in [1e-30_f32, 1e-20, 1.0, 1e10, 1e20, 1e30] {
+            let x = vec3(scale, 0.0, 0.0);
+            let y = vec3(0.0, scale, 0.0);
+            for (p1, p2, sign) in [(x, y, 1.0), (y, x, -1.0)] {
+                let n = tri_normal(&origin, &p1, &p2);
+                assert!(
+                    n.is_finite() && n.x == 0.0 && n.y == 0.0 && n.z * sign > 0.0,
+                    "scale={scale} normal={n:?}"
+                );
+                assert_eq!(
+                    face_shade_level(&vec3(0.0, 0.0, -sign), Some(&n)),
+                    LEVEL_COUNT - 1
+                );
+            }
+        }
+
+        // Finite endpoints can have an edge difference beyond f32's range.
+        let n = tri_normal(
+            &vec3(-2e38, 0.0, 0.0),
+            &vec3(2e38, 0.0, 0.0),
+            &vec3(0.0, 1e38, 0.0),
+        );
+        assert!(n.is_finite() && n.x == 0.0 && n.y == 0.0 && n.z > 0.0);
+
+        assert_eq!(
+            tri_normal(&origin, &vec3(1.0, 0.0, 0.0), &vec3(2.0, 0.0, 0.0)),
+            origin
+        );
     }
 
     #[test]
@@ -2170,6 +2223,84 @@ mod tests {
         assert_eq!(p1.1, 16.0);
         assert_eq!(p0.2, 0.5);
         assert!((p1.2 - 0.500016).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_clip_screen_line_to_rect_retains_wide_crossings_and_depth() {
+        let clip = ClipRect {
+            left: 0,
+            top: 0,
+            right: 7,
+            bottom: 7,
+        };
+        for scale in [1e8_f32, 1e20, 2e38] {
+            for diagonal in [false, true] {
+                for transpose in [false, true] {
+                    let point = |x, y, z| if transpose { (y, x, z) } else { (x, y, z) };
+                    let ends = if diagonal {
+                        [point(-scale, -scale, 0.0), point(scale, scale, 1.0)]
+                    } else {
+                        [point(-scale, 4.0, 0.0), point(scale, 4.0, 1.0)]
+                    };
+                    let y0 = if diagonal { 0.0 } else { 4.0 };
+                    let y1 = if diagonal { 8.0 } else { 4.0 };
+                    let expected = [
+                        point(0.0, y0, 0.5),
+                        point(8.0, y1, (0.5 + 4.0 / f64::from(scale)) as f32),
+                    ];
+
+                    for reverse in [false, true] {
+                        let (input, expected) = if reverse {
+                            ([ends[1], ends[0]], [expected[1], expected[0]])
+                        } else {
+                            (ends, expected)
+                        };
+                        let (start, end) =
+                            clip_screen_line_to_rect(input[0], input[1], clip).unwrap();
+                        for (actual, expected) in [start, end].into_iter().zip(expected) {
+                            assert_eq!((actual.0, actual.1), (expected.0, expected.1));
+                            // Midpoint depth and the small viewport offset differ by at most two f32 ULPs.
+                            assert!((actual.2 - expected.2).abs() <= 1e-7);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_clip_screen_line_to_rect_wide_tangent_and_disjoint() {
+        let clip = ClipRect {
+            left: 0,
+            top: 0,
+            right: 7,
+            bottom: 7,
+        };
+        let scale = 1e20_f32;
+        let tangent =
+            clip_screen_line_to_rect((-scale, scale, 0.0), (scale, -scale, 1.0), clip).unwrap();
+        assert_eq!(tangent, ((0.0, 0.0, 0.5), (0.0, 0.0, 0.5)));
+
+        assert!(clip_screen_line_to_rect((-scale, -4.0, 0.0), (scale, -4.0, 1.0), clip).is_none());
+        assert!(clip_screen_line_to_rect((-4.0, 0.0, 0.0), (scale, -scale, 1.0), clip).is_none());
+    }
+
+    #[test]
+    fn test_clip_screen_line_to_rect_wide_keeps_near_endpoint() {
+        let clip = ClipRect {
+            left: 0,
+            top: 0,
+            right: 7,
+            bottom: 7,
+        };
+        let scale = 1e20_f32;
+        let (start, end) =
+            clip_screen_line_to_rect((0.0, 4.0, 0.0), (scale, scale, 1.0), clip).unwrap();
+        assert_eq!(start, (0.0, 4.0, 0.0));
+        assert_eq!((end.0, end.1), (4.0, 8.0));
+        // The y=8 boundary is reached after four units of the stored endpoint span.
+        let expected_depth = 4.0 / (f64::from(scale) - 4.0);
+        assert!((f64::from(end.2) / expected_depth - 1.0).abs() < 2e-6);
     }
 
     #[test]

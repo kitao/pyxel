@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel import cube
 
@@ -28,26 +29,32 @@ PUBLIC_CUBE_CLASSES = (
 
 def test_fresh_from_pyxel_import_cube_resolves_the_package():
     _run_fresh_interpreter(
-        "import importlib, sys\n"
+        "import importlib\n"
+        "import sys\n"
+        "\n"
         "import pyxel\n"
         "from pyxel import cube\n"
+        "\n"
         "assert cube is pyxel.cube\n"
-        "assert cube is importlib.import_module('pyxel.cube')\n"
-        "assert cube is sys.modules['pyxel.cube']\n"
-        "assert cube.__name__ == 'pyxel.cube'\n"
-        "assert cube.__package__ == 'pyxel.cube'\n"
+        'assert cube is importlib.import_module("pyxel.cube")\n'
+        'assert cube is sys.modules["pyxel.cube"]\n'
+        'assert cube.__name__ == "pyxel.cube"\n'
+        'assert cube.__package__ == "pyxel.cube"\n'
         "assert cube.__spec__ is not None\n"
     )
 
 
 def test_fresh_explicit_cube_import_has_the_same_identity():
     _run_fresh_interpreter(
-        "import importlib, sys\n"
+        "import importlib\n"
+        "import sys\n"
+        "\n"
         "import pyxel.cube as imported_cube\n"
         "from pyxel import cube\n"
+        "\n"
         "assert cube is imported_cube\n"
-        "assert cube is importlib.import_module('pyxel.cube')\n"
-        "assert cube is sys.modules['pyxel.cube']\n"
+        'assert cube is importlib.import_module("pyxel.cube")\n'
+        'assert cube is sys.modules["pyxel.cube"]\n'
     )
 
 
@@ -70,8 +77,9 @@ def test_cube_instance_pickle_error_uses_the_public_type_name():
 
 def _run_fresh_interpreter(source):
     env = {**os.environ}
+    package_root = str(Path(pyxel.__file__).resolve().parent.parent)
     env["PYTHONPATH"] = os.pathsep.join(
-        filter(None, (str(ROOT_DIR / "python"), env.get("PYTHONPATH")))
+        filter(None, (package_root, env.get("PYTHONPATH")))
     )
     result = subprocess.run(
         [sys.executable, "-c", source],

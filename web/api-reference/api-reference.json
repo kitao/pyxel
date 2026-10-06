@@ -7162,18 +7162,18 @@
           "type": "function",
           "signature": "atan2(y, x)",
           "description": {
-            "en": "Return the arctangent of y/x in degrees.",
-            "cn": "返回 y/x 的反正切值 (以度为单位)。",
-            "de": "Gibt den Arkustangens von y/x in Grad zurück.",
-            "es": "Devuelve la arcotangente de y/x en grados.",
-            "fr": "Renvoie l'arctangente de y/x en degrés.",
-            "it": "Restituisce l'arcotangente di y/x in gradi.",
-            "ja": "y/x の逆正接を度で返す。",
-            "ko": "y/x의 아크탄젠트를 도 단위로 반환합니다.",
-            "pt": "Retorna a arcotangente de y/x em graus.",
-            "ru": "Возвращает арктангенс y/x в градусах.",
-            "tr": "y/x değerinin ark tanjantını derece cinsinden döndürür.",
-            "uk": "Повертає арктангенс y/x у градусах."
+            "en": "Return the two-argument arctangent of y and x in degrees, accounting for the quadrant.",
+            "cn": "返回 y 和 x 的双参数反正切值 (以度为单位)，结果会考虑所在象限。",
+            "de": "Gibt den Arkustangens mit den zwei Argumenten y und x in Grad zurück und berücksichtigt dabei den Quadranten.",
+            "es": "Devuelve la arcotangente de dos argumentos (y, x) en grados, teniendo en cuenta el cuadrante.",
+            "fr": "Renvoie l'arctangente des deux arguments y et x en degrés, en tenant compte du quadrant.",
+            "it": "Restituisce l'arcotangente dei due argomenti y e x in gradi, tenendo conto del quadrante.",
+            "ja": "y と x の 2 引数から、象限を考慮した逆正接を度で返す。",
+            "ko": "사분면을 고려하여 두 인수 y와 x의 아크탄젠트를 도 단위로 반환합니다.",
+            "pt": "Retorna a arcotangente dos dois argumentos y e x em graus, levando em conta o quadrante.",
+            "ru": "Возвращает арктангенс двух аргументов y и x в градусах с учётом квадранта.",
+            "tr": "y ve x için iki argümanlı ark tanjantı, bölgeyi dikkate alarak derece cinsinden döndürür.",
+            "uk": "Повертає арктангенс двох аргументів y і x у градусах з урахуванням квадранта."
           },
           "params": [
             {

@@ -4,14 +4,13 @@ import argparse
 import os
 import random
 import runpy
-import subprocess
 import sys
 import tempfile
 from itertools import pairwise
 from math import cos, pi, sin
 from pathlib import Path
 
-from _image_capture import save_gif
+from _image_capture import run_worker, save_gif
 from PIL import Image
 
 _DESCRIPTION = """Generate documentation GIFs for Pyxel Cube examples c01 through c06.
@@ -58,6 +57,7 @@ def collision_input(frame, app, pyxel, state):
             node for node in app.children if type(node).__name__ == "MovingPlatform"
         )
         state["platform"] = platform
+
     pos = app.player.transform.pos
     if stage == "start" and ((pos.x - 21) ** 2 + (pos.z - 33) ** 2) ** 0.5 < 10:
         stage = "island_jump"
@@ -214,6 +214,7 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
                 keys.add(pitch_key)
         if 266 <= frame <= 275:
             keys.add(pyxel.KEY_UP)
+
         scene = app.scene
         # Predict the view after the example handles this frame's arrow input.
         angle = (
@@ -292,6 +293,7 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
                 )
                 for index, base in enumerate(shot_frames)
             ]
+
             support_index = shot_frames.index(support_frame)
             shots[support_index - 1] = (
                 shot_frames[support_index - 1],
@@ -299,6 +301,7 @@ def input_for_frame(name, frame, pyxel, app=None, state=None):
                 (0, 0),
             )
             shots[support_index] = (support_frame, bridge_target, (0, 0))
+
             # Add short bursts as each stack reaches the front of the view.
             shots.extend(
                 (
@@ -442,6 +445,7 @@ def generate(name, destination):
                     bridge.transform.pos.x,
                     capsule.transform.pos.y,
                 )
+
             callbacks["draw"]()
             pyxel.flip()
             assert pyxel.frame_count == before + 1
@@ -467,7 +471,7 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.output_dir) as temp_dir:
         for name in names:
-            subprocess.run(
+            run_worker(
                 [
                     sys.executable,
                     str(Path(__file__).resolve()),
@@ -475,9 +479,7 @@ def main():
                     name,
                     "--output-dir",
                     temp_dir,
-                ],
-                check=True,
-                timeout=120,
+                ]
             )
 
         for name in names:

@@ -6,7 +6,6 @@ from _capture import compare_or_update_all  # type: ignore[reportMissingImports]
 
 ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
 
-
 # Pytest option and ordering hooks
 
 
