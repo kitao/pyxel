@@ -81,9 +81,14 @@ impl Vec3 {
     }
 
     fn dot_f64(&self, other: &Self) -> f64 {
-        f64::from(self.x) * f64::from(other.x)
-            + f64::from(self.y) * f64::from(other.y)
-            + f64::from(self.z) * f64::from(other.z)
+        let terms = [(self.x, other.x), (self.y, other.y), (self.z, other.z)];
+        // Keep the original signed-zero sum when every product is zero.
+        if terms.iter().all(|&(a, b)| a == 0.0 || b == 0.0) {
+            return f64::from(self.x) * f64::from(other.x)
+                + f64::from(self.y) * f64::from(other.y)
+                + f64::from(self.z) * f64::from(other.z);
+        }
+        sum_wide_products([terms[0], terms[1], terms[2], (0.0, 0.0)])
     }
 
     pub fn cross(&self, other: &Self) -> RcVec3 {
@@ -447,6 +452,101 @@ pub(super) fn sum_wide_products(terms: [(f32, f32); 4]) -> f64 {
 mod tests {
     use super::*;
     use crate::cube::mat4::Mat4;
+
+    #[test]
+    fn test_dot_retains_wide_cancellation_residual() {
+        for large in [1e20, 1e30, 3e38] {
+            let a = Vec3 {
+                x: large,
+                y: 1.0,
+                z: -large,
+            };
+            let b = Vec3 {
+                x: large,
+                y: 1.0,
+                z: large,
+            };
+            // Equal stored products cancel exactly, leaving the middle product.
+            assert_eq!(a.dot(&b), 1.0);
+        }
+    }
+
+    #[test]
+    fn test_project_retains_wide_cancellation_residual() {
+        for exponent in [64, 80, 120] {
+            let large = 2.0_f32.powi(exponent);
+            let a = Vec3 {
+                x: large,
+                y: 1.0,
+                z: -large,
+            };
+            let b = Vec3 {
+                x: large,
+                y: 1.0,
+                z: large,
+            };
+            let projected = deref(&a.project(&b));
+            // The numerator is 1; dividing by 2*large^2+1 rounds these
+            // components to the same f32 powers as dividing by 2*large^2.
+            let side = 2.0_f64.powi(-exponent - 1) as f32;
+            let middle = 2.0_f64.powi(-2 * exponent - 1) as f32;
+            assert_eq!(
+                projected,
+                Vec3 {
+                    x: side,
+                    y: middle,
+                    z: side
+                }
+            );
+        }
+    }
+
+    #[test]
+    fn test_dot_and_project_keep_ordinary_f32_cancellation() {
+        let large = 1e10;
+        let a = Vec3 {
+            x: large,
+            y: 1.0,
+            z: -large,
+        };
+        let b = Vec3 {
+            x: large,
+            y: 1.0,
+            z: large,
+        };
+        // Finite f32 accumulation loses the middle 1 before cancellation.
+        assert_eq!(a.dot(&b).to_bits(), 0.0_f32.to_bits());
+        assert_eq!(
+            deref(&a.project(&b)),
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_keeps_signed_zero_in_wide_path() {
+        let axis = Vec3 {
+            x: 0.0,
+            y: 1e20,
+            z: 1e20,
+        };
+        for x in [-0.0, -1.0] {
+            let value = Vec3 {
+                x,
+                y: -0.0,
+                z: -0.0,
+            };
+            let projected = deref(&value.project(&axis));
+            // Each product is -0; their sum, positive division, and
+            // multiplication by nonnegative axis components retain -0.
+            for component in [projected.x, projected.y, projected.z] {
+                assert_eq!(component.to_bits(), (-0.0_f32).to_bits());
+            }
+        }
+    }
 
     fn deref(rc: &RcVec3) -> Vec3 {
         *rc_ref!(rc)

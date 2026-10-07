@@ -2,7 +2,7 @@
 #![allow(clippy::many_single_char_names)]
 
 use crate::cube::mat4::{Mat4, RcMat4};
-use crate::cube::vec3::{RcVec3, Vec3};
+use crate::cube::vec3::{sum_wide_products, RcVec3, Vec3};
 
 // Component order is (x, y, z, w), with w as the scalar.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -429,10 +429,12 @@ impl Quat {
     pub fn dot(&self, other: &Self) -> f32 {
         let dot = self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w;
         if !dot.is_finite() && self.is_finite() && other.is_finite() {
-            return (f64::from(self.x) * f64::from(other.x)
-                + f64::from(self.y) * f64::from(other.y)
-                + f64::from(self.z) * f64::from(other.z)
-                + f64::from(self.w) * f64::from(other.w)) as f32;
+            return sum_wide_products([
+                (self.x, other.x),
+                (self.y, other.y),
+                (self.z, other.z),
+                (self.w, other.w),
+            ]) as f32;
         }
         dot
     }
@@ -566,6 +568,45 @@ impl Quat {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_dot_retains_wide_cancellation_residual() {
+        for large in [1e20, 1e30, 3e38] {
+            let a = Quat {
+                x: large,
+                y: 1.0,
+                z: -large,
+                w: 2.0,
+            };
+            let b = Quat {
+                x: large,
+                y: 1.0,
+                z: large,
+                w: 1.0,
+            };
+            // Equal stored products cancel, leaving 1 + 2.
+            assert_eq!(a.dot(&b), 3.0);
+        }
+    }
+
+    #[test]
+    fn test_dot_keeps_ordinary_f32_cancellation() {
+        let large = 1e10;
+        let a = Quat {
+            x: large,
+            y: 1.0,
+            z: -large,
+            w: 2.0,
+        };
+        let b = Quat {
+            x: large,
+            y: 1.0,
+            z: large,
+            w: 1.0,
+        };
+        // The middle 1 is lost before cancellation; the last 2 remains.
+        assert_eq!(a.dot(&b).to_bits(), 2.0_f32.to_bits());
+    }
 
     fn deref(rc: &RcQuat) -> Quat {
         *rc_ref!(rc)

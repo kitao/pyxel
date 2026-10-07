@@ -2,7 +2,7 @@
 #![allow(clippy::many_single_char_names, clippy::needless_range_loop)]
 
 use crate::cube::quat::{Quat, RcQuat};
-use crate::cube::vec3::{RcVec3, Vec3};
+use crate::cube::vec3::{sum_wide_products, RcVec3, Vec3};
 
 // Row-major storage: data[row][col].
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -172,11 +172,9 @@ impl Mat4 {
                     && self.data[i].iter().all(|value| value.is_finite())
                     && (0..4).all(|k| other.data[k][j].is_finite())
                 {
-                    let mut sum = 0.0_f64;
-                    for k in 0..4 {
-                        sum += f64::from(self.data[i][k]) * f64::from(other.data[k][j]);
-                    }
-                    result[i][j] = sum as f32;
+                    result[i][j] = sum_wide_products(std::array::from_fn(|k| {
+                        (self.data[i][k], other.data[k][j])
+                    })) as f32;
                 }
             }
         }
@@ -241,14 +239,10 @@ impl Mat4 {
             if !components[i].is_finite()
                 && row[..used_columns].iter().all(|value| value.is_finite())
             {
-                let sum = f64::from(row[0]) * f64::from(v.x)
-                    + f64::from(row[1]) * f64::from(v.y)
-                    + f64::from(row[2]) * f64::from(v.z);
-                components[i] = (if translation {
-                    sum + f64::from(row[3])
-                } else {
-                    sum
-                }) as f32;
+                let offset = if translation { row[3] } else { 0.0 };
+                components[i] =
+                    sum_wide_products([(row[0], v.x), (row[1], v.y), (row[2], v.z), (offset, 1.0)])
+                        as f32;
             }
         }
         Vec3 {
@@ -843,6 +837,95 @@ impl Mat4 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_vector_transforms_retain_wide_cancellation_residual() {
+        for large in [1e20, 1e30] {
+            let rotation = deref(&Mat4::from_euler(&Vec3 {
+                x: 0.0,
+                y: 45.0,
+                z: 45.0,
+            }));
+            let scale = deref(&Mat4::from_scale(&Vec3 {
+                x: large,
+                y: 1.0,
+                z: large,
+            }));
+            let scaled = rotation.mul_mat_value(&scale);
+            let v = Vec3 {
+                x: scaled.data[0][2],
+                y: 1.0,
+                z: -scaled.data[0][0],
+            };
+            let translation = deref(&Mat4::from_translation(&Vec3 {
+                x: 0.25,
+                y: 0.0,
+                z: 0.0,
+            }));
+            let matrix = translation.mul_mat_value(&scaled);
+            // The first and third products are equal and opposite. Only
+            // the middle coefficient and, for a point, translation remain.
+            assert_eq!(matrix.mul_vec_value(&v).x, matrix.data[0][1] + 0.25);
+            assert_eq!(matrix.mul_dir_value(&v).x, matrix.data[0][1]);
+        }
+    }
+
+    #[test]
+    fn test_matrix_product_retains_wide_cancellation_residual() {
+        for large in [1e20, 1e30] {
+            let rotation = deref(&Mat4::from_euler(&Vec3 {
+                x: 0.0,
+                y: 45.0,
+                z: 45.0,
+            }));
+            let scale = deref(&Mat4::from_scale(&Vec3 {
+                x: large,
+                y: 1.0,
+                z: large,
+            }));
+            let matrix = rotation.mul_mat_value(&scale);
+            let v = Vec3 {
+                x: matrix.data[0][2],
+                y: 1.0,
+                z: -matrix.data[0][0],
+            };
+            let translation = deref(&Mat4::from_translation(&v));
+            // The composed translation has the same independently cancelling
+            // first and third products as the point transform.
+            assert_eq!(
+                matrix.mul_mat_value(&translation).data[0][3],
+                matrix.data[0][1]
+            );
+        }
+    }
+
+    #[test]
+    fn test_recovery_keeps_finite_components_and_ignored_translation() {
+        let matrix = Mat4 {
+            data: [
+                [1e20, 1.0, -1e20, 0.25],
+                [1e10, 1.0, -1e10, 0.25],
+                [0.0, 0.0, 1.0, f32::INFINITY],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        let v = Vec3 {
+            x: 1e20,
+            y: 1.0,
+            z: 1e20,
+        };
+        let point = matrix.mul_vec_value(&v);
+        let direction = matrix.mul_dir_value(&v);
+        let translation = deref(&Mat4::from_translation(&v));
+        let composed = matrix.mul_mat_value(&translation);
+        // Y's finite f32 sum loses its middle 1 even while X needs recovery.
+        assert_eq!(point.y.to_bits(), 0.25_f32.to_bits());
+        assert_eq!(direction.y.to_bits(), 0.0_f32.to_bits());
+        assert_eq!(composed.data[1][3].to_bits(), 0.25_f32.to_bits());
+        assert_eq!(point.z, f32::INFINITY);
+        assert_eq!(direction.z, v.z);
+        assert_eq!(composed.data[2][3], f32::INFINITY);
+    }
 
     fn deref(rc: &RcMat4) -> Mat4 {
         *rc_ref!(rc)
