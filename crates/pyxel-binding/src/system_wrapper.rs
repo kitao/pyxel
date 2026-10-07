@@ -218,14 +218,17 @@ fn resize(width: u32, height: u32) -> PyResult<()> {
 }
 
 // Internal helpers
+// Leading underscores preserve the private Python bridge names used by the runtime and CLI.
 
 #[cfg(target_os = "emscripten")]
+#[allow(clippy::used_underscore_items)]
 #[pyfunction]
 fn _reset_statics() {
     pyxel::reset_statics();
 }
 
 #[cfg(not(target_os = "emscripten"))]
+#[allow(clippy::used_underscore_items)]
 #[pyfunction]
 fn _pid_exists(pid: u32) -> bool {
     let system = sysinfo::System::new_all();

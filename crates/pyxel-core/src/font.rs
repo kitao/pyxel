@@ -68,7 +68,7 @@ impl Font {
                 code = Some(
                     line.split_whitespace()
                         .nth(1)
-                        .ok_or_else(&parse_err)?
+                        .ok_or_else(parse_err)?
                         .parse::<i32>()
                         .map_err(|_| parse_err())?,
                 );
@@ -76,7 +76,7 @@ impl Font {
                 dwidth = line
                     .split_whitespace()
                     .nth(1)
-                    .ok_or_else(&parse_err)?
+                    .ok_or_else(parse_err)?
                     .parse()
                     .map_err(|_| parse_err())?;
             } else if line.starts_with("BBX") {

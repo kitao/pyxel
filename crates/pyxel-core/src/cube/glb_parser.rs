@@ -751,8 +751,7 @@ fn import_primitive(
 
     let indices = reader
         .read_indices()
-        .map(|indices| indices.into_u32().map(|i| i as i32).collect::<Vec<i32>>())
-        .unwrap_or_default();
+        .map_or_default(|indices| indices.into_u32().map(|i| i as i32).collect::<Vec<i32>>());
     if indices.iter().any(|&index| index as usize >= vertex_count) {
         return Err("GLB primitive index is out of range for POSITION count".to_string());
     }
