@@ -68,8 +68,10 @@ the engine's ordinary `f32` math and from native failure conversion.
 ### Effective defaults in references and stubs
 
 **Decision:** API references and `.pyi` signatures show effective parameter
-defaults. Do not replace them with internal `None` sentinels. Use `None` only
-for actual default behavior such as automatic selection or absence of a value.
+defaults. Show a fixed effective value when omission selects that value; do not
+replace it with an internal `None` sentinel. Keep `None` when it denotes public
+default behavior, such as automatic selection, use of a configured setting, or
+absence of a value, and explain that behavior in the parameter description.
 Reference type labels name the public type in Python union notation
 (`int | None`) and do not expose an internal sentinel either.
 
@@ -81,6 +83,12 @@ fixed-default arguments are omitted: `fps=30`, `capture_scale=2`, and
 requested screen size. Its `None` annotation therefore denotes automatic
 selection, which the parameter description explains. There is no single fixed
 magnification to substitute.
+
+`screenshot` and `screencast` therefore retain `scale=None` in references and
+`scale: int | None = None` in stubs. As recorded under their
+[argument contract](#screenshot-and-screencast-arguments), omission or `None` uses
+the effective capture scale configured by `init`. Explain this dependency rather
+than substituting the initial `capture_scale=2` value for the default.
 
 The [system binding](../../../crates/pyxel-binding/src/system_wrapper.rs),
 [initialization](../../../crates/pyxel-core/src/pyxel.rs), and [resource
