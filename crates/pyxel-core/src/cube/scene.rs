@@ -1071,8 +1071,8 @@ impl Scene {
                 [a, b].map(|entry| {
                     let mut entry = entry.clone();
                     let offset = vec_mul(entry.velocity, -remaining);
-                    for axis in 0..3 {
-                        entry.world.data[axis][3] += component(offset, axis);
+                    for (axis, row) in entry.world.data[..3].iter_mut().enumerate() {
+                        row[3] += component(offset, axis);
                     }
                     entry.inverse = entry.world.inverse_value();
                     entry.aabb.min = vec_add(entry.aabb.min, offset);
@@ -1523,8 +1523,8 @@ impl Scene {
                     contact.depth = 0.0;
                 }
                 let offset = vec_mul(*rc_ref!(&contact.normal), contact.depth);
-                for axis in 0..3 {
-                    next_bodies[i].world.data[axis][3] += component(offset, axis);
+                for (axis, row) in next_bodies[i].world.data[..3].iter_mut().enumerate() {
+                    row[3] += component(offset, axis);
                 }
                 if !resting[i] {
                     continue;
@@ -6391,8 +6391,8 @@ mod tests {
                     } else {
                         Mat4::identity_value()
                     };
-                    for axis in 0..3 {
-                        pose.data[axis][3] = component(normal, axis) * radius;
+                    for (axis, row) in pose.data[..3].iter_mut().enumerate() {
+                        row[3] = component(normal, axis) * radius;
                     }
                     rc_mut!(&body).transform = Mat4::from_rows(pose.data);
                     Node::add_child(&root, &body);
@@ -6432,8 +6432,8 @@ mod tests {
 
                     // A new drop after relocating above the same floor must also bounce.
                     let mut pose = Node::world_transform_value(&body);
-                    for axis in 0..3 {
-                        pose.data[axis][3] += component(normal, axis) * 30.0;
+                    for (axis, row) in pose.data[..3].iter_mut().enumerate() {
+                        row[3] += component(normal, axis) * 30.0;
                     }
                     rc_mut!(&body).transform = Mat4::from_rows(pose.data);
                     rc_mut!(&collider).velocity = Vec3::zero();

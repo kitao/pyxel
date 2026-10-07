@@ -257,8 +257,7 @@ fn project_clipped_vertices(
         len: 0,
     };
 
-    for i in 0..vertices.len {
-        let vertex = vertices.vertices[i];
+    for &vertex in &vertices.vertices[..vertices.len] {
         let screen = project_offset(
             &vertex.world,
             &ctx.vp,
@@ -1661,10 +1660,10 @@ fn unit_ellipse_positions() -> &'static [f32; (ELLIPSE_SEGMENTS + 1) * 3] {
 // Scale the linear part while preserving translation.
 fn scale_axes(world_mat: &Mat4, sx: f32, sy: f32, sz: f32) -> Mat4 {
     let mut out = *world_mat;
-    for row in 0..3 {
-        out.data[row][0] *= sx;
-        out.data[row][1] *= sy;
-        out.data[row][2] *= sz;
+    for row in &mut out.data[..3] {
+        row[0] *= sx;
+        row[1] *= sy;
+        row[2] *= sz;
     }
     out
 }
@@ -2682,8 +2681,8 @@ mod tests {
 
     // Allow for f32 rounding when interpolating onto the near plane.
     fn assert_clip_vertices_inside(vertices: &ClippedTriangle, clip_row: &[f32; 4]) {
-        for i in 0..vertices.len {
-            let front = clip_front(&vertices.vertices[i].world, clip_row);
+        for (i, vertex) in vertices.vertices[..vertices.len].iter().enumerate() {
+            let front = clip_front(&vertex.world, clip_row);
             assert!(front >= 0.1 - 1e-6, "vertex {i} front={front}");
         }
     }
