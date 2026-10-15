@@ -84,6 +84,24 @@
         height: 20px;
       }
 
+      .site-notice {
+        margin-bottom: 24px;
+        padding: 14px 16px;
+        border: 1px solid #6e5725;
+        border-left: 4px solid #d29922;
+        background: #1c1b16;
+      }
+
+      .site-notice .notice-title {
+        margin-bottom: 6px;
+        color: #e3b341;
+        font-weight: 600;
+      }
+
+      .site-notice p:last-child {
+        margin-bottom: 0;
+      }
+
       .quick-links {
         margin: 20px 0 24px;
       }
@@ -234,6 +252,14 @@
         /></a>
       </p>
       <div lang="en">
+        <aside class="site-notice" aria-labelledby="notice-en">
+          <p class="notice-title" id="notice-en">Notice</p>
+          <p>
+            Pyxel's repository and related resources on GitHub are currently
+            unavailable due to an account issue. The guides, examples, and tools
+            on this site remain available.
+          </p>
+        </aside>
         <p>
           <strong>Pyxel</strong> (/ˈpɪksəl/) is a retro game engine for Python.
         </p>
@@ -313,6 +339,13 @@
         </nav>
       </div>
       <div lang="ja">
+        <aside class="site-notice" aria-labelledby="notice-ja">
+          <p class="notice-title" id="notice-ja">お知らせ</p>
+          <p>
+            現在、GitHub アカウントの問題により、GitHub
+            上のリポジトリや関連ページにアクセスできない状態です。このサイトのユーザーガイド、サンプル、各種ツールは引き続き利用できます。
+          </p>
+        </aside>
         <p>
           <strong>Pyxel</strong>（ピクセル）は Python
           向けのレトロゲームエンジンです。
