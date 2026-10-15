@@ -52,3 +52,6 @@ macos-deployment-target = "11.0"
 
 [tool.maturin.target."x86_64-apple-darwin"]
 macos-deployment-target = "10.13"
+
+[tool.pytest.ini_options]
+filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
