@@ -2,7 +2,7 @@
 
 # Pyxel API Reference
 
-*[Read online in other languages](https://kitao.github.io/pyxel/web/api-reference/).*
+*[Read online in other languages](https://kitao.dev/pyxel/api-reference/).*
 
 ## System
 

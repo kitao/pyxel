@@ -6,7 +6,7 @@ use crate::image::{rgb24_to_rgb8, Rgb24};
 
 pub const LEVEL_COUNT: usize = 8;
 // The source color is an explicit anchor, not a requirement for an odd width.
-pub const BASE_LEVEL: usize = (2 * (LEVEL_COUNT - 1) + 1) / 3;
+pub(crate) const BASE_LEVEL: usize = (2 * (LEVEL_COUNT - 1) + 1) / 3;
 type Entry = (i32, i32);
 const CHROMA_WEIGHT: f32 = 2.0;
 

@@ -2,7 +2,7 @@
 
 # Pyxel Editor Manual
 
-*[Read online in other languages](https://kitao.github.io/pyxel/web/editor-manual/).*
+*[Read online in other languages](https://kitao.dev/pyxel/editor-manual/).*
 
 ## Overview
 
@@ -31,15 +31,15 @@ Operations common to all editors.
 
 The menu bar at the top of the screen contains four editor switching buttons, Undo/Redo buttons, and a Save button. The help message area on the right displays context-sensitive information based on the cursor position.
 
-![Menu Bar](https://kitao.github.io/pyxel/web/editor-manual/images/ui_menubar.png)
+![Menu Bar](https://kitao.dev/pyxel/editor-manual/images/ui_menubar.png)
 
-- ![images/btn_image.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_image.png) Switch to Image Editor
-- ![images/btn_tilemap.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_tilemap.png) Switch to Tilemap Editor
-- ![images/btn_sound.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_sound.png) Switch to Sound Editor
-- ![images/btn_music.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_music.png) Switch to Music Editor
-- ![images/btn_undo.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_undo.png) Ctrl(Cmd)+Z — Undo
-- ![images/btn_redo.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_redo.png) Ctrl(Cmd)+Y — Redo
-- ![images/btn_save.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_save.png) Ctrl(Cmd)+S — Save
+- ![images/btn_image.png](https://kitao.dev/pyxel/editor-manual/images/btn_image.png) Switch to Image Editor
+- ![images/btn_tilemap.png](https://kitao.dev/pyxel/editor-manual/images/btn_tilemap.png) Switch to Tilemap Editor
+- ![images/btn_sound.png](https://kitao.dev/pyxel/editor-manual/images/btn_sound.png) Switch to Sound Editor
+- ![images/btn_music.png](https://kitao.dev/pyxel/editor-manual/images/btn_music.png) Switch to Music Editor
+- ![images/btn_undo.png](https://kitao.dev/pyxel/editor-manual/images/btn_undo.png) Ctrl(Cmd)+Z — Undo
+- ![images/btn_redo.png](https://kitao.dev/pyxel/editor-manual/images/btn_redo.png) Ctrl(Cmd)+Y — Redo
+- ![images/btn_save.png](https://kitao.dev/pyxel/editor-manual/images/btn_save.png) Ctrl(Cmd)+S — Save
 
 ### Other Shortcuts
 
@@ -71,11 +71,11 @@ A mode for editing images in each image bank. You can create pixel art for sprit
 
 ### Screen Layout
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/image_editor.gif](https://kitao.github.io/pyxel/web/editor-manual/images/image_editor.gif)
+![https://kitao.dev/pyxel/editor-manual/images/image_editor.gif](https://kitao.dev/pyxel/editor-manual/images/image_editor.gif)
 
 #### Image Canvas
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/image_canvas.png](https://kitao.github.io/pyxel/web/editor-manual/images/image_canvas.png)
+![https://kitao.dev/pyxel/editor-manual/images/image_canvas.png](https://kitao.dev/pyxel/editor-manual/images/image_canvas.png)
 
 The editing area selected in the image bank view is displayed magnified. Click and drag with the mouse to draw.
 
@@ -86,7 +86,7 @@ The editing area selected in the image bank view is displayed magnified. Click a
 
 #### Image Bank View
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/image_bankview.png](https://kitao.github.io/pyxel/web/editor-manual/images/image_bankview.png)
+![https://kitao.dev/pyxel/editor-manual/images/image_bankview.png](https://kitao.dev/pyxel/editor-manual/images/image_bankview.png)
 
 A thumbnail view of the entire image bank. The white frame indicates the current editing area.
 
@@ -98,17 +98,17 @@ A thumbnail view of the entire image bank. The white frame indicates the current
 
 #### Tool Buttons
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/image_tools.png](https://kitao.github.io/pyxel/web/editor-manual/images/image_tools.png)
+![https://kitao.dev/pyxel/editor-manual/images/image_tools.png](https://kitao.dev/pyxel/editor-manual/images/image_tools.png)
 
 Select a tool for drawing.
 
-- ![tool_select](https://kitao.github.io/pyxel/web/editor-manual/images/tool_select.png) S — Select a rectangular area
-- ![tool_pencil](https://kitao.github.io/pyxel/web/editor-manual/images/tool_pencil.png) P — Draw freehand. Hold Shift for straight lines
-- ![tool_rectb](https://kitao.github.io/pyxel/web/editor-manual/images/tool_rectb.png) R — Draw a rectangle outline. Hold Shift for a square
-- ![tool_rect](https://kitao.github.io/pyxel/web/editor-manual/images/tool_rect.png) Shift+R — Draw a filled rectangle. Hold Shift for a square
-- ![tool_circb](https://kitao.github.io/pyxel/web/editor-manual/images/tool_circb.png) C — Draw an ellipse outline. Hold Shift for a circle
-- ![tool_circ](https://kitao.github.io/pyxel/web/editor-manual/images/tool_circ.png) Shift+C — Draw a filled ellipse. Hold Shift for a circle
-- ![tool_bucket](https://kitao.github.io/pyxel/web/editor-manual/images/tool_bucket.png) B — Fill a connected region of the same color
+- ![tool_select](https://kitao.dev/pyxel/editor-manual/images/tool_select.png) S — Select a rectangular area
+- ![tool_pencil](https://kitao.dev/pyxel/editor-manual/images/tool_pencil.png) P — Draw freehand. Hold Shift for straight lines
+- ![tool_rectb](https://kitao.dev/pyxel/editor-manual/images/tool_rectb.png) R — Draw a rectangle outline. Hold Shift for a square
+- ![tool_rect](https://kitao.dev/pyxel/editor-manual/images/tool_rect.png) Shift+R — Draw a filled rectangle. Hold Shift for a square
+- ![tool_circb](https://kitao.dev/pyxel/editor-manual/images/tool_circb.png) C — Draw an ellipse outline. Hold Shift for a circle
+- ![tool_circ](https://kitao.dev/pyxel/editor-manual/images/tool_circ.png) Shift+C — Draw a filled ellipse. Hold Shift for a circle
+- ![tool_bucket](https://kitao.dev/pyxel/editor-manual/images/tool_bucket.png) B — Fill a connected region of the same color
 
 #### Selection Tool Shortcuts
 
@@ -125,7 +125,7 @@ The following shortcut keys are available while using the selection tool.
 
 #### Color Palette
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/image_palette.png](https://kitao.github.io/pyxel/web/editor-manual/images/image_palette.png)
+![https://kitao.dev/pyxel/editor-manual/images/image_palette.png](https://kitao.dev/pyxel/editor-manual/images/image_palette.png)
 
 Select a drawing color from the palette, which initially has 16 colors.
 
@@ -136,7 +136,7 @@ Select a drawing color from the palette, which initially has 16 colors.
 
 #### Bank Number
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/image_banknum.png](https://kitao.github.io/pyxel/web/editor-manual/images/image_banknum.png)
+![https://kitao.dev/pyxel/editor-manual/images/image_banknum.png](https://kitao.dev/pyxel/editor-manual/images/image_banknum.png)
 
 Switch the target image bank (0-2).
 
@@ -157,11 +157,11 @@ A mode for arranging image bank images as tile patterns and editing tilemaps.
 
 ### Screen Layout
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_editor.gif](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_editor.gif)
+![https://kitao.dev/pyxel/editor-manual/images/tilemap_editor.gif](https://kitao.dev/pyxel/editor-manual/images/tilemap_editor.gif)
 
 #### Tilemap Canvas
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_canvas.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_canvas.png)
+![https://kitao.dev/pyxel/editor-manual/images/tilemap_canvas.png](https://kitao.dev/pyxel/editor-manual/images/tilemap_canvas.png)
 
 The editing area selected in the tilemap view is displayed magnified. Place tile images selected in the tile image view. Drawing tools and selection shortcuts are shared with the Image Editor. Note that all cells default to tile (0,0), so it is recommended to keep image bank position (0,0) empty.
 
@@ -172,7 +172,7 @@ The editing area selected in the tilemap view is displayed magnified. Place tile
 
 #### Tilemap View
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_mapview.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_mapview.png)
+![https://kitao.dev/pyxel/editor-manual/images/tilemap_mapview.png](https://kitao.dev/pyxel/editor-manual/images/tilemap_mapview.png)
 
 A thumbnail view of the entire tilemap. The white frame indicates the current editing area.
 
@@ -183,7 +183,7 @@ A thumbnail view of the entire tilemap. The white frame indicates the current ed
 
 #### Tile Image View
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tileview.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tileview.png)
+![https://kitao.dev/pyxel/editor-manual/images/tilemap_tileview.png](https://kitao.dev/pyxel/editor-manual/images/tilemap_tileview.png)
 
 Displays the referenced image bank. Select tile images with the white frame.
 
@@ -195,29 +195,29 @@ Displays the referenced image bank. Select tile images with the white frame.
 
 #### Tilemap Number
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tmnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tmnum.png)
+![https://kitao.dev/pyxel/editor-manual/images/tilemap_tmnum.png](https://kitao.dev/pyxel/editor-manual/images/tilemap_tmnum.png)
 
 Switch the target tilemap (0-7).
 
 #### Ref. Image Bank Number
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_imgnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_imgnum.png)
+![https://kitao.dev/pyxel/editor-manual/images/tilemap_imgnum.png](https://kitao.dev/pyxel/editor-manual/images/tilemap_imgnum.png)
 
 Switch the image bank (0-2) referenced for tile images.
 
 #### Tool Buttons
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tools.png](https://kitao.github.io/pyxel/web/editor-manual/images/tilemap_tools.png)
+![https://kitao.dev/pyxel/editor-manual/images/tilemap_tools.png](https://kitao.dev/pyxel/editor-manual/images/tilemap_tools.png)
 
 Select a tool for drawing.
 
-- ![tool_select](https://kitao.github.io/pyxel/web/editor-manual/images/tool_select.png) S — Select a rectangular area
-- ![tool_pencil](https://kitao.github.io/pyxel/web/editor-manual/images/tool_pencil.png) P — Draw freehand. Hold Shift for straight lines
-- ![tool_rectb](https://kitao.github.io/pyxel/web/editor-manual/images/tool_rectb.png) R — Draw a rectangle outline. Hold Shift for a square
-- ![tool_rect](https://kitao.github.io/pyxel/web/editor-manual/images/tool_rect.png) Shift+R — Draw a filled rectangle. Hold Shift for a square
-- ![tool_circb](https://kitao.github.io/pyxel/web/editor-manual/images/tool_circb.png) C — Draw an ellipse outline. Hold Shift for a circle
-- ![tool_circ](https://kitao.github.io/pyxel/web/editor-manual/images/tool_circ.png) Shift+C — Draw a filled ellipse. Hold Shift for a circle
-- ![tool_bucket](https://kitao.github.io/pyxel/web/editor-manual/images/tool_bucket.png) B — Fill a connected region of the same color
+- ![tool_select](https://kitao.dev/pyxel/editor-manual/images/tool_select.png) S — Select a rectangular area
+- ![tool_pencil](https://kitao.dev/pyxel/editor-manual/images/tool_pencil.png) P — Draw freehand. Hold Shift for straight lines
+- ![tool_rectb](https://kitao.dev/pyxel/editor-manual/images/tool_rectb.png) R — Draw a rectangle outline. Hold Shift for a square
+- ![tool_rect](https://kitao.dev/pyxel/editor-manual/images/tool_rect.png) Shift+R — Draw a filled rectangle. Hold Shift for a square
+- ![tool_circb](https://kitao.dev/pyxel/editor-manual/images/tool_circb.png) C — Draw an ellipse outline. Hold Shift for a circle
+- ![tool_circ](https://kitao.dev/pyxel/editor-manual/images/tool_circ.png) Shift+C — Draw a filled ellipse. Hold Shift for a circle
+- ![tool_bucket](https://kitao.dev/pyxel/editor-manual/images/tool_bucket.png) B — Fill a connected region of the same color
 
 ### Placing Multiple Tiles
 
@@ -241,31 +241,31 @@ A mode for editing sounds used for melodies and sound effects.
 
 ### Screen Layout
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/sound_editor.gif](https://kitao.github.io/pyxel/web/editor-manual/images/sound_editor.gif)
+![https://kitao.dev/pyxel/editor-manual/images/sound_editor.gif](https://kitao.dev/pyxel/editor-manual/images/sound_editor.gif)
 
 #### Sound Number
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/sound_sndnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_sndnum.png)
+![https://kitao.dev/pyxel/editor-manual/images/sound_sndnum.png](https://kitao.dev/pyxel/editor-manual/images/sound_sndnum.png)
 
 Switch the target sound (0-63).
 
 #### Playback Speed
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/sound_speed.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_speed.png)
+![https://kitao.dev/pyxel/editor-manual/images/sound_speed.png](https://kitao.dev/pyxel/editor-manual/images/sound_speed.png)
 
 Sets the playback duration per note. This is a common setting for all notes, specified in the range 1-99. Smaller values result in faster playback (1 speed unit = 1/120 second; e.g., speed 60 = 0.5 seconds per note). For sound effects, 1-9 is typical; for melodies, 10 or higher is recommended.
 
 #### Play / Stop / Loop
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/sound_playback.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_playback.png)
+![https://kitao.dev/pyxel/editor-manual/images/sound_playback.png](https://kitao.dev/pyxel/editor-manual/images/sound_playback.png)
 
-- ![images/btn_play.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_play.png) Space — Play
-- ![images/btn_stop.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_stop.png) Space — Stop (press Space during playback to stop)
-- ![images/btn_loop.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_loop.png) L — Toggle loop playback
+- ![images/btn_play.png](https://kitao.dev/pyxel/editor-manual/images/btn_play.png) Space — Play
+- ![images/btn_stop.png](https://kitao.dev/pyxel/editor-manual/images/btn_stop.png) Space — Stop (press Space during playback to stop)
+- ![images/btn_loop.png](https://kitao.dev/pyxel/editor-manual/images/btn_loop.png) L — Toggle loop playback
 
 #### Piano Roll
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/sound_piano.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_piano.png)
+![https://kitao.dev/pyxel/editor-manual/images/sound_piano.png](https://kitao.dev/pyxel/editor-manual/images/sound_piano.png)
 
 Click to input note pitch. Red squares represent notes, blue squares represent rests. During piano roll editing, a blue cursor is displayed; during property area editing, a different cursor shape appears. Notes are played from left to right, and rests are automatically inserted in empty positions. Clicking an already-filled position overwrites it. Drag to enter notes continuously along the pointer's path.
 
@@ -291,7 +291,7 @@ Click to input note pitch. Red squares represent notes, blue squares represent r
 
 #### Octave Bar
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/sound_octave_l.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_octave_l.png)
+![https://kitao.dev/pyxel/editor-manual/images/sound_octave_l.png](https://kitao.dev/pyxel/editor-manual/images/sound_octave_l.png)
 
 Displays the starting octave (0-3) for keyboard input. The keyboard covers two octaves from the selected octave.
 
@@ -347,7 +347,7 @@ You can input notes using the PC keyboard. The upper row (QWE row + number row) 
 
 #### Property Area (TON / VOL / EFX)
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/sound_property.png](https://kitao.github.io/pyxel/web/editor-manual/images/sound_property.png)
+![https://kitao.dev/pyxel/editor-manual/images/sound_property.png](https://kitao.dev/pyxel/editor-manual/images/sound_property.png)
 
 Set each note's tone (TON), volume (VOL), and effect (EFX). From the piano roll, press ↓ or click TON to enter this area. Navigation, selection, and copy/paste work as in the piano roll. For example, P on the TON row sets Pulse. To change a value partway through, set it for every note from that position onward.
 
@@ -391,25 +391,25 @@ A mode for arranging sounds in playback order to compose music tracks.
 
 ### Screen Layout
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/music_editor.gif](https://kitao.github.io/pyxel/web/editor-manual/images/music_editor.gif)
+![https://kitao.dev/pyxel/editor-manual/images/music_editor.gif](https://kitao.dev/pyxel/editor-manual/images/music_editor.gif)
 
 #### Music Number
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/music_mscnum.png](https://kitao.github.io/pyxel/web/editor-manual/images/music_mscnum.png)
+![https://kitao.dev/pyxel/editor-manual/images/music_mscnum.png](https://kitao.dev/pyxel/editor-manual/images/music_mscnum.png)
 
 Switch the target music (0-7).
 
 #### Play / Stop / Loop
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/music_playback.png](https://kitao.github.io/pyxel/web/editor-manual/images/music_playback.png)
+![https://kitao.dev/pyxel/editor-manual/images/music_playback.png](https://kitao.dev/pyxel/editor-manual/images/music_playback.png)
 
-- ![images/btn_play.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_play.png) Space — Play
-- ![images/btn_stop.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_stop.png) Space — Stop (press Space during playback to stop)
-- ![images/btn_loop.png](https://kitao.github.io/pyxel/web/editor-manual/images/btn_loop.png) L — Toggle loop playback
+- ![images/btn_play.png](https://kitao.dev/pyxel/editor-manual/images/btn_play.png) Space — Play
+- ![images/btn_stop.png](https://kitao.dev/pyxel/editor-manual/images/btn_stop.png) Space — Stop (press Space during playback to stop)
+- ![images/btn_loop.png](https://kitao.dev/pyxel/editor-manual/images/btn_loop.png) L — Toggle loop playback
 
 #### Sequence Editor (CH0-CH3)
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/music_sequence.png](https://kitao.github.io/pyxel/web/editor-manual/images/music_sequence.png)
+![https://kitao.dev/pyxel/editor-manual/images/music_sequence.png](https://kitao.dev/pyxel/editor-manual/images/music_sequence.png)
 
 Place sound numbers in playback order across four channels (CH0-CH3). Copy and paste between channels is also supported.
 
@@ -430,6 +430,6 @@ Place sound numbers in playback order across four channels (CH0-CH3). Copy and p
 
 #### Sound Buttons (0-63)
 
-![https://kitao.github.io/pyxel/web/editor-manual/images/music_buttons.png](https://kitao.github.io/pyxel/web/editor-manual/images/music_buttons.png)
+![https://kitao.dev/pyxel/editor-manual/images/music_buttons.png](https://kitao.dev/pyxel/editor-manual/images/music_buttons.png)
 
 Buttons for inserting sound numbers (0-63). Pressing a button inserts the sound number at the editing cursor position. Created sounds are shown in blue, uncreated ones in gray. Hovering over a button previews the sound.

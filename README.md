@@ -15,11 +15,11 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 
 Also, this project is developed by one person, kept going by your GitHub stars. If you enjoy it, please give it a star!
 
-**[▸ User Guide](https://kitao.github.io/pyxel/web/user-guide/)**
+**[▸ User Guide](https://kitao.dev/pyxel/user-guide/)**
 
-**[▸ Pyxel Cube Guide — Making 3D Games](https://kitao.github.io/pyxel/web/user-guide/cube/)**
+**[▸ Pyxel Cube Guide — Making 3D Games](https://kitao.dev/pyxel/user-guide/cube/)**
 
-**[▸ User Examples](https://kitao.github.io/pyxel-user-examples/)**
+**[▸ User Examples](https://kitao.dev/pyxel/user-examples/)**
 
 **[▸ Share Your Work](https://github.com/kitao/pyxel/discussions/new?category=user-examples)**
 
@@ -33,42 +33,42 @@ Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオ
 
 また、このプロジェクトは GitHub のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！
 
-**[▸ ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
+**[▸ ユーザーガイド](https://kitao.dev/pyxel/user-guide/)**
 
-**[▸ Pyxel Cube ガイド — 3D ゲームを作る](https://kitao.github.io/pyxel/web/user-guide/cube/)**
+**[▸ Pyxel Cube ガイド — 3D ゲームを作る](https://kitao.dev/pyxel/user-guide/cube/)**
 
-**[▸ ユーザー作品集](https://kitao.github.io/pyxel-user-examples/)**
+**[▸ ユーザー作品集](https://kitao.dev/pyxel/user-examples/)**
 
 **[▸ 作品を投稿する](https://github.com/kitao/pyxel/discussions/new?category=user-examples)**
 
-[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" alt="Pyxel User Examples" width="553">](https://kitao.github.io/pyxel-user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" alt="Pyxel book" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" alt="Pyxel User Examples" width="553">](https://kitao.dev/pyxel/user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" alt="Pyxel book" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 <p>
-<a href="https://kitao.github.io/pyxel/web/showcase/examples/02-jump-game.html">
+<a href="https://kitao.dev/pyxel/showcase/examples/02-jump-game.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/02_jump_game.gif" alt="Jump game" width="253">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/examples/10-platformer.html">
+<a href="https://kitao.dev/pyxel/showcase/examples/10-platformer.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/10_platformer.gif" alt="Platformer" width="222">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/apps/30sec-of-daylight.html">
+<a href="https://kitao.dev/pyxel/showcase/apps/30sec-of-daylight.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" alt="30 Seconds of Daylight" width="268">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/apps/megaball.html">
+<a href="https://kitao.dev/pyxel/showcase/apps/megaball.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/megaball.gif" alt="Megaball" width="231">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/tools/image-editor.html">
+<a href="https://kitao.dev/pyxel/showcase/tools/image-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_tilemap_editor.gif" alt="Image and tilemap editor" width="256">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/tools/sound-editor.html">
+<a href="https://kitao.dev/pyxel/showcase/tools/sound-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_music_editor.gif" alt="Sound and music editor" width="256">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/examples/c04-mesh-and-motion.html">
+<a href="https://kitao.dev/pyxel/showcase/examples/c04-mesh-and-motion.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c04_mesh_and_motion.gif" alt="Mesh and motion" width="248">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/examples/c05-3d-collision.html">
+<a href="https://kitao.dev/pyxel/showcase/examples/c05-3d-collision.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c05_3d_collision.gif" alt="3D collision" width="248">
 </a>
-<a href="https://kitao.github.io/pyxel/web/showcase/examples/c06-3d-physics.html">
+<a href="https://kitao.dev/pyxel/showcase/examples/c06-3d-physics.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c06_3d_physics.gif" alt="3D physics" width="248">
 </a>
 </p>

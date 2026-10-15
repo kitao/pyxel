@@ -2,15 +2,15 @@
 
 # Pyxel User Guide
 
-*[Read online in other languages](https://kitao.github.io/pyxel/web/user-guide/).*
+*[Read online in other languages](https://kitao.dev/pyxel/user-guide/).*
 
-![Pyxel](images/pyxel_logo_152x64.png)
+[![Pyxel](images/pyxel_logo_152x64.png)](https://kitao.dev/pyxel/)
 
 **Pyxel** (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
-Also, this project is developed by one person, kept going by your [GitHub](https://github.com/kitao/pyxel) stars. If you enjoy it, please give it a star!
+This project is developed by one person. If you enjoy it, please consider supporting it with [a GitHub star](https://github.com/kitao/pyxel) or a donation through [GitHub Sponsors](https://github.com/sponsors/kitao) or [Ko-fi](https://ko-fi.com/H2H27VDKD).
 
 ## Specifications
 
@@ -50,9 +50,9 @@ pip install -U pyxel
 
 The web version of Pyxel can be used without installation on PCs, smartphones, tablets, and other devices with a compatible browser.
 
-The web-based development environment [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) is ready to use simply by opening it in your browser.
+The web-based development environment [Pyxel Code Maker](https://kitao.dev/pyxel/code-maker/) is ready to use simply by opening it in your browser.
 
-For other usage, such as embedding Pyxel apps on your own site, please refer to [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/).
+For other usage, such as embedding Pyxel apps on your own site, please refer to [How to Use Pyxel for Web](https://kitao.dev/pyxel/web-usage/).
 
 ### VS Code
 
@@ -102,7 +102,7 @@ cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-You can browse the example list and run examples in your browser at [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
+You can browse the example list and run examples in your browser at [Pyxel Showcase](https://kitao.dev/pyxel/showcase/).
 
 ## Creating Applications
 
@@ -212,7 +212,7 @@ The following special key actions are available while a Pyxel application is run
 Use Pyxel Editor to create images and sounds for your application.
 The created data is saved as a Pyxel resource file (.pyxres).
 
-For detailed usage instructions, see the [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/).
+For detailed usage instructions, see the [Pyxel Editor Manual](https://kitao.dev/pyxel/editor-manual/).
 
 ### Other Creation Methods
 
@@ -225,7 +225,7 @@ Pyxel sounds and music can also be created using the following method:
 
 - Create them with the `Sound.set` or `Music.set` functions
 
-Refer to the [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/) for details on these functions.
+Refer to the [Pyxel API Reference](https://kitao.dev/pyxel/api-reference/) for details on these functions.
 
 ## Distributing Applications
 
@@ -260,7 +260,7 @@ A Pyxel application file can be converted to an executable with the `pyxel app2e
 
 ## API Reference
 
-A complete list of Pyxel APIs is available at [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/).
+A complete list of Pyxel APIs is available at [Pyxel API Reference](https://kitao.dev/pyxel/api-reference/).
 
 Check "Advanced" on the reference page to show APIs for advanced features.
 
@@ -270,26 +270,26 @@ If you're confident in your skills, try using the Advanced API to create truly a
 
 ### Documentation
 
-- [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/)
-- [Pyxel MML Commands](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html)
-- [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/)
-- [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/)
+- [Pyxel API Reference](https://kitao.dev/pyxel/api-reference/)
+- [Pyxel MML Commands](https://kitao.dev/pyxel/mml-studio/mml-commands.html)
+- [Pyxel Editor Manual](https://kitao.dev/pyxel/editor-manual/)
+- [How to Use Pyxel for Web](https://kitao.dev/pyxel/web-usage/)
 - [Pyxel Resource File Format](https://github.com/kitao/pyxel/blob/main/docs/pyxres-format.md)
 - [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq.md)
 
 ### Examples & Tools
 
-- [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/)
-- [Pyxel Web Launcher](https://kitao.github.io/pyxel/web/launcher/)
-- [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/)
-- [Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/)
+- [Pyxel Showcase](https://kitao.dev/pyxel/showcase/)
+- [Pyxel Web Launcher](https://kitao.dev/pyxel/launcher/)
+- [Pyxel Code Maker](https://kitao.dev/pyxel/code-maker/)
+- [Pyxel MML Studio](https://kitao.dev/pyxel/mml-studio/)
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [MCP Server](https://github.com/kitao/pyxel-mcp)
 - [Claude Code Skill](https://github.com/kitao/pyxel-skill)
 
 ### Other Information
 
-- [User Examples](https://kitao.github.io/pyxel-user-examples/)
+- [User Examples](https://kitao.dev/pyxel/user-examples/)
 - [Developer's X Account](https://x.com/kitao)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese)](https://discord.gg/qHA5BCS)

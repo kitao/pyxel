@@ -9,8 +9,6 @@ define_wrapper!(Shading, pyxel::cube::Shading, module = "pyxel.cube");
 impl Shading {
     #[classattr]
     const LEVEL_COUNT: usize = pyxel::cube::shading::LEVEL_COUNT;
-    #[classattr]
-    const BASE_LEVEL: usize = pyxel::cube::shading::BASE_LEVEL;
 
     #[new]
     fn new(colors: Vec<pyxel::Rgb24>) -> Self {

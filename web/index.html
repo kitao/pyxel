@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Pyxel is a retro game engine for Python."
+    />
+    <title>Pyxel</title>
+    <link rel="icon" href="../wasm/images/pyxel_icon_64x64.ico" />
+    <style>
+      body {
+        margin: 0;
+        background: #0d1117;
+        color: #f0f6fc;
+        font:
+          16px/1.5 -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        overflow-wrap: break-word;
+      }
+
+      main {
+        box-sizing: border-box;
+        max-width: 848px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 0 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #3d444d;
+      }
+
+      h1 {
+        margin: 0;
+        line-height: 1.25;
+      }
+
+      .language-switch {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: -4px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .language-switch button {
+        padding: 4px 2px;
+        border: 0;
+        background: transparent;
+        color: #4493f8;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .language-switch button:hover {
+        text-decoration: underline;
+      }
+
+      .language-switch button[aria-pressed="true"] {
+        color: inherit;
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 20px;
+      }
+
+      .badges img {
+        display: block;
+        width: auto;
+        height: 20px;
+      }
+
+      .quick-links {
+        margin: 20px 0 24px;
+      }
+
+      .quick-links p {
+        margin-bottom: 8px;
+      }
+
+      .quick-links p:last-child {
+        margin-bottom: 0;
+      }
+
+      .quick-links a {
+        display: inline-block;
+        white-space: nowrap;
+      }
+
+      .quick-links .submission-link {
+        margin-left: 4px;
+        font-weight: 400;
+      }
+
+      .image-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 6px 4px;
+        margin-bottom: 12px;
+      }
+
+      p {
+        margin: 0 0 16px;
+      }
+
+      a {
+        color: #4493f8;
+        text-decoration: none;
+      }
+
+      a,
+      button {
+        border-radius: 0;
+        scroll-margin-block: 24px;
+      }
+
+      a:has(> img) {
+        display: inline-block;
+        max-width: 100%;
+        vertical-align: bottom;
+        line-height: 0;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 1px solid #8b949e;
+        outline-offset: 3px;
+      }
+
+      strong {
+        font-weight: 600;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        vertical-align: bottom;
+      }
+
+      html[lang="en"] main > [lang="ja"],
+      html[lang="ja"] main > [lang="en"] {
+        display: none;
+      }
+    </style>
+    <script>
+      const homeLanguages = ["en", "ja"];
+      let savedLanguage = null;
+      try {
+        savedLanguage = localStorage.getItem("pyxel-lang");
+      } catch {}
+      const preferredLanguages = [
+        new URLSearchParams(location.search).get("lang"),
+        savedLanguage,
+        ...(navigator.languages?.length
+          ? navigator.languages
+          : [navigator.language]),
+      ];
+      document.documentElement.lang =
+        preferredLanguages
+          .filter(Boolean)
+          .map((language) => language.toLowerCase().split("-")[0])
+          .find((language) => homeLanguages.includes(language)) || "en";
+    </script>
+  </head>
+
+  <body>
+    <main>
+      <header>
+        <h1>
+          <img
+            src="../docs/images/pyxel_logo_152x64.png"
+            alt="Pyxel"
+            width="152"
+            height="64"
+          />
+        </h1>
+        <nav class="language-switch" aria-label="Language / 言語">
+          <button
+            type="button"
+            lang="en"
+            data-language="en"
+            aria-pressed="false"
+          >
+            English
+          </button>
+          <span aria-hidden="true">/</span>
+          <button
+            type="button"
+            lang="ja"
+            data-language="ja"
+            aria-pressed="false"
+          >
+            日本語
+          </button>
+        </nav>
+      </header>
+      <p class="badges">
+        <a href="https://github.com/kitao/pyxel"
+          ><img
+            src="https://img.shields.io/github/stars/kitao/pyxel?style=social"
+            alt="GitHub Repo stars"
+        /></a>
+        <a href="https://github.com/kitao/pyxel"
+          ><img
+            src="https://img.shields.io/github/forks/kitao/pyxel?style=social"
+            alt="GitHub forks"
+        /></a>
+        <a href="https://github.com/sponsors/kitao"
+          ><img
+            src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&amp;logo=github%20sponsors&amp;style=social"
+            alt="GitHub Sponsors"
+        /></a>
+        <a href="https://ko-fi.com/H2H27VDKD"
+          ><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"
+        /></a>
+      </p>
+      <div lang="en">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) is a retro game engine for Python.
+        </p>
+        <p>
+          With simple specifications inspired by retro gaming consoles, such as
+          displaying only 16 colors and supporting 4 sound channels, you can
+          easily enjoy making pixel-art-style games.
+        </p>
+        <p>
+          Pyxel is open source under the
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          and free to use. Let's start making retro games with Pyxel!
+        </p>
+        <p>
+          This project is developed by one person. If you enjoy it, please
+          consider supporting it with
+          <a href="https://github.com/kitao/pyxel">a GitHub star</a> or a
+          donation through
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a> or
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Resources">
+          <p>
+            <strong>
+              <a href="https://kitao.dev/pyxel/user-guide/">▸ User Guide</a>
+            </strong>
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ Showcase</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong>
+              <a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ User Examples</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Share Your Work)</a
+              >
+            </strong>
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Source Code</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="ja">
+        <p>
+          <strong>Pyxel</strong>（ピクセル）は Python
+          向けのレトロゲームエンジンです。
+        </p>
+        <p>
+          使える色は 16 色のみ、同時に再生できる音は 4
+          音までなど、レトロゲーム機を意識したシンプルな仕様で、Python
+          を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。
+        </p>
+        <p>
+          Pyxel は
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          のオープンソースで、無料で自由に使えます。Pyxel
+          でレトロゲームづくりを始めましょう！
+        </p>
+        <p>
+          このプロジェクトは個人で開発を続けています。もし気に入ったら、<a
+            href="https://github.com/kitao/pyxel"
+            >GitHub でのスター登録</a
+          >や、<a href="https://github.com/sponsors/kitao">GitHub Sponsors</a
+          >・<a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>
+          を通じた寄付で応援していただけるとうれしいです。
+        </p>
+        <nav class="quick-links" aria-label="関連リンク">
+          <p>
+            <strong>
+              <a href="https://kitao.dev/pyxel/user-guide/">▸ ユーザーガイド</a>
+            </strong>
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ サンプル集</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong>
+              <a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ ユーザー作品集</a
+              ><a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >（作品を投稿する）</a
+              >
+            </strong>
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ ソースコード</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <p class="image-gallery">
+        <a href="https://kitao.dev/pyxel/user-examples/"
+          ><img
+            src="../docs/images/pyxel_thanks.png"
+            alt="Pyxel User Examples"
+            width="553"
+        /></a>
+        <a href="https://gihyo.jp/book/2025/978-4-297-14657-3"
+          ><img
+            src="../docs/images/pyxel_book.png"
+            alt="Pyxel book"
+            width="190"
+        /></a>
+      </p>
+      <p class="image-gallery">
+        <a href="https://kitao.dev/pyxel/showcase/examples/02-jump-game.html">
+          <img
+            src="../docs/images/02_jump_game.gif"
+            alt="Jump game"
+            width="253"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/examples/10-platformer.html">
+          <img
+            src="../docs/images/10_platformer.gif"
+            alt="Platformer"
+            width="222"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/apps/30sec-of-daylight.html">
+          <img
+            src="../docs/images/30sec_of_daylight.gif"
+            alt="30 Seconds of Daylight"
+            width="268"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/apps/megaball.html">
+          <img src="../docs/images/megaball.gif" alt="Megaball" width="231" />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/tools/image-editor.html">
+          <img
+            src="../docs/images/image_tilemap_editor.gif"
+            alt="Image and tilemap editor"
+            width="256"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/tools/sound-editor.html">
+          <img
+            src="../docs/images/sound_music_editor.gif"
+            alt="Sound and music editor"
+            width="256"
+          />
+        </a>
+        <a
+          href="https://kitao.dev/pyxel/showcase/examples/c04-mesh-and-motion.html"
+        >
+          <img
+            src="../docs/images/c04_mesh_and_motion.gif"
+            alt="Mesh and motion"
+            width="248"
+          />
+        </a>
+        <a
+          href="https://kitao.dev/pyxel/showcase/examples/c05-3d-collision.html"
+        >
+          <img
+            src="../docs/images/c05_3d_collision.gif"
+            alt="3D collision"
+            width="248"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/examples/c06-3d-physics.html">
+          <img
+            src="../docs/images/c06_3d_physics.gif"
+            alt="3D physics"
+            width="248"
+          />
+        </a>
+      </p>
+    </main>
+
+    <script>
+      const languageButtons = document.querySelectorAll(
+        ".language-switch button",
+      );
+      updateLanguageButtons();
+      for (const button of languageButtons) {
+        button.addEventListener("click", () => {
+          const language = button.dataset.language;
+          document.documentElement.lang = language;
+          updateLanguageButtons();
+          try {
+            localStorage.setItem("pyxel-lang", language);
+          } catch {}
+          const url = new URL(location.href);
+          url.searchParams.set("lang", language);
+          history.replaceState(null, "", url);
+        });
+      }
+
+      function updateLanguageButtons() {
+        for (const button of languageButtons) {
+          button.setAttribute(
+            "aria-pressed",
+            button.dataset.language === document.documentElement.lang,
+          );
+        }
+      }
+    </script>
+  </body>
+</html>

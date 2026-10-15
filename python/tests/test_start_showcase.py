@@ -65,7 +65,7 @@ def test_start_showcase_preserves_public_paths(showcase_url: str):
 
     status, body = _get(showcase_url + "/web/web-usage/index.html")
     assert status == 200
-    assert CDN_RUNTIME_URL.encode() in body
+    assert b"https://kitao.dev/pyxel/2.9.9/pyxel.js" in body
 
 
 def test_inject_html_uses_offsets_from_rewritten_document():

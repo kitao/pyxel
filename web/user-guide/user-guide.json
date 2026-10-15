@@ -106,19 +106,33 @@
       "tr": "{0}, {1} altında açık kaynaklıdır ve ücretsiz olarak kullanılabilir. Haydi, {0} ile retro oyun yapmaya başlayalım!",
       "uk": "{0} є відкритим програмним забезпеченням під {1} та безкоштовним для використання. Давайте почнемо створювати ретро-ігри з {0}!"
     },
-    "overview_star": {
-      "en": "Also, this project is developed by one person, kept going by your {0} stars. If you enjoy it, please give it a star!",
-      "cn": "另外，这个项目由一人开发，{0} 上的星标是持续开发的动力。如果您喜欢，请给它一个星标！",
-      "de": "Außerdem wird dieses Projekt von einer einzelnen Person entwickelt und durch Ihre Sterne auf {0} am Leben erhalten. Wenn es Ihnen gefällt, geben Sie ihm bitte einen Stern!",
-      "es": "Además, este proyecto es desarrollado por una sola persona, impulsado por sus estrellas en {0}. Si le gusta, ¡por favor dele una estrella!",
-      "fr": "De plus, ce projet est développé par une seule personne, soutenu par vos étoiles sur {0}. Si vous l'aimez, n'hésitez pas à lui donner une étoile !",
-      "it": "Inoltre, questo progetto è sviluppato da una sola persona, sostenuto dalle stelle su {0}. Se piace, lasciare una stella!",
-      "ja": "また、このプロジェクトは {0} のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！",
-      "ko": "또한, 이 프로젝트는 한 사람이 개발하고 있으며, {0}의 별이 큰 응원이 됩니다. 마음에 드셨다면 별을 주세요!",
-      "pt": "Além disso, este projeto é desenvolvido por uma única pessoa, mantido pelas suas estrelas no {0}. Se você gostou, por favor dê uma estrela!",
-      "ru": "Также, этот проект разрабатывается одним человеком, и звёзды на {0} — большая поддержка. Если вам нравится, пожалуйста, поставьте звезду!",
-      "tr": "Ayrıca, bu proje tek bir kişi tarafından geliştirilmektedir ve {0} üzerindeki yıldızlarınız büyük bir teşviktir. Beğendiyseniz, lütfen bir yıldız verin!",
-      "uk": "Також, цей проєкт розробляється однією людиною, і ваші зірки на {0} — велика підтримка. Якщо вам подобається, будь ласка, поставте зірку!"
+    "overview_support": {
+      "en": "This project is developed by one person. If you enjoy it, please consider supporting it with {0} or a donation through {1} or {2}.",
+      "cn": "这个项目由一人开发。如果您喜欢，请考虑 {0}，或通过 {1}、{2} 捐款来支持开发。",
+      "de": "Dieses Projekt wird von einer einzelnen Person entwickelt. Wenn es Ihnen gefällt, würde ich mich über Ihre Unterstützung freuen: mit {0} oder einer Spende über {1} oder {2}.",
+      "es": "Este proyecto lo desarrolla una sola persona. Si le gusta, considere apoyarlo {0} o con una donación a través de {1} o {2}.",
+      "fr": "Ce projet est développé par une seule personne. Si vous l'appréciez, pensez à le soutenir {0} ou en faisant un don via {1} ou {2}.",
+      "it": "Questo progetto è sviluppato da una sola persona. Se piace, è possibile sostenerlo {0} oppure con una donazione tramite {1} o {2}.",
+      "ja": "このプロジェクトは個人で開発を続けています。もし気に入ったら、{0} や、{1}・{2} を通じた寄付で応援していただけるとうれしいです。",
+      "ko": "이 프로젝트는 개인이 개발하고 있습니다. 마음에 드셨다면 {0} 또는 {1}나 {2}를 통한 기부로 개발을 응원해 주시면 감사하겠습니다.",
+      "pt": "Este projeto é desenvolvido por uma única pessoa. Se você gostou, considere apoiá-lo {0} ou com uma doação via {1} ou {2}.",
+      "ru": "Этот проект разрабатывает один человек. Если он вам нравится, вы можете поддержать его {0} или пожертвованием через {1} или {2}.",
+      "tr": "Bu proje tek bir kişi tarafından geliştirilmektedir. Beğendiyseniz {0} veya {1} ya da {2} üzerinden bağış yaparak destek olabilirsiniz.",
+      "uk": "Цей проєкт розробляє одна людина. Якщо він вам подобається, можете підтримати його {0} або пожертвою через {1} чи {2}."
+    },
+    "overview_star_link": {
+      "en": "a GitHub star",
+      "cn": "在 GitHub 上加星标",
+      "de": "einem Stern auf GitHub",
+      "es": "dándole una estrella en GitHub",
+      "fr": "en lui donnant une étoile sur GitHub",
+      "it": "con una stella su GitHub",
+      "ja": "GitHub でのスター登録",
+      "ko": "GitHub에 별표 추가",
+      "pt": "com uma estrela no GitHub",
+      "ru": "звездой на GitHub",
+      "tr": "GitHub'da yıldız vererek",
+      "uk": "зіркою на GitHub"
     },
     "specs_title": {
       "en": "Specifications",

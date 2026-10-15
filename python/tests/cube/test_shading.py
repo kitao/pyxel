@@ -13,7 +13,7 @@ class TestDefault:
 
     def test_level_constants_and_last_cell(self):
         assert Shading.LEVEL_COUNT == 8
-        assert Shading.BASE_LEVEL == 5
+        assert not hasattr(Shading, "BASE_LEVEL")
         s = Shading(palette())
         s[15, Shading.LEVEL_COUNT - 1] = (6, 7)
         assert s[15, Shading.LEVEL_COUNT - 1] == (6, 7)
@@ -260,7 +260,7 @@ class TestRampInvariants:
         s = Shading(pal)
         for col in range(len(pal)):
             base = _linear_luma(pal[col])
-            for lv in range(Shading.BASE_LEVEL):
+            for lv in range(5):
                 p, q = s[col, lv]
                 assert _entry_luma(pal, p, q) < base + 1e-6, (
                     f"{pal_name} col {col} lv{lv} brighter than base"
@@ -271,7 +271,7 @@ class TestRampInvariants:
         s = Shading(pal)
         for col in range(len(pal)):
             base = _linear_luma(pal[col])
-            for lv in range(Shading.BASE_LEVEL + 1, Shading.LEVEL_COUNT):
+            for lv in range(6, Shading.LEVEL_COUNT):
                 p, q = s[col, lv]
                 assert _entry_luma(pal, p, q) >= base - 1e-6, (
                     f"{pal_name} col {col} lv{lv} darker than base"

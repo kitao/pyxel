@@ -54,8 +54,8 @@ def test_link_lists_preserve_pairs_and_separator(padding, separator):
 
     assert evaluator.eval(expression) == separator.join(
         [
-            "[API](https://kitao.github.io/pyxel/web/api-reference/)",
-            "[Editor](https://kitao.github.io/pyxel/web/editor-manual/)",
+            "[API](https://kitao.dev/pyxel/api-reference/)",
+            "[Editor](https://kitao.dev/pyxel/editor-manual/)",
         ]
     )
 
@@ -93,29 +93,29 @@ def test_string_concatenation_preserves_literal_contents(expression, expected):
         (
             "user-guide/cube",
             "../#s-dist",
-            "https://kitao.github.io/pyxel/web/user-guide/#s-dist",
+            "https://kitao.dev/pyxel/user-guide/#s-dist",
         ),
         (
             "user-guide/cube",
             "../../showcase/",
-            "https://kitao.github.io/pyxel/web/showcase/",
+            "https://kitao.dev/pyxel/showcase/",
         ),
         (
             "user-guide/cube",
             "images/coordinates-en.svg",
-            "https://kitao.github.io/pyxel/web/user-guide/cube/images/coordinates-en.svg",
+            "https://kitao.dev/pyxel/user-guide/cube/images/coordinates-en.svg",
         ),
         (
             "user-guide/cube",
             "#s-models",
-            "https://kitao.github.io/pyxel/web/user-guide/cube/#s-models",
+            "https://kitao.dev/pyxel/user-guide/cube/#s-models",
         ),
         ("user-guide/cube", "../../../docs/pyxel.gpl", "pyxel.gpl"),
         ("user-guide", "../../docs/images/palette.png", "images/palette.png"),
         (
             "editor-manual",
             "../api-reference/",
-            "https://kitao.github.io/pyxel/web/api-reference/",
+            "https://kitao.dev/pyxel/api-reference/",
         ),
         (
             "user-guide/cube",
@@ -181,7 +181,7 @@ def test_detailed_guide_selection_preserves_content(tmp_path):
     assert "### Subtopic\n" in result
     assert "#### Detail\n" in result
     assert (
-        "- [Package](https://kitao.github.io/pyxel/web/user-guide/#s-dist) `pyxel package`"
+        "- [Package](https://kitao.dev/pyxel/user-guide/#s-dist) `pyxel package`"
         in result
     )
     assert (
@@ -189,7 +189,7 @@ def test_detailed_guide_selection_preserves_content(tmp_path):
         in result
     )
     assert (
-        "![Mesh hierarchy](https://kitao.github.io/pyxel/web/user-guide/cube/images/mesh.svg)"
+        "![Mesh hierarchy](https://kitao.dev/pyxel/user-guide/cube/images/mesh.svg)"
         in result
     )
     assert f"```python\n{program}\n```" in result
@@ -206,10 +206,10 @@ def test_linked_images_follow_the_existing_illustration_selection():
     assert "example.com/book" not in result
     assert "Book" not in result
     assert (
-        "[![Palette](images/palette.png)](https://kitao.github.io/pyxel/web/api-reference/)"
+        "[![Palette](images/palette.png)](https://kitao.dev/pyxel/api-reference/)"
         in result
     )
-    assert "[Editor](https://kitao.github.io/pyxel/web/editor-manual/)" in result
+    assert "[Editor](https://kitao.dev/pyxel/editor-manual/)" in result
 
 
 def test_ordered_instructions_preserve_steps_and_inline_code():

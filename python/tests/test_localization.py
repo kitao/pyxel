@@ -1,3 +1,4 @@
+import ast
 import json
 import re
 from html.parser import HTMLParser
@@ -41,14 +42,15 @@ def test_localized_text_entries_are_complete_and_keep_placeholders():
             assert len(placeholder_sets) == 1, (path, value)
 
 
-def test_cube_guides_keep_sections_examples_and_navigation_in_sync():
+def test_cube_guides_keep_structure_and_translated_content_in_sync():
     path = ROOT_DIR / "web/user-guide/cube/user-guide.json"
     document = json.loads(path.read_text(encoding="utf-8"))
     guides = document["guides"]
     assert [guide["language"] for guide in guides] == [
         language["code"] for language in document["languages"]
     ]
-    source = next(guide for guide in guides if guide["language"] == "ja")
+    # Japanese is revised first; translations share English code and navigation.
+    source = next(guide for guide in guides if guide["language"] == "en")
     section_ids = [section["id"] for section in source["sections"]]
 
     for guide in guides:
@@ -60,6 +62,10 @@ def test_cube_guides_keep_sections_examples_and_navigation_in_sync():
                 for block in section["blocks"]
                 if block.get("syntax") == "python"
             ]
+            for example in examples:
+                ast.parse(example, filename="/".join(context))
+            if guide["language"] == "ja":
+                continue
             source_examples = [
                 block["code"]
                 for block in source_section["blocks"]
