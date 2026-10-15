@@ -2,13 +2,13 @@
 
 # Pyxel Cube User Guide
 
-*[Read online in other languages](https://kitao.github.io/pyxel/web/user-guide/cube/).*
+*[Read online in other languages](https://kitao.dev/pyxel/user-guide/cube/).*
 
 ## Overview
 
 **Pyxel Cube** is a submodule included in Pyxel 3.0 and later. Import `pyxel.cube` to use 3D features alongside the existing 2D features and easily create retro 3D games.
 
-If you are new to Pyxel, first read the [Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/) to set up your environment and learn the basics.
+If you are new to Pyxel, first read the [Pyxel User Guide](https://kitao.dev/pyxel/user-guide/) to set up your environment and learn the basics.
 
 ## Run the examples
 
@@ -21,7 +21,7 @@ cd pyxel_examples/cube
 pyxel run c01_hello_cube.py
 ```
 
-See “Cube Examples” in [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) for the example list. You can also run the examples in your browser.
+See “Cube Examples” in [Pyxel Showcase](https://kitao.dev/pyxel/showcase/) for the example list. You can also run the examples in your browser.
 
 ## Basic usage
 
@@ -48,7 +48,7 @@ Update and draw the node tree from your application's `update()` and `draw()`. E
 
 ## Coordinates and transforms
 
-### Vectors ([Vec3](https://kitao.github.io/pyxel/web/api-reference/cube/#vec3) class)
+### Vectors ([Vec3](https://kitao.dev/pyxel/api-reference/cube/#vec3) class)
 
 ```python
 from pyxel.cube import Mat4, Quat, Vec3
@@ -56,7 +56,7 @@ from pyxel.cube import Mat4, Quat, Vec3
 
 A **vector** represents a position or displacement with three values: X, Y, and Z. Pyxel Cube uses `Vec3`. The standard directions are **+X right, +Y up, −Z forward, and +Z backward**; ground movement uses X and Z. `Vec3.UP` is (0, 1, 0), and `Vec3.FORWARD` is (0, 0, −1). You can choose another up axis to suit your camera and game.
 
-![Oblique view of the X, Y, Z axes and origin O. The point (30, 20, 5) is 30 along X and 5 along Z on the ground, then 20 upward along Y.](https://kitao.github.io/pyxel/web/user-guide/cube/images/coordinates.svg)
+![Oblique view of the X, Y, Z axes and origin O. The point (30, 20, 5) is 30 along X and 5 along Z on the ground, then 20 upward along Y.](https://kitao.dev/pyxel/user-guide/cube/images/coordinates.svg)
 
 The examples use 100 world units per meter, so 1 unit is 1 centimeter and `Vec3(100, 0, 0)` is 1 meter along X. You can choose your own scale. A world length of 100 does not necessarily occupy 100 pixels: its screen size depends on the camera.
 
@@ -74,7 +74,7 @@ Subtract the current position from the target to find the direction, then use `n
 - `pos.x`, `pos.y`, `pos.z`: the coordinates. To change them, assign a new `Vec3`.
 - `Vec3.ZERO`: `Vec3(0, 0, 0)`.
 
-### Transform matrices ([Mat4](https://kitao.github.io/pyxel/web/api-reference/cube/#mat4) class)
+### Transform matrices ([Mat4](https://kitao.dev/pyxel/api-reference/cube/#mat4) class)
 
 Changing position, orientation, or size by translation, rotation, or scaling is called a **transform**. A `Mat4` matrix combines these operations. This example rotates 45 degrees around Y, then moves 30 along X from the origin. You can pass this matrix to nodes and drawing methods later.
 
@@ -93,7 +93,7 @@ Mat4.IDENTITY  # No translation, rotation, or scaling
 
 The components of `Vec3` and `Mat4` cannot be modified. Their methods return new values; assign the result to a variable or property.
 
-### Rotations ([Quat](https://kitao.github.io/pyxel/web/api-reference/cube/#quat) class)
+### Rotations ([Quat](https://kitao.dev/pyxel/api-reference/cube/#quat) class)
 
 `Quat` represents only rotation, using a **quaternion**. For simple angles, use `Mat4.from_euler()`. To rotate smoothly from the current orientation toward a target, interpolate with `Quat`, then convert the result to a matrix.
 
@@ -110,7 +110,7 @@ The second argument of `slerp()` controls progress: 0 is the start, 1 is the tar
 
 In Pyxel Cube, an object placed in 3D space is a **node**. Nodes can also group several objects.
 
-### Define a node ([Node](https://kitao.github.io/pyxel/web/api-reference/cube/#node) class)
+### Define a node ([Node](https://kitao.dev/pyxel/api-reference/cube/#node) class)
 
 Subclass `Node`, put movement and other update processing in `on_update()`, and put drawing processing in `on_draw()`. Setting a matrix on the node's `transform` affects its drawn position, orientation, and size.
 
@@ -194,11 +194,11 @@ Coordinates relative to the parent node are **local coordinates**; coordinates r
 
 Visibility and update settings, as well as deletion, also affect descendants. To detach a node from the tree for reuse, call its parent's `remove_child(node)`.
 
-The `on_update()` in the [Pyxel Cube introduction](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c01_hello_cube.py) example shows how to move nodes ([run](https://kitao.github.io/pyxel/web/showcase/examples/c01-hello-cube.html)).
+The `on_update()` in the [Pyxel Cube introduction](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c01_hello_cube.py) example shows how to move nodes ([run](https://kitao.dev/pyxel/showcase/examples/c01-hello-cube.html)).
 
 ## Camera and shading
 
-### Camera ([Camera](https://kitao.github.io/pyxel/web/api-reference/cube/#camera) class)
+### Camera ([Camera](https://kitao.dev/pyxel/api-reference/cube/#camera) class)
 
 A **camera** chooses a viewpoint and direction and converts 3D positions to a 2D view. Assign a `Camera` to `root.camera`. `Mat4.look_at(camera_position, target_position)` creates its world transform.
 
@@ -221,7 +221,7 @@ self.root.camera.ortho_size = 100
 
 To follow a player, update the camera position and target each frame. `near` and `far` hide objects that are too close or too distant; adjust them to your scene.
 
-### Shading ([Shading](https://kitao.github.io/pyxel/web/api-reference/cube/#shading) class)
+### Shading ([Shading](https://kitao.dev/pyxel/api-reference/cube/#shading) class)
 
 **Shading** changes brightness according to face orientation and light direction. Assign a `Shading` to `root.shading`; child nodes inherit it.
 
@@ -238,7 +238,7 @@ self.root.shading.direction = Vec3(0.4, -1, -0.5)
 
 The display palette maps color numbers to RGB values. The **shading palette** maps a color number and brightness to drawing color numbers; it does not add display colors. `Shading(pyxel.colors)` builds it automatically from the display palette.
 
-Brightness has eight levels, from 0 (dark) to 7 (bright), selected by face orientation. Each entry holds two color numbers. Equal numbers give a solid color; different numbers form a checkerboard dither. `Shading.BASE_LEVEL` (5) retains the original color.
+Brightness has eight levels, from 0 (dark) to 7 (bright), selected by face orientation. Each entry holds two color numbers. Equal numbers give a solid color; different numbers form a checkerboard dither.
 
 For example, change how dark faces of color number 8 are drawn:
 
@@ -285,7 +285,7 @@ Triangles, rectangles, circles, ellipses, boxes, and spheres also have outline m
 
 ### Draw with images
 
-A **texture** is an image applied to a surface. Use Pyxel's [Image](https://kitao.github.io/pyxel/web/api-reference/#image). For example, passing an image to `box()` instead of a color number applies the whole image to each face.
+A **texture** is an image applied to a surface. Use Pyxel's [Image](https://kitao.dev/pyxel/api-reference/#image). For example, passing an image to `box()` instead of a color number applies the whole image to each face.
 
 This example uses a prepared image file, `assets/texture.png`. Load it when initializing the node after `pyxel.init()`, then draw in `on_draw()`.
 
@@ -309,9 +309,9 @@ self.plane(Mat4.IDENTITY, self.texture, uvs, 30, 30)
 
 Change the `uvs` range to use part of an image. Set `colkey` to a color number to make that color transparent.
 
-See `PlaneShape` and `SpriteShape` in the [basic 3D shapes](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py) example ([run](https://kitao.github.io/pyxel/web/showcase/examples/c02-basic-shapes.html)).
+See `PlaneShape` and `SpriteShape` in the [basic 3D shapes](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py) example ([run](https://kitao.dev/pyxel/showcase/examples/c02-basic-shapes.html)).
 
-### Create shape data ([Primitive](https://kitao.github.io/pyxel/web/api-reference/cube/#primitive) class)
+### Create shape data ([Primitive](https://kitao.dev/pyxel/api-reference/cube/#primitive) class)
 
 Methods such as `box()` draw basic shapes immediately. To create or deform a shape, or reuse it, **define its vertices and faces as data and pass them when drawing**. This shape data is a `Primitive`.
 
@@ -333,7 +333,7 @@ self.shape.compute_normals()
 
 This code changes the plane as follows.
 
-![Move the plane's top-left vertex from (-10, 10, 0) to (-10, 20, 0), a displacement of (0, 10, 0). The other vertices stay in place.](https://kitao.github.io/pyxel/web/user-guide/cube/images/primitive.svg)
+![Move the plane's top-left vertex from (-10, 10, 0) to (-10, 20, 0), a displacement of (0, 10, 0). The other vertices stay in place.](https://kitao.dev/pyxel/user-guide/cube/images/primitive.svg)
 
 Pass the shape to `prim()` inside `on_draw()` to draw it. `8` is the standard palette's red color number.
 
@@ -343,7 +343,7 @@ self.prim(Mat4.IDENTITY, self.shape, 8)
 
 Changing `positions` every frame can produce a rippling body. `indices` stores the vertex numbers forming each face; `uvs` maps vertices to image positions. Use a `Primitive` with drawing methods and textures.
 
-See `on_draw()` in the [custom 3D shapes](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c03_custom_shapes.py) example for vertex deformation ([run](https://kitao.github.io/pyxel/web/showcase/examples/c03-custom-shapes.html)).
+See `on_draw()` in the [custom 3D shapes](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c03_custom_shapes.py) example for vertex deformation ([run](https://kitao.dev/pyxel/showcase/examples/c03-custom-shapes.html)).
 
 ### Combine 3D and 2D
 
@@ -369,11 +369,11 @@ self.text(Vec3(0, 20, 0), "ENEMY", 7)
 
 ## Meshes and motions
 
-[`Mesh`](https://kitao.github.io/pyxel/web/api-reference/cube/#mesh) handles three-dimensional data (**3D models**) for characters and terrain placed in a game. It brings together shapes such as heads, bodies and legs, relationships between parts, and surface images and colors.
+[`Mesh`](https://kitao.dev/pyxel/api-reference/cube/#mesh) handles three-dimensional data (**3D models**) for characters and terrain placed in a game. It brings together shapes such as heads, bodies and legs, relationships between parts, and surface images and colors.
 
 `Mesh.from_glb()` reads **GLB (binary glTF 2.0)** files. They package shape, hierarchy and textures in one file and can also contain animation.
 
-The supported GLB features and production steps are explained later in [Create resources](https://kitao.github.io/pyxel/web/user-guide/cube/#s-resources).
+The supported GLB features and production steps are explained later in [Create resources](https://kitao.dev/pyxel/user-guide/cube/#s-resources).
 
 ### Loading a Mesh from GLB
 
@@ -391,7 +391,7 @@ self.root.add_child(actor)
 
 The example above belongs in app initialization after `pyxel.init()`. After initialization, relative paths are based on the directory of the Python file that called `pyxel.init()`. Use the placement node's `actor.transform` to adjust position, orientation and size.
 
-### Playing animation (class [`Motion`](https://kitao.github.io/pyxel/web/api-reference/cube/#motion))
+### Playing animation (class [`Motion`](https://kitao.dev/pyxel/api-reference/cube/#motion))
 
 `Motion` handles animation such as walking or running. Animations in the GLB are loaded with the `Mesh` and put in the `mesh.motions` list. Play them with `play_motion()` on the display node.
 
@@ -408,13 +408,13 @@ To play at the original animation speed, match the `fps` in `Mesh.from_glb(..., 
 
 `Motion` updates the transforms of the imported parts. Use the placement root returned by `Node.from_mesh()` for overall placement and a further parent node for character movement and collision handling; this division makes them easier to combine.
 
-For an example of switching Motion clips, see `play()` in the [GLB model animation](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py) sample ([run](https://kitao.github.io/pyxel/web/showcase/examples/c04-mesh-and-motion.html)).
+For an example of switching Motion clips, see `play()` in the [GLB model animation](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py) sample ([run](https://kitao.dev/pyxel/showcase/examples/c04-mesh-and-motion.html)).
 
 ## Physics engine
 
 Cube's physics engine calculates motion from velocity and gravity, and detects collisions. Implement `on_collide()` to receive collision information and handle position and velocity corrections, landing, or collecting items as your game needs.
 
-### Colliders ([Collider](https://kitao.github.io/pyxel/web/api-reference/cube/#collider) class)
+### Colliders ([Collider](https://kitao.dev/pyxel/api-reference/cube/#collider) class)
 
 A **collider** defines a collision shape and physical properties. Create a `Collider` and assign it to a node's `collider`. Use a sphere, capsule, box, or other shape separately from the visible `Mesh`. For complex terrain, assign its `Mesh` to the collider's `mesh`.
 
@@ -443,11 +443,11 @@ self.collider.velocity = Vec3(vx, self.collider.velocity.y, 0)
 
 Set velocity to 2 in the held direction; releasing the keys sets X velocity to 0. Handle landing and walls in `on_collide()`, described next.
 
-See `Player` in the [3D collision action game](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py) example for movement, jumping, and coin collection ([run](https://kitao.github.io/pyxel/web/showcase/examples/c05-3d-collision.html)).
+See `Player` in the [3D collision action game](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py) example for movement, jumping, and coin collection ([run](https://kitao.dev/pyxel/showcase/examples/c05-3d-collision.html)).
 
 ### Respond to collisions
 
-Cube calculates motion and collisions, then passes the other node and contact information ([Contact](https://kitao.github.io/pyxel/web/api-reference/cube/#contact)) to `on_collide(other, contact)`. `normal` is the world-space push-out direction; `depth` is the penetration correction distance.
+Cube calculates motion and collisions, then passes the other node and contact information ([Contact](https://kitao.dev/pyxel/api-reference/cube/#contact)) to `on_collide(other, contact)`. `normal` is the world-space push-out direction; `depth` is the penetration correction distance.
 
 This example applies the reported position, velocity, and angular-velocity corrections when the parent node's transform is `Mat4.IDENTITY`. Without an `on_collide()` implementation, push-out and bounce corrections are not applied.
 
@@ -462,7 +462,7 @@ def on_collide(self, other, contact):
 
 Change bounce strength with `restitution` and resistance to sliding with `friction`. Set `rolls=True` to calculate rotation caused by collisions too.
 
-See `on_collide()` in the [3D physics simulation](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py) example for bouncing and rolling ([run](https://kitao.github.io/pyxel/web/showcase/examples/c06-3d-physics.html)).
+See `on_collide()` in the [3D physics simulation](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py) example for bouncing and rolling ([run](https://kitao.dev/pyxel/showcase/examples/c06-3d-physics.html)).
 
 ### Raycasting
 
@@ -474,7 +474,7 @@ hit = self.parent.raycast(self.world_transform.pos, Vec3.DOWN, tags={"ground"})
 
 The origin uses world coordinates, so get the node's world position with `world_transform.pos`. This example searches colliders with the `ground` tag below the parent node. Tag ground nodes beforehand, for example with `ground.tags.add("ground")`.
 
-A hit returns [RaycastHit](https://kitao.github.io/pyxel/web/api-reference/cube/#raycasthit), with the contact position in `hit.point`; a miss returns `None`. `raycast_all()` returns multiple contacts sorted by distance. Use `overlap_sphere()` or `overlap_box()` to find enemies or other objects within a region rather than along a line.
+A hit returns [RaycastHit](https://kitao.dev/pyxel/api-reference/cube/#raycasthit), with the contact position in `hit.point`; a miss returns `None`. `raycast_all()` returns multiple contacts sorted by distance. Use `overlap_sphere()` or `overlap_box()` to find enemies or other objects within a region rather than along a line.
 
 ## Create resources
 
@@ -510,7 +510,7 @@ Blockbench (.bbmodel) → Export (.glb) → Mesh.from_glb()
 
 To paint textures with Pyxel's standard colors, set up the palette as follows.
 
-1. Save the [Pyxel palette (pyxel.gpl)](https://kitao.github.io/pyxel/docs/pyxel.gpl).
+1. Save the [Pyxel palette (pyxel.gpl)](https://kitao.dev/pyxel/assets/pyxel.gpl).
 2. In **Paint** mode's **Palette** panel, choose **Import Palette** and load the saved file. Enable **Replace old palette** to replace the existing palette.
 3. Right-click empty space in the palette and enable **Lock Palette** to prevent adding, deleting, or dragging colors to reorder them.
 4. Choose colors from the palette; paint with 100% opacity and 0 blur.
@@ -539,19 +539,19 @@ For complex-looking terrain, create a collision `Mesh` with simplified walkable 
 
 ### Images, sound, and music
 
-Image, sound, and music resources are shared with Pyxel. See [Create resources in the Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/#s-resources) for creation and loading steps.
+Image, sound, and music resources are shared with Pyxel. See [Create resources in the Pyxel User Guide](https://kitao.dev/pyxel/user-guide/#s-resources) for creation and loading steps.
 
 ## Distribute applications
 
-Pyxel Cube applications use the same distribution process as Pyxel. See [Distribute applications in the Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/#s-dist) for the steps, and [Using Pyxel on the web](https://kitao.github.io/pyxel/web/web-usage/) for embedding in web pages.
+Pyxel Cube applications use the same distribution process as Pyxel. See [Distribute applications in the Pyxel User Guide](https://kitao.dev/pyxel/user-guide/#s-dist) for the steps, and [Using Pyxel on the web](https://kitao.dev/pyxel/web-usage/) for embedding in web pages.
 
 Include the GLBs, images, sounds, and other resources used by the game, preserving the file layout referenced by the code.
 
 ## API reference
 
-See the [API Reference](https://kitao.github.io/pyxel/web/api-reference/) for class and argument details. Select **Cube** at the top to view Pyxel Cube APIs. Select **Base** for shared APIs such as input, sound, and 2D drawing.
+See the [API Reference](https://kitao.dev/pyxel/api-reference/) for class and argument details. Select **Cube** at the top to view Pyxel Cube APIs. Select **Base** for shared APIs such as input, sound, and 2D drawing.
 
 ## Links
 
-- [Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/#s-links): related manuals, tools, and community links, plus license and contribution information.
+- [Pyxel User Guide](https://kitao.dev/pyxel/user-guide/#s-links): related manuals, tools, and community links, plus license and contribution information.
 - [Frequently asked questions](https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md): questions about operation and the environment.

@@ -20,7 +20,7 @@
             Launch tool for the web version of
             <a
               class="link"
-              href="https://github.com/kitao/pyxel"
+              href="https://kitao.dev/pyxel/"
               target="_blank"
               rel="noopener noreferrer"
               >Pyxel</a
@@ -152,7 +152,7 @@
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
-        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+        ).replace("{0}", link("https://kitao.dev/pyxel/", "Pyxel"));
 
         document.querySelectorAll("[data-i18n]").forEach((el) => {
           el.textContent = t(el.dataset.i18n);

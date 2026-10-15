@@ -21,7 +21,7 @@ WEB_USAGE_JSON = WEB_DIR / "web-usage" / "web-usage.json"
 EDITOR_MANUAL_HTML = WEB_DIR / "editor-manual" / "index.html"
 EDITOR_MANUAL_JSON = WEB_DIR / "editor-manual" / "editor-manual.json"
 DOCS_DIR = ROOT_DIR / "docs"
-PYXEL_WEB = "https://kitao.github.io/pyxel/web"
+PYXEL_WEB = "https://kitao.dev/pyxel"
 BLOCK_MARKER = "\x00BLK{idx}\x00"
 # Page illustrations left out of the generated Markdown, which is read as plain
 # text; the logo and palette images stay.
@@ -943,11 +943,11 @@ def _transform_url(url, web_path=None):
     if url.startswith(("http://", "https://")):
         return url
     if web_path:
-        resolved = urljoin(f"{PYXEL_WEB}/{web_path}/", url)
-        docs_url = f"{PYXEL_WEB.removesuffix('/web')}/docs/"
-        if resolved.startswith(docs_url):
-            return resolved.removeprefix(docs_url)
-        return resolved
+        # Repository-relative assets remain relative to the generated Markdown.
+        source_url = urljoin(f"/web/{web_path}/", url)
+        if source_url.startswith("/docs/"):
+            return source_url.removeprefix("/docs/")
+        return urljoin(f"{PYXEL_WEB}/{web_path}/", url)
     if url.startswith("../../docs/images/"):
         return url.replace("../../docs/images/", "images/")
     if url.startswith("../../docs/"):

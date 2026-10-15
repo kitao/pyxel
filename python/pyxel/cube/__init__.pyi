@@ -186,7 +186,6 @@ class Camera:
 
 class Shading:
     LEVEL_COUNT: int
-    BASE_LEVEL: int
 
     direction: Vec3
 

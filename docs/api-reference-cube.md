@@ -2,7 +2,7 @@
 
 # Pyxel API Reference
 
-*[Read online in other languages](https://kitao.github.io/pyxel/web/api-reference/cube/).*
+*[Read online in other languages](https://kitao.dev/pyxel/api-reference/cube/).*
 
 ## Vec3
 
@@ -1357,12 +1357,6 @@ Number of brightness-table columns: 8. Iterate over range(Shading.LEVEL_COUNT) t
 
 - **Type:** `int`
 
-### `Shading.BASE_LEVEL` — constant
-
-The level that keeps the original palette color in an automatically generated table: 5.
-
-- **Type:** `int`
-
 ### `direction` — variable
 
 The direction the light travels, in world space. Face brightness follows the angle between this and the face normal. The default is Vec3(0.5, -1, -0.8).
@@ -1381,7 +1375,6 @@ Rebuild the lookup table from a palette. Manual edits through shading[(col, leve
 
 ```python
 shading.build(pyxel.colors)
-shading[8, Shading.BASE_LEVEL] = (8, 8)
 ```
 
 **Note:** Call build() after changing the display palette; changing pyxel.colors alone does not regenerate the table. Generation chooses flat colors, 50% checker pairs, and repeated cells for the supplied colors; dithering is optional.

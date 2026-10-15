@@ -13,7 +13,7 @@ We recommend trying Pyxel's example code in the following order.
 4. 04_sound_api — Sound API
 5. 02_jump_game — Game implementation
 
-You can copy the examples by following the [User Guide](https://kitao.github.io/pyxel/web/user-guide/#s-usage), or run them in your browser on [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
+You can copy the examples by following the [User Guide](https://kitao.dev/pyxel/user-guide/#s-usage), or run them in your browser on [Pyxel Showcase](https://kitao.dev/pyxel/showcase/).
 
 </details>
 
@@ -50,9 +50,9 @@ You can also play an MML string directly by passing it to the `play` function in
 pyxel.play(0, "CDEFG")
 ```
 
-For available MML commands, see [Pyxel MML Commands](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html). For usage examples, see the [demo](https://kitao.github.io/pyxel/web/showcase/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
+For available MML commands, see [Pyxel MML Commands](https://kitao.dev/pyxel/mml-studio/mml-commands.html). For usage examples, see the [demo](https://kitao.dev/pyxel/showcase/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
 
-You can also create and share MML in your browser using [Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/).
+You can also create and share MML in your browser using [Pyxel MML Studio](https://kitao.dev/pyxel/mml-studio/).
 
 </details>
 
@@ -77,16 +77,16 @@ Pass the developer and app names to `pyxel.user_data_dir(vendor_name, app_name)`
 <details>
 <summary>Can I try Pyxel without installing it?</summary>
 
-With [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/), you can create and run Pyxel apps in your browser. However, the code editor only edits `main.py`, so a local environment is recommended when editing projects with multiple Python files.
+With [Pyxel Code Maker](https://kitao.dev/pyxel/code-maker/), you can create and run Pyxel apps in your browser. However, the code editor only edits `main.py`, so a local environment is recommended when editing projects with multiple Python files.
 
-[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) lets you browse and run sample code and apps in your browser.
+[Pyxel Showcase](https://kitao.dev/pyxel/showcase/) lets you browse and run sample code and apps in your browser.
 
 </details>
 
 <details>
 <summary>How do I publish my Pyxel app on the web?</summary>
 
-There are four methods: Pyxel Code Maker, Pyxel Web Launcher, app2html, and HTML Custom Elements. For details, see [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/).
+There are four methods: Pyxel Code Maker, Pyxel Web Launcher, app2html, and HTML Custom Elements. For details, see [How to Use Pyxel for Web](https://kitao.dev/pyxel/web-usage/).
 
 </details>
 

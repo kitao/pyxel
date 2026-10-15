@@ -241,7 +241,7 @@ function updateTexts() {
   document.getElementById("page-title").textContent = t("title");
   document.getElementById("page-subtitle").innerHTML = t("subtitle").replace(
     "{0}",
-    link("https://github.com/kitao/pyxel", "Pyxel"),
+    link("https://kitao.dev/pyxel/", "Pyxel"),
   );
 
   const searchInput = document.getElementById("search-input");

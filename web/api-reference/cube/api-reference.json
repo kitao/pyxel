@@ -7183,27 +7183,6 @@
           "advanced": false
         },
         {
-          "name": "BASE_LEVEL",
-          "type": "constant",
-          "signature": "Shading.BASE_LEVEL",
-          "description": {
-            "en": "The level that keeps the original palette color in an automatically generated table: 5.",
-            "cn": "自动生成的表中保留调色板原色的级别：5。",
-            "de": "Die Stufe, die in automatisch erzeugten Tabellen die ursprüngliche Palettenfarbe beibehält: 5.",
-            "es": "El nivel que conserva el color original de la paleta en una tabla generada automáticamente: 5.",
-            "fr": "Le niveau qui conserve la couleur d'origine de la palette dans une table générée automatiquement : 5.",
-            "it": "Il livello che mantiene il colore originale della palette in una tabella generata automaticamente: 5.",
-            "ja": "自動生成したテーブルでパレットの元色を保持するレベル。値は 5。",
-            "ko": "자동 생성된 테이블에서 팔레트의 원래 색상을 유지하는 단계입니다. 값은 5입니다.",
-            "pt": "O nível que mantém a cor original da paleta em uma tabela gerada automaticamente: 5.",
-            "ru": "Уровень, сохраняющий исходный цвет палитры в автоматически созданной таблице: 5.",
-            "tr": "Otomatik oluşturulan tabloda paletin özgün rengini koruyan seviye: 5.",
-            "uk": "Рівень, що зберігає початковий колір палітри в автоматично створеній таблиці: 5."
-          },
-          "value_type": "int",
-          "advanced": false
-        },
-        {
           "name": "direction",
           "type": "variable",
           "signature": "direction",
@@ -7280,10 +7259,7 @@
             "tr": "Görüntü paletini değiştirdikten sonra build() çağırın; yalnızca pyxel.colors değerini değiştirmek tabloyu yeniden oluşturmaz. Verilen renkler için düz renkler, %50 dama çiftleri ve tekrarlanan hücreler seçilir; dither zorunlu değildir.",
             "uk": "Після зміни палітри відображення викличте build(); сама зміна pyxel.colors не створює таблицю заново. Для переданих кольорів обираються суцільні кольори, шахові пари з частками 50% і повторювані клітинки; дизеринг необов'язковий."
           },
-          "examples": [
-            "shading.build(pyxel.colors)",
-            "shading[8, Shading.BASE_LEVEL] = (8, 8)"
-          ]
+          "examples": ["shading.build(pyxel.colors)"]
         }
       ]
     },

@@ -13,7 +13,7 @@ Pyxel のサンプルコードを以下の順に試すのがおすすめです�
 4. 04_sound_api — サウンド API
 5. 02_jump_game — ゲーム実装
 
-サンプルコードは [ユーザーガイドの手順](https://kitao.github.io/pyxel/web/user-guide/#s-usage) でコピーできるほか、[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) でブラウザ上でも実行できます。
+サンプルコードは [ユーザーガイドの手順](https://kitao.dev/pyxel/user-guide/#s-usage) でコピーできるほか、[Pyxel Showcase](https://kitao.dev/pyxel/showcase/) でブラウザ上でも実行できます。
 
 </details>
 
@@ -50,9 +50,9 @@ pyxel.sounds[0].mml("CDEFGAB>C")
 pyxel.play(0, "CDEFG")
 ```
 
-利用できる MML コマンドは [Pyxel MML コマンド](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html) を参照してください。使用例はサンプル 09_shooter.py の [デモ](https://kitao.github.io/pyxel/web/showcase/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
+利用できる MML コマンドは [Pyxel MML コマンド](https://kitao.dev/pyxel/mml-studio/mml-commands.html) を参照してください。使用例はサンプル 09_shooter.py の [デモ](https://kitao.dev/pyxel/showcase/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
 
-また、[Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/) を使えば、MML をブラウザ上で作成・共有できます。
+また、[Pyxel MML Studio](https://kitao.dev/pyxel/mml-studio/) を使えば、MML をブラウザ上で作成・共有できます。
 
 </details>
 
@@ -77,16 +77,16 @@ pyxel.play(0, "CDEFG")
 <details>
 <summary>インストールせずに Pyxel を試せますか？</summary>
 
-[Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) を使えば、ブラウザ上で Pyxel アプリを作成して実行できます。ただし、コードエディタで編集できるのは `main.py` だけです。複数の Python ファイルを編集する場合は、ローカル環境をおすすめします。
+[Pyxel Code Maker](https://kitao.dev/pyxel/code-maker/) を使えば、ブラウザ上で Pyxel アプリを作成して実行できます。ただし、コードエディタで編集できるのは `main.py` だけです。複数の Python ファイルを編集する場合は、ローカル環境をおすすめします。
 
-[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) では、サンプルコードやアプリをブラウザ上で一覧・実行できます。
+[Pyxel Showcase](https://kitao.dev/pyxel/showcase/) では、サンプルコードやアプリをブラウザ上で一覧・実行できます。
 
 </details>
 
 <details>
 <summary>自作の Pyxel アプリを Web で公開するにはどうすればいいですか？</summary>
 
-Pyxel Code Maker、Pyxel Web Launcher、app2html、HTML カスタム要素の 4 つの方法があります。詳しくは [Web 版 Pyxel の使い方](https://kitao.github.io/pyxel/web/web-usage/) を参照してください。
+Pyxel Code Maker、Pyxel Web Launcher、app2html、HTML カスタム要素の 4 つの方法があります。詳しくは [Web 版 Pyxel の使い方](https://kitao.dev/pyxel/web-usage/) を参照してください。
 
 </details>
 

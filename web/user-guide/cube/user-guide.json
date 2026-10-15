@@ -387,7 +387,7 @@
               "text": "<p>The display palette maps color numbers to RGB values. The <strong>shading palette</strong> maps a color number and brightness to drawing color numbers; it does not add display colors. <code class=\"chip\">Shading(pyxel.colors)</code> builds it automatically from the display palette.</p>"
             },
             {
-              "text": "<p>Brightness has eight levels, from 0 (dark) to 7 (bright), selected by face orientation. Each entry holds two color numbers. Equal numbers give a solid color; different numbers form a checkerboard dither. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) retains the original color.</p>"
+              "text": "<p>Brightness has eight levels, from 0 (dark) to 7 (bright), selected by face orientation. Each entry holds two color numbers. Equal numbers give a solid color; different numbers form a checkerboard dither.</p>"
             },
             {
               "text": "<p>For example, change how dark faces of color number 8 are drawn:</p>"
@@ -686,7 +686,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>To paint textures with Pyxel's standard colors, set up the palette as follows.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Save the <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">Pyxel palette (pyxel.gpl)</a>.</li><li>In <strong>Paint</strong> mode's <strong>Palette</strong> panel, choose <strong>Import Palette</strong> and load the saved file. Enable <strong>Replace old palette</strong> to replace the existing palette.</li><li>Right-click empty space in the palette and enable <strong>Lock Palette</strong> to prevent adding, deleting, or dragging colors to reorder them.</li><li>Choose colors from the palette; paint with 100% opacity and 0 blur.</li></ol><p><strong>Lock Palette</strong> prevents these editing operations; it does not automatically restrict paint colors. For a custom palette, load the same colors that the game displays.</p>"
+              "text": "<p>To paint textures with Pyxel's standard colors, set up the palette as follows.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Save the <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">Pyxel palette (pyxel.gpl)</a>.</li><li>In <strong>Paint</strong> mode's <strong>Palette</strong> panel, choose <strong>Import Palette</strong> and load the saved file. Enable <strong>Replace old palette</strong> to replace the existing palette.</li><li>Right-click empty space in the palette and enable <strong>Lock Palette</strong> to prevent adding, deleting, or dragging colors to reorder them.</li><li>Choose colors from the palette; paint with 100% opacity and 0 blur.</li></ol><p><strong>Lock Palette</strong> prevents these editing operations; it does not automatically restrict paint colors. For a custom palette, load the same colors that the game displays.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Export to GLB</h3>"
@@ -1003,7 +1003,7 @@
               "text": "<p>显示调色板把颜色编号映射到 RGB 值。<strong>明暗调色板</strong>把颜色编号和亮度映射到绘图颜色编号，并不增加显示颜色。<code class=\"chip\">Shading(pyxel.colors)</code> 根据显示调色板自动生成它。</p>"
             },
             {
-              "text": "<p>亮度按面的朝向分为八级，从 0 (暗) 到 7 (亮)。每个条目包含两个颜色编号；相同则填纯色，不同则产生棋盘格抖色。<code class=\"chip\">Shading.BASE_LEVEL</code> (5) 保留原始颜色。</p>"
+              "text": "<p>亮度按面的朝向分为八级，从 0 (暗) 到 7 (亮)。每个条目包含两个颜色编号；相同则填纯色，不同则产生棋盘格抖色。</p>"
             },
             {
               "text": "<p>例如，修改颜色编号 8 的暗面画法：</p>"
@@ -1302,7 +1302,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>使用 Pyxel 标准色绘制纹理，请按以下步骤设置调色板。</p><ol class=\"list-decimal pl-6 space-y-2\"><li>保存 <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">Pyxel 调色板 (pyxel.gpl)</a>。</li><li>在 <strong>Paint</strong> 模式的 <strong>Palette</strong> 面板选择 <strong>Import Palette</strong>，加载文件。启用 <strong>Replace old palette</strong> 替换现有调色板。</li><li>右键单击调色板空白处，启用 <strong>Lock Palette</strong>，防止添加、删除及拖动排序颜色。</li><li>从调色板选色，以 100% 不透明度和 0 模糊绘制。</li></ol><p><strong>Lock Palette</strong> 仅防止这些编辑操作，不会自动限制绘图颜色。自定义调色板也应加载与游戏显示相同的颜色。</p>"
+              "text": "<p>使用 Pyxel 标准色绘制纹理，请按以下步骤设置调色板。</p><ol class=\"list-decimal pl-6 space-y-2\"><li>保存 <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">Pyxel 调色板 (pyxel.gpl)</a>。</li><li>在 <strong>Paint</strong> 模式的 <strong>Palette</strong> 面板选择 <strong>Import Palette</strong>，加载文件。启用 <strong>Replace old palette</strong> 替换现有调色板。</li><li>右键单击调色板空白处，启用 <strong>Lock Palette</strong>，防止添加、删除及拖动排序颜色。</li><li>从调色板选色，以 100% 不透明度和 0 模糊绘制。</li></ol><p><strong>Lock Palette</strong> 仅防止这些编辑操作，不会自动限制绘图颜色。自定义调色板也应加载与游戏显示相同的颜色。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">导出为 GLB</h3>"
@@ -1619,7 +1619,7 @@
               "text": "<p>Die Anzeigepalette ordnet Farbnummern RGB-Werte zu. Die <strong>Schattierungspalette</strong> ordnet Farbnummer und Helligkeit den Zeichenfarbnummern zu; sie fügt keine Anzeigefarben hinzu. <code class=\"chip\">Shading(pyxel.colors)</code> erzeugt sie automatisch aus der Anzeigepalette.</p>"
             },
             {
-              "text": "<p>Je nach Flächenausrichtung gibt es acht Helligkeitsstufen von 0 (dunkel) bis 7 (hell). Jeder Eintrag enthält zwei Farbnummern: gleiche ergeben eine Vollfarbe, verschiedene ein Schachbrett-Dithering. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) behält die Originalfarbe.</p>"
+              "text": "<p>Je nach Flächenausrichtung gibt es acht Helligkeitsstufen von 0 (dunkel) bis 7 (hell). Jeder Eintrag enthält zwei Farbnummern: gleiche ergeben eine Vollfarbe, verschiedene ein Schachbrett-Dithering.</p>"
             },
             {
               "text": "<p>So ändern Sie beispielsweise dunkle Flächen der Farbnummer 8:</p>"
@@ -1918,7 +1918,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Für Texturen in Pyxels Standardfarben richten Sie die Palette so ein:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Speichern Sie die <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">Pyxel-Palette (pyxel.gpl)</a>.</li><li>Wählen Sie im Modus <strong>Paint</strong> im Bereich <strong>Palette</strong> den Eintrag <strong>Import Palette</strong> und laden Sie die Datei. Aktivieren Sie <strong>Replace old palette</strong>.</li><li>Klicken Sie mit rechts auf freien Palettenplatz und aktivieren Sie <strong>Lock Palette</strong>, um Hinzufügen, Löschen und Umordnen durch Ziehen zu verhindern.</li><li>Wählen Sie Palettenfarben und malen Sie mit 100% Deckkraft und 0 Unschärfe.</li></ol><p><strong>Lock Palette</strong> verhindert diese Bearbeitungen, beschränkt aber nicht automatisch die Malfarben. Laden Sie bei eigenen Paletten dieselben Farben wie im Spiel.</p>"
+              "text": "<p>Für Texturen in Pyxels Standardfarben richten Sie die Palette so ein:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Speichern Sie die <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">Pyxel-Palette (pyxel.gpl)</a>.</li><li>Wählen Sie im Modus <strong>Paint</strong> im Bereich <strong>Palette</strong> den Eintrag <strong>Import Palette</strong> und laden Sie die Datei. Aktivieren Sie <strong>Replace old palette</strong>.</li><li>Klicken Sie mit rechts auf freien Palettenplatz und aktivieren Sie <strong>Lock Palette</strong>, um Hinzufügen, Löschen und Umordnen durch Ziehen zu verhindern.</li><li>Wählen Sie Palettenfarben und malen Sie mit 100% Deckkraft und 0 Unschärfe.</li></ol><p><strong>Lock Palette</strong> verhindert diese Bearbeitungen, beschränkt aber nicht automatisch die Malfarben. Laden Sie bei eigenen Paletten dieselben Farben wie im Spiel.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Als GLB exportieren</h3>"
@@ -2235,7 +2235,7 @@
               "text": "<p>La paleta de pantalla relaciona números de color con valores RGB. La <strong>paleta de sombreado</strong> relaciona color y brillo con los números usados para dibujar; no añade colores de pantalla. <code class=\"chip\">Shading(pyxel.colors)</code> la genera automáticamente desde la paleta de pantalla.</p>"
             },
             {
-              "text": "<p>Hay ocho niveles de brillo según la orientación, de 0 (oscuro) a 7 (claro). Cada entrada contiene dos números de color: iguales producen un color uniforme; distintos, tramado ajedrezado. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) conserva el color original.</p>"
+              "text": "<p>Hay ocho niveles de brillo según la orientación, de 0 (oscuro) a 7 (claro). Cada entrada contiene dos números de color: iguales producen un color uniforme; distintos, tramado ajedrezado.</p>"
             },
             {
               "text": "<p>Por ejemplo, cambie cómo se dibujan las caras oscuras del color 8:</p>"
@@ -2534,7 +2534,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Para pintar con colores estándar de Pyxel configure la paleta así:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Guarde la <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">paleta Pyxel (pyxel.gpl)</a>.</li><li>En <strong>Paint</strong>, panel <strong>Palette</strong>, elija <strong>Import Palette</strong> y cargue el archivo. Active <strong>Replace old palette</strong> para sustituir la existente.</li><li>Haga clic derecho en espacio vacío y active <strong>Lock Palette</strong> para impedir añadir, borrar o reordenar colores arrastrándolos.</li><li>Elija colores de la paleta y pinte con opacidad 100% y desenfoque 0.</li></ol><p><strong>Lock Palette</strong> impide esas ediciones, pero no restringe automáticamente el color de pintura. Para paletas propias cargue los mismos colores del juego.</p>"
+              "text": "<p>Para pintar con colores estándar de Pyxel configure la paleta así:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Guarde la <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">paleta Pyxel (pyxel.gpl)</a>.</li><li>En <strong>Paint</strong>, panel <strong>Palette</strong>, elija <strong>Import Palette</strong> y cargue el archivo. Active <strong>Replace old palette</strong> para sustituir la existente.</li><li>Haga clic derecho en espacio vacío y active <strong>Lock Palette</strong> para impedir añadir, borrar o reordenar colores arrastrándolos.</li><li>Elija colores de la paleta y pinte con opacidad 100% y desenfoque 0.</li></ol><p><strong>Lock Palette</strong> impide esas ediciones, pero no restringe automáticamente el color de pintura. Para paletas propias cargue los mismos colores del juego.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Exportar a GLB</h3>"
@@ -2851,7 +2851,7 @@
               "text": "<p>La palette d'affichage associe numéros de couleur et valeurs RGB. La <strong>palette d'ombrage</strong> associe couleur et luminosité aux numéros utilisés pour dessiner ; elle n'ajoute pas de couleurs d'affichage. <code class=\"chip\">Shading(pyxel.colors)</code> la crée automatiquement depuis la palette d'affichage.</p>"
             },
             {
-              "text": "<p>Huit niveaux de luminosité, de 0 (sombre) à 7 (clair), dépendent de l'orientation. Chaque entrée contient deux numéros : identiques pour une couleur unie, différents pour un tramage en damier. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) conserve la couleur originale.</p>"
+              "text": "<p>Huit niveaux de luminosité, de 0 (sombre) à 7 (clair), dépendent de l'orientation. Chaque entrée contient deux numéros : identiques pour une couleur unie, différents pour un tramage en damier.</p>"
             },
             {
               "text": "<p>Par exemple, modifiez l'aspect des faces sombres de la couleur 8 :</p>"
@@ -3150,7 +3150,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Pour peindre avec les couleurs standard de Pyxel, configurez la palette :</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Enregistrez la <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">palette Pyxel (pyxel.gpl)</a>.</li><li>Dans <strong>Paint</strong>, panneau <strong>Palette</strong>, choisissez <strong>Import Palette</strong> et chargez le fichier. Activez <strong>Replace old palette</strong> pour remplacer la palette.</li><li>Faites un clic droit dans l'espace vide et activez <strong>Lock Palette</strong> pour empêcher ajout, suppression et réorganisation par glissement.</li><li>Choisissez les couleurs dans la palette ; opacité 100%, flou 0.</li></ol><p><strong>Lock Palette</strong> bloque ces éditions sans limiter automatiquement les couleurs de peinture. Pour une palette personnalisée, chargez les mêmes couleurs que dans le jeu.</p>"
+              "text": "<p>Pour peindre avec les couleurs standard de Pyxel, configurez la palette :</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Enregistrez la <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">palette Pyxel (pyxel.gpl)</a>.</li><li>Dans <strong>Paint</strong>, panneau <strong>Palette</strong>, choisissez <strong>Import Palette</strong> et chargez le fichier. Activez <strong>Replace old palette</strong> pour remplacer la palette.</li><li>Faites un clic droit dans l'espace vide et activez <strong>Lock Palette</strong> pour empêcher ajout, suppression et réorganisation par glissement.</li><li>Choisissez les couleurs dans la palette ; opacité 100%, flou 0.</li></ol><p><strong>Lock Palette</strong> bloque ces éditions sans limiter automatiquement les couleurs de peinture. Pour une palette personnalisée, chargez les mêmes couleurs que dans le jeu.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Exporter en GLB</h3>"
@@ -3467,7 +3467,7 @@
               "text": "<p>La palette di visualizzazione associa numeri di colore a RGB. La <strong>palette di ombreggiatura</strong> associa colore e luminosità ai numeri per disegnare; non aggiunge colori di visualizzazione. <code class=\"chip\">Shading(pyxel.colors)</code> la genera automaticamente dalla palette di visualizzazione.</p>"
             },
             {
-              "text": "<p>Ci sono otto livelli secondo l'orientamento, da 0 (scuro) a 7 (chiaro). Ogni voce contiene due numeri: uguali danno un colore uniforme, diversi un dithering a scacchiera. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) conserva il colore originale.</p>"
+              "text": "<p>Ci sono otto livelli secondo l'orientamento, da 0 (scuro) a 7 (chiaro). Ogni voce contiene due numeri: uguali danno un colore uniforme, diversi un dithering a scacchiera.</p>"
             },
             {
               "text": "<p>Per esempio, modificare le facce scure del colore 8:</p>"
@@ -3766,7 +3766,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Per dipingere con i colori standard Pyxel, configurare la palette:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Salvare la <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">palette Pyxel (pyxel.gpl)</a>.</li><li>In <strong>Paint</strong>, pannello <strong>Palette</strong>, scegliere <strong>Import Palette</strong> e caricare il file. Attivare <strong>Replace old palette</strong> per sostituire quella attuale.</li><li>Fare clic destro nello spazio vuoto e attivare <strong>Lock Palette</strong> per impedire aggiunta, eliminazione e riordino trascinando.</li><li>Scegliere colori dalla palette, con opacità 100% e sfocatura 0.</li></ol><p><strong>Lock Palette</strong> impedisce queste modifiche, ma non limita automaticamente i colori di pittura. Per palette proprie caricare gli stessi colori del gioco.</p>"
+              "text": "<p>Per dipingere con i colori standard Pyxel, configurare la palette:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Salvare la <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">palette Pyxel (pyxel.gpl)</a>.</li><li>In <strong>Paint</strong>, pannello <strong>Palette</strong>, scegliere <strong>Import Palette</strong> e caricare il file. Attivare <strong>Replace old palette</strong> per sostituire quella attuale.</li><li>Fare clic destro nello spazio vuoto e attivare <strong>Lock Palette</strong> per impedire aggiunta, eliminazione e riordino trascinando.</li><li>Scegliere colori dalla palette, con opacità 100% e sfocatura 0.</li></ol><p><strong>Lock Palette</strong> impedisce queste modifiche, ma non limita automaticamente i colori di pittura. Per palette proprie caricare gli stessi colori del gioco.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Esportare in GLB</h3>"
@@ -3840,10 +3840,14 @@
           "title": "サンプルを実行する",
           "blocks": [
             {
-              "text": "<p>Pyxel Cube のサンプルは、<code class=\"chip\">pyxel_examples</code> 内の <code class=\"chip\">cube</code> ディレクトリにあります。</p>"
+              "text": "<p>ローカル環境で試すには、まずターミナルで次のコマンドを実行してサンプルを展開します。現在のディレクトリに <code class=\"chip\">pyxel_examples</code> が作成されます。すでに同名のディレクトリがある場合は置き換えられるため、編集したファイルは先に別の場所へ移してください。</p>"
             },
             {
-              "text": "<p>ローカル環境では以下のコマンドでサンプルを実行できます。</p>"
+              "code": "pyxel copy_examples",
+              "syntax": "sh"
+            },
+            {
+              "text": "<p>続けて、その中の <code class=\"chip\">cube</code> ディレクトリに移動し、サンプル <code class=\"chip\">c01_hello_cube.py</code> を実行します。</p>"
             },
             {
               "code": "cd pyxel_examples/cube\npyxel run c01_hello_cube.py",
@@ -3859,7 +3863,10 @@
           "title": "基本的な使い方",
           "blocks": [
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-import\">Pyxel Cube のクラスをインポートする</h3>"
+              "text": "<p>Pyxel Cube の基本的な使い方は、次の 4 つの手順です。</p>"
+            },
+            {
+              "text": "<h3 class=\"sub-title\" id=\"s-import\">1. Pyxel Cube のクラスをインポートする</h3>"
             },
             {
               "text": "<p><code class=\"chip\">pyxel.cube</code> から必要なクラスをインポートします。</p>"
@@ -3869,19 +3876,19 @@
               "syntax": "python"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-node-behavior\">ノードを定義する</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-node-behavior\">2. ノードを定義する</h3>"
             },
             {
               "text": "<p><code class=\"chip\">Node</code> クラスを継承し、ノードの更新・描画の処理を定義します。</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-app-flow\">ノードツリーを作成する</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-app-flow\">3. ノードツリーを作成する</h3>"
             },
             {
-              "text": "<p>定義したクラスからノードのインスタンスを生成し、まとめ役のノードに登録して<strong>ノードツリー</strong>を作成します。</p>"
+              "text": "<p>定義したクラスからノードのインスタンスを生成し、親となるノードの子として追加します。このようにノードを親子関係でつないだ構造を<strong>ノードツリー</strong>と呼びます。</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-scene-loop\">ノードツリーを更新・描画する</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-scene-loop\">4. ノードツリーを更新・描画する</h3>"
             },
             {
               "text": "<p>アプリの <code class=\"chip\">update()</code> と <code class=\"chip\">draw()</code> から、ノードツリーを更新・描画します。登録した各ノードの処理が実行され、カメラから見た画像が Pyxel の 2D 画面に描かれます。</p>"
@@ -3893,6 +3900,9 @@
           "title": "座標と変換",
           "blocks": [
             {
+              "text": "<p>3D 空間で物体をどこに置き、どう動かし、どの向きや大きさで描くかを指定する方法を説明します。</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-vectors\">ベクトル（<a class=\"link\" href=\"../../api-reference/cube/#vec3\">Vec3</a> クラス）</h3>"
             },
             {
@@ -3900,13 +3910,13 @@
               "syntax": "python"
             },
             {
-              "text": "<p><strong>ベクトル</strong>は、X・Y・Z の 3 つの値で位置や移動量を表すものです。Pyxel Cube では <code class=\"chip\">Vec3</code> クラスで扱います。</p><p class=\"mt-2\">Pyxel Cube の標準的な使い方では、<strong>+X を右、+Y を上、−Z を前、+Z を後ろ</strong>として、地面に沿った移動に X と Z を使います。<code class=\"chip\">Vec3.UP</code> は <code class=\"chip\">Vec3(0, 1, 0)</code>、<code class=\"chip\">Vec3.FORWARD</code> は <code class=\"chip\">Vec3(0, 0, -1)</code> で、この基準に沿った方向を示す定数です。</p><p class=\"mt-2\">ゲームでどの軸を上下として使うかは、カメラの設定やゲームの作り方に合わせて決められます。</p>"
+              "text": "<p><strong>ベクトル</strong>は、X・Y・Z の 3 つの値で位置や移動量を表すものです。Pyxel Cube では <code class=\"chip\">Vec3</code> クラスで扱います。</p><p class=\"mt-2\">Pyxel Cube の標準的な使い方では、<strong>+X を右、+Y を上、−Z を前</strong>として、地面に沿った移動に X と Z を使います。ゲームでどの軸を上下として使うかは、カメラの設定やゲームの作り方に合わせて決められます。</p><p class=\"mt-2\">よく使う値は定数でも指定できます。例えば、<code class=\"chip\">Vec3.UP</code> は上方向の <code class=\"chip\">Vec3(0, 1, 0)</code>、<code class=\"chip\">Vec3.FORWARD</code> は前方向の <code class=\"chip\">Vec3(0, 0, -1)</code>、<code class=\"chip\">Vec3.ZERO</code> は原点や移動量ゼロを表す <code class=\"chip\">Vec3(0, 0, 0)</code> です。</p>"
             },
             {
               "text": "<figure class=\"mt-4\"><img class=\"mx-auto w-full max-w-[420px] h-auto rounded\" src=\"images/coordinates.svg\" alt=\"3D 空間の座標軸を斜めから見た概念図。点 (30, 20, 5) は、原点 O から地面に沿って X 方向に 30、Z 方向に 5 進み、Y 方向に 20 上がった位置。\"></figure>"
             },
             {
-              "text": "<p><strong>長さの目安</strong>として、サンプルでは<strong>100 を 1 m、1 を 1 cm</strong>として扱っています。この目安なら、<code class=\"chip\">Vec3(100, 0, 0)</code> は原点から X 方向に 1 m 進んだ位置です。長さの単位は、作るゲームに合わせて自由に決められます。</p><p class=\"mt-2\">3D 空間の長さ 100 が画面上で何ピクセルに見えるかは、カメラの位置や設定によって変わります。</p>"
+              "text": "<p><strong>長さの目安</strong>として、Pyxel Showcase の Cube サンプルでは<strong>100 を 1 m、1 を 1 cm</strong>として扱っています。この目安では、図の <code class=\"chip\">Vec3(30, 20, 5)</code> は原点から X 方向に 30 cm、Y 方向に 20 cm、Z 方向に 5 cm の位置です。</p><p class=\"mt-2\">3D 空間の長さが画面上で何ピクセルに見えるかは、カメラの位置や設定によって変わるため、長さの単位は作るゲームに合わせて自由に決められます。</p>"
             },
             {
               "text": "<p>位置に移動量を足すと物体を動かせます。たとえば、弾を目標に向かって進めるには、次のように書けます。</p>"
@@ -3919,13 +3929,13 @@
               "text": "<p>目標から現在地を引いて向きを求め、<code class=\"chip\">normalize()</code> で長さを 1 にそろえます。速さを掛ければ移動量です。</p>"
             },
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><code class=\"chip\">pos.x</code>・<code class=\"chip\">pos.y</code>・<code class=\"chip\">pos.z</code>：各座標。変更するときは新しい <code class=\"chip\">Vec3</code> を代入します。</li><li><code class=\"chip\">Vec3.ZERO</code>：<code class=\"chip\">Vec3(0, 0, 0)</code>。</li></ul>"
+              "text": "<p><code class=\"chip\">pos.x</code>・<code class=\"chip\">pos.y</code>・<code class=\"chip\">pos.z</code> で各座標を読み取れます。これらは読み取り専用なので、<code class=\"chip\">pos.x += 10</code> のようには変更できません。X 方向に 10 動かすには、<code class=\"chip\">pos += Vec3(10, 0, 0)</code> と書きます。演算で新しい <code class=\"chip\">Vec3</code> が作られ、変数 <code class=\"chip\">pos</code> に代入されます。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-transform\">行列（<a class=\"link\" href=\"../../api-reference/cube/#mat4\">Mat4</a> クラス）</h3>"
             },
             {
-              "text": "<p>移動・回転・拡大縮小など、物体の位置・向き・大きさを変える操作を<strong>変換（トランスフォーム）</strong>と呼びます。<strong>行列</strong>は変換の内容をまとめて表すもので、Pyxel Cube では <code class=\"chip\">Mat4</code> クラスで扱います。</p><p class=\"mt-2\">次の例では、Y 軸まわりに 45 度回転させ、原点から X 方向に 30 移動する変換を作ります。後で説明するノードや描画メソッドに、この行列を渡して使います。</p>"
+              "text": "<p>移動・回転・拡大縮小など、物体の位置・向き・大きさを変える操作を<strong>変換（トランスフォーム）</strong>と呼びます。<strong>行列</strong>は変換の内容をまとめて表すもので、Pyxel Cube では <code class=\"chip\">Mat4</code> クラスで扱います。</p><p class=\"mt-2\">次の例では、Y 軸まわりに 45 度回転させ、X 方向に 30 移動する変換を作ります。この行列は、後で説明するノードや描画メソッドで使います。ここでの軸は、行列を使う場所の座標系が基準です。子ノードに設定するときは親ノードの軸、ノードの描画メソッドに渡すときはそのノードの軸が基準になります。</p>"
             },
             {
               "code": "rotation = Mat4.from_euler(Vec3(0, 45, 0))\ntranslation = Mat4.from_translation(Vec3(30, 0, 0))\ntransform = translation * rotation",
@@ -3935,24 +3945,27 @@
               "text": "<p><code class=\"chip\">from_euler()</code> には X・Y・Z 軸まわりの回転角（度）、<code class=\"chip\">from_translation()</code> には各軸方向の移動量を指定します。</p><p class=\"mt-2\">行列同士を <code class=\"chip\">*</code> で掛け合わせると、複数の変換をまとめられます。<code class=\"chip\">translation * rotation</code> は、右の <code class=\"chip\">rotation</code> でその場で回転させた後、左の <code class=\"chip\">translation</code> で位置をずらす変換です。</p>"
             },
             {
+              "text": "<p>拡大縮小には <code class=\"chip\">Mat4.from_scale()</code> を使い、X・Y・Z 方向の倍率を <code class=\"chip\">Vec3</code> で指定します。次の例は、幅・高さ・奥行きをすべて 2 倍にする行列と、何も変換しない行列 <code class=\"chip\">Mat4.IDENTITY</code> です。ノードの描画メソッドなど、引数に行列を渡す必要がある場面で、追加の移動・回転・拡大縮小を行わずに描くには <code class=\"chip\">Mat4.IDENTITY</code> を渡します。</p>"
+            },
+            {
               "code": "Mat4.from_scale(Vec3(2, 2, 2))  # Double the size\nMat4.IDENTITY  # No translation, rotation, or scaling",
               "syntax": "python"
             },
             {
-              "text": "<p><code class=\"chip\">Vec3</code>・<code class=\"chip\">Mat4</code> の値は、作った後に成分を直接変更できません。演算や変換メソッドは新しい値を返すため、変更するときは変数やプロパティに代入します。</p>"
+              "text": "<p><code class=\"chip\">Mat4</code> も成分を直接変更できません。演算や変換メソッドの結果を、変数やプロパティに代入して使います。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">回転（<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> クラス）</h3>"
             },
             {
-              "text": "<p><code class=\"chip\">Quat</code> は、回転だけを表す<strong>クォータニオン</strong>です。単純に角度を指定するなら <code class=\"chip\">Mat4.from_euler()</code> を使えます。現在の向きから目標の向きへ滑らかに回すときなどは、<code class=\"chip\">Quat</code> で回転を補間し、行列に変換して使います。</p>"
+              "text": "<p><strong>クォータニオン</strong>は回転を表すもので、Pyxel Cube では <code class=\"chip\">Quat</code> クラスで扱います。2 つの向きの間を滑らかに回すには、<code class=\"chip\">Quat</code> で途中の回転を求め（補間し）、<code class=\"chip\">Mat4.from_quat()</code> で行列に変換します。この行列をノードや描画メソッドに指定して、回転を反映します。</p><p class=\"mt-2\"><code class=\"chip\">slerp()</code> は、開始と目標の回転から、その間の回転を求めるメソッドです。次の例は、回転していない状態 (<code class=\"chip\">Quat.IDENTITY</code>) から Y 軸まわりに 90 度回転した状態までの、中間の回転を求めます。</p>"
             },
             {
               "code": "start = Quat.IDENTITY\ntarget = Quat.from_euler(Vec3(0, 90, 0))\nrotation = start.slerp(target, 0.5)\ntransform = Mat4.from_quat(rotation)",
               "syntax": "python"
             },
             {
-              "text": "<p><code class=\"chip\">slerp()</code> の第 2 引数は、開始の回転を 0、目標の回転を 1 とした割合です。この例の 0.5 は、中間の向きを作ります。成分を直接計算する必要はありません。</p>"
+              "text": "<p><code class=\"chip\">start.slerp(target, 0.5)</code> の <code class=\"chip\">target</code> は目標の回転、<code class=\"chip\">0.5</code> は開始を 0、目標を 1 とした割合です。この例では Y 軸まわりに 45 度の回転になります。割合を 0 から 1 へ少しずつ増やすと、目標へ滑らかに回せます。</p>"
             }
           ]
         },
@@ -3967,69 +3980,78 @@
               "text": "<h3 class=\"sub-title\" id=\"s-node-class\">ノードの定義（<a class=\"link\" href=\"../../api-reference/cube/#node\">Node</a> クラス）</h3>"
             },
             {
-              "text": "<p><code class=\"chip\">Node</code> クラスを継承し、<code class=\"chip\">on_update()</code> に動きなどの更新処理、<code class=\"chip\">on_draw()</code> に形を描く処理を書きます。ノードの <code class=\"chip\">transform</code> に行列を設定すると、その位置・向き・大きさが描画に反映されます。</p><p class=\"mt-2\">次の例は、Y 軸まわりに回転する箱のノードです。</p>"
+              "text": "<p><code class=\"chip\">Node</code> クラスを継承し、<code class=\"chip\">on_update()</code> に動きなどの更新処理、<code class=\"chip\">on_draw()</code> に形を描く処理を書きます。ノードの <code class=\"chip\">transform</code> に行列を設定すると、その位置・向き・大きさが描画に反映されます。</p><p class=\"mt-2\">次の例では、Y 軸まわりに回転するアイテムを <code class=\"chip\">Item</code> クラスで定義し、箱の形で描きます。</p>"
             },
             {
-              "code": "import pyxel\nfrom pyxel.cube import Mat4, Node, Vec3\n\nclass Box(Node):\n    def on_update(self):\n        angle = pyxel.frame_count\n        self.transform = Mat4.from_euler(\n            Vec3(0, angle, 0)\n        )\n\n    def on_draw(self):\n        self.box(\n            Mat4.IDENTITY, Vec3(16, 16, 16), 11\n        )",
+              "code": "import pyxel\nfrom pyxel.cube import Mat4, Node, Vec3\n\nclass Item(Node):\n    def on_update(self):\n        angle = pyxel.frame_count\n        self.transform = Mat4.from_euler(\n            Vec3(0, angle, 0)\n        )\n\n    def on_draw(self):\n        self.box(\n            Mat4.IDENTITY, Vec3(16, 16, 16), 11\n        )",
               "syntax": "python"
             },
             {
-              "text": "<p>この <code class=\"chip\">on_update()</code> は、経過フレーム数を Y 軸まわりの回転角（度）にして、箱の向きを変えます。</p>"
+              "text": "<p>この例の <code class=\"chip\">on_update()</code> では、経過フレーム数を Y 軸まわりの回転角（度）として使い、アイテムの向きを変えています。</p>"
             },
             {
-              "text": "<p><code class=\"chip\">on_draw()</code> は、一辺が 16 の箱を色番号 11 で描きます。<code class=\"chip\">Mat4.IDENTITY</code> はノードの位置や向きのまま描く指定、<code class=\"chip\">Vec3</code> の 3 値は幅・高さ・奥行きです。</p>"
+              "text": "<p>この例の <code class=\"chip\">on_draw()</code> では、<code class=\"chip\">box()</code> メソッドを呼び、一辺が 16 の箱を色番号 11 で描いています。<code class=\"chip\">Mat4.IDENTITY</code> を渡すことで追加の変換を行わず、ノードに設定した位置・向き・大きさで描きます。<code class=\"chip\">Vec3</code> の 3 値は箱の幅・高さ・奥行きです。</p>"
+            },
+            {
+              "text": "<p>サンプル <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c01_hello_cube.py\">c01_hello_cube.py</a> では、<code class=\"chip\">Cube.on_update()</code> 内で立方体の回転と円周上の移動を計算し、<code class=\"chip\">transform</code> に設定しています。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-nodes\">ノードの作成と登録</h3>"
             },
             {
-              "text": "<p>定義した <code class=\"chip\">Box</code> クラスから箱のノードを作り、親ノードの子として追加します。子にするノードを引数に指定して、親ノードの <code class=\"chip\">add_child()</code> メソッドを呼び出します。</p>"
+              "text": "<p>定義した <code class=\"chip\">Item</code> クラスからノードを作り、親ノードの子として追加します。子にするノードを引数に指定して、親ノードの <code class=\"chip\">add_child()</code> メソッドを呼び出します。</p>"
             },
             {
-              "text": "<p>ノードを親子関係でつないだ構造を<strong>ノードツリー</strong>と呼び、最上位のノードを<strong>ルートノード</strong>と呼びます。下のアプリは、まとめ役のノードに箱を登録します。</p>"
+              "text": "<p>ノードを親子関係でつないだ構造を<strong>ノードツリー</strong>と呼び、最上位のノードを<strong>ルートノード</strong>と呼びます。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-getting-started\">ノードツリーの更新と描画</h3>"
             },
             {
-              "text": "<p>ノードを作って登録しただけでは処理は進みません。アプリの <code class=\"chip\">update()</code> からルートノードの <code class=\"chip\">update()</code> を呼び、各ノードを毎フレーム更新します。アプリの <code class=\"chip\">draw()</code> からはルートノードの <code class=\"chip\">draw(x, y, w, h)</code> を呼び、カメラから見たノードツリーを 2D 画面に描きます。</p>"
+              "text": "<p>各ノードを毎フレーム更新するために、アプリの <code class=\"chip\">update()</code> からルートノードの <code class=\"chip\">update()</code> を呼びます。アプリの <code class=\"chip\">draw()</code> からはルートノードの <code class=\"chip\">draw(x, y, w, h)</code> を呼び、カメラから見たノードツリーを 2D 画面に描きます。</p>"
             },
             {
-              "text": "<p>上の <code class=\"chip\">Box</code> の定義に次のコードを続けると、箱を画面に表示できます。<code class=\"chip\">Camera</code> は視点を決めるクラスです。ここでは原点の箱を少し上から見ており、設定の詳細は次の章で説明します。</p>"
+              "text": "<p>上の <code class=\"chip\">Item</code> の定義に次のコードを続けると、アイテムを画面に表示できます。このコードでは、ルートノードに <code class=\"chip\">root</code> という変数名を付け、<code class=\"chip\">Item</code> のインスタンスを子として追加します。<code class=\"chip\">Camera</code> は視点を決めるクラスです。ここでは原点の箱を少し上から見ており、設定の詳細は次の章で説明します。</p>"
             },
             {
-              "code": "from pyxel.cube import Camera\n\nclass App:\n    def __init__(self):\n        pyxel.init(160, 120)\n        self.root = Node()\n        self.root.add_child(Box())\n        self.root.camera = Camera()\n        self.root.camera.transform = Mat4.look_at(\n            Vec3(0, 24, 48), Vec3.ZERO\n        )\n        pyxel.run(self.update, self.draw)\n\n    def update(self):\n        self.root.update()\n\n    def draw(self):\n        pyxel.cls(0)\n        self.root.draw(0, 0, pyxel.width, pyxel.height)\n\nApp()",
+              "code": "from pyxel.cube import Camera\n\n# Other imports and the Item definition are omitted here; see above.\n\nclass App:\n    def __init__(self):\n        pyxel.init(160, 120)\n        self.root = Node()\n        self.root.add_child(Item())\n        self.root.camera = Camera()\n        self.root.camera.transform = Mat4.look_at(\n            Vec3(0, 24, 48), Vec3.ZERO\n        )\n        pyxel.run(self.update, self.draw)\n\n    def update(self):\n        self.root.update()\n\n    def draw(self):\n        pyxel.cls(0)\n        self.root.draw(0, 0, pyxel.width, pyxel.height)\n\nApp()",
               "syntax": "python"
             },
             {
-              "text": "<p><code class=\"chip\">root</code> はこの例で付けた変数名なので、自由に変えられます。まとめ役のノードは自分では形を描かず、子ノードの処理をまとめます。</p>"
+              "text": "<p>この例のルートノードは自分では形を描かず、子ノードの更新と描画を行います。</p>"
             },
             {
               "text": "<p><code class=\"chip\">draw(x, y, w, h)</code> の引数で、<strong>2D 画面のどこに、どの大きさで描くか</strong>を指定します。<code class=\"chip\">x, y</code> は描画領域の左上の座標、<code class=\"chip\">w, h</code> はその幅と高さです。いずれもピクセル単位の値です。</p>"
             },
             {
-              "text": "<p>上の例は、2D 画面の左上 (0, 0) から、画面の幅 <code class=\"chip\">pyxel.width</code> と高さ <code class=\"chip\">pyxel.height</code> を使って、画面全体に描きます。例えば、<code class=\"chip\">self.root.draw(16, 16, 80, 60)</code> に変えると、左上が (16, 16)、幅 80 ピクセル・高さ 60 ピクセルの領域に描けます。</p><p class=\"mt-2\">箱の大きさを変えるには、<code class=\"chip\">Box.on_draw()</code> の <code class=\"chip\">Vec3(16, 16, 16)</code> を変えます。回転を速くするには、<code class=\"chip\">on_update()</code> の <code class=\"chip\">angle = pyxel.frame_count</code> を <code class=\"chip\">angle = pyxel.frame_count * 2</code> に変えます。</p>"
+              "text": "<p>上の例では、2D 画面の左上 (0, 0) から、画面の幅 <code class=\"chip\">pyxel.width</code> と高さ <code class=\"chip\">pyxel.height</code> を使って、画面全体に描いています。<code class=\"chip\">self.root.draw(16, 16, 80, 60)</code> に変えると、左上が (16, 16)、幅 80 ピクセル・高さ 60 ピクセルの領域に描けます。</p><p class=\"mt-2\">回転を速くするには、<code class=\"chip\">Item.on_update()</code> の <code class=\"chip\">angle = pyxel.frame_count</code> を <code class=\"chip\">angle = pyxel.frame_count * 2</code> に変えます。箱の大きさを変えるには、<code class=\"chip\">Item.on_draw()</code> の <code class=\"chip\">Vec3(16, 16, 16)</code> を変えます。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-node-transforms\">親子関係と変換</h3>"
             },
             {
-              "text": "<p>子ノードの <code class=\"chip\">transform</code> は、親ノードを基準にした変換です。親を動かしたり回転させたりすると、子も一緒に動きます。例えば、車体の子にタイヤを登録すれば、車全体を移動しながらタイヤだけを回せます。</p>"
+              "text": "<p>子ノードに <code class=\"chip\">transform</code> を設定すると、親ノードを基準に位置・向き・大きさが計算されます。これにより、複数のノードを一緒に移動・回転させながら、各ノードの動きも個別に制御できます。</p>"
             },
             {
               "text": "<p>親ノードを基準にした座標を<strong>ローカル座標</strong>、3D 空間全体を基準にした座標を<strong>ワールド座標</strong>と呼びます。<code class=\"chip\">node.transform</code> は親ノードを基準にした変換を表す行列です。<code class=\"chip\">node.world_transform</code> では、親ノードの変換も含めて、3D 空間全体を基準にした変換を表す行列を取得できます。</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-node-lifetime\">表示・更新・削除</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-node-lifetime\">ノードの操作</h3>"
             },
             {
-              "text": "<table class=\"w-full text-left\"><thead><tr><th class=\"th\">したいこと</th><th class=\"th\">ノードへの操作</th></tr></thead><tbody><tr><td class=\"td\">一時的に隠す</td><td class=\"td\"><code class=\"chip\">node.visible = False</code>。描画が止まり、更新や衝突は続きます。</td></tr><tr><td class=\"td\">更新を止める</td><td class=\"td\"><code class=\"chip\">node.active = False</code>。更新と衝突が止まり、描画は続きます。</td></tr><tr><td class=\"td\">使い終わった弾や敵を削除する</td><td class=\"td\"><code class=\"chip\">node.destroy()</code>。更新処理の最後に <code class=\"chip\">on_destroy()</code> が呼ばれ、ツリーから外れます。</td></tr></tbody></table>"
+              "text": "<p><code class=\"chip\">Node</code> クラスは、更新・表示を制御するプロパティと、ノードの削除や親子関係の解除を行うメソッドを備えています。</p>"
             },
             {
-              "text": "<p>表示・更新の設定と削除は子孫にも及びます。再び使うノードをツリーから取り外すだけなら、親の <code class=\"chip\">remove_child(node)</code> を呼びます。</p>"
+              "text": "<p>更新・衝突判定は <code class=\"chip\">node.active = True</code> で有効、<code class=\"chip\">node.active = False</code> で無効を指定します。親ノードの更新が無効なら子ノード以下の更新・衝突判定も無効になりますが、子ノードの <code class=\"chip\">active</code> の値や描画の動作は変わりません。</p>"
             },
             {
-              "text": "<p>ノードを動かす例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c01_hello_cube.py\">Pyxel Cube 入門</a>サンプルの <code class=\"chip\">on_update()</code> にあります（<a class=\"link\" href=\"../../showcase/examples/c01-hello-cube.html\">実行</a>）。</p>"
+              "text": "<p>表示は <code class=\"chip\">node.visible = True</code> で表示、<code class=\"chip\">node.visible = False</code> で非表示を指定します。親ノードが非表示なら子ノード以下も描画されませんが、子ノードの <code class=\"chip\">visible</code> の値や更新・衝突判定の動作は変わりません。</p>"
+            },
+            {
+              "text": "<p><code class=\"chip\">node.destroy()</code> は、このノードと子ノード以下を削除済みの状態にし、更新処理の最後に各ノードの <code class=\"chip\">on_destroy()</code> を呼んで親子関係を解除します。Python のインスタンスは、変数などから参照されている限り残ります。</p>"
+            },
+            {
+              "text": "<p>ノードを削除せずに親子関係を解除するには、親ノードの <code class=\"chip\">remove_child(node)</code> を呼びます。解除したノードは <code class=\"chip\">add_child(node)</code> で再び子ノードとして追加できます。</p>"
             }
           ]
         },
@@ -4038,52 +4060,70 @@
           "title": "カメラとシェーディング",
           "blocks": [
             {
+              "text": "<p>3D 空間を画面に映す視点と、物体の陰影を設定する方法を説明します。</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-camera\">カメラ（<a class=\"link\" href=\"../../api-reference/cube/#camera\">Camera</a> クラス）</h3>"
             },
             {
-              "text": "<p><strong>カメラ</strong>は、3D 空間をどこからどちらへ見て、2D 画面に映すかを決めます。ルートノードの <code class=\"chip\">camera</code> に設定し、<code class=\"chip\">Mat4.look_at(カメラの位置, 見る位置)</code> で位置と向きを指定します。カメラの変換はワールド座標で指定します。</p>"
+              "text": "<p><strong>カメラ</strong>は、3D 空間をどこから見て 2D 画面に映すかを決めます。<code class=\"chip\">Camera</code> クラスのインスタンスを作り、位置と向きを表す行列をカメラの <code class=\"chip\">transform</code> に設定します。そのカメラをルートノードの <code class=\"chip\">camera</code> に指定すると、設定した視点でノードツリーが描かれます。</p>"
             },
             {
-              "code": "from pyxel.cube import Camera\n\nself.root.camera = Camera()\nself.root.camera.transform = Mat4.look_at(\n    Vec3(0, 78, 104), Vec3.ZERO\n)",
+              "text": "<p>次の例では、<code class=\"chip\">Mat4.look_at(カメラの位置, 見る位置)</code> で、位置 (0, 78, 104) から原点を見るための行列を作ります。カメラの位置と見る位置はワールド座標で指定します。</p>"
+            },
+            {
+              "code": "from pyxel.cube import Camera\n\ncamera = Camera()\ncamera.transform = Mat4.look_at(\n    Vec3(0, 78, 104), Vec3.ZERO\n)\nself.root.camera = camera",
               "syntax": "python"
             },
             {
               "text": "<p><code class=\"chip\">Camera()</code> の初期設定は<strong>透視投影</strong>です。同じ大きさの物体でも、カメラから遠いほど小さく映ります。カメラの <code class=\"chip\">fov</code> は縦方向の画角（度）で、初期値は 60 です。</p>"
             },
             {
-              "text": "<p>距離によって見かけの大きさを変えずに描きたい場合は、カメラの <code class=\"chip\">ortho_size</code> に数値を設定して<strong>平行投影</strong>に切り替えます。模型のように全体を見せる場面などで使えます。</p>"
+              "text": "<p>カメラの <code class=\"chip\">ortho_size</code> に、<strong>描画領域に映す 3D 空間の高さ</strong>を指定すると、距離によって物体の見かけの大きさが変わらない<strong>平行投影</strong>になります。次の例では、3D 空間の長さで高さ 100 の範囲を映します。</p>"
             },
             {
               "code": "self.root.camera.ortho_size = 100",
               "syntax": "python"
             },
             {
-              "text": "<p>100 は、描画領域に映る 3D 空間の高さです（ワールド単位）。幅は描画領域の縦横比から決まり、画面のピクセル数とは別の値です。<code class=\"chip\">self.root.camera.ortho_size = None</code> で透視投影に戻せます。</p>"
+              "text": "<p>幅は描画領域の縦横比から決まり、画面のピクセル数とは別の値です。<code class=\"chip\">self.root.camera.ortho_size = None</code> で透視投影に戻せます。</p>"
             },
             {
-              "text": "<p>プレイヤーを追うカメラは、毎フレーム、プレイヤーの位置に合わせて <code class=\"chip\">look_at()</code> のカメラ位置と見る位置を更新します。カメラに近すぎる物体や遠すぎる物体は映りません。その範囲は <code class=\"chip\">near</code> と <code class=\"chip\">far</code> で調整できます。</p>"
+              "text": "<p>カメラに近すぎる物体や遠すぎる物体は描画されません。描画する奥行きの範囲は、カメラの <code class=\"chip\">near</code> と <code class=\"chip\">far</code> で調整できます。</p>"
+            },
+            {
+              "text": "<p>対象の動きに合わせて視点を動かすには、毎フレーム、対象の位置をもとにカメラの位置を計算し、<code class=\"chip\">Mat4.look_at(カメラの位置, 対象の位置)</code> で対象を見る行列を作って、カメラの <code class=\"chip\">transform</code> に設定します。</p>"
+            },
+            {
+              "text": "<p>サンプル <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py\">c05_3d_collision.py</a> の <code class=\"chip\">App.update_camera()</code> では、プレイヤーに合わせてカメラを動かしています。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-shading\">シェーディング（<a class=\"link\" href=\"../../api-reference/cube/#shading\">Shading</a> クラス）</h3>"
             },
             {
-              "text": "<p><strong>シェーディング</strong>は、面の向きと光の方向に応じて陰影を付ける処理です。<code class=\"chip\">Shading</code> を作り、ルートノードの <code class=\"chip\">shading</code> に設定します。設定は子ノードへ引き継がれます。</p>"
+              "text": "<p><strong>シェーディング</strong>は、面の向きと光の方向に応じて陰影を付ける処理です。<code class=\"chip\">Shading</code> クラスで、光の方向と、面の明るさに応じて使う色を設定します。</p><p>Pyxel の描画に使う色は、色番号ごとに <code class=\"chip\">pyxel.colors</code> に登録されています。<code class=\"chip\">Shading(pyxel.colors)</code> で <code class=\"chip\">Shading</code> を作ると、これらの色からシェーディングパレットが自動生成されます。次の例では、光の方向を指定して、ルートノードの <code class=\"chip\">shading</code> に設定します。</p>"
             },
             {
-              "code": "from pyxel.cube import Shading\n\nself.root.shading = Shading(pyxel.colors)\nself.root.shading.direction = Vec3(0.4, -1, -0.5)",
+              "code": "from pyxel.cube import Shading\n\nshading = Shading(pyxel.colors)\nshading.direction = Vec3(0.4, -1, -0.5)\nself.root.shading = shading",
               "syntax": "python"
             },
             {
-              "text": "<p><code class=\"chip\">direction</code> は、ワールド座標での光の進む方向です。上の例は、主に上から下へ光を当てます。シェーディングを設定しなければ、指定した色やテクスチャの色のまま描画されます。</p>"
+              "text": "<p><code class=\"chip\">direction</code> は、ワールド座標での光の進む方向です。上の例では、上から斜めに光を当てています。シェーディングを使わない場合は、指定した色やテクスチャの色で描画されます。</p>"
+            },
+            {
+              "text": "<p>子ノードの描画にも、親ノードの <code class=\"chip\">Shading</code> が使われます。子ノードに別の <code class=\"chip\">Shading</code> を設定すると、その設定で描画されます。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-shading-palette\">シェーディングパレット</h3>"
             },
             {
-              "text": "<p>Pyxel の表示パレットは「色番号 → RGB の色」の対応です。一方、<strong>シェーディングパレット</strong>は「元の色番号と面の明るさ → 描く色番号」の対応です。新しい色を増やさず、表示パレット内の色で陰影を作ります。<code class=\"chip\">Shading(pyxel.colors)</code> がこの対応表を自動生成します。</p>"
+              "text": "<p><strong>シェーディングパレット</strong>は、元の色番号と面の明るさごとに描画色を登録した 2 次元の表です。<code class=\"chip\">shading[色番号, 明るさ]</code> で参照・変更できます。</p>"
             },
             {
-              "text": "<p>各色には 0（最も暗い）から 7（最も明るい）までの 8 段階があり、描画時に面の向きから段階が選ばれます。各段階の色は 2 個の色番号で指定します。同じ番号なら単色、異なる番号なら 2 色を市松模様に並べる<strong>ディザ</strong>になります。自動生成した表では、<code class=\"chip\">Shading.BASE_LEVEL</code> (5) が元の色を保つ段階です。</p>"
+              "text": "<p>各色には 0（最も暗い）から 7（最も明るい）までの 8 段階があり、描画時に面の向きから段階が選ばれます。各段階の色は 2 個の色番号で指定します。同じ番号なら単色、異なる番号なら 2 色を市松模様に並べる<strong>ディザ</strong>になります。</p>"
+            },
+            {
+              "text": "<p>自動生成されたパレットでは、明るさ 5 に元の色番号が設定されます。元の色番号が 8 なら、<code class=\"chip\">shading[8, 5]</code> は <code class=\"chip\">(8, 8)</code> になります。0〜4 は元の色より暗く、6〜7 は明るく見せるための段階です。</p>"
             },
             {
               "text": "<p>例えば、色番号 8 の暗い面を、自分で選んだ色にするには次のように編集します。</p>"
@@ -4093,7 +4133,7 @@
               "syntax": "python"
             },
             {
-              "text": "<p>表示パレットを変えた場合は <code class=\"chip\">shading.build(pyxel.colors)</code> で対応表を作り直します。手動で編集した内容も上書きされるため、編集はその後に行います。</p>"
+              "text": "<p><code class=\"chip\">pyxel.colors</code> の色を変更した場合は、<code class=\"chip\">shading.build(pyxel.colors)</code> でシェーディングパレットを作り直します。手動で編集した内容も上書きされるため、編集はその後に行います。</p>"
             },
             {
               "text": "<p>一部の描画だけ陰影を外したい場合は、そのノードの <code class=\"chip\">on_draw()</code> 内で次のように指定します。</p>"
@@ -4103,32 +4143,35 @@
               "syntax": "python"
             },
             {
-              "text": "<p><code class=\"chip\">shaded()</code> は、その <code class=\"chip\">on_draw()</code> 内の以降の描画に作用します。次のノードの描画では有効に戻ります。</p>"
+              "text": "<p><code class=\"chip\">shaded()</code> の設定は、そのノードの以降の描画にだけ適用され、次に呼ばれる <code class=\"chip\">on_draw()</code> の開始時にシェーディングは有効に戻ります。</p>"
             }
           ]
         },
         {
           "id": "s-rendering",
-          "title": "3D の描画",
+          "title": "3D 形状の描画",
           "blocks": [
+            {
+              "text": "<p>Pyxel Cube では、Pyxel の 2D 描画と同じように、ノードの <code class=\"chip\">on_draw()</code> 内で 3D 用の描画メソッドを呼び出して形状を描きます。</p>"
+            },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-drawing\">描画メソッドの選び方</h3>"
             },
             {
-              "text": "<p>ノードの <code class=\"chip\">on_draw()</code> から、描きたいものに合う描画メソッドを呼びます。点・線・平面図形・立体・画像・文字を 3D 空間に描けます。位置や寸法は 3D 空間の値で指定し、カメラが画面上の位置や見かけの大きさを決めます。</p>"
+              "text": "<p>ノードには、点・線・平面図形・立体・画像・文字を 3D 空間に描くための描画メソッドが用意されています。位置や寸法は 3D 空間の値で指定し、カメラが画面上の位置や見かけの大きさを決めます。</p>"
             },
             {
               "code": "pyxel.line(0, 0, 30, 20, 8)  # 2D\nself.line(Vec3(0, 0, 0), Vec3(30, 20, 0), 8)  # 3D",
               "syntax": "python"
             },
             {
-              "text": "<p>描画位置は、そのノードの位置・向きを基準にします。<code class=\"chip\">Mat4</code> を受け取るメソッドでは、ノードの変換に加えて、描く形の移動・回転・拡大縮小を指定できます。</p>"
+              "text": "<p>描画位置は、そのノードの位置・向きを基準にします。<code class=\"chip\">Mat4</code> を受け取るメソッドでは、その行列に含まれる移動・回転・拡大縮小が適用されます。</p>"
             },
             {
-              "text": "<table class=\"w-full text-left\"><thead><tr><th class=\"th\">描くもの</th><th class=\"th\">主なメソッドと用途</th></tr></thead><tbody><tr><td class=\"td\">点・線・三角形</td><td class=\"td\"><code class=\"chip\">pset()</code>・<code class=\"chip\">line()</code>・<code class=\"chip\">tri()</code>。位置を直接指定して描きます。</td></tr><tr><td class=\"td\">平面図形</td><td class=\"td\"><code class=\"chip\">rect()</code>・<code class=\"chip\">elli()</code> は行列で向きを指定します。<code class=\"chip\">circ()</code> は常にカメラを向く円です。</td></tr><tr><td class=\"td\">立体</td><td class=\"td\"><code class=\"chip\">box()</code>・<code class=\"chip\">sphere()</code>。箱や球を描きます。</td></tr><tr><td class=\"td\">画像を貼った板</td><td class=\"td\"><code class=\"chip\">plane()</code> は行列で向きを指定し、<code class=\"chip\">sprite()</code> は常にカメラを向きます。</td></tr><tr><td class=\"td\">自作・変形した形</td><td class=\"td\"><code class=\"chip\">prim()</code> に <code class=\"chip\">Primitive</code> の形状データを渡します。</td></tr><tr><td class=\"td\">文字</td><td class=\"td\"><code class=\"chip\">text()</code>。3D の位置に文字を置き、文字の大きさは画面上で一定に保ちます。</td></tr></tbody></table>"
+              "text": "<div class=\"overflow-x-auto\"><table class=\"w-full text-left\"><thead><tr><th class=\"th whitespace-nowrap\">描画対象</th><th class=\"th whitespace-nowrap\">メソッド</th><th class=\"th whitespace-nowrap\">位置の指定</th><th class=\"th whitespace-nowrap\">向き</th></tr></thead><tbody><tr><td class=\"td whitespace-nowrap\">点</td><td class=\"td\"><code class=\"chip\">pset()</code></td><td class=\"td\">点の <code class=\"chip\">Vec3</code></td><td class=\"td\">—</td></tr><tr><td class=\"td whitespace-nowrap\">線</td><td class=\"td\"><code class=\"chip\">line()</code></td><td class=\"td\">両端の <code class=\"chip\">Vec3</code></td><td class=\"td\">両端の位置で決まる</td></tr><tr><td class=\"td whitespace-nowrap\">三角形</td><td class=\"td\"><code class=\"chip\">tri()</code>・<code class=\"chip\">trib()</code></td><td class=\"td\">3 頂点の <code class=\"chip\">Vec3</code></td><td class=\"td\">頂点の位置で決まる</td></tr><tr><td class=\"td whitespace-nowrap\">矩形</td><td class=\"td\"><code class=\"chip\">rect()</code>・<code class=\"chip\">rectb()</code></td><td class=\"td\"><code class=\"chip\">Mat4</code></td><td class=\"td\">行列で指定</td></tr><tr><td class=\"td whitespace-nowrap\">円</td><td class=\"td\"><code class=\"chip\">circ()</code>・<code class=\"chip\">circb()</code></td><td class=\"td\">中心の <code class=\"chip\">Vec3</code></td><td class=\"td\">カメラを向く</td></tr><tr><td class=\"td whitespace-nowrap\">楕円</td><td class=\"td\"><code class=\"chip\">elli()</code>・<code class=\"chip\">ellib()</code></td><td class=\"td\"><code class=\"chip\">Mat4</code></td><td class=\"td\">行列で指定</td></tr><tr><td class=\"td whitespace-nowrap\">箱</td><td class=\"td\"><code class=\"chip\">box()</code>・<code class=\"chip\">boxb()</code></td><td class=\"td\"><code class=\"chip\">Mat4</code></td><td class=\"td\">行列で指定</td></tr><tr><td class=\"td whitespace-nowrap\">球</td><td class=\"td\"><code class=\"chip\">sphere()</code>・<code class=\"chip\">sphereb()</code></td><td class=\"td\">中心の <code class=\"chip\">Vec3</code></td><td class=\"td\">—</td></tr><tr><td class=\"td whitespace-nowrap\">画像を貼った平面</td><td class=\"td\"><code class=\"chip\">plane()</code></td><td class=\"td\"><code class=\"chip\">Mat4</code></td><td class=\"td\">行列で指定</td></tr><tr><td class=\"td whitespace-nowrap\">画像を貼った平面</td><td class=\"td\"><code class=\"chip\">sprite()</code></td><td class=\"td\">位置の <code class=\"chip\">Vec3</code></td><td class=\"td\">カメラを向く</td></tr><tr><td class=\"td whitespace-nowrap\">任意の形状</td><td class=\"td\"><code class=\"chip\">prim()</code></td><td class=\"td\"><code class=\"chip\">Mat4</code></td><td class=\"td\">行列で指定</td></tr><tr><td class=\"td whitespace-nowrap\">文字</td><td class=\"td\"><code class=\"chip\">text()</code></td><td class=\"td\">位置の <code class=\"chip\">Vec3</code></td><td class=\"td\">カメラを向く</td></tr></tbody></table></div>"
             },
             {
-              "text": "<p>三角形・矩形・円・楕円・箱・球には、末尾に <code class=\"chip\">b</code> を付けた輪郭描画メソッドもあります。例えば <code class=\"chip\">boxb()</code> は箱の辺だけを描きます。</p>"
+              "text": "<p>名前が <code class=\"chip\">b</code> で終わるメソッドは、輪郭だけを描きます。例えば <code class=\"chip\">boxb()</code> は箱の辺だけを描きます。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">画像を使った描画</h3>"
@@ -4137,7 +4180,7 @@
               "text": "<p>物体の表面に貼る画像が<strong>テクスチャ</strong>です。Pyxel の <a class=\"link\" href=\"../../api-reference/#image\"><code class=\"chip\">Image</code></a> を使います。例えば <code class=\"chip\">box()</code> には、色番号の代わりに画像を渡すと、各面にその画像全体が貼られます。</p>"
             },
             {
-              "text": "<p>次は用意した画像ファイル <code class=\"chip\">assets/texture.png</code> を使う例です。ノードの初期化時に画像を読み込み、<code class=\"chip\">on_draw()</code> で描きます（<code class=\"chip\">pyxel.init()</code> の後に初期化します）。</p>"
+              "text": "<p>次は用意した画像ファイル <code class=\"chip\">assets/texture.png</code> を使う例です。ノードの初期化時に画像を読み込み、<code class=\"chip\">on_draw()</code> で描きます。</p>"
             },
             {
               "code": "self.texture = pyxel.Image.from_image(\"assets/texture.png\")",
@@ -4148,7 +4191,7 @@
               "syntax": "python"
             },
             {
-              "text": "<p>画像を板に貼る場合は、板の向きを自分で決める <code class=\"chip\">plane()</code> と、板を常にカメラへ向ける <code class=\"chip\">sprite()</code> を使えます。前者は壁の看板など、後者はドット絵のキャラクターや爆発などに向いています。<code class=\"chip\">sprite()</code> の画像にはシェーディングがかかりません。</p>"
+              "text": "<p>壁の看板などには <code class=\"chip\">plane()</code>、ドット絵のキャラクターや爆発などには <code class=\"chip\">sprite()</code> が向いています。<code class=\"chip\">sprite()</code> の画像にはシェーディングがかかりません。</p>"
             },
             {
               "text": "<p>次の例は <code class=\"chip\">on_draw()</code> 内で、画像全体を幅・高さ 30 の板に貼ります。<code class=\"chip\">uvs</code> は板の左上・右上・左下・右下に対応する画像上の位置で、画像の左上を (0, 0)、右下を (1, 1) として指定します。</p>"
@@ -4161,7 +4204,7 @@
               "text": "<p>画像の一部を使うには <code class=\"chip\">uvs</code> の範囲を変えます。<code class=\"chip\">colkey</code> に色番号を指定すると、画像のその色を透明にできます。</p>"
             },
             {
-              "text": "<p>画像を貼る例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">基本的な 3D 形状</a>サンプルの <code class=\"chip\">PlaneShape・SpriteShape</code> にあります（<a class=\"link\" href=\"../../showcase/examples/c02-basic-shapes.html\">実行</a>）。</p>"
+              "text": "<p>画像を貼る例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a>サンプルの <code class=\"chip\">PlaneShape・SpriteShape</code> にあります。このサンプルは <a class=\"link\" href=\"../../showcase/examples/c02-basic-shapes.html\">ブラウザで実行できます</a>。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-primitives\">形状データの作成（<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> クラス）</h3>"
@@ -4193,7 +4236,7 @@
               "text": "<p><code class=\"chip\">positions</code> を毎フレーム変えれば、波打つ体なども作れます。<code class=\"chip\">indices</code> は面を構成する頂点番号、<code class=\"chip\">uvs</code> は頂点と画像上の位置の対応です。<code class=\"chip\">Primitive</code> は描画メソッドやテクスチャと組み合わせて使います。</p>"
             },
             {
-              "text": "<p>頂点を動かして形を変える例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c03_custom_shapes.py\">カスタム 3D 形状</a>サンプルの <code class=\"chip\">on_draw()</code> にあります（<a class=\"link\" href=\"../../showcase/examples/c03-custom-shapes.html\">実行</a>）。</p>"
+              "text": "<p>頂点を動かして形を変える例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c03_custom_shapes.py\">c03_custom_shapes.py</a>サンプルの <code class=\"chip\">on_draw()</code> にあります。このサンプルは <a class=\"link\" href=\"../../showcase/examples/c03-custom-shapes.html\">ブラウザで実行できます</a>。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-overlay\">3D と 2D の合成</h3>"
@@ -4212,7 +4255,7 @@
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><code class=\"chip\">x, y, w, h</code>：3D を描く領域（ビューポート）。画面の一部にも描けます。</li><li><code class=\"chip\">Camera.clear_color</code>：描画先全体を塗る背景色。2D の背景を残すなら <code class=\"chip\">None</code>。</li><li><code class=\"chip\">target</code>：<code class=\"chip\">Image</code> を渡すと画面の代わりに画像へ描けます。</li></ul>"
             },
             {
-              "text": "<p>3D の位置に敵の名前などを重ねる場合は、ノードの <code class=\"chip\">text()</code> を使えます。文字は距離によらず画面上で一定の大きさになり、3D の奥行きに応じて物体に隠れます。画面に固定したスコアは <code class=\"chip\">pyxel.text()</code>、物体に付ける名前はノードの <code class=\"chip\">text()</code>、という使い分けができます。</p>"
+              "text": "<p>3D 空間の物体に名前などを添える場合は、ノードの <code class=\"chip\">text()</code> を使えます。文字の表示サイズは、カメラからの距離の影響を受けません。ほかの物体より奥にある部分は、その物体に隠れます。画面に固定したスコアは <code class=\"chip\">pyxel.text()</code>、物体に付ける名前はノードの <code class=\"chip\">text()</code>、という使い分けができます。</p>"
             },
             {
               "code": "self.text(Vec3(0, 20, 0), \"ENEMY\", 7)",
@@ -4263,7 +4306,7 @@
               "text": "<p><code class=\"chip\">Motion</code> は、読み込んだパーツの変換を更新します。全体の配置は <code class=\"chip\">Node.from_mesh()</code> が返す配置用ルート、キャラクターの移動や衝突処理はさらにその親ノード、という分担にすると、それぞれを組み合わせやすくなります。</p>"
             },
             {
-              "text": "<p>Motion を切り替える例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">GLB モデルのアニメーション</a>サンプルの <code class=\"chip\">play()</code> にあります（<a class=\"link\" href=\"../../showcase/examples/c04-mesh-and-motion.html\">実行</a>）。</p>"
+              "text": "<p>Motion を切り替える例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>サンプルの <code class=\"chip\">play()</code> にあります。このサンプルは <a class=\"link\" href=\"../../showcase/examples/c04-mesh-and-motion.html\">ブラウザで実行できます</a>。</p>"
             }
           ]
         },
@@ -4304,7 +4347,7 @@
               "text": "<p>押している方向の速度に 2 を指定し、キーを離すと X 方向の速度を 0 にします。着地や壁への応答は、次の <code class=\"chip\">on_collide()</code> で処理します。</p>"
             },
             {
-              "text": "<p>移動・ジャンプ・コイン取得の例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py\">3D 当たり判定を使ったアクションゲーム</a>サンプルの <code class=\"chip\">Player</code> にあります（<a class=\"link\" href=\"../../showcase/examples/c05-3d-collision.html\">実行</a>）。</p>"
+              "text": "<p>移動・ジャンプ・コイン取得の例は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py\">c05_3d_collision.py</a>サンプルの <code class=\"chip\">Player</code> にあります。このサンプルは <a class=\"link\" href=\"../../showcase/examples/c05-3d-collision.html\">ブラウザで実行できます</a>。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-physics-response\">衝突への応答</h3>"
@@ -4323,7 +4366,7 @@
               "text": "<p>反発の強さは <code class=\"chip\">restitution</code>、滑りにくさは <code class=\"chip\">friction</code> で変えられます。衝突による回転も計算するときは <code class=\"chip\">rolls=True</code> を指定します。</p>"
             },
             {
-              "text": "<p>物体の反発や転がりに使う衝突応答は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">3D 物理シミュレーション</a>サンプルの <code class=\"chip\">on_collide()</code> にあります（<a class=\"link\" href=\"../../showcase/examples/c06-3d-physics.html\">実行</a>）。</p>"
+              "text": "<p>物体の反発や転がりに使う衝突応答は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>サンプルの <code class=\"chip\">on_collide()</code> にあります。このサンプルは <a class=\"link\" href=\"../../showcase/examples/c06-3d-physics.html\">ブラウザで実行できます</a>。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">レイキャスト</h3>"
@@ -4382,7 +4425,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>テクスチャを Pyxel の標準色で描くには、次のようにパレットを設定します。</p><ol class=\"list-decimal pl-6 space-y-2\"><li><a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">Pyxel パレット (pyxel.gpl)</a> を保存します。</li><li><strong>Paint</strong> モードの <strong>Palette</strong> パネルで <strong>Import Palette</strong> を選び、保存したファイルを読み込みます。<strong>Replace old palette</strong> を有効にして、既存のパレットを置き換えます。</li><li>パレットの余白を右クリックし、<strong>Lock Palette</strong> を有効にすると、色の追加・削除や、ドラッグによる並べ替えを防げます。</li><li>使う色をパレットから選び、不透明度 100%、ぼかし 0 で描きます。</li></ol><p class=\"mt-2\"><strong>Lock Palette</strong> はこれらの操作を防ぐ設定で、描画色を自動制限するものではありません。独自パレットを使う場合も、ゲームの表示色と同じ色を読み込みます。</p>"
+              "text": "<p>テクスチャを Pyxel の標準色で描くには、次のようにパレットを設定します。</p><ol class=\"list-decimal pl-6 space-y-2\"><li><a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">Pyxel パレット (pyxel.gpl)</a> を保存します。</li><li><strong>Paint</strong> モードの <strong>Palette</strong> パネルで <strong>Import Palette</strong> を選び、保存したファイルを読み込みます。<strong>Replace old palette</strong> を有効にして、既存のパレットを置き換えます。</li><li>パレットの余白を右クリックし、<strong>Lock Palette</strong> を有効にすると、色の追加・削除や、ドラッグによる並べ替えを防げます。</li><li>使う色をパレットから選び、不透明度 100%、ぼかし 0 で描きます。</li></ol><p class=\"mt-2\"><strong>Lock Palette</strong> はこれらの操作を防ぐ設定で、描画色を自動制限するものではありません。独自パレットを使う場合も、ゲームの表示色と同じ色を読み込みます。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">GLB への書き出し</h3>"
@@ -4699,7 +4742,7 @@
               "text": "<p>표시 팔레트는 색 번호를 RGB 값에 대응시킵니다. <strong>셰이딩 팔레트</strong>는 색 번호와 밝기를 그리기에 사용할 색 번호에 대응시키며 표시 색을 추가하지 않습니다. <code class=\"chip\">Shading(pyxel.colors)</code>가 표시 팔레트에서 자동으로 만듭니다.</p>"
             },
             {
-              "text": "<p>밝기는 면의 방향에 따라 0(어두움)부터 7(밝음)까지 8단계입니다. 각 항목은 색 번호 두 개를 가집니다. 같으면 단색, 다르면 체크무늬 디더링입니다. <code class=\"chip\">Shading.BASE_LEVEL</code>(5)은 원래 색을 유지합니다.</p>"
+              "text": "<p>밝기는 면의 방향에 따라 0(어두움)부터 7(밝음)까지 8단계입니다. 각 항목은 색 번호 두 개를 가집니다. 같으면 단색, 다르면 체크무늬 디더링입니다.</p>"
             },
             {
               "text": "<p>예를 들어 색 번호 8의 어두운 면을 바꾸려면 다음과 같이 하세요.</p>"
@@ -4998,7 +5041,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Pyxel 기본색으로 텍스처를 칠하려면 다음과 같이 팔레트를 설정하세요.</p><ol class=\"list-decimal pl-6 space-y-2\"><li><a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">Pyxel 팔레트 (pyxel.gpl)</a>를 저장하세요.</li><li><strong>Paint</strong> 모드의 <strong>Palette</strong> 패널에서 <strong>Import Palette</strong>를 선택해 파일을 불러오세요. <strong>Replace old palette</strong>를 켜 기존 팔레트를 교체하세요.</li><li>팔레트 빈 곳을 오른쪽 클릭하고 <strong>Lock Palette</strong>를 켜 색 추가·삭제·드래그 정렬을 막으세요.</li><li>팔레트에서 색을 선택하고 불투명도 100%, 흐림 0으로 칠하세요.</li></ol><p><strong>Lock Palette</strong>는 이러한 편집만 막으며 그리기 색을 자동 제한하지 않습니다. 사용자 팔레트도 게임 표시색과 같은 색을 불러오세요.</p>"
+              "text": "<p>Pyxel 기본색으로 텍스처를 칠하려면 다음과 같이 팔레트를 설정하세요.</p><ol class=\"list-decimal pl-6 space-y-2\"><li><a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">Pyxel 팔레트 (pyxel.gpl)</a>를 저장하세요.</li><li><strong>Paint</strong> 모드의 <strong>Palette</strong> 패널에서 <strong>Import Palette</strong>를 선택해 파일을 불러오세요. <strong>Replace old palette</strong>를 켜 기존 팔레트를 교체하세요.</li><li>팔레트 빈 곳을 오른쪽 클릭하고 <strong>Lock Palette</strong>를 켜 색 추가·삭제·드래그 정렬을 막으세요.</li><li>팔레트에서 색을 선택하고 불투명도 100%, 흐림 0으로 칠하세요.</li></ol><p><strong>Lock Palette</strong>는 이러한 편집만 막으며 그리기 색을 자동 제한하지 않습니다. 사용자 팔레트도 게임 표시색과 같은 색을 불러오세요.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">GLB로 내보내기</h3>"
@@ -5315,7 +5358,7 @@
               "text": "<p>A paleta de exibição associa números de cor a RGB. A <strong>paleta de sombreamento</strong> associa cor e brilho aos números usados no desenho; não acrescenta cores de exibição. <code class=\"chip\">Shading(pyxel.colors)</code> a gera automaticamente pela paleta de exibição.</p>"
             },
             {
-              "text": "<p>Há oito níveis de brilho conforme a orientação, de 0 (escuro) a 7 (claro). Cada entrada tem dois números: iguais dão cor sólida; diferentes, pontilhamento em xadrez. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) mantém a cor original.</p>"
+              "text": "<p>Há oito níveis de brilho conforme a orientação, de 0 (escuro) a 7 (claro). Cada entrada tem dois números: iguais dão cor sólida; diferentes, pontilhamento em xadrez.</p>"
             },
             {
               "text": "<p>Por exemplo, altere as faces escuras da cor 8:</p>"
@@ -5614,7 +5657,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Para pintar com cores padrão Pyxel, configure a paleta:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Salve a <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">paleta Pyxel (pyxel.gpl)</a>.</li><li>Em <strong>Paint</strong>, painel <strong>Palette</strong>, escolha <strong>Import Palette</strong> e carregue o arquivo. Ative <strong>Replace old palette</strong> para substituir a existente.</li><li>Clique com o botão direito no espaço vazio e ative <strong>Lock Palette</strong> para impedir adição, exclusão ou reordenação por arraste.</li><li>Escolha cores da paleta, com opacidade 100% e desfoque 0.</li></ol><p><strong>Lock Palette</strong> impede essas edições sem restringir automaticamente a cor de pintura. Para paletas próprias carregue as mesmas cores do jogo.</p>"
+              "text": "<p>Para pintar com cores padrão Pyxel, configure a paleta:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Salve a <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">paleta Pyxel (pyxel.gpl)</a>.</li><li>Em <strong>Paint</strong>, painel <strong>Palette</strong>, escolha <strong>Import Palette</strong> e carregue o arquivo. Ative <strong>Replace old palette</strong> para substituir a existente.</li><li>Clique com o botão direito no espaço vazio e ative <strong>Lock Palette</strong> para impedir adição, exclusão ou reordenação por arraste.</li><li>Escolha cores da paleta, com opacidade 100% e desfoque 0.</li></ol><p><strong>Lock Palette</strong> impede essas edições sem restringir automaticamente a cor de pintura. Para paletas próprias carregue as mesmas cores do jogo.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Exportar para GLB</h3>"
@@ -5931,7 +5974,7 @@
               "text": "<p>Палитра отображения сопоставляет номера цветов с RGB. <strong>Палитра затенения</strong> сопоставляет цвет и яркость с номерами для рисования; она не добавляет отображаемых цветов. <code class=\"chip\">Shading(pyxel.colors)</code> создаёт её автоматически из палитры отображения.</p>"
             },
             {
-              "text": "<p>Яркость имеет восемь уровней по ориентации грани, от 0 (темно) до 7 (светло). В записи два номера цвета: одинаковые дают сплошной цвет, разные — шахматный дизеринг. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) сохраняет исходный цвет.</p>"
+              "text": "<p>Яркость имеет восемь уровней по ориентации грани, от 0 (темно) до 7 (светло). В записи два номера цвета: одинаковые дают сплошной цвет, разные — шахматный дизеринг.</p>"
             },
             {
               "text": "<p>Например, измените тёмные грани цвета 8:</p>"
@@ -6230,7 +6273,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Для стандартных цветов Pyxel настройте палитру:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Сохраните <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">палитру Pyxel (pyxel.gpl)</a>.</li><li>В <strong>Paint</strong>, панель <strong>Palette</strong>, выберите <strong>Import Palette</strong> и загрузите файл. Включите <strong>Replace old palette</strong> для замены старой.</li><li>Щёлкните правой кнопкой по пустому месту и включите <strong>Lock Palette</strong>, чтобы запретить добавление, удаление и перестановку перетаскиванием.</li><li>Выберите цвета из палитры; непрозрачность 100%, размытие 0.</li></ol><p><strong>Lock Palette</strong> запрещает эти правки, но не ограничивает цвета рисования автоматически. Для своей палитры загрузите те же цвета, что в игре.</p>"
+              "text": "<p>Для стандартных цветов Pyxel настройте палитру:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Сохраните <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">палитру Pyxel (pyxel.gpl)</a>.</li><li>В <strong>Paint</strong>, панель <strong>Palette</strong>, выберите <strong>Import Palette</strong> и загрузите файл. Включите <strong>Replace old palette</strong> для замены старой.</li><li>Щёлкните правой кнопкой по пустому месту и включите <strong>Lock Palette</strong>, чтобы запретить добавление, удаление и перестановку перетаскиванием.</li><li>Выберите цвета из палитры; непрозрачность 100%, размытие 0.</li></ol><p><strong>Lock Palette</strong> запрещает эти правки, но не ограничивает цвета рисования автоматически. Для своей палитры загрузите те же цвета, что в игре.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Экспорт в GLB</h3>"
@@ -6547,7 +6590,7 @@
               "text": "<p>Ekran paleti renk numaralarını RGB değerlerine eşler. <strong>Gölgelendirme paleti</strong> renk ve parlaklığı çizilecek renk numaralarına eşler; ekran rengi eklemez. <code class=\"chip\">Shading(pyxel.colors)</code> ekran paletinden otomatik oluşturur.</p>"
             },
             {
-              "text": "<p>Yüz yönelimine göre 0 (karanlık) ile 7 (aydınlık) arasında sekiz düzey vardır. Her kayıt iki renk numarası taşır: aynıysa düz renk, farklıysa dama düzeninde dithering oluşur. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) özgün rengi korur.</p>"
+              "text": "<p>Yüz yönelimine göre 0 (karanlık) ile 7 (aydınlık) arasında sekiz düzey vardır. Her kayıt iki renk numarası taşır: aynıysa düz renk, farklıysa dama düzeninde dithering oluşur.</p>"
             },
             {
               "text": "<p>Örneğin 8 numaralı rengin karanlık yüzlerini değiştirin:</p>"
@@ -6846,7 +6889,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Standart Pyxel renkleriyle boyamak için paleti kurun:</p><ol class=\"list-decimal pl-6 space-y-2\"><li><a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">Pyxel paletini (pyxel.gpl)</a> kaydedin.</li><li><strong>Paint</strong> kipinde <strong>Palette</strong> panelinden <strong>Import Palette</strong> seçip dosyayı yükleyin. Eskisini değiştirmek için <strong>Replace old palette</strong> açın.</li><li>Boş alana sağ tıklayıp <strong>Lock Palette</strong> açarak renk ekleme, silme ve sürükleyerek sıralamayı engelleyin.</li><li>Paletten renk seçin; opaklık %100, bulanıklık 0 olsun.</li></ol><p><strong>Lock Palette</strong> bu düzenlemeleri engeller, boya renklerini otomatik sınırlamaz. Özel paletler için oyundaki renklerin aynısını yükleyin.</p>"
+              "text": "<p>Standart Pyxel renkleriyle boyamak için paleti kurun:</p><ol class=\"list-decimal pl-6 space-y-2\"><li><a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">Pyxel paletini (pyxel.gpl)</a> kaydedin.</li><li><strong>Paint</strong> kipinde <strong>Palette</strong> panelinden <strong>Import Palette</strong> seçip dosyayı yükleyin. Eskisini değiştirmek için <strong>Replace old palette</strong> açın.</li><li>Boş alana sağ tıklayıp <strong>Lock Palette</strong> açarak renk ekleme, silme ve sürükleyerek sıralamayı engelleyin.</li><li>Paletten renk seçin; opaklık %100, bulanıklık 0 olsun.</li></ol><p><strong>Lock Palette</strong> bu düzenlemeleri engeller, boya renklerini otomatik sınırlamaz. Özel paletler için oyundaki renklerin aynısını yükleyin.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">GLB olarak dışa aktarma</h3>"
@@ -7163,7 +7206,7 @@
               "text": "<p>Палітра відображення зіставляє номери кольорів із RGB. <strong>Палітра затінення</strong> зіставляє колір і яскравість із номерами для малювання; кольорів відображення не додає. <code class=\"chip\">Shading(pyxel.colors)</code> створює її автоматично з палітри відображення.</p>"
             },
             {
-              "text": "<p>За орієнтацією грані є вісім рівнів, від 0 (темно) до 7 (світло). Запис містить два номери: однакові дають суцільний колір, різні — шаховий дизеринг. <code class=\"chip\">Shading.BASE_LEVEL</code> (5) зберігає початковий колір.</p>"
+              "text": "<p>За орієнтацією грані є вісім рівнів, від 0 (темно) до 7 (світло). Запис містить два номери: однакові дають суцільний колір, різні — шаховий дизеринг.</p>"
             },
             {
               "text": "<p>Наприклад, змініть темні грані кольору 8:</p>"
@@ -7462,7 +7505,7 @@
               "syntax": "text"
             },
             {
-              "text": "<p>Для стандартних кольорів Pyxel налаштуйте палітру:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Збережіть <a class=\"link\" href=\"https://kitao.github.io/pyxel/docs/pyxel.gpl\">палітру Pyxel (pyxel.gpl)</a>.</li><li>У <strong>Paint</strong>, панель <strong>Palette</strong>, виберіть <strong>Import Palette</strong> і завантажте файл. Увімкніть <strong>Replace old palette</strong> для заміни старої.</li><li>Клацніть правою кнопкою порожнє місце й увімкніть <strong>Lock Palette</strong>, щоб заборонити додавання, видалення й перестановку перетягуванням.</li><li>Виберіть кольори з палітри; непрозорість 100%, розмиття 0.</li></ol><p><strong>Lock Palette</strong> блокує ці правки, але не обмежує кольори малювання автоматично. Для власної палітри завантажте ті самі кольори, що й у грі.</p>"
+              "text": "<p>Для стандартних кольорів Pyxel налаштуйте палітру:</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Збережіть <a class=\"link\" href=\"https://kitao.dev/pyxel/assets/pyxel.gpl\">палітру Pyxel (pyxel.gpl)</a>.</li><li>У <strong>Paint</strong>, панель <strong>Palette</strong>, виберіть <strong>Import Palette</strong> і завантажте файл. Увімкніть <strong>Replace old palette</strong> для заміни старої.</li><li>Клацніть правою кнопкою порожнє місце й увімкніть <strong>Lock Palette</strong>, щоб заборонити додавання, видалення й перестановку перетягуванням.</li><li>Виберіть кольори з палітри; непрозорість 100%, розмиття 0.</li></ol><p><strong>Lock Palette</strong> блокує ці правки, але не обмежує кольори малювання автоматично. Для власної палітри завантажте ті самі кольори, що й у грі.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-export\">Експорт у GLB</h3>"

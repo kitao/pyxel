@@ -17,6 +17,9 @@ target/
 # Node
 node_modules/
 
+# Cloudflare
+.wrangler/
+
 # Environment
 .env
 .venv/

@@ -42,7 +42,7 @@
       }
 
       function updateTexts() {
-        const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
+        const pyxelLink = link("https://kitao.dev/pyxel/", "Pyxel");
 
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
@@ -53,7 +53,7 @@
         document.getElementById("s-overview").innerHTML = `
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel Cube</strong>")}</p>
-          <p class="body mt-2">${t("overview_beginner").replace("{0}", link("https://kitao.github.io/pyxel/web/user-guide/", t("base_guide")))}</p>`;
+          <p class="body mt-2">${t("overview_beginner").replace("{0}", link("https://kitao.dev/pyxel/user-guide/", t("base_guide")))}</p>`;
 
         const guide = data.guides.find((guide) => guide.language === lang);
         document.getElementById("guide").innerHTML = renderGuide(guide);

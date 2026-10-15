@@ -124,7 +124,7 @@
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
-        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+        ).replace("{0}", link("https://kitao.dev/pyxel/", "Pyxel"));
 
         for (const cat of data.categories) {
           const header = document.querySelector(`[data-cat-id="${cat.id}"]`);
