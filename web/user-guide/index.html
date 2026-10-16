@@ -45,7 +45,6 @@
           <section class="card" id="s-links"></section>
           <section class="card" id="s-contrib"></section>
           <section class="card" id="s-license"></section>
-          <section class="card" id="s-sponsors"></section>
         `;
         app.appendChild(wrap);
         updateTexts();
@@ -417,20 +416,6 @@ pyxel.show()`,
               "MIT License",
             ),
           )}</p>`;
-
-        document.getElementById("s-sponsors").innerHTML = `
-          <h2 class="section-title">${esc(t("sponsors_title"))}</h2>
-          <p class="body">${t("sponsors_body")
-            .replace(
-              "{0}",
-              link("https://github.com/sponsors/kitao", t("sponsors_link")),
-            )
-            .replace(
-              "{1}",
-              link("https://github.com/sponsors/kitao", "GitHub Sponsors"),
-            )
-            .replace("{2}", link("https://www.patreon.com/tkitao", "Patreon"))
-            .replace("{3}", link("https://ko-fi.com/H2H27VDKD", "Ko-fi"))}</p>`;
 
         setDocLang(lang);
         hljs.highlightAll();

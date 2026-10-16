@@ -314,7 +314,3 @@ Submitting a pull request implies that you agree to license your contribution un
 ## License
 
 Pyxel is licensed under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE). You may freely sell or distribute it as long as you include the copyright notice and the full license text in the source code, a file for license notices, or a similar place.
-
-## Recruiting Sponsors
-
-Support Pyxel's continued maintenance and feature development through [GitHub Sponsors](https://github.com/sponsors/kitao), [Patreon](https://www.patreon.com/tkitao), or [Ko-fi](https://ko-fi.com/H2H27VDKD). GitHub Sponsors supporters can consult directly with the Pyxel developer. For more details, please visit [here](https://github.com/sponsors/kitao).
