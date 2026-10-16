@@ -1519,48 +1519,6 @@
       "ru": "Pyxel лицензируется по {0}. Его можно свободно продавать или распространять при условии, что уведомление об авторских правах и полный текст лицензии указаны в исходном коде, файле с лицензионной информацией или аналогичном месте.",
       "tr": "Pyxel, {0} ile lisanslanmıştır. Kaynak kodunda, lisans bilgilerinin yer aldığı bir dosyada veya benzeri bir yerde telif hakkı bildirimine ve lisans metninin tamamına yer verilmesi koşuluyla Pyxel serbestçe satılabilir veya dağıtılabilir.",
       "uk": "Pyxel ліцензовано під {0}. Його можна вільно продавати або розповсюджувати за умови, що повідомлення про авторські права та повний текст ліцензії наведено у вихідному коді, файлі з ліцензійною інформацією або аналогічному місці."
-    },
-    "sponsors_title": {
-      "en": "Recruiting Sponsors",
-      "cn": "征募赞助者",
-      "de": "Sponsoren suchen",
-      "es": "Búsqueda de patrocinadores",
-      "fr": "Recherche de sponsors",
-      "it": "Ricerca di sponsor",
-      "ja": "スポンサー募集",
-      "ko": "스폰서 모집",
-      "pt": "Recrutamento de Patrocinadores",
-      "ru": "Поиск спонсоров",
-      "tr": "Sponsor Arayışı",
-      "uk": "Пошук спонсорів"
-    },
-    "sponsors_body": {
-      "en": "Support Pyxel's continued maintenance and feature development through {1}, {2}, or {3}. GitHub Sponsors supporters can consult directly with the Pyxel developer. For more details, please visit {0}.",
-      "cn": "您可以通过 {1}、{2}、{3} 捐款，支持 Pyxel 的持续维护和功能开发。GitHub Sponsors 的赞助者可以直接咨询 Pyxel 开发者。有关更多详细信息，请访问 {0}。",
-      "de": "Unterstützen Sie die fortlaufende Wartung und Funktionsentwicklung von Pyxel mit einer Spende über {1}, {2} oder {3}. Sponsoren über GitHub Sponsors können sich direkt mit dem Pyxel-Entwickler beraten. Für weitere Details besuchen Sie bitte {0}.",
-      "es": "Apoye el mantenimiento continuo y el desarrollo de funciones de Pyxel con una donación a través de {1}, {2} o {3}. Quienes patrocinan el proyecto a través de GitHub Sponsors pueden consultar directamente con el desarrollador de Pyxel. Para más detalles, visite {0}.",
-      "fr": "Soutenez la maintenance continue et le développement de fonctionnalités de Pyxel en faisant un don via {1}, {2} ou {3}. Les sponsors sur GitHub Sponsors peuvent consulter directement le développeur de Pyxel. Pour plus de détails, veuillez visiter {0}.",
-      "it": "Sostenere la manutenzione continua e lo sviluppo di nuove funzionalità di Pyxel con una donazione tramite {1}, {2} o {3}. Gli sponsor su GitHub Sponsors possono consultare direttamente lo sviluppatore di Pyxel. Per ulteriori dettagli, visitare {0}.",
-      "ja": "Pyxel のメンテナンスと機能追加の継続を、{1}・{2}・{3} を通じた寄付で応援していただけるとうれしいです。GitHub Sponsors のスポンサーは、特典として Pyxel についての相談が可能です。詳細は {0} をご覧ください。",
-      "ko": "Pyxel의 지속적인 유지 관리 및 기능 개발을 {1}, {2}, {3}를 통한 기부로 응원해 주시면 감사하겠습니다. GitHub Sponsors의 스폰서에게는 Pyxel 개발자와 직접 상담할 수 있는 혜택이 제공됩니다. 자세한 내용은 {0}를 참조하세요.",
-      "pt": "Apoie a manutenção contínua e o desenvolvimento de recursos do Pyxel com uma doação via {1}, {2} ou {3}. Os patrocinadores no GitHub Sponsors podem consultar diretamente o desenvolvedor do Pyxel. Para mais detalhes, visite {0}.",
-      "ru": "Поддержите дальнейшее сопровождение и развитие функций Pyxel пожертвованием через {1}, {2} или {3}. Спонсоры на GitHub Sponsors могут консультироваться непосредственно с разработчиком Pyxel. Для получения дополнительной информации см. {0}.",
-      "tr": "Pyxel'in sürdürülebilir bakımı ve özellik geliştirmesi için {1}, {2} ya da {3} üzerinden bağış yaparak destek olabilirsiniz. GitHub Sponsors üzerinden destek veren sponsorlar, Pyxel geliştiricisiyle doğrudan danışma imkânına sahip olabilirler. Daha fazla bilgi için {0} ziyaret edin.",
-      "uk": "Підтримайте подальше обслуговування та розвиток функцій Pyxel пожертвою через {1}, {2} чи {3}. Спонсори на GitHub Sponsors можуть безпосередньо консультуватися з розробником Pyxel. Для отримання додаткової інформації відвідайте {0}."
-    },
-    "sponsors_link": {
-      "en": "here",
-      "cn": "这里",
-      "de": "hier",
-      "es": "aquí",
-      "fr": "ici",
-      "it": "qui",
-      "ja": "こちら",
-      "ko": "여기",
-      "pt": "aqui",
-      "ru": "здесь",
-      "tr": "burayı",
-      "uk": "тут"
     }
   },
   "special_keys": [
