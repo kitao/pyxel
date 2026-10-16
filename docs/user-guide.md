@@ -10,7 +10,7 @@
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
-This project is developed by one person. If you enjoy it, please consider supporting it with [a GitHub star](https://github.com/kitao/pyxel) or a donation through [GitHub Sponsors](https://github.com/sponsors/kitao) or [Ko-fi](https://ko-fi.com/H2H27VDKD).
+This project is developed by one person. If you enjoy it, please consider supporting it with [a GitHub star](https://github.com/kitao/pyxel) or a donation through [GitHub Sponsors](https://github.com/sponsors/kitao), [Patreon](https://www.patreon.com/tkitao), or [Ko-fi](https://ko-fi.com/H2H27VDKD).
 
 ## Specifications
 
@@ -317,4 +317,4 @@ Pyxel is licensed under the [MIT License](https://github.com/kitao/pyxel/blob/ma
 
 ## Recruiting Sponsors
 
-Pyxel is looking for sponsors on GitHub Sponsors. Please consider sponsoring Pyxel to support its continued maintenance and feature development. As a benefit, sponsors can consult directly with the Pyxel developer. For more details, please visit [here](https://github.com/sponsors/kitao).
+Support Pyxel's continued maintenance and feature development through [GitHub Sponsors](https://github.com/sponsors/kitao), [Patreon](https://www.patreon.com/tkitao), or [Ko-fi](https://ko-fi.com/H2H27VDKD). GitHub Sponsors supporters can consult directly with the Pyxel developer. For more details, please visit [here](https://github.com/sponsors/kitao).

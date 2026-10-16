@@ -107,18 +107,18 @@
       "uk": "{0} є відкритим програмним забезпеченням під {1} та безкоштовним для використання. Давайте почнемо створювати ретро-ігри з {0}!"
     },
     "overview_support": {
-      "en": "This project is developed by one person. If you enjoy it, please consider supporting it with {0} or a donation through {1} or {2}.",
-      "cn": "这个项目由一人开发。如果您喜欢，请考虑 {0}，或通过 {1}、{2} 捐款来支持开发。",
-      "de": "Dieses Projekt wird von einer einzelnen Person entwickelt. Wenn es Ihnen gefällt, würde ich mich über Ihre Unterstützung freuen: mit {0} oder einer Spende über {1} oder {2}.",
-      "es": "Este proyecto lo desarrolla una sola persona. Si le gusta, considere apoyarlo {0} o con una donación a través de {1} o {2}.",
-      "fr": "Ce projet est développé par une seule personne. Si vous l'appréciez, pensez à le soutenir {0} ou en faisant un don via {1} ou {2}.",
-      "it": "Questo progetto è sviluppato da una sola persona. Se piace, è possibile sostenerlo {0} oppure con una donazione tramite {1} o {2}.",
-      "ja": "このプロジェクトは個人で開発を続けています。もし気に入ったら、{0} や、{1}・{2} を通じた寄付で応援していただけるとうれしいです。",
-      "ko": "이 프로젝트는 개인이 개발하고 있습니다. 마음에 드셨다면 {0} 또는 {1}나 {2}를 통한 기부로 개발을 응원해 주시면 감사하겠습니다.",
-      "pt": "Este projeto é desenvolvido por uma única pessoa. Se você gostou, considere apoiá-lo {0} ou com uma doação via {1} ou {2}.",
-      "ru": "Этот проект разрабатывает один человек. Если он вам нравится, вы можете поддержать его {0} или пожертвованием через {1} или {2}.",
-      "tr": "Bu proje tek bir kişi tarafından geliştirilmektedir. Beğendiyseniz {0} veya {1} ya da {2} üzerinden bağış yaparak destek olabilirsiniz.",
-      "uk": "Цей проєкт розробляє одна людина. Якщо він вам подобається, можете підтримати його {0} або пожертвою через {1} чи {2}."
+      "en": "This project is developed by one person. If you enjoy it, please consider supporting it with {0} or a donation through {1}, {2}, or {3}.",
+      "cn": "这个项目由一人开发。如果您喜欢，请考虑 {0}，或通过 {1}、{2}、{3} 捐款来支持开发。",
+      "de": "Dieses Projekt wird von einer einzelnen Person entwickelt. Wenn es Ihnen gefällt, würde ich mich über Ihre Unterstützung freuen: mit {0} oder einer Spende über {1}, {2} oder {3}.",
+      "es": "Este proyecto lo desarrolla una sola persona. Si le gusta, considere apoyarlo {0} o con una donación a través de {1}, {2} o {3}.",
+      "fr": "Ce projet est développé par une seule personne. Si vous l'appréciez, pensez à le soutenir {0} ou en faisant un don via {1}, {2} ou {3}.",
+      "it": "Questo progetto è sviluppato da una sola persona. Se piace, è possibile sostenerlo {0} oppure con una donazione tramite {1}, {2} o {3}.",
+      "ja": "このプロジェクトは個人で開発を続けています。もし気に入ったら、{0} や、{1}・{2}・{3} を通じた寄付で応援していただけるとうれしいです。",
+      "ko": "이 프로젝트는 개인이 개발하고 있습니다. 마음에 드셨다면 {0} 또는 {1}, {2}, {3}를 통한 기부로 개발을 응원해 주시면 감사하겠습니다.",
+      "pt": "Este projeto é desenvolvido por uma única pessoa. Se você gostou, considere apoiá-lo {0} ou com uma doação via {1}, {2} ou {3}.",
+      "ru": "Этот проект разрабатывает один человек. Если он вам нравится, вы можете поддержать его {0} или пожертвованием через {1}, {2} или {3}.",
+      "tr": "Bu proje tek bir kişi tarafından geliştirilmektedir. Beğendiyseniz {0} veya {1}, {2} ya da {3} üzerinden bağış yaparak destek olabilirsiniz.",
+      "uk": "Цей проєкт розробляє одна людина. Якщо він вам подобається, можете підтримати його {0} або пожертвою через {1}, {2} чи {3}."
     },
     "overview_star_link": {
       "en": "a GitHub star",
@@ -1535,18 +1535,18 @@
       "uk": "Пошук спонсорів"
     },
     "sponsors_body": {
-      "en": "Pyxel is looking for sponsors on GitHub Sponsors. Please consider sponsoring Pyxel to support its continued maintenance and feature development. As a benefit, sponsors can consult directly with the Pyxel developer. For more details, please visit {0}.",
-      "cn": "Pyxel 在 GitHub Sponsors 上寻找赞助者。请考虑赞助 Pyxel，以支持其持续维护和功能开发。作为一种福利，赞助者可以直接咨询 Pyxel 开发者。有关更多详细信息，请访问 {0}。",
-      "de": "Pyxel sucht Sponsoren auf GitHub Sponsors. Bitte ziehen Sie in Betracht, Pyxel zu sponsern, um dessen fortlaufende Wartung und Funktionsentwicklung zu unterstützen. Als Vorteil können sich Sponsoren direkt mit dem Pyxel-Entwickler beraten. Für weitere Details besuchen Sie bitte {0}.",
-      "es": "Pyxel está buscando patrocinadores en GitHub Sponsors. Por favor, considere patrocinar a Pyxel para apoyar su mantenimiento continuo y desarrollo de funciones. Como beneficio, los patrocinadores pueden consultar directamente con el desarrollador de Pyxel. Para más detalles, visite {0}.",
-      "fr": "Pyxel recherche des sponsors sur GitHub Sponsors. Veuillez envisager de soutenir Pyxel pour soutenir sa maintenance continue et le développement de fonctionnalités. En tant qu'avantage, les sponsors peuvent consulter directement le développeur de Pyxel. Pour plus de détails, veuillez visiter {0}.",
-      "it": "Pyxel sta cercando sponsor su GitHub Sponsors. Si prega di considerare l'idea di sponsorizzare Pyxel per supportarne la manutenzione continua e lo sviluppo di nuove funzionalità. Come beneficio, gli sponsor possono consultare direttamente lo sviluppatore di Pyxel. Per ulteriori dettagli, visitare {0}.",
-      "ja": "Pyxel は GitHub Sponsors でスポンサーを募っています。Pyxel のメンテナンスと機能追加の継続のために、スポンサーになることをご検討ください。スポンサーは特典として Pyxel についての相談が可能です。詳細は {0} をご覧ください。",
-      "ko": "Pyxel은 GitHub Sponsors에서 스폰서를 모집하고 있습니다. Pyxel의 지속적인 유지 관리 및 기능 개발을 지원하기 위해 후원을 고려해 주세요. 스폰서에게는 Pyxel 개발자와 직접 상담할 수 있는 혜택이 제공됩니다. 자세한 내용은 {0}를 참조하세요.",
-      "pt": "O Pyxel está buscando patrocinadores no GitHub Sponsors. Considere patrocinar o Pyxel para apoiar sua manutenção contínua e desenvolvimento de recursos. Como benefício, os patrocinadores podem consultar diretamente o desenvolvedor do Pyxel. Para mais detalhes, por favor, visite {0}.",
-      "ru": "Pyxel ищет спонсоров на GitHub Sponsors. Пожалуйста, подумайте о том, чтобы стать спонсором Pyxel и поддержать его дальнейшее сопровождение и развитие функций. В качестве преимущества спонсоры могут консультироваться непосредственно с разработчиком Pyxel. Для получения дополнительной информации см. {0}.",
-      "tr": "Pyxel, GitHub Sponsors üzerinde sponsorlar arıyor. Pyxel'in sürdürülebilir bakımı ve özellik geliştirmesi için sponsor olmayı düşünün. Bir avantaj olarak, sponsorlar Pyxel geliştiricisiyle doğrudan danışma imkânına sahip olabilirler. Daha fazla bilgi için {0} ziyaret edin.",
-      "uk": "Pyxel шукає спонсорів на GitHub Sponsors. Розгляньте можливість спонсорування Pyxel, щоб підтримати його подальше обслуговування та розвиток функцій. Як перевага, спонсори можуть безпосередньо консультуватися з розробником Pyxel. Для отримання додаткової інформації відвідайте {0}."
+      "en": "Support Pyxel's continued maintenance and feature development through {1}, {2}, or {3}. GitHub Sponsors supporters can consult directly with the Pyxel developer. For more details, please visit {0}.",
+      "cn": "您可以通过 {1}、{2}、{3} 捐款，支持 Pyxel 的持续维护和功能开发。GitHub Sponsors 的赞助者可以直接咨询 Pyxel 开发者。有关更多详细信息，请访问 {0}。",
+      "de": "Unterstützen Sie die fortlaufende Wartung und Funktionsentwicklung von Pyxel mit einer Spende über {1}, {2} oder {3}. Sponsoren über GitHub Sponsors können sich direkt mit dem Pyxel-Entwickler beraten. Für weitere Details besuchen Sie bitte {0}.",
+      "es": "Apoye el mantenimiento continuo y el desarrollo de funciones de Pyxel con una donación a través de {1}, {2} o {3}. Quienes patrocinan el proyecto a través de GitHub Sponsors pueden consultar directamente con el desarrollador de Pyxel. Para más detalles, visite {0}.",
+      "fr": "Soutenez la maintenance continue et le développement de fonctionnalités de Pyxel en faisant un don via {1}, {2} ou {3}. Les sponsors sur GitHub Sponsors peuvent consulter directement le développeur de Pyxel. Pour plus de détails, veuillez visiter {0}.",
+      "it": "Sostenere la manutenzione continua e lo sviluppo di nuove funzionalità di Pyxel con una donazione tramite {1}, {2} o {3}. Gli sponsor su GitHub Sponsors possono consultare direttamente lo sviluppatore di Pyxel. Per ulteriori dettagli, visitare {0}.",
+      "ja": "Pyxel のメンテナンスと機能追加の継続を、{1}・{2}・{3} を通じた寄付で応援していただけるとうれしいです。GitHub Sponsors のスポンサーは、特典として Pyxel についての相談が可能です。詳細は {0} をご覧ください。",
+      "ko": "Pyxel의 지속적인 유지 관리 및 기능 개발을 {1}, {2}, {3}를 통한 기부로 응원해 주시면 감사하겠습니다. GitHub Sponsors의 스폰서에게는 Pyxel 개발자와 직접 상담할 수 있는 혜택이 제공됩니다. 자세한 내용은 {0}를 참조하세요.",
+      "pt": "Apoie a manutenção contínua e o desenvolvimento de recursos do Pyxel com uma doação via {1}, {2} ou {3}. Os patrocinadores no GitHub Sponsors podem consultar diretamente o desenvolvedor do Pyxel. Para mais detalhes, visite {0}.",
+      "ru": "Поддержите дальнейшее сопровождение и развитие функций Pyxel пожертвованием через {1}, {2} или {3}. Спонсоры на GitHub Sponsors могут консультироваться непосредственно с разработчиком Pyxel. Для получения дополнительной информации см. {0}.",
+      "tr": "Pyxel'in sürdürülebilir bakımı ve özellik geliştirmesi için {1}, {2} ya da {3} üzerinden bağış yaparak destek olabilirsiniz. GitHub Sponsors üzerinden destek veren sponsorlar, Pyxel geliştiricisiyle doğrudan danışma imkânına sahip olabilirler. Daha fazla bilgi için {0} ziyaret edin.",
+      "uk": "Підтримайте подальше обслуговування та розвиток функцій Pyxel пожертвою через {1}, {2} чи {3}. Спонсори на GitHub Sponsors можуть безпосередньо консультуватися з розробником Pyxel. Для отримання додаткової інформації відвідайте {0}."
     },
     "sponsors_link": {
       "en": "here",
