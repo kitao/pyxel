@@ -85,7 +85,8 @@
               "{1}",
               link("https://github.com/sponsors/kitao", "GitHub Sponsors"),
             )
-            .replace("{2}", link("https://ko-fi.com/H2H27VDKD", "Ko-fi"))}</p>
+            .replace("{2}", link("https://www.patreon.com/tkitao", "Patreon"))
+            .replace("{3}", link("https://ko-fi.com/H2H27VDKD", "Ko-fi"))}</p>
           <div class="flex items-end gap-2 mt-3">
             <a href="https://kitao.dev/pyxel/user-examples/" target="_blank" rel="noopener noreferrer" style="flex:553"><img src="../../docs/images/pyxel_thanks.png" alt="Pyxel User Examples" class="w-full" loading="lazy"></a>
             <a href="https://gihyo.jp/book/2025/978-4-297-14657-3" target="_blank" rel="noopener noreferrer" style="flex:190"><img src="../../docs/images/pyxel_book.png" alt="Pyxel book" class="w-full" loading="lazy"></a>
@@ -419,10 +420,17 @@ pyxel.show()`,
 
         document.getElementById("s-sponsors").innerHTML = `
           <h2 class="section-title">${esc(t("sponsors_title"))}</h2>
-          <p class="body">${t("sponsors_body").replace(
-            "{0}",
-            link("https://github.com/sponsors/kitao", t("sponsors_link")),
-          )}</p>`;
+          <p class="body">${t("sponsors_body")
+            .replace(
+              "{0}",
+              link("https://github.com/sponsors/kitao", t("sponsors_link")),
+            )
+            .replace(
+              "{1}",
+              link("https://github.com/sponsors/kitao", "GitHub Sponsors"),
+            )
+            .replace("{2}", link("https://www.patreon.com/tkitao", "Patreon"))
+            .replace("{3}", link("https://ko-fi.com/H2H27VDKD", "Ko-fi"))}</p>`;
 
         setDocLang(lang);
         hljs.highlightAll();
