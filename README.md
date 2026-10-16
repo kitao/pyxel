@@ -1,74 +1,93 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_logo_152x64.png" alt="Pyxel">
-
-[![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
-[![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&logo=github%20sponsors&style=social)](https://github.com/sponsors/kitao)
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
-
-**Pyxel** (/ˈpɪksəl/) is a retro game engine for Python.
-
-With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
-
-Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
-
-Also, this project is developed by one person, kept going by your GitHub stars. If you enjoy it, please give it a star!
-
-**[▸ User Guide](https://kitao.dev/pyxel/user-guide/)**
-
-**[▸ Pyxel Cube Guide — Making 3D Games](https://kitao.dev/pyxel/user-guide/cube/)**
-
-**[▸ User Examples](https://kitao.dev/pyxel/user-examples/)**
-
-**[▸ Share Your Work](https://github.com/kitao/pyxel/discussions/new?category=user-examples)**
-
----
-
-**Pyxel**（ピクセル）は Python 向けのレトロゲームエンジンです。
-
-使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。
-
-Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
-
-また、このプロジェクトは GitHub のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！
-
-**[▸ ユーザーガイド](https://kitao.dev/pyxel/user-guide/)**
-
-**[▸ Pyxel Cube ガイド — 3D ゲームを作る](https://kitao.dev/pyxel/user-guide/cube/)**
-
-**[▸ ユーザー作品集](https://kitao.dev/pyxel/user-examples/)**
-
-**[▸ 作品を投稿する](https://github.com/kitao/pyxel/discussions/new?category=user-examples)**
-
-[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" alt="Pyxel User Examples" width="553">](https://kitao.dev/pyxel/user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" alt="Pyxel book" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+# <a href="https://kitao.dev/pyxel/"><img src="https://kitao.dev/pyxel/assets/images/pyxel_logo_152x64.png" alt="Pyxel" width="152" height="64"></a>
 
 <p>
-<a href="https://kitao.dev/pyxel/showcase/examples/02-jump-game.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/02_jump_game.gif" alt="Jump game" width="253">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/examples/10-platformer.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/10_platformer.gif" alt="Platformer" width="222">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/apps/30sec-of-daylight.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" alt="30 Seconds of Daylight" width="268">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/apps/megaball.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/megaball.gif" alt="Megaball" width="231">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/tools/image-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_tilemap_editor.gif" alt="Image and tilemap editor" width="256">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/tools/sound-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_music_editor.gif" alt="Sound and music editor" width="256">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/examples/c04-mesh-and-motion.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c04_mesh_and_motion.gif" alt="Mesh and motion" width="248">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/examples/c05-3d-collision.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c05_3d_collision.gif" alt="3D collision" width="248">
-</a>
-<a href="https://kitao.dev/pyxel/showcase/examples/c06-3d-physics.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/c06_3d_physics.gif" alt="3D physics" width="248">
-</a>
+  <a href="https://github.com/kitao/pyxel"><img src="https://img.shields.io/github/stars/kitao/pyxel?style=social" alt="GitHub Repo stars" height="20"></a>
+  <a href="https://github.com/kitao/pyxel"><img src="https://img.shields.io/github/forks/kitao/pyxel?style=social" alt="GitHub forks" height="20"></a>
+  <a href="https://github.com/sponsors/kitao"><img src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&amp;logo=github%20sponsors&amp;style=social" alt="GitHub Sponsors" height="20"></a>
+  <a href="https://ko-fi.com/H2H27VDKD"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi" height="20" width="149"></a>
 </p>
+
+A retro game engine for Python
+
+**[▸ Website](https://kitao.dev/pyxel/)**
+
+<p>
+        <a href="https://kitao.dev/pyxel/user-examples/"
+          ><img
+            src="https://kitao.dev/pyxel/assets/images/pyxel_thanks.png"
+            alt="Pyxel User Examples"
+            width="553"
+        /></a>
+        <a href="https://gihyo.jp/book/2025/978-4-297-14657-3"
+          ><img
+            src="https://kitao.dev/pyxel/assets/images/pyxel_book.png"
+            alt="Pyxel book"
+            width="190"
+        /></a>
+      </p>
+
+<p>
+        <a href="https://kitao.dev/pyxel/showcase/examples/02-jump-game.html">
+          <img
+            src="https://kitao.dev/pyxel/assets/images/02_jump_game.gif"
+            alt="Jump game"
+            width="253"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/examples/10-platformer.html">
+          <img
+            src="https://kitao.dev/pyxel/assets/images/10_platformer.gif"
+            alt="Platformer"
+            width="222"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/apps/30sec-of-daylight.html">
+          <img
+            src="https://kitao.dev/pyxel/assets/images/30sec_of_daylight.gif"
+            alt="30 Seconds of Daylight"
+            width="268"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/apps/megaball.html">
+          <img src="https://kitao.dev/pyxel/assets/images/megaball.gif" alt="Megaball" width="231" />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/tools/image-editor.html">
+          <img
+            src="https://kitao.dev/pyxel/assets/images/image_tilemap_editor.gif"
+            alt="Image and tilemap editor"
+            width="256"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/tools/sound-editor.html">
+          <img
+            src="https://kitao.dev/pyxel/assets/images/sound_music_editor.gif"
+            alt="Sound and music editor"
+            width="256"
+          />
+        </a>
+        <a
+          href="https://kitao.dev/pyxel/showcase/examples/c04-mesh-and-motion.html"
+        >
+          <img
+            src="https://kitao.dev/pyxel/assets/images/c04_mesh_and_motion.gif"
+            alt="Mesh and motion"
+            width="248"
+          />
+        </a>
+        <a
+          href="https://kitao.dev/pyxel/showcase/examples/c05-3d-collision.html"
+        >
+          <img
+            src="https://kitao.dev/pyxel/assets/images/c05_3d_collision.gif"
+            alt="3D collision"
+            width="248"
+          />
+        </a>
+        <a href="https://kitao.dev/pyxel/showcase/examples/c06-3d-physics.html">
+          <img
+            src="https://kitao.dev/pyxel/assets/images/c06_3d_physics.gif"
+            alt="3D physics"
+            width="248"
+          />
+        </a>
+      </p>
