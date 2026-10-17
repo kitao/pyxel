@@ -16,7 +16,8 @@ class Shape(Node):
         self.transform = Mat4.from_translation(self.position) * spin
 
     def on_draw(self):
-        if self.wire_method and pyxel.btn(pyxel.KEY_SPACE):
+        wireframe = pyxel.btn(pyxel.KEY_SPACE) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A)
+        if self.wire_method and wireframe:
             caption = self.wire_method
             self.draw_wire()
         else:
@@ -165,9 +166,19 @@ class Scene(Node):
             prev_x, prev_y = self.prev_mouse_pos
             self.yaw = max(-45.0, min(45.0, self.yaw - (mouse_x - prev_x) * 0.5))
             self.pitch = max(-30.0, min(30.0, self.pitch + (mouse_y - prev_y) * 0.5))
-            self.update_camera()
 
         self.prev_mouse_pos = (mouse_x, mouse_y)
+        self.yaw += 2 * (
+            pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)
+            - pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        )
+        self.pitch += 2 * (
+            pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)
+            - pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP)
+        )
+        self.yaw = max(-45.0, min(45.0, self.yaw))
+        self.pitch = max(-30.0, min(30.0, self.pitch))
+        self.update_camera()
 
 
 class App:
@@ -190,10 +201,10 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        hud_x, hud_y = pyxel.width // 2 - 35, pyxel.height // 2 - 10
-        pyxel.rect(hud_x, hud_y, 70, 20, 0)
-        pyxel.text(hud_x + 3, hud_y + 3, "Mouse: Rotate", 7)
-        pyxel.text(hud_x + 3, hud_y + 11, "Space: Wireframe", 7)
+        hud_x, hud_y = pyxel.width // 2 - 40, pyxel.height // 2 - 10
+        pyxel.rect(hud_x, hud_y, 80, 20, 0)
+        pyxel.text(hud_x + 3, hud_y + 3, "Mouse/Pad: Turn", 7)
+        pyxel.text(hud_x + 3, hud_y + 11, "Space/Bottom: Wire", 7)
 
 
 App()

@@ -21,7 +21,6 @@ const VIRTUAL_GAMEPAD_X = 6;
 const VIRTUAL_GAMEPAD_Y = 7;
 const VIRTUAL_GAMEPAD_START = 8;
 const VIRTUAL_GAMEPAD_BACK = 9;
-const VIRTUAL_GAMEPAD_BUTTON_COUNT = 10;
 
 // Custom elements
 
@@ -158,14 +157,16 @@ window.pyxelContext = {
   resetPromise: null,
 };
 
-const _virtualGamepadStates = Array(VIRTUAL_GAMEPAD_BUTTON_COUNT).fill(false);
+let _virtualGamepadHeldButtons = 0;
+let _virtualGamepadPendingButtons = 0;
+const _virtualGamepadContacts = new Map();
 
-// Pack the 10 button states into a single int so Rust can fetch them in
-// one emscripten_run_script_int call instead of ten per frame.
+// Rust reads once per frame; retain short presses until that frame observes them.
 const _readVirtualGamepadBitmask = () => {
-  let bits = 0;
-  for (let i = 0; i < VIRTUAL_GAMEPAD_BUTTON_COUNT; i++) {
-    if (_virtualGamepadStates[i]) bits |= 1 << i;
+  const bits = _virtualGamepadHeldButtons | _virtualGamepadPendingButtons;
+  _virtualGamepadPendingButtons = 0;
+  for (const contact of _virtualGamepadContacts.values()) {
+    contact.observedButtons = contact.buttons;
   }
   return bits;
 };
@@ -743,60 +744,49 @@ const _waitForInput = async () => {
 
 // Virtual gamepad
 
-const _updateGamepadStateFromTouch = (
-  clientX,
-  clientY,
-  crossRect,
-  buttonRect,
-  menuRect,
-) => {
-  const size = crossRect.width;
-  const crossX = (clientX - crossRect.left) / size - 0.5;
-  const crossY = (clientY - crossRect.bottom) / size + 0.5;
-  const buttonX = (clientX - buttonRect.right) / size + 0.5;
-  const buttonY = (clientY - buttonRect.bottom) / size + 0.5;
-  const menuX = (clientX - menuRect.left) / size;
-  const menuY = (clientY - menuRect.bottom) / size + 0.5;
+const _virtualDpadButtons = [
+  [VIRTUAL_GAMEPAD_RIGHT],
+  [VIRTUAL_GAMEPAD_RIGHT, VIRTUAL_GAMEPAD_DOWN],
+  [VIRTUAL_GAMEPAD_DOWN],
+  [VIRTUAL_GAMEPAD_DOWN, VIRTUAL_GAMEPAD_LEFT],
+  [VIRTUAL_GAMEPAD_LEFT],
+  [VIRTUAL_GAMEPAD_LEFT, VIRTUAL_GAMEPAD_UP],
+  [VIRTUAL_GAMEPAD_UP],
+  [VIRTUAL_GAMEPAD_UP, VIRTUAL_GAMEPAD_RIGHT],
+];
+const _virtualActionButtons = [
+  [VIRTUAL_GAMEPAD_B],
+  [VIRTUAL_GAMEPAD_A],
+  [VIRTUAL_GAMEPAD_X],
+  [VIRTUAL_GAMEPAD_Y],
+];
 
-  if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
-    const angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
-    if (angle > 22.5 && angle < 157.5) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_UP] = true;
+const _getVirtualGamepadButtons = (clientX, clientY, rect, control) => {
+  if (rect.width <= 0 || rect.height <= 0) return 0;
+  const x = (clientX - rect.left) / rect.width - 0.5;
+  const y = (clientY - rect.top) / rect.height - 0.5;
+  if (control === "menu") {
+    // The 92-pixel menu image has a 14-pixel gap between its two buttons.
+    if (Math.abs(x) > 7 / 92) {
+      return 1 << (x >= 0 ? VIRTUAL_GAMEPAD_START : VIRTUAL_GAMEPAD_BACK);
     }
-    if (angle > -157.5 && angle < -22.5) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_DOWN] = true;
-    }
-    if (Math.abs(angle) >= 112.5) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_LEFT] = true;
-    }
-    if (Math.abs(angle) <= 67.5) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_RIGHT] = true;
-    }
+    return 0;
   }
 
-  if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
-    const angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
-    if (angle > -135 && angle < -45) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_A] = true;
-    }
-    if (Math.abs(angle) <= 45) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_B] = true;
-    }
-    if (Math.abs(angle) >= 135) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_X] = true;
-    }
-    if (angle > 45 && angle < 135) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_Y] = true;
-    }
+  // The central quarter matches the cross center and the gap between buttons.
+  if (x ** 2 + y ** 2 <= 0.125 ** 2) {
+    return 0;
   }
-
-  if (menuX >= 0.0 && menuX <= 1.0 && menuY >= 0.2 && menuY <= 0.5) {
-    if (menuX >= 0.5) {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_START] = true;
-    } else {
-      _virtualGamepadStates[VIRTUAL_GAMEPAD_BACK] = true;
-    }
-  }
+  const buttons =
+    control === "cross" ? _virtualDpadButtons : _virtualActionButtons;
+  const angle = Math.atan2(y, x);
+  const sector =
+    Math.floor(
+      (angle * buttons.length) / (2 * Math.PI) + buttons.length + 0.5,
+    ) % buttons.length;
+  let bits = 0;
+  for (const button of buttons[sector]) bits |= 1 << button;
+  return bits;
 };
 
 // Add touch controls and keep their hit areas stable across resets.
@@ -822,10 +812,9 @@ const _addVirtualGamepad = (mode) => {
     img.alt = "";
     img.src = `${_scriptDir}${path}`;
     img.tabIndex = -1;
-    img.onload = () => {
-      pyxelScreen.appendChild(img);
-      _updateScreenElementsSize();
-    };
+    img.draggable = false;
+    img.onload = _updateScreenElementsSize;
+    pyxelScreen.appendChild(img);
     return img;
   };
 
@@ -842,49 +831,94 @@ const _addVirtualGamepad = (mode) => {
     GAMEPAD_MENU_PATH,
   );
 
-  // Replace reset-scoped handlers to prevent duplicate touch events.
-  if (_addVirtualGamepad._handler) {
-    const prev = _addVirtualGamepad._handler;
-    document.removeEventListener("touchstart", prev);
-    document.removeEventListener("touchmove", prev);
-    document.removeEventListener("touchend", prev);
-    document.removeEventListener("touchcancel", prev);
-  }
-  if (_addVirtualGamepad._invalidateRects) {
-    window.removeEventListener("resize", _addVirtualGamepad._invalidateRects);
-  }
-
+  const contacts = _virtualGamepadContacts;
   let cachedRects = null;
   const invalidateRects = () => {
     cachedRects = null;
   };
   _addVirtualGamepad._invalidateRects = invalidateRects;
   window.addEventListener("resize", invalidateRects);
+  window.addEventListener("scroll", invalidateRects, true);
+
+  const releaseContacts = () => {
+    contacts.clear();
+    _virtualGamepadHeldButtons = 0;
+    _virtualGamepadPendingButtons = 0;
+  };
+  window.addEventListener("blur", releaseContacts);
+  window.addEventListener("pagehide", releaseContacts);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) releaseContacts();
+  });
 
   const touchHandler = (e) => {
-    if (!cachedRects) {
-      const cross = gamepadCrossImage.getBoundingClientRect();
-      const button = gamepadButtonImage.getBoundingClientRect();
-      const menu = gamepadMenuImage.getBoundingClientRect();
-      // Avoid caching zero rects before the controls enter the DOM.
-      if (cross.width > 0 && button.width > 0 && menu.width > 0) {
-        cachedRects = { cross, button, menu };
+    const rects = cachedRects ?? {
+      cross: gamepadCrossImage.getBoundingClientRect(),
+      button: gamepadButtonImage.getBoundingClientRect(),
+      menu: gamepadMenuImage.getBoundingClientRect(),
+    };
+    // Retry incomplete bounds as the images load; each loaded control still works.
+    if (
+      !cachedRects &&
+      Object.values(rects).every((rect) => rect.width > 0 && rect.height > 0)
+    ) {
+      cachedRects = rects;
+    }
+
+    let handled = false;
+    if (e.type === "touchstart") {
+      for (const touch of e.changedTouches) {
+        // Match the image stacking order when the menu overlaps a pad corner.
+        for (const [control, rect] of Object.entries(rects).reverse()) {
+          if (
+            rect.width > 0 &&
+            rect.height > 0 &&
+            touch.clientX >= rect.left &&
+            touch.clientX <= rect.right &&
+            touch.clientY >= rect.top &&
+            touch.clientY <= rect.bottom
+          ) {
+            // Keep the control assigned until this particular finger is lifted.
+            contacts.set(touch.identifier, {
+              control,
+              buttons: 0,
+              observedButtons: 0,
+            });
+            break;
+          }
+        }
       }
     }
-    const cross =
-      cachedRects?.cross ?? gamepadCrossImage.getBoundingClientRect();
-    const button =
-      cachedRects?.button ?? gamepadButtonImage.getBoundingClientRect();
-    const menu = cachedRects?.menu ?? gamepadMenuImage.getBoundingClientRect();
 
-    _virtualGamepadStates.fill(false);
-    for (const touch of e.touches) {
-      const { clientX, clientY } = touch;
-      _updateGamepadStateFromTouch(clientX, clientY, cross, button, menu);
+    const activeIds = new Set(
+      Array.from(e.touches, (touch) => touch.identifier),
+    );
+    for (const [id, contact] of contacts) {
+      handled = true;
+      if (!activeIds.has(id)) {
+        if (e.type === "touchend") {
+          _virtualGamepadPendingButtons |=
+            contact.buttons & ~contact.observedButtons;
+        }
+        contacts.delete(id);
+      }
     }
-    if (e.cancelable) e.preventDefault();
+
+    _virtualGamepadHeldButtons = 0;
+    for (const touch of e.touches) {
+      const contact = contacts.get(touch.identifier);
+      if (contact) {
+        contact.buttons = _getVirtualGamepadButtons(
+          touch.clientX,
+          touch.clientY,
+          rects[contact.control],
+          contact.control,
+        );
+        _virtualGamepadHeldButtons |= contact.buttons;
+      }
+    }
+    if (handled && e.cancelable) e.preventDefault();
   };
-  _addVirtualGamepad._handler = touchHandler;
 
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });

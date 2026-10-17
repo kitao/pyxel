@@ -57,22 +57,49 @@ test("optional showcase registration failures stay inside its warning handler", 
   }
 });
 
-const loadVirtualGamepad = () => {
-  const screen = { style: {}, appendChild() {} };
+const loadVirtualGamepad = ({ touchDevice = true, mode = "enabled" } = {}) => {
+  const elements = new Map();
+  const screen = {
+    style: {},
+    appendChild(element) {
+      elements.set(element.id, element);
+    },
+  };
   const rects = {
-    "pyxel-gamepad-cross": { left: 0, right: 100, bottom: 100, width: 100 },
-    "pyxel-gamepad-button": { left: 200, right: 300, bottom: 100, width: 100 },
-    "pyxel-gamepad-menu": { left: 100, right: 200, bottom: 100, width: 100 },
+    "pyxel-gamepad-cross": {
+      left: 0,
+      top: 0,
+      right: 100,
+      bottom: 100,
+      width: 100,
+      height: 100,
+    },
+    "pyxel-gamepad-button": {
+      left: 200,
+      top: 0,
+      right: 300,
+      bottom: 100,
+      width: 100,
+      height: 100,
+    },
+    "pyxel-gamepad-menu": {
+      left: 100,
+      top: 74,
+      right: 192,
+      bottom: 100,
+      width: 92,
+      height: 26,
+    },
   };
   const context = {
     window: Object.assign(new EventTarget(), {
-      matchMedia: () => ({ matches: true }),
+      matchMedia: () => ({ matches: touchDevice }),
       customElements: { define() {} },
     }),
     document: Object.assign(new EventTarget(), {
       head: { appendChild() {} },
       getElementsByTagName: () => [],
-      getElementById: () => null,
+      getElementById: (id) => elements.get(id),
       querySelector: (selector) =>
         selector === "canvas#canvas" ? { style: {} } : screen,
       createElement: () => ({
@@ -91,11 +118,13 @@ const loadVirtualGamepad = () => {
     };`,
     context,
   );
-  context.__test.add("enabled");
+  context.__test.add(mode);
   return {
     document: context.document,
+    window: context.window,
     read: context.__test.read,
     rects,
+    elements,
     resize: loadArrowFunction(pyxelSource, "_updateScreenElementsSize", {
       document: {
         querySelector: () => ({
@@ -111,10 +140,14 @@ const loadVirtualGamepad = () => {
   };
 };
 
-const dispatchTouches = (target, type, touches) => {
+const dispatchTouches = (target, type, touches, changedTouches = touches) => {
   const event = new Event(type, { cancelable: true });
-  event.touches = touches;
+  const withIds = (items) =>
+    items.map((touch, i) => ({ identifier: i, ...touch }));
+  event.touches = withIds(touches);
+  event.changedTouches = withIds(changedTouches);
   target.dispatchEvent(event);
+  return event;
 };
 
 for (const order of [
@@ -304,9 +337,10 @@ test("virtual gamepad keeps remaining touches when one touch is canceled", () =>
   assert.equal(gamepad.read(), 0);
 });
 
-test("virtual gamepad replaces touch handlers before controls load", () => {
+test("virtual gamepad creates controls and listeners once before images load", () => {
   const gamepad = loadVirtualGamepad();
   gamepad.addAgain();
+  assert.equal(gamepad.elements.size, 3);
   dispatchTouches(gamepad.document, "touchstart", [
     { clientX: 250, clientY: 75 },
   ]);
@@ -340,6 +374,347 @@ test("virtual gamepad refreshes touch bounds after screen sizing", () => {
     { clientX: 100, clientY: 50 },
   ]);
   assert.equal(gamepad.read(), 1 << 0);
+});
+
+test("virtual gamepad accepts all eight directions including image corners", () => {
+  const gamepad = loadVirtualGamepad();
+  for (const [clientX, clientY, bits] of [
+    [50, 0, 1],
+    [100, 0, 9],
+    [100, 50, 8],
+    [99, 99, 10],
+    [50, 100, 2],
+    [0, 100, 6],
+    [0, 50, 4],
+    [0, 0, 5],
+  ]) {
+    dispatchTouches(gamepad.document, "touchstart", [{ clientX, clientY }]);
+    assert.equal(gamepad.read(), bits, `direction at ${clientX}, ${clientY}`);
+    dispatchTouches(gamepad.document, "touchend", []);
+  }
+});
+
+test("virtual gamepad retains each control when a held finger drifts outside", () => {
+  const gamepad = loadVirtualGamepad();
+  dispatchTouches(gamepad.document, "touchstart", [
+    { identifier: 7, clientX: 90, clientY: 10 },
+    { identifier: 9, clientX: 250, clientY: 90 },
+  ]);
+  assert.equal(gamepad.read(), 9 | (1 << 4));
+
+  dispatchTouches(gamepad.document, "touchmove", [
+    { identifier: 9, clientX: 250, clientY: 130 },
+    { identifier: 7, clientX: 120, clientY: -20 },
+  ]);
+  assert.equal(gamepad.read(), 9 | (1 << 4));
+
+  dispatchTouches(gamepad.document, "touchend", [
+    { identifier: 7, clientX: 120, clientY: -20 },
+  ]);
+  assert.equal(gamepad.read(), 9);
+  dispatchTouches(gamepad.document, "touchend", []);
+  assert.equal(gamepad.read(), 0);
+});
+
+test("virtual gamepad leaves the centers neutral and supports sliding directions", () => {
+  const gamepad = loadVirtualGamepad();
+  for (const clientX of [50, 250]) {
+    dispatchTouches(gamepad.document, "touchstart", [{ clientX, clientY: 50 }]);
+    assert.equal(gamepad.read(), 0);
+    dispatchTouches(gamepad.document, "touchmove", [
+      { clientX: clientX + 2, clientY: 49 },
+    ]);
+    assert.equal(gamepad.read(), 0);
+    dispatchTouches(gamepad.document, "touchend", []);
+  }
+
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 50, clientY: 10 },
+  ]);
+  for (const [clientX, clientY, bits] of [
+    [90, 10, 9],
+    [90, 50, 8],
+    [50, 50, 0],
+    [10, 90, 6],
+  ]) {
+    dispatchTouches(gamepad.document, "touchmove", [{ clientX, clientY }]);
+    assert.equal(gamepad.read(), bits);
+  }
+});
+
+test("virtual gamepad uses each control's own displayed rectangle", () => {
+  const gamepad = loadVirtualGamepad();
+  gamepad.rects["pyxel-gamepad-button"] = {
+    left: 200,
+    top: 0,
+    right: 260,
+    bottom: 60,
+    width: 60,
+    height: 60,
+  };
+  for (const [clientX, clientY, bits] of [
+    [230, 50, 1 << 4],
+    [250, 30, 1 << 5],
+    [210, 30, 1 << 6],
+    [230, 10, 1 << 7],
+    [102, 75, 1 << 9],
+    [190, 99, 1 << 8],
+  ]) {
+    dispatchTouches(gamepad.document, "touchstart", [{ clientX, clientY }]);
+    assert.equal(gamepad.read(), bits, `button at ${clientX}, ${clientY}`);
+    dispatchTouches(gamepad.document, "touchend", []);
+  }
+});
+
+test("virtual gamepad combines same-button contacts until both are released", () => {
+  const gamepad = loadVirtualGamepad();
+  const first = { identifier: 7, clientX: 245, clientY: 80 };
+  const second = { identifier: 9, clientX: 255, clientY: 80 };
+  dispatchTouches(gamepad.document, "touchstart", [first], [first]);
+  dispatchTouches(gamepad.document, "touchstart", [first, second], [second]);
+  dispatchTouches(gamepad.document, "touchend", [second], [first]);
+  assert.equal(gamepad.read(), 1 << 4);
+  dispatchTouches(gamepad.document, "touchcancel", [], [second]);
+  assert.equal(gamepad.read(), 0);
+});
+
+test("virtual gamepad does not capture touches that started outside controls", () => {
+  const gamepad = loadVirtualGamepad();
+  const start = { clientX: 400, clientY: 400 };
+  const event = dispatchTouches(gamepad.document, "touchstart", [start]);
+  assert.equal(event.defaultPrevented, false);
+  dispatchTouches(gamepad.document, "touchmove", [
+    { clientX: 50, clientY: 10 },
+  ]);
+  assert.equal(gamepad.read(), 0);
+});
+
+test("virtual gamepad releases contacts on focus loss or a hidden document", () => {
+  const gamepad = loadVirtualGamepad();
+  for (const type of ["blur", "pagehide", "visibilitychange"]) {
+    dispatchTouches(gamepad.document, "touchstart", [
+      { clientX: 50, clientY: 10 },
+    ]);
+    assert.equal(gamepad.read(), 1);
+    gamepad.document.hidden = true;
+    (type === "visibilitychange"
+      ? gamepad.document
+      : gamepad.window
+    ).dispatchEvent(new Event(type));
+    assert.equal(gamepad.read(), 0);
+    dispatchTouches(gamepad.document, "touchmove", [
+      { clientX: 50, clientY: 10 },
+    ]);
+    assert.equal(gamepad.read(), 0);
+  }
+});
+
+test("virtual gamepad keeps direction sectors symmetric under quarter turns", () => {
+  const gamepad = loadVirtualGamepad();
+  const rotateDpad = (bits) =>
+    (bits & 1 ? 8 : 0) |
+    (bits & 8 ? 2 : 0) |
+    (bits & 2 ? 4 : 0) |
+    (bits & 4 ? 1 : 0);
+  const rotateButton = (bits) =>
+    (bits & 32 ? 16 : 0) |
+    (bits & 16 ? 64 : 0) |
+    (bits & 64 ? 128 : 0) |
+    (bits & 128 ? 32 : 0);
+  for (const [centerX, rotate] of [
+    [50, rotateDpad],
+    [250, rotateButton],
+  ]) {
+    for (let degree = 0; degree < 360; degree++) {
+      const angle = (degree * Math.PI) / 180;
+      let dx = Math.cos(angle) * 40;
+      let dy = Math.sin(angle) * 40;
+      let expected;
+      for (let turn = 0; turn < 4; turn++) {
+        dispatchTouches(gamepad.document, "touchstart", [
+          { clientX: centerX + dx, clientY: 50 + dy },
+        ]);
+        const bits = gamepad.read();
+        assert.ok(
+          (centerX === 50
+            ? [1, 2, 4, 8, 5, 6, 9, 10]
+            : [16, 32, 64, 128]
+          ).includes(bits),
+          `valid sector at ${degree}, turn ${turn}`,
+        );
+        if (turn === 0) expected = bits;
+        assert.equal(bits, expected, `${centerX}, ${degree}, turn ${turn}`);
+        dispatchTouches(gamepad.document, "touchend", []);
+        expected = rotate(expected);
+        [dx, dy] = [-dy, dx];
+      }
+    }
+  }
+});
+
+test("virtual gamepad keeps a finger assigned to its original control", () => {
+  const gamepad = loadVirtualGamepad();
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 90, clientY: 50 },
+  ]);
+  dispatchTouches(gamepad.document, "touchmove", [
+    { clientX: 250, clientY: 50 },
+  ]);
+  assert.equal(gamepad.read(), 8);
+  dispatchTouches(gamepad.document, "touchend", []);
+
+  for (const [clientX, bits] of [
+    [110, 512],
+    [180, 256],
+  ]) {
+    dispatchTouches(gamepad.document, "touchstart", [{ clientX, clientY: 90 }]);
+    dispatchTouches(gamepad.document, "touchmove", [{ clientX, clientY: 130 }]);
+    assert.equal(gamepad.read(), bits);
+    dispatchTouches(gamepad.document, "touchend", []);
+    assert.equal(gamepad.read(), 0);
+  }
+});
+
+test("virtual gamepad invalidates bounds after scrolling and ignores visible events", () => {
+  const gamepad = loadVirtualGamepad();
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 50, clientY: 10 },
+  ]);
+  gamepad.document.hidden = false;
+  gamepad.document.dispatchEvent(new Event("visibilitychange"));
+  assert.equal(gamepad.read(), 1);
+  dispatchTouches(gamepad.document, "touchend", []);
+
+  for (const rect of Object.values(gamepad.rects)) {
+    rect.top += 200;
+    rect.bottom += 200;
+  }
+  gamepad.window.dispatchEvent(new Event("scroll"));
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 50, clientY: 210 },
+  ]);
+  assert.equal(gamepad.read(), 1);
+});
+
+test("virtual gamepad reports taps shorter than a frame once for every control", () => {
+  const gamepad = loadVirtualGamepad();
+  for (const [clientX, clientY, bits] of [
+    [50, 10, 1],
+    [90, 10, 9],
+    [90, 50, 8],
+    [90, 90, 10],
+    [50, 90, 2],
+    [10, 90, 6],
+    [10, 50, 4],
+    [10, 10, 5],
+    [250, 90, 16],
+    [290, 50, 32],
+    [210, 50, 64],
+    [250, 10, 128],
+    [110, 90, 512],
+    [180, 90, 256],
+  ]) {
+    dispatchTouches(gamepad.document, "touchstart", [{ clientX, clientY }]);
+    dispatchTouches(gamepad.document, "touchend", []);
+    assert.equal(gamepad.read(), bits);
+    assert.equal(gamepad.read(), 0);
+
+    dispatchTouches(gamepad.document, "touchstart", [{ clientX, clientY }]);
+    dispatchTouches(gamepad.document, "touchcancel", []);
+    assert.equal(gamepad.read(), 0);
+  }
+});
+
+test("virtual gamepad keeps the menu's central gap neutral", () => {
+  const gamepad = loadVirtualGamepad();
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 146, clientY: 90 },
+  ]);
+  assert.equal(gamepad.read(), 0);
+  for (const clientX of [140, 152]) {
+    dispatchTouches(gamepad.document, "touchmove", [{ clientX, clientY: 90 }]);
+    assert.equal(gamepad.read(), 0);
+  }
+  for (const [clientX, bits] of [
+    [110, 512],
+    [180, 256],
+  ]) {
+    dispatchTouches(gamepad.document, "touchmove", [{ clientX, clientY: 90 }]);
+    assert.equal(gamepad.read(), bits);
+  }
+});
+
+test("virtual gamepad reports the latest slide without combining opposite directions", () => {
+  const gamepad = loadVirtualGamepad();
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 50, clientY: 10 },
+  ]);
+  dispatchTouches(gamepad.document, "touchmove", [
+    { clientX: 50, clientY: 90 },
+  ]);
+  assert.equal(gamepad.read(), 2);
+  dispatchTouches(gamepad.document, "touchend", []);
+  assert.equal(gamepad.read(), 0);
+
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 250, clientY: 90 },
+  ]);
+  assert.equal(gamepad.read(), 16);
+  dispatchTouches(gamepad.document, "touchmove", [
+    { clientX: 290, clientY: 50 },
+  ]);
+  dispatchTouches(gamepad.document, "touchend", []);
+  assert.equal(gamepad.read(), 32);
+  assert.equal(gamepad.read(), 0);
+});
+
+test("virtual gamepad prioritizes the visible menu at either pad overlap", () => {
+  const gamepad = loadVirtualGamepad();
+  gamepad.rects["pyxel-gamepad-menu"] = {
+    left: 80,
+    top: 80,
+    right: 220,
+    bottom: 120,
+    width: 140,
+    height: 40,
+  };
+  for (const [clientX, bits] of [
+    [90, 512],
+    [210, 256],
+  ]) {
+    dispatchTouches(gamepad.document, "touchstart", [{ clientX, clientY: 90 }]);
+    assert.equal(gamepad.read(), bits);
+    dispatchTouches(gamepad.document, "touchend", []);
+  }
+});
+
+test("virtual gamepad handles partial image loading and release with empty bounds", () => {
+  const gamepad = loadVirtualGamepad();
+  gamepad.rects["pyxel-gamepad-cross"].height = 0;
+  dispatchTouches(gamepad.document, "touchstart", [
+    { clientX: 250, clientY: 90 },
+  ]);
+  assert.equal(gamepad.read(), 16);
+
+  for (const rect of Object.values(gamepad.rects)) {
+    rect.width = 0;
+    rect.height = 0;
+  }
+  gamepad.resize();
+  dispatchTouches(gamepad.document, "touchend", []);
+  assert.equal(gamepad.read(), 0);
+});
+
+test("virtual gamepad leaves disabled and fine-pointer pages untouched", () => {
+  for (const options of [{ mode: "disabled" }, { touchDevice: false }]) {
+    const gamepad = loadVirtualGamepad(options);
+    assert.equal(gamepad.elements.size, 0);
+    assert.equal(getEventListeners(gamepad.document, "touchstart").length, 0);
+    dispatchTouches(gamepad.document, "touchstart", [
+      { clientX: 50, clientY: 10 },
+    ]);
+    assert.equal(gamepad.read(), 0);
+  }
 });
 
 test("runtime asset base accepts query and fragment suffixes", () => {

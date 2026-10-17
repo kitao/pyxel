@@ -137,15 +137,25 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        for index, key in enumerate([pyxel.KEY_1, pyxel.KEY_2, pyxel.KEY_3]):
-            if pyxel.btnp(key):
+        for index, (key, button) in enumerate(
+            [
+                (pyxel.KEY_1, pyxel.GAMEPAD1_BUTTON_A),
+                (pyxel.KEY_2, pyxel.GAMEPAD1_BUTTON_B),
+                (pyxel.KEY_3, pyxel.GAMEPAD1_BUTTON_X),
+            ]
+        ):
+            if pyxel.btnp(key) or pyxel.btnp(button):
                 self.gazelle.play(index)
 
-        if pyxel.btnp(pyxel.KEY_S):
+        if pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y):
             self.scene.shading = self.shading if self.scene.shading is None else None
 
-        turn = pyxel.btn(pyxel.KEY_RIGHT) - pyxel.btn(pyxel.KEY_LEFT)
-        tilt = pyxel.btn(pyxel.KEY_UP) - pyxel.btn(pyxel.KEY_DOWN)
+        turn = (
+            pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        ) - (pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT))
+        tilt = (pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP)) - (
+            pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)
+        )
         self.yaw += 0.4 + turn * 2.0
         self.pitch = max(5.0, min(60.0, self.pitch + tilt))
         self.update_camera()
@@ -169,8 +179,8 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        pyxel.text(8, 8, "Arrows: Rotate  S: Shading  Q: Quit", 7)
-        pyxel.text(8, 18, "1: Walk  2: Run  3: Eat", 7)
+        pyxel.text(8, 8, "Arrows/Pad: Rotate  S/Top: Shading  Q: Quit", 7)
+        pyxel.text(8, 18, "1/Bottom: Walk  2/Right: Run  3/Left: Eat", 7)
 
 
 App()
