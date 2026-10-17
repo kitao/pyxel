@@ -177,11 +177,11 @@ class Scene(Node):
         eye = target + rotation * Vec3(0, 0, 1100)
         self.camera.transform = Mat4.look_at(eye, target)
 
-    def shoot(self):
+    def shoot(self, center=False):
         half_fov = self.camera.fov / 2
         scale = 2 * pyxel.sin(half_fov) / pyxel.cos(half_fov) / pyxel.height
-        x = (pyxel.mouse_x - pyxel.width / 2) * scale
-        y = (pyxel.height / 2 - pyxel.mouse_y) * scale
+        x = 0 if center else (pyxel.mouse_x - pyxel.width / 2) * scale
+        y = 0 if center else (pyxel.height / 2 - pyxel.mouse_y) * scale
         direction = self.camera.transform.rot * Vec3(x, y, -1).normalize()
         origin = self.camera.transform.pos
 
@@ -228,23 +228,44 @@ class App:
         pyxel.sounds[0].mml("T200 Q100 @0 V88 O4 @ENV1{0,2,127,5,48,17,0} C8")
 
         self.scene = Scene()
+        self.gamepad = False
+        self.mouse_pos = (pyxel.mouse_x, pyxel.mouse_y)
 
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btnp(pyxel.KEY_R):
+        reset = pyxel.btnp(pyxel.GAMEPAD1_BUTTON_B)
+        if pyxel.btnp(pyxel.KEY_R) or reset:
             self.scene.reset()
 
         scene = self.scene
-        scene.angle += 2 * (pyxel.btn(pyxel.KEY_RIGHT) - pyxel.btn(pyxel.KEY_LEFT))
-        scene.pitch += 2 * (pyxel.btn(pyxel.KEY_UP) - pyxel.btn(pyxel.KEY_DOWN))
+        right = pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        left = pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)
+        up = pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP)
+        down = pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)
+        scene.angle += 2 * (
+            (pyxel.btn(pyxel.KEY_RIGHT) or right) - (pyxel.btn(pyxel.KEY_LEFT) or left)
+        )
+        scene.pitch += 2 * (
+            (pyxel.btn(pyxel.KEY_UP) or up) - (pyxel.btn(pyxel.KEY_DOWN) or down)
+        )
         scene.pitch = max(-12, min(75, scene.pitch))
         scene.move_camera()
 
-        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 10, 10) or pyxel.btnp(
-            pyxel.KEY_SPACE, 10, 10
+        fire = pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A, 10, 10)
+        mouse_pos = (pyxel.mouse_x, pyxel.mouse_y)
+        if fire or reset or right or left or up or down:
+            self.gamepad = True
+        elif mouse_pos != self.mouse_pos or pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+            self.gamepad = False
+        self.mouse_pos = mouse_pos
+
+        if (
+            fire
+            or pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 10, 10)
+            or pyxel.btnp(pyxel.KEY_SPACE, 10, 10)
         ):
-            scene.shoot()
+            scene.shoot(center=self.gamepad)
 
         scene.update()
 
@@ -252,9 +273,11 @@ class App:
         pyxel.cls(12)
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        pyxel.circb(pyxel.mouse_x, pyxel.mouse_y, 4, 7)
-        pyxel.pset(pyxel.mouse_x, pyxel.mouse_y, 7)
-        pyxel.text(8, 8, "Mouse: Aim  Click/Space: Fire  Arrows: Rotate  R: Reset", 7)
+        aim = (pyxel.width // 2, pyxel.height // 2) if self.gamepad else self.mouse_pos
+        pyxel.circb(*aim, 4, 7)
+        pyxel.pset(*aim, 7)
+        pyxel.text(8, 8, "Mouse: Aim  Click/Space: Fire  R/Right: Reset", 7)
+        pyxel.text(8, 18, "Arrows/Pad: Rotate  Bottom: Fire at center", 7)
 
 
 App()

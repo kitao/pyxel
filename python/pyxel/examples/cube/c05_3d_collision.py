@@ -71,8 +71,12 @@ class Player(Node):
         self.platform = None
 
         # Keep the movement direction steady while the camera turns.
-        dx = pyxel.btn(pyxel.KEY_RIGHT) - pyxel.btn(pyxel.KEY_LEFT)
-        dz = pyxel.btn(pyxel.KEY_UP) - pyxel.btn(pyxel.KEY_DOWN)
+        dx = (
+            pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        ) - (pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT))
+        dz = (pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP)) - (
+            pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)
+        )
         if (dx, dz) != self.move_input:
             camera = self.parent.camera.transform
             right = Vec3(camera[0, 0], 0, camera[2, 0]).normalize()
@@ -89,7 +93,8 @@ class Player(Node):
             # Follow the slope to stay grounded when moving downhill.
             vy = min(-move.dot(self.floor_normal) / self.floor_normal.y, 0) + GRAVITY
 
-        if pyxel.btnp(pyxel.KEY_SPACE) and self.jumps < 2:
+        jump = pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
+        if jump and self.jumps < 2:
             vy = JUMP_SPEED
             if self.jumps == 0:
                 self.parent.yaw = self.heading + 180
@@ -274,7 +279,7 @@ class App(Node):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_S):
+        if pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_B):
             self.shading = self.lighting if self.shading is None else None
 
         self.update()
@@ -292,7 +297,7 @@ class App(Node):
             self.draw_text(252, 8, "SUMMIT REACHED!")
 
         pyxel.rect(0, 228, 320, 12, 0)
-        help_text = "Arrows: Move  Space: Jump x2  S: Shading  Q: Quit"
+        help_text = "Arrows/Pad: Move  Space/Bottom: Jump x2  S/Right: Shading  Q: Quit"
         pyxel.text((320 - len(help_text) * 4) // 2, 231, help_text, 7)
 
     def draw_text(self, x, y, text):

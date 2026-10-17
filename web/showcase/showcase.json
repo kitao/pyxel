@@ -1378,7 +1378,6 @@
         "tr": "Cube Örnekleri",
         "uk": "Приклади Cube"
       },
-      "collapsed": true,
       "items": [
         {
           "file": "c01_hello_cube.py",

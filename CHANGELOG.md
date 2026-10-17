@@ -24,6 +24,7 @@
 - Fixed app2exe imports and concurrent builds
 - Fixed play and watch process cleanup
 - Fixed web startup, resets, imports, and virtual gamepad resizing
+- Improved virtual gamepad diagonals, touch tracking, and short taps
 - Fixed project loading, saving, downloads, and share URLs in web tools
 - Improved web layouts, accessibility, and API reference search
 - Fixed local web preview serving and restricted access to public files

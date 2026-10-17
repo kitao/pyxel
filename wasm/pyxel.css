@@ -83,13 +83,22 @@ img#pyxel-prompt {
 }
 
 /* Touch controls overlaid by wasm/pyxel.js on coarse-pointer devices */
+img#pyxel-gamepad-cross,
+img#pyxel-gamepad-button,
+img#pyxel-gamepad-menu {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 img#pyxel-gamepad-cross {
   --min-width-ratio: 0.2;
   position: absolute;
   left: 1%;
   bottom: 5%;
   image-rendering: pixelated;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 img#pyxel-gamepad-button {
@@ -98,7 +107,7 @@ img#pyxel-gamepad-button {
   right: 1%;
   bottom: 5%;
   image-rendering: pixelated;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 img#pyxel-gamepad-menu {
@@ -108,5 +117,5 @@ img#pyxel-gamepad-menu {
   bottom: 1%;
   transform: translateX(-50%);
   image-rendering: pixelated;
-  pointer-events: none;
+  pointer-events: auto;
 }
