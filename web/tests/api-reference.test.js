@@ -146,6 +146,50 @@ test("API reference restores the Advanced preference after reload", () => {
   assert.equal(loadToolbar().checked, false);
 });
 
+test("API reference keeps working when browser storage is blocked", () => {
+  const blocked = () => {
+    throw new Error("Storage blocked");
+  };
+  const elements = [];
+  const context = vm.createContext({
+    document: {
+      getElementById: () => ({ appendChild() {} }),
+      createElement: (tagName) => {
+        const node = {
+          tagName,
+          dataset: {},
+          appendChild() {},
+          setAttribute() {},
+          addEventListener(event, handler) {
+            this[event] = handler;
+          },
+        };
+        elements.push(node);
+        return node;
+      },
+    },
+    localStorage: { getItem: blocked, setItem: blocked },
+    buildPageHeader() {},
+    buildVariantSwitch() {},
+  });
+  vm.runInContext(apiReferenceSource, context);
+  vm.runInContext(
+    `
+    data = { categories: [{ id: "test", items: [{ advanced: true }] }] };
+    cacheDomRefs = () => {};
+    updateTexts = () => {};
+    updateVisibility = () => {};
+    buildPage();
+  `,
+    context,
+  );
+  const toggle = elements.find((node) => node.type === "checkbox");
+  assert.equal(toggle.checked, false);
+  toggle.checked = true;
+  toggle.change();
+  assert.equal(vm.runInContext("showAdvanced", context), true);
+});
+
 test("API categories expose stable targets for class links", () => {
   const elements = new Map();
   const app = { appendChild() {} };

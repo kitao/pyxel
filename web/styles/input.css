@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Words in test names must not become utility classes */
+@source not "../tests";
 
 @layer components {
   /* Shared layout, card, text, and table primitives */

@@ -3,15 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
     <meta
       name="description"
       content="Pyxel is a retro game engine for Python."
     />
+    <meta property="og:title" content="Pyxel" />
+    <meta
+      property="og:description"
+      content="Pyxel is a retro game engine for Python."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kitao.dev/pyxel/" />
+    <meta
+      property="og:image"
+      content="https://kitao.dev/pyxel/assets/images/pyxel_thanks.png"
+    />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:image:alt" content="Pyxel User Examples" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Pyxel</title>
     <link rel="icon" href="../wasm/images/pyxel_icon_64x64.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://kitao.dev/assets/fonts/noto-sans-jp.css"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300..700&amp;family=Noto+Sans:wght@300..700&amp;family=Noto+Sans+Symbols+2&amp;display=swap"
     />
     <style>
       body {
@@ -20,6 +38,8 @@
         color: #f0f6fc;
         font:
           16px/1.5 "Noto Sans JP",
+          "Noto Sans",
+          "Noto Sans Symbols 2",
           sans-serif;
         font-synthesis: none;
         overflow-wrap: break-word;
@@ -44,7 +64,6 @@
 
       h1 {
         margin: 0;
-        line-height: 1.25;
       }
 
       .language-switch {
@@ -56,6 +75,11 @@
         white-space: nowrap;
       }
 
+      /* display: flex would otherwise override the hidden attribute */
+      .language-switch[hidden] {
+        display: none;
+      }
+
       .language-switch button {
         padding: 4px 2px;
         border: 0;
@@ -65,10 +89,6 @@
         cursor: pointer;
       }
 
-      .language-switch button:hover {
-        text-decoration: underline;
-      }
-
       .language-switch button[aria-pressed="true"] {
         color: inherit;
       }
@@ -76,13 +96,11 @@
       .badges {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
         gap: 4px;
         margin-bottom: 20px;
       }
 
       .badges img {
-        display: block;
         width: auto;
         height: 20px;
       }
@@ -146,19 +164,18 @@
 
       a,
       button {
-        border-radius: 0;
         scroll-margin-block: 24px;
       }
 
       a:has(> img) {
-        display: inline-block;
-        max-width: 100%;
-        vertical-align: bottom;
         line-height: 0;
       }
 
-      a:hover {
-        text-decoration: underline;
+      @media (hover: hover) {
+        a:hover,
+        .language-switch button:hover {
+          text-decoration: underline;
+        }
       }
 
       a:focus-visible,
@@ -186,7 +203,11 @@
       const homeLanguages = ["en", "ja"];
       let savedLanguage = null;
       try {
-        savedLanguage = localStorage.getItem("pyxel-lang");
+        // Every kitao.dev page shares this key; the earlier pyxel-lang key
+        // counts only without it.
+        savedLanguage =
+          localStorage.getItem("kitao.dev.language") ??
+          localStorage.getItem("pyxel-lang");
       } catch {}
       const preferredLanguages = [
         new URLSearchParams(location.search).get("lang"),
@@ -214,7 +235,7 @@
             height="64"
           />
         </h1>
-        <nav class="language-switch" aria-label="Language / 言語">
+        <nav class="language-switch" aria-label="Language / 言語" hidden>
           <button
             type="button"
             lang="en"
@@ -251,7 +272,11 @@
             alt="Patreon"
         /></a>
         <a href="https://ko-fi.com/H2H27VDKD"
-          ><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"
+          ><img
+            src="https://ko-fi.com/img/githubbutton_sm.svg"
+            alt="Ko-fi"
+            width="149"
+            height="20"
         /></a>
       </p>
       <div lang="en">
@@ -438,12 +463,14 @@
             src="../docs/images/pyxel_thanks.png"
             alt="Pyxel User Examples"
             width="553"
+            height="311"
         /></a>
         <a href="https://gihyo.jp/book/2025/978-4-297-14657-3"
           ><img
             src="../docs/images/pyxel_book.png"
             alt="Pyxel book"
             width="190"
+            height="240"
         /></a>
       </p>
       <p class="image-gallery">
@@ -452,6 +479,8 @@
             src="../docs/images/02_jump_game.gif"
             alt="Jump game"
             width="253"
+            height="190"
+            loading="lazy"
           />
         </a>
         <a href="https://kitao.dev/pyxel/showcase/examples/10-platformer.html">
@@ -459,6 +488,8 @@
             src="../docs/images/10_platformer.gif"
             alt="Platformer"
             width="222"
+            height="222"
+            loading="lazy"
           />
         </a>
         <a href="https://kitao.dev/pyxel/showcase/apps/30sec-of-daylight.html">
@@ -466,16 +497,26 @@
             src="../docs/images/30sec_of_daylight.gif"
             alt="30 Seconds of Daylight"
             width="268"
+            height="201"
+            loading="lazy"
           />
         </a>
         <a href="https://kitao.dev/pyxel/showcase/apps/megaball.html">
-          <img src="../docs/images/megaball.gif" alt="Megaball" width="231" />
+          <img
+            src="../docs/images/megaball.gif"
+            alt="Megaball"
+            width="231"
+            height="208"
+            loading="lazy"
+          />
         </a>
         <a href="https://kitao.dev/pyxel/showcase/tools/image-editor.html">
           <img
             src="../docs/images/image_tilemap_editor.gif"
             alt="Image and tilemap editor"
             width="256"
+            height="192"
+            loading="lazy"
           />
         </a>
         <a href="https://kitao.dev/pyxel/showcase/tools/sound-editor.html">
@@ -483,6 +524,8 @@
             src="../docs/images/sound_music_editor.gif"
             alt="Sound and music editor"
             width="256"
+            height="192"
+            loading="lazy"
           />
         </a>
         <a
@@ -492,6 +535,8 @@
             src="../docs/images/c04_mesh_and_motion.gif"
             alt="Mesh and motion"
             width="248"
+            height="186"
+            loading="lazy"
           />
         </a>
         <a
@@ -501,6 +546,8 @@
             src="../docs/images/c05_3d_collision.gif"
             alt="3D collision"
             width="248"
+            height="186"
+            loading="lazy"
           />
         </a>
         <a href="https://kitao.dev/pyxel/showcase/examples/c06-3d-physics.html">
@@ -508,35 +555,37 @@
             src="../docs/images/c06_3d_physics.gif"
             alt="3D physics"
             width="248"
+            height="186"
+            loading="lazy"
           />
         </a>
       </p>
     </main>
 
     <script>
-      const languageButtons = document.querySelectorAll(
-        ".language-switch button",
-      );
-      updateLanguageButtons();
+      const languageSwitch = document.querySelector(".language-switch");
+      const languageButtons = languageSwitch.querySelectorAll("button");
+      setLanguage(document.documentElement.lang);
       for (const button of languageButtons) {
         button.addEventListener("click", () => {
           const language = button.dataset.language;
-          document.documentElement.lang = language;
-          updateLanguageButtons();
+          setLanguage(language);
           try {
-            localStorage.setItem("pyxel-lang", language);
+            localStorage.setItem("kitao.dev.language", language);
           } catch {}
           const url = new URL(location.href);
           url.searchParams.set("lang", language);
           history.replaceState(null, "", url);
         });
       }
+      languageSwitch.hidden = false;
 
-      function updateLanguageButtons() {
+      function setLanguage(language) {
+        document.documentElement.lang = language;
         for (const button of languageButtons) {
           button.setAttribute(
             "aria-pressed",
-            button.dataset.language === document.documentElement.lang,
+            button.dataset.language === language,
           );
         }
       }

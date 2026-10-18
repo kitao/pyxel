@@ -2,7 +2,10 @@ const PYXEL_API_REF_ADVANCED_KEY = "pyxel-api-ref-advanced";
 
 let data = null;
 let lang = "en";
-let showAdvanced = localStorage.getItem(PYXEL_API_REF_ADVANCED_KEY) === "1";
+let showAdvanced = false;
+try {
+  showAdvanced = localStorage.getItem(PYXEL_API_REF_ADVANCED_KEY) === "1";
+} catch {}
 let searchQuery = "";
 
 // Element lookup maps built once after buildPage; per-keystroke
@@ -51,7 +54,12 @@ function buildPage() {
   toggleCheck.checked = showAdvanced;
   toggleCheck.addEventListener("change", () => {
     showAdvanced = toggleCheck.checked;
-    localStorage.setItem(PYXEL_API_REF_ADVANCED_KEY, showAdvanced ? "1" : "0");
+    try {
+      localStorage.setItem(
+        PYXEL_API_REF_ADVANCED_KEY,
+        showAdvanced ? "1" : "0",
+      );
+    } catch {}
     updateVisibility();
   });
   const toggleText = document.createElement("span");

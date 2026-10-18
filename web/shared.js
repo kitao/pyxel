@@ -1,6 +1,8 @@
 // Page controls
 
 const PYXEL_LANG_KEY = "pyxel-lang";
+// The kitao.dev sites share an English or Japanese choice under this key.
+const SITE_LANG_KEY = "kitao.dev.language";
 
 const setDocLang = (lang) => {
   document.documentElement.lang = lang === "cn" ? "zh" : lang;
@@ -267,7 +269,15 @@ const initPage = (jsonFile, buildFn) => {
 };
 
 const detectLang = (languages) => {
-  const stored = localStorage.getItem(PYXEL_LANG_KEY);
+  let own = null;
+  let shared = null;
+  try {
+    own = localStorage.getItem(PYXEL_LANG_KEY);
+    shared = localStorage.getItem(SITE_LANG_KEY);
+  } catch {}
+  // English and Japanese follow the latest choice on any kitao.dev site.
+  const stored =
+    own === null || own === "en" || own === "ja" ? (shared ?? own) : own;
   if (stored && languages.some((l) => l.code === stored)) return stored;
   const nav = (navigator.language ?? "").toLowerCase();
   if (nav.startsWith("zh")) return "cn";
@@ -278,6 +288,10 @@ const detectLang = (languages) => {
 };
 
 const saveLang = (lang) => {
-  localStorage.setItem(PYXEL_LANG_KEY, lang);
+  try {
+    localStorage.setItem(PYXEL_LANG_KEY, lang);
+    if (lang === "en" || lang === "ja")
+      localStorage.setItem(SITE_LANG_KEY, lang);
+  } catch {}
   setDocLang(lang);
 };

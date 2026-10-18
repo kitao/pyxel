@@ -5,10 +5,8 @@ import io
 import json
 import os
 import re
-import runpy
 import shutil
 import subprocess
-import sys
 import tarfile
 import tempfile
 import zipfile
@@ -46,26 +44,22 @@ class LocalLinks(HTMLParser):
 def main():
     parser = argparse.ArgumentParser(
         description="Build dist/site/ for kitao.dev/pyxel without deploying.",
-        epilog=(
-            "Requires Node.js and npm ci --prefix web. The optional gallery uses "
-            "the Python dependencies from pyxel-user-examples/requirements.txt. "
-            "Preview with: python3 -m http.server --directory dist/site"
-        ),
+        epilog="Requires Node.js and npm ci --prefix web.",
     )
     parser.add_argument(
         "--runtime-tag",
         action="append",
         help="local release tag; repeat to include more (default: v2.9.9)",
     )
-    parser.add_argument("--output", type=Path, default=ROOT_DIR / "dist" / "site")
     parser.add_argument(
-        "--user-examples",
+        "--output",
         type=Path,
-        help="include the gallery from this local repository",
+        default=ROOT_DIR / "dist" / "site",
+        help="new, empty, or previously built directory (default: dist/site/)",
     )
     args = parser.parse_args()
     try:
-        build_site(args.output, args.runtime_tag or ["v2.9.9"], args.user_examples)
+        build_site(args.output, args.runtime_tag or ["v2.9.9"])
     except (
         OSError,
         ValueError,
@@ -77,17 +71,15 @@ def main():
     print(f"Built {args.output.resolve()}/pyxel/.")
 
 
-def build_site(output, runtime_tags=("v2.9.9",), user_examples=None, root=ROOT_DIR):
+def build_site(output, runtime_tags=("v2.9.9",), root=ROOT_DIR):
     root, output = root.resolve(), output.resolve()
-    if output == root or root.is_relative_to(output):
+    if is_within(root, output):
         raise ValueError("The output must not replace the repository or its parents")
-    if output.is_relative_to(root) and output != root / "dist" / "site":
+    if is_within(output, root) and not same_path(output, root / "dist" / "site"):
         raise ValueError("Build output inside the repository must be dist/site/")
-    if user_examples and (
-        user_examples.resolve().is_relative_to(output)
-        or output.is_relative_to(user_examples.resolve())
-    ):
-        raise ValueError("The output must not replace the gallery repository")
+    # Replacing the output discards it.
+    if output.exists() and not (output.is_dir() and is_replaceable(output)):
+        raise ValueError("The output must be empty or a previous site build")
 
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".site-", dir=output.parent) as temporary:
@@ -105,21 +97,19 @@ def build_site(output, runtime_tags=("v2.9.9",), user_examples=None, root=ROOT_D
             PROVISIONAL_VERSION,
         )
 
-        for name in PAGE_DIRS:
+        for name in (*PAGE_DIRS, "index.html", "shared.js"):
             for source in tracked_files(root, "web/" + name):
                 target = site / source.relative_to(root / "web")
                 copy_page(source, target, version)
-        copy_page(root / "web" / "shared.js", site / "shared.js", version)
-        copy_page(root / "web" / "index.html", site / "index.html", version)
-        for source_dir, target_dir in (
+        for source_path, target_path in (
             ("docs/images", "assets/images"),
+            ("docs/pyxel.gpl", "assets/pyxel.gpl"),
             ("python/pyxel/examples", "assets/examples"),
         ):
-            for source in tracked_files(root, source_dir):
-                target = site / target_dir / source.relative_to(root / source_dir)
+            for source in tracked_files(root, source_path):
+                target = site / target_path / source.relative_to(root / source_path)
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, target)
-        shutil.copyfile(root / "docs/pyxel.gpl", site / "assets/pyxel.gpl")
 
         subprocess.run(
             [
@@ -134,10 +124,10 @@ def build_site(output, runtime_tags=("v2.9.9",), user_examples=None, root=ROOT_D
             cwd=root / "web",
             check=True,
         )
-        if user_examples:
-            copy_gallery(user_examples.resolve(), site / "user-examples", version)
+        # Pages on other sites load the runtime and examples, so these allow CORS;
+        # released bundles never change, so browsers may keep them.
         (stage / "_headers").write_text(
-            "/pyxel/*\n"
+            "/pyxel*\n"
             "  X-Content-Type-Options: nosniff\n"
             "  Referrer-Policy: strict-origin-when-cross-origin\n\n"
             + "".join(
@@ -148,7 +138,6 @@ def build_site(output, runtime_tags=("v2.9.9",), user_examples=None, root=ROOT_D
                 if release != PROVISIONAL_VERSION
             )
             + f"/pyxel/{PROVISIONAL_VERSION}/*\n"
-            "  Cache-Control: public, max-age=0, must-revalidate\n"
             "  Access-Control-Allow-Origin: *\n\n"
             "/pyxel/assets/examples/*\n"
             "  Access-Control-Allow-Origin: *\n",
@@ -159,32 +148,68 @@ def build_site(output, runtime_tags=("v2.9.9",), user_examples=None, root=ROOT_D
         replace_output(stage, output)
 
 
-def tracked_files(root, directory):
+def is_within(path, directory):
+    return any(same_path(parent, directory) for parent in (path, *path.parents))
+
+
+def same_path(first, second):
+    # Comparing identities also matches aliases on case-insensitive file systems.
+    if first.exists() and second.exists():
+        return first.samefile(second)
+    return first == second
+
+
+def is_replaceable(directory):
+    # A previous build has _headers and pyxel, and at most the build's other files
+    # and the .DS_Store files Finder adds.
+    names = {path.name for path in directory.iterdir()} - {".DS_Store"}
+    return not names or names == {"_headers", "pyxel"}
+
+
+def tracked_files(root, pathspec):
     names = (
         subprocess.check_output(
-            ["git", "-C", str(root), "ls-files", "-z", "--", directory]
+            ["git", "-C", str(root), "ls-files", "-z", "--", pathspec],
+            env=git_environment(),
         )
         .decode()
         .split("\0")
     )
+    paths = []
     for name in names:
         if not name or any(
             part.startswith(".") or part == "__pycache__" for part in Path(name).parts
         ):
             continue
-        path = root / name
-        if path.is_symlink() or not path.resolve().is_relative_to(
-            (root / directory).resolve()
-        ):
-            raise ValueError(f"Public source must stay inside {directory}: {name}")
+        path = public_source(root, name)
         if path.is_file() and path.suffix not in {".pyc", ".pyo"}:
-            yield path
+            paths.append(path)
+    if not paths:
+        raise ValueError(f"No public sources match {pathspec}")
+    return paths
+
+
+def public_source(root, name):
+    path = root / name
+    # A symlinked file or directory could publish files from elsewhere.
+    if path.resolve() != root.resolve() / name:
+        raise ValueError(f"Public sources must not be symlinks: {name}")
+    return path
+
+
+def git_environment(**overrides):
+    # Inherited variables such as GIT_DIR must not point git at another repository.
+    return {
+        name: value
+        for name, value in os.environ.items()
+        if not name.upper().startswith("GIT_")
+    } | overrides
 
 
 def copy_release(root, tag, site):
     if not re.fullmatch(r"v\d+\.\d+\.\d+(?:(?:a|b|rc)\d+)?", tag):
         raise ValueError("The runtime tag must be a release tag such as v2.9.9")
-    env = {**os.environ, "GIT_NO_LAZY_FETCH": "1"}
+    env = git_environment(GIT_NO_LAZY_FETCH="1")
     commit = (
         subprocess.check_output(
             [
@@ -283,36 +308,6 @@ def rewrite_urls(text, version, html=False):
     return text
 
 
-def copy_gallery(source, target, version):
-    # Render through the gallery's owner without changing its checkout or generated pages.
-    sys.path.insert(0, str(source / "scripts"))
-    try:
-        builder = runpy.run_path(str(source / "scripts" / "build_pages"))
-        pages = builder["render_pages"](source)
-    except ImportError as error:
-        raise ValueError(
-            "Install the gallery's requirements.txt into the active Python environment"
-        ) from error
-    finally:
-        sys.path.pop(0)
-    for path, text in pages.items():
-        destination = target / path.relative_to(source)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(rewrite_urls(text, version), encoding="utf-8")
-    for name in ("styles.css", "lightbox.js", "favicon.ico"):
-        shutil.copyfile(source / name, target / name)
-    for image in sorted(
-        {
-            url
-            for text in pages.values()
-            for url in re.findall(r"images/(\d+\.gif)", text)
-        }
-    ):
-        destination = target / "images" / image
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source / "images" / image, destination)
-
-
 def verify_links(stage):
     errors = []
     for path in stage.rglob("*"):
@@ -362,21 +357,21 @@ def verify_releases(stage, output):
     for release in (output / "pyxel").iterdir():
         if not re.fullmatch(r"\d+\.\d+\.\d+(?:(?:a|b|rc)\d+)?", release.name):
             continue
-        before = {
-            path.relative_to(release): path.read_bytes()
-            for path in release.rglob("*")
-            if path.is_file()
-        }
-        target = stage / "pyxel" / release.name
-        after = {
-            path.relative_to(target): path.read_bytes()
-            for path in target.rglob("*")
-            if path.is_file()
-        }
+        before = release_files(release)
+        after = release_files(stage / "pyxel" / release.name)
         if before != after and not (release.name == PROVISIONAL_VERSION and after):
             raise ValueError(
                 f"An existing release would change or disappear: {release.name}"
             )
+
+
+def release_files(directory):
+    # Finder can add .DS_Store to a previous build.
+    return {
+        path.relative_to(directory): path.read_bytes()
+        for path in directory.rglob("*")
+        if path.is_file() and path.name != ".DS_Store"
+    }
 
 
 def replace_output(stage, output):
