@@ -1,5 +1,7 @@
 import importlib.util
+import os
 import subprocess
+import sys
 import zipfile
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
@@ -7,6 +9,14 @@ from pathlib import Path
 import pytest
 
 ROOT_DIR = Path(__file__).parents[2]
+
+
+@pytest.fixture(autouse=True)
+def isolated_git(monkeypatch):
+    # Inherited variables such as GIT_DIR must not point the fixtures' git elsewhere.
+    for name in list(os.environ):
+        if name.upper().startswith("GIT_"):
+            monkeypatch.delenv(name)
 
 
 @pytest.fixture
@@ -123,12 +133,81 @@ def test_link_check_resolves_cloudflare_html_paths(builder, tmp_path):
         builder.verify_links(tmp_path)
 
 
-@pytest.mark.parametrize("destination", [".", "dist", "web", "wasm"])
-def test_output_cannot_replace_repository_files(builder, tmp_path, destination):
+@pytest.mark.parametrize(
+    ("destination", "message"),
+    [
+        (".", "must not replace the repository"),
+        ("..", "must not replace the repository"),
+        ("dist", "must be dist/site/"),
+        ("web", "must be dist/site/"),
+        ("wasm", "must be dist/site/"),
+    ],
+)
+def test_output_cannot_replace_repository_files(
+    builder, tmp_path, destination, message
+):
     root = tmp_path / "repository"
     root.mkdir()
-    with pytest.raises(ValueError, match="output|Build output"):
-        builder.build_site(root / destination, root=root)
+    with pytest.raises(ValueError, match=message):
+        builder.build_site(root / destination, ["not-a-tag"], root=root)
+
+
+def test_output_guards_match_letter_case_aliases(builder, tmp_path):
+    root = tmp_path / "repository"
+    root.mkdir()
+    alias = tmp_path / "REPOSITORY"
+    if not alias.exists():
+        pytest.skip("the file system distinguishes letter case")
+    with pytest.raises(ValueError, match="must not replace the repository"):
+        builder.build_site(alias, ["not-a-tag"], root=root)
+    with pytest.raises(ValueError, match="must be dist/site/"):
+        builder.build_site(alias / "web", ["not-a-tag"], root=root)
+
+
+@pytest.mark.parametrize(
+    "kept", ["documents", "documents/notes.txt", "documents/pyxel/README.md"]
+)
+def test_output_must_be_empty_or_a_previous_build(builder, tmp_path, kept):
+    # A lone pyxel directory, such as another checkout, is not a previous build.
+    (tmp_path / kept).parent.mkdir(parents=True, exist_ok=True)
+    (tmp_path / kept).write_text("keep")
+    with pytest.raises(ValueError, match="previous site build"):
+        builder.build_site(tmp_path / "documents", ["not-a-tag"])
+    assert (tmp_path / kept).read_text() == "keep"
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["documents"]
+
+
+@pytest.fixture
+def repository(tmp_path):
+    root = tmp_path / "repository"
+    (root / "web").mkdir(parents=True)
+    (root / "web/index.html").write_text("home")
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    subprocess.run(["git", "-C", str(root), "add", "web"], check=True)
+    return root
+
+
+def test_public_sources_must_be_tracked(builder, repository):
+    (repository / "web/local.js").write_text("untracked")
+    assert builder.tracked_files(repository, "web") == [repository / "web/index.html"]
+    with pytest.raises(ValueError, match="No public sources"):
+        builder.tracked_files(repository, "web/local.js")
+
+
+def test_public_sources_ignore_an_inherited_git_dir(
+    builder, repository, tmp_path, monkeypatch
+):
+    subprocess.run(["git", "init", "-q", str(tmp_path / "other")], check=True)
+    monkeypatch.setenv("GIT_DIR", str(tmp_path / "other" / ".git"))
+    assert builder.tracked_files(repository, "web") == [repository / "web/index.html"]
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+def test_public_sources_must_not_be_symlinks(builder, repository, tmp_path):
+    (repository / "web").rename(tmp_path / "elsewhere")
+    (repository / "web").symlink_to(tmp_path / "elsewhere")
+    with pytest.raises(ValueError, match="symlinks"):
+        builder.tracked_files(repository, "web")
 
 
 def test_previous_release_cannot_change_or_disappear(builder, tmp_path):
@@ -147,14 +226,46 @@ def test_previous_release_cannot_change_or_disappear(builder, tmp_path):
         builder.verify_releases(tmp_path / "new", tmp_path / "old")
 
 
-def test_failed_build_preserves_existing_site(builder, tmp_path):
+PREVIOUS_BUILD = {"_headers": "previous headers", "pyxel/index.html": "previous site"}
+
+
+@pytest.mark.parametrize(
+    "files",
+    [
+        pytest.param({}, id="empty"),
+        pytest.param(PREVIOUS_BUILD, id="build"),
+        pytest.param(
+            PREVIOUS_BUILD | {".DS_Store": "Finder"},
+            id="build with every top-level file and .DS_Store",
+        ),
+    ],
+)
+def test_failed_build_preserves_a_replaceable_output(builder, tmp_path, files):
     output = tmp_path / "site"
     output.mkdir()
-    (output / "index.html").write_text("previous site")
+    for name, text in files.items():
+        (output / name).parent.mkdir(parents=True, exist_ok=True)
+        (output / name).write_text(text)
+    # The runtime tag fails after the output check accepts the output.
     with pytest.raises(ValueError, match="release tag"):
         builder.build_site(output, ["not-a-tag"])
-    assert (output / "index.html").read_text() == "previous site"
+    assert {
+        path.relative_to(output).as_posix(): path.read_text()
+        for path in output.rglob("*")
+        if path.is_file()
+    } == files
     assert sorted(path.name for path in tmp_path.iterdir()) == ["site"]
+
+
+def test_finder_files_do_not_change_a_previous_release(builder, tmp_path):
+    old = tmp_path / "old/pyxel/2.9.9"
+    new = tmp_path / "new/pyxel/2.9.9"
+    old.mkdir(parents=True)
+    new.mkdir(parents=True)
+    (old / "pyxel.js").write_text("published")
+    (old / ".DS_Store").write_text("Finder")
+    (new / "pyxel.js").write_text("published")
+    builder.verify_releases(tmp_path / "new", tmp_path / "old")
 
 
 def test_provisional_runtime_can_be_replaced_but_not_removed(builder, tmp_path):

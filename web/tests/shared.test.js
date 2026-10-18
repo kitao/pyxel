@@ -23,7 +23,7 @@ const loadShared = (overrides = {}) => {
     ...overrides,
   };
   vm.runInNewContext(
-    `${source}\n;globalThis.__test = { initPage, resolveGitHubBlobUrl, uint8ToBase64, base64ToUint8 };`,
+    `${source}\n;globalThis.__test = { initPage, resolveGitHubBlobUrl, uint8ToBase64, base64ToUint8, detectLang, saveLang };`,
     context,
   );
   return context;
@@ -79,6 +79,48 @@ for (const page of ["api-reference", "user-guide"]) {
     });
   }
 }
+
+test("tools keep their other languages and share English or Japanese with kitao.dev", () => {
+  const languages = ["en", "ja", "ko"].map((code) => ({ code }));
+  const storage = new Map();
+  const { detectLang, saveLang } = loadShared({
+    localStorage: {
+      getItem: (key) => storage.get(key) ?? null,
+      setItem: (key, value) => storage.set(key, value),
+    },
+  }).__test;
+  storage.set("pyxel-lang", "en");
+  assert.equal(detectLang(languages), "en");
+  storage.set("kitao.dev.language", "ja");
+  assert.equal(detectLang(languages), "ja");
+  saveLang("ko");
+  assert.deepEqual(Object.fromEntries(storage), {
+    "kitao.dev.language": "ja",
+    "pyxel-lang": "ko",
+  });
+  assert.equal(detectLang(languages), "ko");
+  saveLang("en");
+  assert.deepEqual(Object.fromEntries(storage), {
+    "kitao.dev.language": "en",
+    "pyxel-lang": "en",
+  });
+  storage.delete("pyxel-lang");
+  assert.equal(detectLang(languages), "en");
+});
+
+test("tools choose and switch languages when browser storage is blocked", () => {
+  const blocked = () => {
+    throw new Error("Storage blocked");
+  };
+  const context = loadShared({
+    localStorage: { getItem: blocked, setItem: blocked },
+    navigator: { language: "ja-JP" },
+  });
+  const { detectLang, saveLang } = context.__test;
+  assert.equal(detectLang([{ code: "en" }, { code: "ja" }]), "ja");
+  saveLang("en");
+  assert.equal(context.document.documentElement.lang, "en");
+});
 
 test("encodeUrlPath preserves separators and escapes each path component", () => {
   assert.equal(

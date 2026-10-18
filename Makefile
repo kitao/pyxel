@@ -1,6 +1,6 @@
 #
 # Prerequisites:
-#   - git, make, cmake, rustup, python 3.11+, Node.js
+#   - git, make, cmake, rustup, python 3.11+, Node.js 22+
 #   - Windows: Git Bash
 #   - Linux: python3-pip, python3-venv, clang, libclang-dev, libsdl2-dev 2.32.10
 #
@@ -30,7 +30,7 @@
 #
 # Web pages:
 #   - Build: make pages
-#   - Test: npm test --prefix web (JavaScript only, on Node.js)
+#   - Test: npm test --prefix web (Node.js), npm run test:browser --prefix web
 #
 
 # Project directories
@@ -165,6 +165,7 @@ test: install
 	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
 	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
 	@cd $(WEB_DIR); npm test
+	@cd $(WEB_DIR); npm run test:browser
 
 run: install
 	@$(SCRIPTS_DIR)/check_window_startup
