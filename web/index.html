@@ -179,9 +179,25 @@
       }
 
       a:focus-visible,
-      button:focus-visible {
+      a:focus-visible > img {
         outline: 1px solid #8b949e;
-        outline-offset: 3px;
+        outline-offset: 2px;
+      }
+
+      a:not(:has(img)):focus-visible,
+      .language-switch button:focus-visible span {
+        text-box: trim-both cap text;
+        outline: none;
+        border: 1px solid #8b949e;
+        padding: 2px;
+        margin: -3px;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+      }
+
+      a:has(> img):focus-visible,
+      .language-switch button:focus-visible {
+        outline: none;
       }
 
       strong {
@@ -242,7 +258,7 @@
             data-language="en"
             aria-pressed="false"
           >
-            English
+            <span>English</span>
           </button>
           <span aria-hidden="true">/</span>
           <button
@@ -251,7 +267,7 @@
             data-language="ja"
             aria-pressed="false"
           >
-            日本語
+            <span>日本語</span>
           </button>
         </nav>
       </header>
@@ -330,10 +346,11 @@
               <a href="https://kitao.dev/pyxel/user-examples/"
                 >▸ User Examples</a
               >
-              <a
-                class="submission-link"
-                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
-                >(Share Your Work)</a
+              <span class="submission-link"
+                ><a
+                  href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                  >(Share Your Work)</a
+                ></span
               >
             </strong>
           </p>
@@ -420,10 +437,11 @@
             <strong>
               <a href="https://kitao.dev/pyxel/user-examples/"
                 >▸ ユーザー作品集</a
-              ><a
-                class="submission-link"
-                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
-                >（作品を投稿する）</a
+              ><span class="submission-link"
+                ><a
+                  href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                  >（作品を投稿する）</a
+                ></span
               >
             </strong>
           </p>
