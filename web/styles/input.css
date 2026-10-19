@@ -17,7 +17,7 @@
     @apply bg-gray-800 shadow-sm border border-gray-700 rounded-2xl px-2 py-1 sm:px-3 sm:py-2;
   }
   .link {
-    @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2 rounded-sm;
+    @apply outline-none text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
   }
   .lang-select {
     @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
@@ -256,6 +256,23 @@
   image-rendering: pixelated;
 }
 
+a.link:focus-visible,
+a.link-strong:focus-visible {
+  outline: 1px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
+/* Cancel border spacing so wrapped document text stays in place. */
+body:not(:has(#runtime-screen)) :is(a.link, a.link-strong):focus-visible {
+  text-box: trim-both cap text;
+  outline: none;
+  border: 1px solid #a5b4fc;
+  padding: 2px;
+  margin: -3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 /* Collapsible details/summary */
 details summary {
   cursor: pointer;
@@ -283,11 +300,21 @@ details[open] > .tri::before {
   width: fit-content;
 }
 
-.card details summary:focus-visible,
-summary:focus-visible .tri {
+summary.tri,
+summary .tri {
+  position: relative;
+}
+
+summary.tri:focus-visible::after,
+summary:focus-visible .tri::after {
+  content: "";
+  position: absolute;
+  /* Match the text frame to its em box while leaving line spacing intact. */
+  inset: calc((1lh - 1em) / 2) 0;
+  translate: 0 0.15em;
   outline: 1px solid #a5b4fc;
   outline-offset: 2px;
-  border-radius: 2px;
+  pointer-events: none;
 }
 
 /* User guide: highlight.js overrides */
