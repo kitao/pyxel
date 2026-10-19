@@ -17,7 +17,7 @@
     @apply bg-gray-800 shadow-sm border border-gray-700 rounded-2xl px-2 py-1 sm:px-3 sm:py-2;
   }
   .link {
-    @apply outline-none text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
+    @apply outline-none text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 hover:underline underline-offset-2;
   }
   .lang-select {
     @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
@@ -90,7 +90,7 @@
     @apply text-sm leading-relaxed space-y-1.5;
   }
   .link-strong {
-    @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+    @apply font-semibold text-indigo-400 hover:text-indigo-300 hover:underline underline-offset-2;
     overflow-wrap: anywhere;
   }
 
@@ -113,7 +113,7 @@
   }
   .input-link {
     @apply flex items-center bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full min-h-[2.25rem] placeholder:text-gray-400 font-mono text-sm break-all select-all
-      focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
+      focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 hover:underline underline-offset-2;
   }
   .help {
     @apply space-y-1 mt-1 pl-5 min-w-0 text-gray-400 text-xs list-disc;
@@ -262,17 +262,6 @@ a.link-strong:focus-visible {
   outline-offset: 2px;
 }
 
-/* Cancel border spacing so wrapped document text stays in place. */
-body:not(:has(#runtime-screen)) :is(a.link, a.link-strong):focus-visible {
-  text-box: trim-both cap text;
-  outline: none;
-  border: 1px solid #a5b4fc;
-  padding: 2px;
-  margin: -3px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-
 /* Collapsible details/summary */
 details summary {
   cursor: pointer;
@@ -311,7 +300,6 @@ summary:focus-visible .tri::after {
   position: absolute;
   /* Match the text frame to its em box while leaving line spacing intact. */
   inset: calc((1lh - 1em) / 2) 0;
-  translate: 0 0.15em;
   outline: 1px solid #a5b4fc;
   outline-offset: 2px;
   pointer-events: none;
