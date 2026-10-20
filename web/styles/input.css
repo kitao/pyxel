@@ -262,6 +262,11 @@ a.link-strong:focus-visible {
   outline-offset: 2px;
 }
 
+a.seg-btn:focus-visible {
+  outline: 1px solid #a5b4fc;
+  outline-offset: -3px;
+}
+
 /* Collapsible details/summary */
 details summary {
   cursor: pointer;
