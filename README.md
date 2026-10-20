@@ -91,5 +91,3 @@ A retro game engine for Python
           />
         </a>
       </p>
-
-Support Pyxel through [GitHub Sponsors](https://github.com/sponsors/kitao), [Patreon](https://www.patreon.com/tkitao), or [Ko-fi](https://ko-fi.com/H2H27VDKD).
