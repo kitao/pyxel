@@ -93,24 +93,61 @@ test("without JavaScript the homepage shows English and no language switch", asy
   }
 });
 
-test("a tapped language button keeps no hover underline", async ({
+test("homepage languages remain visible and usable on every screen size", async ({
   page,
-  isMobile,
 }) => {
-  test.skip(!isMobile, "only touch screens keep a tapped element hovered");
+  const guide = require("../../user-guide/user-guide.json");
   await page.goto("/pyxel/");
-  const japanese = page.locator("[data-language='ja']");
-  await japanese.tap();
-  await expect(page.locator("html")).toHaveAttribute("lang", "ja");
-  expect(
-    await japanese.evaluate(
-      (button) => getComputedStyle(button).textDecorationLine,
-    ),
-  ).toBe("none");
+  for (const { code } of guide.languages) {
+    await page.locator("#lang-select").selectOption(code);
+    const tag = code === "cn" ? "zh" : code;
+    await expect(page.locator("html")).toHaveAttribute("lang", tag);
+    await expect(page.locator("main > div[lang]:visible")).toHaveCount(1);
+    await expect(page.locator(`main > div[lang='${tag}']`)).toBeVisible();
+    await expect(
+      page.locator("main > div[lang]:visible .quick-links a"),
+    ).toHaveCount(8);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      code,
+    ).toBe(true);
+  }
+  await page.reload();
+  await expect(page.locator("#lang-select")).toHaveValue("uk");
 });
 
-test("the homepage in both languages passes axe", async ({ page }) => {
-  for (const path of ["/pyxel/?lang=en", "/pyxel/?lang=ja"]) {
+test("homepage and guide keep the language selected on either page", async ({
+  page,
+}) => {
+  // Syntax highlighting is unrelated to language selection.
+  await page.route(
+    /^https:\/\/cdn\.jsdelivr\.net\/gh\/highlightjs\//,
+    (route) => route.fulfill({ body: "" }),
+  );
+  await page.goto("/pyxel/?lang=fr");
+  await page.locator("#lang-select").selectOption("cn");
+  const guide = new URL(
+    await page
+      .locator("main > div[lang='zh'] .quick-links a")
+      .first()
+      .getAttribute("href"),
+  );
+  await page.goto(guide.pathname);
+  await expect(page.locator("#lang-select")).toHaveValue("cn");
+  await page.locator("#lang-select").selectOption("de");
+  await page.goto("/pyxel/");
+  await expect(page.locator("#lang-select")).toHaveValue("de");
+  await page.locator("#lang-select").selectOption("ja");
+  await page.goto(guide.pathname);
+  await expect(page.locator("#lang-select")).toHaveValue("ja");
+});
+
+test("the homepage in every language passes axe", async ({ page }) => {
+  for (const { code } of require("../../user-guide/user-guide.json")
+    .languages) {
+    const path = `/pyxel/?lang=${code}`;
     await page.goto(path);
     await page.evaluate(axe.source);
     // In-text links keep the maintainer's colour-only design.
