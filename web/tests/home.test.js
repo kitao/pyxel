@@ -46,27 +46,15 @@ const loadHome = ({
   storageBlocked = false,
 } = {}) => {
   const storage = new Map(Object.entries(saved));
-  const buttons = Object.fromEntries(
-    ["en", "ja"].map((code) => [
-      code,
-      {
-        dataset: { language: code },
-        setAttribute(name, value) {
-          assert.equal(name, "aria-pressed");
-          this.pressed = String(value);
-        },
-        addEventListener(type, listener) {
-          assert.equal(type, "click");
-          this.click = listener;
-        },
-      },
-    ]),
-  );
   const languageSwitch = {
     hidden: true,
-    querySelectorAll(selector) {
-      assert.equal(selector, "button");
-      return Object.values(buttons);
+    value: "",
+    addEventListener(type, listener) {
+      assert.equal(type, "change");
+      this.change = (language) => {
+        this.value = language;
+        listener();
+      };
     },
   };
   const context = {
@@ -99,7 +87,7 @@ const loadHome = ({
     },
   };
   vm.runInNewContext(scripts.join("\n"), context);
-  return { context, languageSwitch, buttons, storage };
+  return { context, languageSwitch, storage };
 };
 
 test("home automatically chooses explicit, saved, then supported browser language", () => {
@@ -107,20 +95,32 @@ test("home automatically chooses explicit, saved, then supported browser languag
   for (const [options, expected] of [
     [{ languages: ["ja-JP", "en-US"] }, "ja"],
     [{ languages: ["en-US", "ja-JP"] }, "en"],
-    [{ languages: ["fr", "ja-JP", "en"] }, "ja"],
-    [{ languages: ["fr", "de"] }, "en"],
+    [{ languages: ["fr", "ja-JP", "en"] }, "fr"],
+    [{ languages: ["ar", "de-DE"] }, "de"],
+    [{ languages: ["ar", "vi"] }, "en"],
+    [{ languages: ["zh-TW"] }, "cn"],
     [{ languages: [], language: "ja-JP" }, "ja"],
     [{ saved: shared("en"), languages: ["ja-JP"] }, "en"],
-    [{ saved: shared("fr"), languages: ["ja-JP"] }, "ja"],
+    [{ saved: shared("invalid"), languages: ["ja-JP"] }, "ja"],
     [{ saved: { "pyxel-lang": "ja" } }, "ja"],
     [{ saved: { ...shared("en"), "pyxel-lang": "ja" } }, "en"],
+    [{ saved: { ...shared("ja"), "pyxel-lang": "fr" } }, "fr"],
+    [{ url: "https://example.test/pyxel/?lang=zh-CN" }, "cn"],
+    [{ url: "https://example.test/pyxel/?lang=cn" }, "cn"],
+    [{ url: "https://example.test/pyxel/?lang=KO-kr" }, "ko"],
+    [
+      { url: "https://example.test/pyxel/?lang=invalid", saved: shared("ja") },
+      "ja",
+    ],
     [{ url: "https://example.test/pyxel/?lang=ja", saved: shared("en") }, "ja"],
     [{ url: "https://example.test/pyxel/?lang=en", saved: shared("ja") }, "en"],
   ]) {
-    const { context, buttons } = loadHome(options);
-    assert.equal(context.document.documentElement.lang, expected);
-    assert.equal(buttons[expected].pressed, "true");
-    assert.equal(buttons[expected === "en" ? "ja" : "en"].pressed, "false");
+    const { context, languageSwitch } = loadHome(options);
+    assert.equal(
+      context.document.documentElement.lang,
+      expected === "cn" ? "zh" : expected,
+    );
+    assert.equal(languageSwitch.value, expected);
   }
 });
 
@@ -130,17 +130,16 @@ test("home language switch is revealed by its script", () => {
 
 test("home can initialize and switch language when browser storage is blocked", () => {
   const url = "https://example.test/pyxel/?source=guide#examples";
-  const { context, buttons } = loadHome({
+  const { context, languageSwitch } = loadHome({
     url,
     languages: ["ja-JP"],
     storageBlocked: true,
   });
   assert.equal(context.document.documentElement.lang, "ja");
   assert.equal(context.location.href, url);
-  buttons.en.click();
+  languageSwitch.change("en");
   assert.equal(context.document.documentElement.lang, "en");
-  assert.equal(buttons.en.pressed, "true");
-  assert.equal(buttons.ja.pressed, "false");
+  assert.equal(languageSwitch.value, "en");
   assert.equal(
     context.location.href,
     "https://example.test/pyxel/?source=guide&lang=en#examples",
@@ -148,23 +147,71 @@ test("home can initialize and switch language when browser storage is blocked", 
 });
 
 test("home language selection persists without changing its title or other URL parts", () => {
-  const { context, buttons, storage } = loadHome({
+  const { context, languageSwitch, storage } = loadHome({
     url: "https://example.test/pyxel/?source=guide#examples",
   });
-  buttons.ja.click();
+  languageSwitch.change("ja");
   assert.equal(context.document.documentElement.lang, "ja");
-  assert.equal(buttons.ja.pressed, "true");
-  assert.equal(buttons.en.pressed, "false");
+  assert.equal(languageSwitch.value, "ja");
   assert.equal(context.document.title, "Pyxel");
   assert.equal(
     context.location.href,
     "https://example.test/pyxel/?source=guide&lang=ja#examples",
   );
-  assert.deepEqual(Object.fromEntries(storage), { "kitao.dev.language": "ja" });
+  assert.deepEqual(Object.fromEntries(storage), {
+    "kitao.dev.language": "ja",
+    "pyxel-lang": "ja",
+  });
   assert.equal(
-    loadHome({ saved: Object.fromEntries(storage) }).buttons.ja.pressed,
-    "true",
+    loadHome({ saved: Object.fromEntries(storage) }).languageSwitch.value,
+    "ja",
   );
+});
+
+test("home offers the guide's languages and remembers every Pyxel selection", () => {
+  const guide = JSON.parse(
+    fs.readFileSync(
+      path.join(__dirname, "..", "user-guide", "user-guide.json"),
+      "utf8",
+    ),
+  );
+  const options = [
+    ...source.matchAll(
+      /<option value="([^"]+)" lang="([^"]+)">([^<]+)<\/option>/g,
+    ),
+  ];
+  assert.deepEqual(
+    options.map(([, code, , name]) => ({ code, name })),
+    guide.languages,
+  );
+  assert.deepEqual(
+    [...source.matchAll(/<div lang="([^"]+)">/g)].map(([, tag]) => tag),
+    options.map(([, , tag]) => tag),
+  );
+
+  const { context, languageSwitch, storage } = loadHome();
+  for (const { code } of guide.languages) {
+    languageSwitch.change(code);
+    assert.equal(
+      context.document.documentElement.lang,
+      code === "cn" ? "zh" : code,
+    );
+    assert.equal(new URL(context.location.href).searchParams.get("lang"), code);
+    assert.equal(storage.get("pyxel-lang"), code);
+    assert.equal(
+      loadHome({ saved: Object.fromEntries(storage) }).languageSwitch.value,
+      code,
+    );
+  }
+});
+
+test("home Pyxel-only selections preserve the shared site's language", () => {
+  const { languageSwitch, storage } = loadHome({
+    saved: { "kitao.dev.language": "ja" },
+  });
+  languageSwitch.change("cn");
+  assert.equal(storage.get("kitao.dev.language"), "ja");
+  assert.equal(storage.get("pyxel-lang"), "cn");
 });
 
 test("home link preview matches the page and its published image", () => {

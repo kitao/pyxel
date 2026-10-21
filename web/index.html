@@ -54,7 +54,7 @@
 
       header {
         display: flex;
-        align-items: flex-end;
+        align-items: flex-start;
         justify-content: space-between;
         gap: 12px;
         margin: 0 0 16px;
@@ -67,30 +67,14 @@
       }
 
       .language-switch {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: -4px;
-        font-size: 14px;
-        white-space: nowrap;
-      }
-
-      /* display: flex would otherwise override the hidden attribute */
-      .language-switch[hidden] {
-        display: none;
-      }
-
-      .language-switch button {
-        padding: 4px 2px;
-        border: 0;
-        background: transparent;
-        color: #4493f8;
-        font: inherit;
-        cursor: pointer;
-      }
-
-      .language-switch button[aria-pressed="true"] {
+        max-width: 50%;
+        padding: 4px 8px;
+        border: 1px solid #3d444d;
+        border-radius: 8px;
+        background: #161b22;
         color: inherit;
+        font: inherit;
+        font-size: 14px;
       }
 
       .badges {
@@ -144,7 +128,7 @@
       }
 
       a,
-      button {
+      select {
         scroll-margin-block: 24px;
       }
 
@@ -153,21 +137,19 @@
       }
 
       @media (hover: hover) {
-        a:hover,
-        .language-switch button:hover {
+        a:hover {
           text-decoration: underline;
         }
       }
 
       a:focus-visible,
       a:focus-visible > img,
-      .language-switch button:focus-visible span {
+      .language-switch:focus-visible {
         outline: 1px solid #8b949e;
         outline-offset: 2px;
       }
 
-      a:has(> img):focus-visible,
-      .language-switch button:focus-visible {
+      a:has(> img):focus-visible {
         outline: none;
       }
 
@@ -181,20 +163,48 @@
         vertical-align: bottom;
       }
 
-      html[lang="en"] main > [lang="ja"],
-      html[lang="ja"] main > [lang="en"] {
+      main > div[lang] {
         display: none;
+      }
+
+      html[lang="en"] main > [lang="en"],
+      html[lang="zh"] main > [lang="zh"],
+      html[lang="de"] main > [lang="de"],
+      html[lang="es"] main > [lang="es"],
+      html[lang="fr"] main > [lang="fr"],
+      html[lang="it"] main > [lang="it"],
+      html[lang="ja"] main > [lang="ja"],
+      html[lang="ko"] main > [lang="ko"],
+      html[lang="pt"] main > [lang="pt"],
+      html[lang="ru"] main > [lang="ru"],
+      html[lang="tr"] main > [lang="tr"],
+      html[lang="uk"] main > [lang="uk"] {
+        display: block;
       }
     </style>
     <script>
-      const homeLanguages = ["en", "ja"];
+      const homeLanguages = [
+        "en",
+        "cn",
+        "de",
+        "es",
+        "fr",
+        "it",
+        "ja",
+        "ko",
+        "pt",
+        "ru",
+        "tr",
+        "uk",
+      ];
       let savedLanguage = null;
       try {
-        // Every kitao.dev page shares this key; the earlier pyxel-lang key
-        // counts only without it.
+        const own = localStorage.getItem("pyxel-lang");
+        const shared = localStorage.getItem("kitao.dev.language");
+        // Match the guide: a Pyxel-only language takes priority over the
+        // English or Japanese choice shared with the other kitao.dev sites.
         savedLanguage =
-          localStorage.getItem("kitao.dev.language") ??
-          localStorage.getItem("pyxel-lang");
+          own === null || own === "en" || own === "ja" ? (shared ?? own) : own;
       } catch {}
       const preferredLanguages = [
         new URLSearchParams(location.search).get("lang"),
@@ -203,11 +213,16 @@
           ? navigator.languages
           : [navigator.language]),
       ];
-      document.documentElement.lang =
+      const homeLanguage =
         preferredLanguages
           .filter(Boolean)
-          .map((language) => language.toLowerCase().split("-")[0])
+          .map((language) => {
+            const code = language.toLowerCase().split("-")[0];
+            return code === "zh" ? "cn" : code;
+          })
           .find((language) => homeLanguages.includes(language)) || "en";
+      document.documentElement.lang =
+        homeLanguage === "cn" ? "zh" : homeLanguage;
     </script>
   </head>
 
@@ -222,25 +237,25 @@
             height="64"
           />
         </h1>
-        <nav class="language-switch" aria-label="Language / 言語" hidden>
-          <button
-            type="button"
-            lang="en"
-            data-language="en"
-            aria-pressed="false"
-          >
-            <span>English</span>
-          </button>
-          <span aria-hidden="true">/</span>
-          <button
-            type="button"
-            lang="ja"
-            data-language="ja"
-            aria-pressed="false"
-          >
-            <span>日本語</span>
-          </button>
-        </nav>
+        <select
+          id="lang-select"
+          class="language-switch"
+          aria-label="Language"
+          hidden
+        >
+          <option value="en" lang="en">English</option>
+          <option value="cn" lang="zh">中文</option>
+          <option value="de" lang="de">Deutsch</option>
+          <option value="es" lang="es">Español</option>
+          <option value="fr" lang="fr">Français</option>
+          <option value="it" lang="it">Italiano</option>
+          <option value="ja" lang="ja">日本語</option>
+          <option value="ko" lang="ko">한국어</option>
+          <option value="pt" lang="pt">Português</option>
+          <option value="ru" lang="ru">Русский</option>
+          <option value="tr" lang="tr">Türkçe</option>
+          <option value="uk" lang="uk">Українська</option>
+        </select>
       </header>
       <p class="badges">
         <a href="https://github.com/kitao/pyxel"
@@ -346,6 +361,419 @@
           </p>
         </nav>
       </div>
+      <div lang="zh">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) 是一个针对 Python 的复古游戏引擎。
+        </p>
+        <p>
+          其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4
+          个声音通道，同时可以轻松享受制作像素艺术风格游戏的乐趣。
+        </p>
+        <p>
+          Pyxel 在
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          下开源并免费使用。让我们开始使用 Pyxel 制作复古游戏吧！
+        </p>
+        <p>
+          这个项目由一人开发。如果您喜欢，请考虑
+          <a href="https://github.com/kitao/pyxel">在 GitHub 上加星标</a
+          >，或通过
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>、<a
+            href="https://www.patreon.com/tkitao"
+            >Patreon</a
+          >、<a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a> 捐款来支持开发。
+        </p>
+        <nav class="quick-links" aria-label="相关链接">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ 用户指南</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/">▸ 示例集</a></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/">▸ 用户示例</a>
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(分享您的作品)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel">▸ 源代码</a></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="de">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) ist eine Retro-Spielengine für
+          Python.
+        </p>
+        <p>
+          Die Spezifikationen sind von Retro-Spielkonsolen inspiriert – z. B.
+          werden nur 16 Farben und 4 Sound-Kanäle unterstützt –, sodass Sie ganz
+          einfach Spiele im Pixel-Art-Stil erstellen können.
+        </p>
+        <p>
+          Pyxel ist unter der
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          als Open Source verfügbar und kostenlos nutzbar. Beginnen Sie mit
+          Pyxel, Retro-Spiele zu erstellen!
+        </p>
+        <p>
+          Dieses Projekt wird von einer einzelnen Person entwickelt. Wenn es
+          Ihnen gefällt, würde ich mich über Ihre Unterstützung freuen: mit
+          <a href="https://github.com/kitao/pyxel">einem Stern auf GitHub</a>
+          oder einer Spende über
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> oder
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Weiterführende Links">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Benutzerhandbuch</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ Beispiele</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Benutzerbeispiele</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Eigenes Werk teilen)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel">▸ Quellcode</a></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="es">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) es un motor de juegos retro para
+          Python.
+        </p>
+        <p>
+          Las especificaciones están inspiradas en las consolas de juegos retro,
+          como el soporte para solo 16 colores y 4 canales de sonido, lo que le
+          permite disfrutar fácilmente de la creación de juegos con estilo de
+          arte en píxeles.
+        </p>
+        <p>
+          Pyxel es de código abierto, se distribuye bajo la
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          y se puede usar de forma gratuita. ¡Empiece a crear juegos retro con
+          Pyxel!
+        </p>
+        <p>
+          Este proyecto lo desarrolla una sola persona. Si le gusta, considere
+          apoyarlo
+          <a href="https://github.com/kitao/pyxel"
+            >dándole una estrella en GitHub</a
+          >
+          o con una donación a través de
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> o
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Recursos">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Guía de usuario</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ Ejemplos</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Ejemplos de Usuarios</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Comparta su creación)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Código fuente</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="fr">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) est un moteur de jeux rétro pour
+          Python.
+        </p>
+        <p>
+          Les spécifications sont inspirées des consoles de jeux rétro, comme le
+          fait de n&#x27;afficher que 16 couleurs et de prendre en charge 4
+          canaux audio, vous permettant ainsi de profiter facilement de la
+          création de jeux au style pixel art.
+        </p>
+        <p>
+          Pyxel est open source, distribué sous la
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          et utilisable gratuitement. Commencez à créer des jeux rétro avec
+          Pyxel !
+        </p>
+        <p>
+          Ce projet est développé par une seule personne. Si vous
+          l&#x27;appréciez, pensez à le soutenir
+          <a href="https://github.com/kitao/pyxel"
+            >en lui donnant une étoile sur GitHub</a
+          >
+          ou en faisant un don via
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> ou
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Ressources">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Guide utilisateur</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ Exemples</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Exemples d&#x27;utilisateurs</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Partagez votre création)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Code source</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="it">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) è un motore di gioco retrò per
+          Python.
+        </p>
+        <p>
+          Le specifiche sono ispirate alle console di gioco retrò, come il
+          supporto di solo 16 colori e 4 canali audio, permettendo di divertirsi
+          facilmente a creare giochi in stile pixel art.
+        </p>
+        <p>
+          Pyxel è open source, distribuito con la
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          e utilizzabile gratuitamente. Iniziamo a creare giochi retrò con
+          Pyxel!
+        </p>
+        <p>
+          Questo progetto è sviluppato da una sola persona. Se piace, è
+          possibile sostenerlo
+          <a href="https://github.com/kitao/pyxel">con una stella su GitHub</a>
+          oppure con una donazione tramite
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> o
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Risorse">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Guida utente</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/">▸ Esempi</a></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Esempi degli utenti</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Condividi la tua creazione)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Codice sorgente</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
       <div lang="ja">
         <p>
           <strong>Pyxel</strong>（ピクセル）は Python
@@ -403,6 +831,423 @@
             <strong
               ><a href="https://github.com/kitao/pyxel"
                 >▸ ソースコード</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="ko">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/)은 Python을 위한 레트로 게임
+          엔진입니다.
+        </p>
+        <p>
+          사양은 레트로 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드
+          채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수
+          있습니다.
+        </p>
+        <p>
+          Pyxel은
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          하에 오픈 소스이며 무료로 사용할 수 있습니다. Pyxel로 레트로 게임을
+          만들어 봅시다!
+        </p>
+        <p>
+          이 프로젝트는 개인이 개발하고 있습니다. 마음에 드셨다면
+          <a href="https://github.com/kitao/pyxel">GitHub에 별표를 남기거나</a>
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a>,
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>를 통한 기부로 개발을
+          응원해 주시면 감사하겠습니다.
+        </p>
+        <nav class="quick-links" aria-label="관련 링크">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ 사용자 가이드</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ 샘플 모음</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ 사용자 예제</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(작품 공유하기)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel">▸ 소스 코드</a></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="pt">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) é um motor de jogos retrô para
+          Python.
+        </p>
+        <p>
+          As especificações são inspiradas em consoles de jogos retrô, como o
+          suporte para apenas 16 cores e 4 canais de som, permitindo que você
+          desfrute facilmente da criação de jogos em estilo pixel art.
+        </p>
+        <p>
+          Pyxel tem código aberto sob a
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          e pode ser usado gratuitamente. Vamos começar a criar jogos retrô com
+          o Pyxel!
+        </p>
+        <p>
+          Este projeto é desenvolvido por uma única pessoa. Se você gostou,
+          considere apoiá-lo
+          <a href="https://github.com/kitao/pyxel">com uma estrela no GitHub</a>
+          ou com uma doação via
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> ou
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Recursos">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Guia do Usuário</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ Exemplos</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Exemplos de Usuários</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Compartilhe sua criação)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Código-fonte</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="ru">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) — это ретро-игровой движок для
+          Python.
+        </p>
+        <p>
+          Простые спецификации, вдохновлённые ретро-игровыми консолями, —
+          например, только 16 цветов и 4 звуковых канала, — позволяют легко
+          наслаждаться созданием игр в стиле пиксельной графики.
+        </p>
+        <p>
+          Pyxel является открытым программным обеспечением, распространяется на
+          условиях
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          и бесплатен для использования. Давайте начнём создавать ретро-игры с
+          Pyxel!
+        </p>
+        <p>
+          Этот проект разрабатывает один человек. Если он вам нравится, вы
+          можете поддержать его
+          <a href="https://github.com/kitao/pyxel">звездой на GitHub</a> или
+          пожертвованием через
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> или
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Полезные ссылки">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Руководство пользователя</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/">▸ Примеры</a></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Примеры пользователей</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Поделиться своей работой)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Исходный код</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="tr">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/), Python için bir retro oyun
+          motorudur.
+        </p>
+        <p>
+          Yalnızca 16 renk desteği ve 4 ses kanalı gibi retro oyun
+          konsollarından ilham alınan sade özellikleriyle piksel sanat tarzı
+          oyunlar yapmanın keyfini kolayca çıkarabilirsiniz.
+        </p>
+        <p>
+          Pyxel,
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          altında açık kaynaklıdır ve ücretsiz olarak kullanılabilir. Haydi,
+          Pyxel ile retro oyun yapmaya başlayalım!
+        </p>
+        <p>
+          Bu proje tek bir kişi tarafından geliştirilmektedir. Beğendiyseniz
+          <a href="https://github.com/kitao/pyxel"
+            >GitHub&#x27;da yıldız vererek</a
+          >
+          veya <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> ya da
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a> üzerinden bağış
+          yaparak destek olabilirsiniz.
+        </p>
+        <nav class="quick-links" aria-label="İlgili Bağlantılar">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Kullanım Kılavuzu</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ Örnekler</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Kullanıcı Örnekleri</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Eserinizi Paylaşın)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Kaynak Kodu</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/launcher/"
+                >▸ Pyxel Web Launcher</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/code-maker/"
+                >▸ Pyxel Code Maker</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/mml-studio/"
+                >▸ Pyxel MML Studio</a
+              ></strong
+            >
+          </p>
+        </nav>
+      </div>
+      <div lang="uk">
+        <p>
+          <strong>Pyxel</strong> (/ˈpɪksəl/) — це ретро-ігровий рушій для
+          Python.
+        </p>
+        <p>
+          Специфікації натхнені ретро-ігровими консолями, зокрема обмеженням до
+          16 кольорів і 4 звукових каналів, що дозволяє легко насолоджуватися
+          створенням ігор у стилі піксельної графіки.
+        </p>
+        <p>
+          Pyxel є відкритим програмним забезпеченням, яке поширюється на умовах
+          <a href="https://github.com/kitao/pyxel/blob/main/LICENSE"
+            >MIT License</a
+          >
+          та є безкоштовним для використання. Давайте почнемо створювати
+          ретро-ігри з Pyxel!
+        </p>
+        <p>
+          Цей проєкт розробляє одна людина. Якщо він вам подобається, можете
+          підтримати його
+          <a href="https://github.com/kitao/pyxel">зіркою на GitHub</a> або
+          пожертвою через
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>,
+          <a href="https://www.patreon.com/tkitao">Patreon</a> чи
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>.
+        </p>
+        <nav class="quick-links" aria-label="Корисні посилання">
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-guide/"
+                >▸ Посібник користувача</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/showcase/"
+                >▸ Приклади</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://kitao.dev/pyxel/user-examples/"
+                >▸ Приклади користувачів</a
+              >
+              <a
+                class="submission-link"
+                href="https://github.com/kitao/pyxel/discussions/new?category=user-examples"
+                >(Поділитися своєю роботою)</a
+              ></strong
+            >
+          </p>
+          <p>
+            <strong
+              ><a href="https://github.com/kitao/pyxel"
+                >▸ Вихідний код</a
               ></strong
             >
           </p>
@@ -536,31 +1381,20 @@
 
     <script>
       const languageSwitch = document.querySelector(".language-switch");
-      const languageButtons = languageSwitch.querySelectorAll("button");
-      setLanguage(document.documentElement.lang);
-      for (const button of languageButtons) {
-        button.addEventListener("click", () => {
-          const language = button.dataset.language;
-          setLanguage(language);
-          try {
+      languageSwitch.value = homeLanguage;
+      languageSwitch.addEventListener("change", () => {
+        const language = languageSwitch.value;
+        document.documentElement.lang = language === "cn" ? "zh" : language;
+        try {
+          localStorage.setItem("pyxel-lang", language);
+          if (language === "en" || language === "ja")
             localStorage.setItem("kitao.dev.language", language);
-          } catch {}
-          const url = new URL(location.href);
-          url.searchParams.set("lang", language);
-          history.replaceState(null, "", url);
-        });
-      }
+        } catch {}
+        const url = new URL(location.href);
+        url.searchParams.set("lang", language);
+        history.replaceState(null, "", url);
+      });
       languageSwitch.hidden = false;
-
-      function setLanguage(language) {
-        document.documentElement.lang = language;
-        for (const button of languageButtons) {
-          button.setAttribute(
-            "aria-pressed",
-            button.dataset.language === language,
-          );
-        }
-      }
     </script>
   </body>
 </html>
