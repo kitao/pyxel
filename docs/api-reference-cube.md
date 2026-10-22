@@ -1201,7 +1201,7 @@ Advance this subtree by one frame: on_update hooks, node motion playback, collid
 
 ### `draw(x, y, w, h, target=None)` — function
 
-Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the entire target before rendering.
+Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the viewport before rendering.
 
 **Parameters:**
 
@@ -1327,7 +1327,7 @@ When set to a number, switches to an orthographic projection with this view heig
 
 ### `clear_color` — variable
 
-When set to a color number, Node.draw() fills the target with it before rendering. None (the default) draws over the existing pixels.
+When set to a color number, Node.draw() fills its viewport with it before rendering. None (the default) draws over the existing pixels.
 
 - **Type:** `int | None`
 

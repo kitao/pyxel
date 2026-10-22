@@ -1389,6 +1389,90 @@ class _ColoredBox(Node):
         self.box(Mat4.IDENTITY, Vec3(4, 4, 4), self.col)
 
 
+class TestViewportClear:
+    @pytest.mark.parametrize("offscreen", [False, True])
+    @pytest.mark.parametrize("color", [None, 3])
+    @pytest.mark.parametrize(
+        "viewport",
+        [
+            (3, 2, 6, 5),
+            (-2, -1, 6, 4),
+            (14, 10, 6, 5),
+            (20, 20, 2, 2),
+            (1, 1, 0, 4),
+            (1, 1, -2, 4),
+            (1, 1, 4, 0),
+            (1, 1, 4, -2),
+            (0, 0, 160, 120),
+        ],
+    )
+    def test_clear_color_only_fills_viewport(self, offscreen, color, viewport):
+        scene = Node()
+        scene.camera = Camera()
+        scene.camera.clear_color = color
+        target = pyxel.Image(16, 12) if offscreen else pyxel.screen
+        target.cls(7)
+
+        if offscreen:
+            scene.draw(*viewport, target)
+        else:
+            scene.draw(*viewport)
+
+        left, top, width, height = viewport
+        for y in range(target.height):
+            for x in range(target.width):
+                inside = left <= x < left + width and top <= y < top + height
+                expected = color if inside and color is not None else 7
+                assert target.pget(x, y) == expected, (x, y, viewport)
+
+    @pytest.mark.parametrize("offscreen", [False, True])
+    def test_later_viewport_keeps_earlier_viewport(self, offscreen):
+        scene = Node()
+        scene.camera = Camera()
+        target = pyxel.Image(16, 12) if offscreen else pyxel.screen
+        target.cls(7)
+        args = (target,) if offscreen else ()
+
+        scene.camera.clear_color = 3
+        scene.draw(0, 0, 8, 12, *args)
+        scene.camera.clear_color = 6
+        scene.draw(8, 0, 8, 12, *args)
+
+        for y in range(target.height):
+            for x in range(target.width):
+                expected = (3 if x < 8 else 6) if x < 16 and y < 12 else 7
+                assert target.pget(x, y) == expected
+
+    def test_clear_preserves_palette_and_other_2d_drawing_state(self):
+        scene = Node()
+        scene.camera = Camera()
+        scene.camera.clear_color = 3
+        target = pyxel.Image(16, 12)
+        target.cls(7)
+        target.pal(3, 11)
+        target.clip(1, 1, 1, 1)
+        target.camera(2, 3)
+        target.dither(0)
+
+        scene.draw(4, 3, 5, 4, target)
+        pixels = target.data_ptr()
+
+        # Background clearing uses viewport coordinates, independent of 2D state.
+        for y in range(12):
+            for x in range(16):
+                expected = 11 if 4 <= x < 9 and 3 <= y < 7 else 7
+                assert pixels[y * 16 + x] == expected
+
+        # Subsequent 2D drawing still uses the original dither, offset and clip.
+        target.pset(3, 4, 8)
+        assert pixels[1 * 16 + 1] == 7
+        target.dither(1)
+        target.pset(3, 4, 3)
+        target.pset(4, 4, 8)
+        assert pixels[1 * 16 + 1] == 11
+        assert pixels[1 * 16 + 2] == 7
+
+
 class TestVisibility:
     def test_direct_subtree_draw_respects_hidden_ancestor_and_clears(self):
         parent, branch = Node(), Node()

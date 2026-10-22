@@ -8,7 +8,7 @@ use pyo3::types::{PyDict, PyTuple, PyType};
 use pyxel::cube::draw::{DrawState, Uvs as QuadUvs};
 use pyxel::cube::mesh::ColImage;
 use pyxel::cube::raster::{
-    camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+    camera_clip_row, clear_viewport, compute_clip_rect, matmul, projection_matrix, view_matrix,
 };
 use pyxel::cube::scene::{
     reset_draw_state, set_draw_context, take_draw_context, with_draw_context, DrawContext,
@@ -1086,8 +1086,9 @@ impl Node {
         };
         let target_w = rc_ref!(&target_rc).width();
         let target_h = rc_ref!(&target_rc).height();
+        let clip = compute_clip_rect(x as f32, y as f32, w as f32, h as f32, target_w, target_h);
         if let Some(col) = rc_ref!(&cam_inner).clear_color {
-            rc_mut!(&target_rc).clear(col as u8);
+            clear_viewport(&mut rc_mut!(&target_rc), &clip, col as u8);
         }
 
         // Lend camera buffers to the draw context for this traversal.
@@ -1100,7 +1101,6 @@ impl Node {
         let proj = projection_matrix(&rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);
         let clip_row = camera_clip_row(&view);
-        let clip = compute_clip_rect(x as f32, y as f32, w as f32, h as f32, target_w, target_h);
 
         set_draw_context(DrawContext {
             target: target_rc,

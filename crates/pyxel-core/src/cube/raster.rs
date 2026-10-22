@@ -81,6 +81,20 @@ pub fn compute_clip_rect(
     }
 }
 
+// The clip is target-clamped; clearing ignores 2D camera, clip and dithering.
+pub fn clear_viewport(target: &mut Image, clip: &ClipRect, color: u8) {
+    if clip.left > clip.right || clip.top > clip.bottom {
+        return;
+    }
+
+    let color = target.palette[color as usize];
+    let stride = target.width() as usize;
+    for y in clip.top..=clip.bottom {
+        let row = y as usize * stride;
+        target.canvas.data[row + clip.left as usize..=row + clip.right as usize].fill(color);
+    }
+}
+
 // View-projection helpers
 
 pub fn view_matrix(camera: &Camera) -> Mat4x4 {
