@@ -625,18 +625,18 @@
       "uk": "Команда {0} конвертує файл застосунку Pyxel (.pyxapp) в один HTML-файл."
     },
     "app2html_body2": {
-      "en": "Application code and resources are embedded in the HTML, so only this file needs to be published. At runtime, it loads the same Pyxel version used for conversion from jsDelivr, so a network connection is required.",
-      "cn": "应用代码和资源都嵌入 HTML，因此只需发布这一个文件。运行时会从 jsDelivr 加载转换时使用的同一 Pyxel 版本，因此需要网络连接。",
-      "de": "Anwendungscode und Ressourcen sind in die HTML-Datei eingebettet, sodass nur diese Datei veröffentlicht werden muss. Zur Laufzeit lädt sie von jsDelivr dieselbe Pyxel-Version, die bei der Konvertierung verwendet wurde; daher ist eine Netzwerkverbindung erforderlich.",
-      "es": "El código de la aplicación y los recursos están incrustados en el HTML, por lo que solo es necesario publicar este archivo. Al ejecutarse, carga desde jsDelivr la misma versión de Pyxel utilizada para la conversión, por lo que se necesita conexión de red.",
-      "fr": "Le code de l'application et les ressources sont intégrés dans le HTML ; seul ce fichier doit donc être publié. À l'exécution, il charge depuis jsDelivr la même version de Pyxel que celle utilisée pour la conversion ; une connexion réseau est donc nécessaire.",
-      "it": "Il codice dell'applicazione e le risorse sono incorporati nel file HTML, quindi è sufficiente pubblicare questo file. Durante l'esecuzione, carica da jsDelivr la stessa versione di Pyxel usata per la conversione; è quindi necessaria una connessione di rete.",
-      "ja": "アプリのコードとリソースは HTML に埋め込まれるため、公開するのはこのファイルだけです。実行時は変換時と同じバージョンの Pyxel を jsDelivr から読み込むため、ネットワーク接続が必要です。",
-      "ko": "앱 코드와 리소스는 HTML에 포함되므로 이 파일만 공개하면 됩니다. 실행 시 jsDelivr에서 변환에 사용한 것과 같은 Pyxel 버전을 불러오므로 네트워크 연결이 필요합니다.",
-      "pt": "O código do aplicativo e os recursos são incorporados no HTML, portanto apenas esse arquivo precisa ser publicado. Na execução, ele carrega do jsDelivr a mesma versão do Pyxel usada na conversão; por isso, é necessária uma conexão de rede.",
-      "ru": "Код приложения и ресурсы встроены в HTML, поэтому публиковать нужно только этот файл. При запуске он загружает с jsDelivr ту же версию Pyxel, которая использовалась при конвертации, поэтому требуется подключение к сети.",
-      "tr": "Uygulama kodu ve kaynaklar HTML'ye gömülür; bu nedenle yalnızca bu dosyanın yayımlanması gerekir. Çalışırken jsDelivr'dan dönüştürmede kullanılan Pyxel sürümünü yükler; bu nedenle ağ bağlantısı gerekir.",
-      "uk": "Код застосунку та ресурси вбудовано в HTML, тому публікувати потрібно лише цей файл. Під час запуску він завантажує з jsDelivr ту саму версію Pyxel, що використовувалася для конвертації, тому потрібне підключення до мережі."
+      "en": "Application code and resources are embedded in the HTML, so only this file needs to be published. At runtime, it loads the same Pyxel version used for conversion from kitao.dev, so a network connection is required.",
+      "cn": "应用代码和资源都嵌入 HTML，因此只需发布这一个文件。运行时会从 kitao.dev 加载转换时使用的同一 Pyxel 版本，因此需要网络连接。",
+      "de": "Anwendungscode und Ressourcen sind in die HTML-Datei eingebettet, sodass nur diese Datei veröffentlicht werden muss. Zur Laufzeit lädt sie von kitao.dev dieselbe Pyxel-Version, die bei der Konvertierung verwendet wurde; daher ist eine Netzwerkverbindung erforderlich.",
+      "es": "El código de la aplicación y los recursos están incrustados en el HTML, por lo que solo es necesario publicar este archivo. Al ejecutarse, carga desde kitao.dev la misma versión de Pyxel utilizada para la conversión, por lo que se necesita conexión de red.",
+      "fr": "Le code de l'application et les ressources sont intégrés dans le HTML ; seul ce fichier doit donc être publié. À l'exécution, il charge depuis kitao.dev la même version de Pyxel que celle utilisée pour la conversion ; une connexion réseau est donc nécessaire.",
+      "it": "Il codice dell'applicazione e le risorse sono incorporati nel file HTML, quindi è sufficiente pubblicare questo file. Durante l'esecuzione, carica da kitao.dev la stessa versione di Pyxel usata per la conversione; è quindi necessaria una connessione di rete.",
+      "ja": "アプリのコードとリソースは HTML に埋め込まれるため、公開するのはこのファイルだけです。実行時は変換時と同じバージョンの Pyxel を kitao.dev から読み込むため、ネットワーク接続が必要です。",
+      "ko": "앱 코드와 리소스는 HTML에 포함되므로 이 파일만 공개하면 됩니다. 실행 시 kitao.dev에서 변환에 사용한 것과 같은 Pyxel 버전을 불러오므로 네트워크 연결이 필요합니다.",
+      "pt": "O código do aplicativo e os recursos são incorporados no HTML, portanto apenas esse arquivo precisa ser publicado. Na execução, ele carrega de kitao.dev a mesma versão do Pyxel usada na conversão; por isso, é necessária uma conexão de rede.",
+      "ru": "Код приложения и ресурсы встроены в HTML, поэтому публиковать нужно только этот файл. При запуске он загружает с kitao.dev ту же версию Pyxel, которая использовалась при конвертации, поэтому требуется подключение к сети.",
+      "tr": "Uygulama kodu ve kaynaklar HTML'ye gömülür; bu nedenle yalnızca bu dosyanın yayımlanması gerekir. Çalışırken kitao.dev'den dönüştürmede kullanılan Pyxel sürümünü yükler; bu nedenle ağ bağlantısı gerekir.",
+      "uk": "Код застосунку та ресурси вбудовано в HTML, тому публікувати потрібно лише цей файл. Під час запуску він завантажує з kitao.dev ту саму версію Pyxel, що використовувалася для конвертації, тому потрібне підключення до мережі."
     },
     "app2html_gamepad": {
       "en": "The virtual gamepad is enabled by default and automatically displayed on touch devices. To disable it, remove {0} from the generated HTML.",

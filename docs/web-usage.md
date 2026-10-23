@@ -91,7 +91,7 @@ The `pyxel app2html` command converts a Pyxel application file (.pyxapp) into a 
 pyxel app2html your_app.pyxapp
 ```
 
-Application code and resources are embedded in the HTML, so only this file needs to be published. At runtime, it loads the same Pyxel version used for conversion from jsDelivr, so a network connection is required.
+Application code and resources are embedded in the HTML, so only this file needs to be published. At runtime, it loads the same Pyxel version used for conversion from kitao.dev, so a network connection is required.
 
 The virtual gamepad is enabled by default and automatically displayed on touch devices. To disable it, remove `gamepad: "enabled",` from the generated HTML.
 

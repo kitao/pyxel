@@ -795,10 +795,7 @@ class TestApp2html:
         pyxel.cli.create_html_from_pyxel_app("my_app.pyxapp")
 
         html = (tmp_path / "my_app.html").read_text(encoding="utf-8")
-        assert (
-            f"https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js"
-            in html
-        )
+        assert f"https://kitao.dev/pyxel/{pyxel.VERSION}/pyxel.js" in html
         assert "launchPyxel(" in html
         assert 'command: "play"' in html
         assert 'name: "my_app.pyxapp"' in html
