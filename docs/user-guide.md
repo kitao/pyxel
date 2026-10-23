@@ -108,7 +108,7 @@ You can browse the example list and run examples in your browser at [Pyxel Showc
 
 ### Create a Program
 
-In your Python script, import Pyxel, set the window size with `init`, and start the application with `run`.
+In your Python script, import Pyxel, set the Pyxel screen size with `init`, and start the application with `run`.
 
 ```python
 import pyxel
@@ -195,15 +195,17 @@ The following special key actions are available while a Pyxel application is run
 | --- | --- |
 | Esc | Quit the application |
 | Alt(Option)+R or A+B+X+Y+BACK on gamepad | Reset the application |
-| Alt(Option)+1 | Save the screenshot to the desktop |
+| Alt(Option)+1 | Save the screenshot |
 | Alt(Option)+2 | Reset the recording start time of the screen capture video |
-| Alt(Option)+3 | Save a screen capture video to the desktop (up to 10 seconds) |
+| Alt(Option)+3 | Save a screen capture video (up to 10 seconds) |
 | Alt(Option)+8 or A+B+X+Y+DL on gamepad | Toggle screen scaling between maximum and integer |
 | Alt(Option)+9 or A+B+X+Y+DR on gamepad | Switch between screen modes (Crisp/Smooth/Retro) |
 | Alt(Option)+0 or A+B+X+Y+DU on gamepad | Toggle the performance monitor (FPS/`update` time/`draw` time) |
 | Alt(Option)+Enter or A+B+X+Y+DD on gamepad | Toggle fullscreen |
-| Shift+Alt(Option)+1/2/3 | Save image bank 0, 1, or 2 to the desktop |
-| Shift+Alt(Option)+0 | Save the current color palette to the desktop |
+| Shift+Alt(Option)+1/2/3 | Save image bank 0, 1, or 2 |
+| Shift+Alt(Option)+0 | Save the current color palette |
+
+Files are saved to the desktop in the desktop version and to the browser's download location in the web version.
 
 ## Creating Resources
 

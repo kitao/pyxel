@@ -326,7 +326,7 @@ Create a translation matrix.
 
 ### `Mat4.from_euler(euler)` — class
 
-Create a rotation matrix from Euler angles in degrees, applied around the world axes in X, Y, Z order.
+Create a rotation matrix from Euler angles in degrees, applied around fixed X, Y, Z axes in that order.
 
 **Parameters:**
 
@@ -587,7 +587,7 @@ Create a rotation around an axis.
 
 ### `Quat.from_euler(euler)` — class
 
-Create a rotation from Euler angles in degrees, applied around the world axes in X, Y, Z order.
+Create a rotation from Euler angles in degrees, applied around fixed X, Y, Z axes in that order.
 
 **Parameters:**
 
@@ -1407,7 +1407,7 @@ node.prim(Mat4.IDENTITY, prim, 11)
 
 ### `Primitive.plane(width=1.0, height=1.0)` — class
 
-Create a textured XY-plane Primitive with flat normals.
+Create a texture-ready XY-plane Primitive with flat normals.
 
 **Parameters:**
 
@@ -1424,7 +1424,7 @@ prim = Primitive.plane(2, 2)
 
 ### `Primitive.box(size=Vec3.ONE)` — class
 
-Create a textured box Primitive with flat normals.
+Create a texture-ready box Primitive with flat normals.
 
 **Parameters:**
 
@@ -1440,7 +1440,7 @@ prim = Primitive.box(Vec3(1, 2, 1))
 
 ### `Primitive.sphere(radius=0.5)` — class
 
-Create a textured low-poly sphere Primitive with flat normals.
+Create a texture-ready low-poly sphere Primitive with flat normals.
 
 **Parameters:**
 
@@ -1456,7 +1456,7 @@ prim = Primitive.sphere(0.5)
 
 ### `Primitive.capsule(height=1.0, radius=0.5)` — class
 
-Create a textured low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.
+Create a texture-ready low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.
 
 **Parameters:**
 

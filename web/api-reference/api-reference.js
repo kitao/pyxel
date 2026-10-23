@@ -276,7 +276,8 @@ function updateTexts() {
       for (let i = 0; i < cat.items.length; i++) {
         const key = `${cat.id}-${i}`;
         const descEl = cached("desc-key", key);
-        if (descEl) descEl.textContent = t(cat.items[i].description);
+        if (descEl)
+          descEl.innerHTML = descriptionHtml(t(cat.items[i].description));
         const detailEl = cached("detail-key", key);
         if (detailEl) buildDetailContent(detailEl, cat.items[i]);
       }
@@ -317,6 +318,17 @@ function updateTexts() {
   }
 
   setDocLang(lang);
+}
+
+function descriptionHtml(text) {
+  let result = "";
+  let offset = 0;
+  for (const match of text.matchAll(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g)) {
+    result += esc(text.slice(offset, match.index));
+    result += link(match[2], match[1]);
+    offset = match.index + match[0].length;
+  }
+  return result + esc(text.slice(offset));
 }
 
 function updateVisibility() {

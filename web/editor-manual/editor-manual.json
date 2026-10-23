@@ -3159,20 +3159,20 @@
   },
   "sound_keyboard_shortcuts": [
     {
-      "key": "Keyboard Key → Enter",
+      "key": "Keyboard Key + Enter",
       "action": {
-        "en": "Input the pressed keyboard note into the piano roll",
-        "cn": "将按下的琴键音符输入到钢琴卷帘",
-        "de": "Gedrückte Taste als Ton im Pianoroll eingeben",
-        "es": "Introducir la nota de la tecla presionada en el piano roll",
-        "fr": "Saisir la note de la touche pressée dans le piano roll",
-        "it": "Inserire nel piano roll la nota del tasto premuto",
-        "ja": "押した鍵盤キーの音をピアノロールに入力する",
-        "ko": "누른 건반 키의 음을 피아노 롤에 입력",
-        "pt": "Inserir no piano roll a nota da tecla pressionada",
-        "ru": "Ввод ноты нажатой клавишей в пианоролл",
-        "tr": "Basılan tuşun notasını piyano rulosuna girer",
-        "uk": "Введення ноти натиснутою клавішею в піанорол"
+        "en": "Hold a keyboard key and press Enter to input its note into the piano roll",
+        "cn": "按住琴键并按 Enter，将该音符输入钢琴卷帘",
+        "de": "Halten Sie eine Klaviertaste gedrückt und drücken Sie Enter, um ihren Ton in die Pianoroll einzugeben",
+        "es": "Mantenga pulsada una tecla y pulse Enter para introducir su nota en el piano roll",
+        "fr": "Maintenez une touche du clavier enfoncée et appuyez sur Enter pour saisir sa note dans le piano roll",
+        "it": "Tenere premuto un tasto e premere Enter per inserire la sua nota nel piano roll",
+        "ja": "鍵盤キーを押したまま Enter を押し、その音をピアノロールに入力する",
+        "ko": "건반 키를 누른 상태에서 Enter를 눌러 해당 음을 피아노 롤에 입력하세요",
+        "pt": "Manter uma tecla pressionada e pressionar Enter para inserir sua nota no piano roll",
+        "ru": "Удерживать клавишу и нажать Enter, чтобы ввести её ноту в пианоролл",
+        "tr": "Bir tuşu basılı tutup Enter tuşuna basarak notasını piyano rulosuna girin",
+        "uk": "Утримувати клавішу та натиснути Enter, щоб ввести її ноту в піанорол"
       }
     },
     {

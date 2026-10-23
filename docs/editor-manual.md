@@ -342,7 +342,7 @@ You can input notes using the PC keyboard. The upper row (QWE row + number row) 
 
 | Shortcut | Action |
 | --- | --- |
-| Keyboard Key → Enter | Input the pressed keyboard note into the piano roll |
+| Keyboard Key + Enter | Hold a keyboard key and press Enter to input its note into the piano roll |
 | 1 | Cycle the preview tone for keyboard input (4 types) |
 
 #### Property Area (TON / VOL / EFX)

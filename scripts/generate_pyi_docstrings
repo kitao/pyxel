@@ -153,6 +153,7 @@ def _fallback_item(class_name, func_name, doc_map):
 
 def _make_docstring(item, indent):
     desc = localize(item.get("description"))
+    desc = re.sub(r"\[([^\]]+)\]\((https?://[^\s)]+)\)", r"\1 (\2)", desc)
     if not desc:
         return None
     params = item.get("params", [])

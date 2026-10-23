@@ -9,6 +9,28 @@ const apiReferenceSource = fs.readFileSync(
   "utf8",
 );
 
+test("API descriptions render documentation links while escaping literal text", () => {
+  const context = vm.createContext({
+    localStorage: { getItem: () => null },
+  });
+  vm.runInContext(
+    fs.readFileSync(path.join(__dirname, "..", "shared.js"), "utf8"),
+    context,
+  );
+  vm.runInContext(apiReferenceSource, context);
+  const render = vm.runInContext("descriptionHtml", context);
+  const result = render(
+    "Read [A & B](https://example.com/a?x=1&y=2), then [C](https://example.com/c). <script>ignored</script>",
+  );
+  assert.match(result, /href="https:\/\/example.com\/a\?x=1&amp;y=2"/);
+  assert.match(result, />A &amp; B<\/a>, then <a /);
+  assert.ok(result.endsWith(". &lt;script&gt;ignored&lt;/script&gt;"));
+  assert.equal(
+    render("[unsafe](javascript:alert)"),
+    "[unsafe](javascript:alert)",
+  );
+});
+
 test("API search keeps constants, descriptions and groups together", () => {
   const refs = {};
   const element = (attr, key) => {

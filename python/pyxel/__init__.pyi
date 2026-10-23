@@ -415,7 +415,7 @@ class Image:
 
         Args:
             filename: Image file name
-            include_colors: Include palette colors from file. Defaults to False.
+            include_colors: If True, replace all of pyxel.colors with the image colors (at most 256 colors). If False, convert to similar colors in the current palette. Defaults to False.
         """
     def data_ptr(self) -> Any:
         """Return the raw data pointer of the image as a ctypes c_uint8 array."""
@@ -443,13 +443,13 @@ class Image:
             x: X coordinate
             y: Y coordinate
             filename: Image file name (PNG/GIF/JPEG)
-            include_colors: Include palette colors from file. Defaults to False.
+            include_colors: If True, replace all of pyxel.colors with the image colors (at most 256 colors). If False, convert to similar colors in the current palette. Defaults to False.
         """
     def save(self, filename: str, scale: int) -> None:
-        """Save the image to a file.
+        """Save the image as a PNG file.
 
         Args:
-            filename: Output file name
+            filename: Output file name. Appends .png unless the name already ends with that extension.
             scale: Scale factor
         """
     @overload
@@ -482,7 +482,7 @@ class Image:
     def camera(self, x: float, y: float) -> None: ...
     @overload
     def pal(self, col1: None = None, col2: None = None) -> None:
-        """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
+        """Replace color col1 with col2 when drawing. Call without arguments to clear the drawing color replacements set by pal.
 
         Args:
             col1: Color to replace
@@ -664,13 +664,13 @@ class Image:
         """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
         Args:
-            x: Destination X
-            y: Destination Y
+            x: Destination X (in pixels)
+            y: Destination Y (in pixels)
             tm: Tilemap number (0-7) or Tilemap instance
-            u: Source X in the tilemap
-            v: Source Y in the tilemap
-            w: Width (negative to flip)
-            h: Height (negative to flip)
+            u: Source X in the tilemap (in pixels)
+            v: Source Y in the tilemap (in pixels)
+            w: Width in pixels (negative to flip)
+            h: Height in pixels (negative to flip)
             colkey: Transparent color. If omitted, no transparency.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
             scale: Scale factor (centered on the copy region). Defaults to 1.
@@ -741,10 +741,10 @@ class Image:
 class Tilemap:
     @property
     def width(self) -> int:
-        """The width of the tilemap."""
+        """Tilemap width (in tiles)"""
     @property
     def height(self) -> int:
-        """The height of the tilemap."""
+        """Tilemap height (in tiles)"""
     imgsrc: int | Image
     """The image bank (0-2) or Image instance referenced by the tilemap."""
 
@@ -752,8 +752,8 @@ class Tilemap:
         """Create a new Tilemap instance.
 
         Args:
-            width: Tilemap width
-            height: Tilemap height
+            width: Tilemap width (in tiles)
+            height: Tilemap height (in tiles)
             img: Image bank number (0-2) or Image instance
         """
     @staticmethod
@@ -770,8 +770,8 @@ class Tilemap:
         """Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.
 
         Args:
-            x: X coordinate
-            y: Y coordinate
+            x: X coordinate (in tiles)
+            y: Y coordinate (in tiles)
             data: Tilemap data as a list of strings
 
         Example::
@@ -781,8 +781,8 @@ class Tilemap:
         """Load the specified TMX layer at (x, y). Layer numbering starts at 0.
 
         Args:
-            x: X coordinate
-            y: Y coordinate
+            x: X coordinate (in tiles)
+            y: Y coordinate (in tiles)
             filename: TMX file name
             layer: Zero-based layer number
         """
@@ -824,8 +824,8 @@ class Tilemap:
         """Get the tile at (x, y). The coordinates are absolute and not affected by the camera offset. A tile is a tuple of (image_tx, image_ty).
 
         Args:
-            x: X coordinate
-            y: Y coordinate
+            x: X coordinate (in tiles)
+            y: Y coordinate (in tiles)
 
         Returns:
             (image_tx, image_ty)
@@ -834,8 +834,8 @@ class Tilemap:
         """Set a tile at (x, y). A tile is a tuple of (image_tx, image_ty).
 
         Args:
-            x: X coordinate
-            y: Y coordinate
+            x: X coordinate (in tiles)
+            y: Y coordinate (in tiles)
             tile: Tile as (image_tx, image_ty)
         """
     def line(
@@ -1047,7 +1047,7 @@ class Channel:
         """Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
         Returns:
-            (sound_index, sec) or None
+            (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.
         """
 
 class Tone:
@@ -1136,7 +1136,7 @@ class Sound:
             pyxel.sounds[0].set_effects("nfnf nvvs")
         """
     def mml(self, code: str | None = None) -> None:
-        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page. Call without arguments to exit MML mode and return to normal mode.
+        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands (https://kitao.dev/pyxel/mml-studio/mml-commands.html) page. Call without arguments to exit MML mode and return to normal mode.
 
         Args:
             code: MML string
@@ -1263,7 +1263,7 @@ def icon(data: list[str], scale: int, colkey: int | None = None) -> None:
     """Set the application icon. Specify the icon image as a list of strings.
 
     Args:
-        data: Icon image as a list of strings
+        data: List of strings, each representing one row using hexadecimal color indices (0-f)
         scale: Scale factor
         colkey: Transparent color. If omitted, no transparency.
     """
@@ -1357,10 +1357,10 @@ def save_pal(filename: str) -> None:
     """
 
 def screenshot(filename: str | None = None, scale: int | None = None) -> None:
-    """Take a screenshot.
+    """Save a screenshot as a PNG file.
 
     Args:
-        filename: File name. If omitted, saved to desktop.
+        filename: File name. In the desktop version, omitting it saves the file to the desktop. In the web version, the browser downloads the file.
         scale: Scale factor. Defaults to capture_scale.
     """
 
@@ -1368,7 +1368,7 @@ def screencast(filename: str | None = None, scale: int | None = None) -> None:
     """Save the screen recording as a GIF file.
 
     Args:
-        filename: File name. If omitted, saved to desktop.
+        filename: File name. In the desktop version, omitting it saves the file to the desktop. In the web version, the browser downloads the file.
         scale: Scale factor. Defaults to capture_scale.
     """
 
@@ -1477,7 +1477,7 @@ def set_dropped_files(files: list[str]) -> None:
 
 # Graphics
 colors: list[int]
-"""List of the palette display colors. Specified by 24-bit numerical value. Supports Python list operations."""
+"""List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations."""
 images: list[Image]
 """Image banks (Image instances) (0-2)."""
 tilemaps: list[Tilemap]
@@ -1520,7 +1520,7 @@ def camera(x: None = None, y: None = None) -> None:
 def camera(x: float, y: float) -> None: ...
 @overload
 def pal(col1: None = None, col2: None = None) -> None:
-    """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
+    """Replace color col1 with col2 when drawing. Call without arguments to clear the drawing color replacements set by pal.
 
     Args:
         col1: Color to replace
@@ -1728,13 +1728,13 @@ def bltm(
     """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
     Args:
-        x: Destination X
-        y: Destination Y
+        x: Destination X (in pixels)
+        y: Destination Y (in pixels)
         tm: Tilemap number (0-7) or Tilemap instance
-        u: Source X in the tilemap
-        v: Source Y in the tilemap
-        w: Width (negative to flip)
-        h: Height (negative to flip)
+        u: Source X in the tilemap (in pixels)
+        v: Source Y in the tilemap (in pixels)
+        w: Width in pixels (negative to flip)
+        h: Height in pixels (negative to flip)
         colkey: Transparent color. If omitted, no transparency.
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
         scale: Scale factor (centered on the copy region). Defaults to 1.
@@ -1855,7 +1855,7 @@ def play_pos(ch: int) -> tuple[int, float] | None:
         ch: Channel number (0-3)
 
     Returns:
-        (sound_index, sec) or None
+        (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.
     """
 
 def gen_bgm(

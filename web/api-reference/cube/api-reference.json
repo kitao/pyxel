@@ -1546,18 +1546,18 @@
           "type": "class",
           "signature": "Mat4.from_euler(euler)",
           "description": {
-            "en": "Create a rotation matrix from Euler angles in degrees, applied around the world axes in X, Y, Z order.",
-            "cn": "根据以度为单位的欧拉角创建旋转矩阵，按 X、Y、Z 顺序绕世界轴应用。",
-            "de": "Erstellt aus Euler-Winkeln in Grad eine Rotationsmatrix, angewendet um die Weltachsen in der Reihenfolge X, Y, Z.",
-            "es": "Crea una matriz de rotación a partir de ángulos de Euler en grados, aplicados alrededor de los ejes mundiales en orden X, Y, Z.",
-            "fr": "Crée une matrice de rotation à partir d'angles d'Euler en degrés, appliqués autour des axes monde dans l'ordre X, Y, Z.",
-            "it": "Crea una matrice di rotazione da angoli di Eulero in gradi, applicati attorno agli assi globali nell'ordine X, Y, Z.",
-            "ja": "オイラー角（度）から回転行列を作る。ワールド軸回りに X→Y→Z の順で回転する。",
-            "ko": "도 단위의 오일러 각으로 회전 행렬을 만들며, 월드 축 X, Y, Z 순서로 적용합니다.",
-            "pt": "Cria uma matriz de rotação a partir de ângulos de Euler em graus, aplicados ao redor dos eixos mundiais na ordem X, Y, Z.",
-            "ru": "Создаёт матрицу вращения из углов Эйлера в градусах, применяемых вокруг мировых осей в порядке X, Y, Z.",
-            "tr": "Derece cinsinden Euler açılarından, dünya eksenleri etrafında X, Y, Z sırasıyla uygulanan bir dönme matrisi oluşturur.",
-            "uk": "Створює матрицю обертання з кутів Ейлера в градусах, застосованих навколо світових осей у порядку X, Y, Z."
+            "en": "Create a rotation matrix from Euler angles in degrees, applied around fixed X, Y, Z axes in that order.",
+            "cn": "根据以度为单位的欧拉角创建旋转矩阵，依次绕固定的 X、Y、Z 轴旋转。",
+            "de": "Erstellt aus Euler-Winkeln in Grad eine Rotationsmatrix, mit Drehungen um die feststehenden X-, Y- und Z-Achsen in dieser Reihenfolge.",
+            "es": "Crea una matriz de rotación a partir de ángulos de Euler en grados, aplicados alrededor de los ejes fijos X, Y, Z en ese orden.",
+            "fr": "Crée une matrice de rotation à partir d'angles d'Euler en degrés, appliqués autour des axes fixes X, Y, Z dans cet ordre.",
+            "it": "Crea una matrice di rotazione da angoli di Eulero in gradi, applicati attorno agli assi fissi X, Y, Z in quest'ordine.",
+            "ja": "オイラー角（度）から回転行列を作る。固定した X・Y・Z 軸の順に回転する。",
+            "ko": "도 단위의 오일러 각으로 회전 행렬을 만들며, 고정된 X, Y, Z축 주위의 회전을 이 순서대로 적용합니다.",
+            "pt": "Cria uma matriz de rotação a partir de ângulos de Euler em graus, aplicados ao redor dos eixos fixos X, Y, Z nessa ordem.",
+            "ru": "Создаёт матрицу вращения из углов Эйлера в градусах, применяемых вокруг неподвижных осей X, Y, Z в указанном порядке.",
+            "tr": "Derece cinsinden Euler açılarından, sabit X, Y, Z eksenleri etrafındaki dönüşleri bu sırayla uygulayan bir dönme matrisi oluşturur.",
+            "uk": "Створює матрицю обертання з кутів Ейлера в градусах, застосованих навколо нерухомих осей X, Y, Z у вказаному порядку."
           },
           "params": [
             {
@@ -2715,18 +2715,18 @@
           "type": "class",
           "signature": "Quat.from_euler(euler)",
           "description": {
-            "en": "Create a rotation from Euler angles in degrees, applied around the world axes in X, Y, Z order.",
-            "cn": "根据以度为单位的欧拉角创建旋转，按 X、Y、Z 顺序绕世界轴应用。",
-            "de": "Erstellt aus Euler-Winkeln in Grad eine Rotation, angewendet um die Weltachsen in der Reihenfolge X, Y, Z.",
-            "es": "Crea una rotación a partir de ángulos de Euler en grados, aplicados alrededor de los ejes mundiales en orden X, Y, Z.",
-            "fr": "Crée une rotation à partir d'angles d'Euler en degrés, appliqués autour des axes monde dans l'ordre X, Y, Z.",
-            "it": "Crea una rotazione da angoli di Eulero in gradi, applicati attorno agli assi globali nell'ordine X, Y, Z.",
-            "ja": "オイラー角（度）から回転を作る。ワールド軸回りに X→Y→Z の順で回転する。",
-            "ko": "도 단위의 오일러 각으로 회전을 만들며, 월드 축 X, Y, Z 순서로 적용합니다.",
-            "pt": "Cria uma rotação a partir de ângulos de Euler em graus, aplicados ao redor dos eixos mundiais na ordem X, Y, Z.",
-            "ru": "Создаёт вращение из углов Эйлера в градусах, применяемых вокруг мировых осей в порядке X, Y, Z.",
-            "tr": "Derece cinsinden Euler açılarından, dünya eksenleri etrafında X, Y, Z sırasıyla uygulanan bir dönme oluşturur.",
-            "uk": "Створює обертання з кутів Ейлера в градусах, застосованих навколо світових осей у порядку X, Y, Z."
+            "en": "Create a rotation from Euler angles in degrees, applied around fixed X, Y, Z axes in that order.",
+            "cn": "根据以度为单位的欧拉角创建旋转，依次绕固定的 X、Y、Z 轴旋转。",
+            "de": "Erstellt aus Euler-Winkeln in Grad eine Rotation, mit Drehungen um die feststehenden X-, Y- und Z-Achsen in dieser Reihenfolge.",
+            "es": "Crea una rotación a partir de ángulos de Euler en grados, aplicados alrededor de los ejes fijos X, Y, Z en ese orden.",
+            "fr": "Crée une rotation à partir d'angles d'Euler en degrés, appliqués autour des axes fixes X, Y, Z dans cet ordre.",
+            "it": "Crea una rotazione da angoli di Eulero in gradi, applicati attorno agli assi fissi X, Y, Z in quest'ordine.",
+            "ja": "オイラー角（度）から回転を作る。固定した X・Y・Z 軸の順に回転する。",
+            "ko": "도 단위의 오일러 각으로 회전을 만들며, 고정된 X, Y, Z축 주위의 회전을 이 순서대로 적용합니다.",
+            "pt": "Cria uma rotação a partir de ângulos de Euler em graus, aplicados ao redor dos eixos fixos X, Y, Z nessa ordem.",
+            "ru": "Создаёт вращение из углов Эйлера в градусах, применяемых вокруг неподвижных осей X, Y, Z в указанном порядке.",
+            "tr": "Derece cinsinden Euler açılarından, sabit X, Y, Z eksenleri etrafındaki dönüşleri bu sırayla uygulayan bir dönme oluşturur.",
+            "uk": "Створює обертання з кутів Ейлера в градусах, застосованих навколо нерухомих осей X, Y, Z у вказаному порядку."
           },
           "params": [
             {
@@ -7434,18 +7434,18 @@
           "type": "class",
           "signature": "Primitive.plane(width=1.0, height=1.0)",
           "description": {
-            "en": "Create a textured XY-plane Primitive with flat normals.",
-            "cn": "创建带纹理的 XY 平面 Primitive，并使用平面法线。",
-            "de": "Erstellt ein texturiertes XY-Ebenen-Primitive mit flachen Normalen.",
-            "es": "Crea un Primitive de plano XY texturizado con normales planas.",
-            "fr": "Crée un Primitive de plan XY texturé avec des normales plates.",
-            "it": "Crea un Primitive piano XY con texture e normali piatte.",
+            "en": "Create a texture-ready XY-plane Primitive with flat normals.",
+            "cn": "创建支持纹理的 XY 平面 Primitive，并使用平面法线。",
+            "de": "Erstellt ein für Texturen vorbereitetes XY-Ebenen-Primitive mit flachen Normalen.",
+            "es": "Crea un Primitive de plano XY con normales planas y preparado para aplicar texturas.",
+            "fr": "Crée un Primitive de plan XY avec des normales plates, adapté au placage de textures.",
+            "it": "Crea un Primitive piano XY con normali piatte, predisposto per l'applicazione di texture.",
             "ja": "フラット法線を持つテクスチャ対応の XY 平面 Primitive を作成する。",
-            "ko": "평면 법선을 가진 텍스처 XY 평면 Primitive를 만듭니다.",
-            "pt": "Cria um Primitive de plano XY texturizado com normais planas.",
-            "ru": "Создаёт текстурированный Primitive на плоскости XY с плоскими нормалями.",
-            "tr": "Düz normallere sahip dokulu bir XY düzlemi Primitive oluşturur.",
-            "uk": "Створює текстурований Primitive на площині XY з пласкими нормалями."
+            "ko": "텍스처를 적용할 수 있고 평면 법선을 가진 XY 평면 Primitive를 만듭니다.",
+            "pt": "Cria um Primitive de plano XY com normais planas e preparado para receber texturas.",
+            "ru": "Создаёт Primitive на плоскости XY с плоскими нормалями и поддержкой текстур.",
+            "tr": "Düz normallere sahip doku uygulamaya hazır bir XY düzlemi Primitive oluşturur.",
+            "uk": "Створює Primitive на площині XY з пласкими нормалями та підтримкою текстур."
           },
           "params": [
             {
@@ -7496,18 +7496,18 @@
           "type": "class",
           "signature": "Primitive.box(size=Vec3.ONE)",
           "description": {
-            "en": "Create a textured box Primitive with flat normals.",
-            "cn": "创建带纹理的盒体 Primitive，并使用平面法线。",
-            "de": "Erstellt ein texturiertes Box-Primitive mit flachen Normalen.",
-            "es": "Crea un Primitive de caja texturizada con normales planas.",
-            "fr": "Crée un Primitive de boîte texturée avec des normales plates.",
-            "it": "Crea un Primitive box con texture e normali piatte.",
+            "en": "Create a texture-ready box Primitive with flat normals.",
+            "cn": "创建支持纹理的盒体 Primitive，并使用平面法线。",
+            "de": "Erstellt ein für Texturen vorbereitetes Box-Primitive mit flachen Normalen.",
+            "es": "Crea un Primitive de caja con normales planas y preparado para aplicar texturas.",
+            "fr": "Crée un Primitive de boîte avec des normales plates, adapté au placage de textures.",
+            "it": "Crea un Primitive box con normali piatte, predisposto per l'applicazione di texture.",
             "ja": "フラット法線を持つテクスチャ対応の箱 Primitive を作成する。",
-            "ko": "평면 법선을 가진 텍스처 박스 Primitive를 만듭니다.",
-            "pt": "Cria um Primitive de caixa texturizada com normais planas.",
-            "ru": "Создаёт текстурированный Primitive-коробку с плоскими нормалями.",
-            "tr": "Düz normallere sahip dokulu bir kutu Primitive oluşturur.",
-            "uk": "Створює текстурований Primitive-коробку з пласкими нормалями."
+            "ko": "텍스처를 적용할 수 있고 평면 법선을 가진 박스 Primitive를 만듭니다.",
+            "pt": "Cria um Primitive de caixa com normais planas e preparado para receber texturas.",
+            "ru": "Создаёт Primitive в форме коробки с плоскими нормалями и поддержкой текстур.",
+            "tr": "Düz normallere sahip doku uygulamaya hazır bir kutu Primitive oluşturur.",
+            "uk": "Створює Primitive у формі коробки з пласкими нормалями та підтримкою текстур."
           },
           "params": [
             {
@@ -7540,18 +7540,18 @@
           "type": "class",
           "signature": "Primitive.sphere(radius=0.5)",
           "description": {
-            "en": "Create a textured low-poly sphere Primitive with flat normals.",
-            "cn": "创建带纹理的低多边形球体 Primitive，并使用平面法线。",
-            "de": "Erstellt ein texturiertes Low-Poly-Kugel-Primitive mit flachen Normalen.",
-            "es": "Crea un Primitive de esfera low-poly texturizada con normales planas.",
-            "fr": "Crée un Primitive de sphère low-poly texturée avec des normales plates.",
-            "it": "Crea un Primitive sfera low-poly con texture e normali piatte.",
+            "en": "Create a texture-ready low-poly sphere Primitive with flat normals.",
+            "cn": "创建支持纹理的低多边形球体 Primitive，并使用平面法线。",
+            "de": "Erstellt ein für Texturen vorbereitetes Low-Poly-Kugel-Primitive mit flachen Normalen.",
+            "es": "Crea un Primitive de esfera low-poly con normales planas y preparado para aplicar texturas.",
+            "fr": "Crée un Primitive de sphère low-poly avec des normales plates, adapté au placage de textures.",
+            "it": "Crea un Primitive sfera low-poly con normali piatte, predisposto per l'applicazione di texture.",
             "ja": "フラット法線を持つテクスチャ対応のローポリ球 Primitive を作成する。",
-            "ko": "평면 법선을 가진 텍스처 로우폴리 구체 Primitive를 만듭니다.",
-            "pt": "Cria um Primitive de esfera low-poly texturizada com normais planas.",
-            "ru": "Создаёт текстурированный низкополигональный Primitive-сферу с плоскими нормалями.",
-            "tr": "Düz normallere sahip dokulu bir düşük poligonlu küre Primitive oluşturur.",
-            "uk": "Створює текстурований низькополігональний Primitive-сферу з пласкими нормалями."
+            "ko": "텍스처를 적용할 수 있고 평면 법선을 가진 로우폴리 구체 Primitive를 만듭니다.",
+            "pt": "Cria um Primitive de esfera low-poly com normais planas e preparado para receber texturas.",
+            "ru": "Создаёт низкополигональную сферу Primitive с плоскими нормалями и поддержкой текстур.",
+            "tr": "Düz normallere sahip doku uygulamaya hazır bir düşük poligonlu küre Primitive oluşturur.",
+            "uk": "Створює низькополігональну сферу Primitive з пласкими нормалями та підтримкою текстур."
           },
           "params": [
             {
@@ -7584,18 +7584,18 @@
           "type": "class",
           "signature": "Primitive.capsule(height=1.0, radius=0.5)",
           "description": {
-            "en": "Create a textured low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.",
-            "cn": "创建以原点为中心、沿 Y 轴的带纹理低多边形胶囊 Primitive，使用平面法线。UV 绕胶囊一周；V 从顶部的 0 递增到底部的 1。height 为 0 时生成球体。",
-            "de": "Erstellt ein texturiertes Low-Poly-Kapsel-Primitive mit flachen Normalen, zentriert am Ursprung entlang der Y-Achse. Die UVs umlaufen die Kapsel einmal; V reicht von 0 oben bis 1 unten. Bei height 0 entsteht eine Kugel.",
-            "es": "Crea un Primitive de cápsula low-poly texturizada, centrada en el origen a lo largo del eje Y, con normales planas. Las UV rodean la cápsula una vez; V va de 0 arriba a 1 abajo. Una altura de 0 crea una esfera.",
-            "fr": "Crée un Primitive de capsule low-poly texturée, centré à l'origine le long de l'axe Y, avec des normales plates. Les UV font un tour de la capsule ; V va de 0 en haut à 1 en bas. Une hauteur de 0 crée une sphère.",
-            "it": "Crea un Primitive capsula low-poly con texture, centrato nell'origine lungo l'asse Y, con normali piatte. Le UV avvolgono la capsula una volta; V va da 0 in alto a 1 in basso. Un'altezza di 0 crea una sfera.",
+            "en": "Create a texture-ready low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.",
+            "cn": "创建支持纹理的低多边形胶囊 Primitive，以原点为中心、沿 Y 轴延伸，并使用平面法线。UV 绕胶囊一周；V 从顶部的 0 递增到底部的 1。height 为 0 时生成球体。",
+            "de": "Erstellt ein für Texturen vorbereitetes Low-Poly-Kapsel-Primitive mit flachen Normalen, zentriert am Ursprung entlang der Y-Achse. Die UVs umlaufen die Kapsel einmal; V reicht von 0 oben bis 1 unten. Bei height 0 entsteht eine Kugel.",
+            "es": "Crea un Primitive de cápsula low-poly preparado para aplicar texturas, centrado en el origen a lo largo del eje Y, con normales planas. Las UV rodean la cápsula una vez; V va de 0 arriba a 1 abajo. Una altura de 0 crea una esfera.",
+            "fr": "Crée un Primitive de capsule low-poly adapté au placage de textures, centré à l'origine le long de l'axe Y, avec des normales plates. Les UV font un tour de la capsule ; V va de 0 en haut à 1 en bas. Une hauteur de 0 crée une sphère.",
+            "it": "Crea un Primitive capsula low-poly predisposto per l'applicazione di texture, centrato nell'origine lungo l'asse Y, con normali piatte. Le UV avvolgono la capsula una volta; V va da 0 in alto a 1 in basso. Un'altezza di 0 crea una sfera.",
             "ja": "原点を中心に Y 軸方向に伸びる、フラット法線を持つテクスチャ対応のローポリカプセル Primitive を作成する。UV は周囲を 1 周し、V は上端の 0 から下端の 1 へ変化する。height が 0 の場合は球になる。",
-            "ko": "원점을 중심으로 Y축을 따라 놓인 텍스처 로우폴리 캡슐 Primitive를 평면 법선과 함께 만듭니다. UV는 캡슐을 한 바퀴 감싸며 V는 위쪽의 0에서 아래쪽의 1까지 변합니다. height가 0이면 구체를 만듭니다.",
-            "pt": "Cria um Primitive de cápsula low-poly texturizada, centrado na origem ao longo do eixo Y, com normais planas. As UVs dão uma volta na cápsula; V vai de 0 no topo a 1 na base. Uma altura de 0 cria uma esfera.",
-            "ru": "Создаёт текстурированный низкополигональный Primitive-капсулу с плоскими нормалями, центрированную в начале координат вдоль оси Y. UV охватывают капсулу один раз; V меняется от 0 сверху до 1 снизу. При height 0 создаётся сфера.",
-            "tr": "Orijinde merkezlenmiş, Y ekseni boyunca uzanan, düz normalli ve dokulu düşük poligonlu bir kapsül Primitive oluşturur. UV'ler kapsülü bir kez sarar; V üstte 0'dan altta 1'e uzanır. height 0 olduğunda bir küre oluşturulur.",
-            "uk": "Створює текстурований низькополігональний Primitive-капсулу з пласкими нормалями, центровану в початку координат уздовж осі Y. UV охоплюють капсулу один раз; V змінюється від 0 зверху до 1 знизу. За height 0 створюється сфера."
+            "ko": "평면 법선을 가지며 텍스처를 적용할 수 있는 로우폴리 캡슐 Primitive를 원점 중심으로 Y축을 따라 만듭니다. UV는 캡슐을 한 바퀴 감싸며 V는 위쪽의 0에서 아래쪽의 1까지 변합니다. height가 0이면 구체를 만듭니다.",
+            "pt": "Cria um Primitive de cápsula low-poly preparado para receber texturas, centrado na origem ao longo do eixo Y, com normais planas. As UVs dão uma volta na cápsula; V vai de 0 no topo a 1 na base. Uma altura de 0 cria uma esfera.",
+            "ru": "Создаёт низкополигональную капсулу Primitive с плоскими нормалями и поддержкой текстур, расположенную вдоль оси Y с центром в начале координат. UV охватывают капсулу один раз; V меняется от 0 сверху до 1 снизу. При height 0 создаётся сфера.",
+            "tr": "Orijinde merkezlenmiş, Y ekseni boyunca uzanan, düz normalli ve doku uygulamaya hazır düşük poligonlu bir kapsül Primitive oluşturur. UV'ler kapsülü bir kez sarar; V üstte 0'dan altta 1'e uzanır. height 0 olduğunda bir küre oluşturulur.",
+            "uk": "Створює низькополігональну капсулу Primitive з пласкими нормалями та підтримкою текстур, розташовану вздовж осі Y з центром у початку координат. UV охоплюють капсулу один раз; V змінюється від 0 зверху до 1 знизу. За height 0 створюється сфера."
           },
           "params": [
             {

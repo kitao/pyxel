@@ -151,8 +151,22 @@ for (const surface of ["page", "runtime", "resource"]) {
     });
     setupFileDrop();
 
-    const code = 'pyxel.load("assets/test.pyxres")\nprint("hello")';
-    const expected = 'pyxel.load("my_resource.pyxres")\nprint("hello")';
+    const code = [
+      'pyxel.load("assets/test.pyxres")',
+      "pyxel.load( 'assets/other.pyxres', exclude_images=True)",
+      'pyxel.load (\n    "assets/third.pyxres",\n    exclude_sounds=True,\n)',
+      'print("hello")',
+      "pyxel.load(resource_path)",
+      'pyxel.unload("assets/test.pyxres")',
+    ].join("\n");
+    const expected = [
+      'pyxel.load("my_resource.pyxres")',
+      "pyxel.load( 'my_resource.pyxres', exclude_images=True)",
+      'pyxel.load (\n    "my_resource.pyxres",\n    exclude_sounds=True,\n)',
+      'print("hello")',
+      "pyxel.load(resource_path)",
+      'pyxel.unload("assets/test.pyxres")',
+    ].join("\n");
     const codeEvent = await targets[surface].drop({
       name: "example.py",
       text: async () => code,

@@ -659,7 +659,7 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     # Clean up whitespace (code blocks are protected)
     cleaned = []
     for line in raw.splitlines():
-        cleaned.append(line.strip())
+        cleaned.append(line.rstrip())
     result = re.sub(r"\n{3,}", "\n\n", "\n".join(cleaned)).strip() + "\n"
 
     for i, block in enumerate(saved_blocks):
@@ -983,6 +983,8 @@ def _html_to_markdown(text, output_name, web_path):
 
     # Embedded programs can contain HTML-looking literals.
     text = re.sub(r"\n```[^\n]*\n.*?\n```\n", save_block, text, flags=re.DOTALL)
+    # Remove template indentation before adding Markdown list indentation.
+    text = "\n".join(line.strip() for line in text.splitlines())
 
     def markdown_image(match):
         url = _transform_url(html.unescape(match[1]), web_path)
@@ -1035,7 +1037,14 @@ def _html_to_markdown(text, output_name, web_path):
         lines = []
         for index, item in enumerate(items, 1):
             marker = f"{index}." if match[1] == "ol" else "-"
-            lines.append(f"{marker} {_strip_html(item)}\n")
+            item = re.sub(r"</?p\b[^>]*>", "\n\n", item)
+            content = re.sub(r"\n{3,}", "\n\n", _strip_html(item))
+            indent = " " * (len(marker) + 1)
+            content = "\n".join(
+                indent + line.strip() if line.strip() else ""
+                for line in content.splitlines()
+            ).lstrip()
+            lines.append(f"{marker} {content}\n")
         return "\n" + "".join(lines)
 
     text = re.sub(r"<(ul|ol)\b[^>]*>(.*?)</\1>", markdown_list, text, flags=re.DOTALL)
