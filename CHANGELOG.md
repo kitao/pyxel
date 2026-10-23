@@ -22,6 +22,7 @@
 - Fixed collisions in the shooter example
 - Fixed app packaging, startup paths, overwrites, and directory handling
 - Fixed app2exe imports and concurrent builds
+- Updated app2html to use the official versioned web runtime
 - Fixed play and watch process cleanup
 - Fixed web startup, resets, imports, and virtual gamepad resizing
 - Improved virtual gamepad diagonals, touch tracking, and short taps
