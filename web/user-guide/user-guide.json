@@ -625,18 +625,18 @@
       "uk": "Створення програми"
     },
     "creating_program_body": {
-      "en": "In your Python script, import Pyxel, set the window size with {0}, and start the application with {1}.",
-      "cn": "在您的 Python 脚本中导入 Pyxel，通过 {0} 指定窗口大小，然后用 {1} 启动应用程序。",
-      "de": "Importieren Sie Pyxel in Ihr Python-Skript, geben Sie die Fenstergröße mit {0} an und starten Sie die Anwendung mit {1}.",
-      "es": "En su script de Python, importe Pyxel, especifique el tamaño de la ventana con {0} y luego inicie la aplicación con {1}.",
-      "fr": "Dans votre script Python, importez Pyxel, spécifiez la taille de la fenêtre avec {0} et démarrez l'application avec {1}.",
-      "it": "Nel proprio script Python, importare Pyxel, specificare le dimensioni della finestra con {0} e avviare l'applicazione con {1}.",
-      "ja": "Python スクリプト内で Pyxel モジュールをインポートし、{0} 関数でウィンドウサイズを指定した後、{1} 関数で Pyxel アプリケーションを開始します。",
-      "ko": "Python 스크립트에서 Pyxel을 가져온 뒤 {0} 함수로 창 크기를 지정하고 {1} 함수로 애플리케이션을 시작하세요.",
-      "pt": "No seu script Python, importe o Pyxel, especifique o tamanho da janela com {0} e inicie o aplicativo com {1}.",
-      "ru": "В вашем Python-скрипте импортируйте Pyxel, укажите размер окна с помощью {0} и запустите приложение с помощью {1}.",
-      "tr": "Python betiğinizde Pyxel'i içe aktarın, pencere boyutunu {0} ile belirtin ve uygulamayı {1} ile başlatın.",
-      "uk": "У вашому Python-скрипті імпортуйте Pyxel, вкажіть розмір вікна за допомогою {0} і запустіть програму за допомогою {1}."
+      "en": "In your Python script, import Pyxel, set the Pyxel screen size with {0}, and start the application with {1}.",
+      "cn": "在您的 Python 脚本中导入 Pyxel，通过 {0} 指定 Pyxel 屏幕大小，然后用 {1} 启动应用程序。",
+      "de": "Importieren Sie Pyxel in Ihr Python-Skript, geben Sie die Größe des Pyxel-Bildschirms mit {0} an und starten Sie die Anwendung mit {1}.",
+      "es": "En su script de Python, importe Pyxel, especifique el tamaño de la pantalla de Pyxel con {0} y luego inicie la aplicación con {1}.",
+      "fr": "Dans votre script Python, importez Pyxel, spécifiez la taille de l'écran Pyxel avec {0} et démarrez l'application avec {1}.",
+      "it": "Nel proprio script Python, importare Pyxel, specificare le dimensioni dello schermo di Pyxel con {0} e avviare l'applicazione con {1}.",
+      "ja": "Python スクリプト内で Pyxel モジュールをインポートし、{0} 関数で Pyxel の画面サイズを指定した後、{1} 関数で Pyxel アプリケーションを開始します。",
+      "ko": "Python 스크립트에서 Pyxel을 가져온 뒤 {0} 함수로 Pyxel 화면 크기를 지정하고 {1} 함수로 애플리케이션을 시작하세요.",
+      "pt": "No seu script Python, importe o Pyxel, especifique o tamanho da tela do Pyxel com {0} e inicie o aplicativo com {1}.",
+      "ru": "В вашем Python-скрипте импортируйте Pyxel, укажите размер экрана Pyxel с помощью {0} и запустите приложение с помощью {1}.",
+      "tr": "Python betiğinizde Pyxel'i içe aktarın, Pyxel ekranının boyutunu {0} ile belirtin ve uygulamayı {1} ile başlatın.",
+      "uk": "У вашому Python-скрипті імпортуйте Pyxel, вкажіть розмір екрана Pyxel за допомогою {0} і запустіть програму за допомогою {1}."
     },
     "creating_program_run_desc": {
       "en": "Pass {1}, which updates the state each frame, and {2}, which draws the screen, to {0}.",
@@ -777,6 +777,20 @@
       "ru": "Во время выполнения приложения Pyxel можно выполнить следующие специальные действия с клавишами.",
       "tr": "Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçekleştirilebilir.",
       "uk": "Під час виконання застосунку Pyxel можна виконати такі спеціальні дії з клавішами."
+    },
+    "creating_keys_save": {
+      "en": "Files are saved to the desktop in the desktop version and to the browser's download location in the web version.",
+      "cn": "桌面版将文件保存到桌面，Web 版将文件保存到浏览器的下载位置。",
+      "de": "In der Desktop-Version werden Dateien auf dem Desktop gespeichert, in der Web-Version im Download-Verzeichnis des Browsers.",
+      "es": "En la versión de escritorio, los archivos se guardan en el escritorio; en la versión web, en la ubicación de descargas del navegador.",
+      "fr": "Les fichiers sont enregistrés sur le bureau dans la version de bureau, et dans le dossier de téléchargement du navigateur dans la version web.",
+      "it": "Nella versione desktop, i file vengono salvati sul desktop; nella versione web, nella cartella di download del browser.",
+      "ja": "ファイルの保存先は、デスクトップ版ではデスクトップ、Web 版ではブラウザのダウンロード先です。",
+      "ko": "데스크톱 버전에서는 파일이 바탕 화면에 저장되고, 웹 버전에서는 브라우저의 다운로드 위치에 저장됩니다.",
+      "pt": "Na versão desktop, os arquivos são salvos na área de trabalho; na versão web, no local de downloads do navegador.",
+      "ru": "В настольной версии файлы сохраняются на рабочий стол, а в веб-версии — в папку загрузок браузера.",
+      "tr": "Masaüstü sürümünde dosyalar masaüstüne, web sürümünde ise tarayıcının indirme konumuna kaydedilir.",
+      "uk": "У настільній версії файли зберігаються на робочий стіл, а у вебверсії — до папки завантажень браузера."
     },
     "th_key": {
       "en": "Key",
@@ -1513,7 +1527,7 @@
       "es": "Pyxel está licenciado bajo la {0}. Puede venderlo o distribuirlo libremente siempre que incluya el aviso de copyright y el texto completo de la licencia en el código fuente, en un archivo de información de licencia o en un lugar similar.",
       "fr": "Pyxel est sous la {0}. Vous pouvez le vendre ou le distribuer librement à condition d'inclure la mention de droit d'auteur et le texte intégral de la licence dans le code source, un fichier de mentions de licence ou un emplacement similaire.",
       "it": "Pyxel è concesso in licenza sotto la {0}. È possibile venderlo o distribuirlo liberamente purché l'avviso di copyright e il testo completo della licenza siano inclusi nel codice sorgente, in un file con le informazioni sulla licenza o in un luogo simile.",
-      "ja": "Pyxel は {0} です。ソースコードやライセンス表示用のファイル等で、著作権とライセンス全文の表示をすれば、自由に販売や配布できます。",
+      "ja": "Pyxel は {0} で公開されています。ソースコードやライセンス表示用のファイル等で、著作権とライセンス全文の表示をすれば、自由に販売や配布できます。",
       "ko": "Pyxel은 {0} 하에 라이선스가 부여됩니다. 소스 코드나 라이선스 표시용 파일 등에 저작권 고지와 라이선스 전문을 포함하면 자유롭게 판매하거나 배포할 수 있습니다.",
       "pt": "O Pyxel é licenciado sob a {0}. Você pode vendê-lo ou distribuí-lo livremente, desde que inclua o aviso de copyright e o texto completo da licença no código-fonte, em um arquivo de informações de licença ou em um local semelhante.",
       "ru": "Pyxel лицензируется по {0}. Его можно свободно продавать или распространять при условии, что уведомление об авторских правах и полный текст лицензии указаны в исходном коде, файле с лицензионной информацией или аналогичном месте.",
@@ -1572,18 +1586,18 @@
     {
       "key": "Alt(Option)+1",
       "action": {
-        "en": "Save the screenshot to the desktop",
-        "cn": "将屏幕截图保存到桌面",
-        "de": "Den Screenshot auf dem Desktop speichern",
-        "es": "Guardar la captura de pantalla en el escritorio",
-        "fr": "Enregistrer la capture d'écran sur le bureau",
-        "it": "Salvare lo screenshot sul desktop",
-        "ja": "スクリーンショットをデスクトップに保存する",
-        "ko": "화면 캡처를 데스크톱에 저장",
-        "pt": "Salvar a captura de tela na área de trabalho",
-        "ru": "Сохранить снимок экрана на рабочий стол",
-        "tr": "Ekran görüntüsünü masaüstüne kaydet",
-        "uk": "Зберегти знімок екрана на робочий стіл"
+        "en": "Save the screenshot",
+        "cn": "保存屏幕截图",
+        "de": "Den Screenshot speichern",
+        "es": "Guardar la captura de pantalla",
+        "fr": "Enregistrer la capture d'écran",
+        "it": "Salvare lo screenshot",
+        "ja": "スクリーンショットを保存する",
+        "ko": "화면 캡처 저장",
+        "pt": "Salvar a captura de tela",
+        "ru": "Сохранить снимок экрана",
+        "tr": "Ekran görüntüsünü kaydet",
+        "uk": "Зберегти знімок екрана"
       }
     },
     {
@@ -1606,18 +1620,18 @@
     {
       "key": "Alt(Option)+3",
       "action": {
-        "en": "Save a screen capture video to the desktop (up to 10 seconds)",
-        "cn": "将屏幕录像视频保存到桌面 (最多 10 秒)",
-        "de": "Ein Bildschirmaufnahmevideo auf dem Desktop speichern (bis zu 10 Sekunden)",
-        "es": "Guardar un video de captura de pantalla en el escritorio (hasta 10 segundos)",
-        "fr": "Enregistrer une vidéo de capture d'écran sur le bureau (jusqu'à 10 secondes)",
-        "it": "Salvare un video di cattura dello schermo sul desktop (fino a 10 secondi)",
-        "ja": "画面キャプチャ動画をデスクトップに保存する（最大 10 秒）",
-        "ko": "화면 캡처 비디오를 데스크톱에 저장 (최대 10초)",
-        "pt": "Salvar um vídeo de captura de tela na área de trabalho (até 10 segundos)",
-        "ru": "Сохранить видео захвата экрана на рабочий стол (до 10 секунд)",
-        "tr": "Ekran kaydı videosunu masaüstüne kaydet (maksimum 10 saniye)",
-        "uk": "Зберегти відео захоплення екрана на робочий стіл (до 10 секунд)"
+        "en": "Save a screen capture video (up to 10 seconds)",
+        "cn": "保存屏幕录像视频 (最多 10 秒)",
+        "de": "Ein Bildschirmaufnahmevideo speichern (bis zu 10 Sekunden)",
+        "es": "Guardar un video de captura de pantalla (hasta 10 segundos)",
+        "fr": "Enregistrer une vidéo de capture d'écran (jusqu'à 10 secondes)",
+        "it": "Salvare un video di cattura dello schermo (fino a 10 secondi)",
+        "ja": "画面キャプチャ動画を保存する（最大 10 秒）",
+        "ko": "화면 캡처 비디오 저장 (최대 10초)",
+        "pt": "Salvar um vídeo de captura de tela (até 10 segundos)",
+        "ru": "Сохранить видео захвата экрана (до 10 секунд)",
+        "tr": "Ekran kaydı videosunu kaydet (maksimum 10 saniye)",
+        "uk": "Зберегти відео захоплення екрана (до 10 секунд)"
       }
     },
     {
@@ -1743,35 +1757,35 @@
     {
       "key": "Shift+Alt(Option)+1/2/3",
       "action": {
-        "en": "Save image bank 0, 1, or 2 to the desktop",
-        "cn": "将图像库 0、1 或 2 保存到桌面",
-        "de": "Bildbank 0, 1 oder 2 auf dem Desktop speichern",
-        "es": "Guardar el banco de imágenes 0, 1 o 2 en el escritorio",
-        "fr": "Enregistrer la banque d'images 0, 1 ou 2 sur le bureau",
-        "it": "Salvare il banco immagini 0, 1 o 2 sul desktop",
-        "ja": "イメージバンク 0, 1, 2 をデスクトップに保存する",
-        "ko": "이미지 뱅크 0, 1 또는 2를 데스크톱에 저장",
-        "pt": "Salvar o banco de imagens 0, 1 ou 2 na área de trabalho",
-        "ru": "Сохранить банк изображений 0, 1 или 2 на рабочий стол",
-        "tr": "Görüntü bankası 0, 1 veya 2'yi masaüstüne kaydet",
-        "uk": "Зберегти банк зображень 0, 1 або 2 на робочий стіл"
+        "en": "Save image bank 0, 1, or 2",
+        "cn": "保存图像库 0、1 或 2",
+        "de": "Bildbank 0, 1 oder 2 speichern",
+        "es": "Guardar el banco de imágenes 0, 1 o 2",
+        "fr": "Enregistrer la banque d'images 0, 1 ou 2",
+        "it": "Salvare il banco immagini 0, 1 o 2",
+        "ja": "イメージバンク 0, 1, 2 を保存する",
+        "ko": "이미지 뱅크 0, 1 또는 2 저장",
+        "pt": "Salvar o banco de imagens 0, 1 ou 2",
+        "ru": "Сохранить банк изображений 0, 1 или 2",
+        "tr": "Görüntü bankası 0, 1 veya 2'yi kaydet",
+        "uk": "Зберегти банк зображень 0, 1 або 2"
       }
     },
     {
       "key": "Shift+Alt(Option)+0",
       "action": {
-        "en": "Save the current color palette to the desktop",
-        "cn": "将当前的调色板保存到桌面",
-        "de": "Die aktuelle Farbpalette auf dem Desktop speichern",
-        "es": "Guardar la paleta de colores actual en el escritorio",
-        "fr": "Enregistrer la palette de couleurs actuelle sur le bureau",
-        "it": "Salvare la palette di colori corrente sul desktop",
-        "ja": "現在のカラーパレットをデスクトップに保存する",
-        "ko": "현재 색상 팔레트를 데스크톱에 저장",
-        "pt": "Salvar a paleta de cores atual na área de trabalho",
-        "ru": "Сохранить текущую цветовую палитру на рабочий стол",
-        "tr": "Geçerli renk paletini masaüstüne kaydet",
-        "uk": "Зберегти поточну кольорову палітру на робочий стіл"
+        "en": "Save the current color palette",
+        "cn": "保存当前的调色板",
+        "de": "Die aktuelle Farbpalette speichern",
+        "es": "Guardar la paleta de colores actual",
+        "fr": "Enregistrer la palette de couleurs actuelle",
+        "it": "Salvare la palette di colori corrente",
+        "ja": "現在のカラーパレットを保存する",
+        "ko": "현재 색상 팔레트 저장",
+        "pt": "Salvar a paleta de cores atual",
+        "ru": "Сохранить текущую цветовую палитру",
+        "tr": "Geçerli renk paletini kaydet",
+        "uk": "Зберегти поточну кольорову палітру"
       }
     }
   ]

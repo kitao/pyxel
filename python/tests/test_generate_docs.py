@@ -155,6 +155,9 @@ def test_detailed_guide_selection_preserves_content(tmp_path):
                         "text": '<ul><li><a href="../#s-dist">Package</a> <code>pyxel package</code></li></ul>'
                     },
                     {
+                        "text": "<ul><li><strong>Geometry</strong><p>Triangles.</p><p>Parts.</p></li></ul>"
+                    },
+                    {
                         "text": "<table><tr><th>Asset</th><th>Setting</th></tr><tr><td>Motion</td><td>Enabled when animated</td></tr></table>"
                     },
                     {"text": '<img src="images/mesh.svg" alt="Mesh hierarchy">'},
@@ -184,6 +187,7 @@ def test_detailed_guide_selection_preserves_content(tmp_path):
         "- [Package](https://kitao.dev/pyxel/user-guide/#s-dist) `pyxel package`"
         in result
     )
+    assert "- **Geometry**\n\n  Triangles.\n\n  Parts.\n" in result
     assert (
         "| Asset | Setting |\n| --- | --- |\n| Motion | Enabled when animated |"
         in result

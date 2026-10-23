@@ -67,6 +67,18 @@ def test_class_fallback_adapts_destination_without_mutating_module(class_name):
         }
 
 
+def test_docstring_links_preserve_label_and_url():
+    generator = _load_generate_pyi_docstrings()
+    item = {
+        "description": {
+            "en": "See [Commands](https://example.com/commands) for syntax."
+        }
+    }
+    assert generator._make_docstring(item, "    ") == [
+        '    """See Commands (https://example.com/commands) for syntax."""'
+    ]
+
+
 def _load_generate_pyi_docstrings():
     loader = SourceFileLoader("generate_pyi_docstrings_test", str(MODULE_PATH))
     spec = importlib.util.spec_from_loader(loader.name, loader)

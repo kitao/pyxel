@@ -565,11 +565,27 @@ Pyxel Cube loads source data for `Mesh` and `Motion` in GLB (binary glTF 2.0) fo
 
 GLB loading supports the following features and has the following limitations.
 
-- **Geometry and hierarchy**Triangle geometry, parent-child relationships between parts, and translation, rotation, and scaling are supported. Loading fails if the geometry uses a drawing mode other than triangles.
-- **Colors and textures**GLB stores surface colors, textures, and related settings as **materials**. Pyxel Cube can load multiple materials and use each material's base color (the basic surface color) and image. If there are multiple sets of image coordinates, only the first set (`TEXCOORD_0`) is loaded.Colors absent from `pyxel.colors` are converted to similar colors when loaded. To use a custom palette, assign a list of RGB values for 1-256 colors to `pyxel.colors[:]` before loading.To cut out transparent areas of an image, set the material's `alphaMode` to `MASK`. However, cutout transparency is disabled if no unused index can be reserved for transparency after the loaded GLB's colors are converted to Pyxel color indices. Translucency with `BLEND`, per-vertex colors (vertex colors), normal maps that use images to represent surface bumps, and material metallic and roughness settings are not applied.
-- **Motions**Keyframe animations that record parts' positions, orientations, and sizes at specific times are supported. GLB's `LINEAR`, `STEP`, and `CUBICSPLINE` interpolation modes can be used between keyframes.Skinning (deformation driven by a skeleton) and morphing (deformation by moving vertices) are not applied, so create arms, legs, and similar elements as separate parts and move those parts. GLB files containing morph animations cannot be loaded. For files using the glTF extension `KHR_animation_pointer`, all animations are excluded from loading.
-- **Cameras and lights**Camera and lighting settings in GLB files are not used; set them in Cube.
-- **File requirements**GLB files that reference external files cannot be loaded. Embed geometry, animation data, and images in the GLB file.
+- **Geometry and hierarchy**
+
+  Triangle geometry, parent-child relationships between parts, and translation, rotation, and scaling are supported. Loading fails if the geometry uses a drawing mode other than triangles.
+- **Colors and textures**
+
+  GLB stores surface colors, textures, and related settings as **materials**. Pyxel Cube can load multiple materials and use each material's base color (the basic surface color) and image. If there are multiple sets of image coordinates, only the first set (`TEXCOORD_0`) is loaded.
+
+  Colors absent from `pyxel.colors` are converted to similar colors when loaded. To use a custom palette, assign a list of RGB values for 1-256 colors to `pyxel.colors[:]` before loading.
+
+  To cut out transparent areas of an image, set the material's `alphaMode` to `MASK`. However, cutout transparency is disabled if no unused index can be reserved for transparency after the loaded GLB's colors are converted to Pyxel color indices. Translucency with `BLEND`, per-vertex colors (vertex colors), normal maps that use images to represent surface bumps, and material metallic and roughness settings are not applied.
+- **Motions**
+
+  Keyframe animations that record parts' positions, orientations, and sizes at specific times are supported. GLB's `LINEAR`, `STEP`, and `CUBICSPLINE` interpolation modes can be used between keyframes.
+
+  Skinning (deformation driven by a skeleton) and morphing (deformation by moving vertices) are not applied, so create arms, legs, and similar elements as separate parts and move those parts. GLB files containing morph animations cannot be loaded. For files using the glTF extension `KHR_animation_pointer`, all animations are excluded from loading.
+- **Cameras and lights**
+
+  Camera and lighting settings in GLB files are not used; set them in Cube.
+- **File requirements**
+
+  GLB files that reference external files cannot be loaded. Embed geometry, animation data, and images in the GLB file.
 
 ### Creating Resources in Blockbench
 

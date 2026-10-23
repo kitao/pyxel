@@ -96,10 +96,14 @@ fn should_cull(area: f32, cull: i32) -> bool {
     (cull == CULL_BACK && area >= 0.0) || (cull == CULL_FRONT && area <= 0.0)
 }
 
-fn prepare_draw(ctx: &mut DrawContext, world_mat: &Mat4, state: &DrawState) -> Mat4 {
+fn apply_draw_state(ctx: &mut DrawContext, state: &DrawState) {
     ctx.dither_alpha = state.dither_alpha.clamp(0.0, 1.0);
     ctx.depth_test = state.depth_test;
     ctx.depth_write = state.depth_write;
+}
+
+fn prepare_draw(ctx: &mut DrawContext, world_mat: &Mat4, state: &DrawState) -> Mat4 {
+    apply_draw_state(ctx, state);
     apply_billboard(world_mat, ctx, state.billboard)
 }
 
@@ -1737,7 +1741,8 @@ pub fn sphereb(
 
 // circ / circb are screen-aligned: their projected geometry depends on
 // the camera, so they bypass the world-space prim path and use the
-// screen-space rasterizer directly with constant depth.
+// screen-space rasterizer directly with constant depth. Their centers still
+// use the original node transform, independent of the camera-facing geometry.
 pub fn circ(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -1746,7 +1751,7 @@ pub fn circ(
     col: i32,
     state: DrawState,
 ) {
-    let world_mat = prepare_draw(ctx, world_mat, &state);
+    apply_draw_state(ctx, &state);
     let world = world_mat.mul_vec_value(local);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
@@ -1803,7 +1808,7 @@ pub fn circb(
     col: i32,
     state: DrawState,
 ) {
-    let world_mat = prepare_draw(ctx, world_mat, &state);
+    apply_draw_state(ctx, &state);
     let world = world_mat.mul_vec_value(local);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
@@ -3088,6 +3093,136 @@ mod tests {
         )
         .unwrap();
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
+    }
+
+    #[test]
+    fn test_camera_facing_shapes_preserve_node_local_centers() {
+        use crate::cube::node::Node;
+
+        let parent = Node::new();
+        rc_mut!(&parent).transform = Mat4::from_rows([
+            [0.0, -1.0, 0.0, 3.0],
+            [2.0, 0.0, 0.0, -1.0],
+            [0.0, 0.0, 1.0, -16.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        let child = Node::new();
+        rc_mut!(&child).transform = Mat4::from_rows([
+            [0.0, 0.0, 1.0, 1.0],
+            [0.0, 1.0, 0.0, 2.0],
+            [-1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        Node::add_child(&parent, &child);
+        let local = Vec3 {
+            x: 4.0,
+            y: 2.0,
+            z: 1.0,
+        };
+        let texture = Image::new(1, 1);
+        rc_mut!(&texture).clear(7);
+
+        // Centers include the parent's scaled Z rotation and the child's Y rotation.
+        let cases = [
+            (
+                &parent,
+                Vec3 {
+                    x: 1.0,
+                    y: 7.0,
+                    z: -15.0,
+                },
+            ),
+            (
+                &child,
+                Vec3 {
+                    x: -1.0,
+                    y: 3.0,
+                    z: -20.0,
+                },
+            ),
+        ];
+        for (node, center) in cases {
+            let world = Node::world_transform_value(node);
+            let expected = *rc_ref!(&Mat4::from_translation(&center));
+            for ortho_size in [None, Some(32.0)] {
+                for camera_angle in 0..3 {
+                    let camera = Camera::new();
+                    rc_mut!(&camera).ortho_size = ortho_size;
+                    if camera_angle == 1 {
+                        rc_mut!(&camera).transform = Mat4::from_rows([
+                            [0.0, -1.0, 0.0, 0.0],
+                            [1.0, 0.0, 0.0, 0.0],
+                            [0.0, 0.0, 1.0, 0.0],
+                            [0.0, 0.0, 0.0, 1.0],
+                        ]);
+                    } else if camera_angle == 2 {
+                        rc_mut!(&camera).transform = Mat4::look_at(
+                            &Vec3 {
+                                x: 8.0,
+                                y: 4.0,
+                                z: 8.0,
+                            },
+                            &Vec3 {
+                                x: 0.0,
+                                y: 0.0,
+                                z: -16.0,
+                            },
+                            &Vec3 {
+                                x: 0.0,
+                                y: 1.0,
+                                z: 0.0,
+                            },
+                        );
+                    }
+                    for shape in ["pset", "circ", "circb", "sprite"] {
+                        let render = |matrix: &Mat4, pos: &Vec3| {
+                            let target = Image::new(64, 64);
+                            let mut ctx = draw_context_64(&target, &camera, false);
+                            let mut state = DrawState::unshaded();
+                            match shape {
+                                "pset" => pset(&mut ctx, matrix, pos, 7, state),
+                                "circ" | "circb" => {
+                                    state.billboard = BILLBOARD_ON;
+                                    if shape == "circ" {
+                                        circ(&mut ctx, matrix, pos, 1.0, 7, state);
+                                    } else {
+                                        circb(&mut ctx, matrix, pos, 1.0, 7, state);
+                                    }
+                                }
+                                _ => sprite(
+                                    &mut ctx,
+                                    matrix,
+                                    pos,
+                                    &texture,
+                                    ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)),
+                                    2.0,
+                                    2.0,
+                                    None,
+                                    0.0,
+                                    state,
+                                ),
+                            }
+                            let pixels = rc_ref!(&target).canvas.data.clone();
+                            pixels
+                        };
+                        let actual = render(&world, &local);
+                        let expected = render(
+                            &expected,
+                            &Vec3 {
+                                x: 0.0,
+                                y: 0.0,
+                                z: 0.0,
+                            },
+                        );
+                        assert!(expected.contains(&7), "{shape} must be visible");
+                        assert_eq!(
+                            actual, expected,
+                            "{shape}, ortho={ortho_size:?}, camera_angle={camera_angle}"
+                        );
+                    }
+                }
+            }
+        }
     }
 
     #[test]

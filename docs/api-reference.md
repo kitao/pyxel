@@ -93,7 +93,7 @@ Set the application icon. Specify the icon image as a list of strings.
 
 **Parameters:**
 
-- `data` (*list[str]*) — Icon image as a list of strings
+- `data` (*list[str]*) — List of strings, each representing one row using hexadecimal color indices (0-f)
 - `scale` (*int*) — Scale factor
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
@@ -185,11 +185,11 @@ Save the resource file (.pyxres). If an option is set to True, the corresponding
 
 ### `screenshot(filename=None, scale=None)` — function *(Advanced)*
 
-Take a screenshot.
+Save a screenshot as a PNG file.
 
 **Parameters:**
 
-- `filename` (*str | None*) — File name. If omitted, saved to desktop.
+- `filename` (*str | None*) — File name. In the desktop version, omitting it saves the file to the desktop. In the web version, the browser downloads the file.
 - `scale` (*int | None*) — Scale factor. Defaults to capture_scale.
 
 ### `screencast(filename=None, scale=None)` — function *(Advanced)*
@@ -198,7 +198,7 @@ Save the screen recording as a GIF file.
 
 **Parameters:**
 
-- `filename` (*str | None*) — File name. If omitted, saved to desktop.
+- `filename` (*str | None*) — File name. In the desktop version, omitting it saves the file to the desktop. In the web version, the browser downloads the file.
 - `scale` (*int | None*) — Scale factor. Defaults to capture_scale.
 
 ### `reset_screencast()` — function *(Advanced)*
@@ -422,7 +422,7 @@ Set the dropped file list for the current frame. Replaces any existing list. Mai
 
 ### `colors` — variable
 
-List of the palette display colors. Specified by 24-bit numerical value. Supports Python list operations.
+List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations.
 
 - **Type:** `list[int]`
 
@@ -508,7 +508,7 @@ Replace color col1 with col2 when drawing.
 
 ### `pal()` — function
 
-Reset the palette to the initial state.
+Clear the drawing color replacements set by pal.
 
 ### `dither(alpha)` — function
 
@@ -690,13 +690,13 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instanc
 
 **Parameters:**
 
-- `x` (*float*) — Destination X
-- `y` (*float*) — Destination Y
+- `x` (*float*) — Destination X (in pixels)
+- `y` (*float*) — Destination Y (in pixels)
 - `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
-- `u` (*float*) — Source X in the tilemap
-- `v` (*float*) — Source Y in the tilemap
-- `w` (*float*) — Width (negative to flip)
-- `h` (*float*) — Height (negative to flip)
+- `u` (*float*) — Source X in the tilemap (in pixels)
+- `v` (*float*) — Source Y in the tilemap (in pixels)
+- `w` (*float*) — Width in pixels (negative to flip)
+- `h` (*float*) — Height in pixels (negative to flip)
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
@@ -849,7 +849,7 @@ Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, 
 
 - `ch` (*int*) — Channel number (0-3)
 
-**Returns:** `tuple[int, float] | None` — (sound_index, sec) or None
+**Returns:** `tuple[int, float] | None` — (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.
 
 ### `gen_bgm(preset, transp, instr, seed, play=False)` — function
 
@@ -1068,7 +1068,7 @@ Create an Image instance from an image file.
 **Parameters:**
 
 - `filename` (*str*) — Image file name
-- `include_colors` (*bool*) — Include palette colors from file. Defaults to False.
+- `include_colors` (*bool*) — If True, replace all of pyxel.colors with the image colors (at most 256 colors). If False, convert to similar colors in the current palette. Defaults to False.
 
 **Returns:** `Image`
 
@@ -1109,7 +1109,7 @@ Load an image file (PNG/GIF/JPEG) at (x, y).
 - `x` (*int*) — X coordinate
 - `y` (*int*) — Y coordinate
 - `filename` (*str*) — Image file name (PNG/GIF/JPEG)
-- `include_colors` (*bool*) — Include palette colors from file. Defaults to False.
+- `include_colors` (*bool*) — If True, replace all of pyxel.colors with the image colors (at most 256 colors). If False, convert to similar colors in the current palette. Defaults to False.
 
 ### `Image.pget(x, y)` — function
 
@@ -1144,11 +1144,11 @@ Return the raw data pointer of the image as a ctypes c_uint8 array.
 
 ### `Image.save(filename, scale)` — function *(Advanced)*
 
-Save the image to a file.
+Save the image as a PNG file.
 
 **Parameters:**
 
-- `filename` (*str*) — Output file name
+- `filename` (*str*) — Output file name. Appends .png unless the name already ends with that extension.
 - `scale` (*int*) — Scale factor
 
 ## Tilemap Class
@@ -1159,8 +1159,8 @@ Create a new Tilemap instance.
 
 **Parameters:**
 
-- `width` (*int*) — Tilemap width
-- `height` (*int*) — Tilemap height
+- `width` (*int*) — Tilemap width (in tiles)
+- `height` (*int*) — Tilemap height (in tiles)
 - `img` (*int | Image*) — Image bank number (0-2) or Image instance
 
 **Returns:** `Tilemap`
@@ -1178,13 +1178,13 @@ Create a Tilemap instance from a TMX file.
 
 ### `Tilemap.width` — variable
 
-The width of the tilemap.
+Tilemap width (in tiles)
 
 - **Type:** `int`
 
 ### `Tilemap.height` — variable
 
-The height of the tilemap.
+Tilemap height (in tiles)
 
 - **Type:** `int`
 
@@ -1200,8 +1200,8 @@ Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex va
 
 **Parameters:**
 
-- `x` (*int*) — X coordinate
-- `y` (*int*) — Y coordinate
+- `x` (*int*) — X coordinate (in tiles)
+- `y` (*int*) — Y coordinate (in tiles)
 - `data` (*list[str]*) — Tilemap data as a list of strings
 
 **Example:**
@@ -1216,8 +1216,8 @@ Load the specified TMX layer at (x, y). Layer numbering starts at 0.
 
 **Parameters:**
 
-- `x` (*int*) — X coordinate
-- `y` (*int*) — Y coordinate
+- `x` (*int*) — X coordinate (in tiles)
+- `y` (*int*) — Y coordinate (in tiles)
 - `filename` (*str*) — TMX file name
 - `layer` (*int*) — Zero-based layer number
 
@@ -1227,8 +1227,8 @@ Get the tile at (x, y). The coordinates are absolute and not affected by the cam
 
 **Parameters:**
 
-- `x` (*float*) — X coordinate
-- `y` (*float*) — Y coordinate
+- `x` (*float*) — X coordinate (in tiles)
+- `y` (*float*) — Y coordinate (in tiles)
 
 **Returns:** `tuple[int, int]` — (image_tx, image_ty)
 
@@ -1238,13 +1238,13 @@ Set a tile at (x, y). A tile is a tuple of (image_tx, image_ty).
 
 **Parameters:**
 
-- `x` (*float*) — X coordinate
-- `y` (*float*) — Y coordinate
+- `x` (*float*) — X coordinate (in tiles)
+- `y` (*float*) — Y coordinate (in tiles)
 - `tile` (*tuple[int, int]*) — Tile as (image_tx, image_ty)
 
 ### `Tilemap.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, clip, camera}` — function
 
-Tilemap instances support drawing functions from the Graphics section. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value. For blt, the source is a Tilemap and tilekey replaces colkey.
+Tilemap instances support drawing functions from the Graphics section, with coordinates and dimensions specified in tiles. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value. For blt, the source is a Tilemap and tilekey replaces colkey.
 
 ### `Tilemap.collide(x, y, w, h, dx, dy, walls)` — function
 
@@ -1376,7 +1376,7 @@ pyxel.sounds[0].set_effects("nfnf nvvs")
 
 ### `Sound.mml(code)` — function
 
-Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page.
+Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the [Pyxel MML Commands](https://kitao.dev/pyxel/mml-studio/mml-commands.html) page.
 
 **Parameters:**
 
@@ -1503,7 +1503,7 @@ Stop playback on this channel.
 
 Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
-**Returns:** `tuple[int, float] | None` — (sound_index, sec) or None
+**Returns:** `tuple[int, float] | None` — (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.
 
 ## Tone Class
 
