@@ -1,9 +1,9 @@
 # <a href="https://kitao.dev/pyxel/"><img src="https://kitao.dev/pyxel/assets/images/pyxel_logo_152x64.png" alt="Pyxel" width="152" height="64"></a>
 
 <p>
-  <a href="https://github.com/kitao/pyxel"><img src="https://img.shields.io/github/stars/kitao/pyxel?style=social" alt="GitHub Repo stars" height="20"></a>
-  <a href="https://github.com/sponsors/kitao"><img src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&amp;logo=github%20sponsors&amp;style=social" alt="GitHub Sponsors" height="20"></a>
-  <a href="https://www.patreon.com/tkitao"><img src="https://img.shields.io/badge/Support%20me%20on%20Patreon-000000?style=social&amp;logo=patreon" alt="Patreon" height="20"></a>
+  <a href="https://github.com/kitao/pyxel"><img src="https://img.shields.io/github/stars/kitao/pyxel?style=social&amp;label=Star%20on%20GitHub" alt="GitHub Repo stars" height="20"></a>
+  <a href="https://github.com/sponsors/kitao"><img src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20on%20GitHub&amp;logo=github%20sponsors&amp;style=social" alt="GitHub Sponsors" height="20"></a>
+  <a href="https://www.patreon.com/tkitao"><img src="https://img.shields.io/badge/Support%20on%20Patreon-000000?style=social&amp;logo=patreon" alt="Patreon" height="20"></a>
   <a href="https://ko-fi.com/H2H27VDKD"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi" height="20" width="149"></a>
 </p>
 
