@@ -29,7 +29,7 @@ pub struct GeneratorParams {
     pub instrumentation: i32,
     // Internal speed unit; the MML tempo is 28800 / speed.
     pub speed: i32,
-    // Chord selector: preset slots 0..=7, custom slots 8..=9.
+    // Chord selector: preset slots 0..=7, Composer-managed custom slots 8..=15.
     pub chord: i32,
     // Bass pattern selector, from 0 to 7.
     pub base: i32,
@@ -2064,8 +2064,8 @@ fn generate_bgm(
     );
     assert!(params.speed >= 1, "speed must be greater than 0");
     assert!(
-        (0..10).contains(&params.chord),
-        "chord must be between 0 and 9"
+        (0..16).contains(&params.chord),
+        "chord must be between 0 and 15"
     );
     assert!(
         (0..8).contains(&params.base),
@@ -2528,6 +2528,40 @@ mod tests {
                     "preset={preset} transpose={transpose} instr={instrumentation} seed={seed} ch{ch} drift"
                 );
             }
+        }
+    }
+
+    #[test]
+    fn test_composer_custom_slots_share_progression_contract() {
+        let mut params = preset_params(0);
+        params.chord = 8;
+        params.custom_progression = Some(vec![CustomChordEntry {
+            loc: 0,
+            notes: Some("200030030000".to_string()),
+            repeat: None,
+        }]);
+        let expected = generate_bgm(&params, 12345, "transpose", "instrumentation");
+        for slot in 8..16 {
+            params.chord = slot;
+            assert_eq!(
+                generate_bgm(&params, 12345, "transpose", "instrumentation"),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn test_composer_chord_slots_reject_outside_producer_range() {
+        for slot in [-1, 16] {
+            let mut params = preset_params(0);
+            params.chord = slot;
+            assert!(std::panic::catch_unwind(|| generate_bgm(
+                &params,
+                12345,
+                "transpose",
+                "instrumentation"
+            ))
+            .is_err());
         }
     }
 }

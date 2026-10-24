@@ -75,6 +75,13 @@ pub fn quit() {
         callback();
     }
     with_platform_mut(Platform::quit);
+    #[cfg(target_os = "emscripten")]
+    stop_main_loop();
+}
+
+#[cfg(target_os = "emscripten")]
+pub fn stop_main_loop() {
+    Platform::stop_main_loop();
 }
 
 pub fn ticks() -> u32 {

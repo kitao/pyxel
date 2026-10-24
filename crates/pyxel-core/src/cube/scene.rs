@@ -7,10 +7,10 @@ use crate::cube::collider::{Collider, RcCollider};
 use crate::cube::collision::{
     capsule_vs_capsule, capsule_vs_rounded_obb, capsule_vs_sphere, capsule_vs_triangle,
     classify_shape, closest_points_segment_aabb, closest_points_segment_segment,
-    closest_points_segment_triangle, collider_aabb, local_box_vs_triangle, point_dist2_ordering,
-    ray_vs_aabb, ray_vs_sphere, ray_vs_sphere_filtered, ray_vs_triangle,
+    closest_points_segment_triangle, collider_aabb, local_box_vs_triangle, obb_pair_needs_wide,
+    point_dist2_ordering, ray_vs_aabb, ray_vs_sphere, ray_vs_sphere_filtered, ray_vs_triangle,
     rounded_obb_vs_rounded_obb, sphere_vs_rounded_obb, sphere_vs_sphere, sphere_vs_triangle, Aabb,
-    ColliderShape, ContactGeom, ObbPairDistance,
+    ColliderShape, ContactGeom, ObbPairDistance, ObbPairDistanceWide,
 };
 use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
@@ -150,6 +150,7 @@ struct ContactConstraint {
 struct ContactBody {
     inverse_mass: f32,
     inverse_inertia: Vec3,
+    wide_inverse_inertia: Option<[f64; 3]>,
     axes: [Vec3; 3],
     velocity: Vec3,
     spin: Vec3,
@@ -206,6 +207,38 @@ impl ContactBody {
             }
         };
 
+        // Inertia grows with squared size. Keep its reciprocal in wide form
+        // when a finite body exceeds f32's intermediate range.
+        let wide_inverse_inertia = if collider.rolls && mass > 0.0 && !inertia.is_finite() {
+            let mass = f64::from(mass);
+            let inertia = match classify_shape(size, radius) {
+                ColliderShape::Sphere { r } => [0.4 * mass * f64::from(r).powi(2); 3],
+                ColliderShape::Capsule { half_h, r } => {
+                    let half_h = f64::from(half_h);
+                    let r = f64::from(r);
+                    let length = 2.0 * half_h;
+                    let cylinder = mass * length / (length + 4.0 * r / 3.0);
+                    let caps = mass - cylinder;
+                    let axial = cylinder * r * r * 0.5 + caps * r * r * 0.4;
+                    let radial = cylinder * (3.0 * r * r + length * length) / 12.0
+                        + caps * (0.4 * r * r + half_h * half_h + 0.75 * half_h * r);
+                    [radial, axial, radial]
+                }
+                ColliderShape::RoundedBox { half, r } => {
+                    let [x, y, z] =
+                        [half.x, half.y, half.z].map(|v| 2.0 * (f64::from(v) + f64::from(r)));
+                    [
+                        mass * (y * y + z * z) / 12.0,
+                        mass * (x * x + z * z) / 12.0,
+                        mass * (x * x + y * y) / 12.0,
+                    ]
+                }
+            };
+            Some(inertia.map(|i| if i > 0.0 { 1.0 / i } else { 0.0 }))
+        } else {
+            None
+        };
+
         let rotation = Node::world_rotation_value(&entry.node);
         let axes = std::array::from_fn(|i| Vec3 {
             x: rotation.data[0][i],
@@ -232,6 +265,7 @@ impl ContactBody {
                 y: inverse(inertia.y),
                 z: inverse(inertia.z),
             },
+            wide_inverse_inertia,
             axes,
             velocity: entry.velocity,
             spin,
@@ -254,16 +288,83 @@ impl ContactBody {
         result
     }
 
+    fn angular_impulse(&self, arm: Vec3, impulse: Vec3) -> Vec3 {
+        let inverse = [
+            self.inverse_inertia.x,
+            self.inverse_inertia.y,
+            self.inverse_inertia.z,
+        ];
+        if self.wide_inverse_inertia.is_none() && inverse == [0.0; 3] {
+            return Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            };
+        }
+        let torque = vec_cross(arm, impulse);
+        if self.wide_inverse_inertia.is_none() && torque.is_finite() {
+            let result = self.apply_inverse_inertia(torque);
+            if result.is_finite() {
+                return result;
+            }
+        }
+        let a = [arm.x, arm.y, arm.z].map(f64::from);
+        let b = [impulse.x, impulse.y, impulse.z].map(f64::from);
+        let torque = [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0],
+        ];
+        let inverse = self
+            .wide_inverse_inertia
+            .unwrap_or_else(|| inverse.map(f64::from));
+        let mut result = [0.0; 3];
+        for (axis, inverse) in self.axes.iter().zip(inverse) {
+            let axis = [axis.x, axis.y, axis.z].map(f64::from);
+            let amount = axis.iter().zip(torque).map(|(a, t)| a * t).sum::<f64>() * inverse;
+            for i in 0..3 {
+                result[i] += axis[i] * amount;
+            }
+        }
+        Vec3 {
+            x: result[0] as f32,
+            y: result[1] as f32,
+            z: result[2] as f32,
+        }
+    }
+
+    fn relative_speed(&self, arm: Vec3, other: &Self, other_arm: Vec3, direction: Vec3) -> f64 {
+        let speed = vec_dot(
+            vec_sub(self.point_velocity(arm), other.point_velocity(other_arm)),
+            direction,
+        );
+        if speed.is_finite() {
+            return f64::from(speed);
+        }
+        let velocity = |body: &Self, arm: Vec3| {
+            let a = [body.spin.x, body.spin.y, body.spin.z].map(f64::from);
+            let b = [arm.x, arm.y, arm.z].map(f64::from);
+            [
+                f64::from(body.velocity.x) + a[1] * b[2] - a[2] * b[1],
+                f64::from(body.velocity.y) + a[2] * b[0] - a[0] * b[2],
+                f64::from(body.velocity.z) + a[0] * b[1] - a[1] * b[0],
+            ]
+        };
+        velocity(self, arm)
+            .into_iter()
+            .zip(velocity(other, other_arm))
+            .zip([direction.x, direction.y, direction.z])
+            .map(|((a, b), d)| (a - b) * f64::from(d))
+            .sum()
+    }
+
     fn point_velocity(&self, arm: Vec3) -> Vec3 {
         vec_add(self.velocity, vec_cross(self.spin, arm))
     }
 
     fn apply_impulse(&mut self, arm: Vec3, impulse: Vec3) {
         self.velocity = vec_add(self.velocity, vec_mul(impulse, self.inverse_mass));
-        self.spin = vec_add(
-            self.spin,
-            self.apply_inverse_inertia(vec_cross(arm, impulse)),
-        );
+        self.spin = vec_add(self.spin, self.angular_impulse(arm, impulse));
     }
 }
 
@@ -282,12 +383,24 @@ struct CachedBody {
     acceleration: Vec3,
     previous_acceleration: Vec3,
     material: [f32; 8],
+    mesh: Option<(std::rc::Weak<RefCell<crate::cube::mesh::Mesh>>, u64)>,
     quiet_frames: u8,
     tolerance: f32,
     integrated: bool,
 }
 
 impl CachedBody {
+    fn matches_mesh(&self, collider: &Collider) -> bool {
+        match (&self.mesh, &collider.mesh) {
+            (Some((previous, version)), Some(mesh)) => {
+                std::rc::Weak::ptr_eq(previous, &std::rc::Rc::downgrade(mesh))
+                    && *version == rc_ref!(mesh).collision_geometry_version()
+            }
+            (None, None) => true,
+            _ => false,
+        }
+    }
+
     fn matches_pose(&self, world: &Mat4, displacement: Vec3) -> bool {
         let position = vec_sub(world.pos_value(), displacement);
         vec_len_sq(vec_sub(position, self.world.pos_value())) < self.tolerance * self.tolerance
@@ -499,7 +612,10 @@ impl Scene {
             let resting = previous
                 .get_mut(&std::rc::Rc::as_ptr(node))
                 .is_some_and(|old| {
-                    if old.quiet_frames < 20 || old.material != contact_material(&coll) {
+                    if old.quiet_frames < 20
+                        || old.material != contact_material(&coll)
+                        || !old.matches_mesh(&coll)
+                    {
                         return false;
                     }
                     let local = *rc_ref!(&rc_ref!(node).transform);
@@ -792,6 +908,13 @@ impl Scene {
         if constraints.len() < 2 {
             return;
         }
+        if constraints
+            .iter()
+            .any(|constraint| constraint.depth.abs() > f32::MAX / 16.0)
+        {
+            Self::resolve_contact_positions_wide(entries, pairs, constraints);
+            return;
+        }
         let zero = Vec3 {
             x: 0.0,
             y: 0.0,
@@ -854,6 +977,82 @@ impl Scene {
             ] {
                 let mut contact = rc_mut!(contact);
                 contact.depth = constraint.push * share;
+            }
+        }
+    }
+
+    // Coupled pushes can overflow before their separation cancels the sum.
+    // Keep aggregate offsets wide and narrow only mass-shared public depths.
+    #[cold]
+    fn resolve_contact_positions_wide(
+        entries: &[ColliderEntry],
+        pairs: &[ContactPair],
+        constraints: &[ContactConstraint],
+    ) {
+        let mut offsets = vec![[0.0_f64; 3]; entries.len()];
+        let mut pushes: Vec<_> = constraints
+            .iter()
+            .map(|constraint| f64::from(constraint.push))
+            .collect();
+        for iteration in 0..32 {
+            let mut largest_change: f64 = 0.0;
+            for step in 0..constraints.len() {
+                let index = if iteration % 2 == 0 {
+                    step
+                } else {
+                    constraints.len() - 1 - step
+                };
+                let constraint = &constraints[index];
+                let normal = [
+                    constraint.normal.x,
+                    constraint.normal.y,
+                    constraint.normal.z,
+                ]
+                .map(f64::from);
+                let separation = (0..3)
+                    .map(|i| normal[i] * (offsets[constraint.a][i] - offsets[constraint.b][i]))
+                    .sum::<f64>();
+                let slop = if constraint.shares.0 > 0.0 && constraint.shares.1 > 0.0 {
+                    let scale = (0..3).fold(1.0_f32, |scale, axis| {
+                        scale
+                            .max(entries[constraint.a].world.data[axis][3].abs())
+                            .max(entries[constraint.b].world.data[axis][3].abs())
+                    });
+                    (4.0 * f32::EPSILON * scale).max(1e-5).max(
+                        entries[constraint.a]
+                            .margin
+                            .max(entries[constraint.b].margin)
+                            * 0.1,
+                    )
+                } else {
+                    0.0
+                };
+                let push =
+                    (pushes[index] + f64::from(constraint.depth) - f64::from(slop) - separation)
+                        .max(0.0);
+                let change = push - pushes[index];
+                pushes[index] = push;
+                largest_change = largest_change.max(change.abs());
+                for (body, share) in [
+                    (constraint.a, constraint.shares.0),
+                    (constraint.b, -constraint.shares.1),
+                ] {
+                    for axis in 0..3 {
+                        offsets[body][axis] += normal[axis] * change * f64::from(share);
+                    }
+                }
+            }
+            if largest_change < 1e-5 {
+                break;
+            }
+        }
+        for (constraint, push) in constraints.iter().zip(pushes) {
+            let pair = &pairs[constraint.pair];
+            for (contact, share) in [
+                (&pair.contact_a, constraint.shares.0),
+                (&pair.contact_b, constraint.shares.1),
+            ] {
+                rc_mut!(contact).depth = (push * f64::from(share)) as f32;
             }
         }
     }
@@ -1017,7 +1216,9 @@ impl Scene {
         let mut poses_valid = vec![false; entries.len()];
         for (i, entry) in entries.iter().enumerate() {
             poses_valid[i] = old_bodies[i].is_some_and(|old| {
-                old.material == materials[i] && old.matches_integrated_pose(entry)
+                old.material == materials[i]
+                    && old.matches_mesh(&rc_ref!(&entry.collider))
+                    && old.matches_integrated_pose(entry)
             });
             // Awake bodies settle according to their solved motion. Only an
             // already sleeping body must preserve its input motion to stay asleep.
@@ -1063,10 +1264,28 @@ impl Scene {
             // can be far beyond those surfaces and invent large torque arms.
             let impact = constraint.swept.then(|| {
                 let closing = -vec_dot(vec_sub(a.velocity, b.velocity), constraint.normal);
-                let remaining = if closing > 0.0 {
-                    (constraint.depth / closing).clamp(0.0, 1.0)
+                let remaining = if closing.is_finite() {
+                    if closing > 0.0 {
+                        (constraint.depth / closing).clamp(0.0, 1.0)
+                    } else {
+                        0.0
+                    }
                 } else {
-                    0.0
+                    let closing = -[a.velocity.x, a.velocity.y, a.velocity.z]
+                        .into_iter()
+                        .zip([b.velocity.x, b.velocity.y, b.velocity.z])
+                        .zip([
+                            constraint.normal.x,
+                            constraint.normal.y,
+                            constraint.normal.z,
+                        ])
+                        .map(|((a, b), n)| (f64::from(a) - f64::from(b)) * f64::from(n))
+                        .sum::<f64>();
+                    if closing > 0.0 {
+                        (f64::from(constraint.depth) / closing).clamp(0.0, 1.0) as f32
+                    } else {
+                        0.0
+                    }
                 };
                 [a, b].map(|entry| {
                     let mut entry = entry.clone();
@@ -1197,11 +1416,12 @@ impl Scene {
 
                 let ra = vec_sub(point, a.world.pos_value());
                 let rb = vec_sub(point, b.world.pos_value());
-                let relative = vec_sub(
-                    bodies[constraint.a].point_velocity(ra),
-                    bodies[constraint.b].point_velocity(rb),
+                let speed = bodies[constraint.a].relative_speed(
+                    ra,
+                    &bodies[constraint.b],
+                    rb,
+                    constraint.normal,
                 );
-                let speed = vec_dot(relative, constraint.normal);
                 let normal = constraint.normal;
                 let axis = if normal.x.abs() < 0.577 {
                     Vec3 {
@@ -1222,8 +1442,8 @@ impl Scene {
                 let directions = [normal, t0, t1];
                 let ba = &bodies[constraint.a];
                 let bb = &bodies[constraint.b];
-                let angular_a = directions.map(|d| ba.apply_inverse_inertia(vec_cross(ra, d)));
-                let angular_b = directions.map(|d| bb.apply_inverse_inertia(vec_cross(rb, d)));
+                let angular_a = directions.map(|d| ba.angular_impulse(ra, d));
+                let angular_b = directions.map(|d| bb.angular_impulse(rb, d));
                 let response = |i: usize| {
                     vec_add(
                         vec_mul(directions[i], ba.inverse_mass + bb.inverse_mass),
@@ -1271,12 +1491,16 @@ impl Scene {
                     rb,
                     bounce: if constraint.depth < 0.0 {
                         constraint.depth
-                    } else if support_speed > 0.0 && -speed <= support_speed + speed_tolerance {
+                    } else if support_speed > 0.0
+                        && -speed <= f64::from(support_speed + speed_tolerance)
+                    {
                         // Repeated normal acceleration is support, including
                         // while rolling. A changed approach still rebounds.
                         0.0
+                    } else if (speed as f32).is_finite() {
+                        -(speed as f32).min(0.0) * restitution
                     } else {
-                        -speed.min(0.0) * restitution
+                        (-speed.min(0.0) * f64::from(restitution)) as f32
                     },
                     friction,
                     normal_impulse,
@@ -1349,9 +1573,21 @@ impl Scene {
                     bodies[contact.a].point_velocity(contact.ra),
                     bodies[contact.b].point_velocity(contact.rb),
                 );
-                let next = (contact.normal_impulse
-                    + (contact.bounce - vec_dot(relative, contact.normal)) * contact.normal_mass)
-                    .max(0.0);
+                let next = contact.normal_impulse
+                    + (contact.bounce - vec_dot(relative, contact.normal)) * contact.normal_mass;
+                let next = if next.is_finite() {
+                    next.max(0.0)
+                } else {
+                    let speed = bodies[contact.a].relative_speed(
+                        contact.ra,
+                        &bodies[contact.b],
+                        contact.rb,
+                        contact.normal,
+                    );
+                    (f64::from(contact.normal_impulse)
+                        + (f64::from(contact.bounce) - speed) * f64::from(contact.normal_mass))
+                    .max(0.0) as f32
+                };
                 let delta = next - contact.normal_impulse;
                 contact.normal_impulse = next;
                 let impulse = vec_mul(contact.normal, delta);
@@ -1380,6 +1616,34 @@ impl Scene {
                     vec_mul(contact.tangents[0], -m00 * x - m01 * y),
                     vec_mul(contact.tangents[1], -m01 * x - m11 * y),
                 );
+                let delta = if delta.is_finite() {
+                    delta
+                } else {
+                    let x = bodies[contact.a].relative_speed(
+                        contact.ra,
+                        &bodies[contact.b],
+                        contact.rb,
+                        contact.tangents[0],
+                    );
+                    let y = bodies[contact.a].relative_speed(
+                        contact.ra,
+                        &bodies[contact.b],
+                        contact.rb,
+                        contact.tangents[1],
+                    );
+                    let a = -f64::from(m00) * x - f64::from(m01) * y;
+                    let b = -f64::from(m01) * x - f64::from(m11) * y;
+                    let value = |axis| {
+                        (f64::from(component(contact.tangents[0], axis)) * a
+                            + f64::from(component(contact.tangents[1], axis)) * b)
+                            as f32
+                    };
+                    Vec3 {
+                        x: value(0),
+                        y: value(1),
+                        z: value(2),
+                    }
+                };
                 let mut next = vec_add(contact.tangent_impulse, delta);
                 let limit = contact.friction * contact.normal_impulse;
                 let length = vec_len(next);
@@ -1464,7 +1728,7 @@ impl Scene {
                 let body = &bodies[index];
                 let momentum = vec_mul(momentum, sign);
                 let dv = vec_mul(momentum, body.inverse_mass);
-                let spin = body.apply_inverse_inertia(vec_cross(arm, momentum));
+                let spin = body.angular_impulse(arm, momentum);
                 let dw = vec_mul(
                     Self::world_to_node_local_direction(&entries[index].node, spin),
                     1.0_f32.to_degrees(),
@@ -1501,6 +1765,12 @@ impl Scene {
                 }),
                 previous_acceleration: old_bodies[i].map_or(zero, |old| old.acceleration),
                 material: materials[i],
+                mesh: rc_ref!(&entry.collider).mesh.as_ref().map(|mesh| {
+                    (
+                        std::rc::Rc::downgrade(mesh),
+                        rc_ref!(mesh).collision_geometry_version(),
+                    )
+                }),
                 quiet_frames,
                 tolerance: entry.margin.max(0.001) * 0.1,
                 integrated: true,
@@ -1508,7 +1778,7 @@ impl Scene {
         }
 
         // Resting is internal to the solver. A changed velocity, transform,
-        // material, support, or a new impact wakes the connected moving bodies.
+        // material, mesh geometry, support, or impact wakes the connected bodies.
         // Callers still receive and apply their usual correction values.
         for constraint in constraints {
             let pair = &pairs[constraint.pair];
@@ -1552,6 +1822,16 @@ impl Scene {
         pairs: &[ContactPair],
         constraints: &[ContactConstraint],
     ) {
+        // Relative motion and the unshared impulse can exceed f32 while each
+        // body's final correction is finite. Preserve the ordinary solve below.
+        if entries.iter().any(|entry| {
+            [entry.velocity.x, entry.velocity.y, entry.velocity.z]
+                .iter()
+                .any(|v| v.abs() > f32::MAX / 16.0)
+        }) {
+            Self::resolve_linear_velocities_wide(entries, pairs, constraints);
+            return;
+        }
         let zero = Vec3 {
             x: 0.0,
             y: 0.0,
@@ -1623,6 +1903,86 @@ impl Scene {
             }
         }
 
+        for (constraint, correction) in constraints.iter().zip(corrections) {
+            store(constraint, correction);
+        }
+    }
+
+    #[cold]
+    fn resolve_linear_velocities_wide(
+        entries: &[ColliderEntry],
+        pairs: &[ContactPair],
+        constraints: &[ContactConstraint],
+    ) {
+        let wide = |v: Vec3| [f64::from(v.x), f64::from(v.y), f64::from(v.z)];
+        let subtract = |a: [f64; 3], b: [f64; 3]| std::array::from_fn(|i| a[i] - b[i]);
+        let dot = |a: [f64; 3], b: [f64; 3]| (0..3).map(|i| a[i] * b[i]).sum::<f64>();
+        let response = |constraint: &ContactConstraint, relative: [f64; 3], old: [f64; 3]| {
+            let normal = wide(constraint.normal);
+            let speed = (dot(old, normal) + f64::from(constraint.depth.min(0.0))
+                - dot(relative, normal))
+            .max(0.0);
+            let tangent = subtract(old, relative);
+            let along_normal = dot(tangent, normal);
+            let mut tangent = std::array::from_fn(|i| tangent[i] - normal[i] * along_normal);
+            let friction = ((f64::from(rc_ref!(&entries[constraint.a].collider).friction)
+                + f64::from(rc_ref!(&entries[constraint.b].collider).friction))
+                * 0.5)
+                .clamp(0.0, 1.0);
+            let limit = friction * speed;
+            let length = dot(tangent, tangent).sqrt();
+            if length > limit {
+                tangent = tangent.map(|v| v * (limit / length));
+            }
+            std::array::from_fn(|i| normal[i] * speed + tangent[i])
+        };
+        let store = |constraint: &ContactConstraint, correction: [f64; 3]| {
+            let pair = &pairs[constraint.pair];
+            for (contact, share) in [
+                (&pair.contact_a, constraint.shares.0),
+                (&pair.contact_b, -constraint.shares.1),
+            ] {
+                let correction = correction.map(|v| (v * f64::from(share)) as f32);
+                *rc_mut!(&rc_ref!(contact).delta_velocity) = Vec3 {
+                    x: correction[0],
+                    y: correction[1],
+                    z: correction[2],
+                };
+            }
+        };
+        if let [constraint] = constraints {
+            let relative = subtract(
+                wide(entries[constraint.a].velocity),
+                wide(entries[constraint.b].velocity),
+            );
+            store(constraint, response(constraint, relative, [0.0; 3]));
+            return;
+        }
+        let mut velocities: Vec<_> = entries.iter().map(|entry| wide(entry.velocity)).collect();
+        let mut corrections = vec![[0.0; 3]; constraints.len()];
+        for iteration in 0..128 {
+            let mut largest_change: f64 = 0.0;
+            for step in 0..constraints.len() {
+                let i = if iteration % 2 == 0 {
+                    step
+                } else {
+                    constraints.len() - 1 - step
+                };
+                let constraint = &constraints[i];
+                let relative = subtract(velocities[constraint.a], velocities[constraint.b]);
+                let next = response(constraint, relative, corrections[i]);
+                let change = subtract(next, corrections[i]);
+                corrections[i] = next;
+                for (axis, delta) in change.into_iter().enumerate() {
+                    velocities[constraint.a][axis] += delta * f64::from(constraint.shares.0);
+                    velocities[constraint.b][axis] -= delta * f64::from(constraint.shares.1);
+                }
+                largest_change = largest_change.max(dot(change, change));
+            }
+            if largest_change < 1e-12 {
+                break;
+            }
+        }
         for (constraint, correction) in constraints.iter().zip(corrections) {
             store(constraint, correction);
         }
@@ -2293,6 +2653,47 @@ impl Scene {
         }) {
             return overlap.map(|geom| (geom, false));
         }
+        // Sphere and capsule cores are degenerate boxes. Reuse the wide
+        // convex-core sweep when relative coordinates have already lost range.
+        if (!relative.is_finite()
+            || !vec_sub(c_a, c_b).is_finite()
+            || !vec_sub(vec_sub(c_a, vel_a), vec_sub(c_b, vel_b)).is_finite())
+            && c_a.is_finite()
+            && c_b.is_finite()
+            && vel_a.is_finite()
+            && vel_b.is_finite()
+            && !matches!(
+                shapes,
+                (S::Sphere { .. }, S::Sphere { .. }) | (S::RoundedBox { .. }, S::RoundedBox { .. })
+            )
+        {
+            let core = |shape| match shape {
+                S::Sphere { r } => (
+                    Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    r,
+                ),
+                S::Capsule { half_h, r } => (
+                    Vec3 {
+                        x: 0.0,
+                        y: half_h,
+                        z: 0.0,
+                    },
+                    r,
+                ),
+                S::RoundedBox { half, r } => (half, r),
+            };
+            let (half_a, radius_a) = core(shapes.0);
+            let (half_b, radius_b) = core(shapes.1);
+            return Self::swept_rounded_obb_vs_rounded_obb(
+                world_a, half_a, radius_a, vel_a, world_b, half_b, radius_b, vel_b,
+            )
+            .map(|geom| (geom, true))
+            .or_else(|| overlap.map(|geom| (geom, false)));
+        }
         match shapes {
             (S::Sphere { r: ra }, S::Sphere { r: rb }) => {
                 Self::swept_sphere_vs_sphere(c_a, ra, vel_a, c_b, rb, vel_b)
@@ -2724,6 +3125,32 @@ impl Scene {
         r_b: f32,
         vel_b: Vec3,
     ) -> Option<ContactGeom> {
+        if obb_pair_needs_wide(world_a, half_a, r_a, world_b, half_b, r_b, vel_a)
+            || obb_pair_needs_wide(world_a, half_a, r_a, world_b, half_b, r_b, vel_b)
+        {
+            // Relative velocity can exceed f32 even when both bodies' motion
+            // and the final contact are finite. Keep the moving-frame shift wide.
+            let relative = [
+                f64::from(vel_a.x) - f64::from(vel_b.x),
+                f64::from(vel_a.y) - f64::from(vel_b.y),
+                f64::from(vel_a.z) - f64::from(vel_b.z),
+            ];
+            if relative.iter().map(|v| v * v).sum::<f64>() < 1e-12 {
+                return None;
+            }
+            return swept_obb_vs_obb_wide(world_a, half_a, r_a, relative, world_b, half_b, r_b)
+                .map(|mut geom| {
+                    let closing = -(0..3).map(|i| relative[i] * geom.normal[i]).sum::<f64>();
+                    if closing > 0.0 {
+                        let remaining = (geom.depth / closing).min(1.0);
+                        let velocity_b = [vel_b.x, vel_b.y, vel_b.z];
+                        for (i, velocity) in velocity_b.into_iter().enumerate() {
+                            geom.point[i] -= f64::from(velocity) * remaining;
+                        }
+                    }
+                    geom.narrow()
+                });
+        }
         let rel_vel = Vec3 {
             x: vel_a.x - vel_b.x,
             y: vel_a.y - vel_b.y,
@@ -3531,6 +3958,25 @@ impl Scene {
         let inv = world.inverse_value();
         let local_origin = inv.mul_vec_value(&origin);
         let local_direction = inv.mul_dir_value(&direction);
+        if !local_origin.is_finite()
+            && origin.is_finite()
+            && direction.is_finite()
+            && world.data.iter().flatten().all(|value| value.is_finite())
+        {
+            return ray_collider_relative_wide(
+                origin,
+                direction,
+                world,
+                Vec3 {
+                    x: 0.0,
+                    y: half_h,
+                    z: 0.0,
+                },
+                radius,
+                max_distance,
+                true,
+            );
+        }
         let r = radius.max(0.0);
         let mut best: Option<(f32, Vec3, Vec3)> = None;
 
@@ -3674,6 +4120,21 @@ impl Scene {
         let inv = world.inverse_value();
         let local_origin = inv.mul_vec_value(&origin);
         let local_direction = inv.mul_dir_value(&direction);
+        if !local_origin.is_finite()
+            && origin.is_finite()
+            && direction.is_finite()
+            && world.data.iter().flatten().all(|value| value.is_finite())
+        {
+            return ray_collider_relative_wide(
+                origin,
+                direction,
+                world,
+                half,
+                radius,
+                max_distance,
+                false,
+            );
+        }
         let (t, local_point, local_normal) =
             ray_vs_rounded_box(local_origin, local_direction, half, radius, max_distance)?;
         Some((
@@ -3685,6 +4146,144 @@ impl Scene {
 }
 
 // Ray-vs-collider intersection helpers
+
+// A rigid inverse can overflow its local origin although the final world hit
+// is representable. Keep that relative frame wide through surface selection.
+#[cold]
+fn ray_collider_relative_wide(
+    origin: Vec3,
+    direction: Vec3,
+    world: &Mat4,
+    half: Vec3,
+    radius: f32,
+    max_distance: f32,
+    capsule: bool,
+) -> Option<(f32, Vec3, Vec3)> {
+    let coordinates = |v: Vec3| [f64::from(v.x), f64::from(v.y), f64::from(v.z)];
+    let dot = |a: [f64; 3], b: [f64; 3]| (0..3).map(|i| a[i] * b[i]).sum::<f64>();
+    let center = coordinates(world.pos_value());
+    let axes: [[f64; 3]; 3] =
+        std::array::from_fn(|j| std::array::from_fn(|i| f64::from(world.data[i][j])));
+    let relative = std::array::from_fn(|i| coordinates(origin)[i] - center[i]);
+    let origin: [f64; 3] = axes.map(|axis| dot(relative, axis));
+    let direction = axes.map(|axis| dot(coordinates(direction), axis));
+    let half = coordinates(half);
+    let radius = f64::from(radius.max(0.0));
+    let mut best: Option<(f64, [f64; 3], [f64; 3])> = None;
+    let mut retain = |t: f64, point: [f64; 3], normal: [f64; 3]| {
+        if (0.0..=f64::from(max_distance)).contains(&t) && best.as_ref().is_none_or(|hit| t < hit.0)
+        {
+            best = Some((t, point, normal));
+        }
+    };
+
+    if !capsule {
+        for axis in 0..3 {
+            if direction[axis].abs() < 1e-12 {
+                continue;
+            }
+            for sign in [-1.0, 1.0] {
+                let plane = sign * (half[axis] + radius);
+                let t = (plane - origin[axis]) / direction[axis];
+                let mut point = std::array::from_fn(|i| origin[i] + direction[i] * t);
+                point[axis] = plane;
+                if (0..3).all(|i| i == axis || point[i].abs() <= half[i] + 1e-6) {
+                    let mut normal = [0.0; 3];
+                    normal[axis] = sign;
+                    retain(t, point, normal);
+                }
+            }
+        }
+    }
+    if radius > 0.0 {
+        // A capsule has one axial segment; a rounded box has twelve edge
+        // segments, restricted to their outward quarters and hemispheres.
+        for axis in 0..3 {
+            if capsule && axis != 1 {
+                continue;
+            }
+            let i = (axis + 1) % 3;
+            let j = (axis + 2) % 3;
+            for signs in if capsule { 0..1 } else { 0..4 } {
+                let signs = [
+                    if signs & 1 == 0 { -1.0 } else { 1.0 },
+                    if signs & 2 == 0 { -1.0 } else { 1.0 },
+                ];
+                let mut center = [0.0; 3];
+                if !capsule {
+                    center[i] = signs[0] * half[i];
+                    center[j] = signs[1] * half[j];
+                }
+                let accepts = |point: [f64; 3]| {
+                    capsule || (point[i] * signs[0] >= half[i] && point[j] * signs[1] >= half[j])
+                };
+                for sign in [-1.0, 1.0] {
+                    center[axis] = sign * half[axis];
+                    let offset: [f64; 3] = std::array::from_fn(|k| origin[k] - center[k]);
+                    let speed2 = dot(direction, direction);
+                    let midpoint = -dot(offset, direction) / speed2;
+                    let closest: [f64; 3] =
+                        std::array::from_fn(|k| offset[k] + direction[k] * midpoint);
+                    let chord2 = radius * radius - dot(closest, closest);
+                    if chord2 < 0.0 {
+                        continue;
+                    }
+                    let chord = (chord2 / speed2).sqrt();
+                    for dt in [-chord, chord] {
+                        let radial: [f64; 3] =
+                            std::array::from_fn(|k| closest[k] + direction[k] * dt);
+                        let point = std::array::from_fn(|k| center[k] + radial[k]);
+                        if radial[axis] * sign >= 0.0 && accepts(point) {
+                            retain(midpoint + dt, point, radial.map(|v| v / radius));
+                        }
+                    }
+                }
+                center[axis] = 0.0;
+                let speed2 = direction[i] * direction[i] + direction[j] * direction[j];
+                if speed2 < 1e-12 {
+                    continue;
+                }
+                let offset = [origin[i] - center[i], origin[j] - center[j]];
+                let cross = offset[0] * direction[j] - offset[1] * direction[i];
+                let closest = [
+                    direction[j] * cross / speed2,
+                    -direction[i] * cross / speed2,
+                ];
+                let chord2 = radius * radius - closest[0] * closest[0] - closest[1] * closest[1];
+                if chord2 < 0.0 {
+                    continue;
+                }
+                let midpoint = -(offset[0] * direction[i] + offset[1] * direction[j]) / speed2;
+                let chord = (chord2 / speed2).sqrt();
+                for dt in [-chord, chord] {
+                    let t = midpoint + dt;
+                    let mut point = center;
+                    point[axis] = origin[axis] + direction[axis] * t;
+                    point[i] += closest[0] + direction[i] * dt;
+                    point[j] += closest[1] + direction[j] * dt;
+                    if point[axis].abs() <= half[axis] && accepts(point) {
+                        let mut normal = [0.0; 3];
+                        normal[i] = (point[i] - center[i]) / radius;
+                        normal[j] = (point[j] - center[j]) / radius;
+                        retain(t, point, normal);
+                    }
+                }
+            }
+        }
+    }
+    best.map(|(distance, point, normal)| {
+        let vector = |values: [f64; 3]| Vec3 {
+            x: values[0] as f32,
+            y: values[1] as f32,
+            z: values[2] as f32,
+        };
+        let world_point =
+            std::array::from_fn(|i| center[i] + (0..3).map(|j| axes[j][i] * point[j]).sum::<f64>());
+        let world_normal =
+            std::array::from_fn(|i| (0..3).map(|j| axes[j][i] * normal[j]).sum::<f64>());
+        (distance as f32, vector(world_point), vector(world_normal))
+    })
+}
 
 fn ray_vs_rounded_box(
     origin: Vec3,
@@ -4665,6 +5264,23 @@ fn swept_obb_vs_obb(
         return None;
     }
 
+    if obb_pair_needs_wide(world_a, half_a, r_a, world_b, half_b, r_b, velocity) {
+        return swept_obb_vs_obb_wide(
+            world_a,
+            half_a,
+            r_a,
+            [
+                f64::from(velocity.x),
+                f64::from(velocity.y),
+                f64::from(velocity.z),
+            ],
+            world_b,
+            half_b,
+            r_b,
+        )
+        .map(WideContactGeom::narrow);
+    }
+
     let ax = obb_axes(world_a);
     let bx = obb_axes(world_b);
     let ca = world_a.pos_value();
@@ -4812,6 +5428,178 @@ fn swept_obb_vs_obb(
         point: vec_add(cb, vec_mul(normal, support_b)),
         normal,
         depth: (-vec_dot(velocity, normal) * (1.0 - entry)).max(0.0),
+    })
+}
+
+struct WideContactGeom {
+    point: [f64; 3],
+    normal: [f64; 3],
+    depth: f64,
+}
+
+impl WideContactGeom {
+    fn narrow(self) -> ContactGeom {
+        let vector = |v: [f64; 3]| Vec3 {
+            x: v[0] as f32,
+            y: v[1] as f32,
+            z: v[2] as f32,
+        };
+        ContactGeom {
+            point: vector(self.point),
+            normal: vector(self.normal),
+            depth: self.depth as f32,
+        }
+    }
+}
+
+// Keep SAT time intervals and closest core points wide until the final
+// contact. A common translation must not change a swept box hit.
+#[cold]
+fn swept_obb_vs_obb_wide(
+    world_a: &Mat4,
+    half_a: Vec3,
+    r_a: f32,
+    velocity: [f64; 3],
+    world_b: &Mat4,
+    half_b: Vec3,
+    r_b: f32,
+) -> Option<WideContactGeom> {
+    let wide = |v: Vec3| [f64::from(v.x), f64::from(v.y), f64::from(v.z)];
+    let dot = |a: [f64; 3], b: [f64; 3]| (0..3).map(|i| a[i] * b[i]).sum::<f64>();
+    let subtract = |a: [f64; 3], b: [f64; 3]| std::array::from_fn(|i| a[i] - b[i]);
+    let ax = obb_axes(world_a);
+    let bx = obb_axes(world_b);
+    let ca = wide(world_a.pos_value());
+    let cb = wide(world_b.pos_value());
+    let delta0 = std::array::from_fn(|i| ca[i] - velocity[i] - cb[i]);
+    let ha = wide(half_a);
+    let hb = wide(half_b);
+    let radius = f64::from(r_a.max(0.0)) + f64::from(r_b.max(0.0));
+    let projection = |axes: &[Vec3; 3], half: [f64; 3], n: [f64; 3]| {
+        (0..3)
+            .map(|i| (dot(wide(axes[i]), n) * half[i]).abs())
+            .sum::<f64>()
+    };
+    let mut entry: f64 = 0.0;
+    let mut exit: f64 = 1.0;
+    let mut entry_normal = None;
+    for axis in swept_obb_axes(&ax, &bx) {
+        let Some(axis) = normalize_axis(axis) else {
+            continue;
+        };
+        let axis = wide(axis);
+        let limit = projection(&ax, ha, axis) + projection(&bx, hb, axis) + radius;
+        let distance = dot(delta0, axis);
+        let speed = dot(velocity, axis);
+        if speed.abs() < 1e-8 {
+            if distance.abs() > limit {
+                return None;
+            }
+            continue;
+        }
+        let t0 = (-limit - distance) / speed;
+        let t1 = (limit - distance) / speed;
+        let axis_entry = t0.min(t1);
+        if axis_entry > entry || (entry_normal.is_none() && axis_entry == entry) {
+            entry = axis_entry;
+            entry_normal = Some(axis.map(|v| {
+                if distance + speed * entry >= 0.0 {
+                    v
+                } else {
+                    -v
+                }
+            }));
+        }
+        exit = exit.min(t0.max(t1));
+        if entry > exit {
+            return None;
+        }
+    }
+    if !(0.0..=1.0).contains(&entry) {
+        return None;
+    }
+    if radius > 0.0 {
+        let pair = ObbPairDistanceWide::new(world_a, half_a, world_b, half_b);
+        let points_at = |t: f64| pair.closest_points(velocity.map(|v| v * (t - 1.0)));
+        let distance2 = |a, b| {
+            let d = subtract(a, b);
+            dot(d, d)
+        };
+        let derivative = |a, b| dot(velocity, subtract(a, b));
+        let radius2 = radius * radius;
+        let (a, b) = points_at(entry);
+        if distance2(a, b) <= radius2 {
+            if entry == 0.0 && derivative(a, b) >= 0.0 {
+                return None;
+            }
+        } else {
+            let mut lo = entry;
+            let mut hi = exit;
+            for _ in 0..32 {
+                let mid = (lo + hi) * 0.5;
+                if mid == lo || mid == hi {
+                    break;
+                }
+                let (a, b) = points_at(mid);
+                if distance2(a, b) <= radius2 {
+                    hi = mid;
+                    break;
+                }
+                if derivative(a, b) < 0.0 {
+                    lo = mid;
+                } else {
+                    hi = mid;
+                }
+            }
+            let (a, b) = points_at(lo);
+            let lo_distance = distance2(a, b);
+            let (a, b) = points_at(hi);
+            let hi_distance = distance2(a, b);
+            if lo_distance.min(hi_distance) > radius2 {
+                return None;
+            }
+            let minimum = if lo_distance < hi_distance { lo } else { hi };
+            lo = entry;
+            hi = minimum;
+            for _ in 0..32 {
+                let mid = (lo + hi) * 0.5;
+                if mid == lo || mid == hi {
+                    break;
+                }
+                let (a, b) = points_at(mid);
+                if distance2(a, b) <= radius2 {
+                    hi = mid;
+                } else {
+                    lo = mid;
+                }
+            }
+            entry = hi;
+        }
+        let (a, b) = points_at(entry);
+        let delta = subtract(a, b);
+        let distance = dot(delta, delta).sqrt();
+        let normal = if distance > 0.0 {
+            delta.map(|v| v / distance)
+        } else {
+            let length = dot(velocity, velocity).sqrt();
+            velocity.map(|v| -v / length)
+        };
+        let closing = -dot(velocity, normal);
+        if closing <= 1e-6 {
+            return None;
+        }
+        return Some(WideContactGeom {
+            point: std::array::from_fn(|i| b[i] + normal[i] * f64::from(r_b.max(0.0))),
+            normal,
+            depth: (radius - distance).max(0.0) + closing * (1.0 - entry),
+        });
+    }
+    let normal = entry_normal?;
+    let support = projection(&bx, hb, normal) + f64::from(r_b.max(0.0));
+    Some(WideContactGeom {
+        point: std::array::from_fn(|i| cb[i] + normal[i] * support),
+        normal,
+        depth: (-dot(velocity, normal) * (1.0 - entry)).max(0.0),
     })
 }
 
@@ -5578,6 +6366,244 @@ mod tests {
                 && (actual.z - expected.z).abs() < 1e-4,
             "actual={actual:?} expected={expected:?}"
         );
+    }
+
+    #[test]
+    fn test_rounded_obb_extreme_sweep_translation_invariance() {
+        for (scale, shift) in [(1.0_f32, 0.0_f32), (3e37, 0.0), (3e37, 1.8e38)] {
+            for axis in 0..3 {
+                for sign in [-1.0_f32, 1.0] {
+                    let mut ca = [3.0 * scale; 3];
+                    let mut cb = [0.0; 3];
+                    let mut velocity = [0.0; 3];
+                    ca[axis] = sign * (shift + 5.0 * scale);
+                    cb[axis] = sign * shift;
+                    velocity[axis] = sign * 10.0 * scale;
+                    let mut a = Mat4::identity_value();
+                    let mut b = Mat4::identity_value();
+                    for i in 0..3 {
+                        a.data[i][3] = ca[i];
+                        b.data[i][3] = cb[i];
+                    }
+                    let half = vec3(scale, scale, scale);
+                    let velocity = vec3(velocity[0], velocity[1], velocity[2]);
+                    let hit = swept_obb_vs_obb(&a, half, scale, velocity, &b, half, scale).unwrap();
+                    let mut normal = [0.5; 3];
+                    normal[axis] = -sign * 0.5_f32.sqrt();
+                    assert_vec3_close(hit.normal, vec3(normal[0], normal[1], normal[2]));
+                    assert!((hit.depth / scale - (1.0 + 3.5 * 2.0_f32.sqrt())).abs() < 2e-5);
+                    assert!(hit.point.is_finite());
+                    for i in 0..3 {
+                        let expected = if i == axis {
+                            -f64::from(sign) * (1.0 + 0.5_f64.sqrt())
+                        } else {
+                            1.5
+                        };
+                        let actual = (f64::from([hit.point.x, hit.point.y, hit.point.z][i])
+                            - f64::from(cb[i]))
+                            / f64::from(scale);
+                        assert!((actual - expected).abs() < 2e-5);
+                    }
+                    for (i, row) in a.data.iter_mut().enumerate().take(3) {
+                        if i != axis {
+                            row[3] = 4.0 * scale;
+                        }
+                    }
+                    assert!(swept_obb_vs_obb(&a, half, scale, velocity, &b, half, scale).is_none());
+                    for (i, row) in a.data.iter_mut().enumerate().take(3) {
+                        if i != axis {
+                            row[3] = 0.0;
+                        }
+                    }
+                    let hit = swept_obb_vs_obb(&a, half, 0.0, velocity, &b, half, 0.0).unwrap();
+                    assert!((hit.depth / scale - 7.0).abs() < 2e-5);
+                    assert!(hit.point.is_finite());
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rounded_obb_extreme_relative_velocity() {
+        for scale in [1.0_f32, 1e38] {
+            for axis in 0..3 {
+                for sign in [-1.0_f32, 1.0] {
+                    let mut a = Mat4::identity_value();
+                    let mut b = Mat4::identity_value();
+                    a.data[axis][3] = sign * 1.3 * scale;
+                    b.data[axis][3] = -sign * 1.3 * scale;
+                    let mut velocity = [0.0; 3];
+                    velocity[axis] = sign * 1.8 * scale;
+                    let va = vec3(velocity[0], velocity[1], velocity[2]);
+                    let vb = vec3(-velocity[0], -velocity[1], -velocity[2]);
+                    let half = vec3(0.1 * scale, 0.1 * scale, 0.1 * scale);
+                    let hit = Scene::swept_rounded_obb_vs_rounded_obb(
+                        &a,
+                        half,
+                        0.1 * scale,
+                        va,
+                        &b,
+                        half,
+                        0.1 * scale,
+                        vb,
+                    )
+                    .unwrap();
+                    assert!(hit.point.is_finite());
+                    assert!((hit.depth / scale - 3.0).abs() < 4e-6);
+                    let mut normal = [0.0; 3];
+                    normal[axis] = -sign;
+                    assert_vec3_close(hit.normal, vec3(normal[0], normal[1], normal[2]));
+                    assert!(([hit.point.x, hit.point.y, hit.point.z][axis] / scale).abs() < 4e-6);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rounded_obb_extreme_linear_response() {
+        for scale in [1.0_f32, 1e38] {
+            for pair_count in [1, 2] {
+                let root = Node::new();
+                for pair_index in 0..pair_count {
+                    for sign in [-1.0_f32, 1.0] {
+                        let node = Node::new();
+                        let collider = box_family_collider(
+                            Vec3::new(0.2 * scale, 0.2 * scale, 0.2 * scale),
+                            0.1 * scale,
+                            1.0,
+                        );
+                        rc_mut!(&collider).velocity = Vec3::new(sign * 1.8 * scale, 0.0, 0.0);
+                        rc_mut!(&collider).friction = 0.0;
+                        rc_mut!(&collider).gravity = 0.0;
+                        rc_mut!(&collider).linear_damp = 0.0;
+                        rc_mut!(&collider).angular_damp = 0.0;
+                        rc_mut!(&node).collider = Some(collider);
+                        place_at(
+                            &node,
+                            -sign * 0.5 * scale,
+                            (pair_index as f32 - 0.5) * scale,
+                            0.0,
+                        );
+                        Node::add_child(&root, &node);
+                    }
+                }
+                Scene::integrate_motion(&root, 1.0 / 30.0);
+                let contacts = Scene::detect_contacts(&root);
+                assert_eq!(contacts.len(), pair_count);
+                for pair in contacts {
+                    for contact in [&pair.contact_a, &pair.contact_b] {
+                        let contact = rc_ref!(contact);
+                        let normal = *rc_ref!(&contact.normal);
+                        let delta = *rc_ref!(&contact.delta_velocity);
+                        assert!(delta.is_finite());
+                        assert_vec3_close(vec_mul(delta, 1.0 / scale), vec_mul(normal, 1.8));
+                        // Multi-contact position resolution deliberately retains
+                        // contact-graph slop (1e-5 at unit scale, split by mass).
+                        assert!((contact.depth / scale - 1.5).abs() < 1e-5);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rounded_obb_extreme_rigid_response() {
+        for scale in [1.0_f32, 1e38] {
+            for rolls in [false, true] {
+                for pair_count in [1, 2] {
+                    let root = Node::new();
+                    for pair_index in 0..pair_count {
+                        for sign in [-1.0_f32, 1.0] {
+                            let node = Node::new();
+                            let collider = box_family_collider(
+                                Vec3::new(0.2 * scale, 0.2 * scale, 0.2 * scale),
+                                0.1 * scale,
+                                1.0,
+                            );
+                            rc_mut!(&collider).velocity = Vec3::new(sign * 1.8 * scale, 0.0, 0.0);
+                            rc_mut!(&collider).friction = 0.0;
+                            rc_mut!(&collider).restitution = 0.1;
+                            rc_mut!(&collider).rolls = rolls;
+                            rc_mut!(&collider).gravity = 0.0;
+                            rc_mut!(&collider).linear_damp = 0.0;
+                            rc_mut!(&collider).angular_damp = 0.0;
+                            rc_mut!(&node).collider = Some(collider);
+                            place_at(
+                                &node,
+                                -sign * 0.5 * scale,
+                                (pair_index as f32 - 0.5) * scale,
+                                0.0,
+                            );
+                            Node::add_child(&root, &node);
+                        }
+                    }
+                    Scene::integrate_motion(&root, 1.0 / 30.0);
+                    let contacts = Scene::detect_contacts(&root);
+                    assert_eq!(contacts.len(), pair_count);
+                    for pair in contacts {
+                        for contact in [&pair.contact_a, &pair.contact_b] {
+                            let contact = rc_ref!(contact);
+                            let normal = *rc_ref!(&contact.normal);
+                            let delta = *rc_ref!(&contact.delta_velocity);
+                            assert!(
+                                delta.is_finite(),
+                                "scale={scale} rolls={rolls} pairs={pair_count} delta={delta:?}"
+                            );
+                            let angular = *rc_ref!(&contact.delta_angular_velocity);
+                            assert!(angular.is_finite());
+                            assert_vec3_close(angular, vec3(0.0, 0.0, 0.0));
+                            assert_vec3_close(vec_mul(delta, 1.0 / scale), vec_mul(normal, 1.98));
+                            // Rolling support retains 10% of its size-based margin,
+                            // split equally between the two movable bodies.
+                            let depth = if rolls && pair_count > 1 {
+                                1.5 - 0.00002
+                            } else {
+                                1.5
+                            };
+                            assert!(
+                                (contact.depth / scale - depth).abs() < 1e-5,
+                                "scale={scale} rolls={rolls} pairs={pair_count} depth={}",
+                                contact.depth / scale
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rounded_obb_extreme_angular_impulse() {
+        // Unit mass: I_z is 2/3 for a side-2 cube, 2/5 for a unit
+        // sphere, and 1.21 for a radius-1 capsule with a length-2 axis.
+        // Scaling the arm and impulse together cancels the squared inertia.
+        for scale in [1.0_f32, 1e20, 1e38] {
+            for (size, radius, expected) in [
+                (Vec3::new(2.0 * scale, 2.0 * scale, 2.0 * scale), 0.0, 1.5),
+                (Vec3::zero(), scale, 2.5),
+                (Vec3::new(0.0, 2.0 * scale, 0.0), scale, 1.0 / 1.21),
+            ] {
+                for rolls in [false, true] {
+                    let root = Node::new();
+                    let node = Node::new();
+                    let collider = box_family_collider(size.clone(), radius, 1.0);
+                    rc_mut!(&collider).rolls = rolls;
+                    rc_mut!(&node).collider = Some(collider);
+                    Node::add_child(&root, &node);
+                    Scene::with_collider_entries(&root, false, |entries| {
+                        assert_eq!(entries.len(), 1);
+                        let mut body = ContactBody::new(&entries[0], 1.0);
+                        body.apply_impulse(vec3(scale, 0.0, 0.0), vec3(0.0, scale, 0.0));
+                        assert!(body.velocity.is_finite());
+                        assert!(body.spin.is_finite());
+                        assert_vec3_close(
+                            body.spin,
+                            vec3(0.0, 0.0, if rolls { expected } else { 0.0 }),
+                        );
+                    });
+                }
+            }
+        }
     }
 
     #[test]

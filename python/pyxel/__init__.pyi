@@ -1057,7 +1057,7 @@ class Tone:
     """Sample bits for the wavetable (1-16). Defaults to 4."""
     @property
     def wavetable(self) -> list[int]:
-        """Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1)."""
+        """List of nonnegative wavetable sample values. Values above (2^sample_bits - 1) are clamped when generating the waveform; stored values remain unchanged."""
     gain: float
     """Tone gain. Defaults to 1.0."""
 

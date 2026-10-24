@@ -543,6 +543,7 @@ fn make_motion() -> Motion {
         part_index,
         target,
         inputs: inputs.clone(),
+        tangent_fps: 1.0,
         values,
         interpolation: MotionInterpolation::Linear,
     };

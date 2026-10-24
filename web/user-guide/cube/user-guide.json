@@ -793,7 +793,7 @@
           "title": "Links",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel User Guide</a>: related manuals, tools, and communities, plus licensing and contribution information.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Frequently Asked Questions</a>: questions about usage and environments.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel User Guide</a>: related manuals, tools, and communities, plus licensing and contribution information.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Frequently Asked Questions</a>: questions about usage and environments.</li></ul>"
             }
           ]
         }
@@ -1456,7 +1456,7 @@
           "title": "相关链接",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel 用户指南</a>：相关手册、工具和社区，以及许可证和贡献方式。</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">常见问题</a>：关于使用方法和运行环境的问题。</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel 用户指南</a>：相关手册、工具和社区，以及许可证和贡献方式。</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">常见问题</a>：关于使用方法和运行环境的问题。</li></ul>"
             }
           ]
         }
@@ -2119,7 +2119,7 @@
           "title": "Links",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel Benutzerhandbuch</a>: weitere Handbücher, Werkzeuge und Communitys sowie Informationen zu Lizenz und Beiträgen.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Häufig gestellte Fragen</a>: Fragen zur Bedienung und zur Umgebung.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel Benutzerhandbuch</a>: weitere Handbücher, Werkzeuge und Communitys sowie Informationen zu Lizenz und Beiträgen.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Häufig gestellte Fragen</a>: Fragen zur Bedienung und zur Umgebung.</li></ul>"
             }
           ]
         }
@@ -2782,7 +2782,7 @@
           "title": "Enlaces",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guía de usuario de Pyxel</a>: manuales, herramientas y comunidades relacionadas, además de información sobre licencias y contribuciones.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Preguntas frecuentes</a>: dudas sobre el uso y los entornos.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guía de usuario de Pyxel</a>: manuales, herramientas y comunidades relacionadas, además de información sobre licencias y contribuciones.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Preguntas frecuentes</a>: dudas sobre el uso y los entornos.</li></ul>"
             }
           ]
         }
@@ -3445,7 +3445,7 @@
           "title": "Liens",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guide utilisateur de Pyxel</a> : manuels, outils et communautés associés, ainsi que les informations de licence et de contribution.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Questions fréquentes</a> : questions sur l'utilisation et les environnements.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guide utilisateur de Pyxel</a> : manuels, outils et communautés associés, ainsi que les informations de licence et de contribution.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Questions fréquentes</a> : questions sur l'utilisation et les environnements.</li></ul>"
             }
           ]
         }
@@ -4108,7 +4108,7 @@
           "title": "Collegamenti",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guida utente di Pyxel</a>: manuali, strumenti e comunità correlati, oltre a informazioni su licenze e contributi.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Domande frequenti</a>: domande sull'uso e sugli ambienti.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guida utente di Pyxel</a>: manuali, strumenti e comunità correlati, oltre a informazioni su licenze e contributi.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Domande frequenti</a>: domande sull'uso e sugli ambienti.</li></ul>"
             }
           ]
         }
@@ -5434,7 +5434,7 @@
           "title": "관련 링크",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel 사용자 가이드</a>: 관련 매뉴얼, 도구, 커뮤니티와 라이선스 및 기여 방법.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">자주 묻는 질문</a>: 사용법과 환경에 관한 질문.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel 사용자 가이드</a>: 관련 매뉴얼, 도구, 커뮤니티와 라이선스 및 기여 방법.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">자주 묻는 질문</a>: 사용법과 환경에 관한 질문.</li></ul>"
             }
           ]
         }
@@ -6097,7 +6097,7 @@
           "title": "Links",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guia do Usuário Pyxel</a>: manuais, ferramentas e comunidades relacionados, além de informações sobre licenças e contribuições.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Perguntas frequentes</a>: dúvidas sobre uso e ambientes.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Guia do Usuário Pyxel</a>: manuais, ferramentas e comunidades relacionados, além de informações sobre licenças e contribuições.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Perguntas frequentes</a>: dúvidas sobre uso e ambientes.</li></ul>"
             }
           ]
         }
@@ -6760,7 +6760,7 @@
           "title": "Ссылки",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Руководство пользователя Pyxel</a>: связанные руководства, инструменты и сообщества, а также сведения о лицензии и участии в разработке.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Частые вопросы</a>: вопросы об использовании и окружении.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Руководство пользователя Pyxel</a>: связанные руководства, инструменты и сообщества, а также сведения о лицензии и участии в разработке.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Частые вопросы</a>: вопросы об использовании и окружении.</li></ul>"
             }
           ]
         }
@@ -7423,7 +7423,7 @@
           "title": "Bağlantılar",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel Kullanım Kılavuzu</a>: ilgili kılavuzlar, araçlar, topluluklar, lisans ve katkıda bulunma bilgileri.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Sık Sorulan Sorular</a>: kullanım ve ortam hakkında sorular.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Pyxel Kullanım Kılavuzu</a>: ilgili kılavuzlar, araçlar, topluluklar, lisans ve katkıda bulunma bilgileri.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Sık Sorulan Sorular</a>: kullanım ve ortam hakkında sorular.</li></ul>"
             }
           ]
         }
@@ -8086,7 +8086,7 @@
           "title": "Посилання",
           "blocks": [
             {
-              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Посібник користувача Pyxel</a>: пов'язані посібники, інструменти, спільноти, ліцензія та способи долучитися до розробки.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md\">Часті запитання</a>: запитання про використання та середовище.</li></ul>"
+              "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><a class=\"link\" href=\"../#s-links\">Посібник користувача Pyxel</a>: пов'язані посібники, інструменти, спільноти, ліцензія та способи долучитися до розробки.</li><li><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/docs/faq.md\">Часті запитання</a>: запитання про використання та середовище.</li></ul>"
             }
           ]
         }

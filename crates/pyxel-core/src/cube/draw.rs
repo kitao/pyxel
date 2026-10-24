@@ -11,10 +11,10 @@ use crate::cube::primitive::{
     self, Primitive, CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
 use crate::cube::raster::{
-    dither_pick, face_shade_level, lookup_ramp, narrow_face_normal, rasterize_border_line,
-    rasterize_circle_border, rasterize_circle_filled, rasterize_line, rasterize_textured_triangle,
-    rasterize_triangle, screen_circle, sprite_corners, tri_normal, world_to_screen, write_pixel,
-    ScreenPlane,
+    dither_pick, edge_function, face_shade_level, lookup_ramp, matmul, narrow_face_normal,
+    rasterize_border_line, rasterize_circle_border, rasterize_circle_filled, rasterize_line,
+    rasterize_textured_triangle, rasterize_triangle, screen_circle, sprite_corners, tri_normal,
+    world_to_screen, write_pixel, ScreenPlane,
 };
 use crate::cube::scene::DrawContext;
 use crate::cube::shading::Shading;
@@ -85,7 +85,7 @@ impl DrawState<'_> {
 // world space) project to a negative area; back faces project to positive.
 #[inline]
 fn signed_screen_area(p0: (f32, f32, f32), p1: (f32, f32, f32), p2: (f32, f32, f32)) -> f32 {
-    (p1.0 - p0.0) * (p2.1 - p0.1) - (p1.1 - p0.1) * (p2.0 - p0.0)
+    edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1))
 }
 
 // Decide whether to skip a face under the given cull mode. Degenerate
@@ -1247,6 +1247,31 @@ pub fn trib(
     draw_border(ctx, world_mat, &positions, edges, col, state);
 }
 
+// Preserve ordinary per-pixel rounding; recover only a lost homogeneous range.
+#[cold]
+fn decal_local_point_wide(
+    matrix: &[[f32; 4]; 4],
+    first_x: f32,
+    ny: f32,
+    dx: f32,
+    depth: f32,
+) -> Option<[f32; 3]> {
+    let point = matrix.map(|row| {
+        f64::from(row[0]) * f64::from(first_x)
+            + f64::from(row[1]) * f64::from(ny)
+            + f64::from(row[3])
+            + f64::from(row[0]) * f64::from(dx)
+            + f64::from(row[2]) * f64::from(depth)
+    });
+    (point[3] != 0.0).then(|| {
+        [
+            (point[0] / point[3]) as f32,
+            (point[1] / point[3]) as f32,
+            (point[2] / point[3]) as f32,
+        ]
+    })
+}
+
 // Only rect, elli, and plane define a filled local XY surface with an explicit
 // orientation. Borders are screen-width lines, not surfaces to extrude.
 // Recolor receivers inside the extrusion without changing their stored depth.
@@ -1270,12 +1295,12 @@ fn draw_decal(
     let mut world = scale_axes(&world, w * 0.5, h * 0.5, 1.0);
     // Geometry transforms, like mul_vec_value, use the affine first three rows.
     world.data[3] = [0.0, 0.0, 0.0, 1.0];
-    let clip_from_local = Mat4 { data: ctx.vp }.mul_mat_value(&world);
-    let det = clip_from_local.determinant();
-    if !det.is_finite() || det.abs() < 1e-12 {
+    let clip_from_local = Mat4 {
+        data: matmul(&ctx.vp, &world.data),
+    };
+    let Some(local_from_clip) = clip_from_local.try_projective_inverse_value() else {
         return;
-    }
-    let local_from_clip = clip_from_local.inverse_value();
+    };
     let bounds = decal_screen_bounds(ctx, &clip_from_local, distance);
     if bounds.left > bounds.right || bounds.top > bounds.bottom {
         return;
@@ -1342,17 +1367,23 @@ fn draw_decal(
             }
             let dx = (x - bounds.left) as f32 * step_x;
             let p: [f32; 4] = std::array::from_fn(|i| row[i] + m[i][0] * dx + m[i][2] * depth);
-            if p[3].abs() < 1e-12 {
-                continue;
-            }
-            let inv_w = 1.0 / p[3];
-            let u = p[0] * inv_w;
-            let v = p[1] * inv_w;
-            let z = p[2] * inv_w;
+            // Homogeneous coordinates have no absolute magnitude cutoff.
+            let [u, v, z] = if p[3] != 0.0 && p.iter().all(|value| value.is_finite()) {
+                let inv_w = 1.0 / p[3];
+                if inv_w.is_finite() {
+                    [p[0] * inv_w, p[1] * inv_w, p[2] * inv_w]
+                } else {
+                    [p[0] / p[3], p[1] / p[3], p[2] / p[3]]
+                }
+            } else {
+                let Some(point) = decal_local_point_wide(m, first_x, ny, dx, depth) else {
+                    continue;
+                };
+                point
+            };
             if !(-1.0..=1.0).contains(&u)
                 || !(-1.0..=1.0).contains(&v)
-                || z < min_z
-                || z > max_z
+                || !(min_z..=max_z).contains(&z)
                 || (ellipse && !inside_unit_ellipse(u, v))
             {
                 continue;
@@ -2112,9 +2143,7 @@ pub fn text(
 mod tests {
     use super::*;
     use crate::cube::camera::Camera;
-    use crate::cube::raster::{
-        camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
-    };
+    use crate::cube::raster::{camera_clip_row, compute_clip_rect, projection_matrix, view_matrix};
 
     fn draw_context_64(target: &RcImage, camera: &RcCamera, shaded: bool) -> DrawContext {
         let view = view_matrix(&rc_ref!(camera));
@@ -2644,6 +2673,74 @@ mod tests {
             );
             assert_eq!(result, Err(expected));
         }
+    }
+
+    #[test]
+    fn test_border_face_orientation_preserves_thin_triangles() {
+        let target = Image::new(64, 64);
+        let camera = Camera::new();
+        let mut ctx = draw_context_64(&target, &camera, false);
+        let thin = [
+            (21.542564, 10.4574375, 0.25),
+            (10.4574375, 21.542562, 0.25),
+            (12.5, 19.5, 0.25),
+        ];
+        let ordinary = [(4.0, 4.0, 0.25), (28.0, 4.0, 0.25), (4.0, 28.0, 0.25)];
+        for points in [thin, ordinary] {
+            for reverse in [false, true] {
+                let mut points = points;
+                if reverse {
+                    points.swap(1, 2);
+                }
+                ctx.vertex_cache = points
+                    .into_iter()
+                    .map(|point| {
+                        (
+                            Vec3 {
+                                x: 0.0,
+                                y: 0.0,
+                                z: 0.0,
+                            },
+                            Some(point),
+                        )
+                    })
+                    .collect();
+                let (_, front) = border_face_plane(
+                    &ctx,
+                    [0, 1, 2],
+                    &Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                )
+                .unwrap();
+                assert_eq!(front, reverse);
+            }
+        }
+        ctx.vertex_cache = [(4.0, 4.0, 0.25), (16.0, 16.0, 0.25), (28.0, 28.0, 0.25)]
+            .into_iter()
+            .map(|point| {
+                (
+                    Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    Some(point),
+                )
+            })
+            .collect();
+        assert!(border_face_plane(
+            &ctx,
+            [0, 1, 2],
+            &Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            }
+        )
+        .is_none());
     }
 
     #[test]
@@ -3310,7 +3407,7 @@ mod tests {
                 &Vec3 {
                     x: 0.0,
                     y: 0.0,
-                    z: -1.0
+                    z: -1.0,
                 },
                 Some(&actual)
             ),
@@ -3490,5 +3587,226 @@ mod tests {
             render(&rc_ref!(&translation), Some(&opposite))[32 * 64 + 32],
             8
         );
+    }
+
+    #[test]
+    fn test_decal_accepts_large_invertible_extents_and_rejects_collapsed_axes() {
+        for extent in [4.0, 1e10, 1e20] {
+            for collapsed in [false, true] {
+                let target = Image::new(64, 64);
+                let camera = Camera::new();
+                let mut ctx = draw_context_64(&target, &camera, false);
+                let receiver = *rc_ref!(&Mat4::from_translation(&Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: -5.0,
+                }));
+                rect(&mut ctx, &receiver, 2.0, 2.0, 3, DrawState::unshaded());
+                let depth = ctx.depth.clone();
+                ctx.decal_distance = Some(10.0);
+                rect(
+                    &mut ctx,
+                    &Mat4::identity_value(),
+                    if collapsed { 0.0 } else { extent },
+                    extent,
+                    8,
+                    DrawState::unshaded(),
+                );
+                assert_eq!(
+                    rc_ref!(&target).canvas.read_data(32, 32),
+                    if collapsed { 3 } else { 8 }
+                );
+                assert_eq!(ctx.depth, depth);
+            }
+        }
+    }
+
+    #[test]
+    fn test_decal_homogeneous_scene_scales_preserve_coverage_and_depth() {
+        for scale in [1e-42, 1e-40, 1e-38, 1e-30, 1.0, 1e12, 1e20, 1e37] {
+            for ortho in [false, true] {
+                for angle in [0.0, 35.0] {
+                    for kind in 0..3 {
+                        let target = Image::new(64, 64);
+                        let camera = Camera::new();
+                        let rotation = Mat4::from_euler(&Vec3 {
+                            x: 0.0,
+                            y: angle,
+                            z: 0.0,
+                        });
+                        let base = rc_ref!(&Mat4::from_translation(&Vec3 {
+                            x: 2.0 * scale,
+                            y: 0.0,
+                            z: 0.0,
+                        }))
+                        .mul_mat_value(&rc_ref!(&rotation));
+                        rc_mut!(&camera).near = scale;
+                        rc_mut!(&camera).far = 10.0 * scale;
+                        rc_mut!(&camera).ortho_size = ortho.then_some(8.0 * scale);
+                        rc_mut!(&camera).transform = Mat4::from_rows(base.data);
+                        let mut ctx = draw_context_64(&target, &camera, false);
+                        let receiver =
+                            base.mul_mat_value(&rc_ref!(&Mat4::from_translation(&Vec3 {
+                                x: 0.0,
+                                y: 0.0,
+                                z: -5.0 * scale,
+                            })));
+                        rect(
+                            &mut ctx,
+                            &receiver,
+                            2.0 * scale,
+                            2.0 * scale,
+                            3,
+                            DrawState::unshaded(),
+                        );
+                        let baseline = rc_ref!(&target).canvas.data.clone();
+                        assert!(
+                            baseline.contains(&3),
+                            "empty receiver scale={scale} ortho={ortho} angle={angle} kind={kind}"
+                        );
+                        let expected: Vec<_> = baseline
+                            .iter()
+                            .map(|&pixel| if pixel == 3 { 8 } else { pixel })
+                            .collect();
+                        let depth = ctx.depth.clone();
+                        ctx.decal_distance = Some(10.0 * scale);
+                        match kind {
+                            0 => rect(
+                                &mut ctx,
+                                &base,
+                                4.0 * scale,
+                                4.0 * scale,
+                                8,
+                                DrawState::unshaded(),
+                            ),
+                            1 => elli(
+                                &mut ctx,
+                                &base,
+                                4.0 * scale,
+                                4.0 * scale,
+                                8,
+                                DrawState::unshaded(),
+                            ),
+                            _ => {
+                                let texture = Image::new(1, 1);
+                                rc_mut!(&texture).clear(8);
+                                plane(
+                                    &mut ctx,
+                                    &base,
+                                    &texture,
+                                    ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)),
+                                    4.0 * scale,
+                                    4.0 * scale,
+                                    None,
+                                    DrawState::unshaded(),
+                                );
+                            }
+                        }
+                        assert!(
+                            rc_ref!(&target).canvas.data == expected,
+                            "scale={scale} ortho={ortho} angle={angle} kind={kind}"
+                        );
+                        assert_eq!(ctx.depth, depth);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_decal_projection_common_scale_preserves_exact_pixels() {
+        let render = |scale| {
+            let target = Image::new(64, 64);
+            let camera = Camera::new();
+            let mut ctx = draw_context_64(&target, &camera, false);
+            let receiver = *rc_ref!(&Mat4::from_translation(&Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -5.0,
+            }));
+            rect(&mut ctx, &receiver, 2.0, 2.0, 3, DrawState::unshaded());
+            let depth = ctx.depth.clone();
+            ctx.vp = ctx.vp.map(|row| row.map(|value| value * scale));
+            ctx.decal_distance = Some(10.0);
+            rect(
+                &mut ctx,
+                &Mat4::identity_value(),
+                4.0,
+                4.0,
+                8,
+                DrawState::unshaded(),
+            );
+            assert_eq!(ctx.depth, depth);
+            let pixels = rc_ref!(&target).canvas.data.clone();
+            assert_eq!(pixels[32 * 64 + 32], 8);
+            pixels
+        };
+        let ordinary = render(1.0);
+        for scale in [1e-38, 1e-30, 1e30, 1e38] {
+            assert_eq!(render(scale), ordinary, "projection scale={scale}");
+        }
+    }
+
+    #[test]
+    fn test_decal_projection_product_overflow_preserves_coverage() {
+        for fov in [1.0, 30.0, 60.0] {
+            let target = Image::new(64, 64);
+            let camera = Camera::new();
+            rc_mut!(&camera).fov = fov;
+            let mut ctx = draw_context_64(&target, &camera, false);
+            let receiver = *rc_ref!(&Mat4::from_translation(&Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -5.0,
+            }));
+            rect(&mut ctx, &receiver, 2.0, 2.0, 3, DrawState::unshaded());
+            let expected: Vec<_> = rc_ref!(&target)
+                .canvas
+                .data
+                .iter()
+                .map(|&pixel| if pixel == 3 { 8 } else { pixel })
+                .collect();
+            ctx.decal_distance = Some(10.0);
+            rect(
+                &mut ctx,
+                &Mat4::identity_value(),
+                3e38,
+                3e38,
+                8,
+                DrawState::unshaded(),
+            );
+            assert!(rc_ref!(&target).canvas.data == expected, "fov={fov}");
+        }
+    }
+
+    #[test]
+    fn test_decal_homogeneous_overflow_keeps_extrusion_boundary() {
+        for projection_scale in [1.0, 1e-38] {
+            let target = Image::new(64, 64);
+            let camera = Camera::new();
+            let mut ctx = draw_context_64(&target, &camera, false);
+            let receiver = *rc_ref!(&Mat4::from_translation(&Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -0.11,
+            }));
+            rect(&mut ctx, &receiver, 0.02, 0.02, 3, DrawState::unshaded());
+            let baseline = rc_ref!(&target).canvas.data.clone();
+            assert!(baseline.contains(&3));
+            ctx.vp = ctx.vp.map(|row| row.map(|value| value * projection_scale));
+            ctx.decal_distance = Some(0.05);
+            rect(
+                &mut ctx,
+                &Mat4::identity_value(),
+                4.0,
+                4.0,
+                8,
+                DrawState::unshaded(),
+            );
+            assert!(
+                rc_ref!(&target).canvas.data == baseline,
+                "projection scale={projection_scale}"
+            );
+        }
     }
 }

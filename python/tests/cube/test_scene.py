@@ -623,7 +623,294 @@ class TestCollisionPipeline:
             )
 
 
+class _FiniteContactRecorder(Node):
+    def __init__(self):
+        super().__init__()
+        self.contacts = []
+
+    def on_collide(self, other, contact):
+        self.contacts.append(
+            (
+                contact.depth,
+                tuple(contact.normal),
+                tuple(contact.point),
+                tuple(contact.delta_velocity),
+                tuple(contact.delta_angular_velocity),
+            )
+        )
+
+
+_FINITE_COLLIDER_SIZES = {
+    "sphere": (0, 0, 0),
+    "capsule": (0, 0.2, 0),
+    "box": (0.2, 0.2, 0.2),
+}
+
+
+def _finite_axis_vector(axis, value):
+    values = [0, 0, 0]
+    values[axis] = value
+    return Vec3(*values)
+
+
+class TestFiniteRelativeFrames:
+    @pytest.mark.parametrize("shape_a", _FINITE_COLLIDER_SIZES)
+    @pytest.mark.parametrize("shape_b", _FINITE_COLLIDER_SIZES)
+    @pytest.mark.parametrize("axis", range(3))
+    @pytest.mark.parametrize("sign", [-1, 1])
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e38])
+    def test_sweep_relative_range(self, shape_a, shape_b, axis, sign, scale):
+        root, a, b = Node(), _FiniteContactRecorder(), _FiniteContactRecorder()
+        for node, order, shape in [(a, sign, shape_a), (b, -sign, shape_b)]:
+            node.transform = Mat4.from_translation(
+                _finite_axis_vector(axis, -order * 0.5 * scale)
+            )
+            node.collider = Collider(
+                size=Vec3(*(v * scale for v in _FINITE_COLLIDER_SIZES[shape])),
+                radius=0.1 * scale,
+                velocity=_finite_axis_vector(axis, order * 1.8 * scale),
+                gravity=0,
+                linear_damp=0,
+                angular_damp=0,
+                friction=0,
+            )
+            root.add_child(node)
+        root.update()
+        ha, hb = (
+            _FINITE_COLLIDER_SIZES[shape_a][axis] / 2,
+            _FINITE_COLLIDER_SIZES[shape_b][axis] / 2,
+        )
+        assert len(a.contacts) == len(b.contacts) == 1
+        for node, order in [(a, sign), (b, -sign)]:
+            depth, normal, point, velocity, spin = node.contacts[0]
+            assert all(
+                math.isfinite(v) for v in [depth, *normal, *point, *velocity, *spin]
+            )
+            assert depth / scale == pytest.approx((2.8 + ha + hb) / 2, abs=3e-5)
+            assert normal == pytest.approx(
+                tuple(_finite_axis_vector(axis, -order)), abs=3e-5
+            )
+            assert tuple(v / scale for v in velocity) == pytest.approx(
+                tuple(_finite_axis_vector(axis, -order * 1.8)), abs=3e-5
+            )
+            assert spin == pytest.approx((0, 0, 0), abs=1e-7)
+            assert point[axis] / scale == pytest.approx(sign * (ha - hb) / 2, abs=3e-5)
+            # Flat/axial contacts may choose any point in their common face/segment.
+            for other in range(3):
+                if other != axis:
+                    assert (
+                        abs(point[other] / scale)
+                        <= min(
+                            _FINITE_COLLIDER_SIZES[shape_a][other],
+                            _FINITE_COLLIDER_SIZES[shape_b][other],
+                        )
+                        / 2
+                        + 3e-5
+                    )
+
+    @pytest.mark.parametrize("shape", ["sphere", "capsule", "box", "rounded_box"])
+    @pytest.mark.parametrize("axis", range(3))
+    @pytest.mark.parametrize("sign", [-1, 1])
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e38])
+    def test_ray_relative_range(self, shape, axis, sign, scale):
+        sizes = {
+            "sphere": (0, 0, 0),
+            "capsule": (0, 0.2, 0),
+            "box": (3, 3, 3),
+            "rounded_box": (2.6, 2.6, 2.6),
+        }
+        radii = {"sphere": 1.5, "capsule": 1.5, "box": 0, "rounded_box": 0.2}
+        root, target = Node(), Node()
+        target.transform = Mat4.from_translation(
+            _finite_axis_vector(axis, -sign * 1.8 * scale)
+        )
+        target.collider = Collider(
+            size=Vec3(*(v * scale for v in sizes[shape])),
+            radius=radii[shape] * scale,
+            mass=0,
+        )
+        root.add_child(target)
+        extent = sizes[shape][axis] / 2 + radii[shape]
+        for method in ["raycast", "raycast_all"]:
+            capped = getattr(root, method)(
+                _finite_axis_vector(axis, sign * 1.8 * scale),
+                _finite_axis_vector(axis, -sign),
+                max_distance=(3.5 - extent) * scale,
+            )
+            assert capped == ([] if method == "raycast_all" else None)
+            result = getattr(root, method)(
+                _finite_axis_vector(axis, sign * 1.8 * scale),
+                _finite_axis_vector(axis, -sign),
+            )
+            if method == "raycast_all":
+                assert len(result) == 1
+                hit = result[0]
+            else:
+                assert result is not None
+                hit = result
+            assert hit.node is target
+            assert all(
+                math.isfinite(v) for v in [hit.distance, *hit.point, *hit.normal]
+            )
+            assert hit.distance / scale == pytest.approx(3.6 - extent, abs=3e-5)
+            assert tuple(v / scale for v in hit.point) == pytest.approx(
+                tuple(_finite_axis_vector(axis, sign * (-1.8 + extent))), abs=3e-5
+            )
+            assert tuple(hit.normal) == pytest.approx(
+                tuple(_finite_axis_vector(axis, sign)), abs=3e-5
+            )
+
+    @pytest.mark.parametrize("shape", ["capsule", "rounded_box"])
+    @pytest.mark.parametrize("sign", [-1, 1])
+    def test_ray_relative_inside_exit(self, shape, sign):
+        scale = 1e38
+        root, target = Node(), Node()
+        axis = 1
+        size = (0, 2, 0) if shape == "capsule" else (3, 3, 3)
+        radius = 2.7 if shape == "capsule" else 2.2
+        target.transform = Mat4.from_translation(
+            _finite_axis_vector(axis, -sign * 1.8 * scale)
+        )
+        target.collider = Collider(
+            size=Vec3(*(v * scale for v in size)), radius=radius * scale, mass=0
+        )
+        root.add_child(target)
+        hit = root.raycast(
+            _finite_axis_vector(axis, sign * 1.8 * scale),
+            _finite_axis_vector(axis, sign),
+        )
+        assert hit is not None
+        assert hit.distance / scale == pytest.approx(0.1, abs=3e-5)
+        assert tuple(v / scale for v in hit.point) == pytest.approx(
+            tuple(_finite_axis_vector(axis, sign * 1.9)), abs=3e-5
+        )
+        assert tuple(hit.normal) == pytest.approx(
+            tuple(_finite_axis_vector(axis, sign)), abs=3e-5
+        )
+
+    @pytest.mark.parametrize("shape", ["capsule", "rounded_box"])
+    @pytest.mark.parametrize("sign", [-1, 1])
+    @pytest.mark.parametrize("scale", [1, 1e20, 1e38])
+    def test_ray_relative_rejects_aabb_corner(self, shape, sign, scale):
+        root, target = Node(), Node()
+        capsule = shape == "capsule"
+        size = (0, 0.2, 0) if capsule else (1, 1, 1)
+        radius = 0.5 if capsule else 0.2
+        target.transform = Mat4.from_translation(Vec3(-sign * 1.8 * scale, 0, 0))
+        target.collider = Collider(
+            size=Vec3(*(v * scale for v in size)), radius=radius * scale, mass=0
+        )
+        root.add_child(target)
+        # Both rays enter the AABB but miss the curved edge/cap surface.
+        origin = Vec3(
+            sign * 1.8 * scale,
+            (0.55 if capsule else 0.65) * scale,
+            (0.45 if capsule else 0.65) * scale,
+        )
+        direction = Vec3(-sign, 0, 0)
+        assert root.raycast(origin, direction) is None
+        assert root.raycast_all(origin, direction) == []
+
+
 class TestMeshColliderRobustness:
+    @pytest.mark.parametrize(
+        "edit",
+        ["positions", "indices", "primitives", "transforms", "parents", "mesh", "none"],
+    )
+    @pytest.mark.parametrize("terrain_mass", [0, 1])
+    def test_sleeping_bodies_wake_when_mesh_geometry_changes(self, edit, terrain_mass):
+        class Ball(Node):
+            def __init__(self):
+                super().__init__()
+                self.depths = []
+                self.transform = Mat4.from_translation(Vec3(0, 8, 0))
+                self.collider = Collider(
+                    radius=8, rolls=True, gravity=0, linear_damp=0, angular_damp=0
+                )
+
+            def on_update(self):
+                self.collider.velocity += Vec3(0, -0.16, 0)
+
+            def on_collide(self, other, contact):
+                self.depths.append(contact.depth)
+                self.transform = Mat4.from_translation(
+                    self.transform.pos + contact.normal * contact.depth
+                )
+                self.collider.velocity += contact.delta_velocity
+                self.collider.angular_velocity += contact.delta_angular_velocity
+
+        positions = [
+            value
+            for y in (0, 2)
+            for point in (
+                (-100, y, -100),
+                (-100, y, 100),
+                (100, y, 100),
+                (100, y, -100),
+            )
+            for value in point
+        ]
+        indices = [0, 1, 2, 0, 2, 3]
+        primitive = Primitive(Primitive.MODE_TRIANGLES, positions, indices)
+        scenes = []
+        # Two independent mesh caches share the same editable primitive.
+        for _ in range(2):
+            mesh = Mesh(
+                [None, primitive],
+                [Mat4.from_translation(Vec3(0, 2, 0)), Mat4.IDENTITY],
+                [-1, -1],
+            )
+            root, terrain, ball = Node(), Node(), Ball()
+            terrain.collider = Collider(mesh=mesh, mass=terrain_mass)
+            root.add_child(terrain)
+            root.add_child(ball)
+            for _ in range(150):
+                root.update()
+            assert ball.transform.pos == Vec3(0, 8, 0)
+            assert ball.collider.velocity == Vec3.ZERO
+            scenes.append((root, terrain, ball, mesh))
+
+        if edit == "positions":
+            primitive.positions[1::3] = [y + 2 for y in primitive.positions[1::3]]
+        elif edit == "indices":
+            primitive.indices[:] = [i + 4 for i in indices]
+        else:
+            for _, terrain, _, mesh in scenes:
+                if edit == "primitives":
+                    mesh.primitives = [
+                        None,
+                        Primitive(Primitive.MODE_TRIANGLES, positions[12:], indices),
+                    ]
+                elif edit == "transforms":
+                    mesh.transforms = [
+                        Mat4.IDENTITY,
+                        Mat4.from_translation(Vec3(0, 2, 0)),
+                    ]
+                elif edit == "parents":
+                    mesh.parents = [-1, 0]
+                elif edit == "mesh":
+                    terrain.collider.mesh = Mesh(
+                        [Primitive(Primitive.MODE_TRIANGLES, positions[12:], indices)],
+                        [Mat4.IDENTITY],
+                        [-1],
+                    )
+
+        for root, _, ball, _ in scenes:
+            ball.depths.clear()
+            root.update()
+            if edit == "none":
+                assert ball.depths == [0]
+                assert ball.transform.pos == Vec3(0, 8, 0)
+            else:
+                # Radius8 resting on the raised y2 plane requires a y10 center.
+                assert ball.depths[0] == pytest.approx(2, abs=1e-5)
+                assert ball.transform.pos.y == pytest.approx(10, abs=1e-5)
+            for _ in range(25):
+                root.update()
+            assert ball.transform.pos.y == pytest.approx(
+                8 if edit == "none" else 10, abs=1e-5
+            )
+
     @staticmethod
     def _make_triangle_mesh_scene():
         primitive = Primitive(

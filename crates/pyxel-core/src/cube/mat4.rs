@@ -588,7 +588,36 @@ impl Mat4 {
         self.inverse_wide()
     }
 
+    pub(crate) fn try_projective_inverse_value(&self) -> Option<Self> {
+        self.try_inverse_value().or_else(|| {
+            // Only homogeneous ratios are consumed here. Preserve exact rank checks,
+            // but normalize the complete inverse before narrowing a lost-range result.
+            let inverse = self.inverse_wide_components()?;
+            let largest = inverse
+                .iter()
+                .flatten()
+                .map(|value| value.abs())
+                .fold(0.0_f64, f64::max);
+            let scale = (largest / f64::from(f32::MAX)).max(1.0);
+            let data = inverse.map(|row| row.map(|value| (value / scale) as f32));
+            data.iter()
+                .flatten()
+                .all(|value| value.is_finite())
+                .then_some(Self { data })
+        })
+    }
+
     fn inverse_wide(&self) -> Option<Self> {
+        let data = self
+            .inverse_wide_components()?
+            .map(|row| row.map(|value| value as f32));
+        data.iter()
+            .flatten()
+            .all(|value| value.is_finite())
+            .then_some(Self { data })
+    }
+
+    fn inverse_wide_components(&self) -> Option<[[f64; 4]; 4]> {
         let mut a = self.data.map(|row| row.map(f64::from));
         let mut inverse = Self::identity_value().data.map(|row| row.map(f64::from));
         let mut scales = [0.0_f64; 4];
@@ -642,11 +671,7 @@ impl Mat4 {
             }
         }
 
-        let data = inverse.map(|row| row.map(|value| value as f32));
-        data.iter()
-            .flatten()
-            .all(|value| value.is_finite())
-            .then_some(Self { data })
+        Some(inverse)
     }
 
     // Preserve exact rank loss without a tolerance that rejects small independent axes.
@@ -1368,5 +1393,38 @@ mod tests {
         let world_val = *rc_ref!(&world);
         let pos = deref_v(&world_val.pos());
         assert_eq!(pos.x, 5.0);
+    }
+
+    #[test]
+    fn test_projective_inverse_preserves_public_inverse_and_rank() {
+        let ordinary = Mat4 {
+            data: [
+                [2.0, 0.5, 0.0, 3.0],
+                [0.0, 4.0, 0.0, -2.0],
+                [0.0, 0.0, 0.5, 7.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        assert_eq!(
+            ordinary.try_projective_inverse_value(),
+            ordinary.try_inverse_value()
+        );
+        let tiny = 2.0_f32.powi(-140);
+        let matrix = Mat4 {
+            data: [
+                [tiny, 0.0, 0.0, 0.0],
+                [0.0, tiny, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        assert!(matrix.try_inverse_value().is_none());
+        assert_eq!(matrix.inverse_value(), Mat4::identity_value());
+        let inverse = matrix.try_projective_inverse_value().unwrap();
+        let x = f64::from(inverse.data[0][0]) * f64::from(tiny) / f64::from(inverse.data[3][3]);
+        assert!((x - 1.0).abs() < 1e-6);
+        let mut collapsed = matrix;
+        collapsed.data[1] = collapsed.data[0];
+        assert!(collapsed.try_projective_inverse_value().is_none());
     }
 }

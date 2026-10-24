@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -52,6 +52,7 @@ pub struct Mesh {
     // instead of every vertex.
     pub local_aabb: RefCell<Option<Aabb>>,
     collision_geometry_dirty: Arc<AtomicBool>,
+    collision_geometry_version: Cell<u64>,
 }
 
 define_rc_type!(RcMesh, Mesh);
@@ -73,6 +74,7 @@ impl Mesh {
             bvh: RefCell::new(None),
             local_aabb: RefCell::new(None),
             collision_geometry_dirty: Arc::new(AtomicBool::new(true)),
+            collision_geometry_version: Cell::new(0),
         })
     }
 
@@ -148,12 +150,20 @@ impl Mesh {
         aabb
     }
 
+    pub(crate) fn collision_geometry_version(&self) -> u64 {
+        self.refresh_collision_geometry();
+        self.collision_geometry_version.get()
+    }
+
     fn refresh_collision_geometry(&self) {
         if !self.collision_geometry_dirty.load(Ordering::Relaxed) {
             return;
         }
         *self.bvh.borrow_mut() = None;
         *self.local_aabb.borrow_mut() = None;
+        // Keep dependent sleep caches invalid after the dirty flag is consumed.
+        self.collision_geometry_version
+            .set(self.collision_geometry_version.get().wrapping_add(1));
         for primitive in self.primitives.iter().flatten() {
             rc_mut!(primitive).register_collision_dependent(&self.collision_geometry_dirty);
         }

@@ -1350,7 +1350,15 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
         drop(node_ref);
 
         if let (Some(mut player), Some(instance)) = (player, instance) {
-            player.frame += player.speed;
+            let next_frame = player.frame + player.speed;
+            let length = rc_ref!(&player.motion).length;
+            player.frame = if player.looping && !next_frame.is_finite() && length > 0.0 {
+                // Keep the remainder when finite playhead values overflow their sum.
+                (f64::from(player.frame) + f64::from(player.speed)).rem_euclid(f64::from(length))
+                    as f32
+            } else {
+                next_frame
+            };
             player.frame = rc_ref!(&player.motion).resolve_frame(player.frame, player.looping);
             let node_py = node_bound.clone().unbind();
             Node::apply_motion_inner(

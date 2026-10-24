@@ -91,11 +91,16 @@ impl Primitive {
                 radius * angle.cos()
             };
             let total_height = height + 2.0 * radius;
-            let v = if total_height > 0.0 {
+            let mut v = if total_height > 0.0 {
                 (total_height / 2.0 - y) / total_height
             } else {
                 0.0
             };
+            if !v.is_finite() && height.is_finite() && radius.is_finite() && y.is_finite() {
+                // The normalized UV can fit even when the full height exceeds f32.
+                let total_height = f64::from(height) + 2.0 * f64::from(radius);
+                v = ((total_height * 0.5 - f64::from(y)) / total_height) as f32;
+            }
             for column in 0..=12 {
                 // Close the texture seam at exactly the same position.
                 let longitude = ((column % 12) as f32 * 30.0).to_radians();
@@ -643,6 +648,42 @@ fn face_normal(p0: Vec3, p1: Vec3, p2: Vec3) -> Vec3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_capsule_uv_finite_height_ratio() {
+        for scale in [1.0_f32, 1e20, 1e38] {
+            for (height, radius) in [(0.0_f32, 2.0_f32), (1.0, 2.0), (-1.0, 2.0), (3.0, 0.1)] {
+                let primitive = Primitive::capsule(height * scale, radius * scale);
+                let primitive = rc_ref!(&primitive);
+                assert!(primitive.positions.iter().all(|v| v.is_finite()));
+                assert!(primitive.normals.iter().all(|v| v.is_finite()));
+                assert!(primitive.uvs.iter().all(|v| v.is_finite()));
+                assert_eq!(primitive.uvs.len(), 6 * 13 * 2);
+                let h = f64::from(height.abs());
+                let r = f64::from(radius);
+                // The six rings are the bottom pole, -45 degrees, two equators,
+                // +45 degrees and top pole; v measures height from the top.
+                let expected = [
+                    1.0,
+                    (h + r * (1.0 + 0.5_f64.sqrt())) / (h + 2.0 * r),
+                    (h + r) / (h + 2.0 * r),
+                    r / (h + 2.0 * r),
+                    r * (1.0 - 0.5_f64.sqrt()) / (h + 2.0 * r),
+                    0.0,
+                ];
+                for (row, expected) in expected.into_iter().enumerate() {
+                    for column in 0..13 {
+                        let actual = primitive.uvs[(row * 13 + column) * 2 + 1];
+                        // Input scaling, trig values and stored coordinates round to f32.
+                        assert!(
+                            (f64::from(actual) - expected).abs() < 8e-7,
+                            "scale={scale} height={height} radius={radius} row={row} v={actual}"
+                        );
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn test_new_defaults() {

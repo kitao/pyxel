@@ -649,4 +649,4 @@ See the [API Reference](https://kitao.dev/pyxel/api-reference/) for details on c
 ## Links
 
 - [Pyxel User Guide](https://kitao.dev/pyxel/user-guide/#s-links): related manuals, tools, and communities, plus licensing and contribution information.
-- [Frequently Asked Questions](https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md): questions about usage and environments.
+- [Frequently Asked Questions](https://github.com/kitao/pyxel/blob/main/docs/faq.md): questions about usage and environments.

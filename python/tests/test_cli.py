@@ -292,6 +292,58 @@ class TestPackage:
         assert "my_app/main.py" in names
         assert "my_app/assets/data.txt" in names
 
+    @pytest.mark.parametrize("inside_app", [False, True])
+    def test_pyxapp_keeps_nested_app_with_output_basename(
+        self, inside_app, tmp_path, monkeypatch
+    ):
+        app_dir = _make_app(tmp_path)
+        (app_dir / "assets/my_app.pyxapp").write_bytes(b"nested app")
+        output_dir = app_dir if inside_app else tmp_path
+        (output_dir / "my_app.pyxapp").write_bytes(b"old output")
+        monkeypatch.chdir(output_dir)
+
+        pyxel.cli.package_pyxel_app(str(app_dir), str(app_dir / "main.py"))
+
+        with zipfile.ZipFile(output_dir / "my_app.pyxapp") as zf:
+            assert zf.read("my_app/assets/my_app.pyxapp") == b"nested app"
+            assert "my_app/my_app.pyxapp" not in zf.namelist()
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+    def test_pyxapp_keeps_input_target_of_existing_output_symlink(
+        self, tmp_path, monkeypatch
+    ):
+        app_dir = _make_app(tmp_path)
+        resource = app_dir / "assets/resource.pyxapp"
+        resource.write_bytes(b"existing input")
+        output = tmp_path / "my_app.pyxapp"
+        output.symlink_to(resource)
+        monkeypatch.chdir(tmp_path)
+
+        pyxel.cli.package_pyxel_app(str(app_dir), str(app_dir / "main.py"))
+
+        assert not output.is_symlink()
+        assert resource.read_bytes() == b"existing input"
+        with zipfile.ZipFile(output) as zf:
+            assert zf.read("my_app/assets/resource.pyxapp") == b"existing input"
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+    def test_pyxapp_excludes_output_reached_through_directory_alias(
+        self, tmp_path, monkeypatch
+    ):
+        app_dir = _make_app(tmp_path)
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "my_app.pyxapp").write_bytes(b"old output")
+        (output_dir / "data.txt").write_bytes(b"linked input")
+        (app_dir / "linked").symlink_to(output_dir, target_is_directory=True)
+        monkeypatch.chdir(output_dir)
+
+        pyxel.cli.package_pyxel_app(str(app_dir), str(app_dir / "main.py"))
+
+        with zipfile.ZipFile(output_dir / "my_app.pyxapp") as zf:
+            assert "my_app/linked/my_app.pyxapp" not in zf.namelist()
+            assert zf.read("my_app/linked/data.txt") == b"linked input"
+
     @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
     def test_pyxapp_includes_linked_directory_contents(self, tmp_path, monkeypatch):
         app_dir = _make_app(tmp_path)

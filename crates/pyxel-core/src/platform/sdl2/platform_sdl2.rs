@@ -26,13 +26,56 @@ struct MainLoopState<F> {
     next_frame_ms: f64,
 }
 
+#[cfg(any(target_os = "emscripten", test))]
+struct MainLoopOwner {
+    arg: *mut c_void,
+    drop_state: unsafe fn(*mut c_void),
+}
+
+#[cfg(any(target_os = "emscripten", test))]
+impl MainLoopOwner {
+    fn new<T>(state: T) -> Self {
+        unsafe fn drop_state<T>(arg: *mut c_void) {
+            // SAFETY: new transfers exactly one Box of this concrete state type.
+            unsafe { drop(Box::from_raw(arg.cast::<T>())) };
+        }
+        Self {
+            arg: Box::into_raw(Box::new(state)).cast(),
+            drop_state: drop_state::<T>,
+        }
+    }
+}
+
+#[cfg(any(target_os = "emscripten", test))]
+impl Drop for MainLoopOwner {
+    fn drop(&mut self) {
+        unsafe { (self.drop_state)(self.arg) };
+    }
+}
+
+#[cfg(any(target_os = "emscripten", test))]
+thread_local! {
+    static MAIN_LOOP_OWNER: std::cell::RefCell<Option<std::rc::Rc<MainLoopOwner>>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(any(target_os = "emscripten", test))]
+fn clear_main_loop_owner() {
+    // Dropping Python callbacks can reenter the engine; release the slot borrow first.
+    let owner = MAIN_LOOP_OWNER.with(|slot| slot.borrow_mut().take());
+    drop(owner);
+}
+
 pub struct PlatformSdl2 {
+    initialized_subsystems: Uint32,
     pub window: *mut SDL_Window,
     pub sdl_gl_context: SDL_GLContext,
     pub gl_context: *mut Context,
     pub audio_device_id: SDL_AudioDeviceID,
     #[cfg(not(target_os = "emscripten"))]
     pub audio_userdata: *mut c_void,
+    #[cfg(not(target_os = "emscripten"))]
+    audio_subsystem_initialized: bool,
     pub mouse_x: i32,
     pub mouse_y: i32,
     pub key_modifiers: SDL_Keymod,
@@ -47,12 +90,15 @@ pub struct PlatformSdl2 {
 impl PlatformSdl2 {
     pub fn new() -> Self {
         Self {
+            initialized_subsystems: 0,
             window: null_mut(),
             sdl_gl_context: null_mut(),
             gl_context: null_mut(),
             audio_device_id: 0,
             #[cfg(not(target_os = "emscripten"))]
             audio_userdata: null_mut(),
+            #[cfg(not(target_os = "emscripten"))]
+            audio_subsystem_initialized: false,
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
             key_modifiers: KMOD_NONE,
@@ -97,6 +143,8 @@ impl PlatformSdl2 {
             );
         }
 
+        self.initialized_subsystems = sdl_flags;
+
         let driver = unsafe { SDL_GetCurrentVideoDriver() };
         self.is_wayland =
             !driver.is_null() && unsafe { CStr::from_ptr(driver) }.to_bytes() == b"wayland";
@@ -116,8 +164,13 @@ impl PlatformSdl2 {
 
     #[cfg(target_os = "emscripten")]
     pub fn quit(&mut self) {
-        unsafe { emscripten_cancel_main_loop() };
         self.pause_audio(true);
+    }
+
+    #[cfg(target_os = "emscripten")]
+    pub fn stop_main_loop() {
+        unsafe { emscripten_cancel_main_loop() };
+        clear_main_loop_owner();
     }
 
     pub fn ticks(&self) -> u32 {
@@ -191,7 +244,6 @@ impl PlatformSdl2 {
         }
     }
 
-    #[cfg(not(target_os = "emscripten"))]
     fn close_window(&mut self) {
         release_window_resources(
             &mut self.gl_context,
@@ -297,14 +349,21 @@ impl PlatformSdl2 {
         #[cfg(not(target_os = "emscripten"))]
         self.close_audio();
 
-        unsafe { SDL_InitSubSystem(SDL_INIT_AUDIO) };
-
         // Keep browser audio alive across Pyxel Web resets, but reopen native
         // devices so each launch gets a fresh stream renderer.
         if let Some(saved_id) = saved_audio_device_id_for_start() {
             self.audio_device_id = saved_id;
             self.pause_audio(false);
             return;
+        }
+
+        if unsafe { SDL_InitSubSystem(SDL_INIT_AUDIO) } < 0 {
+            println!("Failed to initialize audio device");
+            return;
+        }
+        #[cfg(not(target_os = "emscripten"))]
+        {
+            self.audio_subsystem_initialized = true;
         }
 
         let userdata =
@@ -329,9 +388,10 @@ impl PlatformSdl2 {
             // SAFETY: SDL rejected the device and therefore never retained or
             // invoked userdata; reclaim the Box created immediately above.
             unsafe { drop(Box::from_raw(userdata.cast::<AudioCallback>())) };
+            unsafe { SDL_QuitSubSystem(SDL_INIT_AUDIO) };
             #[cfg(not(target_os = "emscripten"))]
-            unsafe {
-                SDL_QuitSubSystem(SDL_INIT_AUDIO);
+            {
+                self.audio_subsystem_initialized = false;
             }
             println!("Failed to initialize audio device");
             return;
@@ -363,7 +423,10 @@ impl PlatformSdl2 {
             self.audio_userdata = null_mut();
         }
 
-        unsafe { SDL_QuitSubSystem(SDL_INIT_AUDIO) };
+        if self.audio_subsystem_initialized {
+            unsafe { SDL_QuitSubSystem(SDL_INIT_AUDIO) };
+            self.audio_subsystem_initialized = false;
+        }
     }
 
     pub fn pause_audio(&mut self, paused: bool) {
@@ -419,19 +482,17 @@ impl PlatformSdl2 {
         // Drive the loop with requestAnimationFrame (fps = 0); browsers keep
         // rAF running in contexts where they throttle timers to 1 Hz.
         let now_ms = unsafe { emscripten_get_now() };
-        let state = Box::new(MainLoopState {
+        let owner = std::rc::Rc::new(MainLoopOwner::new(MainLoopState {
             callback,
             frame_ms: 1000.0 / f64::from(fps),
             last_frame_ms: now_ms,
             next_frame_ms: now_ms,
-        });
+        }));
+        let arg = owner.arg;
+        let previous = MAIN_LOOP_OWNER.with(|slot| slot.borrow_mut().replace(owner));
+        drop(previous);
         unsafe {
-            emscripten_set_main_loop_arg(
-                main_loop_callback::<F>,
-                Box::into_raw(state).cast::<c_void>(),
-                0,
-                1,
-            );
+            emscripten_set_main_loop_arg(main_loop_callback::<F>, arg, 0, 1);
         }
     }
 
@@ -499,9 +560,12 @@ impl Drop for PlatformSdl2 {
     fn drop(&mut self) {
         self.close_gamepads();
         #[cfg(not(target_os = "emscripten"))]
-        {
-            self.close_audio();
-            self.close_window();
+        self.close_audio();
+        self.close_window();
+        // Each platform releases only the video/input references it acquired.
+        // Browser audio has its own retained device lifetime.
+        if self.initialized_subsystems != 0 {
+            unsafe { SDL_QuitSubSystem(self.initialized_subsystems) };
         }
     }
 }
@@ -558,7 +622,6 @@ fn window_title_c_string(title: &str) -> CString {
     CString::new(title).expect("window title NUL bytes are replaced")
 }
 
-#[cfg(any(not(target_os = "emscripten"), test))]
 fn release_window_resources<DropGlowContext, DeleteSdlContext, DestroyWindow>(
     gl_context: &mut *mut Context,
     sdl_gl_context: &mut SDL_GLContext,
@@ -602,8 +665,18 @@ extern "C" {
 
 #[cfg(target_os = "emscripten")]
 unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
-    // SAFETY: run_frame_loop passes a non-null Box<MainLoopState<F>> as arg;
-    // Emscripten invokes callbacks serially and retains the allocation for the loop lifetime.
+    // Emscripten cancels queued runners by generation before calling this function.
+    // Keep the current state alive if the callback quits or replaces its own loop.
+    let owner = MAIN_LOOP_OWNER.with(|slot| {
+        slot.borrow()
+            .as_ref()
+            .filter(|owner| owner.arg == arg)
+            .cloned()
+    });
+    let Some(_owner) = owner else {
+        return;
+    };
+    // SAFETY: this loop registered the concrete F, and _owner retains its Box.
     let state = &mut *arg.cast::<MainLoopState<F>>();
     let now_ms = emscripten_get_now();
     if let Some(delta_ms) = advance_frame_schedule(
@@ -655,6 +728,33 @@ mod tests {
     };
     #[cfg(not(target_os = "emscripten"))]
     use super::{saved_audio_device_id_for_start, AUDIO_DEVICE_ID};
+
+    #[test]
+    fn test_main_loop_owner_defers_active_callback_release() {
+        use std::cell::Cell;
+        use std::rc::Rc;
+
+        struct CallbackDrop(Rc<Cell<u32>>);
+        impl Drop for CallbackDrop {
+            fn drop(&mut self) {
+                self.0.set(self.0.get() + 1);
+            }
+        }
+        let drops = Rc::new(Cell::new(0));
+        let owner = Rc::new(super::MainLoopOwner::new(CallbackDrop(drops.clone())));
+        let active_callback = owner.clone();
+        super::MAIN_LOOP_OWNER.with(|slot| *slot.borrow_mut() = Some(owner));
+        super::clear_main_loop_owner();
+        super::clear_main_loop_owner();
+        assert_eq!(drops.get(), 0);
+        drop(active_callback);
+        assert_eq!(drops.get(), 1);
+
+        let owner = Rc::new(super::MainLoopOwner::new(CallbackDrop(drops.clone())));
+        super::MAIN_LOOP_OWNER.with(|slot| *slot.borrow_mut() = Some(owner));
+        super::clear_main_loop_owner();
+        assert_eq!(drops.get(), 2);
+    }
 
     #[test]
     fn test_browser_save_script_escapes_filename_as_javascript_string() {
@@ -718,6 +818,31 @@ mod tests {
             |_| actions.borrow_mut().push("destroy_window"),
         );
         assert_eq!(actions.borrow().len(), 3);
+    }
+
+    #[cfg(not(target_os = "emscripten"))]
+    #[test]
+    fn test_platform_replacement_balances_its_subsystem_reference() {
+        // The timer subsystem avoids a real window, audio device and the event
+        // queue used by other tests. Retain one reference owned by another caller.
+        unsafe { assert_eq!(super::SDL_InitSubSystem(super::SDL_INIT_TIMER), 0) };
+        let acquire = || {
+            unsafe { assert_eq!(super::SDL_InitSubSystem(super::SDL_INIT_TIMER), 0) };
+            let mut platform = super::PlatformSdl2::new();
+            platform.initialized_subsystems = super::SDL_INIT_TIMER;
+            platform
+        };
+        let mut current = acquire();
+        for _ in 0..300 {
+            // facade::init acquires the new platform before dropping the old one.
+            current = acquire();
+        }
+        drop(current);
+        unsafe {
+            assert_ne!(super::SDL_WasInit(super::SDL_INIT_TIMER), 0);
+            super::SDL_QuitSubSystem(super::SDL_INIT_TIMER);
+            assert_eq!(super::SDL_WasInit(super::SDL_INIT_TIMER), 0);
+        }
     }
 
     #[cfg(not(target_os = "emscripten"))]
