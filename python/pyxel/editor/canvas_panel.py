@@ -16,9 +16,6 @@ from .settings import (
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
-# Sentinel tile that marks cells touched by tilemap-mode drawing primitives.
-_EMPTY_TILE = (255, 255)
-
 
 class CanvasPanel(Widget):
     # Variables:
@@ -41,7 +38,6 @@ class CanvasPanel(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 11, 16, 130, 130)
-
         if hasattr(parent, "tilemap_index_var"):
             self._is_tilemap_mode = True
             self.copy_var("tilemap_index_var", parent)
@@ -70,6 +66,8 @@ class CanvasPanel(Widget):
         self._edit_canvas = (
             pyxel.Tilemap(16, 16, 0) if self._is_tilemap_mode else pyxel.Image(16, 16)
         )
+        self._draw_mask = pyxel.Image(16, 16) if self._is_tilemap_mode else None
+
         self.add_history = parent.add_history
         self.copy_var("color_var", parent)
         self.copy_var("tool_var", parent)
@@ -103,7 +101,6 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -141,7 +138,6 @@ class CanvasPanel(Widget):
                 data["tilemap_index"] = self.tilemap_index_var
             else:
                 data["image_index"] = self.image_index_var
-
             data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
             data["old_canvas"] = self.canvas_var.get_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
@@ -166,7 +162,6 @@ class CanvasPanel(Widget):
             data["new_canvas"] = self.canvas_var.get_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
             )
-
             if data["new_canvas"] != data["old_canvas"]:
                 self.add_history(data)
 
@@ -183,13 +178,31 @@ class CanvasPanel(Widget):
         if self._is_tilemap_mode:
             self._edit_canvas.imgsrc = self.canvas_var.imgsrc
 
+    def _draw_edit_canvas(self, method, *args):
+        if not self._is_tilemap_mode:
+            getattr(self._edit_canvas, method)(*args, self.color_var)
+            return
+
+        # Drawing coverage is independent of every admitted tile payload.
+        mask = self._draw_mask
+        mask.cls(0)
+        if method == "fill":
+            tile = self._edit_canvas.pget(*args)
+            for y in range(16):
+                for x in range(16):
+                    if self._edit_canvas.pget(x, y) != tile:
+                        mask.pset(x, y, 2)
+
+        getattr(mask, method)(*args, 1)
+        self._finish_edit_canvas()
+
     def _finish_edit_canvas(self):
         if not self._is_tilemap_mode:
             return
 
         for y in range(16):
             for x in range(16):
-                if self._edit_canvas.pget(x, y) != _EMPTY_TILE:
+                if self._draw_mask.pget(x, y) != 1:
                     continue
                 tile = (
                     self.tile_x_var + (x - self._press_x) % self.tile_w_var,
@@ -231,24 +244,21 @@ class CanvasPanel(Widget):
         self._is_dragged = True
         self._is_assist_mode = False
 
-        # SELECT: begin selection
         if self.tool_var == TOOL_SELECT:
             self._reset_edit_canvas()
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
 
-        # PENCIL/RECTB/RECT/CIRCB/CIRC: place initial dot
         elif TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._reset_edit_canvas()
-            self._edit_canvas.pset(x, y, self.color_var)
-            self._finish_edit_canvas()
+            self._draw_edit_canvas("pset", x, y)
 
-        # BUCKET: flood fill and commit immediately
+        # Flood fill commits on mouse-down; other drawing tools commit on release.
         elif self.tool_var == TOOL_BUCKET:
             self._add_pre_history()
             self._reset_edit_canvas()
-            self._edit_canvas.fill(x, y, self.color_var)
-            self._finish_edit_canvas()
+            self._draw_edit_canvas("fill", x, y)
+
             self.canvas_var.blt(
                 self.focus_x_var * 8,
                 self.focus_y_var * 8,
@@ -279,7 +289,6 @@ class CanvasPanel(Widget):
             self._add_post_history()
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        # Apply the active tool across the drag
         if key == pyxel.MOUSE_BUTTON_LEFT:
             x1 = self._press_x
             y1 = self._press_y
@@ -294,48 +303,34 @@ class CanvasPanel(Widget):
                 else:
                     x2 = x1 + abs(dy) * (1 if dx > 0 else -1)
 
-            # SELECT: update selection rectangle
             if self.tool_var == TOOL_SELECT:
                 x2 = clamp(x2, 0, 15)
                 y2 = clamp(y2, 0, 15)
                 self._select_x1, self._select_x2 = (x1, x2) if x1 < x2 else (x2, x1)
                 self._select_y1, self._select_y2 = (y1, y2) if y1 < y2 else (y2, y1)
 
-            # PENCIL: freehand or assisted straight line
             elif self.tool_var == TOOL_PENCIL:
                 if self._is_assist_mode:
                     self._reset_edit_canvas()
-                    self._edit_canvas.line(x1, y1, x2, y2, self.color_var)
-                    self._finish_edit_canvas()
+                    self._draw_edit_canvas("line", x1, y1, x2, y2)
                 else:
-                    self._edit_canvas.line(
-                        self._last_x, self._last_y, x2, y2, self.color_var
-                    )
-                    self._finish_edit_canvas()
+                    self._draw_edit_canvas("line", self._last_x, self._last_y, x2, y2)
 
-            # RECTB: outlined rectangle
             elif self.tool_var == TOOL_RECTB:
                 self._reset_edit_canvas()
-                self._edit_canvas.rectb2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("rectb2", x1, y1, x2, y2)
 
-            # RECT: filled rectangle
             elif self.tool_var == TOOL_RECT:
                 self._reset_edit_canvas()
-                self._edit_canvas.rect2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("rect2", x1, y1, x2, y2)
 
-            # CIRCB: outlined ellipse
             elif self.tool_var == TOOL_CIRCB:
                 self._reset_edit_canvas()
-                self._edit_canvas.ellib2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("ellib2", x1, y1, x2, y2)
 
-            # CIRC: filled ellipse
             elif self.tool_var == TOOL_CIRC:
                 self._reset_edit_canvas()
-                self._edit_canvas.elli2(x1, y1, x2, y2, self.color_var)
-                self._finish_edit_canvas()
+                self._draw_edit_canvas("elli2", x1, y1, x2, y2)
 
             self._last_x = x2
             self._last_y = y2
@@ -376,7 +371,6 @@ class CanvasPanel(Widget):
         # Copy/cut/paste bank (Ctrl+Shift or Cmd+Shift)
         has_cmd_or_ctrl = pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
         if pyxel.btn(pyxel.KEY_SHIFT) and has_cmd_or_ctrl:
-            # Ctrl+Shift+C/Ctrl+Shift+X: Copy bank
             if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
                 self._bank_buffer = {}
                 if self._is_tilemap_mode:
@@ -388,7 +382,6 @@ class CanvasPanel(Widget):
                         self.image_index_var
                     ].get_slice(0, 0, 256, 256)
 
-            # Ctrl+Shift+X: Cut bank
             if pyxel.btnp(pyxel.KEY_X):
                 self._add_pre_history(bank_copy=True)
                 if self._is_tilemap_mode:
@@ -397,7 +390,6 @@ class CanvasPanel(Widget):
                     pyxel.images[self.image_index_var].rect(0, 0, 256, 256, 0)
                 self._add_post_history(bank_copy=True)
 
-            # Ctrl+Shift+V: Paste bank
             if pyxel.btnp(pyxel.KEY_V) and self._bank_buffer is not None:
                 self._add_pre_history(bank_copy=True)
                 if self._is_tilemap_mode:
@@ -417,17 +409,14 @@ class CanvasPanel(Widget):
             and not pyxel.btn(pyxel.KEY_SHIFT)
             and has_cmd_or_ctrl
         ):
-            # Ctrl+A: Select all
             if pyxel.btnp(pyxel.KEY_A):
                 self._select_x1 = self._select_y1 = 0
                 self._select_x2 = self._select_y2 = 15
 
-            # Ctrl+C: Copy
             if pyxel.btnp(pyxel.KEY_C):
                 x, y, w, h = self._selection_rect()
                 self._canvas_buffer = self.canvas_var.get_slice(x, y, w, h)
 
-            # Ctrl+X: Cut
             if pyxel.btnp(pyxel.KEY_X):
                 x, y, w, h = self._selection_rect()
                 self._canvas_buffer = self.canvas_var.get_slice(x, y, w, h)
@@ -435,7 +424,6 @@ class CanvasPanel(Widget):
                 self.canvas_var.rect(x, y, w, h, (0, 0) if self._is_tilemap_mode else 0)
                 self._add_post_history()
 
-            # Ctrl+V: Paste
             if self._canvas_buffer is not None and pyxel.btnp(pyxel.KEY_V):
                 self._add_pre_history()
                 width = len(self._canvas_buffer[0])
@@ -443,6 +431,7 @@ class CanvasPanel(Widget):
                 width -= max(self._select_x1 + width - 16, 0)
                 height -= max(self._select_y1 + height - 16, 0)
                 clipped = [row[:width] for row in self._canvas_buffer[:height]]
+
                 self.canvas_var.set_slice(
                     self.focus_x_var * 8 + self._select_x1,
                     self.focus_y_var * 8 + self._select_y1,

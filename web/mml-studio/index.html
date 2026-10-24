@@ -20,7 +20,7 @@
         Music Macro Language (MML) editor for
         <a
           class="link"
-          href="https://github.com/kitao/pyxel"
+          href="https://kitao.dev/pyxel/"
           target="_blank"
           rel="noopener noreferrer"
           >Pyxel</a
@@ -36,7 +36,6 @@
       <div
         class="flex sm:flex-row flex-col items-start sm:items-center mb-4 min-w-0"
       >
-        <!-- Controls -->
         <div class="flex flex-col mr-0 sm:mr-4 min-w-[100px]">
           <div class="flex flex-row gap-x-2 mb-2">
             <button
@@ -66,6 +65,7 @@
               class="toggle active"
               data-action="loop"
               data-state="true"
+              aria-pressed="true"
               data-click="handleButtonPress"
               title="Ctrl(Cmd)+L: Toggle Loop"
               disabled
@@ -104,7 +104,6 @@
           </div>
         </div>
 
-        <!-- Screen -->
         <div
           class="flex flex-grow items-center bg-gray-800 shadow-sm mt-2 sm:mt-0 p-0 border border-gray-700 w-full sm:w-auto h-24"
         >
@@ -113,11 +112,11 @@
             src="pyxel-screen.html"
             class="border-0 w-full h-full"
             tabindex="-1"
+            title="Pyxel Runtime"
           ></iframe>
         </div>
       </div>
 
-      <!-- Channel 1 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch1" class="text-xl">CH1</label>
@@ -127,6 +126,8 @@
               class="toggle"
               data-action="solo1"
               data-state="false"
+              aria-label="Solo channel 1"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -136,6 +137,8 @@
               class="toggle"
               data-action="mute1"
               data-state="false"
+              aria-label="Mute channel 1"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -150,7 +153,6 @@
         ></textarea>
       </div>
 
-      <!-- Channel 2 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch2" class="text-xl">CH2</label>
@@ -160,6 +162,8 @@
               class="toggle"
               data-action="solo2"
               data-state="false"
+              aria-label="Solo channel 2"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -169,6 +173,8 @@
               class="toggle"
               data-action="mute2"
               data-state="false"
+              aria-label="Mute channel 2"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -183,7 +189,6 @@
         ></textarea>
       </div>
 
-      <!-- Channel 3 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch3" class="text-xl">CH3</label>
@@ -193,6 +198,8 @@
               class="toggle"
               data-action="solo3"
               data-state="false"
+              aria-label="Solo channel 3"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -202,6 +209,8 @@
               class="toggle"
               data-action="mute3"
               data-state="false"
+              aria-label="Mute channel 3"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -216,7 +225,6 @@
         ></textarea>
       </div>
 
-      <!-- Channel 4 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch4" class="text-xl">CH4</label>
@@ -226,6 +234,8 @@
               class="toggle"
               data-action="solo4"
               data-state="false"
+              aria-label="Solo channel 4"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               SOLO
@@ -235,6 +245,8 @@
               class="toggle"
               data-action="mute4"
               data-state="false"
+              aria-label="Mute channel 4"
+              aria-pressed="false"
               data-click="handleButtonPress"
             >
               MUTE
@@ -251,7 +263,6 @@
 
       <div class="flex-grow mt-2">
         <span class="block text-xl">URL</span>
-        <!-- Share URL -->
         <a
           id="share-url"
           target="_blank"
@@ -260,28 +271,120 @@
           style="display: block"
         ></a>
 
-        <!-- QR Code -->
         <img id="qr-code-image" alt="QR Code" class="mt-4" />
       </div>
     </main>
 
     <script>
-      // Cache frequently used screen, share-link, and QR elements.
       const runtimeScreen = document.getElementById("runtime-screen");
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
 
-      // URL compression helpers for compact share links
-      // Base conversion helpers are provided by shared.js.
-      function b64urlEncode(bytes) {
-        return uint8ToBase64(bytes)
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
+      // Page controls
+
+      function handleButtonPress(button) {
+        const action = button.dataset.action;
+        const varName = `js_${action}`;
+        let isActive;
+
+        if (action === "play" || action === "stop") {
+          isActive = true;
+          setButtonStyle(button, true);
+          setTimeout(() => {
+            setButtonStyle(button, false);
+          }, 150);
+        } else {
+          button.dataset.state = button.dataset.state !== "true";
+          isActive = button.dataset.state === "true";
+          setButtonStyle(button, isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        }
+
+        const runtime = runtimeScreen.contentWindow;
+        runtime[varName] = isActive;
+        if (action === "stop") {
+          runtime.js_play = false;
+          runtime.js_play_request = (runtime.js_play_request ?? 0) + 1;
+        } else if (action === "play") {
+          runtime.js_stop = false;
+          const request = (runtime.js_play_request ?? 0) + 1;
+          runtime.js_play_request = request;
+          const finish = () => {
+            if (runtime.js_play_request === request) {
+              runtime.js_play = false;
+            }
+          };
+
+          runtime.resetPyxel().then(finish, (error) => {
+            finish();
+            console.error("Playback reset failed", error);
+          });
+        }
       }
 
-      function b64urlDecode(s) {
-        return base64ToUint8(s.replace(/-/g, "+").replace(/_/g, "/"));
+      function handleMmlInput(textarea) {
+        runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
+        scheduleShareUrlUpdate();
+      }
+
+      async function updateShareUrl() {
+        const generation = ++shareUrlGeneration;
+        clearTimeout(shareUrlUpdateTimer);
+
+        let mmlStr = "";
+        for (let i = 1; i <= 4; i++) {
+          const textarea = document.getElementById(`ch${i}`);
+          const ch = textarea.value
+            .trim()
+            .replace(/ +/g, " ")
+            .replace(/\n+/g, "\n");
+          mmlStr += (i > 1 ? ";" : "") + ch;
+        }
+
+        let url = location.origin + location.pathname;
+        if (!/^[\s;]*$/.test(mmlStr)) {
+          url += "?mml=" + (await encodeMmlToUrl(mmlStr));
+        }
+        if (generation !== shareUrlGeneration) return;
+
+        shareUrl.textContent = shareUrl.href = url;
+        window.history.replaceState(null, "", url);
+
+        const qrSize = Math.max(128, Math.min(url.length, 400));
+        qrCodeImage.src =
+          `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
+          encodeURIComponent(url);
+        qrCodeImage.width = qrSize;
+        qrCodeImage.height = qrSize;
+      }
+
+      function resolvePyxelInput() {
+        runtimeScreen.contentWindow?.pyxelContext?.resolveInput?.();
+      }
+
+      function scheduleShareUrlUpdate() {
+        clearTimeout(shareUrlUpdateTimer);
+        shareUrlUpdateTimer = setTimeout(updateShareUrl, 300);
+      }
+
+      // URL encoding
+
+      async function encodeMmlToUrl(mml) {
+        const compressed = await compressDeflateRaw(mml);
+        return b64urlEncode(compressed);
+      }
+
+      // A `+` (or its URLSearchParams space form) identifies lz-string data.
+      // For other values, try deflate-raw before the compatible lz-string form.
+      async function decodeMmlFromUrl(value) {
+        if (value.includes("+") || value.includes(" ")) {
+          return LZString.decompressFromEncodedURIComponent(value);
+        }
+        try {
+          return await decompressDeflateRaw(b64urlDecode(value));
+        } catch {
+          return LZString.decompressFromEncodedURIComponent(value);
+        }
       }
 
       async function compressDeflateRaw(text) {
@@ -299,103 +402,26 @@
         return await new Response(stream).text();
       }
 
-      // Encoder: always produces new format (deflate-raw + base64url).
-      async function encodeMmlToUrl(mml) {
-        const compressed = await compressDeflateRaw(mml);
-        return b64urlEncode(compressed);
+      function b64urlEncode(bytes) {
+        return uint8ToBase64(bytes)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
       }
 
-      // Decoder: `+` (or its space form after URLSearchParams decoding) marks
-      // legacy lz-string. Short legacy values may consist of base64url
-      // characters only, so try the new format first and fall back on failure.
-      async function decodeMmlFromUrl(value) {
-        if (value.includes("+") || value.includes(" ")) {
-          return LZString.decompressFromEncodedURIComponent(value);
-        }
-        try {
-          return await decompressDeflateRaw(b64urlDecode(value));
-        } catch {
-          return LZString.decompressFromEncodedURIComponent(value);
-        }
+      function b64urlDecode(s) {
+        return base64ToUint8(s.replace(/-/g, "+").replace(/_/g, "/"));
       }
 
-      // Playback button state helpers
       function setButtonStyle(button, isActive) {
         button.classList.toggle("active", isActive);
       }
 
-      function handleButtonPress(button) {
-        const action = button.dataset.action;
-        const varName = `js_${action}`;
-        let isActive;
-
-        if (action === "play" || action === "stop") {
-          isActive = true;
-          setButtonStyle(button, true);
-          setTimeout(() => {
-            setButtonStyle(button, false);
-            runtimeScreen.contentWindow[varName] = false;
-          }, 150);
-        } else {
-          button.dataset.state = button.dataset.state !== "true";
-          isActive = button.dataset.state === "true";
-          setButtonStyle(button, isActive);
-        }
-
-        runtimeScreen.contentWindow[varName] = isActive;
-        if (action === "play") {
-          runtimeScreen.contentWindow.resetPyxel();
-        }
-      }
-
-      // Defer the URL/QR refresh so typing does not regenerate the QR code
-      // and rewrite the history entry on every keystroke.
-      let urlUpdateTimer = null;
-
-      function scheduleUrlUpdate() {
-        clearTimeout(urlUpdateTimer);
-        urlUpdateTimer = setTimeout(updateUrl, 300);
-      }
-
-      function handleMmlInput(textarea) {
-        runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
-        scheduleUrlUpdate();
-      }
-
-      async function updateUrl() {
-        clearTimeout(urlUpdateTimer);
-        let mmlStr = "";
-        for (let i = 1; i <= 4; i++) {
-          const textarea = document.getElementById(`ch${i}`);
-          const ch = textarea.value
-            .trim()
-            .replace(/ +/g, " ")
-            .replace(/\n+/g, "\n");
-          mmlStr += (i > 1 ? ";" : "") + ch;
-        }
-
-        let url = location.origin + location.pathname;
-        if (!/^[\s;]*$/.test(mmlStr)) {
-          url += "?mml=" + (await encodeMmlToUrl(mmlStr));
-        }
-
-        shareUrl.textContent = shareUrl.href = url;
-        window.history.replaceState(null, "", url);
-
-        const qrSize = Math.max(128, Math.min(url.length, 400));
-        qrCodeImage.src =
-          `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
-          encodeURIComponent(url);
-        qrCodeImage.width = qrSize;
-        qrCodeImage.height = qrSize;
-      }
-
-      function resolvePyxelInput() {
-        runtimeScreen.contentWindow?.pyxelContext?.resolveInput?.();
-      }
+      // Avoid rebuilding the share URL and QR code on every keystroke.
+      let shareUrlUpdateTimer = null;
+      let shareUrlGeneration = 0;
 
       window.addEventListener("DOMContentLoaded", async () => {
-        // Bind data-attribute handlers declared in the static markup.
         document.querySelectorAll("[data-click]").forEach((el) => {
           el.addEventListener("click", () => handleButtonPress(el));
         });
@@ -408,7 +434,6 @@
           window.addEventListener(ev, resolvePyxelInput);
         });
 
-        // Keyboard shortcuts for play, stop, and loop
         window.addEventListener("keydown", (e) => {
           resolvePyxelInput();
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -446,25 +471,33 @@
           for (let i = 1; i <= 4; i++) {
             const textarea = document.getElementById(`ch${i}`);
             textarea.value = mmlList[i - 1] || "";
-            handleMmlInput(textarea);
           }
         }
 
-        updateUrl();
+        updateShareUrl();
 
-        // Push initial button states into the runtime after the iframe loads.
-        runtimeScreen.addEventListener("load", () => {
-          document.querySelectorAll("button[data-action]").forEach((button) => {
-            const varName = `js_${button.dataset.action}`;
-            runtimeScreen.contentWindow[varName] =
-              button.dataset.state === "true";
-          });
-        });
-
-        // Enable playback controls after the runtime context is ready.
+        // Synchronize current values before enabling playback controls.
         waitForPyxelReady(
-          () => runtimeScreen.contentWindow?.pyxelContext?.resolveInput,
           () => {
+            const context = runtimeScreen.contentWindow?.pyxelContext;
+            return context?.resolveInput || context?.initialized;
+          },
+          () => {
+            document
+              .querySelectorAll("textarea[data-input]")
+              .forEach((textarea) => {
+                runtimeScreen.contentWindow[`js_${textarea.id}_mml`] =
+                  textarea.value;
+              });
+
+            document
+              .querySelectorAll("button[data-action]")
+              .forEach((button) => {
+                const varName = `js_${button.dataset.action}`;
+                runtimeScreen.contentWindow[varName] =
+                  button.dataset.state === "true";
+              });
+
             document
               .querySelectorAll(
                 'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]',

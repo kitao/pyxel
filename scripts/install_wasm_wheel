@@ -1,23 +1,67 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-set -euo pipefail
-shopt -s failglob
+import importlib.util
+import re
+import shutil
+import sys
+import zipfile
+from importlib.machinery import SourceFileLoader
+from pathlib import Path
 
-cd "$(dirname "$0")"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+DIST_DIR = ROOT_DIR / "dist"
+WASM_DIR = ROOT_DIR / "wasm"
+PYPROJECT_PATH = ROOT_DIR / "python" / "pyproject.toml"
+WHEEL_PATH_PATTERN = re.compile(r'(?m)^(const PYXEL_WHEEL_PATH\s*=\s*")[^"]+(";)$')
 
-DIST_DIR="../dist"
-WASM_DIR="../wasm"
-SCRIPT_NAME="pyxel.js"
 
-mkdir -p "$WASM_DIR"
+def main() -> int:
+    try:
+        checker_path = Path(__file__).with_name("check_wasm_wheel")
+        loader = SourceFileLoader("_pyxel_wheel_checker", str(checker_path))
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        checker = importlib.util.module_from_spec(spec)
+        loader.exec_module(checker)
+        wheel_path = checker.find_wheel(DIST_DIR, PYPROJECT_PATH)
+        violations = checker.find_wheel_mismatches(
+            wheel_path, PYPROJECT_PATH, PYPROJECT_PATH.parent / "pyxel"
+        )
+        if violations:
+            raise ValueError(f"wheel contents failed validation: {violations}")
+    except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
+        print(f"error: invalid WebAssembly wheel: {error}", file=sys.stderr)
+        return 1
 
-rm -f "$WASM_DIR"/*-emscripten_*.whl
-cp -f "$DIST_DIR"/*-emscripten_*.whl "$WASM_DIR"
+    WASM_DIR.mkdir(parents=True, exist_ok=True)
+    script_path = WASM_DIR / "pyxel.js"
+    script = script_path.read_text(encoding="utf-8")
+    updated_script, count = WHEEL_PATH_PATTERN.subn(
+        lambda match: f"{match.group(1)}{wheel_path.name}{match.group(2)}",
+        script,
+        count=1,
+    )
+    if count != 1:
+        print(f"error: wheel path pattern not found in {script_path}", file=sys.stderr)
+        return 1
 
-WHEEL_PATHS=("$WASM_DIR"/*-emscripten_*.whl)
-WHEEL_NAME="$(basename "${WHEEL_PATHS[0]}")"
+    installed_wheel_path = WASM_DIR / wheel_path.name
+    wheel_temp_path = installed_wheel_path.with_name(f".{wheel_path.name}.tmp")
+    script_temp_path = script_path.with_suffix(".js.tmp")
+    try:
+        shutil.copy2(wheel_path, wheel_temp_path)
+        script_temp_path.write_text(updated_script, encoding="utf-8")
+        wheel_temp_path.replace(installed_wheel_path)
+        script_temp_path.replace(script_path)
+    finally:
+        wheel_temp_path.unlink(missing_ok=True)
+        script_temp_path.unlink(missing_ok=True)
 
-# Use a temp file instead of sed -i for cross-platform compatibility.
-trap 'rm -f "$WASM_DIR/$SCRIPT_NAME.tmp"' EXIT
-sed "s#\\(PYXEL_WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" "$WASM_DIR/$SCRIPT_NAME" > "$WASM_DIR/$SCRIPT_NAME.tmp"
-mv "$WASM_DIR/$SCRIPT_NAME.tmp" "$WASM_DIR/$SCRIPT_NAME"
+    for pattern in checker.WASM_WHEEL_GLOBS:
+        for old_wheel_path in WASM_DIR.glob(pattern):
+            if old_wheel_path != installed_wheel_path:
+                old_wheel_path.unlink()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

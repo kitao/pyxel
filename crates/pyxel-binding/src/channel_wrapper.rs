@@ -8,8 +8,6 @@ define_audio_wrapper!(Channel, pyxel::Channel, pyxel::RcChannel);
 
 #[pymethods]
 impl Channel {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Channel::new())
@@ -51,18 +49,17 @@ impl Channel {
         let sec = if let Some(tick) = tick {
             deprecation_warning!(
                 PLAY_TICK_ONCE,
-                "tick option of Channel.play is deprecated. Use sec option instead."
+                "tick option of Channel.play is deprecated. Use sec in seconds (tick / 120) instead."
             );
             Some(tick as f32 / 120.0)
         } else {
             sec
         };
         validate_sec(sec)?;
+
         let should_loop = r#loop.unwrap_or(false);
         let resume = resume.unwrap_or(false);
-        let _lock = pyxel::AudioLock::lock();
 
-        // Dispatch supported sound input forms.
         cast_pyany! {
             snd,
             "snd must be int, list[int], Sound, list[Sound], or str",
@@ -70,6 +67,7 @@ impl Channel {
             (u32, {
                 let sound = pyxel::sounds().get(snd as usize).cloned()
                     .ok_or_else(|| invalid_index_error!("snd", "sound"))?;
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play_sound(sound, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
@@ -81,31 +79,34 @@ impl Channel {
                     validate_index!(i, all_sounds.len(), "snd", "sound", list);
                 }
                 let sounds = snd.iter().map(|&i| all_sounds[i as usize].clone()).collect();
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play(sounds, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
             }),
 
             (Sound, {
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play_sound(snd.inner, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
             }),
 
             (Vec<Sound>, {
-                let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
+                let sounds = snd.into_iter().map(|sound| sound.inner).collect();
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play(sounds, sec, should_loop, resume)
                     .map_err(PyValueError::new_err)?;
             }),
 
             (String, {
+                let _lock = pyxel::AudioLock::lock();
                 self.inner_mut()
                     .play_mml(&snd, sec, should_loop, resume)
                     .map_err(PyException::new_err)?;
             })
         }
-
         Ok(())
     }
 
@@ -119,8 +120,6 @@ impl Channel {
         self.inner_mut().play_position()
     }
 }
-
-// Module registration
 
 pub fn add_channel_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Channel>()?;

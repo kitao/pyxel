@@ -1,0 +1,1242 @@
+use std::borrow::Cow;
+use std::collections::HashMap;
+use std::fs;
+
+use crate::cube::mat4::{Mat4, RcMat4};
+use crate::cube::mesh::{ColImage, Material, Mesh, RcMesh};
+use crate::cube::motion::{
+    CubicQuatKey, CubicVec3Key, Motion, MotionChannel, MotionInterpolation, MotionTarget,
+    MotionValues,
+};
+use crate::cube::primitive::{Primitive, RcPrimitive, MODE_TRIANGLES};
+use crate::cube::quat::Quat;
+use crate::cube::vec3::Vec3;
+use crate::image::{Color, Image, RcImage, Rgb24};
+use crate::settings::MAX_COLORS;
+
+type TextureTint = [f32; 3];
+type TextureTintKey = (u32, u32, u32);
+type ImageCacheKey = (usize, TextureTintKey, Option<(i32, u32)>);
+
+pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
+    if !fps.is_finite() || fps <= 0.0 {
+        return Err("fps must be finite and greater than 0".to_string());
+    }
+
+    let bytes = fs::read(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
+    validate_glb_header(&bytes)?;
+    let (import_bytes, skip_animations) = sanitize_glb_for_import(&bytes)?;
+
+    let (document, buffers, images) = gltf::import_slice(import_bytes.as_ref())
+        .map_err(|e| format!("Failed to parse file '{filename}': {e}"))?;
+    validate_document(&document, images.len())?;
+
+    let (materials, resolved_colkey) = import_materials(&document, &images, colkey)?;
+    let mesh = Mesh::new();
+    {
+        let mut m = rc_mut!(&mesh);
+        m.colkey = resolved_colkey;
+        if let Some(material) = materials.first() {
+            m.col_img = material.col_img.clone();
+        }
+        m.materials = materials;
+    }
+
+    let scene = document
+        .default_scene()
+        .or_else(|| document.scenes().next())
+        .ok_or_else(|| "GLB has no scene".to_string())?;
+    let mut node_parts = HashMap::<usize, usize>::new();
+    for node in scene.nodes() {
+        import_node(&mesh, &buffers, &mut node_parts, &node, -1)?;
+    }
+
+    if !skip_animations {
+        import_animations(&mesh, &buffers, &node_parts, &document, fps)?;
+    }
+    rc_ref!(&mesh).validate()?;
+    Ok(mesh)
+}
+
+fn warn_glb(message: &str) {
+    eprintln!("Pyxel warning: {message}");
+}
+
+// Image conversion helpers
+
+fn rgba8_to_pyxel_image(
+    width: u32,
+    height: u32,
+    rgba: &[u8],
+    colors: &[Rgb24],
+    color_factor: TextureTint,
+    alpha_mask: Option<(Color, f32)>,
+) -> Result<RcImage, String> {
+    let width_usize = width as usize;
+    let height_usize = height as usize;
+    let pixel_count = width_usize
+        .checked_mul(height_usize)
+        .ok_or_else(|| "GLB texture dimensions overflow".to_string())?;
+    let expected_len = pixel_count
+        .checked_mul(4)
+        .ok_or_else(|| "GLB texture dimensions overflow".to_string())?;
+    if rgba.len() != expected_len {
+        return Err("GLB texture buffer length does not match image dimensions".to_string());
+    }
+    validate_palette(colors)?;
+
+    let rc =
+        Image::try_new(width, height).map_err(|_| "GLB texture dimensions overflow".to_string())?;
+    {
+        let mut image = rc_mut!(rc);
+        let mut color_table = HashMap::<(u8, u8, u8), Color>::with_capacity(256);
+
+        for y in 0..height_usize {
+            for x in 0..width_usize {
+                let base = (y * width_usize + x) * 4;
+                if let Some((color, cutoff)) = alpha_mask {
+                    if is_masked_alpha(rgba[base + 3], cutoff) {
+                        image.canvas.write_data(x, y, color);
+                        continue;
+                    }
+                }
+
+                let src_rgb = tinted_rgb(rgba, base, color_factor);
+                let color = if let Some(color) = color_table.get(&src_rgb) {
+                    *color
+                } else {
+                    let color = rgb_to_palette_color(src_rgb, colors)?;
+                    color_table.insert(src_rgb, color);
+                    color
+                };
+                image.canvas.write_data(x, y, color);
+            }
+        }
+    }
+
+    Ok(rc)
+}
+
+fn tinted_rgb(rgba: &[u8], base: usize, color_factor: TextureTint) -> (u8, u8, u8) {
+    (
+        (rgba[base] as f32 * color_factor[0]).round() as u8,
+        (rgba[base + 1] as f32 * color_factor[1]).round() as u8,
+        (rgba[base + 2] as f32 * color_factor[2]).round() as u8,
+    )
+}
+
+fn image_to_rgba8(img: &gltf::image::Data) -> Result<Vec<u8>, String> {
+    match img.format {
+        gltf::image::Format::R8G8B8A8 => Ok(img.pixels.clone()),
+        gltf::image::Format::R8G8B8 => {
+            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
+            for rgb in img.pixels.as_chunks::<3>().0 {
+                rgba.extend_from_slice(&[rgb[0], rgb[1], rgb[2], 255]);
+            }
+            Ok(rgba)
+        }
+        gltf::image::Format::R8G8 => {
+            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
+            for rg in img.pixels.as_chunks::<2>().0 {
+                rgba.extend_from_slice(&[rg[0], rg[0], rg[0], rg[1]]);
+            }
+            Ok(rgba)
+        }
+        gltf::image::Format::R8 => {
+            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
+            for &r in &img.pixels {
+                rgba.extend_from_slice(&[r, r, r, 255]);
+            }
+            Ok(rgba)
+        }
+        _ => Err("GLB unsupported image format".to_string()),
+    }
+}
+
+// BLEND falls back to opaque silently here; validate_texture_usage warns
+// once per material before import reaches this resolver.
+fn mask_alpha_cutoff(material: &gltf::Material) -> Result<Option<f32>, String> {
+    match material.alpha_mode() {
+        gltf::material::AlphaMode::Opaque | gltf::material::AlphaMode::Blend => return Ok(None),
+        gltf::material::AlphaMode::Mask => {}
+    }
+    let cutoff = material.alpha_cutoff().unwrap_or(0.5);
+    if !cutoff.is_finite() || !(0.0..=1.0).contains(&cutoff) {
+        return Err("GLB material alphaCutoff must be between 0.0 and 1.0".to_string());
+    }
+    Ok(Some(cutoff))
+}
+
+fn is_masked_alpha(alpha: u8, cutoff: f32) -> bool {
+    (alpha as f32 / 255.0) < cutoff
+}
+
+fn validate_palette(colors: &[Rgb24]) -> Result<(), String> {
+    if colors.is_empty() {
+        return Err(format!(
+            "Number of colors must be between 1 and {MAX_COLORS}"
+        ));
+    }
+    if colors.len() > MAX_COLORS as usize {
+        return Err(format!(
+            "Number of colors must be between 1 and {MAX_COLORS}"
+        ));
+    }
+    Ok(())
+}
+
+fn resolve_mask_colkey(
+    colkey: Option<i32>,
+    used_colors: &[bool],
+    needs_colkey: bool,
+) -> Option<i32> {
+    let Some(colkey) = colkey else {
+        if !needs_colkey {
+            return None;
+        }
+        return select_fallback_mask_colkey(used_colors);
+    };
+    if !needs_colkey {
+        return Some(colkey);
+    }
+
+    let max_colors = MAX_COLORS as i32;
+    if !(0..max_colors).contains(&colkey) {
+        warn_glb(&format!(
+            "GLB alpha mask requires colkey between 0 and {}; selecting a fallback colkey",
+            max_colors - 1
+        ));
+        return select_fallback_mask_colkey(used_colors);
+    }
+    if used_colors.get(colkey as usize).copied().unwrap_or(false) {
+        warn_glb(
+            "GLB alpha mask colkey collides with an opaque texture color; selecting a fallback colkey",
+        );
+        return select_fallback_mask_colkey(used_colors);
+    }
+    Some(colkey)
+}
+
+fn select_fallback_mask_colkey(used_colors: &[bool]) -> Option<i32> {
+    if let Some(index) = used_colors.iter().position(|used| !*used) {
+        return Some(index as i32);
+    }
+    warn_glb("GLB alpha mask requires an unused colkey color; alpha mask is ignored");
+    None
+}
+
+fn mark_texture_palette_usage(
+    width: u32,
+    height: u32,
+    rgba: &[u8],
+    colors: &[Rgb24],
+    color_factor: TextureTint,
+    alpha_cutoff: Option<f32>,
+    used_colors: &mut [bool],
+) -> Result<bool, String> {
+    let width_usize = width as usize;
+    let height_usize = height as usize;
+    let pixel_count = width_usize
+        .checked_mul(height_usize)
+        .ok_or_else(|| "GLB texture dimensions overflow".to_string())?;
+    let expected_len = pixel_count
+        .checked_mul(4)
+        .ok_or_else(|| "GLB texture dimensions overflow".to_string())?;
+    if rgba.len() != expected_len {
+        return Err("GLB texture buffer length does not match image dimensions".to_string());
+    }
+
+    let mut has_alpha_mask_pixels = false;
+    for pixel_index in 0..pixel_count {
+        let base = pixel_index * 4;
+        if let Some(cutoff) = alpha_cutoff {
+            if is_masked_alpha(rgba[base + 3], cutoff) {
+                has_alpha_mask_pixels = true;
+                continue;
+            }
+        }
+
+        let color = rgb_to_palette_color(tinted_rgb(rgba, base, color_factor), colors)?;
+        used_colors[color as usize] = true;
+    }
+
+    Ok(has_alpha_mask_pixels)
+}
+
+fn color_distance_sq(a: (u8, u8, u8), b: (u8, u8, u8)) -> f32 {
+    let dr = a.0 as f32 - b.0 as f32;
+    let dg = a.1 as f32 - b.1 as f32;
+    let db = a.2 as f32 - b.2 as f32;
+    dr * dr + dg * dg + db * db
+}
+
+fn rgb_to_palette_color(rgb: (u8, u8, u8), colors: &[Rgb24]) -> Result<Color, String> {
+    validate_palette(colors)?;
+    let mut closest_color: Color = 0;
+    let mut closest_dist: f32 = f32::MAX;
+
+    for (i, pal_color) in colors.iter().enumerate() {
+        let pal_rgb = (
+            (pal_color >> 16) as u8,
+            (pal_color >> 8) as u8,
+            *pal_color as u8,
+        );
+        let dist = color_distance_sq(rgb, pal_rgb);
+        if dist < closest_dist {
+            closest_color = i as Color;
+            closest_dist = dist;
+        }
+    }
+
+    Ok(closest_color)
+}
+
+// The factor-alpha warning lives in validate_texture_usage; these
+// converters run in both material passes and stay silent.
+fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
+    if factor.iter().any(|component| !component.is_finite()) {
+        return Err("GLB material baseColorFactor must be finite".to_string());
+    }
+    Ok((
+        (factor[0].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (factor[1].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (factor[2].clamp(0.0, 1.0) * 255.0).round() as u8,
+    ))
+}
+
+fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTintKey), String> {
+    if factor.iter().any(|component| !component.is_finite()) {
+        return Err("GLB material baseColorFactor must be finite".to_string());
+    }
+    let tint = [
+        factor[0].clamp(0.0, 1.0),
+        factor[1].clamp(0.0, 1.0),
+        factor[2].clamp(0.0, 1.0),
+    ];
+    let key = (tint[0].to_bits(), tint[1].to_bits(), tint[2].to_bits());
+    Ok((tint, key))
+}
+
+fn import_materials(
+    document: &gltf::Document,
+    images: &[gltf::image::Data],
+    colkey: Option<i32>,
+) -> Result<(Vec<Material>, Option<i32>), String> {
+    let colors = crate::pyxel::colors();
+    validate_palette(&colors)?;
+    let mut used_colors = vec![false; colors.len()];
+    let mut needs_mask_colkey = false;
+
+    for material in document.materials() {
+        let pbr = material.pbr_metallic_roughness();
+        let alpha_cutoff = mask_alpha_cutoff(&material)?;
+        if let Some(texture_info) = pbr.base_color_texture() {
+            let (tint, _) = base_color_factor_to_tint(pbr.base_color_factor())?;
+            let image_index = texture_info.texture().source().index();
+            if let Some(img) = images.get(image_index) {
+                let rgba = image_to_rgba8(img)?;
+                needs_mask_colkey |= mark_texture_palette_usage(
+                    img.width,
+                    img.height,
+                    &rgba,
+                    &colors,
+                    tint,
+                    alpha_cutoff,
+                    &mut used_colors,
+                )?;
+            } else {
+                let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
+                let color = rgb_to_palette_color(rgb, &colors)?;
+                used_colors[color as usize] = true;
+            }
+        } else {
+            let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
+            let color = rgb_to_palette_color(rgb, &colors)?;
+            used_colors[color as usize] = true;
+        }
+    }
+
+    let resolved_colkey = resolve_mask_colkey(colkey, &used_colors, needs_mask_colkey);
+    let mut image_cache = HashMap::<ImageCacheKey, RcImage>::new();
+    let mut materials = Vec::new();
+
+    // Resolve materials while reusing identical decoded images
+    for material in document.materials() {
+        let pbr = material.pbr_metallic_roughness();
+        let alpha_cutoff = mask_alpha_cutoff(&material)?;
+        let col_img = if let Some(texture_info) = pbr.base_color_texture() {
+            let (tint, tint_key) = base_color_factor_to_tint(pbr.base_color_factor())?;
+            let image_index = texture_info.texture().source().index();
+            let mask_colkey = resolved_colkey.zip(alpha_cutoff);
+            let cache_key = (
+                image_index,
+                tint_key,
+                mask_colkey.map(|(colkey, cutoff)| (colkey, cutoff.to_bits())),
+            );
+
+            if let Some(img) = image_cache.get(&cache_key) {
+                ColImage::Image(img.clone())
+            } else if let Some(img) = images.get(image_index) {
+                let rgba = image_to_rgba8(img)?;
+                let image = rgba8_to_pyxel_image(
+                    img.width,
+                    img.height,
+                    &rgba,
+                    &colors,
+                    tint,
+                    mask_colkey.map(|(colkey, cutoff)| (colkey as Color, cutoff)),
+                )?;
+                image_cache.insert(cache_key, image.clone());
+                ColImage::Image(image)
+            } else {
+                let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
+                ColImage::Color(i32::from(rgb_to_palette_color(rgb, &colors)?))
+            }
+        } else {
+            let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
+            ColImage::Color(i32::from(rgb_to_palette_color(rgb, &colors)?))
+        };
+        materials.push(Material {
+            col_img,
+            colkey: resolved_colkey,
+        });
+    }
+
+    Ok((materials, resolved_colkey))
+}
+
+// Validation helpers
+
+fn validate_glb_header(bytes: &[u8]) -> Result<(), String> {
+    if bytes.len() < 4 || &bytes[0..4] != b"glTF" {
+        return Err("GLB binary header is required".to_string());
+    }
+    if bytes.len() >= 8 {
+        let version = u32::from_le_bytes([bytes[4], bytes[5], bytes[6], bytes[7]]);
+        if version != 2 {
+            return Err("GLB version 2 is required".to_string());
+        }
+    }
+    Ok(())
+}
+
+fn glb_json_chunk(bytes: &[u8]) -> Result<Option<&[u8]>, String> {
+    if bytes.len() < 20 {
+        return Ok(None);
+    }
+
+    let json_len = u32::from_le_bytes([bytes[12], bytes[13], bytes[14], bytes[15]]) as usize;
+    let json_type = [bytes[16], bytes[17], bytes[18], bytes[19]];
+    if json_type != *b"JSON" {
+        return Err("GLB first chunk must be JSON".to_string());
+    }
+
+    let json_end = 20_usize
+        .checked_add(json_len)
+        .ok_or_else(|| "GLB JSON chunk length overflows".to_string())?;
+    if json_end > bytes.len() {
+        return Err("GLB JSON chunk is truncated".to_string());
+    }
+    Ok(Some(&bytes[20..json_end]))
+}
+
+fn sanitize_glb_for_import(bytes: &[u8]) -> Result<(Cow<'_, [u8]>, bool), String> {
+    let Some(json_bytes) = glb_json_chunk(bytes)? else {
+        return Ok((Cow::Borrowed(bytes), false));
+    };
+    let mut json: gltf::json::Value = gltf::json::deserialize::from_slice(json_bytes)
+        .map_err(|e| format!("Failed to parse GLB JSON: {e}"))?;
+
+    let extension = "KHR_animation_pointer";
+    let declared = ["extensionsUsed", "extensionsRequired"].iter().any(|key| {
+        json[*key]
+            .as_array()
+            .is_some_and(|names| names.iter().any(|name| name.as_str() == Some(extension)))
+    });
+
+    let targeted = json["animations"].as_array().is_some_and(|animations| {
+        animations.iter().any(|animation| {
+            animation["channels"].as_array().is_some_and(|channels| {
+                channels
+                    .iter()
+                    .any(|channel| channel["target"]["extensions"].get(extension).is_some())
+            })
+        })
+    });
+    if !declared && !targeted {
+        return Ok((Cow::Borrowed(bytes), false));
+    }
+
+    warn_glb("GLB animation pointer/material animation is not supported; animations are ignored");
+    let object = json.as_object_mut().unwrap();
+    object.remove("animations");
+    for key in ["extensionsUsed", "extensionsRequired"] {
+        if let Some(names) = object
+            .get_mut(key)
+            .and_then(gltf::json::Value::as_array_mut)
+        {
+            names.retain(|name| name.as_str() != Some(extension));
+            if names.is_empty() {
+                object.remove(key);
+            }
+        }
+    }
+
+    // GLB container layout: 12-byte header (magic, version, total length),
+    // then length-prefixed chunks, each padded to 4-byte alignment (spaces
+    // for JSON, NULs for BIN). The JSON chunk body starts at byte 20.
+    let json_len = u32::from_le_bytes([bytes[12], bytes[13], bytes[14], bytes[15]]) as usize;
+    let json_start = 20;
+    let json_end = json_start + json_len;
+    let mut new_json = gltf::json::serialize::to_vec(&json)
+        .map_err(|e| format!("Failed to write GLB JSON: {e}"))?;
+    let pad = (4 - new_json.len() % 4) % 4;
+    new_json.extend(std::iter::repeat_n(b' ', pad));
+
+    let total_len = 12 + 8 + new_json.len() + bytes.len() - json_end;
+    let mut out = Vec::with_capacity(total_len);
+    out.extend_from_slice(&bytes[0..8]);
+    out.extend_from_slice(&(total_len as u32).to_le_bytes());
+    out.extend_from_slice(&(new_json.len() as u32).to_le_bytes());
+    out.extend_from_slice(b"JSON");
+    out.extend_from_slice(&new_json);
+    out.extend_from_slice(&bytes[json_end..]);
+    Ok((Cow::Owned(out), true))
+}
+
+fn validate_document(document: &gltf::Document, image_count: usize) -> Result<(), String> {
+    if document.skins().next().is_some() {
+        warn_glb("GLB skins are not supported; skinning is ignored");
+    }
+
+    for buffer in document.buffers() {
+        if let gltf::buffer::Source::Uri(_) = buffer.source() {
+            return Err("GLB external buffers are not supported".to_string());
+        }
+    }
+
+    for image in document.images() {
+        match image.source() {
+            gltf::image::Source::View { .. } => {}
+            gltf::image::Source::Uri { .. } => {
+                return Err("GLB external images are not supported".to_string());
+            }
+        }
+    }
+
+    validate_mesh_features(document);
+    validate_texture_usage(document, image_count);
+    Ok(())
+}
+
+fn validate_mesh_features(document: &gltf::Document) {
+    for mesh in document.meshes() {
+        if mesh.weights().is_some() {
+            warn_glb("GLB mesh morph targets are not supported; base mesh is used");
+        }
+        for primitive in mesh.primitives() {
+            if primitive.material().index().is_none() {
+                warn_glb("GLB primitive material is missing; default mesh material is used");
+            }
+            validate_primitive_attributes(&primitive);
+            if primitive.morph_targets().next().is_some() {
+                warn_glb("GLB mesh morph targets are not supported; base mesh is used");
+            }
+        }
+    }
+
+    for node in document.nodes() {
+        if let gltf::scene::Transform::Matrix { .. } = node.transform() {
+            warn_glb("GLB matrix node transforms are not supported; transform is decomposed");
+        }
+        if node.weights().is_some() {
+            warn_glb("GLB node morph target weights are not supported; base mesh is used");
+        }
+    }
+}
+
+fn validate_primitive_attributes(primitive: &gltf::Primitive) {
+    for (semantic, _) in primitive.attributes() {
+        match semantic {
+            gltf::mesh::Semantic::Positions
+            | gltf::mesh::Semantic::Normals
+            | gltf::mesh::Semantic::TexCoords(0) => {}
+            _ => {
+                warn_glb(&format!(
+                    "GLB unsupported vertex attribute: {semantic:?}; attribute is ignored"
+                ));
+            }
+        }
+    }
+}
+
+fn validate_texture_usage(document: &gltf::Document, image_count: usize) {
+    for material in document.materials() {
+        if !matches!(
+            material.alpha_mode(),
+            gltf::material::AlphaMode::Opaque | gltf::material::AlphaMode::Mask
+        ) {
+            warn_glb("GLB material alpha mode is not supported; alpha is ignored");
+        }
+        let factor = material.pbr_metallic_roughness().base_color_factor();
+        if factor[3].is_finite() && (factor[3] - 1.0).abs() > f32::EPSILON {
+            warn_glb("GLB material baseColorFactor alpha is not supported; alpha is ignored");
+        }
+
+        if material.normal_texture().is_some()
+            || material.occlusion_texture().is_some()
+            || material.emissive_texture().is_some()
+            || material
+                .pbr_metallic_roughness()
+                .metallic_roughness_texture()
+                .is_some()
+        {
+            warn_glb("GLB unsupported texture usage; non-base-color textures are ignored");
+        }
+
+        if let Some(texture) = material.pbr_metallic_roughness().base_color_texture() {
+            if texture.texture().source().index() >= image_count {
+                warn_glb("GLB base color texture image is missing; using flat material color");
+            }
+        }
+    }
+}
+
+// Scene import
+
+fn import_node(
+    mesh: &RcMesh,
+    buffers: &[gltf::buffer::Data],
+    node_parts: &mut HashMap<usize, usize>,
+    node: &gltf::Node,
+    parent: i32,
+) -> Result<(), String> {
+    let node_name = node.name().unwrap_or("").to_string();
+    let node_part = add_part(
+        mesh,
+        None,
+        node_transform(node),
+        parent,
+        node_name.clone(),
+        None,
+    );
+    node_parts.insert(node.index(), node_part);
+
+    if let Some(gltf_mesh) = node.mesh() {
+        for primitive in gltf_mesh.primitives() {
+            let primitive_index = primitive.index();
+            let name = if node_name.is_empty() {
+                format!("primitive_{primitive_index}")
+            } else {
+                format!("{node_name}_primitive_{primitive_index}")
+            };
+            let material_index = primitive.material().index();
+            let primitive = import_primitive(&primitive, buffers)?;
+            add_part(
+                mesh,
+                Some(primitive),
+                Mat4::identity(),
+                node_part as i32,
+                name,
+                material_index,
+            );
+        }
+    }
+
+    for child in node.children() {
+        import_node(mesh, buffers, node_parts, &child, node_part as i32)?;
+    }
+    Ok(())
+}
+
+fn add_part(
+    mesh: &RcMesh,
+    primitive: Option<RcPrimitive>,
+    transform: RcMat4,
+    parent: i32,
+    name: String,
+    material_index: Option<usize>,
+) -> usize {
+    let mut m = rc_mut!(mesh);
+    let index = m.primitives.len();
+    m.primitives.push(primitive);
+    m.transforms.push(transform);
+    m.parents.push(parent);
+    m.names.push(name);
+    m.material_indices.push(material_index);
+    index
+}
+
+fn node_transform(node: &gltf::Node) -> RcMat4 {
+    let (pos, rot, scale) = node_transform_components(node);
+    Mat4::compose(&pos, &rot, &scale)
+}
+
+fn node_transform_components(node: &gltf::Node) -> (Vec3, Quat, Vec3) {
+    let (translation, rotation, scale) = node.transform().decomposed();
+    let pos = Vec3 {
+        x: translation[0],
+        y: translation[1],
+        z: translation[2],
+    };
+    let rot = Quat {
+        x: rotation[0],
+        y: rotation[1],
+        z: rotation[2],
+        w: rotation[3],
+    };
+    let scale = Vec3 {
+        x: scale[0],
+        y: scale[1],
+        z: scale[2],
+    };
+    (pos, rot, scale)
+}
+
+// Primitive import
+
+fn import_primitive(
+    primitive: &gltf::Primitive,
+    buffers: &[gltf::buffer::Data],
+) -> Result<RcPrimitive, String> {
+    if primitive.mode() != gltf::mesh::Mode::Triangles {
+        return Err("GLB only triangle primitives are supported".to_string());
+    }
+
+    let has_texture = primitive
+        .material()
+        .pbr_metallic_roughness()
+        .base_color_texture()
+        .is_some();
+    let reader =
+        primitive.reader(|buffer| buffers.get(buffer.index()).map(|data| data.0.as_slice()));
+
+    let positions = reader
+        .read_positions()
+        .ok_or_else(|| "GLB primitive is missing POSITION".to_string())?
+        .flat_map(std::iter::IntoIterator::into_iter)
+        .collect::<Vec<f32>>();
+    let vertex_count = positions.len() / 3;
+    if vertex_count == 0 {
+        return Err("GLB primitive POSITION count is zero".to_string());
+    }
+
+    let uvs = match reader.read_tex_coords(0) {
+        Some(tex_coords) => tex_coords
+            .into_f32()
+            .flat_map(std::iter::IntoIterator::into_iter)
+            .collect::<Vec<f32>>(),
+        None if has_texture => return Err("GLB primitive is missing TEXCOORD_0".to_string()),
+        None => Vec::new(),
+    };
+    if has_texture && uvs.len() / 2 != vertex_count {
+        return Err("GLB TEXCOORD_0 and POSITION count mismatch".to_string());
+    }
+
+    let vertex_normals = match reader.read_normals() {
+        Some(normals) => {
+            let normals = normals
+                .flat_map(std::iter::IntoIterator::into_iter)
+                .collect::<Vec<f32>>();
+            if normals.len() / 3 != vertex_count {
+                return Err("GLB NORMAL and POSITION count mismatch".to_string());
+            }
+            if normals.iter().any(|normal| !normal.is_finite()) {
+                return Err("GLB NORMAL values must be finite".to_string());
+            }
+            Some(normals)
+        }
+        None => None,
+    };
+
+    let indices = reader
+        .read_indices()
+        .map_or_default(|indices| indices.into_u32().map(|i| i as i32).collect::<Vec<i32>>());
+    if indices.iter().any(|&index| index as usize >= vertex_count) {
+        return Err("GLB primitive index is out of range for POSITION count".to_string());
+    }
+    if indices.is_empty() {
+        if !vertex_count.is_multiple_of(3) {
+            return Err("GLB triangle vertex count must be a multiple of 3".to_string());
+        }
+    } else if !indices.len().is_multiple_of(3) {
+        return Err("GLB triangle indices count must be a multiple of 3".to_string());
+    }
+
+    let prim = Primitive::new();
+    {
+        let mut p = rc_mut!(&prim);
+        p.positions = positions;
+        p.uvs = uvs;
+        p.indices = indices;
+        p.mode = MODE_TRIANGLES;
+
+        p.compute_normals();
+        if let Some(vertex_normals) = vertex_normals {
+            p.normals = authored_normals_to_flat_normals(&vertex_normals, &p.indices, &p.normals)?;
+        }
+    }
+    Ok(prim)
+}
+
+fn authored_normals_to_flat_normals(
+    vertex_normals: &[f32],
+    indices: &[i32],
+    fallback_normals: &[f32],
+) -> Result<Vec<f32>, String> {
+    let vertex_count = vertex_normals.len() / 3;
+    let face_count = if indices.is_empty() {
+        vertex_count / 3
+    } else {
+        indices.len() / 3
+    };
+    let mut out = Vec::with_capacity(face_count * 3);
+
+    for face_index in 0..face_count {
+        let (a, b, c) = if indices.is_empty() {
+            (face_index * 3, face_index * 3 + 1, face_index * 3 + 2)
+        } else {
+            (
+                indices[face_index * 3] as usize,
+                indices[face_index * 3 + 1] as usize,
+                indices[face_index * 3 + 2] as usize,
+            )
+        };
+        if a >= vertex_count || b >= vertex_count || c >= vertex_count {
+            return Err("GLB primitive index is out of range for NORMAL count".to_string());
+        }
+
+        let nx = vertex_normals[a * 3] + vertex_normals[b * 3] + vertex_normals[c * 3];
+        let ny = vertex_normals[a * 3 + 1] + vertex_normals[b * 3 + 1] + vertex_normals[c * 3 + 1];
+        let nz = vertex_normals[a * 3 + 2] + vertex_normals[b * 3 + 2] + vertex_normals[c * 3 + 2];
+        let len = (nx * nx + ny * ny + nz * nz).sqrt();
+        if len > f32::EPSILON {
+            out.extend_from_slice(&[nx / len, ny / len, nz / len]);
+        } else {
+            let base = face_index * 3;
+            out.extend_from_slice(&fallback_normals[base..base + 3]);
+        }
+    }
+
+    Ok(out)
+}
+
+// Animation import
+
+fn import_animations(
+    mesh: &RcMesh,
+    buffers: &[gltf::buffer::Data],
+    node_parts: &HashMap<usize, usize>,
+    document: &gltf::Document,
+    fps: f32,
+) -> Result<(), String> {
+    let identity_components = (
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+        Quat {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+        },
+        Vec3 {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+        },
+    );
+    let mut base_components = vec![identity_components; rc_ref!(mesh).transforms.len()];
+    for node in document.nodes() {
+        if let Some(&part_index) = node_parts.get(&node.index()) {
+            base_components[part_index] = node_transform_components(&node);
+        }
+    }
+
+    for animation in document.animations() {
+        let motion = Motion::new(
+            animation.name().unwrap_or("").to_string(),
+            0.0,
+            base_components.clone(),
+        );
+        {
+            let mut m = rc_mut!(&motion);
+
+            for channel in animation.channels() {
+                let interpolation = match channel.sampler().interpolation() {
+                    gltf::animation::Interpolation::CubicSpline => MotionInterpolation::CubicSpline,
+                    gltf::animation::Interpolation::Step => MotionInterpolation::Step,
+                    gltf::animation::Interpolation::Linear => MotionInterpolation::Linear,
+                };
+
+                let reader = channel
+                    .reader(|buffer| buffers.get(buffer.index()).map(|data| data.0.as_slice()));
+                let mut inputs = reader
+                    .read_inputs()
+                    .ok_or_else(|| "GLB animation channel is missing input times".to_string())?
+                    .collect::<Vec<f32>>();
+                if inputs.is_empty() {
+                    return Err("GLB animation channel has empty input keys".to_string());
+                }
+                if inputs.iter().any(|time| !time.is_finite() || *time < 0.0)
+                    || inputs.windows(2).any(|pair| pair[0] >= pair[1])
+                {
+                    return Err(
+                        "GLB animation input times must be finite, nonnegative, and strictly increasing"
+                            .to_string(),
+                    );
+                }
+
+                for time in &mut inputs {
+                    *time *= fps;
+                    if !time.is_finite() {
+                        return Err("GLB animation frame times must be finite".to_string());
+                    }
+                }
+                if let Some(&last) = inputs.last() {
+                    m.length = m.length.max(last);
+                }
+
+                let node_index = channel.target().node().index();
+                let part_index = *node_parts.get(&node_index).ok_or_else(|| {
+                    format!("GLB animation targets node {node_index} outside imported scene")
+                })?;
+                let mut tangent_fps = 1.0;
+                let (target, values) = match channel.target().property() {
+                    gltf::animation::Property::Translation => {
+                        let values = match reader.read_outputs() {
+                            Some(gltf::animation::util::ReadOutputs::Translations(values)) => {
+                                let values = values
+                                    .map(|v| Vec3 {
+                                        x: v[0],
+                                        y: v[1],
+                                        z: v[2],
+                                    })
+                                    .collect::<Vec<_>>();
+
+                                if interpolation == MotionInterpolation::CubicSpline {
+                                    let (keys, scale) = cubic_vec3_keys(&values, fps)?;
+                                    tangent_fps = scale;
+                                    MotionValues::CubicTranslations(keys)
+                                } else {
+                                    MotionValues::Translations(values)
+                                }
+                            }
+                            _ => {
+                                return Err(
+                                    "GLB animation translation values are missing".to_string()
+                                );
+                            }
+                        };
+                        (MotionTarget::Translation, values)
+                    }
+
+                    gltf::animation::Property::Rotation => {
+                        let values = match reader.read_outputs() {
+                            Some(gltf::animation::util::ReadOutputs::Rotations(values)) => {
+                                let values = values
+                                    .into_f32()
+                                    .map(|v| Quat {
+                                        x: v[0],
+                                        y: v[1],
+                                        z: v[2],
+                                        w: v[3],
+                                    })
+                                    .collect::<Vec<_>>();
+
+                                if interpolation == MotionInterpolation::CubicSpline {
+                                    let (keys, scale) = cubic_quat_keys(&values, fps)?;
+                                    tangent_fps = scale;
+                                    MotionValues::CubicRotations(keys)
+                                } else {
+                                    MotionValues::Rotations(values)
+                                }
+                            }
+                            _ => {
+                                return Err("GLB animation rotation values are missing".to_string());
+                            }
+                        };
+                        (MotionTarget::Rotation, values)
+                    }
+
+                    gltf::animation::Property::Scale => {
+                        let values = match reader.read_outputs() {
+                            Some(gltf::animation::util::ReadOutputs::Scales(values)) => {
+                                let values = values
+                                    .map(|v| Vec3 {
+                                        x: v[0],
+                                        y: v[1],
+                                        z: v[2],
+                                    })
+                                    .collect::<Vec<_>>();
+
+                                if interpolation == MotionInterpolation::CubicSpline {
+                                    let (keys, scale) = cubic_vec3_keys(&values, fps)?;
+                                    tangent_fps = scale;
+                                    MotionValues::CubicScales(keys)
+                                } else {
+                                    MotionValues::Scales(values)
+                                }
+                            }
+                            _ => return Err("GLB animation scale values are missing".to_string()),
+                        };
+                        (MotionTarget::Scale, values)
+                    }
+
+                    gltf::animation::Property::MorphTargetWeights => {
+                        return Err("GLB morph target animation is not supported".to_string());
+                    }
+                };
+
+                let value_count = values.len();
+                if value_count != inputs.len() {
+                    return Err(format!(
+                        "GLB animation input/output counts mismatch: inputs={}, outputs={}",
+                        inputs.len(),
+                        value_count
+                    ));
+                }
+                m.channels.push(MotionChannel {
+                    part_index,
+                    target,
+                    inputs,
+                    tangent_fps,
+                    values,
+                    interpolation,
+                });
+            }
+        }
+
+        rc_mut!(mesh).motions.push(motion);
+    }
+
+    Ok(())
+}
+
+fn cubic_vec3_keys(values: &[Vec3], fps: f32) -> Result<(Vec<CubicVec3Key>, f32), String> {
+    let (chunks, remainder) = values.as_chunks::<3>();
+    if !remainder.is_empty() {
+        return Err("GLB cubic spline animation values must be tangent/value triples".to_string());
+    }
+    let deferred = chunks.iter().any(|chunk| {
+        [chunk[0], chunk[2]].iter().any(|v| {
+            [v.x, v.y, v.z].into_iter().any(|v| {
+                let per_frame = v / fps;
+                v.is_finite() && (!per_frame.is_finite() || (v != 0.0 && per_frame == 0.0))
+            })
+        })
+    });
+    let divisor = if deferred { 1.0 } else { fps };
+    let keys = chunks
+        .iter()
+        .map(|chunk| CubicVec3Key {
+            in_tangent: vec3_per_frame(&chunk[0], divisor),
+            value: chunk[1],
+            out_tangent: vec3_per_frame(&chunk[2], divisor),
+        })
+        .collect();
+    Ok((keys, if deferred { fps } else { 1.0 }))
+}
+
+fn cubic_quat_keys(values: &[Quat], fps: f32) -> Result<(Vec<CubicQuatKey>, f32), String> {
+    let (chunks, remainder) = values.as_chunks::<3>();
+    if !remainder.is_empty() {
+        return Err("GLB cubic spline animation values must be tangent/value triples".to_string());
+    }
+    let deferred = chunks.iter().any(|chunk| {
+        [chunk[0], chunk[2]].iter().any(|v| {
+            [v.x, v.y, v.z, v.w].into_iter().any(|v| {
+                let per_frame = v / fps;
+                v.is_finite() && (!per_frame.is_finite() || (v != 0.0 && per_frame == 0.0))
+            })
+        })
+    });
+    let divisor = if deferred { 1.0 } else { fps };
+    let keys = chunks
+        .iter()
+        .map(|chunk| CubicQuatKey {
+            in_tangent: quat_per_frame(&chunk[0], divisor),
+            value: chunk[1],
+            out_tangent: quat_per_frame(&chunk[2], divisor),
+        })
+        .collect();
+    Ok((keys, if deferred { fps } else { 1.0 }))
+}
+
+fn vec3_per_frame(v: &Vec3, fps: f32) -> Vec3 {
+    Vec3 {
+        x: v.x / fps,
+        y: v.y / fps,
+        z: v.z / fps,
+    }
+}
+
+fn quat_per_frame(q: &Quat, fps: f32) -> Quat {
+    Quat {
+        x: q.x / fps,
+        y: q.y / fps,
+        z: q.z / fps,
+        w: q.w / fps,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cubic_motion_retains_finite_tangents_across_frame_rates() {
+        for fps in [20.0_f32, 1.0, 1e-20, 1e-39, 1e20] {
+            for amplitude in [1.0_f32, 1e-30] {
+                for target in ["translation", "scale", "rotation"] {
+                    let width = if target == "rotation" { 4 } else { 3 };
+                    let axis = usize::from(target == "rotation");
+                    let mut values = vec![0.0_f32; 6 * width];
+                    values[2 * width + axis] = amplitude;
+                    values[3 * width + axis] = amplitude * 0.5;
+                    if target == "rotation" {
+                        values[width + 3] = 1.0;
+                        values[4 * width + 3] = 1.0;
+                    }
+                    let mut bytes = Vec::new();
+                    for value in [0.0_f32, 0.5].iter().chain(values.iter()) {
+                        bytes.extend_from_slice(&value.to_le_bytes());
+                    }
+                    let document = serde_json::json!({
+                        "asset": {"version": "2.0"},
+                        "buffers": [{"byteLength": bytes.len()}],
+                        "bufferViews": [
+                            {"buffer": 0, "byteOffset": 0, "byteLength": 8},
+                            {"buffer": 0, "byteOffset": 8, "byteLength": values.len() * 4}
+                        ],
+                        "accessors": [
+                            {"bufferView": 0, "componentType": 5126, "count": 2, "type": "SCALAR", "min": [0.0], "max": [0.5]},
+                            {"bufferView": 1, "componentType": 5126, "count": 6, "type": if target == "rotation" { "VEC4" } else { "VEC3" }}
+                        ],
+                        "nodes": [{}],
+                        "animations": [{
+                            "samplers": [{"input": 0, "output": 1, "interpolation": "CUBICSPLINE"}],
+                            "channels": [{"sampler": 0, "target": {"node": 0, "path": target}}]
+                        }]
+                    });
+                    let gltf =
+                        gltf::Gltf::from_slice(&serde_json::to_vec(&document).unwrap()).unwrap();
+                    let buffers = vec![gltf::buffer::Data(bytes)];
+                    let mesh = Mesh::new();
+                    let mut node_parts = HashMap::new();
+                    let node = gltf.document.nodes().next().unwrap();
+                    import_node(&mesh, &buffers, &mut node_parts, &node, -1).unwrap();
+                    import_animations(&mesh, &buffers, &node_parts, &gltf.document, fps).unwrap();
+                    let mesh = rc_ref!(&mesh);
+                    let motion = rc_ref!(&mesh.motions[0]);
+                    assert_eq!(motion.length, 0.5 * fps);
+                    let sampled = motion.sample(motion.length * 0.5, false);
+                    assert_eq!(sampled.len(), 1);
+                    let matrix = sampled[0].1;
+                    assert!(matrix.data.iter().flatten().all(|v| v.is_finite()));
+                    // Midpoint Hermite weights are +1/8 and -1/8, the
+                    // authored interval is 1/2 second, and slopes are A and A/2.
+                    let expected = f64::from(amplitude) / 32.0;
+                    let (actual, expected) = match target {
+                        "translation" => (matrix.data[0][3], expected),
+                        "scale" => (matrix.data[0][0], expected),
+                        _ => (
+                            matrix.data[0][2],
+                            2.0 * expected / (1.0 + expected * expected),
+                        ),
+                    };
+                    // Ordinary interpolation rounds h10*dt in f32. Bound its
+                    // subnormal ulps relative to the authored interval as well as
+                    // quaternion composition; a lost nonzero slope still fails.
+                    let tolerance = 4e-6 + 64.0 * f64::from(f32::from_bits(1)) / f64::from(fps);
+                    assert!((f64::from(actual) - expected).abs() <= expected.abs() * tolerance,
+                        "fps={fps} amplitude={amplitude} target={target} actual={actual} expected={expected}");
+                    for frame in [0.0, motion.length] {
+                        let endpoint = motion.sample(frame, false)[0].1;
+                        let expected = if target == "scale" { 0.0 } else { 1.0 };
+                        assert_eq!(endpoint.data[0][0], expected);
+                        assert_eq!(endpoint.data[0][3], 0.0);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_partial_animation_preserves_authored_signed_and_zero_scale_components() {
+        // A half-turn about Z negates X/Y exactly. Expected matrices retain
+        // the unkeyed authored components, including signs and zero-axis rotation.
+        let cases = [
+            (
+                "translation",
+                [-1.0, 2.0, 3.0],
+                vec![5.0_f32, 6.0, 7.0],
+                [1.0, -2.0, 3.0],
+                [5.0, 6.0, 7.0],
+            ),
+            (
+                "rotation",
+                [-1.0, -2.0, 3.0],
+                vec![0.0, 0.0, 0.0, 1.0],
+                [-1.0, -2.0, 3.0],
+                [1.0, 2.0, 3.0],
+            ),
+            (
+                "scale",
+                [0.0, 2.0, 3.0],
+                vec![1.0, 2.0, 3.0],
+                [-1.0, -2.0, 3.0],
+                [1.0, 2.0, 3.0],
+            ),
+        ];
+
+        for (target, scale, values, diagonal, translation) in cases {
+            let mut bytes = 0.0_f32.to_le_bytes().to_vec();
+            for value in &values {
+                bytes.extend_from_slice(&value.to_le_bytes());
+            }
+            let document = serde_json::json!({
+                "asset": {"version": "2.0"},
+                "buffers": [{"byteLength": bytes.len()}],
+                "bufferViews": [
+                    {"buffer": 0, "byteOffset": 0, "byteLength": 4},
+                    {"buffer": 0, "byteOffset": 4, "byteLength": values.len() * 4}
+                ],
+                "accessors": [
+                    {"bufferView": 0, "componentType": 5126, "count": 1, "type": "SCALAR", "min": [0.0], "max": [0.0]},
+                    {"bufferView": 1, "componentType": 5126, "count": 1, "type": if target == "rotation" { "VEC4" } else { "VEC3" }}
+                ],
+                "nodes": [{"translation": [1.0, 2.0, 3.0], "rotation": [0.0, 0.0, 1.0, 0.0], "scale": scale}],
+                "animations": [{
+                    "samplers": [{"input": 0, "output": 1, "interpolation": "LINEAR"}],
+                    "channels": [{"sampler": 0, "target": {"node": 0, "path": target}}]
+                }]
+            });
+            let gltf = gltf::Gltf::from_slice(&serde_json::to_vec(&document).unwrap()).unwrap();
+            let buffers = vec![gltf::buffer::Data(bytes)];
+            let mesh = Mesh::new();
+            let mut node_parts = HashMap::new();
+            let node = gltf.document.nodes().next().unwrap();
+            import_node(&mesh, &buffers, &mut node_parts, &node, -1).unwrap();
+            import_animations(&mesh, &buffers, &node_parts, &gltf.document, 30.0).unwrap();
+
+            let mesh_ref = rc_ref!(&mesh);
+            let motion = rc_ref!(&mesh_ref.motions[0]);
+            let sampled = motion.sample(0.0, false);
+            assert_eq!(sampled.len(), 1);
+            assert_eq!(sampled[0].0, node_parts[&0]);
+            assert_eq!(
+                sampled[0].1.data,
+                [
+                    [diagonal[0], 0.0, 0.0, translation[0]],
+                    [0.0, diagonal[1], 0.0, translation[1]],
+                    [0.0, 0.0, diagonal[2], translation[2]],
+                    [0.0, 0.0, 0.0, 1.0],
+                ],
+                "target={target}"
+            );
+        }
+    }
+}

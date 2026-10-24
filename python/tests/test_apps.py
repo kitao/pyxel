@@ -53,15 +53,18 @@ CAPTURE_PLANS = {
 
 
 class TestApps:
+    def test_bundled_apps_have_capture_plans(self):
+        planned = set(CAPTURE_PLANS)
+        apps = {app.stem for app in APPS_DIR.glob("*.pyxapp")}
+        assert planned == apps
+
     @pytest.mark.parametrize(
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())
     )
     def test_app(self, name, tmp_path, compare_screenshots):
         pyxapp = APPS_DIR / f"{name}.pyxapp"
         assert pyxapp.exists(), f"App not found: {pyxapp}"
-
         plan = CAPTURE_PLANS[name]
         run_app_subprocess(pyxapp, plan, tmp_path)
-
         results = collect_plan_results(plan, tmp_path)
         compare_screenshots(name, results, APP_REFS_DIR)

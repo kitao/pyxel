@@ -6,10 +6,6 @@ use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 
-pub(crate) fn validate_sec(sec: Option<f32>) -> PyResult<()> {
-    pyxel::Channel::validate_sec(sec).map_err(PyValueError::new_err)
-}
-
 // Playback functions
 
 #[pyfunction]
@@ -25,7 +21,7 @@ fn play(
     let sec = if let Some(tick) = tick {
         deprecation_warning!(
             PLAY_TICK_ONCE,
-            "tick option of pyxel.play is deprecated. Use sec option instead."
+            "tick option of pyxel.play is deprecated. Use sec in seconds (tick / 120) instead."
         );
         Some(tick as f32 / 120.0)
     } else {
@@ -33,17 +29,17 @@ fn play(
     };
     validate_sec(sec)?;
 
-    validate_index!(ch, pyxel::channels().len(), "ch", "channel");
+    validate_channel_index(ch)?;
     let should_loop = r#loop.unwrap_or(false);
     let resume = resume.unwrap_or(false);
 
-    // Dispatch supported sound input forms.
     cast_pyany! {
         snd,
         "snd must be int, list[int], Sound, list[Sound], or str",
 
         (u32, {
             validate_index!(snd, pyxel::sounds().len(), "snd", "sound");
+            validate_channel_index(ch)?;
             pyxel()
                 .play_sound(ch, snd, sec, should_loop, resume)
                 .map_err(PyValueError::new_err)?;
@@ -54,12 +50,14 @@ fn play(
             for &s in &snd {
                 validate_index!(s, num_sounds, "snd", "sound", list);
             }
+            validate_channel_index(ch)?;
             pyxel()
                 .play(ch, &snd, sec, should_loop, resume)
                 .map_err(PyValueError::new_err)?;
         }),
 
         (Sound, {
+            validate_channel_index(ch)?;
             let _lock = pyxel::AudioLock::lock();
             audio_mut!(pyxel::channels()[ch as usize])
                 .play_sound(snd.inner, sec, should_loop, resume)
@@ -67,7 +65,8 @@ fn play(
         }),
 
         (Vec<Sound>, {
-            let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
+            let sounds = snd.into_iter().map(|sound| sound.inner).collect();
+            validate_channel_index(ch)?;
             let _lock = pyxel::AudioLock::lock();
             audio_mut!(pyxel::channels()[ch as usize])
                 .play(sounds, sec, should_loop, resume)
@@ -75,12 +74,12 @@ fn play(
         }),
 
         (String, {
+            validate_channel_index(ch)?;
             pyxel()
                 .play_mml(ch, &snd, sec, should_loop, resume)
                 .map_err(PyException::new_err)?;
         })
     }
-
     Ok(())
 }
 
@@ -90,7 +89,7 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) ->
     let sec = if let Some(tick) = tick {
         deprecation_warning!(
             PLAYM_TICK_ONCE,
-            "tick option of pyxel.playm is deprecated. Use sec option instead."
+            "tick option of pyxel.playm is deprecated. Use sec in seconds (tick / 120) instead."
         );
         Some(tick as f32 / 120.0)
     } else {
@@ -99,7 +98,6 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) ->
     validate_sec(sec)?;
 
     validate_index!(msc, pyxel::musics().len(), "msc", "music");
-
     pyxel()
         .play_music(msc, sec, r#loop.unwrap_or(false))
         .map_err(PyException::new_err)?;
@@ -171,7 +169,16 @@ fn music(msc: u32) -> PyResult<Music> {
         .ok_or_else(|| invalid_index_error!("msc", "music"))
 }
 
-// Module registration
+pub(crate) fn validate_sec(sec: Option<f32>) -> PyResult<()> {
+    pyxel::Channel::validate_sec(sec).map_err(PyValueError::new_err)
+}
+
+fn validate_channel_index(ch: u32) -> PyResult<()> {
+    if ch as usize >= pyxel::channels().len() {
+        return Err(invalid_index_error!("ch", "channel"));
+    }
+    Ok(())
+}
 
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;
@@ -184,6 +191,5 @@ pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(channel, m)?)?;
     m.add_function(wrap_pyfunction!(sound, m)?)?;
     m.add_function(wrap_pyfunction!(music, m)?)?;
-
     Ok(())
 }

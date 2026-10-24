@@ -69,10 +69,19 @@ pub fn init(headless: bool) {
 }
 
 pub fn quit() {
-    if let Some(mut callback) = crate::quit_callback().take() {
+    // Release the callback-slot borrow before invoking Python exit hooks.
+    let callback = crate::quit_callback().take();
+    if let Some(mut callback) = callback {
         callback();
     }
     with_platform_mut(Platform::quit);
+    #[cfg(target_os = "emscripten")]
+    stop_main_loop();
+}
+
+#[cfg(target_os = "emscripten")]
+pub fn stop_main_loop() {
+    Platform::stop_main_loop();
 }
 
 pub fn ticks() -> u32 {

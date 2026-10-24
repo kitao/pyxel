@@ -25,12 +25,14 @@ fn btnv(key: pyxel::Key) -> pyxel::KeyValue {
     pyxel().button_value(key)
 }
 
-// Input overrides
+// Mouse cursor
 
 #[pyfunction]
 fn mouse(visible: bool) {
     pyxel().set_mouse_visible(visible);
 }
+
+// Input overrides
 
 #[pyfunction]
 fn set_btn(key: pyxel::Key, state: bool) {
@@ -56,8 +58,6 @@ fn set_input_text(text: &str) {
 fn set_dropped_files(files: Vec<String>) {
     pyxel().set_dropped_files(&files);
 }
-
-// Module registration
 
 pub fn add_input_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(btn, m)?)?;

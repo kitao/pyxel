@@ -1,0 +1,346 @@
+from math import fsum, isclose, sqrt
+
+import pytest
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
+from pyxel.cube import Mat4, Quat, Vec3
+
+
+class TestConstructor:
+    def test_default_is_identity(self):
+        m = Mat4()
+        for i in range(4):
+            for j in range(4):
+                expected = 1.0 if i == j else 0.0
+                assert m[i, j] == expected
+
+
+class TestConstants:
+    def test_identity(self):
+        m = Mat4.IDENTITY
+        for i in range(4):
+            for j in range(4):
+                assert m[i, j] == (1.0 if i == j else 0.0)
+
+    def test_singleton_identity(self):
+        assert Mat4.IDENTITY is Mat4.IDENTITY
+
+
+class TestHash:
+    def test_hash_equal_for_equal_values(self):
+        m1 = Mat4.from_translation(Vec3(1, 2, 3))
+        m2 = Mat4.from_translation(Vec3(1, 2, 3))
+        assert hash(m1) == hash(m2)
+
+    def test_usable_as_dict_key(self):
+        d = {
+            Mat4.IDENTITY: "id",
+            Mat4.from_translation(Vec3(1, 0, 0)): "t",
+        }
+        assert d[Mat4.IDENTITY] == "id"
+        assert d[Mat4.from_translation(Vec3(1, 0, 0))] == "t"
+
+
+class TestElementAccess:
+    def test_getitem_tuple(self):
+        m = Mat4.from_translation(Vec3(5, 6, 7))
+        assert m[0, 3] == 5.0
+        assert m[1, 3] == 6.0
+        assert m[2, 3] == 7.0
+
+    def test_getitem_out_of_range(self):
+        with raises_exact(IndexError, "Mat4 index out of range"):
+            _ = Mat4.IDENTITY[4, 0]
+
+
+class TestDecomposed:
+    def test_pos_after_translation(self):
+        m = Mat4.from_translation(Vec3(1, 2, 3))
+        assert m.pos == Vec3(1, 2, 3)
+
+    def test_scale_after_from_scale(self):
+        m = Mat4.from_scale(Vec3(2, 3, 4))
+        assert m.scale == Vec3(2, 3, 4)
+
+    def test_rot_zero_after_translation(self):
+        m = Mat4.from_translation(Vec3(1, 2, 3))
+        assert approx_v(m.rot.to_euler(), Vec3(0, 0, 0))
+
+    def test_compose_round_trip(self):
+        pos = Vec3(1, 2, 3)
+        rot_euler = Vec3(0, 45, 0)
+        rot = Quat.from_euler(rot_euler)
+        scale = Vec3(2, 2, 2)
+        m = Mat4.compose(pos, rot, scale)
+        assert m.pos == pos
+        assert approx_v(m.scale, scale)
+        assert approx_v(m.rot.to_euler(), rot_euler)
+
+    @pytest.mark.parametrize("sx", [-2, 2])
+    @pytest.mark.parametrize("sy", [-3, 3])
+    @pytest.mark.parametrize("sz", [-4, 4])
+    def test_signed_scale_decomposition_reconstructs_transform(self, sx, sy, sz):
+        m = Mat4.compose(
+            Vec3(1, 2, 3), Quat.from_euler(Vec3(23, -47, 71)), Vec3(sx, sy, sz)
+        )
+        expected_scale = Vec3(2, 3, -4 if sx * sy * sz < 0 else 4)
+
+        assert approx_v(m.scale, expected_scale)
+        assert isclose(m.rot.length(), 1, abs_tol=1e-6)
+        assert approx_m(Mat4.compose(m.pos, m.rot, m.scale), m)
+
+    @pytest.mark.parametrize(
+        "scale",
+        [
+            Vec3(0, -3, 4),
+            Vec3(-2, 0, 4),
+            Vec3(-2, 3, 0),
+            Vec3(0, 0, -4),
+            Vec3(0, -3, 0),
+            Vec3(-2, 0, 0),
+            Vec3(0, 0, 0),
+        ],
+    )
+    def test_zero_scale_preserves_lengths_and_returns_identity_rotation(self, scale):
+        m = Mat4.compose(Vec3(1, 2, 3), Quat.from_euler(Vec3(23, -47, 71)), scale)
+
+        assert approx_v(m.scale, Vec3(abs(scale.x), abs(scale.y), abs(scale.z)))
+        assert m.rot == Quat.IDENTITY
+
+    @pytest.mark.parametrize("magnitude", [1e-30, 1e-22, 1e-12, 1, 1e20, 1e30])
+    def test_decomposition_preserves_small_and_large_nonzero_scales(self, magnitude):
+        rot = Quat.from_euler(Vec3(23, -47, 71))
+        scale = Vec3(magnitude, 2 * magnitude, -3 * magnitude)
+        m = Mat4.compose(Vec3.ZERO, rot, scale)
+
+        for actual, expected in zip(
+            (m.scale.x, m.scale.y, m.scale.z), (scale.x, scale.y, scale.z)
+        ):
+            assert isclose(actual, expected, rel_tol=2e-6, abs_tol=0)
+        assert isclose(m.rot.length(), 1, abs_tol=1e-6)
+        assert approx_v(m.rot * Vec3(1, 2, 3), rot * Vec3(1, 2, 3))
+
+
+class TestOperators:
+    def test_mul_invalid_type(self):
+        with raises_exact(
+            TypeError, "unsupported operand type(s) for *: 'pyxel.cube.Mat4' and 'int'"
+        ):
+            Mat4() * 1
+
+    @pytest.mark.parametrize("left", [Mat4.IDENTITY, Quat.IDENTITY])
+    def test_mul_defers_to_reflected_operand(self, left):
+        class ReflectedOperand:
+            def __rmul__(self, operand):
+                return operand
+
+        assert left * ReflectedOperand() is left
+
+    def test_mul_identity(self):
+        m = Mat4.from_translation(Vec3(1, 2, 3))
+        assert m * Mat4.IDENTITY == m
+
+    def test_mul_vec_translation(self):
+        m = Mat4.from_translation(Vec3(10, 20, 30))
+        assert m * Vec3(1, 2, 3) == Vec3(11, 22, 33)
+
+    def test_eq(self):
+        assert Mat4.IDENTITY == Mat4.IDENTITY
+        assert Mat4.IDENTITY != Mat4.from_translation(Vec3(1, 0, 0))
+
+
+class TestFactories:
+    def test_from_euler_y90(self):
+        m = Mat4.from_euler(Vec3(0, 90, 0))
+        assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
+
+    def test_from_axis_angle_y90(self):
+        m = Mat4.from_axis_angle(Vec3.UP, 90)
+        assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
+
+    def test_from_quat_matches_rotation(self):
+        q = Quat.from_axis_angle(Vec3.UP, 90)
+        m = Mat4.from_quat(q)
+        assert approx_v(m * Vec3(1, 0, 0), q * Vec3(1, 0, 0))
+
+    def test_look_at_translation(self):
+        eye = Vec3(0, 0, 5)
+        m = Mat4.look_at(eye, Vec3(0, 0, 0))
+        assert m.pos == eye
+
+
+class TestTransform:
+    def test_translate(self):
+        m = Mat4().translate(Vec3(1, 2, 3))
+        assert m.pos == Vec3(1, 2, 3)
+
+    def test_rotate_x(self):
+        m = Mat4().rotate_x(90)
+        assert approx_v(m * Vec3(0, 1, 0), Vec3(0, 0, 1))
+
+    def test_rotate_y(self):
+        m = Mat4().rotate_y(90)
+        assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
+
+    def test_rotate_z(self):
+        m = Mat4().rotate_z(90)
+        assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 1, 0))
+
+    def test_rotate_arbitrary_axis(self):
+        m = Mat4().rotate(Vec3.UP, 90)
+        assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
+
+    def test_scale_by(self):
+        m = Mat4().scale_by(Vec3(2, 3, 4))
+        assert m.scale == Vec3(2, 3, 4)
+
+
+class TestMatrixOps:
+    @pytest.mark.parametrize("scale", [1e-4, 1e-20, 1e20, -1e-20])
+    def test_inverse_keeps_small_and_large_invertible_scales(self, scale):
+        m = Mat4.from_scale(Vec3(scale, scale, scale))
+        inverse = m.inverse()
+        # Diagonal inversion has an independent reciprocal expectation, even
+        # when the determinant underflows or overflows f32.
+        for axis in range(3):
+            assert inverse[axis, axis] == pytest.approx(1 / scale, rel=2e-6)
+        assert tuple(inverse * (m * Vec3(1, 2, 3))) == pytest.approx(
+            (1, 2, 3), abs=1e-6
+        )
+
+    def test_inverse_uses_axis_scales_independently(self):
+        m = Mat4.from_scale(Vec3(1e-8, 1e8, -1))
+        assert tuple(m.inverse() * (m * Vec3(1, 2, 3))) == pytest.approx(
+            (1, 2, 3), abs=1e-6
+        )
+
+    def test_inverse_singular_scale_keeps_identity_fallback(self):
+        assert Mat4.from_scale(Vec3(1, 0, 1)).inverse() == Mat4.IDENTITY
+
+    def test_inverse_singular_composition_keeps_identity_fallback(self):
+        matrix = (
+            Mat4.from_euler(Vec3(0, 0, 45))
+            * Mat4.from_scale(Vec3(0, 100, 333))
+            * Mat4.from_euler(Vec3(0, 33, 72))
+        )
+        assert all(matrix[0, col] == -matrix[1, col] for col in range(4))
+        assert matrix.inverse() == Mat4.IDENTITY
+
+    def test_inverse_round_trip(self):
+        rot = Quat.from_euler(Vec3(30, 45, 60))
+        m = Mat4.compose(Vec3(1, 2, 3), rot, Vec3(1.5, 2, 0.5))
+        identity_back = m * m.inverse()
+        assert approx_m(identity_back, Mat4.IDENTITY)
+
+    def test_transpose(self):
+        m = Mat4.from_translation(Vec3(1, 2, 3))
+        t = m.transpose()
+        for i in range(4):
+            for j in range(4):
+                assert t[i, j] == m[j, i]
+
+    def test_determinant_identity(self):
+        assert Mat4.IDENTITY.determinant() == 1.0
+
+    def test_determinant_scale(self):
+        assert Mat4.from_scale(Vec3(2, 3, 4)).determinant() == 24.0
+
+
+class TestCoordinateConversions:
+    def test_mat_to_world(self):
+        inner = Mat4.from_translation(Vec3(5, 0, 0))
+        outer = Mat4.from_translation(Vec3(10, 0, 0))
+        assert inner.to_world(outer).pos == Vec3(15, 0, 0)
+
+    def test_mat_to_local_round_trip(self):
+        outer = Mat4.from_translation(Vec3(10, 0, 0))
+        inner = Mat4.from_translation(Vec3(15, 0, 0))
+        local = inner.to_local(outer)
+        assert local.pos == Vec3(5, 0, 0)
+        assert local.to_world(outer) == inner
+
+
+@pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30])
+class TestFiniteDirections:
+    def test_axis_angle_retains_quarter_turn(self, scale):
+        matrix = Mat4.from_axis_angle(Vec3(0, scale, 0), 90)
+        assert tuple(Vec3.RIGHT.to_world_dir(matrix)) == pytest.approx(
+            (0, 0, -1), abs=1e-6
+        )
+
+    def test_look_at_retains_requested_forward(self, scale):
+        matrix = Mat4.look_at(Vec3.ZERO, Vec3(-3 * scale, 0, -4 * scale))
+        assert tuple(Vec3.FORWARD.to_world_dir(matrix)) == pytest.approx(
+            (-0.6, 0, -0.8), abs=1e-6
+        )
+
+    def test_look_at_with_scaled_up_retains_basis(self, scale):
+        matrix = Mat4.look_at(Vec3.ZERO, Vec3.FORWARD, Vec3(0, scale, 0))
+        assert matrix == Mat4.IDENTITY
+
+
+class TestFiniteIntermediates:
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    @pytest.mark.parametrize("operation", ["position", "direction", "matrix"])
+    def test_products_retain_representable_cancellation(self, scale, operation):
+        rotation = Mat4.from_euler(Vec3(0, 0, 45))
+        left = Mat4.from_scale(Vec3(scale, 1, 1)) * rotation
+        if operation == "matrix":
+            right = rotation * Mat4.from_scale(Vec3(3, 0, 1))
+            product = left * right
+            actual = tuple(product[i, j] for i in range(4) for j in range(4))
+            # Accumulate stored entries independently with Python's wider float.
+            expected = tuple(
+                fsum(left[i, k] * right[k, j] for k in range(4))
+                for i in range(4)
+                for j in range(4)
+            )
+        else:
+            vector = Vec3(3, 3, 0)
+            actual = tuple(
+                left * vector if operation == "position" else vector.to_world_dir(left)
+            )
+            expected = tuple(
+                fsum(left[i, j] * vector[j] for j in range(3)) for i in range(3)
+            )
+        assert actual == pytest.approx(expected, rel=2e-6, abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    @pytest.mark.parametrize("diagonal", [False, True])
+    def test_look_at_retains_wide_eye_target_difference(self, scale, diagonal):
+        eye = Vec3(scale, -scale, 0) if diagonal else Vec3(-scale, 0, 0)
+        target = -eye
+        expected = (-sqrt(0.5), sqrt(0.5), 0) if diagonal else (1, 0, 0)
+        matrix = Mat4.look_at(eye, target)
+        assert matrix.pos == eye
+        assert tuple(Vec3.FORWARD.to_world_dir(matrix)) == pytest.approx(
+            expected, abs=1e-6
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_finite_up_hint_retains_oblique_basis(self, scale):
+        matrix = Mat4.look_at(Vec3.ZERO, Vec3(0.6, 0, -0.8), Vec3(scale, scale, scale))
+        right = (0.8 / sqrt(2.96), -1.4 / sqrt(2.96), 0.6 / sqrt(2.96))
+        up = (-0.8 * right[1], 0.6 * right[2] + 0.8 * right[0], -0.6 * right[1])
+        for axis, expected in [
+            (Vec3.FORWARD, (0.6, 0, -0.8)),
+            (Vec3.RIGHT, right),
+            (Vec3.UP, up),
+        ]:
+            assert tuple(axis.to_world_dir(matrix)) == pytest.approx(expected, abs=1e-6)
+
+
+# 1e-4 exceeds the f32 rounding of unit-scale values and stays below any expected difference
+def approx_v(a, b, tol=1e-4):
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
+    )
+
+
+def approx_m(a, b, tol=1e-4):
+    for i in range(4):
+        for j in range(4):
+            if not isclose(a[i, j], b[i, j], abs_tol=tol):
+                return False
+    return True

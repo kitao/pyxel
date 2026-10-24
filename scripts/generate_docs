@@ -5,20 +5,26 @@ import json
 import re
 import subprocess
 from pathlib import Path
+from urllib.parse import urljoin
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "web"
 API_REF_JSON = WEB_DIR / "api-reference" / "api-reference.json"
+CUBE_API_REF_JSON = WEB_DIR / "api-reference" / "cube" / "api-reference.json"
 MML_COMMANDS_JSON = WEB_DIR / "mml-studio" / "mml-commands.json"
 USER_GUIDE_HTML = WEB_DIR / "user-guide" / "index.html"
 USER_GUIDE_JSON = WEB_DIR / "user-guide" / "user-guide.json"
+CUBE_USER_GUIDE_HTML = WEB_DIR / "user-guide" / "cube" / "index.html"
+CUBE_USER_GUIDE_JSON = WEB_DIR / "user-guide" / "cube" / "user-guide.json"
 WEB_USAGE_HTML = WEB_DIR / "web-usage" / "index.html"
 WEB_USAGE_JSON = WEB_DIR / "web-usage" / "web-usage.json"
 EDITOR_MANUAL_HTML = WEB_DIR / "editor-manual" / "index.html"
 EDITOR_MANUAL_JSON = WEB_DIR / "editor-manual" / "editor-manual.json"
 DOCS_DIR = ROOT_DIR / "docs"
-PYXEL_WEB = "https://kitao.github.io/pyxel/web"
+PYXEL_WEB = "https://kitao.dev/pyxel"
 BLOCK_MARKER = "\x00BLK{idx}\x00"
+# Page illustrations left out of the generated Markdown, which is read as plain
+# text; the logo and palette images stay.
 MARKDOWN_IMAGE_EXCLUDE_URLS = {
     "user-guide": {
         "images/pyxel_thanks.png",
@@ -33,170 +39,14 @@ MARKDOWN_IMAGE_EXCLUDE_URLS = {
 }
 HTML_DOCS = (
     (USER_GUIDE_HTML, USER_GUIDE_JSON, "user-guide", "user-guide"),
+    (CUBE_USER_GUIDE_HTML, CUBE_USER_GUIDE_JSON, "user-guide-cube", "user-guide/cube"),
     (EDITOR_MANUAL_HTML, EDITOR_MANUAL_JSON, "editor-manual", "editor-manual"),
     (WEB_USAGE_HTML, WEB_USAGE_JSON, "web-usage", "web-usage"),
 )
-API_REFERENCE_DOCS = ((API_REF_JSON, "api-reference", "api-reference"),)
-
-
-# Shared helpers
-
-
-def generated_header(*source_paths):
-    sources = " and ".join(str(p.relative_to(ROOT_DIR)) for p in source_paths)
-    return f"<!-- This file is generated from {sources}. -->\n\n"
-
-
-def localize(obj):
-    if not obj:
-        return ""
-    if isinstance(obj, str):
-        return obj
-    return obj.get("en", "")
-
-
-def _find_matching(text, start, open_ch, close_ch):
-    depth = 1
-    i = start
-    while i < len(text) and depth > 0:
-        ch = text[i]
-        if ch == "\\" and i + 1 < len(text):
-            i += 2
-            continue
-        if ch in ('"', "'", "`"):
-            q = ch
-            i += 1
-            while i < len(text) and text[i] != q:
-                if text[i] == "\\":
-                    i += 1
-                i += 1
-            i += 1
-            continue
-        if ch == open_ch:
-            depth += 1
-        elif ch == close_ch:
-            depth -= 1
-        i += 1
-    return i
-
-
-# Parse one JavaScript argument while preserving nested strings, regexes, arrays, and groups.
-def _parse_arg(text):
-    text = text.lstrip()
-    if not text:
-        return "", ""
-    # Split one argument off the front, dispatching on its first character
-    if text[0] in ('"', "'"):
-        q = text[0]
-        i = 1
-        while i < len(text):
-            if text[i] == "\\" and i + 1 < len(text):
-                i += 2
-                continue
-            if text[i] == q:
-                return text[: i + 1], text[i + 1 :].lstrip()
-            i += 1
-    elif text[0] == "`":
-        i = 1
-        while i < len(text):
-            if text[i] == "\\" and i + 1 < len(text):
-                i += 2
-                continue
-            if text[i] == "$" and i + 1 < len(text) and text[i + 1] == "{":
-                i = _find_matching(text, i + 2, "{", "}")
-                continue
-            if text[i] == "`":
-                return text[: i + 1], text[i + 1 :].lstrip()
-            i += 1
-    elif text[0] == "/":
-        i = 1
-        while i < len(text) and text[i] != "/":
-            if text[i] == "\\":
-                i += 1
-            i += 1
-        i += 1
-        while i < len(text) and text[i].isalpha():
-            i += 1
-        return text[:i], text[i:].lstrip()
-    elif text[0] == "[":
-        end = _find_matching(text, 1, "[", "]")
-        return text[:end], text[end:].lstrip()
-    else:
-        depth = 0
-        i = 0
-        while i < len(text):
-            ch = text[i]
-            if ch in ('"', "'", "`"):
-                q = ch
-                i += 1
-                while i < len(text) and text[i] != q:
-                    if text[i] == "\\":
-                        i += 1
-                    i += 1
-                i += 1
-                continue
-            if ch in ("(", "[", "{"):
-                depth += 1
-            elif ch in (")", "]", "}"):
-                if depth == 0:
-                    break
-                depth -= 1
-            elif ch == "," and depth == 0:
-                break
-            i += 1
-        return text[:i].rstrip(), text[i:].lstrip()
-    return text, ""
-
-
-def _skip_comma(text):
-    text = text.lstrip()
-    return text[1:].lstrip() if text.startswith(",") else text
-
-
-def _split_plus(expr):
-    parts = []
-    current = []
-    depth = 0
-    in_str = None
-    for ch in expr:
-        if in_str:
-            current.append(ch)
-            if ch != "\\" and ch == in_str:
-                in_str = None
-            continue
-        if ch in ('"', "'", "`"):
-            in_str = ch
-            current.append(ch)
-            continue
-        if ch in ("(", "[", "{"):
-            depth += 1
-        elif ch in (")", "]", "}"):
-            depth -= 1
-        if ch == "+" and depth == 0:
-            parts.append("".join(current))
-            current = []
-            continue
-        current.append(ch)
-    if current:
-        parts.append("".join(current))
-    return parts if len(parts) > 1 else [expr]
-
-
-def _transform_url(url, web_path=None):
-    if url.startswith(("http://", "https://")):
-        return url
-    if url.startswith("../../docs/images/"):
-        return url.replace("../../docs/images/", "images/")
-    if url.startswith("../../docs/"):
-        return url.replace("../../docs/", "")
-    if url.startswith("../"):
-        return f"{PYXEL_WEB}/{url[3:]}"
-    if web_path:
-        return f"{PYXEL_WEB}/{web_path}/{url}"
-    return url
-
-
-# JavaScript template evaluator
+API_REFERENCE_DOCS = (
+    (API_REF_JSON, "api-reference", "api-reference"),
+    (CUBE_API_REF_JSON, "api-reference-cube", "api-reference/cube"),
+)
 
 
 class JsEval:
@@ -215,6 +65,7 @@ class JsEval:
     def eval_template(self, template):
         result = []
         i = 0
+
         while i < len(template):
             if template[i] == "\\" and i + 1 < len(template):
                 c = template[i + 1]
@@ -227,9 +78,9 @@ class JsEval:
             else:
                 result.append(template[i])
                 i += 1
+
         return "".join(result)
 
-    # Evaluate the supported JavaScript expression subset into Markdown text.
     def eval(self, expr):
         expr = expr.strip()
         if not expr:
@@ -245,17 +96,21 @@ class JsEval:
             en_expr, _ = _parse_arg(rest)
             return self.eval(en_expr)
 
+        # Split top-level concatenation before recognizing a string literal.
+        parts = _split_plus(expr)
+        if len(parts) > 1:
+            return "".join(self.eval(p.strip()) for p in parts)
+
         # String literals
         if len(expr) >= 2:
             if (expr[0] == '"' and expr[-1] == '"') or (
                 expr[0] == "'" and expr[-1] == "'"
             ):
                 s = expr[1:-1]
-                return (
-                    s.replace("\\n", "\n")
-                    .replace("\\/", "/")
-                    .replace('\\"', '"')
-                    .replace("\\'", "'")
+                return re.sub(
+                    r"\\([n\\/'\"])",
+                    lambda match: "\n" if match[1] == "n" else match[1],
+                    s,
                 )
             if expr[0] == "`" and expr[-1] == "`":
                 return self.eval_template(expr[1:-1])
@@ -288,7 +143,6 @@ class JsEval:
         # esc(t("key")).replace(...) chain (must come before bare esc)
         if expr.startswith("esc(t(") and re.search(r"\.replace(All)?\(", expr):
             return self._replace_chain(expr)
-
         # esc(inner) -> just evaluate inner
         if expr.startswith("esc("):
             return self.eval(expr[4 : _find_matching(expr, 4, "(", ")") - 1])
@@ -383,6 +237,7 @@ class JsEval:
             ]
             tools = self._data.get("image_tools", [])
             rows = []
+
             for i, tool in enumerate(tools):
                 icon = tool_icons[i] if i < len(tool_icons) else ""
                 img = ""
@@ -396,6 +251,7 @@ class JsEval:
         if expr.startswith("keyboardDiagram("):
             kl = self._data.get("sound_keyboard_layout", {})
             notes = localize(kl.get("notes", {}))
+
             rows = [
                 f"\n**{localize(kl.get('upper_label', {}))}**\n",
                 "| Note | Key |",
@@ -403,6 +259,7 @@ class JsEval:
             ]
             for i, key in enumerate(kl.get("upper", [])):
                 rows.append(f"| {notes[i]} | {key} |")
+
             rows += [
                 f"\n**{localize(kl.get('lower_label', {}))}**\n",
                 "| Note | Key |",
@@ -410,8 +267,9 @@ class JsEval:
             ]
             for i, key in enumerate(kl.get("lower", [])):
                 rows.append(f"| {notes[i]} | {key} |")
+
             rows.append(
-                f"\n| {localize(kl.get('rest_label', {}))} | {kl.get('rest_key', '')} |"
+                f"\n**{localize(kl.get('rest_label', {}))}:** {kl.get('rest_key', '')}"
             )
             return "\n".join(rows) + "\n"
 
@@ -436,22 +294,17 @@ class JsEval:
         if ".map(" in expr and ".join(" in expr:
             return self._map_join(expr)
 
-        # String concatenation
-        parts = _split_plus(expr)
-        if len(parts) > 1:
-            return "".join(self.eval(p.strip()) for p in parts)
-
         return expr
 
     # Expression helpers
 
     def _replace_chain(self, expr):
-        # Handle t("key").replace/replaceAll(...) and esc(t("key")).replace/replaceAll(...)
         m = re.match(r'(?:esc\()?t\("([^"]+)"\)\)?', expr)
         if not m:
             return expr
         text = self._localize(m.group(1))
         rest = expr[m.end() :]
+
         while True:
             head = re.match(r"\s*\.replace(All)?\(", rest)
             if not head:
@@ -465,6 +318,7 @@ class JsEval:
             if rest.startswith(","):
                 rest = rest[1:].strip()
             rest = rest.removeprefix(")")
+
             repl = self.eval(repl_s)
             rm = re.match(r"/(.+?)/(g)?", pat_s)
             if rm:
@@ -481,10 +335,11 @@ class JsEval:
                     if replace_all
                     else text.replace(pat, repl, 1)
                 )
+
         return text
 
     def _parse_array(self, arr_str):
-        arr_str = arr_str.strip().strip("[]")
+        arr_str = arr_str.strip()[1:-1]
         items = []
         while arr_str.strip():
             item, arr_str = _parse_arg(arr_str.strip())
@@ -501,15 +356,61 @@ class JsEval:
                 return ""
             if val is None:
                 return ""
+
         if index is not None:
             val = val[int(index)]
             if field:
                 val = val.get(field, "")
+
         if isinstance(val, dict):
             return localize(val)
-        if isinstance(val, str):
-            return val
         return val
+
+    def _map_join(self, expr):
+        arr_end = expr.index(".map(")
+        arr_str = expr[:arr_end].strip()
+        # Handle destructured map callbacks such as ([u, n]) => `...`.
+        m = re.search(
+            r"\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)"
+            r'\s*\.join\((["\'].*?["\'])\)',
+            expr,
+            re.DOTALL,
+        )
+        if m:
+            pairs_inner = arr_str[1:-1]
+            items = []
+            while pairs_inner.strip():
+                pairs_inner = pairs_inner.strip()
+                if pairs_inner.startswith("["):
+                    pair_s, pairs_inner = _parse_arg(pairs_inner)
+                    pair = self._parse_array(pair_s)
+                    if len(pair) >= 2:
+                        saved = dict(self._vars)
+                        self._vars[m.group(1)] = pair[0]
+                        self._vars[m.group(2)] = pair[1]
+                        items.append(self.eval_template(m.group(3)))
+                        self._vars = saved
+                    pairs_inner = _skip_comma(pairs_inner)
+                else:
+                    break
+            return self.eval(m.group(4)).join(items)
+        # Handle single-argument map callbacks such as k => `...` or (k) => `...`.
+        m = re.search(
+            r"\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)"
+            r'\s*\.join\((["\'].*?["\'])\)',
+            expr,
+            re.DOTALL,
+        )
+        if m:
+            keys = self._parse_array(arr_str)
+            items = []
+            for key in keys:
+                saved = dict(self._vars)
+                self._vars[m.group(1)] = key
+                items.append(self.eval_template(m.group(2)))
+                self._vars = saved
+            return self.eval(m.group(3)).join(items)
+        return expr
 
     # Markdown render helpers
 
@@ -571,6 +472,33 @@ class JsEval:
                 rows.append(f"- {img}{desc}")
         return "\n" + "\n".join(rows) + "\n"
 
+    def _table(self, inner):
+        headers_s, rest = _parse_arg(inner.strip())
+        rest = _skip_comma(rest)
+        rows_s, _ = _parse_arg(rest)
+        headers = self._parse_array(headers_s)
+
+        # Parse the row matrix by removing only the outermost brackets.
+        rows_stripped = rows_s.strip()
+        if rows_stripped.startswith("[") and rows_stripped.endswith("]"):
+            rows_stripped = rows_stripped[1:-1]
+        rows_inner = rows_stripped
+        rows = []
+        while rows_inner.strip():
+            rows_inner = rows_inner.strip()
+            if rows_inner.startswith("["):
+                row_s, rows_inner = _parse_arg(rows_inner)
+                rows.append(self._parse_array(row_s))
+                rows_inner = _skip_comma(rows_inner)
+            else:
+                break
+
+        md = "\n| " + " | ".join(headers) + " |\n"
+        md += "| " + " | ".join("---" for _ in headers) + " |\n"
+        for row in rows:
+            md += "| " + " | ".join(row) + " |\n"
+        return md
+
     # Data lookup helpers
 
     def _resolve_data_ref(self, inner):
@@ -588,87 +516,14 @@ class JsEval:
             return self._data.get(m.group(1), [])
         return self._resolve_data_ref(inner)
 
-    # Render a table(headers, rows) call into a Markdown table.
-    def _table(self, inner):
-        headers_s, rest = _parse_arg(inner.strip())
-        rest = _skip_comma(rest)
-        rows_s, _ = _parse_arg(rest)
-        headers = self._parse_array(headers_s)
-        # Parse the row matrix by removing only the outermost brackets.
-        rows_stripped = rows_s.strip()
-        if rows_stripped.startswith("[") and rows_stripped.endswith("]"):
-            rows_stripped = rows_stripped[1:-1]
-        rows_inner = rows_stripped
-        rows = []
-        while rows_inner.strip():
-            rows_inner = rows_inner.strip()
-            if rows_inner.startswith("["):
-                row_s, rows_inner = _parse_arg(rows_inner)
-                rows.append(self._parse_array(row_s))
-                rows_inner = _skip_comma(rows_inner)
-            else:
-                break
-        md = "\n| " + " | ".join(headers) + " |\n"
-        md += "| " + " | ".join("---" for _ in headers) + " |\n"
-        for row in rows:
-            md += "| " + " | ".join(row) + " |\n"
-        return md
-
-    # Evaluate JavaScript map/join template expressions used by manual sections.
-    def _map_join(self, expr):
-        arr_end = expr.index(".map(")
-        arr_str = expr[:arr_end].strip()
-        # Handle destructured map callbacks such as ([u, n]) => `...`.
-        m = re.search(
-            r"\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)"
-            r'\s*\.join\(["\'].*?["\']\)',
-            expr,
-            re.DOTALL,
-        )
-        if m:
-            pairs_inner = arr_str.strip().strip("[]")
-            items = []
-            while pairs_inner.strip():
-                pairs_inner = pairs_inner.strip()
-                if pairs_inner.startswith("["):
-                    pair_s, pairs_inner = _parse_arg(pairs_inner)
-                    pair = self._parse_array(pair_s)
-                    if len(pair) >= 2:
-                        saved = dict(self._vars)
-                        self._vars[m.group(1)] = pair[0]
-                        self._vars[m.group(2)] = pair[1]
-                        items.append(self.eval_template(m.group(3)))
-                        self._vars = saved
-                    pairs_inner = _skip_comma(pairs_inner)
-                else:
-                    break
-            return "".join(items)
-        # Handle single-argument map callbacks such as k => `...` or (k) => `...`.
-        m = re.search(
-            r"\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)"
-            r'\s*\.join\(["\'].*?["\']\)',
-            expr,
-            re.DOTALL,
-        )
-        if m:
-            keys = self._parse_array(arr_str)
-            items = []
-            for key in keys:
-                saved = dict(self._vars)
-                self._vars[m.group(1)] = key
-                items.append(self.eval_template(m.group(2)))
-                self._vars = saved
-            return "".join(items)
-        return expr
-
     # Extract JavaScript variables and simple template loops from updateTexts().
     def extract_variables(self, body):
-        # Extract const/let initializers such as const x = expr.
         for m in re.finditer(r"(?:const|let)\s+(\w+)\s*=\s*", body):
             expr_start = m.end()
             j = expr_start
             depth = 0
             in_str = None
+
             while j < len(body):
                 ch = body[j]
                 if in_str:
@@ -690,6 +545,7 @@ class JsEval:
                 elif ch == ";" and depth == 0:
                     break
                 j += 1
+
             self._vars[m.group(1)] = self.eval(body[expr_start:j].strip())
 
         # Expand for-of template loops into accumulated list text.
@@ -715,51 +571,44 @@ class JsEval:
             self._vars[target_var] = "".join(result)
 
 
-# Markdown conversion helpers
-
-
-def _strip_html(text):
-    text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
-    text = re.sub(
-        r"</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead"
-        r"|tbody|table|pre|code|h[1-6])[^>]*>",
-        "",
-        text,
-    )
-    return html.unescape(text).strip()
-
-
 # Document generators
 
 
-# Convert localized web page templates into generated Markdown documents.
 def generate_from_html(html_path, json_path, output_name, web_path=None):
     web_path = web_path or output_name
     html_text = html_path.read_text(encoding="utf-8")
     data = json.loads(json_path.read_text(encoding="utf-8"))
     ev = JsEval(data["ui"], data, web_path)
 
-    # Extract updateTexts() body
     m = re.search(r"function updateTexts\(\)\s*\{", html_text)
     if not m:
         raise ValueError(f"{html_path}: required function updateTexts() not found")
     body = html_text[m.end() : _find_matching(html_text, m.end(), "{", "}") - 1]
-
-    # Extract variables
     ev.extract_variables(body)
 
-    # Extract innerHTML sections
     lines = []
+    guide = next(
+        (guide for guide in data.get("guides", []) if guide["language"] == "en"),
+        None,
+    )
+    guide_match = re.search(
+        r'document\.getElementById\("guide"\)\.innerHTML\s*=\s*'
+        r"renderGuide\(guide\)",
+        body,
+    )
     innerhtml_pattern = (
         r'(?:\$|document\.getElementById)\("([^"]+)"\)\.innerHTML\s*=\s*`'
     )
     for sm in re.finditer(innerhtml_pattern, body):
+        if guide is not None and guide_match and sm.start() > guide_match.start():
+            break
         sec_id = sm.group(1)
         if sec_id in ("page-title", "page-subtitle"):
             continue
         start = sm.end()
         i = start
         depth = 0
+
         while i < len(body):
             ch = body[i]
             if ch == "\\" and i + 1 < len(body):
@@ -777,60 +626,17 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
                 elif ch == "}":
                     depth -= 1
             i += 1
+
         evaluated = ev.eval_template(body[start:i])
 
-        # Convert HTML structure to Markdown
-        evaluated = re.sub(
-            r"<h2[^>]*>(.*?)</h2>",
-            lambda m: f"\n## {_strip_html(m.group(1))}\n",
-            evaluated,
-        )
-        evaluated = re.sub(
-            r"<h3[^>]*>(.*?)</h3>",
-            lambda m: f"\n### {_strip_html(m.group(1))}\n",
-            evaluated,
-        )
-        evaluated = re.sub(
-            r"<h4[^>]*>(.*?)</h4>",
-            lambda m: f"\n#### {_strip_html(m.group(1))}\n",
-            evaluated,
-        )
+        lines.append(_html_to_markdown(evaluated, output_name, web_path))
 
-        def markdown_image(match):
-            url = _transform_url(match.group(1), web_path)
-            if url in MARKDOWN_IMAGE_EXCLUDE_URLS.get(output_name, set()):
-                return ""
-            return f"\n![{match.group(2)}]({url})\n"
+    if guide is not None and guide_match:
+        lines.append(_html_to_markdown(_guide_html(guide), output_name, web_path))
 
-        evaluated = re.sub(
-            r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
-            markdown_image,
-            evaluated,
-        )
-        evaluated = re.sub(
-            r"<ul[^>]*>(.*?)</ul>",
-            lambda m: (
-                "\n"
-                + "".join(
-                    f"- {_strip_html(li)}\n"
-                    for li in re.findall(r"<li>(.*?)</li>", m.group(1), re.DOTALL)
-                )
-            ),
-            evaluated,
-            flags=re.DOTALL,
-        )
-        evaluated = re.sub(r"<strong>(.*?)</strong>", r"**\1**", evaluated)
-        lines.append(evaluated)
-
-    # Assemble the generated Markdown document
     title = localize(data["ui"].get("title", ""))
     url = f"{PYXEL_WEB}/{web_path}/"
-    header = (
-        f"# {title}\n\n"
-        f"*This document was auto-generated from the "
-        f"[{title}]({url}) web page, "
-        f"which also offers multilingual support.*\n"
-    )
+    header = f"# {title}\n\n*[Read online in other languages]({url}).*\n"
     raw = header + "\n".join(lines)
 
     # Protect code blocks from tag stripping and whitespace cleanup
@@ -853,10 +659,9 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     # Clean up whitespace (code blocks are protected)
     cleaned = []
     for line in raw.splitlines():
-        cleaned.append(line.strip())
+        cleaned.append(line.rstrip())
     result = re.sub(r"\n{3,}", "\n\n", "\n".join(cleaned)).strip() + "\n"
 
-    # Restore code blocks
     for i, block in enumerate(saved_blocks):
         result = result.replace(BLOCK_MARKER.format(idx=i), block.strip())
 
@@ -865,23 +670,17 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
-# Render the API reference JSON into the generated Markdown manual.
 def generate_api_reference(json_path, output_name, web_path):
     api_data = json.loads(json_path.read_text(encoding="utf-8"))
-    lines = []
 
+    lines = []
     title = localize(api_data["ui"]["title"])
     url = f"{PYXEL_WEB}/{web_path}/"
     lines.append(f"# {title}")
     lines.append("")
-    lines.append(
-        f"*This document was auto-generated from the "
-        f"[{title}]({url}) web page, "
-        f"which also offers multilingual support.*"
-    )
+    lines.append(f"*[Read online in other languages]({url}).*")
     lines.append("")
 
-    # Emit each category's items and constant groups
     for cat in api_data["categories"]:
         lines.append(f"## {localize(cat['title'])}")
         lines.append("")
@@ -898,6 +697,7 @@ def generate_api_reference(json_path, output_name, web_path):
             if item.get("value_type"):
                 lines.append(f"- **Type:** `{item['value_type']}`")
                 lines.append("")
+
             if item.get("params"):
                 lines.append("**Parameters:**")
                 lines.append("")
@@ -906,12 +706,14 @@ def generate_api_reference(json_path, output_name, web_path):
                     suffix = f" — {p_desc}" if p_desc else ""
                     lines.append(f"- `{p['name']}` (*{p['type']}*){suffix}")
                 lines.append("")
+
             ret = item.get("returns")
             if ret and ret.get("type") and ret["type"] != "None":
                 ret_desc = localize(ret.get("description"))
                 suffix = f" — {ret_desc}" if ret_desc else ""
                 lines.append(f"**Returns:** `{ret['type']}`{suffix}")
                 lines.append("")
+
             if item.get("examples"):
                 lines.append("**Example:**")
                 lines.append("")
@@ -919,6 +721,7 @@ def generate_api_reference(json_path, output_name, web_path):
                 lines.extend(item["examples"])
                 lines.append("```")
                 lines.append("")
+
             if item.get("notes"):
                 lines.append(f"**Note:** {localize(item['notes'])}")
                 lines.append("")
@@ -947,27 +750,21 @@ def generate_api_reference(json_path, output_name, web_path):
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
-# Render MML command metadata into a generated Markdown table.
 def generate_mml_commands():
     mml_data = json.loads(MML_COMMANDS_JSON.read_text(encoding="utf-8"))
     lines = []
 
     title = localize(mml_data["ui"]["title"])
-    url = f"{PYXEL_WEB}/mml-studio/"
+    url = f"{PYXEL_WEB}/mml-studio/mml-commands.html"
     lines.append(f"# {title}")
     lines.append("")
-    lines.append(
-        f"*This document was auto-generated from the "
-        f"[{title}]({url}) web page, "
-        f"which also offers multilingual support.*"
-    )
+    lines.append(f"*[Read online in other languages]({url}).*")
     lines.append("")
 
     th_cmd = localize(mml_data["ui"]["th_command"])
     th_desc = localize(mml_data["ui"]["th_description"])
     lines.append(f"| {th_cmd} | {th_desc} |")
     lines.append("| --- | --- |")
-
     for cmd in mml_data["commands"]:
         command = cmd["cmd"].replace("|", "\\|")
         desc = localize(cmd["desc"])
@@ -976,7 +773,6 @@ def generate_mml_commands():
         if example:
             cell_desc += f" Example: `{example}`"
         lines.append(f"| `{command}` | {cell_desc} |")
-
     lines.append("")
 
     path = DOCS_DIR / "mml-commands.md"
@@ -986,18 +782,301 @@ def generate_mml_commands():
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
-# Command entry point
+# Shared helpers
+
+
+def generated_header(*source_paths):
+    sources = " and ".join(p.relative_to(ROOT_DIR).as_posix() for p in source_paths)
+    return f"<!-- This file is generated from {sources}. -->\n\n"
+
+
+def localize(obj):
+    if not obj:
+        return ""
+    if isinstance(obj, str):
+        return obj
+    return obj.get("en", "")
+
+
+def _find_matching(text, start, open_ch, close_ch):
+    depth = 1
+    i = start
+
+    while i < len(text) and depth > 0:
+        ch = text[i]
+        if ch == "\\" and i + 1 < len(text):
+            i += 2
+            continue
+        if ch in ('"', "'", "`"):
+            q = ch
+            i += 1
+            while i < len(text) and text[i] != q:
+                if text[i] == "\\":
+                    i += 1
+                i += 1
+            i += 1
+            continue
+        if ch == open_ch:
+            depth += 1
+        elif ch == close_ch:
+            depth -= 1
+        i += 1
+
+    return i
+
+
+# Parse one JavaScript argument while preserving nested strings, regexes, arrays, and groups.
+def _parse_arg(text):
+    text = text.lstrip()
+    if not text:
+        return "", ""
+
+    if text[0] in ('"', "'"):
+        q = text[0]
+        i = 1
+        while i < len(text):
+            if text[i] == "\\" and i + 1 < len(text):
+                i += 2
+                continue
+            if text[i] == q:
+                return text[: i + 1], text[i + 1 :].lstrip()
+            i += 1
+
+    elif text[0] == "`":
+        i = 1
+        while i < len(text):
+            if text[i] == "\\" and i + 1 < len(text):
+                i += 2
+                continue
+            if text[i] == "$" and i + 1 < len(text) and text[i + 1] == "{":
+                i = _find_matching(text, i + 2, "{", "}")
+                continue
+            if text[i] == "`":
+                return text[: i + 1], text[i + 1 :].lstrip()
+            i += 1
+
+    elif text[0] == "/":
+        i = 1
+        while i < len(text) and text[i] != "/":
+            if text[i] == "\\":
+                i += 1
+            i += 1
+        i += 1
+        while i < len(text) and text[i].isalpha():
+            i += 1
+        return text[:i], text[i:].lstrip()
+
+    elif text[0] == "[":
+        end = _find_matching(text, 1, "[", "]")
+        return text[:end], text[end:].lstrip()
+
+    else:
+        depth = 0
+        i = 0
+        while i < len(text):
+            ch = text[i]
+            if ch in ('"', "'", "`"):
+                q = ch
+                i += 1
+                while i < len(text) and text[i] != q:
+                    if text[i] == "\\":
+                        i += 1
+                    i += 1
+                i += 1
+                continue
+            if ch in ("(", "[", "{"):
+                depth += 1
+            elif ch in (")", "]", "}"):
+                if depth == 0:
+                    break
+                depth -= 1
+            elif ch == "," and depth == 0:
+                break
+            i += 1
+
+        return text[:i].rstrip(), text[i:].lstrip()
+    return text, ""
+
+
+def _skip_comma(text):
+    text = text.lstrip()
+    return text[1:].lstrip() if text.startswith(",") else text
+
+
+def _split_plus(expr):
+    parts = []
+    current = []
+    depth = 0
+    in_str = None
+    escaped = False
+
+    for ch in expr:
+        if in_str:
+            current.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == in_str:
+                in_str = None
+            continue
+        if ch in ('"', "'", "`"):
+            in_str = ch
+            current.append(ch)
+            continue
+        if ch in ("(", "[", "{"):
+            depth += 1
+        elif ch in (")", "]", "}"):
+            depth -= 1
+        if ch == "+" and depth == 0:
+            parts.append("".join(current))
+            current = []
+            continue
+        current.append(ch)
+
+    if current:
+        parts.append("".join(current))
+    return parts if len(parts) > 1 else [expr]
+
+
+def _transform_url(url, web_path=None):
+    if url.startswith(("http://", "https://")):
+        return url
+    if web_path:
+        # Repository-relative assets remain relative to the generated Markdown.
+        source_url = urljoin(f"/web/{web_path}/", url)
+        if source_url.startswith("/docs/"):
+            return source_url.removeprefix("/docs/")
+        return urljoin(f"{PYXEL_WEB}/{web_path}/", url)
+    if url.startswith("../../docs/images/"):
+        return url.replace("../../docs/images/", "images/")
+    if url.startswith("../../docs/"):
+        return url.replace("../../docs/", "")
+    if url.startswith("../"):
+        return f"{PYXEL_WEB}/{url[3:]}"
+    return url
+
+
+# Markdown conversion helpers
+
+
+def _guide_html(guide):
+    sections = []
+    for section in guide["sections"]:
+        blocks = [f"<h2>{html.escape(section['title'])}</h2>"]
+        for block in section["blocks"]:
+            if "code" in block:
+                syntax = block.get("syntax") or "python"
+                blocks.append(f"\n```{syntax}\n{block['code']}\n```\n")
+            else:
+                blocks.append(block["text"])
+        sections.append("\n".join(blocks))
+    return "\n".join(sections)
+
+
+def _html_to_markdown(text, output_name, web_path):
+    saved_blocks = []
+
+    def save_block(match):
+        saved_blocks.append(match.group(0))
+        return BLOCK_MARKER.format(idx=len(saved_blocks) - 1)
+
+    # Embedded programs can contain HTML-looking literals.
+    text = re.sub(r"\n```[^\n]*\n.*?\n```\n", save_block, text, flags=re.DOTALL)
+    # Remove template indentation before adding Markdown list indentation.
+    text = "\n".join(line.strip() for line in text.splitlines())
+
+    def markdown_image(match):
+        url = _transform_url(html.unescape(match[1]), web_path)
+        if url in MARKDOWN_IMAGE_EXCLUDE_URLS.get(output_name, set()):
+            return ""
+        return f"\n![{match[2]}]({url})\n"
+
+    text = re.sub(
+        r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
+        markdown_image,
+        text,
+    )
+
+    def markdown_link(match):
+        label = _strip_html(match[2])
+        if not label:
+            return ""
+        return f"[{label}]({_transform_url(html.unescape(match[1]), web_path)})"
+
+    text = re.sub(
+        r'<a\b[^>]*href="([^"]*)"[^>]*>(.*?)</a>',
+        markdown_link,
+        text,
+        flags=re.DOTALL,
+    )
+    text = re.sub(r"<code[^>]*>(.*?)</code>", r"`\1`", text)
+    for level in (2, 3, 4):
+        text = re.sub(
+            rf"<h{level}[^>]*>(.*?)</h{level}>",
+            lambda match, level=level: f"\n{'#' * level} {_strip_html(match[1])}\n",
+            text,
+        )
+
+    def markdown_table(match):
+        rows = []
+        for row in re.findall(r"<tr[^>]*>(.*?)</tr>", match[1], re.DOTALL):
+            cells = re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.DOTALL)
+            rows.append([_strip_html(cell).replace("|", r"\|") for cell in cells])
+        if not rows:
+            return ""
+        lines = ["| " + " | ".join(rows[0]) + " |"]
+        lines.append("| " + " | ".join("---" for _ in rows[0]) + " |")
+        lines.extend("| " + " | ".join(row) + " |" for row in rows[1:])
+        return "\n" + "\n".join(lines) + "\n"
+
+    text = re.sub(r"<table[^>]*>(.*?)</table>", markdown_table, text, flags=re.DOTALL)
+
+    def markdown_list(match):
+        items = re.findall(r"<li\b[^>]*>(.*?)</li>", match[2], re.DOTALL)
+        lines = []
+        for index, item in enumerate(items, 1):
+            marker = f"{index}." if match[1] == "ol" else "-"
+            item = re.sub(r"</?p\b[^>]*>", "\n\n", item)
+            content = re.sub(r"\n{3,}", "\n\n", _strip_html(item))
+            indent = " " * (len(marker) + 1)
+            content = "\n".join(
+                indent + line.strip() if line.strip() else ""
+                for line in content.splitlines()
+            ).lstrip()
+            lines.append(f"{marker} {content}\n")
+        return "\n" + "".join(lines)
+
+    text = re.sub(r"<(ul|ol)\b[^>]*>(.*?)</\1>", markdown_list, text, flags=re.DOTALL)
+    text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
+    for index, block in enumerate(saved_blocks):
+        text = text.replace(BLOCK_MARKER.format(idx=index), block)
+    return text
+
+
+def _strip_html(text):
+    text = re.sub(r"<code[^>]*>(.*?)</code>", r"`\1`", text)
+    text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
+    text = re.sub(
+        r"</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead"
+        r"|tbody|table|pre|code|h[1-6])[^>]*>",
+        "",
+        text,
+    )
+    return html.unescape(text).strip()
+
 
 if __name__ == "__main__":
     generated = []
     for html_path, json_path, output_name, web_path in HTML_DOCS:
         generate_from_html(html_path, json_path, output_name, web_path)
         generated.append(DOCS_DIR / f"{output_name}.md")
+
     for json_path, output_name, web_path in API_REFERENCE_DOCS:
         generate_api_reference(json_path, output_name, web_path)
         generated.append(DOCS_DIR / f"{output_name}.md")
+
     generate_mml_commands()
     generated.append(DOCS_DIR / "mml-commands.md")
 
-    # Format the generated Markdown so it matches the repo formatter output.
     subprocess.run(["ruff", "format", "-q", *map(str, generated)], check=True)

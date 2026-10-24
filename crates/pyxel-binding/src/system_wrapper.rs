@@ -38,7 +38,6 @@ fn init(
         .or_else(|_| sys.getattr("argv"))?
         .extract()?;
 
-    // Change to script directory
     let locals = PyDict::new(py);
     locals.set_item("os", &os_mod)?;
     locals.set_item("inspect", py.import("inspect")?)?;
@@ -71,7 +70,6 @@ fn init(
     )
     .map_err(pyo3::exceptions::PyValueError::new_err)?;
 
-    // Register reset callback
     *pyxel::reset_callback() = Some(Box::new(move |window_state| {
         Python::attach(|py| {
             let result: PyResult<()> = (|| {
@@ -81,20 +79,25 @@ fn init(
                 locals.set_item("orig_argv", &orig_argv)?;
                 locals.set_item("window_state", &window_state)?;
                 locals.set_item("window_state_env", pyxel::WINDOW_STATE_ENV)?;
+                locals.set_item("watch_state_file_env", pyxel::WATCH_STATE_FILE_ENV)?;
+                locals.set_item("watch_reset_exit_code", pyxel::WATCH_RESET_EXIT_CODE)?;
+
                 py.run(
-                    c"
-import os, subprocess, sys
-# 0x52 = WATCH_RESET_EXIT_CODE in settings.rs, checked by cli.py watch mode
-if os.environ.get('PYXEL_WATCH_STATE_FILE'):
-    os._exit(0x52)
-if sys.platform == 'darwin':
+                    c"import os
+import subprocess
+import sys
+
+if os.environ.get(watch_state_file_env):
+    os._exit(watch_reset_exit_code)
+
+if sys.platform == \"darwin\":
     # Silence child stderr while the parent process is being replaced.
     try:
-        f = open(os.devnull, 'wb')
-        os.dup2(f.fileno(), 2)
-        f.close()
+        with open(os.devnull, \"wb\") as f:
+            os.dup2(f.fileno(), 2)
     except OSError:
         pass
+
 env = os.environ.copy()
 if window_state is not None and window_state_env in env:
     env[window_state_env] = window_state
@@ -116,13 +119,12 @@ sys.exit(0)
         });
     }));
 
-    // Register quit callback to run Python atexit handlers
+    // Platform quit bypasses Python's normal interpreter shutdown.
     *pyxel::quit_callback() = Some(Box::new(|| {
         Python::attach(|py| {
             let _ = py.run(c"import atexit; atexit._run_exitfuncs()", None, None);
         });
     }));
-
     Ok(())
 }
 
@@ -216,21 +218,22 @@ fn resize(width: u32, height: u32) -> PyResult<()> {
 }
 
 // Internal helpers
+// Leading underscores preserve the private Python bridge names used by the runtime and CLI.
 
 #[cfg(target_os = "emscripten")]
+#[allow(clippy::used_underscore_items)]
 #[pyfunction]
 fn _reset_statics() {
     pyxel::reset_statics();
 }
 
 #[cfg(not(target_os = "emscripten"))]
+#[allow(clippy::used_underscore_items)]
 #[pyfunction]
 fn _pid_exists(pid: u32) -> bool {
     let system = sysinfo::System::new_all();
     system.process(sysinfo::Pid::from_u32(pid)).is_some()
 }
-
-// Module registration
 
 pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;

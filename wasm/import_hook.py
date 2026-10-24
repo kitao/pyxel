@@ -10,8 +10,12 @@ class ImportHook:
         self.imported_modules = set()
         self.main_dir = None
 
+    def invalidate_caches(self):
+        # Runtime resets remove downloaded modules and may change the main script.
+        self.imported_modules.clear()
+        self.main_dir = None
+
     def find_spec(self, fullname, path, target=None):
-        # Skip already-processed, built-in, loaded, or problematic modules.
         if (
             fullname in self.imported_modules
             or fullname in sys.builtin_module_names
@@ -19,18 +23,19 @@ class ImportHook:
             or fullname in SKIP_MODULES
         ):
             return
+        # Record the name before find_spec re-enters this hook.
         self.imported_modules.add(fullname)
 
-        # Skip standard library or installed packages.
+        # Only application imports need host-side file downloads.
         spec = importlib.util.find_spec(fullname)
         if spec:
             origin = spec.origin
             if (
                 origin in (None, "built-in", "builtin", "frozen")
-                or "site-packages" in origin
-                or "dist-packages" in origin
+                or "site-packages" in os.path.normpath(origin).split(os.sep)
+                or "dist-packages" in os.path.normpath(origin).split(os.sep)
                 or os.path.realpath(origin).startswith(
-                    os.path.realpath(sys.base_prefix)
+                    os.path.join(os.path.realpath(sys.base_prefix), "")
                 )
             ):
                 return

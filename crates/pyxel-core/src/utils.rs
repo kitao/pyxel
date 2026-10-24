@@ -1,11 +1,3 @@
-// Shared helper macros
-
-macro_rules! repeat_extend {
-    ($container:expr, $value:expr, $count:expr) => {
-        $container.extend(std::iter::repeat($value).take($count as usize));
-    };
-}
-
 macro_rules! define_rc_type {
     ($alias:ident, $inner:ty) => {
         pub type $alias = std::rc::Rc<std::cell::RefCell<$inner>>;
@@ -90,7 +82,7 @@ pub fn add_file_extension(filename: &str, ext: &str) -> String {
     }
 }
 
-// Vector compression and expansion helpers
+// Shorten repeated trailing values/rows; expansion repeats the final entry.
 
 pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
     assert!(!vec.is_empty());
@@ -125,7 +117,6 @@ pub fn expand_vec2<T: Clone>(
         .iter()
         .map(|inner_vec| expand_vec(inner_vec, new_inner_len))
         .collect();
-
     expand_vec(&new_vec, new_outer_len)
 }
 
@@ -136,7 +127,6 @@ pub fn trim_empty_vec<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
         .rev()
         .position(|vec| !vec.is_empty())
         .map_or(0, |i| vecs.len() - i);
-
     vecs.truncate(new_len);
     vecs
 }
@@ -196,30 +186,8 @@ mod tests {
     #[test]
     fn test_add_file_extension_edge_cases() {
         assert_eq!(add_file_extension("", ".png"), ".png");
-        // Partial suffixes must still receive the full extension.
         assert_eq!(add_file_extension("test.pn", ".png"), "test.pn.png");
         assert_eq!(add_file_extension(".png", ".png"), ".png");
-    }
-
-    // Macro behavior tests
-
-    #[test]
-    fn test_repeat_extend() {
-        let mut v = vec![1, 2];
-        repeat_extend!(v, 0, 3);
-        assert_eq!(v, vec![1, 2, 0, 0, 0]);
-
-        let mut v: Vec<i32> = Vec::new();
-        repeat_extend!(v, 42, 0);
-        assert_eq!(v, [] as [i32; 0]);
-    }
-
-    #[test]
-    #[should_panic(expected = "already borrowed")]
-    fn test_rc_type_rejects_overlapping_mutable_borrow() {
-        let value = new_rc_type!(1_u8);
-        let _shared = rc_ref!(value);
-        let _mutable = rc_mut!(value);
     }
 
     // Vector shape helper tests

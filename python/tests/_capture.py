@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -7,7 +8,6 @@ from pathlib import Path
 import pytest
 
 # Reference paths
-
 REFERENCES_DIR = Path(__file__).parent / "references"
 EXAMPLES_DIR = Path(__file__).parent.parent / "pyxel" / "examples"
 APPS_DIR = EXAMPLES_DIR / "apps"
@@ -17,12 +17,7 @@ EDITOR_REFS_DIR = REFERENCES_DIR / "editor"
 
 _RUNNER = Path(__file__).parent / "_runner.py"
 
-
 # Capture subprocess wrappers
-
-
-def _run_subprocess(*args):
-    subprocess.run([sys.executable, str(_RUNNER), *args], check=True)
 
 
 def run_example_subprocess(script_path, plan, out_dir):
@@ -39,6 +34,19 @@ def run_app_subprocess(pyxapp_path, plan, out_dir):
 
 def run_editor_subprocess(editor, resource_file, out_dir):
     _run_subprocess("editor", editor, str(resource_file), str(out_dir))
+
+
+def _run_subprocess(*args):
+    result = subprocess.run(
+        [sys.executable, str(_RUNNER), *args],
+        env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "Failed to initialize audio device" not in result.stdout
 
 
 # Captured-result collection
@@ -65,6 +73,7 @@ def collect_editor_results(out_dir):
 def compare_or_update_all(name, results, refs_dir, update_references):
     updated = []
     failures = []
+
     for frame, actual_path in results:
         ref_path = refs_dir / f"{name}_f{frame}.png"
         if update_references:
@@ -72,15 +81,18 @@ def compare_or_update_all(name, results, refs_dir, update_references):
             shutil.copy(actual_path, ref_path)
             updated.append(ref_path.name)
             continue
+
         if not ref_path.exists():
             failures.append(
                 f"Reference missing: {ref_path.name}. Run with --update-references"
             )
             continue
+
         actual_bytes = Path(actual_path).read_bytes()
         ref_bytes = ref_path.read_bytes()
         if actual_bytes != ref_bytes:
             failures.append(f"Screenshot mismatch: {ref_path.name}")
+
     if updated:
         pytest.skip(f"References updated: {', '.join(updated)}")
     if failures:

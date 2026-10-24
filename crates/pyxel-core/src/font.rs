@@ -39,8 +39,6 @@ pub enum Font {
 define_rc_type!(RcFont, Font);
 
 impl Font {
-    // Constructors
-
     pub fn new(filename: &str, font_size: Option<f32>) -> Result<RcFont, String> {
         let font = if filename.to_lowercase().ends_with(".bdf") {
             Self::parse_bdf(filename)?
@@ -52,6 +50,7 @@ impl Font {
 
     fn parse_bdf(filename: &str) -> Result<Font, String> {
         let parse_err = || format!("Failed to parse file '{filename}'");
+        let read_err = || format!("Failed to read file '{filename}'");
         let file = File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
 
         let mut bounding_box = BdfBoundingBox::default();
@@ -61,15 +60,15 @@ impl Font {
         let mut dwidth = 0;
         let mut bbx = BdfBoundingBox::default();
 
-        // Dispatch on BDF keyword lines
-        for line in BufReader::new(file).lines().map_while(Result::ok) {
+        for line in BufReader::new(file).lines() {
+            let line = line.map_err(|_| read_err())?;
             if line.starts_with("FONTBOUNDINGBOX") {
                 bounding_box = Self::parse_bdf_bbox(&line, &parse_err)?;
             } else if line.starts_with("ENCODING") {
                 code = Some(
                     line.split_whitespace()
                         .nth(1)
-                        .ok_or_else(&parse_err)?
+                        .ok_or_else(parse_err)?
                         .parse::<i32>()
                         .map_err(|_| parse_err())?,
                 );
@@ -77,7 +76,7 @@ impl Font {
                 dwidth = line
                     .split_whitespace()
                     .nth(1)
-                    .ok_or_else(&parse_err)?
+                    .ok_or_else(parse_err)?
                     .parse()
                     .map_err(|_| parse_err())?;
             } else if line.starts_with("BBX") {
@@ -103,6 +102,7 @@ impl Font {
                     return Err(parse_err());
                 }
                 let bits = u32::from_str_radix(hex, 16).map_err(|_| parse_err())?;
+                // BDF rows are MSB-first; rendering reads the leftmost pixel from bit 0.
                 rows.push(bits.reverse_bits() >> (32 - hex.len() * 4));
             }
         }
@@ -125,6 +125,7 @@ impl Font {
         if values.len() < 4 {
             return Err(parse_err());
         }
+
         // Bitmap rows are stored as u32; reject glyphs wider than 32 pixels
         if values[0] > 32 {
             return Err(format!(
@@ -132,6 +133,7 @@ impl Font {
                 values[0]
             ));
         }
+
         Ok(BdfBoundingBox {
             width: values[0],
             height: values[1],
@@ -146,6 +148,7 @@ impl Font {
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)
             .map_err(|_| format!("Failed to read file '{filename}'"))?;
+
         let font = FontdueFont::from_bytes(buffer, FontSettings::default())
             .map_err(|_| format!("Failed to parse file '{filename}'"))?;
         let size = font_size.unwrap_or(DEFAULT_SIZE);
@@ -156,11 +159,10 @@ impl Font {
         })
     }
 
-    // Public methods
-
-    pub fn text_width(&mut self, text: &str) -> i32 {
+    pub fn text_width(&mut self, text: &str) -> i64 {
         let mut max_width = 0;
         let mut width = 0;
+
         for c in text.chars() {
             if c == '\n' {
                 max_width = max_width.max(width);
@@ -170,95 +172,101 @@ impl Font {
             if Self::is_invisible(c) {
                 continue;
             }
-            width += self.char_advance(c);
+            width += i64::from(self.char_advance(c));
         }
+
         max_width.max(width)
     }
 
     pub(crate) fn draw(
         &mut self,
         canvas: &mut Canvas<Color>,
-        x: i32,
-        y: i32,
+        x: i64,
+        y: i64,
         text: &str,
         color: Color,
     ) {
         self.for_each_pixel(x, y, text, |px, py| {
-            if canvas.clip_rect.contains(px, py) {
-                canvas.write_data(px as usize, py as usize, color);
-            }
+            canvas.write_data_with_clipping_i64(px, py, color);
         });
     }
 
     pub(crate) fn for_each_pixel(
         &mut self,
-        x: i32,
-        y: i32,
+        x: i64,
+        y: i64,
         text: &str,
-        mut f: impl FnMut(i32, i32),
+        mut f: impl FnMut(i64, i64),
     ) {
         let (line_height, ascent) = self.line_metrics();
         let start_x = x;
         let mut x = x;
         let mut y = y;
+
         for c in text.chars() {
             if c == '\n' {
                 x = start_x;
-                y += line_height;
+                y += i64::from(line_height);
                 continue;
             }
             if Self::is_invisible(c) {
                 continue;
             }
-            x += self.glyph_pixels(c, x, y, ascent, &mut f);
+            x += i64::from(self.glyph_pixels(c, x, y, ascent, &mut f));
         }
     }
 
     fn glyph_pixels(
         &mut self,
         c: char,
-        x: i32,
-        y: i32,
+        x: i64,
+        y: i64,
         ascent: i32,
-        f: &mut impl FnMut(i32, i32),
+        f: &mut impl FnMut(i64, i64),
     ) -> i32 {
-        // Dispatch by font backend
         match self {
             Font::Bdf {
                 bounding_box,
                 glyphs,
             } => {
                 if let Some(glyph) = glyphs.get(&(c as i32)) {
-                    let gx = x + bounding_box.x + glyph.bbx.x;
-                    let gy =
-                        y + bounding_box.y + bounding_box.height - glyph.bbx.y - glyph.bbx.height;
+                    let gx = x + i64::from(bounding_box.x) + i64::from(glyph.bbx.x);
+                    let gy = y + i64::from(bounding_box.y) + i64::from(bounding_box.height)
+                        - i64::from(glyph.bbx.y)
+                        - i64::from(glyph.bbx.height);
+
                     for (i, &row) in glyph.bitmap.iter().enumerate() {
-                        let py = gy + i as i32;
+                        let py = gy + i as i64;
                         for j in 0..glyph.bbx.width {
                             if (row >> j) & 1 == 1 {
-                                f(gx + j, py);
+                                f(gx + i64::from(j), py);
                             }
                         }
                     }
+
                     glyph.dwidth
                 } else {
                     0
                 }
             }
+
             Font::Fontdue { font, cache, size } => {
                 let (metrics, bitmap) = cache.entry(c).or_insert_with(|| font.rasterize(c, *size));
                 if metrics.width > 0 {
-                    let gx = x + metrics.xmin;
-                    let gy = (y + ascent) - (metrics.ymin + metrics.height as i32);
+                    let gx = x + i64::from(metrics.xmin);
+                    let gy =
+                        (y + i64::from(ascent)) - (i64::from(metrics.ymin) + metrics.height as i64);
+
                     for (i, row) in bitmap.chunks_exact(metrics.width).enumerate() {
-                        let py = gy + i as i32;
+                        let py = gy + i as i64;
                         for (j, &alpha) in row.iter().enumerate() {
                             if alpha >= ALPHA_THRESHOLD {
-                                f(gx + j as i32, py);
+                                f(gx + j as i64, py);
                             }
                         }
                     }
                 }
+
                 metrics.advance_width.ceil() as i32
             }
         }
@@ -268,8 +276,6 @@ impl Font {
 
     fn is_invisible(c: char) -> bool {
         let cp = c as u32;
-
-        // Control characters
         if c.is_control() {
             return true;
         }
@@ -328,8 +334,6 @@ mod tests {
 
     #[test]
     fn test_parse_bdf_rejects_overlong_bitmap_row() {
-        // A 9-digit BITMAP row must fail with the parser's Err contract
-        // instead of underflowing the bit-alignment shift
         let path = std::env::temp_dir().join(format!("pyxel_font_test_{}.bdf", std::process::id()));
         let mut file = File::create(&path).unwrap();
         writeln!(
@@ -343,14 +347,11 @@ mod tests {
             result.err(),
             Some(format!("Failed to parse file '{}'", path.to_str().unwrap()))
         );
-
         std::fs::remove_file(&path).ok();
     }
 
     #[test]
     fn test_parse_bdf_rejects_overwide_glyph() {
-        // A BBX width over 32 must fail with the explicit width-limit error
-        // because bitmap rows are stored as u32
         let path = std::env::temp_dir().join(format!(
             "pyxel_font_test_overwide_glyph_{}.bdf",
             std::process::id()
@@ -367,14 +368,11 @@ mod tests {
             result.err(),
             Some("BDF glyph width 33 exceeds 32 pixel limit".to_string())
         );
-
         std::fs::remove_file(&path).ok();
     }
 
     #[test]
     fn test_parse_bdf_rejects_short_bbx_line() {
-        // A BBX line with fewer than 4 values must fail with the parser's
-        // Err contract instead of panicking on the missing fields
         let path = std::env::temp_dir().join(format!(
             "pyxel_font_test_short_bbx_{}.bdf",
             std::process::id()
@@ -391,7 +389,6 @@ mod tests {
             result.err(),
             Some(format!("Failed to parse file '{}'", path.to_str().unwrap()))
         );
-
         std::fs::remove_file(&path).ok();
     }
 }

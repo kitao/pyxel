@@ -59,7 +59,7 @@ class App(Widget):
 
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
         self._resource_file = resource_file
-
+        self._save_failed = False
         self.new_var("help_message_var", "")
 
         self._editor_button = RadioButton(
@@ -104,7 +104,6 @@ class App(Widget):
         ]
         self.__on_editor_button_change(self.editor_type_var)
 
-        # Set event listeners
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
@@ -142,7 +141,13 @@ class App(Widget):
         self.help_message_var = "REDO:CTRL+Y"
 
     def __on_save_button_press(self):
-        pyxel.save(self._resource_file)
+        try:
+            pyxel.save(self._resource_file)
+        except Exception as e:  # noqa: BLE001 - Native savers raise plain Exception.
+            print(f"Failed to save resource: {e}")
+            self._save_failed = True
+        else:
+            self._save_failed = False
 
     def __on_save_button_mouse_hover(self, _x, _y):
         self.help_message_var = "SAVE:CTRL+S"
@@ -158,14 +163,25 @@ class App(Widget):
             dropped_file = wasm_dropped_files[-1]
         else:
             dropped_file = None
+
         if dropped_file:
             file_ext = Path(dropped_file).suffix
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
-                for editor in self._editors:
-                    editor.reset_history()
-                pyxel.load(dropped_file)
-                self._set_title(dropped_file)
+                colors = list(pyxel.colors)
+                pyxel.colors[:] = colors[pyxel.NUM_COLORS :]
+                try:
+                    pyxel.load(dropped_file)
+                except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
+                    print(f"Failed to load resource: {e}")
+                else:
+                    pyxel.num_user_colors = len(pyxel.colors)
+                    # Reapply the selected color's palette bound.
+                    self._editors[0].color_var = self._editors[0].color_var
+                    for editor in self._editors:
+                        editor.reset_history()
+                finally:
+                    pyxel.colors[:] = colors[: pyxel.NUM_COLORS] + list(pyxel.colors)
             else:
                 self._editor.trigger_event("drop", dropped_file)
 
@@ -181,6 +197,7 @@ class App(Widget):
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.is_pressed_var = True
+
             if self._editor.can_undo and pyxel.btnp(
                 pyxel.KEY_Z, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):
@@ -190,13 +207,12 @@ class App(Widget):
             ):
                 self._redo_button.is_pressed_var = True
 
-        # Hidden save shortcut for Pyxel Code Maker.
-        if pyxel.btn(pyxel.KEY_F13):
-            self._save_button.is_pressed_var = True
-
     def __on_draw(self):
         pyxel.cls(WIDGET_BACKGROUND_COLOR)
         pyxel.rect(0, 0, 240, 9, WIDGET_PANEL_COLOR)
         pyxel.line(0, 9, 239, 9, WIDGET_SHADOW_COLOR)
-        pyxel.text(93, 2, self.help_message_var, HELP_MESSAGE_COLOR)
+        message = (
+            "SAVE FAILED: SEE CONSOLE" if self._save_failed else self.help_message_var
+        )
+        pyxel.text(93, 2, message, HELP_MESSAGE_COLOR)
         self.help_message_var = ""

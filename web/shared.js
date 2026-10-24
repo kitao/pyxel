@@ -1,25 +1,11 @@
-// Language detection and localized page initialization helpers
+// Page controls
 
 const PYXEL_LANG_KEY = "pyxel-lang";
-
-const detectLang = (languages) => {
-  const stored = localStorage.getItem(PYXEL_LANG_KEY);
-  if (stored && languages.some((l) => l.code === stored)) return stored;
-  const nav = (navigator.language ?? "").toLowerCase();
-  if (nav.startsWith("zh")) return "cn";
-  for (const l of languages) {
-    if (nav.startsWith(l.code)) return l.code;
-  }
-  return "en";
-};
+// The kitao.dev sites share an English or Japanese choice under this key.
+const SITE_LANG_KEY = "kitao.dev.language";
 
 const setDocLang = (lang) => {
   document.documentElement.lang = lang === "cn" ? "zh" : lang;
-};
-
-const saveLang = (lang) => {
-  localStorage.setItem(PYXEL_LANG_KEY, lang);
-  setDocLang(lang);
 };
 
 const buildLangSelector = (
@@ -49,20 +35,34 @@ const buildLangSelector = (
   return select;
 };
 
-// Standard page header with title, subtitle, and a language selector that
-// re-renders through the page's text updater.
-const buildPageHeader = (updateFn) => {
+const buildVariantSwitch = () => {
+  const onCube = /\/cube(?:\/(?:index\.html)?)?$/.test(location.pathname);
+  const sw = document.createElement("div");
+  sw.className = "seg mt-1";
+  const variants = [
+    { label: "Base", href: onCube ? "../" : "./", active: !onCube },
+    { label: "Cube", href: onCube ? "./" : "cube/", active: onCube },
+  ];
+  for (const v of variants) {
+    const seg = document.createElement(v.active ? "span" : "a");
+    seg.className = v.active ? "seg-btn seg-active" : "seg-btn";
+    if (!v.active) seg.href = v.href;
+    seg.textContent = v.label;
+    sw.appendChild(seg);
+  }
+  return sw;
+};
+
+const buildPageHeader = (updateFn, leadingControl = null) => {
   const header = document.createElement("header");
-  header.className = "flex items-start gap-4 mb-6";
+  header.className = "flex flex-wrap sm:flex-nowrap items-start gap-4 mb-6";
 
   const titleBlock = document.createElement("div");
-  titleBlock.className = "flex-1 min-w-0 order-first";
-
+  titleBlock.className = "w-full sm:w-auto sm:flex-1 min-w-0 shrink-0";
   const h1 = document.createElement("h1");
   h1.className = "font-semibold text-2xl tracking-tight";
   h1.id = "page-title";
   titleBlock.appendChild(h1);
-
   const subtitle = document.createElement("p");
   subtitle.className = "mt-2 text-gray-300 text-sm";
   subtitle.id = "page-subtitle";
@@ -73,12 +73,13 @@ const buildPageHeader = (updateFn) => {
     updateFn();
   });
 
-  header.appendChild(langSelect);
   header.appendChild(titleBlock);
+  if (leadingControl) header.appendChild(leadingControl);
+  header.appendChild(langSelect);
   return header;
 };
 
-// Shared HTML string helpers for generated static pages
+// HTML helpers
 
 const esc = (s) =>
   String(s)
@@ -106,7 +107,10 @@ const btnChip = (s) => `<span class="btn-chip">${esc(s)}</span>`;
 
 const linkChip = (s) => `<span class="link-chip">${esc(s)}</span>`;
 
-// Chunked Base64 and Uint8Array conversion for archive payloads
+// Data transfer
+
+const encodeUrlPath = (path) =>
+  path.split("/").map(encodeURIComponent).join("/");
 
 // Keep spread calls below browser argument limits.
 const BASE64_CHUNK_SIZE = 0x8000;
@@ -124,9 +128,13 @@ const base64ToUint8 = (b64) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
-// Resolve the ref/path boundary in a GitHub blob URL and return the ref with its
-// commit SHA. Trying the longest ref first supports branch names with slashes.
-const resolveGitHubBlobUrl = async (input, fetchImpl = fetch) => {
+// Preserve a supplied ref boundary; otherwise try candidates from longest to
+// shortest.
+const resolveGitHubBlobUrl = async (
+  input,
+  fetchImpl = fetch,
+  preferredRef = null,
+) => {
   let url;
   try {
     url = new URL(input);
@@ -149,28 +157,74 @@ const resolveGitHubBlobUrl = async (input, fetchImpl = fetch) => {
 
   const [user, repo] = parts;
   const refAndPath = parts.slice(3);
-  for (let split = refAndPath.length - 1; split >= 1; split--) {
+  // null means a missing ref; undefined means probing cannot continue.
+  const resolveSplit = async (split) => {
     const ref = refAndPath.slice(0, split).join("/");
     const path = refAndPath.slice(split).join("/");
-    const response = await fetchImpl(
-      `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
-      {
-        headers: { Accept: "application/vnd.github.sha" },
-        cache: "no-cache",
-      },
-    );
-    if (!response.ok) continue;
-
-    const sha = (await response.text()).trim();
-    if (/^[0-9a-f]{40}$/i.test(sha)) {
-      return { user, repo, ref, sha, path };
+    if (/^[0-9a-f]{40}$/i.test(ref)) {
+      return { user, repo, ref, sha: ref, path };
     }
+    try {
+      const response = await fetchImpl(
+        `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
+        {
+          headers: { Accept: "application/vnd.github.sha" },
+          cache: "no-cache",
+        },
+      );
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        if (response.status === 422) {
+          try {
+            const error = JSON.parse(await response.text());
+            if (error.message?.startsWith("No commit found for SHA:")) {
+              return null;
+            }
+          } catch {}
+        }
+        return undefined;
+      }
+
+      const sha = (await response.text()).trim();
+      return /^[0-9a-f]{40}$/i.test(sha)
+        ? { user, repo, ref, sha, path }
+        : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  if (preferredRef) {
+    const preferredSplit = preferredRef.split("/").length;
+    if (
+      preferredSplit < refAndPath.length &&
+      refAndPath.slice(0, preferredSplit).join("/") === preferredRef
+    ) {
+      const path = refAndPath.slice(preferredSplit).join("/");
+      const resolved = await resolveSplit(preferredSplit);
+      if (resolved) return resolved;
+      return {
+        user,
+        repo,
+        ref: preferredRef,
+        sha: null,
+        path,
+      };
+    }
+  }
+
+  for (let split = refAndPath.length - 1; split >= 1; split--) {
+    const resolved = await resolveSplit(split);
+    if (resolved) return resolved;
+    if (resolved === undefined) break;
   }
 
   throw new Error("Failed to resolve the GitHub ref and file path");
 };
 
-// Readiness polling for embedded Pyxel frame runtime hooks
+// Page setup
 
 const waitForPyxelReady = (
   checkFn,
@@ -189,8 +243,6 @@ const waitForPyxelReady = (
   })();
 };
 
-// Localized JSON loading, language selection, and page rendering
-
 const initPage = (jsonFile, buildFn) => {
   fetch(jsonFile)
     .then((response) => {
@@ -203,6 +255,43 @@ const initPage = (jsonFile, buildFn) => {
       data = json;
       lang = detectLang(data.languages);
       buildFn();
+
+      const anchor = document.location?.hash.slice(1);
+      if (anchor) {
+        const target = document.getElementById(anchor);
+        if (target) {
+          if (target.tagName === "DETAILS") target.open = true;
+          target.scrollIntoView();
+        }
+      }
     })
     .catch((e) => console.error("Failed to load data:", e));
+};
+
+const detectLang = (languages) => {
+  let own = null;
+  let shared = null;
+  try {
+    own = localStorage.getItem(PYXEL_LANG_KEY);
+    shared = localStorage.getItem(SITE_LANG_KEY);
+  } catch {}
+  // English and Japanese follow the latest choice on any kitao.dev site.
+  const stored =
+    own === null || own === "en" || own === "ja" ? (shared ?? own) : own;
+  if (stored && languages.some((l) => l.code === stored)) return stored;
+  const nav = (navigator.language ?? "").toLowerCase();
+  if (nav.startsWith("zh")) return "cn";
+  for (const l of languages) {
+    if (nav.startsWith(l.code)) return l.code;
+  }
+  return "en";
+};
+
+const saveLang = (lang) => {
+  try {
+    localStorage.setItem(PYXEL_LANG_KEY, lang);
+    if (lang === "en" || lang === "ja")
+      localStorage.setItem(SITE_LANG_KEY, lang);
+  } catch {}
+  setDocLang(lang);
 };

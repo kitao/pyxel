@@ -29,6 +29,7 @@ class PianoRoll(Widget):
         super().__init__(parent, 30, 25, 193, 123)
         self._press_x = 0
         self._press_y = 0
+
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
         self.add_pre_history = parent.add_pre_history
@@ -39,7 +40,6 @@ class PianoRoll(Widget):
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_click", self.__on_mouse_click)
@@ -123,8 +123,8 @@ class PianoRoll(Widget):
             self.field_cursor.insert(self.note_var)
 
     def __on_draw(self):
-        # Draw frame
         pyxel.rect(self.x, self.y, self.width, self.height, PIANO_ROLL_BACKGROUND_COLOR)
+        pyxel.clip(self.x, self.y, self.width, self.height)
 
         # Draw cursor or playback position
         play_pos = pyxel.play_pos(0)
@@ -164,7 +164,7 @@ class PianoRoll(Widget):
         )
 
         # Draw notes
-        for i, note in enumerate(self.get_field(0)):
+        for i, note in enumerate(self.get_field(0)[:MAX_SOUND_LENGTH]):
             pyxel.rect(
                 i * 4 + 31,
                 143 - note * 2,
@@ -172,3 +172,5 @@ class PianoRoll(Widget):
                 3,
                 PIANO_ROLL_NOTE_COLOR if note >= 0 else PIANO_ROLL_REST_COLOR,
             )
+
+        pyxel.clip()

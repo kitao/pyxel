@@ -22,7 +22,6 @@ struct CharStream<'a> {
 }
 
 impl<'a> CharStream<'a> {
-    // Constructors
     fn new(input: &'a str) -> Self {
         Self {
             bytes: input.as_bytes(),
@@ -30,7 +29,6 @@ impl<'a> CharStream<'a> {
         }
     }
 
-    // Cursor access
     fn peek(&self) -> Option<char> {
         self.bytes.get(self.pos).map(|&b| b as char)
     }
@@ -43,7 +41,6 @@ impl<'a> CharStream<'a> {
         c
     }
 
-    // Error reporting
     fn error(&self, message: &str) -> String {
         format!("MML:{}: {}", self.pos, message)
     }
@@ -58,7 +55,6 @@ macro_rules! parse_error {
 pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut stream = CharStream::new(mml);
     let mut commands = Vec::new();
-
     let mut octave: i32 = DEFAULT_OCTAVE;
     let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE * 4 / DEFAULT_LENGTH;
     let mut quantize: u32 = DEFAULT_QUANTIZE;
@@ -74,84 +70,66 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut is_glide_set = false;
 
     let mut connected_note: Option<u32> = None;
+    let mut connected_gate_index: Option<usize> = None;
     let mut last_note_index: Option<usize> = None;
     let mut repeat_depth: u32 = 0;
 
-    // Parse MML commands
     while stream.peek().is_some() {
         if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1)? {
-            // T<bpm> - Set tempo (bpm >= 1)
             is_tempo_set = true;
             commands.push(MmlCommand::Tempo {
                 clocks_per_tick: bpm_to_clocks_per_tick(bpm),
             });
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE)? {
-            // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
             is_quantize_set = true;
             quantize = gate_time;
             commands.push(MmlCommand::Quantize {
                 gate_ratio: gate_time_to_gate_ratio(gate_time),
             });
         } else if let Some(vol) = parse_command(&mut stream, "V", RANGE_VOLUME)? {
-            // V<vol> - Set volume level (0 <= vol <= 127)
             is_volume_set = true;
             commands.push(MmlCommand::Volume {
                 level: volume_to_level(vol),
             });
         } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL)? {
-            // K<key_offset> - Transpose key in semitones
             is_transpose_set = true;
             commands.push(MmlCommand::Transpose {
                 semitone_offset: key_offset as f32,
             });
         } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL)? {
-            // Y<offset_cents> - Set detune in cents
             is_detune_set = true;
             commands.push(MmlCommand::Detune {
                 semitone_offset: cents_to_semitones(offset_cents),
             });
         } else if let Some(command) = parse_envelope(&mut stream)? {
-            // @ENV<slot> - Switch to envelope slot (slot >= 0, 0 = off)
-            // @ENV<slot> { init_vol, dur_ticks1, vol1, ... } - Define envelope and switch to slot
             is_envelope_set = true;
             commands.push(command);
         } else if let Some(command) = parse_vibrato(&mut stream)? {
-            // @VIB<slot> - Switch to vibrato slot (slot >= 0, 0 = off)
-            // @VIB<slot> { delay_ticks, period_ticks, depth_cents } - Define vibrato and switch to slot
             is_vibrato_set = true;
             commands.push(command);
         } else if let Some(command) = parse_glide(&mut stream)? {
-            // @GLI<slot> - Switch to glide slot (slot >= 0, 0 = off)
-            // @GLI<slot> { offset_cents, dur_ticks } - Define glide and switch to slot
             is_glide_set = true;
             commands.push(command);
         } else if let Some(tone) = parse_command(&mut stream, "@", RANGE_GE0)? {
-            // @<tone> - Set tone (tone >= 0)
             is_tone_set = true;
             commands.push(MmlCommand::Tone { tone });
         } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE)? {
-            // O<oct> - Set octave (-1 <= oct <= 9)
             octave = oct;
         } else if parse_string(&mut stream, ">").is_ok() {
-            // > - Octave up
             if octave < RANGE_OCTAVE.1 {
                 octave += 1;
             } else {
                 parse_error!(stream, "Octave exceeds maximum {}", octave);
             }
         } else if parse_string(&mut stream, "<").is_ok() {
-            // < - Octave down
             if octave > RANGE_OCTAVE.0 {
                 octave -= 1;
             } else {
                 parse_error!(stream, "Octave is below minimum {}", octave);
             }
         } else if parse_string(&mut stream, "L").is_ok() {
-            // L<len> - Set default note length (1 <= len <= 192)
             note_ticks = parse_length_ticks(&mut stream, note_ticks)?;
         } else if let Some((command, is_connected)) = parse_note(&mut stream, octave, note_ticks)? {
-            // C/D/E/F/G/A/B[#+-][<len>][.][&] - Play note (1 <= len <= 192)
-
             // Combine durations if this note is tied to the previous one.
             if let Some(prev_note) = connected_note.take() {
                 if let MmlCommand::Note {
@@ -171,6 +149,18 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                         }
                         if is_connected {
                             connected_note = Some(prev_note);
+                        } else {
+                            // A same-pitch tie plays as one note, so its gate follows
+                            // the Q in effect where the tie ends.
+                            let gate_ratio = gate_time_to_gate_ratio(quantize);
+                            if let Some(index) = connected_gate_index.take() {
+                                commands[index] = MmlCommand::Quantize { gate_ratio };
+                            } else if quantize != 100 {
+                                if let Some(index) = last_note_index {
+                                    commands.insert(index, MmlCommand::Quantize { gate_ratio });
+                                    last_note_index = Some(index + 1);
+                                }
+                            }
                         }
                         continue;
                     }
@@ -186,6 +176,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                     }
                 };
             }
+
             ensure_set!(
                 is_tempo_set,
                 MmlCommand::Tempo {
@@ -221,13 +212,16 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             ensure_set!(is_vibrato_set, MmlCommand::Vibrato { slot: 0 });
             ensure_set!(is_glide_set, MmlCommand::Glide { slot: 0 });
 
+            connected_gate_index = None;
             if quantize != 100 {
-                let gate_ratio = if is_connected {
-                    1.0
+                if is_connected {
+                    connected_gate_index = Some(commands.len());
+                    commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
                 } else {
-                    gate_time_to_gate_ratio(quantize)
-                };
-                commands.push(MmlCommand::Quantize { gate_ratio });
+                    commands.push(MmlCommand::Quantize {
+                        gate_ratio: gate_time_to_gate_ratio(quantize),
+                    });
+                }
             }
 
             if is_connected {
@@ -235,11 +229,9 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                     connected_note = Some(*midi_note);
                 }
             }
-
             last_note_index = Some(commands.len());
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks)? {
-            // R[<len>][.] - Rest (1 <= len <= 192)
             if connected_note.is_some() {
                 parse_error!(stream, "Tie '&' is not followed by a note");
             }
@@ -249,15 +241,12 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                     clocks_per_tick: bpm_to_clocks_per_tick(DEFAULT_TEMPO),
                 });
             }
-
             commands.push(command);
             last_note_index = None;
         } else if parse_string(&mut stream, "[").is_ok() {
-            // [ - Repeat start marker
             repeat_depth += 1;
             commands.push(MmlCommand::RepeatStart);
         } else if parse_string(&mut stream, "]").is_ok() {
-            // ]<count> - Repeat end (count >= 1, 0 = infinite)
             if repeat_depth == 0 {
                 parse_error!(stream, "Repeat end ']' has no matching '['");
             }
@@ -269,7 +258,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             };
             commands.push(MmlCommand::RepeatEnd { play_count: count });
         } else {
-            let c = stream.peek().unwrap();
+            let Some(c) = stream.peek() else { break };
             parse_error!(stream, "Unexpected character '{c}'");
         }
     }
@@ -304,6 +293,7 @@ impl DurationTransform {
                 0,
             )
         };
+
         let fixed_clocks = self
             .fixed_clocks
             .checked_add(next_fixed_clocks)?
@@ -370,6 +360,7 @@ fn duration_transform(commands: &[MmlCommand]) -> Option<DurationTransform> {
             }
             _ => DurationTransform::default(),
         };
+
         let transform = transforms.last_mut()?;
         *transform = transform.then(next)?;
     }
@@ -430,7 +421,6 @@ fn parse_number<T: TryFrom<i32>>(
             break;
         }
     }
-
     if !has_digit {
         let err_char = stream.peek().map_or(String::new(), |c| c.to_string());
         stream.pos = pos;
@@ -440,7 +430,6 @@ fn parse_number<T: TryFrom<i32>>(
     if negative {
         value = -value;
     }
-
     if value < range.0 {
         return Err(ParseNumberError::Invalid(
             stream.error(&format!("'{name}' is below minimum {}", range.0)),
@@ -492,6 +481,7 @@ fn parse_string(stream: &mut CharStream, literal: &str) -> Result<String, String
             }
         }
     }
+
     Ok(parsed_str)
 }
 
@@ -518,7 +508,6 @@ fn parse_command<T: TryFrom<i32>>(
 fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
     const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
     let mut note_ticks = note_ticks;
-
     skip_whitespace(stream);
     if stream.peek().is_some_and(|c| c.is_ascii_digit()) {
         let len: u32 = expect_number(stream, "Note length", RANGE_LENGTH)?;
@@ -535,9 +524,10 @@ fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, S
             dot_ticks /= 2;
             note_ticks += dot_ticks;
         } else {
-            parse_error!(stream, "Cannot apply dot to odd note length");
+            parse_error!(stream, "Cannot apply dot to this note length");
         }
     }
+
     Ok(note_ticks)
 }
 
@@ -547,7 +537,6 @@ fn parse_note(
     note_ticks: u32,
 ) -> Result<Option<(MmlCommand, bool)>, String> {
     skip_whitespace(stream);
-
     let semitone = match stream.peek().map(|c| c.to_ascii_uppercase()) {
         Some(c) => match c {
             'C' => 0,
@@ -573,7 +562,6 @@ fn parse_note(
     };
 
     let mut duration_ticks = parse_length_ticks(stream, note_ticks)?;
-
     // Extend duration with '&<len>'
     let mut is_connected = false;
     while parse_string(stream, "&").is_ok() {
@@ -581,7 +569,7 @@ fn parse_note(
         if stream.peek().is_some_and(|c| c.is_ascii_digit()) {
             duration_ticks += parse_length_ticks(stream, note_ticks)?;
         } else {
-            // Set connection flag if '&' followed by non-digit
+            // A bare & ties to the next note instead of adding a length.
             is_connected = true;
             break;
         }
@@ -620,12 +608,13 @@ fn parse_envelope(stream: &mut CharStream) -> Result<Option<MmlCommand>, String>
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Envelope { slot }));
     }
+
     if slot == 0 {
         parse_error!(stream, "Envelope slot 0 is reserved for disable");
     }
-
     let init_vol = expect_number(stream, "init_vol", RANGE_VOLUME)?;
     let mut segments = Vec::new();
+
     while parse_string(stream, "}").is_err() {
         expect_string(stream, ",")?;
         let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE0)?;
@@ -648,10 +637,10 @@ fn parse_vibrato(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> 
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Vibrato { slot }));
     }
+
     if slot == 0 {
         parse_error!(stream, "Vibrato slot 0 is reserved for disable");
     }
-
     let delay_ticks = expect_number(stream, "delay_ticks", RANGE_GE0)?;
     expect_string(stream, ",")?;
     let period_ticks = expect_number(stream, "period_ticks", RANGE_GE0)?;
@@ -674,10 +663,10 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Glide { slot }));
     }
+
     if slot == 0 {
         parse_error!(stream, "Glide slot 0 is reserved for disable");
     }
-
     let semitone_offset = if parse_string(stream, "*").is_ok() {
         None
     } else {
@@ -866,9 +855,7 @@ mod tests {
     fn test_default_length() {
         let cmds = parse("L8 C D E");
         let notes = note_commands(&cmds);
-        for (_, ticks) in &notes {
-            assert_eq!(*ticks, 24, "L8 sets eighth-note ticks");
-        }
+        assert_eq!(notes, [(60, 24), (62, 24), (64, 24)]);
     }
 
     // Rest
@@ -891,7 +878,6 @@ mod tests {
     fn test_rest_with_tie() {
         let cmds = parse("R4&8");
         let rests = rest_commands(&cmds);
-        // 48 + 24 = 72
         assert_eq!(rests, [72]);
     }
 
@@ -908,7 +894,6 @@ mod tests {
     fn test_tie_extends_duration() {
         let cmds = parse("C4&4");
         let notes = note_commands(&cmds);
-        // 48 + 48 = 96
         assert_eq!(notes[0].1, 96);
     }
 
@@ -916,7 +901,6 @@ mod tests {
     fn test_tie_chain() {
         let cmds = parse("C4&4&4");
         let notes = note_commands(&cmds);
-        // 48 + 48 + 48 = 144
         assert_eq!(notes, [(60, 144)]);
     }
 
@@ -933,7 +917,6 @@ mod tests {
     fn test_tie_same_note_merges() {
         let cmds = parse("C4& C4");
         let notes = note_commands(&cmds);
-        // 48 + 48 merged into a single note
         assert_eq!(notes, [(60, 96)]);
     }
 
@@ -946,7 +929,6 @@ mod tests {
 
     #[test]
     fn test_tie_survives_non_note_commands() {
-        // Parameter commands may sit between tied notes
         let cmds = parse("C4& T140 C4");
         let notes = note_commands(&cmds);
         assert_eq!(notes, [(60, 96)]);
@@ -978,14 +960,6 @@ mod tests {
     // Parameter commands: Tempo
 
     #[test]
-    fn test_tempo() {
-        let cmds = parse("T120 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Tempo { .. })));
-    }
-
-    #[test]
     fn test_tempo_value() {
         let cmds = parse("T120 C");
         let cpt = cmds.iter().find_map(|cmd| match cmd {
@@ -998,26 +972,18 @@ mod tests {
     // Parameter commands: Volume
 
     #[test]
-    fn test_volume() {
-        let cmds = parse("V100 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Volume { .. })));
-    }
-
-    #[test]
     fn test_volume_value() {
-        // V127 -> level = 1.0
-        let cmds = parse("V127 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if (*level - 1.0).abs() < 1e-4)));
-
-        // V0 -> level = 0.0
-        let cmds = parse("V0 C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if *level == 0.0)));
+        for (mml, expected) in [("V0 C", 0.0), ("V100 C", 100.0 / 127.0), ("V127 C", 1.0)] {
+            let cmds = parse(mml);
+            let levels: Vec<f32> = cmds
+                .iter()
+                .filter_map(|cmd| match cmd {
+                    MmlCommand::Volume { level } => Some(*level),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(levels, [expected], "{mml}");
+        }
     }
 
     // Parameter commands: Quantize
@@ -1026,9 +992,8 @@ mod tests {
     fn test_quantize() {
         let cmds = parse("Q50 C");
         let qvals = quantize_commands(&cmds);
-        // Q50 -> gate_ratio = 0.5
         assert!(
-            qvals.iter().any(|&r| (r - 0.5).abs() < 1e-4),
+            qvals.contains(&0.5),
             "expected gate_ratio 0.5, got {qvals:?}"
         );
     }
@@ -1038,9 +1003,8 @@ mod tests {
         // Q100 means no per-note quantize command is emitted
         let cmds = parse("Q100 C D");
         let qvals = quantize_commands(&cmds);
-        // Only the Q100 command itself (gate_ratio=1.0), no per-note quantize
         assert_eq!(qvals.len(), 1, "expected only the Q100 command: {qvals:?}");
-        assert!((qvals[0] - 1.0).abs() < 1e-4);
+        assert_eq!(qvals[0], 1.0);
     }
 
     #[test]
@@ -1048,10 +1012,47 @@ mod tests {
         // Connected note (C&) should get gate_ratio=1.0, normal note (D) gets 0.5
         let cmds = parse("Q50 C& D");
         let qvals = quantize_commands(&cmds);
-        assert_eq!(qvals.len(), 3);
-        assert!((qvals[0] - 0.5).abs() < 1e-4, "Q50: {}", qvals[0]);
-        assert!((qvals[1] - 1.0).abs() < 1e-4, "connected: {}", qvals[1]);
-        assert!((qvals[2] - 0.5).abs() < 1e-4, "normal: {}", qvals[2]);
+        assert_eq!(qvals, [0.5, 1.0, 0.5]);
+    }
+
+    #[test]
+    fn test_tied_same_note_ends_with_current_quantize() {
+        // C4& C4 merges into one note that ends with the same gate as C4&4
+        let tied = parse("Q50 C4& C4");
+        let lengthened = parse("Q50 C4&4");
+        assert_eq!(quantize_commands(&tied), [0.5, 0.5]);
+        assert_eq!(quantize_commands(&tied), quantize_commands(&lengthened));
+        assert_eq!(note_commands(&tied), note_commands(&lengthened));
+    }
+
+    #[test]
+    fn test_tied_same_note_uses_quantize_at_tie_end() {
+        let cmds = parse("Q50 C4& Q80 C4");
+        assert_eq!(quantize_commands(&cmds), [0.5, 0.8, 0.8]);
+        assert_eq!(note_commands(&cmds), [(60, 96)]);
+    }
+
+    #[test]
+    fn test_tie_chain_into_slur_keeps_full_gate() {
+        let cmds = parse("Q50 C4& C4& D4");
+        assert_eq!(quantize_commands(&cmds), [0.5, 1.0, 0.5]);
+        assert_eq!(note_commands(&cmds), [(60, 96), (62, 48)]);
+    }
+
+    #[test]
+    fn test_tied_note_gate_inserted_after_full_gate() {
+        // Q100 emits no per-note gate, so a tie ending under Q50 inserts one before the note
+        let cmds = parse("Q100 C4& Q50 C4");
+        let note_index = cmds
+            .iter()
+            .position(|cmd| matches!(cmd, MmlCommand::Note { .. }))
+            .unwrap();
+        assert!(matches!(
+            cmds[note_index - 1],
+            MmlCommand::Quantize { gate_ratio } if gate_ratio == 0.5
+        ));
+        assert_eq!(quantize_commands(&cmds), [1.0, 0.5, 0.5]);
+        assert_eq!(note_commands(&cmds), [(60, 96)]);
     }
 
     // Parameter commands: Tone, Transpose, Detune
@@ -1069,7 +1070,7 @@ mod tests {
         let cmds = parse("K5 C");
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::Transpose { semitone_offset } if (*semitone_offset - 5.0).abs() < 1e-4
+            MmlCommand::Transpose { semitone_offset } if *semitone_offset == 5.0
         )));
     }
 
@@ -1078,17 +1079,16 @@ mod tests {
         let cmds = parse("K-5 C");
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::Transpose { semitone_offset } if (*semitone_offset + 5.0).abs() < 1e-4
+            MmlCommand::Transpose { semitone_offset } if *semitone_offset == -5.0
         )));
     }
 
     #[test]
     fn test_detune() {
         let cmds = parse("Y50 C");
-        // 50 cents = 0.5 semitones
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::Detune { semitone_offset } if (*semitone_offset - 0.5).abs() < 1e-4
+            MmlCommand::Detune { semitone_offset } if *semitone_offset == 0.5
         )));
     }
 
@@ -1097,9 +1097,11 @@ mod tests {
     #[test]
     fn test_envelope_definition() {
         let cmds = parse("@ENV1{127, 10, 64} C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::EnvelopeSet { slot: 1, .. })));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            MmlCommand::EnvelopeSet { slot: 1, initial_level, segments }
+                if *initial_level == 1.0 && segments.as_ref() == [(10, 64.0 / 127.0)]
+        )));
     }
 
     #[test]
@@ -1107,7 +1109,9 @@ mod tests {
         let cmds = parse("@ENV1{127, 10, 64, 10, 32} C");
         assert!(cmds.iter().any(|cmd| matches!(
             cmd,
-            MmlCommand::EnvelopeSet { slot: 1, segments, .. } if segments.len() == 2
+            MmlCommand::EnvelopeSet { slot: 1, initial_level, segments }
+                if *initial_level == 1.0
+                    && segments.as_ref() == [(10, 64.0 / 127.0), (10, 32.0 / 127.0)]
         )));
     }
 
@@ -1124,9 +1128,11 @@ mod tests {
     #[test]
     fn test_vibrato_definition() {
         let cmds = parse("@VIB1{10, 20, 50} C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::VibratoSet { slot: 1, .. })));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            MmlCommand::VibratoSet { slot: 1, delay_ticks: 10, period_ticks: 20, semitone_depth }
+                if *semitone_depth == 0.5
+        )));
     }
 
     // Effect definitions: Glide
@@ -1134,9 +1140,11 @@ mod tests {
     #[test]
     fn test_glide_definition() {
         let cmds = parse("@GLI1{100, 10} C");
-        assert!(cmds
-            .iter()
-            .any(|cmd| matches!(cmd, MmlCommand::GlideSet { slot: 1, .. })));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            MmlCommand::GlideSet { slot: 1, semitone_offset: Some(offset), duration_ticks: Some(10) }
+                if *offset == 1.0
+        )));
     }
 
     #[test]
@@ -1159,9 +1167,9 @@ mod tests {
             cmd,
             MmlCommand::GlideSet {
                 slot: 1,
-                semitone_offset: Some(_),
+                semitone_offset: Some(offset),
                 duration_ticks: None,
-            }
+            } if *offset == 1.0
         )));
 
         let cmds = parse("@GLI1{*, 10} C");
@@ -1179,7 +1187,6 @@ mod tests {
 
     #[test]
     fn test_default_commands_inserted_on_first_note() {
-        // First note triggers auto-insertion of all default parameter commands
         let cmds = parse("C");
         assert_eq!(cmds.len(), 11);
         assert!(matches!(cmds[0], MmlCommand::Tempo { .. }));
@@ -1215,6 +1222,20 @@ mod tests {
         let no_space = note_commands(&parse("CDE"));
         let with_space = note_commands(&parse("C D E"));
         assert_eq!(no_space, with_space);
+    }
+
+    #[test]
+    fn test_trailing_whitespace() {
+        for mml in ["", "V7", "T120", ">", "@ENV1{127}", "[C]2", "C"] {
+            assert_eq!(
+                format!("{:?}", parse(&format!("{mml} \t\n"))),
+                format!("{:?}", parse(mml)),
+                "{mml:?}"
+            );
+        }
+
+        assert_parse_error("C& \n", "MML:4: Tie '&' is not followed by a note");
+        assert_parse_error("[V7 \n", "MML:5: Repeat start '[' has no matching ']'");
     }
 
     #[test]
@@ -1315,14 +1336,13 @@ mod tests {
 
     #[test]
     fn test_err_note_length_not_divisible() {
-        // 192 is not divisible by 7
         assert_parse_error("C7", "MML:2: Invalid note length '7'");
     }
 
     #[test]
     fn test_err_dot_on_odd_tick_length() {
         // L192 = 1 tick, cannot apply dot to odd value
-        assert_parse_error("C192.", "MML:5: Cannot apply dot to odd note length");
+        assert_parse_error("C192.", "MML:5: Cannot apply dot to this note length");
     }
 
     // total_duration_sec
@@ -1332,7 +1352,6 @@ mod tests {
         let cmds = parse("T120 C4");
         let sec = total_duration_sec(&cmds).unwrap();
         let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1343,7 +1362,6 @@ mod tests {
         let clocks = u128::from(
             (bpm_to_clocks_per_tick(120) + bpm_to_clocks_per_tick(60)) * TICKS_PER_QUARTER_NOTE,
         );
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1359,7 +1377,6 @@ mod tests {
         let cmds = parse("T120 [C4]2");
         let sec = total_duration_sec(&cmds).unwrap();
         let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE * 2);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1368,7 +1385,6 @@ mod tests {
         let cmds = parse("T120 [[C4]2]3");
         let sec = total_duration_sec(&cmds).unwrap();
         let clocks = u128::from(bpm_to_clocks_per_tick(120) * TICKS_PER_QUARTER_NOTE * 2 * 3);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 
@@ -1379,7 +1395,6 @@ mod tests {
         let clocks = u128::from(TICKS_PER_QUARTER_NOTE)
             * (u128::from(bpm_to_clocks_per_tick(120))
                 + u128::from(bpm_to_clocks_per_tick(60)) * 5);
-
         assert_eq!(sec, duration_sec_for_clocks(clocks));
     }
 

@@ -11,11 +11,14 @@ from urllib.parse import urlparse
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_ROOT_DIRS = (
+    ROOT_DIR / "docs",
     ROOT_DIR / "web",
     ROOT_DIR / "wasm",
     ROOT_DIR / "python" / "pyxel" / "examples",
 )
 PORT = 8000
+CDN_RUNTIME_URL = "https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"
+LOCAL_RUNTIME_URL = "/wasm/pyxel.js"
 
 SW_PATH = "/pyxel-sw.js"
 SW_JS = r"""// Pyxel Showcase service worker
@@ -40,27 +43,18 @@ self.addEventListener('fetch', (event) => {
 
 INJECT_SNIPPET = """
 <script>
-(function() {
+(async function() {
   try {
     const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     const isSecure = window.isSecureContext || isLocalhost;
     if (!isSecure || !('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('__SW_PATH__', { scope: '/' });
+    await navigator.serviceWorker.register('__SW_PATH__', { scope: '/' });
   } catch (e) {
     console.warn('SW register failed', e);
   }
 })();
 </script>
 """.replace("__SW_PATH__", SW_PATH)
-
-
-def _get_ip() -> str:
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-            sock.connect(("8.8.8.8", 80))
-            return sock.getsockname()[0]
-    except OSError:
-        return "127.0.0.1"
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -84,14 +78,22 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         full_path = Path(self.translate_path(path)).resolve()
-        if not any(
-            full_path == root_dir or full_path.is_relative_to(root_dir)
-            for root_dir in PUBLIC_ROOT_DIRS
-        ):
+        if not _is_public_path(full_path):
             self.send_error(404, "File not found")
             return None
 
-        if path.endswith(".html"):
+        if full_path.is_dir():
+            for index_name in ("index.html", "index.htm"):
+                index_path = full_path / index_name
+                if index_path.is_file():
+                    if not _is_public_path(index_path.resolve()):
+                        self.send_error(404, "File not found")
+                        return None
+                    if path.endswith("/") and index_name == "index.html":
+                        full_path = index_path
+                    break
+
+        if full_path.suffix == ".html":
             if not full_path.is_file():
                 return super().send_head()
             try:
@@ -111,19 +113,6 @@ class Handler(SimpleHTTPRequestHandler):
         return super().send_head()
 
 
-def _inject_html(text: str) -> str:
-    lower = text.lower()
-    if "serviceworker" in lower or "service-worker" in lower:
-        return text
-    head_idx = lower.rfind("</head>")
-    if head_idx != -1:
-        return text[:head_idx] + INJECT_SNIPPET + text[head_idx:]
-    body_idx = lower.rfind("</body>")
-    if body_idx != -1:
-        return text[:body_idx] + INJECT_SNIPPET + text[body_idx:]
-    return text + INJECT_SNIPPET
-
-
 def main() -> int:
     ip = _get_ip()
     print(f"Serving HTTP on {ip} port {PORT} (http://{ip}:{PORT}/) ...")
@@ -131,11 +120,49 @@ def main() -> int:
     threading.Timer(
         0.5, lambda: webbrowser.open(f"http://localhost:{PORT}/web/showcase/")
     ).start()
+
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     return 0
+
+
+def _get_ip() -> str:
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+
+
+def _is_public_path(path: Path) -> bool:
+    return any(
+        path == root_dir or path.is_relative_to(root_dir)
+        for root_dir in PUBLIC_ROOT_DIRS
+    )
+
+
+def _inject_html(text: str) -> str:
+    lower = text.lower()
+    head_idx = lower.rfind("</head>")
+    if head_idx != -1:
+        text = (
+            text[:head_idx].replace(CDN_RUNTIME_URL, LOCAL_RUNTIME_URL)
+            + text[head_idx:]
+        )
+        lower = text.lower()
+        head_idx = lower.rfind("</head>")
+
+    if "serviceworker" in lower or "service-worker" in lower:
+        return text
+    if head_idx != -1:
+        return text[:head_idx] + INJECT_SNIPPET + text[head_idx:]
+    body_idx = lower.rfind("</body>")
+    if body_idx != -1:
+        return text[:body_idx] + INJECT_SNIPPET + text[body_idx:]
+    return text + INJECT_SNIPPET
 
 
 if __name__ == "__main__":

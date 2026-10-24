@@ -17,10 +17,7 @@ class ImageToggleButton(ToggleButton):
         self._img = img
         self._u = u
         self._v = v
-
         self.add_event_listener("draw", self.__on_draw)
-
-    # Event handlers
 
     def __on_draw(self):
         pyxel.pal(BUTTON_ENABLED_COLOR, self.button_color)

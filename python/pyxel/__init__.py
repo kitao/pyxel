@@ -15,4 +15,9 @@ if sys.platform == "linux":
         except OSError:
             pass
 
+from . import cube as _cube
 from .pyxel_binding import *  # type: ignore
+
+# Restore the Python cube package overwritten by the native star import.
+cube = _cube
+del _cube

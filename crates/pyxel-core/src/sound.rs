@@ -6,7 +6,6 @@ use crate::audio::Audio;
 use crate::channel::Channel;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{parse_mml, total_duration_sec};
-use crate::old_mml_parser::parse_old_mml;
 use crate::pcm_decoder::{load_pcm, PcmData};
 use crate::pyxel;
 use crate::settings::{
@@ -145,11 +144,13 @@ impl Sound {
             }
             self.notes.push(note);
         }
+
         Ok(())
     }
 
     pub fn set_tones(&mut self, tone_str: &str) -> Result<(), String> {
         self.tones.clear();
+
         for c in simplify_string(tone_str).chars() {
             let tone = match c {
                 't' => TONE_TRIANGLE,
@@ -161,11 +162,13 @@ impl Sound {
             };
             self.tones.push(tone);
         }
+
         Ok(())
     }
 
     pub fn set_volumes(&mut self, volume_str: &str) -> Result<(), String> {
         self.volumes.clear();
+
         for c in simplify_string(volume_str).chars() {
             if ('0'..='7').contains(&c) {
                 self.volumes.push(c.to_digit(10).unwrap() as SoundVolume);
@@ -173,11 +176,13 @@ impl Sound {
                 return Err(format!("Invalid sound volume '{c}'"));
             }
         }
+
         Ok(())
     }
 
     pub fn set_effects(&mut self, effect_str: &str) -> Result<(), String> {
         self.effects.clear();
+
         for c in simplify_string(effect_str).chars() {
             let effect = match c {
                 'n' => EFFECT_NONE,
@@ -190,14 +195,16 @@ impl Sound {
             };
             self.effects.push(effect);
         }
+
         Ok(())
     }
 
     // MML & PCM
 
     pub fn set_mml(&mut self, code: &str) -> Result<(), String> {
+        let commands = parse_mml(code)?;
         self.clear_pcm();
-        self.commands = parse_mml(code)?;
+        self.commands = commands;
         self.command_revision = self.command_revision.wrapping_add(1);
         Ok(())
     }
@@ -207,17 +214,9 @@ impl Sound {
         self.command_revision = self.command_revision.wrapping_add(1);
     }
 
-    pub fn old_mml(&mut self, code: &str) -> Result<(), String> {
-        self.clear_pcm();
-        self.commands = parse_old_mml(code)?;
-        self.command_revision = self.command_revision.wrapping_add(1);
-        Ok(())
-    }
-
     pub fn load_pcm(&mut self, filename: &str) -> Result<(), String> {
-        self.clear_mml();
-
         let pcm = load_pcm(filename, AUDIO_SAMPLE_RATE)?;
+        self.clear_mml();
         self.pcm = Some(pcm);
         Ok(())
     }
@@ -236,7 +235,6 @@ impl Sound {
         use_ffmpeg: Option<bool>,
     ) -> Result<(), String> {
         let num_samples = Audio::duration_samples(duration_sec)?;
-
         let render_sound = new_audio_type!(self.clone());
         let render_channel = Channel::new();
         audio_mut!(render_channel).play(vec![render_sound], None, true, false)?;
@@ -262,12 +260,6 @@ impl Sound {
     }
 
     // Command emission
-
-    pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
-        let mut commands = Vec::new();
-        self.emit_commands(&mut commands);
-        commands
-    }
 
     pub(crate) fn command_snapshot(&mut self) -> Arc<[MmlCommand]> {
         if self.commands.is_empty() {
@@ -349,14 +341,14 @@ impl Sound {
 
     pub(crate) fn emit_commands(&self, commands: &mut Vec<MmlCommand>) {
         commands.clear();
-        self.emit_fixed_params(commands);
+        Self::emit_fixed_params(commands);
         self.emit_envelope_slots(commands);
         self.emit_vibrato_slot(commands);
         self.emit_glide_slot(commands);
         self.emit_notes(commands);
     }
 
-    fn emit_fixed_params(&self, commands: &mut Vec<MmlCommand>) {
+    fn emit_fixed_params(commands: &mut Vec<MmlCommand>) {
         commands.push(MmlCommand::Tempo {
             clocks_per_tick: AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND,
         });
@@ -427,12 +419,9 @@ impl Sound {
     fn emit_notes(&self, commands: &mut Vec<MmlCommand>) {
         let tones = pyxel::tones();
         let duration_ticks = self.speed as u32;
-
         let mut last_tone: Option<SoundTone> = None;
         let mut last_volume: Option<SoundVolume> = None;
-        let mut last_fadeout: Option<SoundEffect> = None;
-        let mut last_vibrato: Option<SoundEffect> = None;
-        let mut last_slide: Option<SoundEffect> = None;
+        let mut last_effect: Option<SoundEffect> = None;
 
         for (i, &note) in self.notes.iter().enumerate() {
             if note < 0 {
@@ -440,15 +429,13 @@ impl Sound {
                 continue;
             }
 
-            let tone = self.cycled_or(i, &self.tones, TONE_TRIANGLE);
-            let volume = self.cycled_or(i, &self.volumes, MAX_VOLUME);
-            let effect = self.cycled_or(i, &self.effects, EFFECT_NONE);
-
+            let tone = Self::cycled_or(i, &self.tones, TONE_TRIANGLE);
+            let volume = Self::cycled_or(i, &self.volumes, MAX_VOLUME);
+            let effect = Self::cycled_or(i, &self.effects, EFFECT_NONE);
             if last_tone != Some(tone) {
                 last_tone = Some(tone);
                 commands.push(MmlCommand::Tone { tone });
             }
-
             if last_volume != Some(volume) {
                 last_volume = Some(volume);
                 commands.push(MmlCommand::Volume {
@@ -456,8 +443,8 @@ impl Sound {
                 });
             }
 
-            if last_fadeout != Some(effect) {
-                last_fadeout = Some(effect);
+            if last_effect != Some(effect) {
+                last_effect = Some(effect);
                 let slot = match effect {
                     EFFECT_FADEOUT => 1,
                     EFFECT_HALF_FADEOUT => 2,
@@ -465,22 +452,15 @@ impl Sound {
                     _ => 0,
                 };
                 commands.push(MmlCommand::Envelope { slot });
-            }
-
-            if last_vibrato != Some(effect) {
-                last_vibrato = Some(effect);
                 commands.push(MmlCommand::Vibrato {
                     slot: u32::from(effect == EFFECT_VIBRATO),
                 });
-            }
-
-            if last_slide != Some(effect) {
-                last_slide = Some(effect);
                 commands.push(MmlCommand::Glide {
                     slot: u32::from(effect == EFFECT_SLIDE),
                 });
             }
 
+            // Legacy C0 maps to MIDI C2 for wavetable tones and C4 for noise.
             let base_note =
                 tones
                     .get(tone as usize)
@@ -499,7 +479,7 @@ impl Sound {
         }
     }
 
-    fn cycled_or<T: Copy>(&self, index: usize, values: &[T], default: T) -> T {
+    fn cycled_or<T: Copy>(index: usize, values: &[T], default: T) -> T {
         if values.is_empty() {
             default
         } else {
@@ -513,11 +493,32 @@ mod tests {
     use super::*;
 
     #[test]
+    fn failed_mml_preserves_pcm() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.pcm = Some(PcmData {
+            samples: vec![1, -2, 3],
+        });
+        assert!(sound.set_mml("X1").is_err());
+        assert_eq!(sound.pcm.as_ref().unwrap().samples, [1, -2, 3]);
+    }
+
+    #[test]
+    fn failed_pcm_preserves_mml() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.set_mml("T120 O4 C").unwrap();
+        let commands = sound.command_snapshot();
+        assert!(sound.load_pcm("").is_err());
+        assert!(!sound.commands.is_empty());
+        assert!(Arc::ptr_eq(&commands, &sound.command_snapshot()));
+    }
+
+    #[test]
     fn command_snapshot_is_reused_until_legacy_sound_changes() {
         let sound = Sound::new();
         let mut sound = audio_mut!(sound);
         sound.set("c2e2", "00", "77", "nn", 6).unwrap();
-
         let first = sound.command_snapshot();
         let second = sound.command_snapshot();
         assert!(std::sync::Arc::ptr_eq(&first, &second));
@@ -532,7 +533,6 @@ mod tests {
         let sound = Sound::new();
         let mut sound = audio_mut!(sound);
         sound.set_mml("T120 O4 C").unwrap();
-
         let first = sound.command_snapshot();
         let second = sound.command_snapshot();
         assert!(std::sync::Arc::ptr_eq(&first, &second));
@@ -547,13 +547,11 @@ mod tests {
         let sound = Sound::new();
         let mut sound = audio_mut!(sound);
         sound.notes = vec![SoundNote::MAX];
-
         let commands = sound.command_snapshot();
         let midi_note = commands.iter().find_map(|command| match command {
             MmlCommand::Note { midi_note, .. } => Some(*midi_note),
             _ => None,
         });
-
         assert_eq!(midi_note, Some(163));
     }
 }

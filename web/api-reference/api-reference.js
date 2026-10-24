@@ -3,157 +3,27 @@ const PYXEL_API_REF_ADVANCED_KEY = "pyxel-api-ref-advanced";
 let data = null;
 let lang = "en";
 let showAdvanced = false;
+try {
+  showAdvanced = localStorage.getItem(PYXEL_API_REF_ADVANCED_KEY) === "1";
+} catch {}
 let searchQuery = "";
 
 // Element lookup maps built once after buildPage; per-keystroke
 // visibility updates must not scan the whole document per entry.
 const domCache = {};
 
-function cacheDomRefs() {
-  for (const attr of [
-    "item-key",
-    "desc-key",
-    "detail-key",
-    "const-key",
-    "const-grid",
-    "items-card",
-    "cg-id",
-    "cg-label",
-    "sec-label",
-    "sec-details",
-    "cat-id",
-    "cat-title",
-    "cat-title2",
-  ]) {
-    const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-    const map = new Map();
-    document.querySelectorAll(`[data-${attr}]`).forEach((el) => {
-      map.set(el.dataset[prop], el);
-    });
-    domCache[attr] = map;
-  }
-  domCache.advMarks = [...document.querySelectorAll(".adv-mark")];
-}
+// Page rendering
 
-const cached = (attr, key) => domCache[attr].get(key);
-
-function badgeColor(type) {
-  switch (type) {
-    case "function":
-      return "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
-    case "variable":
-      return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-    case "class":
-      return "bg-amber-500/20 text-amber-300 border border-amber-500/30";
-    case "constant":
-      return "bg-pink-500/20 text-pink-300 border border-pink-500/30";
-    default:
-      return "bg-gray-500/20 text-gray-300 border border-gray-500/30";
-  }
-}
-
-function matchesSearch(item) {
-  if (!searchQuery) return true;
-  const q = searchQuery.toLowerCase();
-  return (
-    item.name.toLowerCase().includes(q) ||
-    item.signature.toLowerCase().includes(q) ||
-    t(item.description).toLowerCase().includes(q)
-  );
-}
-
-function isVisible(item) {
-  if (!showAdvanced && item.advanced) return false;
-  return matchesSearch(item);
-}
-
-function hasDetails(item) {
-  return (
-    (item.params && item.params.length > 0) ||
-    (item.returns && item.returns.type !== "None") ||
-    (item.examples && item.examples.length > 0) ||
-    item.notes ||
-    item.value_type
-  );
-}
-
-// Render the expandable detail body for one API entry.
-function buildDetailContent(container, item) {
-  container.innerHTML = "";
-  const wrap = document.createElement("div");
-  wrap.className = "mt-2 pl-3 border-l-2 border-gray-700 space-y-2.5";
-
-  // Value type block for variable entries
-  if (item.value_type) {
-    const sec = document.createElement("div");
-    sec.innerHTML =
-      `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("type_label"))}</div>` +
-      `<code class="text-emerald-300 text-xs font-mono">${esc(item.value_type)}</code>`;
-    wrap.appendChild(sec);
-  }
-
-  // Parameter rows preserve declared order from api-reference.json.
-  if (item.params && item.params.length > 0) {
-    const sec = document.createElement("div");
-    let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
-    html += '<div class="space-y-1">';
-    for (const p of item.params) {
-      html += '<div class="text-xs leading-relaxed">';
-      html += `<code class="text-indigo-300 font-mono">${esc(p.name)}</code>`;
-      html += ` <span class="text-gray-500">(${esc(p.type)})</span>`;
-      if (p.description) {
-        html += ` <span class="text-gray-400">\u2014 ${esc(t(p.description))}</span>`;
-      }
-      html += "</div>";
-    }
-    html += "</div>";
-    sec.innerHTML = html;
-    wrap.appendChild(sec);
-  }
-
-  // Return block is hidden for None-returning APIs.
-  if (item.returns && item.returns.type !== "None") {
-    const sec = document.createElement("div");
-    let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
-    html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.returns.type)}</code>`;
-    if (item.returns.description) {
-      html += ` <span class="text-gray-400">\u2014 ${esc(t(item.returns.description))}</span>`;
-    }
-    html += "</div>";
-    sec.innerHTML = html;
-    wrap.appendChild(sec);
-  }
-
-  // Example snippets are shown as a single preformatted block.
-  if (item.examples && item.examples.length > 0) {
-    const sec = document.createElement("div");
-    const exampleCode = item.examples.join("\n");
-    sec.innerHTML =
-      `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("example"))}</div>` +
-      `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(exampleCode)}</pre>`;
-    wrap.appendChild(sec);
-  }
-
-  // Optional notes stay separate from the main description.
-  if (item.notes) {
-    const sec = document.createElement("div");
-    sec.innerHTML =
-      `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("notes"))}</div>` +
-      `<p class="text-gray-400 text-xs leading-relaxed">${esc(t(item.notes))}</p>`;
-    wrap.appendChild(sec);
-  }
-
-  container.appendChild(wrap);
-}
-
-// Build the searchable API reference shell and category sections.
 function buildPage() {
   const app = document.getElementById("app");
   app.innerHTML = "";
+  app.appendChild(
+    buildPageHeader(() => {
+      updateTexts();
+      updateVisibility();
+    }, buildVariantSwitch()),
+  );
 
-  app.appendChild(buildPageHeader(updateTexts));
-
-  // Toolbar for text search and advanced API visibility
   const toolbar = document.createElement("div");
   toolbar.className = "flex items-center gap-3 mb-4";
 
@@ -161,7 +31,8 @@ function buildPage() {
   searchWrap.className = "flex-1 relative";
   const searchIcon = document.createElement("span");
   searchIcon.className =
-    "absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none";
+    "absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none";
+  searchIcon.setAttribute("aria-hidden", "true");
   searchIcon.innerHTML =
     '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>';
   const searchInput = document.createElement("input");
@@ -179,12 +50,16 @@ function buildPage() {
   toggleWrap.className = "toggle-label text-gray-400 hover:text-gray-200";
   const toggleCheck = document.createElement("input");
   toggleCheck.type = "checkbox";
-  toggleCheck.className =
-    "accent-indigo-500 w-4 h-4 rounded cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-900";
+  toggleCheck.className = "checkbox";
   toggleCheck.checked = showAdvanced;
   toggleCheck.addEventListener("change", () => {
     showAdvanced = toggleCheck.checked;
-    localStorage.setItem(PYXEL_API_REF_ADVANCED_KEY, showAdvanced ? "1" : "0");
+    try {
+      localStorage.setItem(
+        PYXEL_API_REF_ADVANCED_KEY,
+        showAdvanced ? "1" : "0",
+      );
+    } catch {}
     updateVisibility();
   });
   const toggleText = document.createElement("span");
@@ -193,22 +68,20 @@ function buildPage() {
   toggleWrap.appendChild(toggleText);
 
   toolbar.appendChild(searchWrap);
-  // Show the Advanced toggle only when advanced items exist (data-driven).
   const hasAdvanced = data.categories.some(
     (cat) => cat.items && cat.items.some((item) => item.advanced),
   );
   if (hasAdvanced) toolbar.appendChild(toggleWrap);
   app.appendChild(toolbar);
 
-  // Empty-state message toggled by updateVisibility
   const noResults = document.createElement("div");
   noResults.id = "no-results";
-  noResults.className = "hidden py-8 text-center text-gray-500 text-sm";
+  noResults.className = "hidden py-8 text-center text-gray-400 text-sm";
   app.appendChild(noResults);
 
-  // Category sections, API rows, and constant groups
   for (const cat of data.categories) {
     const section = document.createElement("details");
+    section.id = cat.id;
     section.open = !cat.collapsed;
     section.className = "mt-6";
     section.dataset.catId = cat.id;
@@ -225,7 +98,6 @@ function buildPage() {
     catHeader.appendChild(line);
     section.appendChild(catHeader);
 
-    // Items card (functions, variables, classes, named constants)
     if (cat.items && cat.items.length > 0) {
       const card = document.createElement("div");
       card.className = "card space-y-0 divide-y divide-gray-700";
@@ -242,53 +114,45 @@ function buildPage() {
         row.className = "py-3";
         row.dataset.itemKey = `${cat.id}-${i}`;
 
-        // Signature line with API kind badge and optional advanced mark
         const sigLine = document.createElement("div");
         sigLine.className = "flex items-baseline gap-2";
-
         const badge = document.createElement("span");
         badge.className = "type-badge shrink-0 " + badgeColor(item.type);
         badge.textContent = item.type;
         sigLine.appendChild(badge);
 
         const sigWrap = document.createElement("span");
+        sigWrap.className = "min-w-0";
         const sig = document.createElement("code");
-        sig.className = "font-mono font-semibold text-sm text-indigo-300";
+        sig.className =
+          "api-signature font-mono font-semibold text-sm text-indigo-300";
         sig.textContent = item.signature;
         sigWrap.appendChild(sig);
-
         if (item.advanced) {
           const adv = document.createElement("span");
           adv.className =
-            "adv-mark text-amber-500/70 text-[10px] leading-none hidden ml-1.5 align-middle";
+            "adv-mark text-amber-500/70 text-[10px] leading-none ml-1.5 align-middle";
           adv.textContent = "ADV";
           sigWrap.appendChild(adv);
         }
         sigLine.appendChild(sigWrap);
-
         row.appendChild(sigLine);
 
-        // Localized one-line description
         const desc = document.createElement("p");
         desc.className = "mt-1 text-gray-400 text-sm pl-0.5";
         desc.dataset.descKey = `${cat.id}-${i}`;
         row.appendChild(desc);
 
-        // Collapsible parameter, return, example, and note details
         if (hasDetails(item)) {
           const details = document.createElement("details");
           details.className = "mt-1";
-
           const summary = document.createElement("summary");
-          summary.className =
-            "tri text-gray-400 text-xs hover:text-gray-300 w-fit";
+          summary.className = "tri text-gray-400 text-xs hover:text-gray-300";
           summary.dataset.uiKey = "details";
           details.appendChild(summary);
-
           const content = document.createElement("div");
           content.dataset.detailKey = `${cat.id}-${i}`;
           details.appendChild(content);
-
           row.appendChild(details);
         }
 
@@ -298,21 +162,6 @@ function buildPage() {
       section.appendChild(card);
     }
 
-    // Flat constant chip grid
-    if (cat.constants && cat.constants.length > 0) {
-      const grid = document.createElement("div");
-      grid.className = "card py-3 px-4";
-      grid.dataset.constGrid = cat.id;
-      let html = '<div class="flex flex-wrap gap-1.5">';
-      for (let i = 0; i < cat.constants.length; i++) {
-        html += `<code class="const-chip" data-const-key="${cat.id}-${i}">${esc(cat.constants[i])}</code>`;
-      }
-      html += "</div>";
-      grid.innerHTML = html;
-      section.appendChild(grid);
-    }
-
-    // Nested constant groups and section-level details
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];
@@ -335,7 +184,6 @@ function buildPage() {
         groupHeader.appendChild(labelSpan);
         groupWrap.appendChild(groupHeader);
 
-        // Labeled subsections inside one constant group
         if (group.sections && group.sections.length > 0) {
           const card = document.createElement("div");
           card.className = "card py-3 px-4 space-y-3";
@@ -345,6 +193,7 @@ function buildPage() {
             const sec = group.sections[s];
             const sid = `${gid}-s-${s}`;
             const secWrap = document.createElement("div");
+            secWrap.dataset.constSection = sid;
 
             if (sec.label) {
               const label = document.createElement("div");
@@ -367,8 +216,7 @@ function buildPage() {
               const det = document.createElement("details");
               det.className = "mt-1.5";
               const sum = document.createElement("summary");
-              sum.className =
-                "tri text-gray-400 text-xs hover:text-gray-300 w-fit";
+              sum.className = "tri text-gray-400 text-xs hover:text-gray-300";
               sum.dataset.uiKey = "details";
               det.appendChild(sum);
               const list = document.createElement("div");
@@ -380,6 +228,7 @@ function buildPage() {
 
             card.appendChild(secWrap);
           }
+
           groupWrap.appendChild(card);
         }
 
@@ -395,27 +244,26 @@ function buildPage() {
   updateVisibility();
 }
 
-// Apply localized labels to headers, controls, categories, and details.
 function updateTexts() {
-  // Localized page title and subtitle
   document.title = t("title");
   document.getElementById("page-title").textContent = t("title");
   document.getElementById("page-subtitle").innerHTML = t("subtitle").replace(
     "{0}",
-    link("https://github.com/kitao/pyxel", "Pyxel"),
+    link("https://kitao.dev/pyxel/", "Pyxel"),
   );
 
-  document.getElementById("search-input").placeholder = t("search_placeholder");
+  const searchInput = document.getElementById("search-input");
+  const searchLabel = t("search_placeholder");
+  searchInput.placeholder = searchLabel;
+  searchInput.setAttribute("aria-label", searchLabel);
   const advLabel = document.getElementById("advanced-label");
   if (advLabel) advLabel.textContent = t("show_advanced");
   document.getElementById("no-results").textContent = t("no_results");
 
-  // Static UI labels such as details toggles
   document.querySelectorAll("[data-ui-key]").forEach((el) => {
     el.textContent = t(el.dataset.uiKey);
   });
 
-  // Category titles and card headings
   for (const cat of data.categories) {
     const el = cached("cat-title", cat.id);
     if (el) el.textContent = t(cat.title);
@@ -423,24 +271,24 @@ function updateTexts() {
     if (el2) el2.textContent = t(cat.title);
   }
 
-  // Entry descriptions, detail bodies, and constant-group labels
   for (const cat of data.categories) {
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
         const key = `${cat.id}-${i}`;
         const descEl = cached("desc-key", key);
-        if (descEl) descEl.textContent = t(cat.items[i].description);
+        if (descEl)
+          descEl.innerHTML = descriptionHtml(t(cat.items[i].description));
         const detailEl = cached("detail-key", key);
         if (detailEl) buildDetailContent(detailEl, cat.items[i]);
       }
     }
+
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];
         const gid = `${cat.id}-cg-${g}`;
         const labelEl = cached("cg-label", gid);
         if (labelEl) labelEl.textContent = t(group.label);
-        // Section labels and per-constant detail text
         if (group.sections) {
           for (let s = 0; s < group.sections.length; s++) {
             const sec = group.sections[s];
@@ -472,19 +320,24 @@ function updateTexts() {
   setDocLang(lang);
 }
 
-// Filter API entries by search text and advanced visibility state.
-function updateVisibility() {
-  domCache.advMarks.forEach((el) => {
-    el.classList.toggle("hidden", !showAdvanced);
-  });
+function descriptionHtml(text) {
+  let result = "";
+  let offset = 0;
+  for (const match of text.matchAll(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g)) {
+    result += esc(text.slice(offset, match.index));
+    result += link(match[2], match[1]);
+    offset = match.index + match[0].length;
+  }
+  return result + esc(text.slice(offset));
+}
 
+function updateVisibility() {
   let totalVisible = 0;
 
   for (const cat of data.categories) {
     let catVisible = 0;
-
-    // API entry rows and their parent item card
     let itemsVisible = 0;
+
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
         const key = `${cat.id}-${i}`;
@@ -494,27 +347,12 @@ function updateVisibility() {
         row.style.display = visible ? "" : "none";
         if (visible) itemsVisible++;
       }
+
       const itemsCard = cached("items-card", cat.id);
       if (itemsCard) itemsCard.style.display = itemsVisible > 0 ? "" : "none";
     }
     catVisible += itemsVisible;
 
-    // Flat constant chips and grid visibility
-    if (cat.constants) {
-      const q = searchQuery.toLowerCase();
-      for (let i = 0; i < cat.constants.length; i++) {
-        const el = cached("const-key", `${cat.id}-${i}`);
-        if (!el) continue;
-        const visible =
-          !searchQuery || cat.constants[i].toLowerCase().includes(q);
-        el.style.display = visible ? "" : "none";
-        if (visible) catVisible++;
-      }
-      const grid = cached("const-grid", cat.id);
-      if (grid) grid.style.display = catVisible > 0 ? "" : "none";
-    }
-
-    // Nested constant-group chips and wrapper visibility
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];
@@ -522,36 +360,203 @@ function updateVisibility() {
         let groupVisible = 0;
 
         if (group.sections) {
-          const q = searchQuery.toLowerCase();
           for (let s = 0; s < group.sections.length; s++) {
             const sec = group.sections[s];
             const sid = `${gid}-s-${s}`;
+            let sectionVisible = 0;
+
             for (let i = 0; i < sec.constants.length; i++) {
               const el = cached("const-key", `${sid}-${i}`);
               if (!el) continue;
-              const visible =
-                !searchQuery || sec.constants[i].toLowerCase().includes(q);
+              const visible = constantMatchesQuery(
+                sec.constants[i],
+                searchQuery,
+              );
               el.style.display = visible ? "" : "none";
-              if (visible) groupVisible++;
+              const detailRow = cached("sec-details", sid)?.children[i];
+              if (detailRow) detailRow.style.display = visible ? "" : "none";
+              if (visible) {
+                sectionVisible++;
+                groupVisible++;
+              }
+            }
+
+            const sectionEl = cached("const-section", sid);
+            if (sectionEl) {
+              sectionEl.style.display = sectionVisible > 0 ? "" : "none";
             }
           }
+
           const grid = cached("const-grid", gid);
           if (grid) grid.style.display = groupVisible > 0 ? "" : "none";
         }
 
         const groupEl = cached("cg-id", gid);
-        if (groupEl) groupEl.style.display = groupVisible > 0 ? "" : "none";
+        if (groupEl) {
+          groupEl.style.display = groupVisible > 0 ? "" : "none";
+          if (
+            searchQuery &&
+            groupVisible > 0 &&
+            groupEl.tagName === "DETAILS"
+          ) {
+            groupEl.open = true;
+          }
+        }
         catVisible += groupVisible;
       }
     }
 
     totalVisible += catVisible;
-
     const section = cached("cat-id", cat.id);
-    if (section) section.style.display = catVisible > 0 ? "" : "none";
+    if (section) {
+      section.style.display = catVisible > 0 ? "" : "none";
+      if (searchQuery && catVisible > 0) section.open = true;
+    }
   }
 
   document
     .getElementById("no-results")
     .classList.toggle("hidden", totalVisible > 0);
+}
+
+// DOM lookup
+
+function cacheDomRefs() {
+  for (const attr of [
+    "item-key",
+    "desc-key",
+    "detail-key",
+    "const-key",
+    "const-grid",
+    "const-section",
+    "items-card",
+    "cg-id",
+    "cg-label",
+    "sec-label",
+    "sec-details",
+    "cat-id",
+    "cat-title",
+    "cat-title2",
+  ]) {
+    const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    const map = new Map();
+    document.querySelectorAll(`[data-${attr}]`).forEach((el) => {
+      map.set(el.dataset[prop], el);
+    });
+    domCache[attr] = map;
+  }
+}
+
+const cached = (attr, key) => domCache[attr].get(key);
+
+const constantMatchesQuery = (constant, query) => {
+  if (!query) return true;
+  return constant.toLowerCase().includes(query.toLowerCase());
+};
+
+function badgeColor(type) {
+  switch (type) {
+    case "function":
+      return "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+    case "variable":
+      return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+    case "class":
+      return "bg-amber-500/20 text-amber-300 border border-amber-500/30";
+    case "constant":
+      return "bg-pink-500/20 text-pink-300 border border-pink-500/30";
+    default:
+      return "bg-gray-500/20 text-gray-300 border border-gray-500/30";
+  }
+}
+
+// Visibility filtering
+
+function isVisible(item) {
+  if (!showAdvanced && item.advanced) return false;
+  return matchesSearch(item);
+}
+
+function matchesSearch(item) {
+  if (!searchQuery) return true;
+  const q = searchQuery.toLowerCase();
+  return (
+    item.name.toLowerCase().includes(q) ||
+    item.signature.toLowerCase().includes(q) ||
+    t(item.description).toLowerCase().includes(q)
+  );
+}
+
+// Detail rendering
+
+function hasDetails(item) {
+  return (
+    (item.params && item.params.length > 0) ||
+    (item.returns && item.returns.type !== "None") ||
+    (item.examples && item.examples.length > 0) ||
+    item.notes ||
+    item.value_type
+  );
+}
+
+function buildDetailContent(container, item) {
+  container.innerHTML = "";
+  const wrap = document.createElement("div");
+  wrap.className = "mt-2 pl-3 border-l-2 border-gray-700 space-y-2.5";
+
+  if (item.value_type) {
+    const sec = document.createElement("div");
+    sec.innerHTML =
+      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("type_label"))}</div>` +
+      `<code class="text-emerald-300 text-xs font-mono">${esc(item.value_type)}</code>`;
+    wrap.appendChild(sec);
+  }
+
+  if (item.params && item.params.length > 0) {
+    const sec = document.createElement("div");
+    let html = `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
+    html += '<div class="space-y-1">';
+    for (const p of item.params) {
+      html += '<div class="text-xs leading-relaxed">';
+      html += `<code class="text-indigo-300 font-mono">${esc(p.name)}</code>`;
+      html += ` <span class="text-gray-400">(${esc(p.type)})</span>`;
+      if (p.description) {
+        html += ` <span class="text-gray-400">\u2014 ${esc(t(p.description))}</span>`;
+      }
+      html += "</div>";
+    }
+    html += "</div>";
+    sec.innerHTML = html;
+    wrap.appendChild(sec);
+  }
+
+  if (item.returns && item.returns.type !== "None") {
+    const sec = document.createElement("div");
+    let html = `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
+    html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.returns.type)}</code>`;
+    if (item.returns.description) {
+      html += ` <span class="text-gray-400">\u2014 ${esc(t(item.returns.description))}</span>`;
+    }
+    html += "</div>";
+    sec.innerHTML = html;
+    wrap.appendChild(sec);
+  }
+
+  if (item.examples && item.examples.length > 0) {
+    const sec = document.createElement("div");
+    const exampleCode = item.examples.join("\n");
+    sec.innerHTML =
+      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("example"))}</div>` +
+      `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(exampleCode)}</pre>`;
+    wrap.appendChild(sec);
+  }
+
+  if (item.notes) {
+    const sec = document.createElement("div");
+    sec.innerHTML =
+      `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("notes"))}</div>` +
+      `<p class="text-gray-400 text-xs leading-relaxed">${esc(t(item.notes))}</p>`;
+    wrap.appendChild(sec);
+  }
+
+  container.appendChild(wrap);
 }

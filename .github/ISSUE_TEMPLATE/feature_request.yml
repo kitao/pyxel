@@ -15,7 +15,7 @@ body:
     attributes:
       label: "Why? / なぜ必要ですか？"
       description: "Explain the motivation or use case / 動機や用途を記入してください"
-      placeholder: "e.g. Shooter-style games often need many small sprites with short lifetimes. / 例: シューティングで小さな表示を多数扱いたい"
+      placeholder: "e.g. I want to use many small visual elements in a shooter. / 例: シューティングで小さな表示を多数扱いたい"
     validations:
       required: true
   - type: textarea
@@ -23,6 +23,6 @@ body:
     attributes:
       label: "Alternatives considered / 検討した代替案"
       description: "Optional: what else did you try? / 任意: 他に試したこと"
-      placeholder: "e.g. Implemented manually with lists of dicts, but performance was limiting. / 例: リストで自作したが性能面で難しかった"
+      placeholder: "e.g. Implemented manually with lists, but performance was limiting. / 例: リストで自作したが性能面で難しかった"
     validations:
       required: false

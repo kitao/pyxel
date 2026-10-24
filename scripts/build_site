@@ -1,0 +1,390 @@
+#!/usr/bin/env python3
+
+import argparse
+import io
+import json
+import os
+import re
+import shutil
+import subprocess
+import tarfile
+import tempfile
+import zipfile
+from html.parser import HTMLParser
+from pathlib import Path, PurePosixPath
+from urllib.parse import unquote, urlsplit
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+PAGE_DIRS = (
+    "api-reference",
+    "code-maker",
+    "editor-manual",
+    "launcher",
+    "mml-studio",
+    "showcase",
+    "user-guide",
+    "web-usage",
+)
+SITE_URL = "https://kitao.dev/pyxel"
+CDN_URL = "https://cdn.jsdelivr.net/gh/kitao/pyxel"
+PROVISIONAL_VERSION = "3.0.0"
+
+
+class LocalLinks(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        self.links.extend(
+            value for name, value in attrs if name in {"src", "href", "root"} and value
+        )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Build dist/site/ for kitao.dev/pyxel without deploying.",
+        epilog="Requires Node.js and npm ci --prefix web.",
+    )
+    parser.add_argument(
+        "--runtime-tag",
+        action="append",
+        help="local release tag; repeat to include more (default: v2.9.9)",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=ROOT_DIR / "dist" / "site",
+        help="new, empty, or previously built directory (default: dist/site/)",
+    )
+    args = parser.parse_args()
+    try:
+        build_site(args.output, args.runtime_tag or ["v2.9.9"])
+    except (
+        OSError,
+        ValueError,
+        KeyError,
+        subprocess.CalledProcessError,
+        zipfile.BadZipFile,
+    ) as error:
+        parser.exit(1, f"error: {error}\n")
+    print(f"Built {args.output.resolve()}/pyxel/.")
+
+
+def build_site(output, runtime_tags=("v2.9.9",), root=ROOT_DIR):
+    root, output = root.resolve(), output.resolve()
+    if is_within(root, output):
+        raise ValueError("The output must not replace the repository or its parents")
+    if is_within(output, root) and not same_path(output, root / "dist" / "site"):
+        raise ValueError("Build output inside the repository must be dist/site/")
+    # Replacing the output discards it.
+    if output.exists() and not (output.is_dir() and is_replaceable(output)):
+        raise ValueError("The output must be empty or a previous site build")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".site-", dir=output.parent) as temporary:
+        stage = Path(temporary) / "site"
+        site = stage / "pyxel"
+        site.mkdir(parents=True)
+        versions = [copy_release(root, tag, site) for tag in runtime_tags]
+        version = versions[-1]
+        copy_runtime(
+            {
+                path.relative_to(root / "wasm").as_posix(): path.read_bytes()
+                for path in tracked_files(root, "wasm")
+            },
+            site / PROVISIONAL_VERSION,
+            PROVISIONAL_VERSION,
+        )
+
+        for name in (*PAGE_DIRS, "index.html", "shared.js"):
+            for source in tracked_files(root, "web/" + name):
+                target = site / source.relative_to(root / "web")
+                copy_page(source, target, version)
+        for source_path, target_path in (
+            ("docs/images", "assets/images"),
+            ("docs/pyxel.gpl", "assets/pyxel.gpl"),
+            ("python/pyxel/examples", "assets/examples"),
+        ):
+            for source in tracked_files(root, source_path):
+                target = site / target_path / source.relative_to(root / source_path)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, target)
+
+        subprocess.run(
+            [
+                "node",
+                str(root / "web/node_modules/@tailwindcss/cli/dist/index.mjs"),
+                "-i",
+                "styles/input.css",
+                "-o",
+                str(site / "styles.css"),
+                "--minify",
+            ],
+            cwd=root / "web",
+            check=True,
+        )
+        # Pages on other sites load the runtime and examples, so these allow CORS;
+        # released bundles never change, so browsers may keep them.
+        (stage / "_headers").write_text(
+            "/pyxel*\n"
+            "  X-Content-Type-Options: nosniff\n"
+            "  Referrer-Policy: strict-origin-when-cross-origin\n\n"
+            + "".join(
+                f"/pyxel/{release}/*\n"
+                "  Cache-Control: public, max-age=31536000, immutable\n"
+                "  Access-Control-Allow-Origin: *\n\n"
+                for release in versions
+                if release != PROVISIONAL_VERSION
+            )
+            + f"/pyxel/{PROVISIONAL_VERSION}/*\n"
+            "  Access-Control-Allow-Origin: *\n\n"
+            "/pyxel/assets/examples/*\n"
+            "  Access-Control-Allow-Origin: *\n",
+            encoding="utf-8",
+        )
+        verify_links(stage)
+        verify_releases(stage, output)
+        replace_output(stage, output)
+
+
+def is_within(path, directory):
+    return any(same_path(parent, directory) for parent in (path, *path.parents))
+
+
+def same_path(first, second):
+    # Comparing identities also matches aliases on case-insensitive file systems.
+    if first.exists() and second.exists():
+        return first.samefile(second)
+    return first == second
+
+
+def is_replaceable(directory):
+    # A previous build has _headers and pyxel, and at most the build's other files
+    # and the .DS_Store files Finder adds.
+    names = {path.name for path in directory.iterdir()} - {".DS_Store"}
+    return not names or names == {"_headers", "pyxel"}
+
+
+def tracked_files(root, pathspec):
+    names = (
+        subprocess.check_output(
+            ["git", "-C", str(root), "ls-files", "-z", "--", pathspec],
+            env=git_environment(),
+        )
+        .decode()
+        .split("\0")
+    )
+    paths = []
+    for name in names:
+        if not name or any(
+            part.startswith(".") or part == "__pycache__" for part in Path(name).parts
+        ):
+            continue
+        path = public_source(root, name)
+        if path.is_file() and path.suffix not in {".pyc", ".pyo"}:
+            paths.append(path)
+    if not paths:
+        raise ValueError(f"No public sources match {pathspec}")
+    return paths
+
+
+def public_source(root, name):
+    path = root / name
+    # A symlinked file or directory could publish files from elsewhere.
+    if path.resolve() != root.resolve() / name:
+        raise ValueError(f"Public sources must not be symlinks: {name}")
+    return path
+
+
+def git_environment(**overrides):
+    # Inherited variables such as GIT_DIR must not point git at another repository.
+    return {
+        name: value
+        for name, value in os.environ.items()
+        if not name.upper().startswith("GIT_")
+    } | overrides
+
+
+def copy_release(root, tag, site):
+    if not re.fullmatch(r"v\d+\.\d+\.\d+(?:(?:a|b|rc)\d+)?", tag):
+        raise ValueError("The runtime tag must be a release tag such as v2.9.9")
+    env = git_environment(GIT_NO_LAZY_FETCH="1")
+    commit = (
+        subprocess.check_output(
+            [
+                "git",
+                "-C",
+                str(root),
+                "rev-parse",
+                "--verify",
+                f"refs/tags/{tag}^{{commit}}",
+            ],
+            env=env,
+        )
+        .decode()
+        .strip()
+    )
+    archive = subprocess.check_output(
+        ["git", "-C", str(root), "archive", "--format=tar", commit, "wasm"],
+        env=env,
+    )
+    with tarfile.open(fileobj=io.BytesIO(archive)) as contents:
+        files = {
+            PurePosixPath(item.name)
+            .relative_to("wasm")
+            .as_posix(): contents.extractfile(item).read()
+            for item in contents.getmembers()
+            if item.isfile()
+        }
+    version = tag[1:]
+    copy_runtime(files, site / version, version)
+    return version
+
+
+def copy_runtime(files, target, version=None):
+    script = files["pyxel.js"].decode("utf-8")
+    match = re.search(r'const PYXEL_WHEEL_PATH\s*=\s*"([^"/]+\.whl)";', script)
+    if not match:
+        raise ValueError("The runtime does not identify a Web wheel")
+    wheel = match[1]
+    with zipfile.ZipFile(io.BytesIO(files[wheel])) as contents:
+        if contents.testzip():
+            raise ValueError(f"Corrupt Web wheel: {wheel}")
+        if version:
+            metadata = contents.read(f"pyxel-{version}.dist-info/METADATA").decode(
+                "utf-8"
+            )
+            if f"\nVersion: {version}\n" not in metadata:
+                raise ValueError(f"The Web wheel does not match version {version}")
+    names = {"pyxel.js", "pyxel.css", "import_hook.py", wheel}
+    names.update(re.findall(r'const \w+_PATH\s*=\s*"([^"\n]+)";', script))
+    names.update(name for name in files if name.startswith("images/"))
+    for name in sorted(names):
+        path = target / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(files[name])
+
+
+def copy_page(source, target, version):
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if source.suffix in {".html", ".js", ".json", ".css"}:
+        text = rewrite_urls(
+            source.read_text(encoding="utf-8"), version, source.suffix == ".html"
+        )
+        target.write_text(text, encoding="utf-8")
+    else:
+        shutil.copyfile(source, target)
+
+
+def rewrite_urls(text, version, html=False):
+    runtime_url = f"{SITE_URL}/{version}/pyxel.js"
+    text = text.replace(f"{CDN_URL}/wasm/pyxel.js", runtime_url)
+    text = text.replace(f"{CDN_URL}@v{version}/wasm/pyxel.js", runtime_url)
+    if html:
+        text = re.sub(r"""(["'])pyxel-(screen|editor)\.html\1""", r"\1pyxel-\2\1", text)
+        head, separator, body = text.partition("</head>")
+        if separator:
+            head = head.replace(runtime_url, f"/pyxel/{PROVISIONAL_VERSION}/pyxel.js")
+            text = head + separator + body
+    for source, target in (
+        ("wasm/", f"{PROVISIONAL_VERSION}/"),
+        ("docs/images/", "assets/images/"),
+        ("docs/pyxel.gpl", "assets/pyxel.gpl"),
+    ):
+        text = re.sub(r"(?:\.\./)+" + re.escape(source), "/pyxel/" + target, text)
+    text = re.sub(
+        r"(?:\.\./)+python/pyxel/examples(?=/|[\"'\s<>]|$)",
+        "/pyxel/assets/examples",
+        text,
+    )
+    for source, target in (
+        ("https://kitao.github.io/pyxel-user-examples", SITE_URL + "/user-examples"),
+        ("https://kitao.github.io/pyxel/web", SITE_URL),
+        ("https://kitao.github.io/pyxel/docs/images", SITE_URL + "/assets/images"),
+        (CDN_URL + "/python/pyxel/examples", SITE_URL + "/assets/examples"),
+    ):
+        text = text.replace(source, target)
+    return text
+
+
+def verify_links(stage):
+    errors = []
+    for path in stage.rglob("*"):
+        if path.suffix not in {".html", ".json"}:
+            continue
+        parser = LocalLinks()
+        text = path.read_text(encoding="utf-8")
+        if path.suffix == ".json":
+            for value in text_values(json.loads(text)):
+                parser.feed(value)
+                parser.close()
+                parser.reset()
+        else:
+            parser.feed(text)
+        parser.links.extend(
+            re.findall(r"""["'`]((?:/pyxel/|(?:\.\./)+)[^"'`<>\s\\]*)["'`]""", text)
+        )
+        for link in parser.links:
+            url = urlsplit(link)
+            if url.scheme or url.netloc or not url.path or "${" in link:
+                continue
+            base = stage if url.path.startswith("/") else path.parent
+            target = (base / unquote(url.path).lstrip("/")).resolve()
+            if not target.exists() and not target.suffix:
+                target = target.with_suffix(".html")
+            if not target.is_relative_to(stage.resolve()) or not target.exists():
+                errors.append(f"{path.relative_to(stage)}: {link}")
+    if errors:
+        raise ValueError("Unresolved local links:\n" + "\n".join(errors))
+
+
+def text_values(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from text_values(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from text_values(item)
+
+
+def verify_releases(stage, output):
+    # Released bundles are fixed; the provisional bundle may be replaced.
+    if not (output / "pyxel").is_dir():
+        return
+    for release in (output / "pyxel").iterdir():
+        if not re.fullmatch(r"\d+\.\d+\.\d+(?:(?:a|b|rc)\d+)?", release.name):
+            continue
+        before = release_files(release)
+        after = release_files(stage / "pyxel" / release.name)
+        if before != after and not (release.name == PROVISIONAL_VERSION and after):
+            raise ValueError(
+                f"An existing release would change or disappear: {release.name}"
+            )
+
+
+def release_files(directory):
+    # Finder can add .DS_Store to a previous build.
+    return {
+        path.relative_to(directory): path.read_bytes()
+        for path in directory.rglob("*")
+        if path.is_file() and path.name != ".DS_Store"
+    }
+
+
+def replace_output(stage, output):
+    previous = stage.parent / "previous"
+    if output.exists():
+        output.rename(previous)
+    try:
+        stage.rename(output)
+    except OSError:
+        if previous.exists():
+            previous.rename(output)
+        raise
+
+
+if __name__ == "__main__":
+    main()

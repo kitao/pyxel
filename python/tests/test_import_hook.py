@@ -1,6 +1,11 @@
+import ast
 import importlib.util
 import os
+import posixpath
+import re
+import runpy
 import sys
+import textwrap
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from types import SimpleNamespace
@@ -24,13 +29,6 @@ def import_hook():
     return module
 
 
-def _frame(filename: str):
-    return SimpleNamespace(
-        f_code=SimpleNamespace(co_filename=filename),
-        f_back=None,
-    )
-
-
 @pytest.mark.parametrize("module_name", ["javascript", "js"])
 def test_pyodide_pseudo_module_is_skipped(import_hook, monkeypatch, module_name):
     hook = import_hook.ImportHook()
@@ -39,7 +37,6 @@ def test_pyodide_pseudo_module_is_skipped(import_hook, monkeypatch, module_name)
         pytest.fail("skipped Pyodide module reached standard module lookup")
 
     monkeypatch.setattr(import_hook.importlib.util, "find_spec", unexpected_find_spec)
-
     assert hook.find_spec(module_name, None) is None
 
 
@@ -57,7 +54,6 @@ def test_bare_cwd_collision_does_not_set_main_dir(import_hook, monkeypatch):
 
     monkeypatch.setattr(import_hook.os.path, "exists", exists)
     hook.find_spec("pkg", None)
-
     assert probes == [
         os.path.join("/virtual/caller", "pkg.py"),
         os.path.join("/virtual/caller", "pkg", "__init__.py"),
@@ -79,5 +75,185 @@ def test_caller_relative_module_sets_main_dir(import_hook, monkeypatch, tmp_path
     )
 
     hook.find_spec("pkg", None)
-
     assert hook.main_dir == str(caller.resolve())
+
+
+def test_find_spec_suppresses_reentrant_lookup(import_hook, monkeypatch):
+    hook = import_hook.ImportHook()
+    calls = []
+
+    def find_spec(name):
+        calls.append(name)
+        assert hook.find_spec(name, None) is None
+        return SimpleNamespace(origin="built-in")
+
+    monkeypatch.setattr(import_hook.importlib.util, "find_spec", find_spec)
+    assert hook.find_spec("recursive_pkg", None) is None
+    assert calls == ["recursive_pkg"]
+
+
+@pytest.mark.parametrize(
+    "app_dir", ["main", "site-packages-game", "dist-packages-demo", "python-other"]
+)
+def test_cached_main_dir_is_probed_from_another_caller(
+    import_hook, monkeypatch, tmp_path, app_dir
+):
+    hook = import_hook.ImportHook()
+    probes = []
+    main = tmp_path / app_dir
+    other = tmp_path / "other"
+    caller = str(main / "app.py")
+
+    monkeypatch.setattr(
+        import_hook.importlib.util,
+        "find_spec",
+        lambda name: (
+            SimpleNamespace(origin=str(main / "first.py"))
+            if name == "first" and app_dir != "main"
+            else None
+        ),
+    )
+    monkeypatch.setattr(import_hook.sys, "base_prefix", str(tmp_path / "python"))
+    monkeypatch.setattr(import_hook.sys, "_getframe", lambda depth: _frame(caller))
+
+    def exists(path):
+        probes.append(path)
+        return path == str(main / "first.py")
+
+    monkeypatch.setattr(import_hook.os.path, "exists", exists)
+    hook.find_spec("first", None)
+
+    caller = str(other / "plugin.py")
+    probes.clear()
+    hook.find_spec("nested.module", None)
+    assert hook.main_dir == str(main)
+    assert probes == [
+        str(other / "nested" / "module.py"),
+        str(other / "nested" / "module" / "__init__.py"),
+        str(main / "nested" / "module.py"),
+        str(main / "nested" / "module" / "__init__.py"),
+    ]
+
+
+def test_runtime_reset_selects_only_modules_inside_application_directories():
+    runtime_path = MODULE_PATH.with_name("pyxel.js")
+    source = runtime_path.read_text(encoding="utf-8")
+    block = next(
+        block
+        for block in re.findall(r"runPython\(`(.*?)`\)", source, re.DOTALL)
+        if "mods = [" in block
+    )
+
+    selection = next(
+        node.value
+        for node in ast.walk(ast.parse(textwrap.dedent(block)))
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "mods"
+            for target in node.targets
+        )
+    )
+
+    modules = {
+        "app": SimpleNamespace(__file__="/work/app.py"),
+        "temp": SimpleNamespace(__file__="/tmp/package/__init__.py"),
+        "work_sibling": SimpleNamespace(__file__="/work-other/app.py"),
+        "temp_sibling": SimpleNamespace(__file__="/tmp-other/app.py"),
+        "root": SimpleNamespace(__file__="/work"),
+        "escaped": SimpleNamespace(__file__="/work/../outside/app.py"),
+        "relative": SimpleNamespace(__file__="package/helper.py"),
+        "builtin": SimpleNamespace(),
+        "empty": SimpleNamespace(__file__=""),
+    }
+    # Evaluate only module selection, using Pyodide's POSIX paths on every host.
+    namespace = {
+        "sys": SimpleNamespace(modules=modules),
+        "os": SimpleNamespace(
+            path=SimpleNamespace(
+                abspath=lambda path: posixpath.normpath(posixpath.join("/work", path))
+            )
+        ),
+        "work_dir": "/work",
+        "temp_dir": "/tmp",
+    }
+
+    selected = eval(
+        compile(ast.Expression(selection), str(runtime_path), "eval"), namespace
+    )
+    assert selected == ["app", "temp", "relative", "__main__"]
+
+
+def test_cache_invalidation_redownloads_removed_application_modules(
+    import_hook, monkeypatch, tmp_path
+):
+    hook = import_hook.ImportHook()
+    module_name = "pyxel_reset_remote_test"
+    module_path = tmp_path / f"{module_name}.py"
+    original_exists = os.path.exists
+    downloads = []
+
+    def hosted_exists(path):
+        if path == str(module_path) and not original_exists(path):
+            downloads.append(path)
+            module_path.write_text(f"value = {len(downloads)}\n", encoding="utf-8")
+        return original_exists(path)
+
+    monkeypatch.syspath_prepend(str(tmp_path))
+    monkeypatch.setattr(sys, "meta_path", [hook, *sys.meta_path])
+    monkeypatch.setattr(os.path, "exists", hosted_exists)
+    # Avoid bytecode retaining the first downloaded module after reset.
+    monkeypatch.setattr(sys, "dont_write_bytecode", True)
+    script_path = tmp_path / "main.py"
+    script_path.write_text(
+        f"import {module_name}\nvalue = {module_name}.value",
+        encoding="utf-8",
+    )
+
+    try:
+        namespace = runpy.run_path(str(script_path))
+        assert namespace["value"] == 1
+
+        # Match resetPyxel: remove modules, invalidate caches, then remove files.
+        sys.modules.pop(module_name)
+        import_hook.importlib.invalidate_caches()
+        module_path.unlink()
+        namespace = runpy.run_path(str(script_path))
+        assert namespace["value"] == 2
+        assert downloads == [str(module_path), str(module_path)]
+    finally:
+        sys.modules.pop(module_name, None)
+
+
+def test_cache_invalidation_forgets_the_previous_main_directory(
+    import_hook, monkeypatch, tmp_path
+):
+    hook = import_hook.ImportHook()
+    old_main = tmp_path / "old" / "main.py"
+    new_main = tmp_path / "new" / "main.py"
+    caller = old_main
+    probes = []
+    monkeypatch.setattr(import_hook.importlib.util, "find_spec", lambda name: None)
+    monkeypatch.setattr(import_hook.sys, "_getframe", lambda depth: _frame(str(caller)))
+    monkeypatch.setattr(sys, "meta_path", [hook, *sys.meta_path])
+
+    def exists(path):
+        probes.append(path)
+        return os.fspath(path).endswith("helper.py")
+
+    monkeypatch.setattr(import_hook.os.path, "exists", exists)
+    hook.find_spec("helper", None)
+    assert hook.main_dir == str(old_main.parent)
+
+    import_hook.importlib.invalidate_caches()
+    caller = new_main
+    probes.clear()
+    hook.find_spec("helper", None)
+    assert hook.main_dir == str(new_main.parent)
+    assert probes == [str(new_main.parent / "helper.py")]
+
+
+def _frame(filename: str):
+    return SimpleNamespace(
+        f_code=SimpleNamespace(co_filename=filename),
+        f_back=None,
+    )

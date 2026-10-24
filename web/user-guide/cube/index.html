@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel Cube User Guide</title>
+    <link rel="icon" href="../../../wasm/images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css"
+    />
+    <script src="../../shared.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  </head>
+
+  <body class="page min-h-full">
+    <main class="page-container" id="app">
+      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
+        Loading...
+      </div>
+    </main>
+
+    <script>
+      let data = null;
+      let lang = "en";
+
+      function buildPage() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+        app.appendChild(buildPageHeader(updateTexts, buildVariantSwitch()));
+
+        const wrap = document.createElement("div");
+        wrap.className = "space-y-6";
+        wrap.id = "content";
+        wrap.innerHTML = `
+          <section class="card" id="s-overview"></section>
+          <div class="space-y-6" id="guide"></div>
+        `;
+        app.appendChild(wrap);
+        updateTexts();
+      }
+
+      function updateTexts() {
+        const pyxelLink = link("https://kitao.dev/pyxel/", "Pyxel");
+
+        document.title = t("title");
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", pyxelLink);
+
+        document.getElementById("s-overview").innerHTML = `
+          <h2 class="section-title">${esc(t("overview_title"))}</h2>
+          <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel Cube</strong>")}</p>
+          <p class="body mt-2">${t("overview_beginner").replace("{0}", link("https://kitao.dev/pyxel/user-guide/", t("base_guide")))}</p>`;
+
+        const guide = data.guides.find((guide) => guide.language === lang);
+        document.getElementById("guide").innerHTML = renderGuide(guide);
+
+        setDocLang(lang);
+        hljs.highlightAll();
+      }
+
+      function renderGuide(guide) {
+        return guide.sections
+          .map(
+            (section) => `
+              <section class="card" id="${esc(section.id)}">
+                <h2 class="section-title">${esc(section.title)}</h2>
+                ${section.blocks
+                  .map((block) =>
+                    block.code !== undefined
+                      ? code(block.code, block.syntax || "python")
+                      : `<div class="body mt-2">${block.text}</div>`,
+                  )
+                  .join("")}
+              </section>`,
+          )
+          .join("");
+      }
+
+      initPage("user-guide.json", buildPage);
+    </script>
+  </body>
+</html>

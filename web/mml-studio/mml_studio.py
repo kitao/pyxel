@@ -2,7 +2,6 @@ import pyxel
 from js import window  # type: ignore
 
 
-# Runtime visualization app
 class App:
     def __init__(self):
         pyxel.init(100, 20, title="Pyxel MML Studio", quit_key=pyxel.KEY_NONE)
@@ -13,14 +12,15 @@ class App:
         for i in range(pyxel.NUM_CHANNELS):
             pyxel.sounds[i].mml(_get_js_var(f"js_ch{i + 1}_mml", ""))
 
-        if _get_js_var("js_play", False):
+        if _get_js_var("js_stop", False):
+            window.js_stop = False
+        elif _get_js_var("js_play", False):
             self.start_playback()
 
         pyxel.run(self.update, self.draw)
 
     def start_playback(self):
         self.loop_enabled = _get_js_var("js_loop", False)
-
         pyxel.stop()
         for i in range(pyxel.NUM_CHANNELS):
             pyxel.play(i, i, loop=self.loop_enabled)
@@ -28,6 +28,7 @@ class App:
     def update(self):
         if _get_js_var("js_stop", False):
             pyxel.stop()
+            window.js_stop = False
 
         is_playing = any(
             pyxel.play_pos(i) is not None for i in range(pyxel.NUM_CHANNELS)
@@ -51,13 +52,11 @@ class App:
 
     def draw(self):
         pyxel.cls(1)
-
         pyxel.rectb(0, -1, pyxel.width, pyxel.height + 2, 5)
 
         for i in range(pyxel.NUM_CHANNELS):
             total_sec = pyxel.sounds[i].total_sec()
             (_, play_sec) = pyxel.play_pos(i) or (None, None)
-
             if play_sec is None:
                 continue
 
@@ -76,10 +75,8 @@ class App:
                 pyxel.rect(x - 1, y - 1, 3, 3, 5)
 
 
-# JavaScript bridge helpers
 def _get_js_var(name, default):
     return getattr(window, name, default)
 
 
-# Browser entry point
 App()

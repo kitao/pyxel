@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 import pyxel
 
 REFS_DIR = Path(__file__).parent / "references" / "audio"
@@ -70,28 +71,6 @@ MML_PARTS = [
 ]
 
 
-def _compare_or_update(name, rendered_path, update_references):
-    ref_path = REFS_DIR / f"{name}.wav"
-    rendered = Path(rendered_path).read_bytes()
-    if update_references:
-        REFS_DIR.mkdir(parents=True, exist_ok=True)
-        ref_path.write_bytes(rendered)
-    else:
-        assert rendered == ref_path.read_bytes(), f"{name}.wav changed"
-
-
-def _append_sounds(sounds):
-    base_index = len(pyxel.sounds)
-    for sound in sounds:
-        pyxel.sounds.append(sound)
-    return base_index
-
-
-def _pop_sounds(count):
-    for _ in range(count):
-        pyxel.sounds.pop()
-
-
 class TestAudioRender:
     def test_classic_sound(self, tmp_path, update_references):
         snd = pyxel.Sound()
@@ -113,14 +92,16 @@ class TestAudioRender:
             snd = pyxel.Sound()
             snd.set(*params)
             sounds.append(snd)
-        base = _append_sounds(sounds)
+
+        base = len(pyxel.sounds)
+        pyxel.sounds.extend(sounds)
         try:
             msc = pyxel.Music()
             msc.set([base, base + 1], [base + 2, base + 3], [base + 4])
             path = tmp_path / "out.wav"
             msc.save(str(path), 2.0)
         finally:
-            _pop_sounds(len(sounds))
+            del pyxel.sounds[base:]
         _compare_or_update("classic_music", path, update_references)
 
     def test_mml_music(self, tmp_path, update_references):
@@ -129,14 +110,16 @@ class TestAudioRender:
             snd = pyxel.Sound()
             snd.mml(mml)
             sounds.append(snd)
-        base = _append_sounds(sounds)
+
+        base = len(pyxel.sounds)
+        pyxel.sounds.extend(sounds)
         try:
             msc = pyxel.Music()
             msc.set([base], [base + 1], [base + 2])
             path = tmp_path / "out.wav"
             msc.save(str(path), 2.0)
         finally:
-            _pop_sounds(len(sounds))
+            del pyxel.sounds[base:]
         _compare_or_update("mml_music", path, update_references)
 
     def test_classic_effects(self, tmp_path, update_references):
@@ -159,3 +142,14 @@ class TestAudioRender:
         path = tmp_path / "out.wav"
         snd.save(str(path), 0.5)
         _compare_or_update("pcm_sound", path, update_references)
+
+
+def _compare_or_update(name, rendered_path, update_references):
+    ref_path = REFS_DIR / f"{name}.wav"
+    rendered = Path(rendered_path).read_bytes()
+    if update_references:
+        REFS_DIR.mkdir(parents=True, exist_ok=True)
+        ref_path.write_bytes(rendered)
+        pytest.skip(f"References updated: {ref_path.name}")
+    else:
+        assert rendered == ref_path.read_bytes(), f"{name}.wav changed"

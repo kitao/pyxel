@@ -1,7 +1,5 @@
 use pyo3::prelude::*;
 
-// Font class
-
 define_wrapper!(Font, pyxel::Font);
 
 #[pymethods]
@@ -14,12 +12,10 @@ impl Font {
             .map_err(pyo3::exceptions::PyException::new_err)
     }
 
-    fn text_width(&self, s: &str) -> i32 {
+    fn text_width(&self, s: &str) -> i64 {
         self.inner_mut().text_width(s)
     }
 }
-
-// Module registration
 
 pub fn add_font_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Font>()?;

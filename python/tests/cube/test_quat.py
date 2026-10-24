@@ -1,0 +1,290 @@
+from math import isclose, isfinite, sqrt
+
+import pytest
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
+from pyxel.cube import Mat4, Quat, Vec3
+
+
+class TestConstructor:
+    def test_default_is_identity(self):
+        q = Quat()
+        assert q.x == 0.0
+        assert q.y == 0.0
+        assert q.z == 0.0
+        assert q.w == 1.0
+
+    def test_explicit(self):
+        q = Quat(1, 2, 3, 4)
+        assert q.x == 1.0
+        assert q.y == 2.0
+        assert q.z == 3.0
+        assert q.w == 4.0
+
+
+class TestConstants:
+    def test_identity(self):
+        assert Quat.IDENTITY == Quat(0, 0, 0, 1)
+
+    def test_singleton_identity(self):
+        assert Quat.IDENTITY is Quat.IDENTITY
+
+
+class TestHash:
+    def test_hash_equal_for_equal_values(self):
+        assert hash(Quat(1, 2, 3, 4)) == hash(Quat(1, 2, 3, 4))
+
+    def test_usable_as_dict_key(self):
+        d = {Quat.IDENTITY: "id", Quat(1, 0, 0, 0): "x"}
+        assert d[Quat.IDENTITY] == "id"
+        assert d[Quat(1, 0, 0, 0)] == "x"
+
+    def test_usable_in_set(self):
+        s = {Quat.IDENTITY, Quat(1, 0, 0, 0), Quat.IDENTITY}
+        assert len(s) == 2
+
+    def test_hash_equal_for_signed_zero(self):
+        assert Quat(0.0, 0, 0, 1) == Quat(-0.0, 0, 0, 1)
+        assert hash(Quat(0.0, 0, 0, 1)) == hash(Quat(-0.0, 0, 0, 1))
+
+    def test_signed_zero_interchangeable_as_dict_key(self):
+        d = {Quat(0.0, 0, 0, 1): "identity"}
+        assert d[Quat(-0.0, 0, 0, 1)] == "identity"
+
+
+class TestSequence:
+    def test_getitem(self):
+        q = Quat(1, 2, 3, 4)
+        assert q[0] == 1.0
+        assert q[1] == 2.0
+        assert q[2] == 3.0
+        assert q[3] == 4.0
+
+    def test_getitem_out_of_range(self):
+        with raises_exact(IndexError, "Quat index out of range"):
+            _ = Quat(1, 2, 3, 4)[4]
+
+    def test_iter(self):
+        assert list(Quat(1, 2, 3, 4)) == [1.0, 2.0, 3.0, 4.0]
+
+    def test_len(self):
+        assert len(Quat()) == 4
+
+
+class TestOperators:
+    def test_mul_invalid_type(self):
+        with raises_exact(
+            TypeError, "unsupported operand type(s) for *: 'pyxel.cube.Quat' and 'int'"
+        ):
+            Quat() * 1
+
+    def test_neg(self):
+        q = Quat(1, 2, 3, 4)
+        assert -q == Quat(-1, -2, -3, -4)
+
+    def test_mul_identity(self):
+        q = Quat.from_axis_angle(Vec3.UP, 45)
+        assert q * Quat.IDENTITY == q
+
+    def test_mul_vec_y90(self):
+        q = Quat.from_axis_angle(Vec3.UP, 90)
+        assert approx_v(q * Vec3(1, 0, 0), Vec3(0, 0, -1))
+
+    def test_eq(self):
+        assert Quat(1, 2, 3, 4) == Quat(1, 2, 3, 4)
+        assert Quat(1, 2, 3, 4) != Quat(1, 2, 3, 5)
+
+
+class TestFactories:
+    def test_from_axis_angle_y90(self):
+        q = Quat.from_axis_angle(Vec3.UP, 90)
+        s = sqrt(0.5)
+        assert approx_q(q, Quat(0, s, 0, s))
+
+    def test_from_euler_y90(self):
+        q = Quat.from_euler(Vec3(0, 90, 0))
+        assert approx_v(q * Vec3(1, 0, 0), Vec3(0, 0, -1))
+
+    def test_from_two_vectors(self):
+        q = Quat.from_two_vectors(Vec3(1, 0, 0), Vec3(0, 1, 0))
+        assert approx_v(q * Vec3(1, 0, 0), Vec3(0, 1, 0))
+
+    def test_from_matrix_round_trip(self):
+        q1 = Quat.from_axis_angle(Vec3.UP, 30)
+        m = q1.to_matrix()
+        q2 = Quat.from_matrix(m)
+        assert approx_v(q1 * Vec3(1, 0, 0), q2 * Vec3(1, 0, 0))
+
+    def test_from_matrix_extracts_rotation_without_translation_or_scale(self):
+        mat = Mat4.compose(
+            Vec3(3, 4, 5), Quat.from_axis_angle(Vec3.UP, 90), Vec3(2, 3, 4)
+        )
+        q = Quat.from_matrix(mat)
+        assert approx_v(q * Vec3.RIGHT, Vec3(0, 0, -1))
+        assert approx_v(q * Vec3.UP, Vec3.UP)
+        assert approx_v(q * Vec3(0, 0, 1), Vec3.RIGHT)
+
+    @pytest.mark.parametrize("scale", [Vec3(-2, 3, 4), Vec3(2, 0, 4)])
+    def test_from_matrix_matches_signed_and_zero_scale_decomposition(self, scale):
+        mat = Mat4.compose(Vec3.ZERO, Quat.from_euler(Vec3(23, -47, 71)), scale)
+        assert Quat.from_matrix(mat) == mat.rot
+
+    def test_from_direction_negative_x(self):
+        q = Quat.from_direction(Vec3(-1, 0, 0), Vec3.UP)
+        # Object's local -Z mapped to world should match the requested forward.
+        assert approx_v(q * Vec3(0, 0, -1), Vec3(-1, 0, 0))
+
+
+class TestUnary:
+    def test_conjugate(self):
+        q = Quat(1, 2, 3, 4)
+        assert q.conjugate() == Quat(-1, -2, -3, 4)
+
+    def test_inverse_unit(self):
+        q = Quat.from_axis_angle(Vec3.UP, 60)
+        assert approx_q(q * q.inverse(), Quat.IDENTITY)
+
+    def test_normalize(self):
+        q = Quat(2, 0, 0, 0).normalize()
+        assert q == Quat(1, 0, 0, 0)
+
+    def test_normalize_zero(self):
+        assert Quat(0, 0, 0, 0).normalize() == Quat.IDENTITY
+
+    def test_length(self):
+        assert Quat(1, 2, 2, 4).length() == 5.0
+
+    def test_length_squared(self):
+        assert Quat(1, 2, 2, 4).length_squared() == 25.0
+
+
+class TestBinary:
+    def test_dot(self):
+        a = Quat(1, 2, 3, 4)
+        b = Quat(5, 6, 7, 8)
+        assert a.dot(b) == 70.0
+
+    def test_angle_to_identity(self):
+        assert Quat.IDENTITY.angle_to(Quat.IDENTITY) == 0.0
+
+
+class TestConversions:
+    def test_to_matrix_matches_rotation(self):
+        q = Quat.from_axis_angle(Vec3.UP, 30)
+        m = q.to_matrix()
+        assert approx_v(m * Vec3(1, 0, 0), q * Vec3(1, 0, 0))
+
+    def test_to_axis_angle(self):
+        q = Quat.from_axis_angle(Vec3.UP, 60)
+        axis, deg = q.to_axis_angle()
+        assert isclose(deg, 60.0, abs_tol=1e-3)
+        assert approx_v(axis, Vec3.UP)
+
+    def test_to_euler_y90(self):
+        q = Quat.from_axis_angle(Vec3.UP, 90)
+        euler = q.to_euler()
+        assert isclose(euler.y, 90.0, abs_tol=1e-3)
+
+
+class TestInterpolation:
+    def test_slerp_endpoints(self):
+        a = Quat.from_axis_angle(Vec3.UP, 0)
+        b = Quat.from_axis_angle(Vec3.UP, 90)
+        assert approx_q(a.slerp(b, 0.0), a)
+        assert approx_q(a.slerp(b, 1.0), b)
+
+    def test_slerp_midpoint_rotates_half(self):
+        a = Quat.from_axis_angle(Vec3.UP, 0)
+        b = Quat.from_axis_angle(Vec3.UP, 90)
+        mid = a.slerp(b, 0.5)
+        # 45 deg rotation of (1, 0, 0) → (cos45, 0, -sin45)
+        s = sqrt(0.5)
+        assert approx_v(mid * Vec3(1, 0, 0), Vec3(s, 0, -s))
+
+
+class TestFiniteInputs:
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_length_retains_representable_magnitude(self, scale):
+        quat = Quat(scale, 2 * scale, 2 * scale, 4 * scale)
+        assert all(isfinite(value) for value in quat)
+        assert quat.length() == pytest.approx(5 * scale, rel=2e-6, abs=0)
+
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_normalize_retains_unit_components(self, scale):
+        quat = Quat(0, scale, 0, scale).normalize()
+        assert tuple(quat) == pytest.approx((0, sqrt(0.5), 0, sqrt(0.5)), abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_axis_angle_retains_quarter_turn(self, scale):
+        quat = Quat.from_axis_angle(Vec3(0, scale, 0), 90)
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3.RIGHT) == pytest.approx((0, 0, -1), abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1e-30, 1e-20, 1, 1e10, 1e20, 1e30])
+    def test_from_two_vectors_retains_shortest_perpendicular_rotation(self, scale):
+        quat = Quat.from_two_vectors(
+            Vec3(3 * scale, 4 * scale, 0), Vec3(-4 * scale, 3 * scale, 0)
+        )
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3(0.6, 0.8, 0)) == pytest.approx(
+            (-0.8, 0.6, 0), abs=1e-6
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30])
+    def test_from_direction_retains_requested_forward(self, scale):
+        quat = Quat.from_direction(Vec3(-3 * scale, 0, -4 * scale))
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3.FORWARD) == pytest.approx((-0.6, 0, -0.8), abs=1e-6)
+
+    @pytest.mark.parametrize("scale", [1, 1e10, 1e20, 1e30])
+    def test_from_direction_with_scaled_up_returns_unit_rotation(self, scale):
+        quat = Quat.from_direction(Vec3.FORWARD, Vec3(0, scale, 0))
+        # A nonunit scalar quaternion can leave UP unchanged, so check its norm too.
+        assert quat.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(quat * Vec3.UP) == pytest.approx((0, 1, 0), abs=1e-6)
+
+
+class TestFiniteIntermediates:
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_dot_cancellation_is_zero(self, scale):
+        assert Quat(scale, scale, 0, 0).dot(Quat(2, -2, 0, 0)) == 0
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_unit_rotation_preserves_large_vector(self, scale):
+        vector = Vec3(scale, 0, 0)
+        rotation = Quat.from_axis_angle(Vec3.UP, 90)
+        assert rotation.length() == pytest.approx(1, abs=1e-6)
+        assert tuple(rotation * vector) == pytest.approx(
+            (0, 0, -vector.x), rel=2e-6, abs=abs(vector.x) * 1e-6
+        )
+
+    @pytest.mark.parametrize("scale", [1, 1e20, 3e38])
+    def test_finite_up_hint_retains_oblique_basis(self, scale):
+        rotation = Quat.from_direction(Vec3(0.6, 0, -0.8), Vec3(scale, scale, scale))
+        # Analytic basis: right = forward cross (1,1,1), then up = right cross forward.
+        right = (0.8 / sqrt(2.96), -1.4 / sqrt(2.96), 0.6 / sqrt(2.96))
+        up = (-0.8 * right[1], 0.6 * right[2] + 0.8 * right[0], -0.6 * right[1])
+        assert rotation.length() == pytest.approx(1, abs=1e-6)
+        for axis, expected in [
+            (Vec3.FORWARD, (0.6, 0, -0.8)),
+            (Vec3.RIGHT, right),
+            (Vec3.UP, up),
+        ]:
+            assert tuple(rotation * axis) == pytest.approx(expected, abs=1e-6)
+
+
+# 1e-4 exceeds the f32 rounding of unit-scale values and stays below any expected difference
+def approx_v(a, b, tol=1e-4):
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
+    )
+
+
+def approx_q(a, b, tol=1e-4):
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
+        and isclose(a.w, b.w, abs_tol=tol)
+    )

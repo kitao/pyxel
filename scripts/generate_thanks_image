@@ -8,7 +8,7 @@ import pyxel
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 USER_EXAMPLES_IMAGES_DIR = ROOT_DIR.parent / "pyxel-user-examples/images"
-LOGO_IMAGE_FILE = ROOT_DIR / "examples/assets/pyxel_logo_38x16.png"
+LOGO_IMAGE_FILE = ROOT_DIR / "python/pyxel/examples/assets/pyxel_logo_38x16.png"
 
 THANKS_IMAGE_FILE = ROOT_DIR / "docs/images/pyxel_thanks.png"
 THANKS_IMAGE_WIDTH = 1920
@@ -87,6 +87,10 @@ EXAMPLE_RANDOM_SEED = 18
 BASE_MESSAGE_WIDTH = 124
 BASE_MESSAGE_HEIGHT = 50
 BASE_MESSAGE_SCALE = 7
+MESSAGE_LINES = (
+    (10, 29, "Thank you for 18,000 stars", 14, "18,000"),
+    (15, 37, "and 1,700,000 downloads!", 4, "1,700,000"),
+)
 
 MESSAGE_WIDTH = BASE_MESSAGE_WIDTH * BASE_MESSAGE_SCALE
 MESSAGE_HEIGHT = BASE_MESSAGE_HEIGHT * BASE_MESSAGE_SCALE
@@ -102,11 +106,14 @@ MESSAGE_PAD_Y = MESSAGE_Y - MESSAGE_PAD
 DRAW_LAYOUT_GUIDES = False
 
 
-def load_example_image(example_id, frame):
-    gif_file = USER_EXAMPLES_IMAGES_DIR / f"{example_id}.gif"
-    gif = PIL.Image.open(gif_file)
-    gif.seek(frame - 1)
-    return gif.copy()
+def generate_thanks_image():
+    thanks_image = PIL.Image.new(
+        "RGB", (THANKS_IMAGE_WIDTH, THANKS_IMAGE_HEIGHT), (0, 0, 0)
+    )
+    draw_example_images(thanks_image)
+    draw_message_image(thanks_image)
+
+    thanks_image.save(THANKS_IMAGE_FILE)
 
 
 def draw_example_images(thanks_image):
@@ -118,26 +125,37 @@ def draw_example_images(thanks_image):
         )
         example_images.append(image)
 
-    random.seed(EXAMPLE_RANDOM_SEED)
-    random.shuffle(example_images)
+    for index, x, y in get_example_positions(
+        [image.height for image in example_images]
+    ):
+        thanks_image.paste(example_images[index], (x, y))
 
+
+def get_example_positions(heights):
+    order = list(range(len(heights)))
+    random.Random(EXAMPLE_RANDOM_SEED).shuffle(order)
+
+    positions = []
+    next_index = 0
     example_x = EXAMPLE_X
-    while example_x < THANKS_IMAGE_WIDTH and example_images:
+    while example_x < THANKS_IMAGE_WIDTH and next_index < len(order):
         col_height = 0
         num_col_images = 0
         while col_height < THANKS_IMAGE_HEIGHT + EXAMPLE_MARGIN:
-            if num_col_images >= len(example_images):
+            if next_index + num_col_images >= len(order):
                 break
-            col_height += example_images[num_col_images].height + EXAMPLE_MARGIN
+            index = order[next_index + num_col_images]
+            col_height += heights[index] + EXAMPLE_MARGIN
             num_col_images += 1
 
         example_y = (THANKS_IMAGE_HEIGHT - col_height - EXAMPLE_MARGIN) // 2
-        for _ in range(num_col_images):
-            image = example_images.pop(0)
-            thanks_image.paste(image, (example_x, example_y))
-            example_y += image.height + EXAMPLE_MARGIN
-
+        for index in order[next_index : next_index + num_col_images]:
+            positions.append((index, example_x, example_y))
+            example_y += heights[index] + EXAMPLE_MARGIN
+        next_index += num_col_images
         example_x += EXAMPLE_WIDTH + EXAMPLE_MARGIN
+
+    return positions
 
 
 def draw_message_image(thanks_image):
@@ -152,13 +170,10 @@ def draw_message_image(thanks_image):
 
     base_image.load(43, 8, str(LOGO_IMAGE_FILE))
 
-    base_image.text(10, 29, "Thank you for 17,000 stars", 12)
-    base_image.text(10 + 14 * 4, 29, "17,000", 9)
+    for x, y, text, accent_index, accent_text in MESSAGE_LINES:
+        base_image.text(x, y, text, 12)
+        base_image.text(x + accent_index * 4, y, accent_text, 9)
 
-    base_image.text(15, 37, "and 1,600,000 downloads!", 12)
-    base_image.text(15 + 4 * 4, 37, "1,600,000", 9)
-
-    # Draw layout guide lines for alignment.
     if DRAW_LAYOUT_GUIDES:
         x1 = 2
         y1 = 2
@@ -185,12 +200,12 @@ def draw_message_image(thanks_image):
         base_image.line(x, y1, x, y1 + h, 8)
         base_image.line(x, y2, x, y2 - h, 8)
 
-    # Convert the Pyxel image to a PIL image.
     message_image = PIL.Image.new("RGB", (BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT))
-
     pixels = []
+
     for y in range(BASE_MESSAGE_HEIGHT):
         for x in range(BASE_MESSAGE_WIDTH):
+            # Decode the packed 0xRRGGBB palette value.
             rgb = pyxel.DEFAULT_COLORS[base_image.pget(x, y)]
             r = (rgb >> 16) & 0xFF
             g = (rgb >> 8) & 0xFF
@@ -203,28 +218,20 @@ def draw_message_image(thanks_image):
         (MESSAGE_WIDTH, MESSAGE_HEIGHT), resample=PIL.Image.NEAREST
     )
 
-    # Draw a black frame around the message as padding.
     message_pad_image = PIL.Image.new(
         "RGB",
-        (
-            MESSAGE_PAD_WIDTH,
-            MESSAGE_PAD_HEIGHT,
-        ),
+        (MESSAGE_PAD_WIDTH, MESSAGE_PAD_HEIGHT),
         (0, 0, 0),
     )
     thanks_image.paste(message_pad_image, (MESSAGE_PAD_X, MESSAGE_PAD_Y))
     thanks_image.paste(message_image, (MESSAGE_X, MESSAGE_Y))
 
 
-def generate_thanks_image():
-    thanks_image = PIL.Image.new(
-        "RGB", (THANKS_IMAGE_WIDTH, THANKS_IMAGE_HEIGHT), (0, 0, 0)
-    )
-    draw_example_images(thanks_image)
-    draw_message_image(thanks_image)
-
-    thanks_image.show()
-    thanks_image.save(THANKS_IMAGE_FILE)
+def load_example_image(example_id, frame):
+    gif_file = USER_EXAMPLES_IMAGES_DIR / f"{example_id}.gif"
+    with PIL.Image.open(gif_file) as gif:
+        gif.seek(frame - 1)
+        return gif.copy()
 
 
 if __name__ == "__main__":

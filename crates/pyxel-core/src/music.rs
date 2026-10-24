@@ -17,11 +17,11 @@ impl Music {
         new_audio_type!(Self { seqs: Vec::new() })
     }
 
-    pub fn set(&mut self, seqs: &[Vec<u32>]) {
-        self.seqs = seqs.to_vec();
-
+    pub fn set(&mut self, seqs: Vec<Vec<u32>>) {
+        self.seqs = seqs;
         let num_channels = pyxel::channels().len();
-        self.seqs.resize_with(num_channels, Vec::new);
+        self.seqs
+            .resize_with(self.seqs.len().max(num_channels), Vec::new);
     }
 
     pub fn save(
@@ -31,7 +31,6 @@ impl Music {
         use_ffmpeg: Option<bool>,
     ) -> Result<(), String> {
         let num_samples = Audio::duration_samples(duration_sec)?;
-
         let pyxel_sounds = pyxel::sounds();
         let render_channels: Vec<_> =
             self.seqs
@@ -46,6 +45,7 @@ impl Music {
                                 })
                             })
                             .collect::<Result<_, _>>()?;
+
                     let channel = Channel::new();
                     audio_mut!(channel).play(sounds, None, true, false)?;
                     Ok(channel)

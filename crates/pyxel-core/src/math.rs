@@ -110,7 +110,6 @@ mod tests {
     #[test]
     fn noise_state_is_isolated_between_threads() {
         const POINT: (f32, f32, f32) = (1.5, 2.5, 3.5);
-
         Pyxel::noise_seed(123);
         let expected = Pyxel::noise(POINT.0, POINT.1, POINT.2);
 

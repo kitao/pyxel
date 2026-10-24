@@ -1,6 +1,5 @@
 use crate::settings::{AUDIO_SAMPLE_BITS, DEFAULT_TONE_SAMPLE_BITS};
 
-// Tone data types
 pub type ToneSample = u32;
 pub type ToneGain = f32;
 
@@ -11,7 +10,6 @@ pub enum ToneMode {
     LongPeriodNoise,
 }
 
-// Tone mode conversions
 impl From<u32> for ToneMode {
     fn from(index: u32) -> Self {
         match index {
@@ -32,7 +30,6 @@ impl From<ToneMode> for u32 {
     }
 }
 
-// Tone state
 pub struct Tone {
     pub mode: ToneMode,
     pub sample_bits: u32,
@@ -46,7 +43,6 @@ pub struct Tone {
 
 define_audio_type!(RcTone, Tone);
 
-// Tone lifecycle and cached waveform
 impl Tone {
     pub fn new() -> RcTone {
         new_audio_type!(Self {
@@ -65,6 +61,7 @@ impl Tone {
         if self.wavetable != self.cached_wavetable || self.sample_bits != self.cached_sample_bits {
             self.cached_wavetable.clone_from(&self.wavetable);
             self.cached_sample_bits = self.sample_bits;
+
             self.waveform.clear();
             if (1..=AUDIO_SAMPLE_BITS).contains(&self.sample_bits) && !self.wavetable.is_empty() {
                 let max_sample = (1u32 << self.sample_bits) - 1;
@@ -77,6 +74,7 @@ impl Tone {
             }
             self.waveform_revision = self.waveform_revision.wrapping_add(1);
         }
+
         (&self.waveform, self.waveform_revision)
     }
 }

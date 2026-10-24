@@ -2,8 +2,8 @@
 *.egg-info/
 *.py[cod]
 __pycache__/
-dist/
 dist-*/
+dist/
 
 # Copied into the package at build time
 python/pyxel/LICENSE
@@ -16,14 +16,17 @@ target/
 
 # Node
 node_modules/
+test-results/
+
+# Cloudflare
+.wrangler/
 
 # Environment
 .env
+.venv/
 
 # AI tools
 .claude/
-.superpowers/
-docs/superpowers/
 
 # Local shortcuts
 /examples

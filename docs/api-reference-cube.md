@@ -1,0 +1,1877 @@
+<!-- This file is generated from web/api-reference/cube/api-reference.json. -->
+
+# Pyxel API Reference
+
+*[Read online in other languages](https://kitao.dev/pyxel/api-reference/cube/).*
+
+## Vec3
+
+### `Vec3(x=0.0, y=0.0, z=0.0)` — class
+
+A 3D vector with x, y, and z components. Values are immutable; arithmetic and transform methods return a new Vec3.
+
+**Parameters:**
+
+- `x` (*float*) — X component. Defaults to 0.0.
+- `y` (*float*) — Y component. Defaults to 0.0.
+- `z` (*float*) — Z component. Defaults to 0.0.
+
+**Example:**
+
+```python
+from pyxel.cube import Vec3
+
+v = Vec3(1.0, 2.0, 3.0)
+w = (v + Vec3.UP) * 2.0
+```
+
+**Note:** Import it from the pyxel.cube module. Supports vector + and -, scalar * and /, unary -, ==, len(), indexing, and iteration.
+
+### `x` — variable
+
+The x component of the vector.
+
+- **Type:** `float`
+
+### `y` — variable
+
+The y component of the vector.
+
+- **Type:** `float`
+
+### `z` — variable
+
+The z component of the vector.
+
+- **Type:** `float`
+
+### `Vec3.ZERO` — constant
+
+Vector with all components 0.
+
+- **Type:** `Vec3`
+
+### `Vec3.ONE` — constant
+
+Vector with all components 1.
+
+- **Type:** `Vec3`
+
+### `Vec3.RIGHT` — constant
+
+Unit vector pointing right (1, 0, 0).
+
+- **Type:** `Vec3`
+
+### `Vec3.LEFT` — constant
+
+Unit vector pointing left (-1, 0, 0).
+
+- **Type:** `Vec3`
+
+### `Vec3.UP` — constant
+
+Unit vector pointing up (0, 1, 0).
+
+- **Type:** `Vec3`
+
+### `Vec3.DOWN` — constant
+
+Unit vector pointing down (0, -1, 0).
+
+- **Type:** `Vec3`
+
+### `Vec3.FORWARD` — constant
+
+Unit vector pointing forward (0, 0, -1). Pyxel Cube uses a right-handed system where forward is -Z.
+
+- **Type:** `Vec3`
+
+### `Vec3.BACK` — constant
+
+Unit vector pointing back (0, 0, 1).
+
+- **Type:** `Vec3`
+
+### `dot(other)` — function
+
+Return the dot product with another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The other vector.
+
+**Returns:** `float`
+
+### `cross(other)` — function
+
+Return the cross product with another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The other vector.
+
+**Returns:** `Vec3`
+
+### `length()` — function
+
+Return the length (magnitude) of the vector.
+
+**Returns:** `float`
+
+### `length_squared()` — function
+
+Return the squared length. Cheaper than length() for comparisons.
+
+**Returns:** `float`
+
+### `distance_to(other)` — function
+
+Return the distance to another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The other vector.
+
+**Returns:** `float`
+
+### `distance_squared_to(other)` — function
+
+Return the squared distance to another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The other vector.
+
+**Returns:** `float`
+
+### `angle_to(other)` — function
+
+Return the angle to another vector in degrees.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The other vector.
+
+**Returns:** `float` — The angle in degrees (0-180).
+
+### `normalize()` — function
+
+Return a unit vector pointing in the same direction. A zero vector returns Vec3.ZERO.
+
+**Returns:** `Vec3`
+
+### `clamp_length(max_length)` — function
+
+Return a copy whose length is clamped to max_length.
+
+**Parameters:**
+
+- `max_length` (*float*) — Maximum allowed length.
+
+**Returns:** `Vec3`
+
+### `min(other)` — function
+
+Return the component-wise minimum with another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The other vector.
+
+**Returns:** `Vec3`
+
+### `max(other)` — function
+
+Return the component-wise maximum with another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The other vector.
+
+**Returns:** `Vec3`
+
+### `lerp(other, t)` — function
+
+Linearly interpolate toward another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The target vector.
+- `t` (*float*) — Interpolation factor from 0.0 to 1.0.
+
+**Returns:** `Vec3`
+
+### `slerp(other, t)` — function
+
+Spherically interpolate toward another vector. Both vectors should be unit length.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The target unit vector.
+- `t` (*float*) — Interpolation factor from 0.0 to 1.0.
+
+**Returns:** `Vec3`
+
+### `reflect(normal)` — function
+
+Return the reflection of the vector against a surface with the given unit normal.
+
+**Parameters:**
+
+- `normal` (*Vec3*) — The unit surface normal.
+
+**Returns:** `Vec3`
+
+### `project(other)` — function
+
+Return the projection of the vector onto another vector.
+
+**Parameters:**
+
+- `other` (*Vec3*) — The vector to project onto.
+
+**Returns:** `Vec3`
+
+### `to_local(mat)` — function *(Advanced)*
+
+Convert a world-space position into mat's local space.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Vec3`
+
+### `to_world(mat)` — function *(Advanced)*
+
+Convert a local-space position into world space through mat.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Vec3`
+
+### `to_local_dir(mat)` — function *(Advanced)*
+
+Convert a world-space direction into mat's local space, ignoring translation.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Vec3`
+
+### `to_world_dir(mat)` — function *(Advanced)*
+
+Convert a local-space direction into world space, ignoring translation.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Vec3`
+
+## Mat4
+
+### `Mat4()` — class
+
+A 4x4 transform matrix. The constructor creates an identity matrix. Values are immutable; transform methods return a new Mat4.
+
+**Example:**
+
+```python
+from pyxel.cube import Mat4, Vec3
+
+node.transform = Mat4.from_translation(Vec3(0, 1, 0))
+spin = node.transform * Mat4.from_axis_angle(Vec3.UP, 90)
+```
+
+**Note:** Supports * with another Mat4 or a Vec3, indexing with [row, col], and ==. Used for Node.transform and the placement argument of draw commands.
+
+### `Mat4.IDENTITY` — constant
+
+The identity matrix.
+
+- **Type:** `Mat4`
+
+### `pos` — variable
+
+The translation part of the matrix.
+
+- **Type:** `Vec3`
+
+### `rot` — variable
+
+The rotation part of the matrix as a unit Quat. Assumes a translation-rotation-scale (TRS) composition. Returns Quat.IDENTITY if any axis has zero scale.
+
+- **Type:** `Quat`
+
+### `scale` — variable
+
+The scale part of the matrix. X and Y are nonnegative; Z carries any reflection sign, so original axis signs are not preserved. If any axis has zero scale, returns axis magnitudes with zeros preserved.
+
+- **Type:** `Vec3`
+
+### `Mat4.from_translation(pos)` — class
+
+Create a translation matrix.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — The translation.
+
+**Returns:** `Mat4`
+
+### `Mat4.from_euler(euler)` — class
+
+Create a rotation matrix from Euler angles in degrees, applied around fixed X, Y, Z axes in that order.
+
+**Parameters:**
+
+- `euler` (*Vec3*) — Rotation around each axis in degrees.
+
+**Returns:** `Mat4`
+
+### `Mat4.from_quat(rot)` — class
+
+Create a rotation matrix from a Quat.
+
+**Parameters:**
+
+- `rot` (*Quat*) — The rotation.
+
+**Returns:** `Mat4`
+
+### `Mat4.from_scale(scale)` — class
+
+Create a scale matrix.
+
+**Parameters:**
+
+- `scale` (*Vec3*) — The per-axis scale.
+
+**Returns:** `Mat4`
+
+### `Mat4.from_axis_angle(axis, deg)` — class
+
+Create a rotation matrix around an axis.
+
+**Parameters:**
+
+- `axis` (*Vec3*) — The rotation axis.
+- `deg` (*float*) — The rotation angle in degrees.
+
+**Returns:** `Mat4`
+
+### `Mat4.compose(pos, rot, scale)` — class
+
+Create a matrix combining translation, rotation, and scale, applied in scale, rotation, translation order.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — The translation.
+- `rot` (*Quat*) — The rotation.
+- `scale` (*Vec3*) — The per-axis scale.
+
+**Returns:** `Mat4`
+
+**Example:**
+
+```python
+mat = Mat4.compose(Vec3(0, 1, 0), Quat.from_euler(Vec3(0, 45, 0)), Vec3.ONE)
+```
+
+### `Mat4.look_at(eye, target, up=Vec3.UP)` — class
+
+Create a transform located at eye and facing target. Typically assigned to a camera's transform.
+
+**Parameters:**
+
+- `eye` (*Vec3*) — The viewpoint position.
+- `target` (*Vec3*) — The point to look at.
+- `up` (*Vec3*) — The up direction. Defaults to Vec3.UP.
+
+**Returns:** `Mat4`
+
+**Example:**
+
+```python
+camera.transform = Mat4.look_at(Vec3(0, 3, 8), Vec3.ZERO)
+```
+
+### `translate(v)` — function
+
+Return a new matrix moved by v along the matrix's local axes.
+
+**Parameters:**
+
+- `v` (*Vec3*) — The local-space translation.
+
+**Returns:** `Mat4`
+
+### `rotate(axis, deg)` — function
+
+Return a new matrix rotated around a local axis.
+
+**Parameters:**
+
+- `axis` (*Vec3*) — The rotation axis.
+- `deg` (*float*) — The rotation angle in degrees.
+
+**Returns:** `Mat4`
+
+### `rotate_x(deg)` — function
+
+Return a new matrix rotated around the local X axis.
+
+**Parameters:**
+
+- `deg` (*float*) — The rotation angle in degrees.
+
+**Returns:** `Mat4`
+
+### `rotate_y(deg)` — function
+
+Return a new matrix rotated around the local Y axis.
+
+**Parameters:**
+
+- `deg` (*float*) — The rotation angle in degrees.
+
+**Returns:** `Mat4`
+
+### `rotate_z(deg)` — function
+
+Return a new matrix rotated around the local Z axis.
+
+**Parameters:**
+
+- `deg` (*float*) — The rotation angle in degrees.
+
+**Returns:** `Mat4`
+
+### `scale_by(v)` — function
+
+Return a new matrix scaled along the matrix's local axes.
+
+**Parameters:**
+
+- `v` (*Vec3*) — The per-axis scale.
+
+**Returns:** `Mat4`
+
+### `inverse()` — function
+
+Return the inverse matrix. Return the identity if no inverse exists or its components cannot be represented as finite 32-bit floats.
+
+**Returns:** `Mat4`
+
+### `transpose()` — function *(Advanced)*
+
+Return the transposed matrix.
+
+**Returns:** `Mat4`
+
+### `determinant()` — function *(Advanced)*
+
+Return the determinant of the matrix.
+
+**Returns:** `float`
+
+### `to_local(mat)` — function *(Advanced)*
+
+Convert a world-space transform into mat's local space.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Mat4`
+
+### `to_world(mat)` — function *(Advanced)*
+
+Convert a local-space transform into world space through mat.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Mat4`
+
+### `to_local_dir(mat)` — function *(Advanced)*
+
+Convert a world-space transform into mat's local space, ignoring translation.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Mat4`
+
+### `to_world_dir(mat)` — function *(Advanced)*
+
+Convert a local-space transform into world space, ignoring translation.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The reference transform.
+
+**Returns:** `Mat4`
+
+## Quat
+
+### `Quat(x=0.0, y=0.0, z=0.0, w=1.0)` — class
+
+A quaternion representing a rotation. The default is the identity rotation. Values are immutable; operations that change the rotation return a new Quat.
+
+**Parameters:**
+
+- `x` (*float*) — X component. Defaults to 0.0.
+- `y` (*float*) — Y component. Defaults to 0.0.
+- `z` (*float*) — Z component. Defaults to 0.0.
+- `w` (*float*) — W component. Defaults to 1.0.
+
+**Example:**
+
+```python
+from pyxel.cube import Quat, Vec3
+
+q = Quat.from_axis_angle(Vec3.UP, 45)
+rotated = q * Vec3.FORWARD
+```
+
+**Note:** Supports * with another Quat (composition) or a Vec3 (applies the rotation), unary -, ==, indexing, and iteration. Rotation operations require a unit quaternion. Use normalize() when specifying components directly.
+
+### `Quat.IDENTITY` — constant
+
+The identity rotation.
+
+- **Type:** `Quat`
+
+### `x` — variable
+
+The x component of the quaternion.
+
+- **Type:** `float`
+
+### `y` — variable
+
+The y component of the quaternion.
+
+- **Type:** `float`
+
+### `z` — variable
+
+The z component of the quaternion.
+
+- **Type:** `float`
+
+### `w` — variable
+
+The w component of the quaternion.
+
+- **Type:** `float`
+
+### `Quat.from_axis_angle(axis, deg)` — class
+
+Create a rotation around an axis.
+
+**Parameters:**
+
+- `axis` (*Vec3*) — The rotation axis.
+- `deg` (*float*) — The rotation angle in degrees.
+
+**Returns:** `Quat`
+
+### `Quat.from_euler(euler)` — class
+
+Create a rotation from Euler angles in degrees, applied around fixed X, Y, Z axes in that order.
+
+**Parameters:**
+
+- `euler` (*Vec3*) — Rotation around each axis in degrees.
+
+**Returns:** `Quat`
+
+### `Quat.from_two_vectors(from_vec, to_vec)` — class
+
+Create the shortest rotation that turns from_vec to face the same direction as to_vec.
+
+**Parameters:**
+
+- `from_vec` (*Vec3*) — The starting direction.
+- `to_vec` (*Vec3*) — The target direction.
+
+**Returns:** `Quat`
+
+### `Quat.from_matrix(mat)` — class *(Advanced)*
+
+Returns the same rotation as mat.rot.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — The source matrix.
+
+**Returns:** `Quat`
+
+### `Quat.from_direction(forward, up=Vec3.UP)` — class
+
+Create a rotation facing the forward direction (the forward axis is -Z), keeping up as close as possible.
+
+**Parameters:**
+
+- `forward` (*Vec3*) — The direction to face.
+- `up` (*Vec3*) — The up direction. Defaults to Vec3.UP.
+
+**Returns:** `Quat`
+
+### `conjugate()` — function *(Advanced)*
+
+Return the conjugate quaternion.
+
+**Returns:** `Quat`
+
+### `inverse()` — function
+
+Return the inverse rotation.
+
+**Returns:** `Quat`
+
+### `normalize()` — function
+
+Return a unit quaternion representing the same rotation.
+
+**Returns:** `Quat`
+
+### `length()` — function *(Advanced)*
+
+Return the length of the quaternion.
+
+**Returns:** `float`
+
+### `length_squared()` — function *(Advanced)*
+
+Return the squared length of the quaternion.
+
+**Returns:** `float`
+
+### `dot(other)` — function *(Advanced)*
+
+Return the dot product with another quaternion.
+
+**Parameters:**
+
+- `other` (*Quat*) — The other quaternion.
+
+**Returns:** `float`
+
+### `angle_to(other)` — function
+
+Return the angle between two rotations in degrees.
+
+**Parameters:**
+
+- `other` (*Quat*) — The other rotation.
+
+**Returns:** `float` — The angle in degrees.
+
+### `to_matrix()` — function
+
+Convert the rotation to a Mat4.
+
+**Returns:** `Mat4`
+
+### `to_euler()` — function
+
+Convert the rotation to Euler angles in degrees (same convention as Quat.from_euler).
+
+**Returns:** `Vec3` — Rotation around each axis in degrees.
+
+### `to_axis_angle()` — function
+
+Convert the rotation to an axis and an angle in degrees.
+
+**Returns:** `tuple[Vec3, float]` — A tuple of the axis and the angle in degrees.
+
+### `slerp(other, t)` — function
+
+Spherically interpolate toward another rotation.
+
+**Parameters:**
+
+- `other` (*Quat*) — The target rotation.
+- `t` (*float*) — Interpolation factor from 0.0 to 1.0.
+
+**Returns:** `Quat`
+
+## Node
+
+### `Node()` — class
+
+A scene-graph node. Subclass it and implement on_update / on_draw, instantiate Mesh assets with Node.from_mesh(), then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.
+
+**Example:**
+
+```python
+from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
+
+
+class Scene(Node):
+    def on_draw(self):
+        self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)
+
+
+scene = Scene()
+scene.shading = Shading(pyxel.colors)
+scene.camera = Camera()
+scene.camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO)
+```
+
+### `name` — variable
+
+Node name, searchable with find_by_name().
+
+- **Type:** `str`
+
+### `transform` — variable
+
+Local transform relative to the parent.
+
+- **Type:** `Mat4`
+
+### `active` — variable
+
+When False, stops update and collision for this node and its descendants.
+
+- **Type:** `bool`
+
+### `visible` — variable
+
+When False, stops drawing for this node and its descendants.
+
+- **Type:** `bool`
+
+### `opacity` — variable
+
+Dithered coverage, clamped to 0-1; defaults to 1. Multiplies ancestor opacity and each draw command's dither, including when drawing a subtree directly. Does not affect updates or collisions.
+
+- **Type:** `float`
+
+### `camera` — variable
+
+Camera used for drawing. None inherits from the closest ancestor that has one.
+
+- **Type:** `Camera | None`
+
+### `shading` — variable
+
+Face-brightness table used for drawing. None inherits from the closest ancestor that has one.
+
+- **Type:** `Shading | None`
+
+### `collider` — variable
+
+Collision shape and motion state. None keeps the node out of collision.
+
+- **Type:** `Collider | None`
+
+### `tags` — variable
+
+A set of tag strings. Edits apply directly to this node. Used by find_by_tags() and the tags filter of spatial queries.
+
+- **Type:** `set[str]`
+
+### `parent` — variable
+
+The parent node, or None for a root.
+
+- **Type:** `Node | None`
+
+### `children` — variable
+
+The child nodes as a tuple.
+
+- **Type:** `tuple`
+
+### `destroyed` — variable
+
+True once destroy() has been called. Remains True after the node is detached.
+
+- **Type:** `bool`
+
+### `forward` — variable
+
+The transform's forward direction (-Z axis) as a unit vector.
+
+- **Type:** `Vec3`
+
+### `right` — variable
+
+The transform's right direction (+X axis) as a unit vector.
+
+- **Type:** `Vec3`
+
+### `up` — variable
+
+The transform's up direction (+Y axis) as a unit vector.
+
+- **Type:** `Vec3`
+
+### `effective_camera` — variable *(Advanced)*
+
+This node's camera, or the camera of the closest ancestor that has one.
+
+- **Type:** `Camera | None`
+
+### `effective_shading` — variable *(Advanced)*
+
+This node's shading table, or the table of the closest ancestor that has one.
+
+- **Type:** `Shading | None`
+
+### `world_transform` — variable *(Advanced)*
+
+The world transform composed from the root down to this node.
+
+- **Type:** `Mat4`
+
+### `Node.from_mesh(mesh)` — class
+
+Create an independent model instance beneath a new identity placement root. Imported part transforms and motions never overwrite this root. Geometry and textures remain shared.
+
+**Parameters:**
+
+- `mesh` (*Mesh*) — The mesh asset to instantiate.
+
+**Returns:** `Node`
+
+### `add_child(node)` — function
+
+Add a node as a child. A node that already has a parent is reparented.
+
+**Parameters:**
+
+- `node` (*Node*) — The node to add.
+
+### `remove_child(node)` — function
+
+Remove a child node.
+
+**Parameters:**
+
+- `node` (*Node*) — The node to remove.
+
+### `destroy()` — function
+
+Flag this node and its descendants for destruction. At the end of update(), on_destroy() fires on each flagged node and it is detached from the tree.
+
+### `apply_motion(motion, frame, *, loop=True)` — function
+
+Sample a Motion at the given frame, replacing matching local part transforms in this subtree of the same model instance. Other parts and the placement root are unchanged.
+
+**Parameters:**
+
+- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
+- `frame` (*float*) — Frame to sample.
+- `loop` (*bool*) — When True, wrap the frame inside the clip length. Defaults to True.
+
+### `play_motion(motion, *, loop=True, speed=1.0, start_frame=0.0)` — function
+
+Start per-update playback of a Motion on this Node.from_mesh() subtree.
+
+**Parameters:**
+
+- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
+- `loop` (*bool*) — When True, wrap playback inside the clip length. Defaults to True.
+- `speed` (*float*) — Frames advanced per update. Defaults to 1.0.
+- `start_frame` (*float*) — Initial frame sampled when playback starts. Defaults to 0.0.
+
+**Note:** Each call restarts playback. Before sampling start_frame, restore the imported translation, rotation and scale of same-instance parts in this subtree targeted by any imported transform clip. This removes previous-clip poses while preserving never-animated parts, attached instances and placement. apply_motion does not perform this reset.
+
+### `stop_motion()` — function
+
+Stop Motion playback on this node.
+
+### `find_by_name(name)` — function
+
+Return every node in this subtree whose name matches.
+
+**Parameters:**
+
+- `name` (*str*) — The name to search for.
+
+**Returns:** `list`
+
+### `find_by_tags(tags)` — function
+
+Return every node in this subtree carrying any of the given tags.
+
+**Parameters:**
+
+- `tags` (*set[str]*) — Tags to search for.
+
+**Returns:** `list`
+
+### `on_update()` — function
+
+Per-frame update hook, called by update() in tree order. Override it in a subclass.
+
+### `on_draw()` — function
+
+Per-frame draw hook, called by draw() in tree order. Call draw commands from here.
+
+### `on_collide(other, contact)` — function
+
+Collision hook called by update(). A solid mesh can report multiple contacts with the same node; apply contact.depth and contact.delta_velocity in callback order. Triggers report once per contacting pair.
+
+**Parameters:**
+
+- `other` (*Node*) — The other node of the contact.
+- `contact` (*Contact*) — The contact information for this side.
+
+### `on_destroy()` — function
+
+Destruction hook, called once per node at the end of update(), just before detachment.
+
+### `dither(alpha)` — function
+
+Apply dithered transparency to the following draw commands in this on_draw. Resets to 1.0 at the start of every node's on_draw.
+
+**Parameters:**
+
+- `alpha` (*float*) — Opacity from 0.0 to 1.0.
+
+### `depth_test(on)` — function
+
+Toggle the depth test for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
+
+**Parameters:**
+
+- `on` (*bool*) — False draws over everything regardless of depth.
+
+### `depth_write(on)` — function *(Advanced)*
+
+Toggle depth-buffer writes for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
+
+**Parameters:**
+
+- `on` (*bool*) — False leaves the depth buffer untouched.
+
+### `depth_offset(offset)` — function *(Advanced)*
+
+Shift only the depth of the following draw commands along the view direction, in world units. Negative is toward the camera. The screen position and size never change. Resets to 0.0 at the start of every node's on_draw.
+
+**Parameters:**
+
+- `offset` (*float*) — Depth shift in world units. Negative is toward the camera.
+
+### `decal(distance)` — function *(Advanced)*
+
+Project shapes and images onto already drawn surfaces when drawing. Applies to rect(), elli(), and plane().
+
+**Parameters:**
+
+- `distance` (*float*) — Projection distance in local units, along mat's −Z axis. Matrix and ancestor scaling also scale the range. Negative projects along +Z. Zero paints nothing but keeps decal mode active.
+
+**Note:** These draw filled planar shapes or images whose position and orientation are specified by a matrix. Borders draw lines and are not included. Other draw commands are unchanged.
+
+Paints already drawn, camera-visible surfaces within the projection range, without changing their depth. Draw receivers first; no collider is needed. Does not stop at the first surface along the projection direction. Dithering, shading, and colkey still apply; depth_test, depth_write, and depth_offset do not affect decal drawing. Resets at each node's on_draw entry.
+
+### `decal()` — function *(Advanced)*
+
+Restore normal drawing. Passing None has the same effect.
+
+### `shaded(on)` — function
+
+Toggle directional shading for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.
+
+**Parameters:**
+
+- `on` (*bool*) — False draws with the base color only.
+
+### `pset(pos, col)` — function
+
+Draw a single pixel at a position.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Position in node-local coordinates.
+- `col` (*int*) — Color number.
+
+### `line(p1, p2, col)` — function
+
+Draw a 1-pixel-wide line segment.
+
+**Parameters:**
+
+- `p1` (*Vec3*) — Start position.
+- `p2` (*Vec3*) — End position.
+- `col` (*int*) — Color number.
+
+### `tri(p1, p2, p3, col)` — function
+
+Draw a filled triangle.
+
+**Parameters:**
+
+- `p1` (*Vec3*) — First vertex.
+- `p2` (*Vec3*) — Second vertex.
+- `p3` (*Vec3*) — Third vertex.
+- `col` (*int*) — Color number.
+
+### `trib(p1, p2, p3, col)` — function
+
+Draw a triangle outline.
+
+**Parameters:**
+
+- `p1` (*Vec3*) — First vertex.
+- `p2` (*Vec3*) — Second vertex.
+- `p3` (*Vec3*) — Third vertex.
+- `col` (*int*) — Color number.
+
+### `rect(mat, w, h, col)` — function
+
+Draw a filled rectangle of size w x h on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `rectb(mat, w, h, col)` — function
+
+Draw a rectangle outline on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `circ(pos, r, col)` — function
+
+Draw a filled circle that always faces the camera.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in world units.
+- `col` (*int*) — Color number.
+
+### `circb(pos, r, col)` — function
+
+Draw a circle outline that always faces the camera.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in world units.
+- `col` (*int*) — Color number.
+
+### `elli(mat, w, h, col)` — function
+
+Draw a filled ellipse of size w x h on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `ellib(mat, w, h, col)` — function
+
+Draw an ellipse outline on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `col` (*int*) — Color number.
+
+### `box(mat, size, col_img=7, *, colkey=None)` — function
+
+Draw a filled box. When col_img is an Image, every face is textured with the whole image.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `size` (*Vec3*) — Edge lengths along each axis.
+- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
+- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+
+**Example:**
+
+```python
+self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)
+```
+
+### `boxb(mat, size, col)` — function
+
+Draw the 12 edges of a box.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `size` (*Vec3*) — Edge lengths along each axis.
+- `col` (*int*) — Color number.
+
+### `sphere(pos, r, col_img=7, *, colkey=None)` — function
+
+Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in node-local units; the node's transform scales it.
+- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
+- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+
+### `sphereb(pos, r, col)` — function
+
+Draw the wireframe edges of a sphere.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `r` (*float*) — Radius in node-local units; the node's transform scales it.
+- `col` (*int*) — Color number.
+
+### `plane(mat, img, uvs, w, h, *, colkey=None)` — function
+
+Draw a textured rectangle of size w x h on mat's local XY plane.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `img` (*Image*) — Texture image.
+- `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
+- `w` (*float*) — Width along mat's local X axis.
+- `h` (*float*) — Height along mat's local Y axis.
+- `colkey` (*int | None*) — Transparent color. Defaults to None.
+
+### `sprite(pos, img, uvs, w, h, *, colkey=None, rotate=0.0)` — function
+
+Draw a textured rectangle that always faces the camera. Sprites render unshaded.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Center position.
+- `img` (*Image*) — Texture image.
+- `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
+- `w` (*float*) — Width in world units.
+- `h` (*float*) — Height in world units.
+- `colkey` (*int | None*) — Transparent color. Defaults to None.
+- `rotate` (*float*) — Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.
+
+### `prim(mat, primitive, col_img=7, *, colkey=None)` — function
+
+Draw a Primitive asset with its own mode and culling.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — Placement relative to the node.
+- `primitive` (*Primitive*) — The vertex data to draw.
+- `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
+- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+
+### `text(pos, s, col, *, font=None)` — function
+
+Draw a screen-space string centered at the projected position. Glyphs keep their pixel size at any distance; the depth test still applies.
+
+**Parameters:**
+
+- `pos` (*Vec3*) — Anchor position.
+- `s` (*str*) — The string to draw.
+- `col` (*int*) — Color number.
+- `font` (*Font | None*) — Font to use. Defaults to None (the built-in font).
+
+### `update()` — function
+
+Advance this subtree by one frame: on_update hooks, node motion playback, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.
+
+**Note:** on_update: At each hook traversal, visit the nodes present at its start at most once, in the original tree order. Check current subtree membership and ancestor active state before each call. Nodes added during that traversal join the next traversal; existing nodes enabled before their turn can run immediately.
+
+### `draw(x, y, w, h, target=None)` — function
+
+Render this subtree into the viewport (x, y, w, h), using this node's effective_camera for the whole subtree. A camera must be set on this node or an ancestor. Its clear_color, when set, fills the viewport before rendering.
+
+**Parameters:**
+
+- `x` (*int*) — Left edge of the viewport.
+- `y` (*int*) — Top edge of the viewport.
+- `w` (*int*) — Viewport width in pixels.
+- `h` (*int*) — Viewport height in pixels.
+- `target` (*Image | None*) — Render target. Defaults to None (the screen).
+
+**Example:**
+
+```python
+scene.draw(0, 0, pyxel.width, pyxel.height)
+```
+
+**Note:** Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.
+
+### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
+
+Cast a ray against the colliders in this subtree and return the closest hit.
+
+**Parameters:**
+
+- `origin` (*Vec3*) — Ray origin in world space.
+- `direction` (*Vec3*) — Ray direction.
+- `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
+- `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `RaycastHit | None` — The closest hit, or None.
+
+**Example:**
+
+```python
+hit = scene.raycast(self.world_transform.pos, Vec3.DOWN, max_distance=2.0)
+```
+
+### `raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
+
+Cast a ray and return the nearest hit for each collider hit, sorted by distance.
+
+**Parameters:**
+
+- `origin` (*Vec3*) — Ray origin in world space.
+- `direction` (*Vec3*) — Ray direction.
+- `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
+- `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `list`
+
+### `overlap_sphere(center, radius, *, hit_triggers=False, tags=None)` — function
+
+Return every node in this subtree whose collider overlaps the given sphere.
+
+**Parameters:**
+
+- `center` (*Vec3*) — Sphere center in world space.
+- `radius` (*float*) — Sphere radius.
+- `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `list`
+
+### `overlap_box(mat, size, *, hit_triggers=False, tags=None)` — function
+
+Return every node in this subtree whose collider overlaps the given box.
+
+**Parameters:**
+
+- `mat` (*Mat4*) — World-space translation, rotation and nonzero scale of the box. Scale is applied to size; reflections are supported. Sheared, non-affine or non-finite matrices raise ValueError.
+- `size` (*Vec3*) — Local edge lengths along each axis. Absolute values are used. Non-finite lengths or scaled dimensions raise ValueError.
+- `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+
+**Returns:** `list`
+
+## Camera
+
+### `Camera()` — class
+
+View settings for rendering: position and orientation, field of view, clip range, projection mode, and clear color. Assign it to Node.camera.
+
+**Example:**
+
+```python
+from pyxel.cube import Camera, Mat4, Vec3
+
+camera = Camera()
+camera.transform = Mat4.look_at(Vec3(0, 3, 8), Vec3.ZERO)
+scene.camera = camera
+```
+
+### `transform` — variable
+
+The camera's position and orientation in world space. Typically set with Mat4.look_at(). The default is the identity matrix.
+
+- **Type:** `Mat4`
+
+### `fov` — variable
+
+The vertical field of view in degrees, used by the perspective projection. The default is 60.
+
+- **Type:** `float`
+
+### `near` — variable
+
+The near clip distance. Geometry closer than this is not drawn. The default is 0.1.
+
+- **Type:** `float`
+
+### `far` — variable
+
+The far clip distance. The default is 1000.
+
+- **Type:** `float`
+
+### `ortho_size` — variable
+
+When set to a number, switches to an orthographic projection with this view height in world units. None (the default) keeps the perspective projection.
+
+- **Type:** `float | None`
+
+### `clear_color` — variable
+
+When set to a color number, Node.draw() fills its viewport with it before rendering. None (the default) draws over the existing pixels.
+
+- **Type:** `int | None`
+
+## Shading
+
+### `Shading(colors)` — class
+
+A face-brightness lookup table with a scene-wide light direction. Built automatically from a palette: each color gets 8 brightness levels (0 = darkest, 7 = brightest), where a level is either a flat color or a 2x2 dither pair. Assign it to Node.shading.
+
+**Parameters:**
+
+- `colors` (*list*) — Display colors as 24-bit values. Typically pyxel.colors.
+
+**Example:**
+
+```python
+from pyxel.cube import Shading
+
+scene.shading = Shading(pyxel.colors)
+```
+
+**Note:** Automatically generated tables keep the original color at level 5. Depending on the palette, multiple levels may use the same color. shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.
+
+### `Shading.LEVEL_COUNT` — constant
+
+Number of brightness-table columns: 8. Iterate over range(Shading.LEVEL_COUNT) to edit every level.
+
+- **Type:** `int`
+
+### `direction` — variable
+
+The direction the light travels, in world space. Face brightness follows the angle between this and the face normal. The default is Vec3(0.5, -1, -0.8).
+
+- **Type:** `Vec3`
+
+### `build(colors)` — function
+
+Rebuild the lookup table from a palette. Manual edits through shading[(col, level)] are overwritten.
+
+**Parameters:**
+
+- `colors` (*list*) — Display colors as 24-bit values.
+
+**Example:**
+
+```python
+shading.build(pyxel.colors)
+```
+
+**Note:** Call build() after changing the display palette; changing pyxel.colors alone does not regenerate the table. Generation chooses flat colors, 50% checker pairs, and repeated cells for the supplied colors; dithering is optional.
+
+## Primitive
+
+### `Primitive(mode, positions, indices, normals=[], uvs=[], cull=Primitive.CULL_BACK)` — class
+
+A vertex-data asset: positions, optional normals and UVs, plus the topology (indices and draw mode). One Primitive can be shared by many Node.prim() draws and Mesh parts.
+
+**Parameters:**
+
+- `mode` (*int*) — Draw mode: MODE_POINTS, MODE_LINES, or MODE_TRIANGLES.
+- `positions` (*list*) — Vertex coordinates as a flat list of x, y, z repeats.
+- `indices` (*list*) — Vertex indices. An empty list consumes the vertices in order 0, 1, 2, ...
+- `normals` (*list*) — Per-face normals as a flat list. Defaults to empty (= derived from the vertices while drawing).
+- `uvs` (*list*) — Per-vertex UVs as a flat list of u, v repeats. Required for textured draws. Defaults to empty.
+- `cull` (*int*) — Face culling mode. Defaults to Primitive.CULL_BACK.
+
+**Example:**
+
+```python
+from pyxel.cube import Primitive
+
+prim = Primitive(Primitive.MODE_TRIANGLES, [0, 1, 0, -1, -1, 0, 1, -1, 0], [])
+node.prim(Mat4.IDENTITY, prim, 11)
+```
+
+**Note:** Edit list attributes through their elements or slices (positions[:] = ...); whole-attribute assignment is not supported.
+
+### `Primitive.plane(width=1.0, height=1.0)` — class
+
+Create a texture-ready XY-plane Primitive with flat normals.
+
+**Parameters:**
+
+- `width` (*float*) — Full width of the plane.
+- `height` (*float*) — Full height of the plane.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.plane(2, 2)
+```
+
+### `Primitive.box(size=Vec3.ONE)` — class
+
+Create a texture-ready box Primitive with flat normals.
+
+**Parameters:**
+
+- `size` (*Vec3*) — Full width, height, and depth of the box. Defaults to Vec3.ONE.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.box(Vec3(1, 2, 1))
+```
+
+### `Primitive.sphere(radius=0.5)` — class
+
+Create a texture-ready low-poly sphere Primitive with flat normals.
+
+**Parameters:**
+
+- `radius` (*float*) — Sphere radius.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.sphere(0.5)
+```
+
+### `Primitive.capsule(height=1.0, radius=0.5)` — class
+
+Create a texture-ready low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.
+
+**Parameters:**
+
+- `height` (*float*) — Length of the central axis segment, as in Collider.size.y. The absolute value is used. Total height is abs(height) + 2 * max(radius, 0).
+- `radius` (*float*) — Radius of the hemispheres and straight section. Negative values are treated as 0.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.capsule(1.0, 0.5)
+```
+
+### `Primitive.MODE_POINTS` — constant
+
+Draw each vertex as a point.
+
+- **Type:** `int`
+
+### `Primitive.MODE_LINES` — constant
+
+Draw every 2 vertices as a line segment.
+
+- **Type:** `int`
+
+### `Primitive.MODE_TRIANGLES` — constant
+
+Draw every 3 vertices as a filled triangle.
+
+- **Type:** `int`
+
+### `Primitive.CULL_NONE` — constant
+
+Draw both sides of each face.
+
+- **Type:** `int`
+
+### `Primitive.CULL_BACK` — constant
+
+Skip faces seen from the back (counterclockwise winding is the front).
+
+- **Type:** `int`
+
+### `Primitive.CULL_FRONT` — constant
+
+Skip faces seen from the front.
+
+- **Type:** `int`
+
+### `mode` — variable
+
+Draw mode: MODE_POINTS, MODE_LINES, or MODE_TRIANGLES.
+
+- **Type:** `int`
+
+### `positions` — variable
+
+Vertex coordinates as a flat list of x, y, z repeats.
+
+- **Type:** `list`
+
+### `indices` — variable
+
+Vertex indices. An empty list consumes the vertices in order.
+
+- **Type:** `list`
+
+### `normals` — variable
+
+Per-face normals as a flat list. Empty means derived from the vertices while drawing.
+
+- **Type:** `list`
+
+### `uvs` — variable
+
+Per-vertex UVs as a flat list of u, v repeats.
+
+- **Type:** `list`
+
+### `cull` — variable
+
+Face culling mode: CULL_NONE, CULL_BACK, or CULL_FRONT.
+
+- **Type:** `int`
+
+### `compute_normals()` — function
+
+Compute flat per-face normals from positions and indices and store them in normals. Only meaningful for MODE_TRIANGLES.
+
+## Mesh
+
+### `Mesh(primitives=[], transforms=[], parents=[], names=None, col_img=7, colkey=None)` — class
+
+A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.
+
+**Parameters:**
+
+- `primitives` (*list[Primitive | None]*) — Primitive per part, or None for a transform-only group part. Defaults to empty.
+- `transforms` (*list[Mat4]*) — Local transform of each part relative to its parent. Defaults to empty.
+- `parents` (*list[int]*) — Parent index of each part. -1 is a root. Defaults to empty.
+- `names` (*list[str] | None*) — Node name per part. Defaults to empty strings.
+- `col_img` (*int | Image*) — Default flat color number, or texture Image. Defaults to 7.
+- `colkey` (*int | None*) — Transparent color when col_img is an Image. Defaults to None.
+
+**Example:**
+
+```python
+from pyxel.cube import Mat4, Mesh, Node, Primitive
+
+prim = Primitive.box()
+mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)
+node = Node.from_mesh(mesh)
+```
+
+**Note:** Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared. Imported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image; col_img exposes the first imported texture, not all material slots.
+
+### `primitives` — variable
+
+Primitive per part. None means a transform-only group part.
+
+- **Type:** `list`
+
+### `transforms` — variable
+
+Local transform of each part relative to its parent.
+
+- **Type:** `list`
+
+### `parents` — variable
+
+Parent index of each part. -1 is a root; parents[i] < i is required.
+
+- **Type:** `list`
+
+### `names` — variable
+
+Node name per part.
+
+- **Type:** `list`
+
+### `motions` — variable
+
+Transform animation clips imported with the mesh.
+
+- **Type:** `list[Motion]`
+
+### `col_img` — variable
+
+Default flat color number, or texture Image.
+
+- **Type:** `int | Image`
+
+### `colkey` — variable
+
+Transparent color when col_img is an Image.
+
+- **Type:** `int | None`
+
+### `Mesh.from_glb(filename, *, colkey=None, fps=30.0)` — class
+
+Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube profile supports embedded buffers/images, base-color materials/textures, and transform animations.
+
+**Parameters:**
+
+- `filename` (*str*) — Path to the .glb file.
+- `colkey` (*int | None*) — Transparent palette color for the imported texture. Defaults to None.
+- `fps` (*float*) — Frames per second used to convert glTF animation times into Pyxel frames. Defaults to 30.0.
+
+**Returns:** `Mesh`
+
+**Example:**
+
+```python
+mesh = Mesh.from_glb("actor.glb", colkey=0)
+actor = Node.from_mesh(mesh)
+```
+
+**Note:** This targets Blockbench's GLTF Model export with Binary (.glb), embedded textures, and armature off; it is not a general glTF loader. Supported vertex attributes are POSITION, NORMAL, and TEXCOORD_0, and LINEAR, STEP, and CUBICSPLINE transform animation channels are supported. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted or collides with opaque pixels, an unused current palette color is selected when possible. Unsupported display features such as non-base-color material textures, alpha blending, skins, morph targets, material animation, matrix transforms, missing materials, and other vertex attributes print console warnings and fall back to the closest displayable base mesh or material. External files, invalid buffers, missing POSITION, missing TEXCOORD_0 for textured primitives, invalid indices, non-triangle primitive modes, morph-target weight animations, and malformed triangle data still raise errors.
+
+### `descendants(i)` — function *(Advanced)*
+
+Return the indices of every part under part i.
+
+**Parameters:**
+
+- `i` (*int*) — The root part index.
+
+**Returns:** `list`
+
+## Motion
+
+### `Motion` — class
+
+An imported transform animation clip owned by a Mesh. Use Node.apply_motion() for one-shot sampling or Node.play_motion() for per-update playback.
+
+**Example:**
+
+```python
+motion = mesh.motions[0]
+actor.apply_motion(motion, frame=0)
+actor.play_motion(motion)
+```
+
+### `name` — variable
+
+Animation name from the GLB file.
+
+- **Type:** `str`
+
+### `length` — variable
+
+Clip length in Pyxel frames.
+
+- **Type:** `float`
+
+## Collider
+
+### `Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO, gravity=9.8, gravity_direction=Vec3.DOWN, linear_damp=0.1, angular_damp=0.1)` — class
+
+Collision shape, physical coefficients, and motion state for a Node. It represents a sphere, capsule, or rounded box derived from size and radius, or static triangle terrain when mesh is set. Analytic shapes require a rigid effective world transform (translation and rotation only); terrain accepts a fixed invertible affine transform.
+
+**Parameters:**
+
+- `size` (*Vec3*) — Core dimensions: Vec3.ZERO selects a sphere, (0, h, 0) a capsule, and other sizes a rounded box. Defaults to Vec3.ZERO.
+- `radius` (*float*) — Sphere or capsule radius, and the corner rounding of a box. Negative values are treated as 0. Defaults to 0.0.
+- `mesh` (*Mesh | None*) — Static terrain mesh. When set, collision physics ignores size, radius, mass, rolls, velocity, and angular_velocity for this collider. Defaults to None.
+- `trigger` (*bool*) — When True, reports contacts without any push-back. Defaults to False.
+- `rolls` (*bool*) — When True, contacts also produce delta_angular_velocity. Defaults to False.
+- `mass` (*float*) — Mass used for contact resolution. It must be finite and greater than or equal to 0. Defaults to 1.0.
+- `restitution` (*float*) — Bounciness. The larger of the two contacting values is used. Defaults to 0.0.
+- `friction` (*float*) — Friction. The average of the two contacting values is used. Defaults to 0.5.
+- `velocity` (*Vec3*) — World-space displacement applied to a non-mesh collider every update. Defaults to Vec3.ZERO.
+- `angular_velocity` (*Vec3*) — Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. Defaults to Vec3.ZERO.
+- `gravity` (*float*) — Gravity strength in m/s². Defaults to 9.8; 0 disables gravity.
+- `gravity_direction` (*Vec3*) — World-space gravity direction. Defaults to Vec3.DOWN.
+- `linear_damp` (*float*) — Linear damping per second. Defaults to 0.1.
+- `angular_damp` (*float*) — Angular damping per second. Defaults to 0.1.
+
+**Example:**
+
+```python
+from pyxel.cube import Collider, Vec3
+
+node.collider = Collider(radius=0.5)
+floor.collider = Collider(size=Vec3(20, 0.5, 20), mass=0.0)
+```
+
+### `size` — variable
+
+Core dimensions and shape selector. Component signs are ignored; for shape classification, components with an absolute value less than 1e-9 are treated as zero. An all-zero size produces a sphere of radius max(radius, 0). A size of (0, h, 0) produces a capsule whose central axis segment has length abs(h) and whose total height is abs(h) + 2 * max(radius, 0). Any other size produces a rounded box with core dimensions abs(size) and overall dimensions abs(size) + 2 * max(radius, 0), component-wise.
+
+- **Type:** `Vec3`
+
+### `radius` — variable
+
+Sphere or capsule radius, and the corner rounding of a box. Negative values are treated as 0.
+
+- **Type:** `float`
+
+### `mesh` — variable
+
+Static terrain mesh. When set, collision physics ignores size, radius, mass, rolls, velocity, and angular_velocity for this collider.
+
+- **Type:** `Mesh | None`
+
+### `trigger` — variable
+
+When True, reports contacts without any push-back.
+
+- **Type:** `bool`
+
+### `rolls` — variable
+
+When True, contacts also produce delta_angular_velocity.
+
+- **Type:** `bool`
+
+### `mass` — variable
+
+Mass used for contact resolution. It must be finite and greater than or equal to 0. For a non-mesh collider, 0.0 makes this side receive no contact correction; the mass value itself does not disable velocity or angular_velocity. Mesh colliders ignore this value.
+
+- **Type:** `float`
+
+### `restitution` — variable
+
+Bounciness. The larger of the two contacting values is used.
+
+- **Type:** `float`
+
+### `friction` — variable
+
+Friction. The average of the two contacting values is used.
+
+- **Type:** `float`
+
+### `velocity` — variable
+
+World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. The same rule applies if the inverse or converted local displacement cannot be represented by finite 32-bit floats.
+
+- **Type:** `Vec3`
+
+### `angular_velocity` — variable
+
+Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular.
+
+- **Type:** `Vec3`
+
+### `gravity` — variable
+
+Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.
+
+- **Type:** `float`
+
+### `gravity_direction` — variable
+
+World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.
+
+- **Type:** `Vec3`
+
+### `linear_damp` — variable *(Advanced)*
+
+Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
+
+- **Type:** `float`
+
+### `angular_damp` — variable *(Advanced)*
+
+Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.
+
+- **Type:** `float`
+
+## Contact
+
+### `Contact` — class
+
+Collision payload passed to Node.on_collide(). It is engine-built and not user-constructible, and carries the contact geometry and engine-resolved motion corrections for the receiving side.
+
+**Example:**
+
+```python
+def on_collide(self, other, contact):
+    offset = contact.normal * contact.depth
+    if self.parent is not None:
+        offset = offset.to_local_dir(self.parent.world_transform)
+
+    push = Mat4.from_translation(offset)
+    self.transform = push * self.transform
+    self.collider.velocity += contact.delta_velocity
+```
+
+### `point` — variable
+
+The contact point in world space.
+
+- **Type:** `Vec3`
+
+### `normal` — variable
+
+The contact normal in world space, pointing from the other node toward this node.
+
+- **Type:** `Vec3`
+
+### `depth` — variable
+
+Suggested push-out distance along normal, already split by the mass ratio. Other solid contacts in the same update are considered together; apply every reported correction when resolving contacts.
+
+- **Type:** `float`
+
+### `delta_velocity` — variable
+
+Suggested additive velocity correction for the receiving node, in world coordinates.
+
+- **Type:** `Vec3`
+
+### `delta_angular_velocity` — variable
+
+Suggested additive angular velocity correction in the receiving node's local coordinates. Non-zero only when that node's collider has rolls=True.
+
+- **Type:** `Vec3`
+
+## RaycastHit
+
+### `RaycastHit` — class
+
+Hit information returned by Node.raycast() and Node.raycast_all(). It is engine-built and not user-constructible.
+
+**Example:**
+
+```python
+hit = scene.raycast(origin, Vec3.DOWN, max_distance=10.0)
+if hit is not None:
+    ground_y = hit.point.y
+```
+
+### `node` — variable
+
+The node that was hit.
+
+- **Type:** `Node`
+
+### `point` — variable
+
+The hit position in world space.
+
+- **Type:** `Vec3`
+
+### `normal` — variable
+
+World-space surface normal. Points toward the ray origin for meshes, outward for other shapes.
+
+- **Type:** `Vec3`
+
+### `distance` — variable
+
+The distance from the ray origin to the hit.
+
+- **Type:** `float`

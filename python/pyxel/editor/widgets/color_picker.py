@@ -13,11 +13,6 @@ class ColorPicker(Widget):
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)
         self._with_shadow = with_shadow
-        self._color_width = 4 if pyxel.num_user_colors > 16 else 8
-        self._color_height = 4 if pyxel.num_user_colors > 32 else 8
-        self._num_cols = 64 // self._color_width
-        self._num_rows = 16 // self._color_height
-
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
@@ -27,6 +22,22 @@ class ColorPicker(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     # Helpers
+
+    @property
+    def _color_width(self):
+        return 4 if pyxel.num_user_colors > 16 else 8
+
+    @property
+    def _color_height(self):
+        return 4 if pyxel.num_user_colors > 32 else 8
+
+    @property
+    def _num_cols(self):
+        return 64 // self._color_width
+
+    @property
+    def _num_rows(self):
+        return 16 // self._color_height
 
     def check_value(self, x, y):
         x -= self.x + 1
@@ -63,6 +74,7 @@ class ColorPicker(Widget):
         cw = self._color_width
         ch = self._color_height
         pyxel.user_pal()
+
         for yi in range(self._num_rows):
             for xi in range(self._num_cols):
                 col = yi * self._num_cols + xi
@@ -74,6 +86,7 @@ class ColorPicker(Widget):
                         ch - 1,
                         col,
                     )
+
         pyxel.pal()
 
     def _draw_cursor(self):
@@ -85,6 +98,7 @@ class ColorPicker(Widget):
         ch = self._color_height
         x = self.x + cw * (col % self._num_cols) + cw // 2
         y = self.y + ch * (col // self._num_cols) + ch // 2
+
         rgb = pyxel.colors[pyxel.NUM_COLORS + col]
         # ITU-R BT.601 luma
         brightness = int(
@@ -92,6 +106,7 @@ class ColorPicker(Widget):
             + ((rgb >> 8) & 0xFF) * 0.587
             + (rgb & 0xFF) * 0.114
         )
+
         # Cursor scales with cell size:
         #   cell 8x8 -> 3x3 cross, cell 4x8 -> 1x3 vertical, cell 4x4 -> 1x1 dot
         cursor_w = cw // 2 - 1

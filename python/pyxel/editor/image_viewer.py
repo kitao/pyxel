@@ -40,19 +40,16 @@ class ImageViewer(Widget):
         self._press_y = 0
         self._drag_offset_x = 0
         self._drag_offset_y = 0
+
         self.copy_var("image_index_var", parent)
         self.copy_var("help_message_var", parent)
-
         self.new_var("focus_x_var", 0)
         self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
-
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
-
         self.new_var("focus_w_var", 1 if self._is_tilemap_mode else 2)
-
         self.new_var("focus_h_var", 1 if self._is_tilemap_mode else 2)
 
         self._h_scroll_bar = ScrollBar(
@@ -77,7 +74,6 @@ class ImageViewer(Widget):
         )
         self.copy_var("viewport_y_var", self._v_scroll_bar, "value_var")
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
@@ -131,13 +127,18 @@ class ImageViewer(Widget):
                 new_x, new_y = self._screen_to_focus(x, y)
                 self.focus_w_var = min(abs(new_x - self._press_x) + 1, 8)
                 self.focus_h_var = min(abs(new_y - self._press_y) + 1, 8)
-                self.focus_x_var = min(new_x, self._press_x)
-                self.focus_y_var = min(new_y, self._press_y)
+                self.focus_x_var = max(
+                    min(new_x, self._press_x), self._press_x - self.focus_w_var + 1
+                )
+                self.focus_y_var = max(
+                    min(new_y, self._press_y), self._press_y - self.focus_h_var + 1
+                )
             else:
                 self.__on_mouse_down(key, x, y)
         elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
+
             if abs(self._drag_offset_x) >= _GRID_SIZE:
                 offset = self._drag_offset_x // _GRID_SIZE
                 self.viewport_x_var += offset

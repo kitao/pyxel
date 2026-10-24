@@ -3,38 +3,6 @@ use pyo3::prelude::*;
 
 use crate::utils::MutexFieldMut;
 
-fn notes_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundNote>> {
-    MutexFieldMut::new(
-        audio_mut!(inner),
-        |sound| &sound.notes,
-        |sound| &mut sound.notes,
-    )
-}
-
-fn tones_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundTone>> {
-    MutexFieldMut::new(
-        audio_mut!(inner),
-        |sound| &sound.tones,
-        |sound| &mut sound.tones,
-    )
-}
-
-fn volumes_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundVolume>> {
-    MutexFieldMut::new(
-        audio_mut!(inner),
-        |sound| &sound.volumes,
-        |sound| &mut sound.volumes,
-    )
-}
-
-fn effects_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundEffect>> {
-    MutexFieldMut::new(
-        audio_mut!(inner),
-        |sound| &sound.effects,
-        |sound| &mut sound.effects,
-    )
-}
-
 // Python sequence wrappers for mutable sound component lists
 
 macro_rules! wrap_sound_as_python_list {
@@ -64,14 +32,12 @@ define_audio_wrapper!(Sound, pyxel::Sound, pyxel::RcSound);
 
 #[pymethods]
 impl Sound {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Sound::new())
     }
 
-    // Sequence properties
+    // Properties
 
     #[getter]
     fn notes(&self) -> Notes {
@@ -115,10 +81,15 @@ impl Sound {
         effects: &str,
         speed: pyxel::SoundSpeed,
     ) -> PyResult<()> {
-        pyxel::Sound::validate_speed(speed).map_err(PyValueError::new_err)?;
         self.inner_mut()
             .set(notes, tones, volumes, effects, speed)
-            .map_err(PyException::new_err)
+            .map_err(|message| {
+                if speed == 0 {
+                    PyValueError::new_err(message)
+                } else {
+                    PyException::new_err(message)
+                }
+            })
     }
 
     fn set_notes(&self, notes: &str) -> PyResult<()> {
@@ -153,32 +124,7 @@ impl Sound {
             self.inner_mut().clear_mml();
             return Ok(());
         };
-
-        // Detect old MML syntax by the presence of 'x'/'X' or '~'.
-        if code.contains('x') || code.contains('X') || code.contains('~') {
-            deprecation_warning!(
-                OLD_MML_ONCE,
-                "Old MML syntax is deprecated. Use new syntax instead."
-            );
-            return self.inner_mut().old_mml(code).map_err(PyException::new_err);
-        }
-
         self.inner_mut().set_mml(code).map_err(PyException::new_err)
-    }
-
-    #[pyo3(signature = (code=None))]
-    fn old_mml(&self, code: Option<&str>) -> PyResult<()> {
-        deprecation_warning!(
-            OLD_MML_FUNC_ONCE,
-            "Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead."
-        );
-
-        let Some(code) = code else {
-            self.inner_mut().clear_mml();
-            return Ok(());
-        };
-
-        self.inner_mut().old_mml(code).map_err(PyException::new_err)
     }
 
     // PCM file operations
@@ -189,7 +135,6 @@ impl Sound {
             self.inner_mut().clear_pcm();
             return Ok(());
         };
-
         self.inner_mut()
             .load_pcm(filename)
             .map_err(PyException::new_err)
@@ -203,14 +148,42 @@ impl Sound {
             .map_err(PyException::new_err)
     }
 
-    // Playback duration
-
     fn total_sec(&self) -> Option<f32> {
         self.inner_ref().total_seconds()
     }
 }
 
-// Module registration
+fn notes_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundNote>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.notes,
+        |sound| &mut sound.notes,
+    )
+}
+
+fn tones_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundTone>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.tones,
+        |sound| &mut sound.tones,
+    )
+}
+
+fn volumes_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundVolume>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.volumes,
+        |sound| &mut sound.volumes,
+    )
+}
+
+fn effects_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundEffect>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.effects,
+        |sound| &mut sound.effects,
+    )
+}
 
 pub fn add_sound_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Notes>()?;

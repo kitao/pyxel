@@ -36,6 +36,7 @@ pub struct Pyxel {
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 // Singleton
+
 thread_local! {
     static PYXEL: &'static RefCell<Option<Pyxel>> =
         Box::leak(Box::new(RefCell::new(None)));
@@ -50,10 +51,32 @@ pub fn pyxel() -> RefMut<'static, Pyxel> {
     })
 }
 
+pub fn frame_seconds() -> f32 {
+    // Scene updates also work before a window or headless engine is initialized.
+    PYXEL.with(|instance| {
+        instance
+            .borrow()
+            .as_ref()
+            .map_or(1.0 / DEFAULT_FPS as f32, Pyxel::frame_seconds)
+    })
+}
+
 fn set_pyxel(instance: Pyxel) {
     // The leaked RefCell keeps the owner address stable through Python module
     // cleanup; replace its value only when the next initialization is ready.
     PYXEL.with(|current| *current.borrow_mut() = Some(instance));
+}
+
+fn release_graphics() {
+    let graphics = PYXEL.with(|current| {
+        current
+            .borrow_mut()
+            .as_mut()
+            .and_then(|instance| instance.graphics.take())
+    });
+    if let Some(graphics) = graphics {
+        platform::with_gl_context(|gl| graphics.destroy(gl));
+    }
 }
 
 // Lifecycle callbacks
@@ -85,6 +108,7 @@ pub fn quit_callback() -> RefMut<'static, Option<Box<dyn FnMut() + Send>>> {
 }
 
 // Macros for global variables
+
 macro_rules! define_static {
     ($func:ident, $static:ident, $type:ty, $default:expr) => {
         thread_local! {
@@ -137,6 +161,7 @@ impl<T> DerefMut for AudioGlobalGuard<T> {
     }
 }
 
+// Audio banks are shared with SDL's callback thread.
 macro_rules! define_audio_global {
     ($func:ident, $static:ident, $type:ty, $init:expr) => {
         static $static: Mutex<Option<$type>> = Mutex::new(None);
@@ -195,22 +220,18 @@ pub fn init(
         "Pyxel already initialized"
     );
 
+    release_graphics();
+
     let headless = headless.unwrap_or(false);
     *is_headless() = headless;
-
-    // Set dimensions
     *width() = w;
     *height() = h;
     *frame_count() = 0;
-
-    // Default parameters
     let title = title.unwrap_or(DEFAULT_TITLE);
     let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
     let fps = fps.unwrap_or(DEFAULT_FPS);
 
-    // Platform
     platform::init(headless);
-
     if !headless {
         let (display_width, display_height) = platform::display_size();
         let display_scale = display_scale
@@ -223,11 +244,9 @@ pub fn init(
             .max(1);
         let window_width = w * display_scale;
         let window_height = h * display_scale;
-
         platform::init_window(title, window_width, window_height);
     }
 
-    // Resize screen
     rc_mut!(screen()).canvas = Canvas::new(w, h);
     rc_mut!(screen()).palette = array::from_fn(|i| i as Color);
 
@@ -239,7 +258,6 @@ pub fn init(
     input_text().clear();
     dropped_files().clear();
 
-    // Build Pyxel instance
     let system = System::new(fps, quit_key, headless);
     let resource = Resource::new(capture_scale, capture_sec, fps);
     let input = Input::new();
@@ -248,7 +266,6 @@ pub fn init(
     } else {
         Some(Graphics::new())
     };
-
     set_pyxel(Pyxel {
         system,
         resource,
@@ -277,6 +294,7 @@ pub fn validate_init_params(
     if fps.unwrap_or(DEFAULT_FPS) == 0 {
         return Err("fps must be greater than 0".to_string());
     }
+
     if !headless.unwrap_or(false) {
         validate_platform_screen_dimensions(w, h)?;
         let max_window_size = i32::MAX as u32;
@@ -293,6 +311,7 @@ pub fn validate_init_params(
             }
         }
     }
+
     validate_screen_area(w, h)?;
     Ok(())
 }
@@ -322,13 +341,19 @@ fn validate_platform_screen_dimensions(w: u32, h: u32) -> Result<(), String> {
 
 fn validate_screen_area(w: u32, h: u32) -> Result<(), String> {
     if w.checked_mul(h).is_none() {
-        return Err("screen dimensions are too large".to_string());
+        return Err("width and height are too large".to_string());
     }
     Ok(())
 }
 
 #[cfg(target_os = "emscripten")]
 pub fn reset_statics() {
+    platform::stop_main_loop();
+
+    // Keep the engine owner available during Python module cleanup, but free
+    // its GPU resources while the old platform context is still current.
+    release_graphics();
+
     IS_INITIALIZED.store(false, Ordering::Relaxed);
 
     // Reset scalar statics
@@ -371,7 +396,7 @@ pub fn reset_statics() {
     *quit_callback() = None;
 }
 
-// Init functions for define_global!
+// Init functions for the global definitions
 
 fn init_images() -> Vec<RcImage> {
     (0..NUM_IMAGES)
@@ -414,6 +439,7 @@ fn init_font_image() -> RcImage {
         palette_is_identity: true,
     });
     let mut image = rc_mut!(rc);
+
     // Each u32 packs one 4x6 glyph MSB-first in its low 24 bits (bit 23 = top-left)
     for (i, data) in FONT_DATA.iter().enumerate() {
         let row = i as u32 / NUM_FONT_COLS;
@@ -429,6 +455,7 @@ fn init_font_image() -> RcImage {
             }
         }
     }
+
     drop(image);
     rc
 }
@@ -479,7 +506,6 @@ mod tests {
     #[test]
     fn scalar_state_is_isolated_between_threads() {
         *width() = 123;
-
         std::thread::spawn(|| {
             *width() = 999;
             assert_eq!(*width(), 999);
@@ -504,6 +530,7 @@ mod tests {
                 std::sync::Arc::as_ptr(&musics[0]) as usize,
             )
         };
+
         let callback_resources = std::thread::spawn(|| {
             let channels = channels();
             let tones = tones();

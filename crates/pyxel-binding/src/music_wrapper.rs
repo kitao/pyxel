@@ -1,7 +1,7 @@
 use std::ops::{Deref, DerefMut};
 use std::sync::MutexGuard;
 
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyIndexError};
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PySlice, PyTuple};
 
@@ -32,13 +32,6 @@ impl DerefMut for MusicSeqMut<'_> {
     }
 }
 
-fn seq_mut(inner: &SeqRef) -> MusicSeqMut<'_> {
-    MusicSeqMut {
-        music: audio_mut!(inner.inner),
-        index: inner.index,
-    }
-}
-
 wrap_as_python_primitive_sequence!(
     Seq,
     SeqRef,
@@ -50,10 +43,17 @@ wrap_as_python_primitive_sequence!(
     seq_mut,
     Vec<u32>,
     (|inner: &SeqRef, list| audio_mut!(inner.inner).seqs[inner.index] = list),
-    (|inner: &SeqRef| audio_ref!(inner.inner).seqs[inner.index].clone())
+    (|inner: &SeqRef| audio_ref!(inner.inner).seqs[inner.index].clone()),
+    validate = (|inner: &SeqRef| {
+        audio_ref!(inner.inner)
+            .seqs
+            .get(inner.index)
+            .map(|_| ())
+            .ok_or_else(|| PyIndexError::new_err("list index out of range"))
+    })
 );
 
-// Seqs is hand-written because it returns Seq wrapper objects (asymmetric get/set types)
+// Indexing returns live Seq views; pop returns a detached list.
 #[pyclass(sequence, unsendable, skip_from_py_object)]
 #[derive(Clone)]
 pub struct Seqs {
@@ -91,7 +91,8 @@ impl Seqs {
 
     fn __getitem__<'py>(&self, py: Python<'py>, key: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(slice) = key.cast::<PySlice>() {
-            let indices = slice.indices(self.__len__() as isize)?;
+            let bounds = crate::utils::SliceBounds::new(slice)?;
+            let indices = bounds.indices(self.__len__());
             let items =
                 crate::utils::slice_indices(indices.start, indices.step, indices.slicelength)
                     .map(|i| self.wrap_seq(i));
@@ -99,7 +100,7 @@ impl Seqs {
             Ok(list.into_any().unbind())
         } else {
             let idx: isize = key.extract()?;
-            let i = resolve_index!(idx, self.__len__())?;
+            let i = resolve_index!(idx, self.__len__(), "list index out of range")?;
             Ok(self.wrap_seq(i).into_pyobject(py)?.into_any().unbind())
         }
     }
@@ -115,8 +116,9 @@ impl Seqs {
     }
 
     fn __repr__(&self, py: Python) -> PyResult<String> {
-        let music = self.inner_ref();
-        let list = PyList::new(py, music.seqs.iter().cloned())?;
+        // Python allocation can run GC callbacks that access this music.
+        let seqs = self.inner_ref().seqs.clone();
+        let list = PyList::new(py, seqs)?;
         Ok(format!(
             "{}{}",
             stringify!(Seqs),
@@ -135,9 +137,11 @@ impl Seqs {
         value: &Bound<'py, PyAny>,
     ) -> PyResult<()> {
         if let Ok(slice) = key.cast::<PySlice>() {
-            let mut music = self.inner_mut();
-            let indices = slice.indices(music.seqs.len() as isize)?;
+            let bounds = crate::utils::SliceBounds::new(slice)?;
             let new_values: Vec<Vec<u32>> = value.extract()?;
+            let mut music = self.inner_mut();
+            let indices = bounds.indices(music.seqs.len());
+
             if indices.step == 1 {
                 let start = indices.start as usize;
                 let end = indices.stop.max(indices.start) as usize;
@@ -150,6 +154,7 @@ impl Seqs {
                         indices.slicelength
                     )));
                 }
+
                 let positions =
                     crate::utils::slice_indices(indices.start, indices.step, indices.slicelength);
                 for (pos, val) in positions.zip(new_values) {
@@ -159,30 +164,31 @@ impl Seqs {
             Ok(())
         } else {
             let idx: isize = key.extract()?;
+            let new_value: Vec<u32> = value.extract()?;
             let mut music = self.inner_mut();
-            let i = resolve_index!(idx, music.seqs.len())?;
-            music.seqs[i] = value.extract()?;
+            let i = resolve_index!(idx, music.seqs.len(), "list assignment index out of range")?;
+            music.seqs[i] = new_value;
             Ok(())
         }
     }
 
     fn __delitem__<'py>(&self, _py: Python<'py>, key: &Bound<'py, PyAny>) -> PyResult<()> {
         if let Ok(slice) = key.cast::<PySlice>() {
+            let bounds = crate::utils::SliceBounds::new(slice)?;
             let mut music = self.inner_mut();
-            let indices = slice.indices(music.seqs.len() as isize)?;
-            let mut idx_list: Vec<usize> =
+            let indices = bounds.indices(music.seqs.len());
+            let positions =
                 crate::utils::slice_indices(indices.start, indices.step, indices.slicelength)
-                    .collect();
-            // Remove from end to preserve earlier indices
-            idx_list.sort_unstable_by(|a, b| b.cmp(a));
-            for i in idx_list {
+                    .descending();
+
+            for i in positions {
                 music.seqs.remove(i);
             }
             Ok(())
         } else {
             let idx: isize = key.extract()?;
             let mut music = self.inner_mut();
-            let i = resolve_index!(idx, music.seqs.len())?;
+            let i = resolve_index!(idx, music.seqs.len(), "list assignment index out of range")?;
             music.seqs.remove(i);
             Ok(())
         }
@@ -224,8 +230,10 @@ impl Seqs {
                 "pop from empty list",
             ));
         }
-        let i = resolve_index!(index.unwrap_or(-1), len)?;
+
+        let i = resolve_index!(index.unwrap_or(-1), len, "pop index out of range")?;
         let removed = music.seqs.remove(i);
+        drop(music);
         Ok(PyList::new(py, &removed)?.unbind().into_any())
     }
 
@@ -238,15 +246,15 @@ impl Seqs {
     fn from_list(&self, list: Vec<Vec<u32>>) {
         deprecation_warning!(
             FROM_LIST_ONCE,
-            "Seqs.from_list() is deprecated. Use slice assignment instead."
+            "Seqs.from_list() is deprecated. Use Music.set(*seqs) instead."
         );
-        self.inner_mut().set(&list);
+        self.inner_mut().set(list);
     }
 
     fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
         deprecation_warning!(
             TO_LIST_ONCE,
-            "Seqs.to_list() is deprecated. Use list(seq) instead."
+            "Seqs.to_list() is deprecated. Use [list(seq) for seq in seqs] instead."
         );
         let seqs: Vec<Vec<u32>> = self.inner_ref().seqs.clone();
         let list = PyList::new(py, seqs)?;
@@ -258,21 +266,15 @@ define_audio_wrapper!(Music, pyxel::Music, pyxel::RcMusic);
 
 #[pymethods]
 impl Music {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Music::new())
     }
 
-    // Properties
-
     #[getter]
     fn seqs(&self) -> Seqs {
         Seqs::wrap(self.inner.clone())
     }
-
-    // Data operations
 
     #[pyo3(signature = (*seqs))]
     fn set(&self, seqs: &Bound<'_, PyTuple>) -> PyResult<()> {
@@ -280,11 +282,9 @@ impl Music {
             .iter()
             .map(|item| item.extract())
             .collect::<PyResult<_>>()?;
-        self.inner_mut().set(&rust_seqs);
+        self.inner_mut().set(rust_seqs);
         Ok(())
     }
-
-    // File operations
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
     fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
@@ -293,8 +293,6 @@ impl Music {
             .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }
-
-    // Deprecated property
 
     #[getter]
     fn snds_list(&self) -> Seqs {
@@ -306,7 +304,12 @@ impl Music {
     }
 }
 
-// Module registration
+fn seq_mut(inner: &SeqRef) -> MusicSeqMut<'_> {
+    MusicSeqMut {
+        music: audio_mut!(inner.inner),
+        index: inner.index,
+    }
+}
 
 pub fn add_music_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Seqs>()?;
