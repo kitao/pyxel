@@ -660,13 +660,16 @@ impl Image {
         let tilemap_x = utils::f32_to_i32(tilemap_x);
         let tilemap_y = utils::f32_to_i32(tilemap_y);
         let tilemap = rc_ref!(tilemap);
-        let source_area = RectArea::new(0, 0, proj.width, proj.height).intersection(RectArea::new(
-            tilemap_x.saturating_neg(),
-            tilemap_y.saturating_neg(),
-            tilemap.width().saturating_mul(TILE_SIZE),
-            tilemap.height().saturating_mul(TILE_SIZE),
-        ));
-        if source_area.is_empty() {
+        // Keep translated source extents wide, including the negation of i32::MIN.
+        let source_left = (-i64::from(tilemap_x)).max(0);
+        let source_top = (-i64::from(tilemap_y)).max(0);
+        let source_right = (i64::from(tilemap.width()) * i64::from(TILE_SIZE)
+            - i64::from(tilemap_x))
+        .min(i64::from(proj.width));
+        let source_bottom = (i64::from(tilemap.height()) * i64::from(TILE_SIZE)
+            - i64::from(tilemap_y))
+        .min(i64::from(proj.height));
+        if source_left >= source_right || source_top >= source_bottom {
             return;
         }
 
@@ -688,19 +691,23 @@ impl Image {
 
         // Sample tile and image data directly for each transformed destination pixel.
         let sample = |vx: i32, vy: i32| -> Option<Color> {
-            if !source_area.contains(vx, vy) {
+            let vx = i64::from(vx);
+            let vy = i64::from(vy);
+            if !(source_left..source_right).contains(&vx)
+                || !(source_top..source_bottom).contains(&vy)
+            {
                 return None;
             }
 
-            let source_x = tilemap_x + vx;
-            let source_y = tilemap_y + vy;
+            let source_x = i64::from(tilemap_x) + vx;
+            let source_y = i64::from(tilemap_y) + vy;
             let tile = tilemap.canvas.read_data(
                 (source_x >> TILE_SHIFT) as usize,
                 (source_y >> TILE_SHIFT) as usize,
             );
 
-            let image_x = tile.0 as i32 * tile_size + (source_x & TILE_MASK);
-            let image_y = tile.1 as i32 * tile_size + (source_y & TILE_MASK);
+            let image_x = tile.0 as i32 * tile_size + (source_x & i64::from(TILE_MASK)) as i32;
+            let image_y = tile.1 as i32 * tile_size + (source_y & i64::from(TILE_MASK)) as i32;
             if image_x < 0 || image_x >= image_width || image_y < 0 || image_y >= image_height {
                 return None;
             }
@@ -967,4 +974,75 @@ pub(crate) fn color_to_rgb24(colors: &[Rgb24], color: Color) -> Rgb24 {
 
 pub fn rgb24_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
     ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tilemap::{ImageSource, Tilemap};
+
+    #[test]
+    fn test_transformed_tilemap_clips_minimum_source_coordinates() {
+        let source = Image::new(8, 8);
+        rc_mut!(source).clear(3);
+        let tilemap = Tilemap::new(1, 1, ImageSource::Image(source));
+
+        for (x, y, u, v, w, h) in [
+            (
+                -536_870_912.0,
+                0.0,
+                -2_147_483_648.0,
+                0.0,
+                -2_147_483_648.0,
+                1.0,
+            ),
+            (
+                0.0,
+                -536_870_912.0,
+                0.0,
+                -2_147_483_648.0,
+                1.0,
+                -2_147_483_648.0,
+            ),
+        ] {
+            let destination = Image::new(8, 8);
+            let mut destination = rc_mut!(destination);
+            destination.clear(7);
+            destination.draw_tilemap(x, y, &tilemap, u, v, w, h, None, None, Some(0.5));
+
+            // The source window ends at zero exclusively, before the first tile.
+            assert_eq!(destination.canvas.data, vec![7; 64]);
+        }
+    }
+
+    #[test]
+    fn test_transformed_tilemap_preserves_ordinary_source_clipping() {
+        let source = Image::new(8, 8);
+        rc_mut!(source).clear(3);
+        let tilemap = Tilemap::new(1, 1, ImageSource::Image(source));
+        let destination = Image::new(8, 8);
+        let mut destination = rc_mut!(destination);
+        destination.clear(7);
+        destination.draw_tilemap(
+            0.0,
+            0.0,
+            &tilemap,
+            -2.0,
+            -2.0,
+            4.0,
+            4.0,
+            None,
+            None,
+            Some(2.0),
+        );
+
+        // Center-based rounding maps destination 2..=5 onto source pixels 0 and 1.
+        let mut expected = vec![7; 64];
+        for y in 2..=5 {
+            for x in 2..=5 {
+                expected[y * 8 + x] = 3;
+            }
+        }
+        assert_eq!(destination.canvas.data, expected);
+    }
 }

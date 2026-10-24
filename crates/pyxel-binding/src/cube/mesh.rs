@@ -106,8 +106,7 @@ impl Mesh {
             mesh.transforms = previous;
             return Err(PyValueError::new_err(error));
         }
-        *mesh.bvh.borrow_mut() = None;
-        *mesh.local_aabb.borrow_mut() = None;
+        mesh.reset_collision_geometry_tracking();
         Ok(())
     }
 
@@ -124,8 +123,7 @@ impl Mesh {
             mesh.parents = previous;
             return Err(PyValueError::new_err(error));
         }
-        *mesh.bvh.borrow_mut() = None;
-        *mesh.local_aabb.borrow_mut() = None;
+        mesh.reset_collision_geometry_tracking();
         Ok(())
     }
 

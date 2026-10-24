@@ -49,6 +49,7 @@ pub struct ScreenShader {
     program: glow::Program,
     uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS],
     vertex_array: glow::VertexArray,
+    vertex_buffer: glow::Buffer,
 }
 
 pub struct Graphics {
@@ -87,6 +88,22 @@ impl Graphics {
                 color_pixels: Vec::new(),
             }
         })
+    }
+
+    pub(crate) fn destroy(self, gl: &mut glow::Context) {
+        // The caller releases these handles before replacing their current context.
+        unsafe {
+            gl.use_program(None);
+            gl.bind_vertex_array(None);
+            gl.bind_buffer(glow::ARRAY_BUFFER, None);
+            for shader in self.screen_shaders {
+                gl.delete_vertex_array(shader.vertex_array);
+                gl.delete_buffer(shader.vertex_buffer);
+                gl.delete_program(shader.program);
+            }
+            gl.delete_texture(self.screen_texture);
+            gl.delete_texture(self.colors_texture);
+        }
     }
 
     pub(crate) fn invalidate_screen_texture(&mut self) {
@@ -171,6 +188,7 @@ impl Graphics {
                 program,
                 uniform_locations,
                 vertex_array,
+                vertex_buffer,
             });
         }
 
@@ -611,5 +629,118 @@ impl Pyxel {
         }
 
         graphics.cached_colors.clone_from(&colors);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::cell::RefCell;
+    use std::ffi::c_void;
+    use std::num::NonZeroU32;
+
+    use super::*;
+
+    thread_local! {
+        static GL_CALLS: RefCell<Vec<(&'static str, u32)>> = const { RefCell::new(Vec::new()) };
+    }
+
+    extern "system" fn get_string(name: u32) -> *const u8 {
+        if name == glow::VERSION {
+            c"2.1".as_ptr().cast()
+        } else {
+            c"".as_ptr().cast()
+        }
+    }
+
+    extern "system" fn use_program(value: u32) {
+        GL_CALLS.with(|calls| calls.borrow_mut().push(("use_program", value)));
+    }
+
+    extern "system" fn bind_vertex_array(value: u32) {
+        GL_CALLS.with(|calls| calls.borrow_mut().push(("bind_vertex_array", value)));
+    }
+
+    extern "system" fn bind_buffer(_target: u32, value: u32) {
+        GL_CALLS.with(|calls| calls.borrow_mut().push(("bind_buffer", value)));
+    }
+
+    extern "system" fn delete_program(value: u32) {
+        GL_CALLS.with(|calls| calls.borrow_mut().push(("program", value)));
+    }
+
+    fn record_deletions(kind: &'static str, count: i32, values: *const u32) {
+        // glow passes the address of each owned handle for the duration of its call.
+        let values = unsafe { std::slice::from_raw_parts(values, count as usize) };
+        GL_CALLS.with(|calls| calls.borrow_mut().extend(values.iter().map(|&v| (kind, v))));
+    }
+
+    extern "system" fn delete_vertex_arrays(count: i32, values: *const u32) {
+        record_deletions("vertex_array", count, values);
+    }
+
+    extern "system" fn delete_buffers(count: i32, values: *const u32) {
+        record_deletions("buffer", count, values);
+    }
+
+    extern "system" fn delete_textures(count: i32, values: *const u32) {
+        record_deletions("texture", count, values);
+    }
+
+    #[test]
+    fn test_destroy_releases_every_owned_gl_handle() {
+        // Real glow dispatch through recording GL entry points checks the owned
+        // handles without requiring a window; browser reset tests check its context.
+        let mut gl = unsafe {
+            glow::Context::from_loader_function(|name| match name {
+                "glGetString" => (get_string as *const ()).cast::<c_void>(),
+                "glUseProgram" => (use_program as *const ()).cast::<c_void>(),
+                "glBindVertexArray" => (bind_vertex_array as *const ()).cast::<c_void>(),
+                "glBindBuffer" => (bind_buffer as *const ()).cast::<c_void>(),
+                "glDeleteProgram" => (delete_program as *const ()).cast::<c_void>(),
+                "glDeleteVertexArrays" => (delete_vertex_arrays as *const ()).cast::<c_void>(),
+                "glDeleteBuffers" => (delete_buffers as *const ()).cast::<c_void>(),
+                "glDeleteTextures" => (delete_textures as *const ()).cast::<c_void>(),
+                _ => std::ptr::null(),
+            })
+        };
+        let graphics = Graphics {
+            is_gles: false,
+            screen_shaders: (1..=3)
+                .map(|id| ScreenShader {
+                    program: glow::NativeProgram(NonZeroU32::new(id).unwrap()),
+                    uniform_locations: [None; NUM_UNIFORMS],
+                    vertex_array: glow::NativeVertexArray(NonZeroU32::new(id + 10).unwrap()),
+                    vertex_buffer: glow::NativeBuffer(NonZeroU32::new(id + 20).unwrap()),
+                })
+                .collect(),
+            screen_texture: glow::NativeTexture(NonZeroU32::new(31).unwrap()),
+            screen_texture_initialized: false,
+            colors_texture: glow::NativeTexture(NonZeroU32::new(32).unwrap()),
+            cached_colors: Vec::new(),
+            color_pixels: Vec::new(),
+        };
+        GL_CALLS.with(|calls| calls.borrow_mut().clear());
+        graphics.destroy(&mut gl);
+        GL_CALLS.with(|calls| {
+            assert_eq!(
+                *calls.borrow(),
+                [
+                    ("use_program", 0),
+                    ("bind_vertex_array", 0),
+                    ("bind_buffer", 0),
+                    ("vertex_array", 11),
+                    ("buffer", 21),
+                    ("program", 1),
+                    ("vertex_array", 12),
+                    ("buffer", 22),
+                    ("program", 2),
+                    ("vertex_array", 13),
+                    ("buffer", 23),
+                    ("program", 3),
+                    ("texture", 31),
+                    ("texture", 32),
+                ]
+            );
+        });
     }
 }

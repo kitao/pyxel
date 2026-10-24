@@ -613,6 +613,36 @@ def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
     assert root.find_by_name("actor")[0].transform.pos == Vec3(18.0 / 30.0, 0.0, 0.0)
 
 
+@pytest.mark.parametrize("scale", [1.0, 1e20, 1e38])
+@pytest.mark.parametrize("looping", [False, True])
+@pytest.mark.parametrize("direction", [-1, 1])
+def test_play_motion_retains_finite_remainder_after_large_increment(
+    tmp_path, scale, looping, direction
+):
+    path = write_single_texture_motion_glb(
+        tmp_path / "actor.glb", animation_times=(0.0, 3.0 * scale)
+    )
+    mesh = Mesh.from_glb(str(path), fps=1.0)
+    root = Node.from_mesh(mesh)
+    actor = root.find_by_name("actor")[0]
+    root.play_motion(
+        mesh.motions[0],
+        loop=looping,
+        start_frame=1.75 * scale,
+        speed=direction * 2.0 * scale,
+    )
+    if direction > 0:
+        expected = (0.25, 11.0 / 12.0) if looping else (1.0, 1.0)
+    else:
+        expected = (11.0 / 12.0, 0.25) if looping else (0.0, 0.0)
+    for x in expected:
+        root.update()
+        # The imported times, playhead, and pose each round to f32.
+        assert actor.transform.pos.x == pytest.approx(x, abs=8e-7)
+        assert actor.transform.pos.y == 0.0
+        assert actor.transform.pos.z == 0.0
+
+
 @pytest.mark.parametrize(
     "start_frame,speed,expected_frame", [(31.0, -1.0, 30.0), (-1.0, 1.0, 0.0)]
 )

@@ -205,7 +205,7 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
     if metadata_comment:
         print(metadata_comment)
 
-    pyxel_app_path = Path(app_path.name + pyxel.APP_FILE_EXTENSION)
+    pyxel_app_path = Path(app_path.name + pyxel.APP_FILE_EXTENSION).absolute()
     temp_app_path = pyxel_app_path.with_name(
         f".{pyxel_app_path.name}.{uuid.uuid4().hex}.tmp"
     )
@@ -228,7 +228,8 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
                 file_path = Path(file)
                 relative_path = file_path.relative_to(app_path)
                 if (
-                    file_path.name == pyxel_app_path.name
+                    # Replacing an output symlink preserves the input it points to.
+                    file_path.parent.resolve() / file_path.name == pyxel_app_path
                     or "__pycache__" in relative_path.parts
                     or file.lower().endswith(_PACKAGE_SKIP_EXTENSIONS)
                 ):
@@ -530,4 +531,5 @@ def _make_metadata_comment(startup_script_file):
 
 
 def _js_string_literal(value):
-    return json.dumps(value, ensure_ascii=True)
+    # Inline script text is parsed as HTML before its JavaScript string literals.
+    return json.dumps(value, ensure_ascii=True).replace("<", "\\u003c")

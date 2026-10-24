@@ -903,6 +903,7 @@ fn import_animations(
                 let part_index = *node_parts.get(&node_index).ok_or_else(|| {
                     format!("GLB animation targets node {node_index} outside imported scene")
                 })?;
+                let mut tangent_fps = 1.0;
                 let (target, values) = match channel.target().property() {
                     gltf::animation::Property::Translation => {
                         let values = match reader.read_outputs() {
@@ -916,7 +917,9 @@ fn import_animations(
                                     .collect::<Vec<_>>();
 
                                 if interpolation == MotionInterpolation::CubicSpline {
-                                    MotionValues::CubicTranslations(cubic_vec3_keys(&values, fps)?)
+                                    let (keys, scale) = cubic_vec3_keys(&values, fps)?;
+                                    tangent_fps = scale;
+                                    MotionValues::CubicTranslations(keys)
                                 } else {
                                     MotionValues::Translations(values)
                                 }
@@ -944,7 +947,9 @@ fn import_animations(
                                     .collect::<Vec<_>>();
 
                                 if interpolation == MotionInterpolation::CubicSpline {
-                                    MotionValues::CubicRotations(cubic_quat_keys(&values, fps)?)
+                                    let (keys, scale) = cubic_quat_keys(&values, fps)?;
+                                    tangent_fps = scale;
+                                    MotionValues::CubicRotations(keys)
                                 } else {
                                     MotionValues::Rotations(values)
                                 }
@@ -968,7 +973,9 @@ fn import_animations(
                                     .collect::<Vec<_>>();
 
                                 if interpolation == MotionInterpolation::CubicSpline {
-                                    MotionValues::CubicScales(cubic_vec3_keys(&values, fps)?)
+                                    let (keys, scale) = cubic_vec3_keys(&values, fps)?;
+                                    tangent_fps = scale;
+                                    MotionValues::CubicScales(keys)
                                 } else {
                                     MotionValues::Scales(values)
                                 }
@@ -995,6 +1002,7 @@ fn import_animations(
                     part_index,
                     target,
                     inputs,
+                    tangent_fps,
                     values,
                     interpolation,
                 });
@@ -1007,34 +1015,54 @@ fn import_animations(
     Ok(())
 }
 
-fn cubic_vec3_keys(values: &[Vec3], fps: f32) -> Result<Vec<CubicVec3Key>, String> {
+fn cubic_vec3_keys(values: &[Vec3], fps: f32) -> Result<(Vec<CubicVec3Key>, f32), String> {
     let (chunks, remainder) = values.as_chunks::<3>();
     if !remainder.is_empty() {
         return Err("GLB cubic spline animation values must be tangent/value triples".to_string());
     }
-    Ok(chunks
+    let deferred = chunks.iter().any(|chunk| {
+        [chunk[0], chunk[2]].iter().any(|v| {
+            [v.x, v.y, v.z].into_iter().any(|v| {
+                let per_frame = v / fps;
+                v.is_finite() && (!per_frame.is_finite() || (v != 0.0 && per_frame == 0.0))
+            })
+        })
+    });
+    let divisor = if deferred { 1.0 } else { fps };
+    let keys = chunks
         .iter()
         .map(|chunk| CubicVec3Key {
-            in_tangent: vec3_per_frame(&chunk[0], fps),
+            in_tangent: vec3_per_frame(&chunk[0], divisor),
             value: chunk[1],
-            out_tangent: vec3_per_frame(&chunk[2], fps),
+            out_tangent: vec3_per_frame(&chunk[2], divisor),
         })
-        .collect())
+        .collect();
+    Ok((keys, if deferred { fps } else { 1.0 }))
 }
 
-fn cubic_quat_keys(values: &[Quat], fps: f32) -> Result<Vec<CubicQuatKey>, String> {
+fn cubic_quat_keys(values: &[Quat], fps: f32) -> Result<(Vec<CubicQuatKey>, f32), String> {
     let (chunks, remainder) = values.as_chunks::<3>();
     if !remainder.is_empty() {
         return Err("GLB cubic spline animation values must be tangent/value triples".to_string());
     }
-    Ok(chunks
+    let deferred = chunks.iter().any(|chunk| {
+        [chunk[0], chunk[2]].iter().any(|v| {
+            [v.x, v.y, v.z, v.w].into_iter().any(|v| {
+                let per_frame = v / fps;
+                v.is_finite() && (!per_frame.is_finite() || (v != 0.0 && per_frame == 0.0))
+            })
+        })
+    });
+    let divisor = if deferred { 1.0 } else { fps };
+    let keys = chunks
         .iter()
         .map(|chunk| CubicQuatKey {
-            in_tangent: quat_per_frame(&chunk[0], fps),
+            in_tangent: quat_per_frame(&chunk[0], divisor),
             value: chunk[1],
-            out_tangent: quat_per_frame(&chunk[2], fps),
+            out_tangent: quat_per_frame(&chunk[2], divisor),
         })
-        .collect())
+        .collect();
+    Ok((keys, if deferred { fps } else { 1.0 }))
 }
 
 fn vec3_per_frame(v: &Vec3, fps: f32) -> Vec3 {
@@ -1057,6 +1085,84 @@ fn quat_per_frame(q: &Quat, fps: f32) -> Quat {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_cubic_motion_retains_finite_tangents_across_frame_rates() {
+        for fps in [20.0_f32, 1.0, 1e-20, 1e-39, 1e20] {
+            for amplitude in [1.0_f32, 1e-30] {
+                for target in ["translation", "scale", "rotation"] {
+                    let width = if target == "rotation" { 4 } else { 3 };
+                    let axis = usize::from(target == "rotation");
+                    let mut values = vec![0.0_f32; 6 * width];
+                    values[2 * width + axis] = amplitude;
+                    values[3 * width + axis] = amplitude * 0.5;
+                    if target == "rotation" {
+                        values[width + 3] = 1.0;
+                        values[4 * width + 3] = 1.0;
+                    }
+                    let mut bytes = Vec::new();
+                    for value in [0.0_f32, 0.5].iter().chain(values.iter()) {
+                        bytes.extend_from_slice(&value.to_le_bytes());
+                    }
+                    let document = serde_json::json!({
+                        "asset": {"version": "2.0"},
+                        "buffers": [{"byteLength": bytes.len()}],
+                        "bufferViews": [
+                            {"buffer": 0, "byteOffset": 0, "byteLength": 8},
+                            {"buffer": 0, "byteOffset": 8, "byteLength": values.len() * 4}
+                        ],
+                        "accessors": [
+                            {"bufferView": 0, "componentType": 5126, "count": 2, "type": "SCALAR", "min": [0.0], "max": [0.5]},
+                            {"bufferView": 1, "componentType": 5126, "count": 6, "type": if target == "rotation" { "VEC4" } else { "VEC3" }}
+                        ],
+                        "nodes": [{}],
+                        "animations": [{
+                            "samplers": [{"input": 0, "output": 1, "interpolation": "CUBICSPLINE"}],
+                            "channels": [{"sampler": 0, "target": {"node": 0, "path": target}}]
+                        }]
+                    });
+                    let gltf =
+                        gltf::Gltf::from_slice(&serde_json::to_vec(&document).unwrap()).unwrap();
+                    let buffers = vec![gltf::buffer::Data(bytes)];
+                    let mesh = Mesh::new();
+                    let mut node_parts = HashMap::new();
+                    let node = gltf.document.nodes().next().unwrap();
+                    import_node(&mesh, &buffers, &mut node_parts, &node, -1).unwrap();
+                    import_animations(&mesh, &buffers, &node_parts, &gltf.document, fps).unwrap();
+                    let mesh = rc_ref!(&mesh);
+                    let motion = rc_ref!(&mesh.motions[0]);
+                    assert_eq!(motion.length, 0.5 * fps);
+                    let sampled = motion.sample(motion.length * 0.5, false);
+                    assert_eq!(sampled.len(), 1);
+                    let matrix = sampled[0].1;
+                    assert!(matrix.data.iter().flatten().all(|v| v.is_finite()));
+                    // Midpoint Hermite weights are +1/8 and -1/8, the
+                    // authored interval is 1/2 second, and slopes are A and A/2.
+                    let expected = f64::from(amplitude) / 32.0;
+                    let (actual, expected) = match target {
+                        "translation" => (matrix.data[0][3], expected),
+                        "scale" => (matrix.data[0][0], expected),
+                        _ => (
+                            matrix.data[0][2],
+                            2.0 * expected / (1.0 + expected * expected),
+                        ),
+                    };
+                    // Ordinary interpolation rounds h10*dt in f32. Bound its
+                    // subnormal ulps relative to the authored interval as well as
+                    // quaternion composition; a lost nonzero slope still fails.
+                    let tolerance = 4e-6 + 64.0 * f64::from(f32::from_bits(1)) / f64::from(fps);
+                    assert!((f64::from(actual) - expected).abs() <= expected.abs() * tolerance,
+                        "fps={fps} amplitude={amplitude} target={target} actual={actual} expected={expected}");
+                    for frame in [0.0, motion.length] {
+                        let endpoint = motion.sample(frame, false)[0].1;
+                        let expected = if target == "scale" { 0.0 } else { 1.0 };
+                        assert_eq!(endpoint.data[0][0], expected);
+                        assert_eq!(endpoint.data[0][3], 0.0);
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn test_partial_animation_preserves_authored_signed_and_zero_scale_components() {

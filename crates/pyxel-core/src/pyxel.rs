@@ -67,6 +67,18 @@ fn set_pyxel(instance: Pyxel) {
     PYXEL.with(|current| *current.borrow_mut() = Some(instance));
 }
 
+fn release_graphics() {
+    let graphics = PYXEL.with(|current| {
+        current
+            .borrow_mut()
+            .as_mut()
+            .and_then(|instance| instance.graphics.take())
+    });
+    if let Some(graphics) = graphics {
+        platform::with_gl_context(|gl| graphics.destroy(gl));
+    }
+}
+
 // Lifecycle callbacks
 
 type ResetCallback = Option<Box<dyn FnMut(Option<String>) + Send>>;
@@ -208,6 +220,8 @@ pub fn init(
         "Pyxel already initialized"
     );
 
+    release_graphics();
+
     let headless = headless.unwrap_or(false);
     *is_headless() = headless;
     *width() = w;
@@ -334,6 +348,12 @@ fn validate_screen_area(w: u32, h: u32) -> Result<(), String> {
 
 #[cfg(target_os = "emscripten")]
 pub fn reset_statics() {
+    platform::stop_main_loop();
+
+    // Keep the engine owner available during Python module cleanup, but free
+    // its GPU resources while the old platform context is still current.
+    release_graphics();
+
     IS_INITIALIZED.store(false, Ordering::Relaxed);
 
     // Reset scalar statics

@@ -479,6 +479,53 @@ class TestLineRasterization:
                 assert target.pget(x, y) == (7 if (x if vertical else y) == 8 else 0)
 
 
+class TestTriangleCulling:
+    @pytest.mark.parametrize(
+        "cull", [Primitive.CULL_NONE, Primitive.CULL_BACK, Primitive.CULL_FRONT]
+    )
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("geometry", ["thin", "ordinary", "degenerate"])
+    def test_projected_winding_and_degeneracy(self, cull, reverse, geometry):
+        if geometry == "thin":
+            # A nonzero projected area can be lost by f32 product cancellation.
+            points = [(21.542564, 10.4574375), (10.4574375, 21.542562), (12.5, 19.5)]
+            covered = {(12, 19), (11, 20), (10, 21)}
+        elif geometry == "ordinary":
+            points = [(4, 4), (28, 4), (4, 28)]
+            covered = {(x, y) for x in range(4, 28) for y in range(4, 28) if x + y < 31}
+        else:
+            points = [(4, 4), (16, 16), (28, 28)]
+            covered = set()
+        if reverse:
+            points[1], points[2] = points[2], points[1]
+        primitive = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [value for x, y in points for value in (x - 16, 16 - y, -5)],
+            [],
+            cull=cull,
+        )
+
+        class Probe(Node):
+            def on_draw(self):
+                self.prim(Mat4.IDENTITY, primitive, 7)
+
+        probe = Probe()
+        probe.camera = Camera()
+        probe.camera.near = 1
+        probe.camera.far = 10
+        probe.camera.ortho_size = 32
+        target = Image(32, 32)
+        probe.draw(0, 0, 32, 32, target)
+        visible = cull == Primitive.CULL_NONE or cull == (
+            Primitive.CULL_BACK if reverse else Primitive.CULL_FRONT
+        )
+        expected = covered if visible else set()
+        actual = {
+            (x, y) for y in range(32) for x in range(32) if target.pget(x, y) == 7
+        }
+        assert actual == expected
+
+
 class TestStateSetters:
     @staticmethod
     def _draw(probe, shading=None):

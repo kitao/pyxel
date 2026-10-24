@@ -58,6 +58,9 @@ pub struct MotionChannel {
     pub part_index: usize,
     pub target: MotionTarget,
     pub inputs: Vec<f32>,
+    // Normally 1: tangents already use frames. Exceptional imports retain
+    // authored tangents until their time scale cancels during sampling.
+    pub tangent_fps: f32,
     pub values: MotionValues,
     pub interpolation: MotionInterpolation,
 }
@@ -242,6 +245,7 @@ impl MotionChannel {
             &to_key.in_tangent,
             t,
             dt,
+            self.tangent_fps,
         )
     }
 
@@ -264,6 +268,7 @@ impl MotionChannel {
             &to_key.in_tangent,
             t,
             dt,
+            self.tangent_fps,
         )
     }
 
@@ -314,6 +319,7 @@ fn cubic_vec3(
     in_tangent: &Vec3,
     t: f32,
     dt: f32,
+    tangent_fps: f32,
 ) -> Vec3 {
     let (h00, h10, h01, h11) = cubic_basis(t);
     let value = Vec3 {
@@ -321,20 +327,21 @@ fn cubic_vec3(
         y: h00 * from.y + h10 * dt * out_tangent.y + h01 * to.y + h11 * dt * in_tangent.y,
         z: h00 * from.z + h10 * dt * out_tangent.z + h01 * to.z + h11 * dt * in_tangent.z,
     };
-    if !value.is_finite()
-        && from.is_finite()
-        && to.is_finite()
-        && out_tangent.is_finite()
-        && in_tangent.is_finite()
-        && t.is_finite()
-        && dt.is_finite()
+    if tangent_fps != 1.0
+        || (!value.is_finite()
+            && from.is_finite()
+            && to.is_finite()
+            && out_tangent.is_finite()
+            && in_tangent.is_finite()
+            && t.is_finite()
+            && dt.is_finite())
     {
         let (h00, h10, h01, h11, dt) = (
             f64::from(h00),
             f64::from(h10),
             f64::from(h01),
             f64::from(h11),
-            f64::from(dt),
+            f64::from(dt) / f64::from(tangent_fps),
         );
         return Vec3 {
             x: (h00 * f64::from(from.x)
@@ -361,6 +368,7 @@ fn cubic_quat(
     in_tangent: &Quat,
     t: f32,
     dt: f32,
+    tangent_fps: f32,
 ) -> Quat {
     let (h00, h10, h01, h11) = cubic_basis(t);
     let quat = Quat {
@@ -369,13 +377,14 @@ fn cubic_quat(
         z: h00 * from.z + h10 * dt * out_tangent.z + h01 * to.z + h11 * dt * in_tangent.z,
         w: h00 * from.w + h10 * dt * out_tangent.w + h01 * to.w + h11 * dt * in_tangent.w,
     };
-    if !quat.is_finite()
-        && from.is_finite()
-        && to.is_finite()
-        && out_tangent.is_finite()
-        && in_tangent.is_finite()
-        && t.is_finite()
-        && dt.is_finite()
+    if tangent_fps != 1.0
+        || (!quat.is_finite()
+            && from.is_finite()
+            && to.is_finite()
+            && out_tangent.is_finite()
+            && in_tangent.is_finite()
+            && t.is_finite()
+            && dt.is_finite())
     {
         // A cubic quaternion component may exceed f32 even when its unit result fits.
         let (h00, h10, h01, h11, dt) = (
@@ -383,7 +392,7 @@ fn cubic_quat(
             f64::from(h10),
             f64::from(h01),
             f64::from(h11),
-            f64::from(dt),
+            f64::from(dt) / f64::from(tangent_fps),
         );
         let qx = h00 * f64::from(from.x)
             + h10 * dt * f64::from(out_tangent.x)
@@ -455,6 +464,7 @@ mod tests {
             part_index: 0,
             target: MotionTarget::Translation,
             inputs: vec![0.0, 30.0],
+            tangent_fps: 1.0,
             values: MotionValues::Translations(vec![
                 Vec3 {
                     x: 0.0,
@@ -481,6 +491,7 @@ mod tests {
             part_index: 0,
             target: MotionTarget::Translation,
             inputs: vec![0.0, 30.0],
+            tangent_fps: 1.0,
             values: MotionValues::CubicTranslations(vec![
                 CubicVec3Key {
                     in_tangent: per_frame,
@@ -613,6 +624,7 @@ mod tests {
                     part_index: 0,
                     target: MotionTarget::Rotation,
                     inputs: vec![0.0, 10.0],
+                    tangent_fps: 1.0,
                     values: MotionValues::CubicRotations(vec![
                         CubicQuatKey {
                             in_tangent: zero,
@@ -654,6 +666,7 @@ mod tests {
             part_index: 0,
             target: MotionTarget::Rotation,
             inputs: vec![0.0, 2.0],
+            tangent_fps: 1.0,
             values: MotionValues::CubicRotations(vec![
                 CubicQuatKey {
                     in_tangent: zero,
@@ -706,6 +719,7 @@ mod tests {
                 part_index: 0,
                 target: MotionTarget::Translation,
                 inputs: vec![0.0, 30.0],
+                tangent_fps: 1.0,
                 values: MotionValues::Rotations(vec![identity_quat(), identity_quat()]),
                 interpolation: MotionInterpolation::Linear,
             }],
@@ -809,6 +823,7 @@ mod tests {
                 part_index: 0,
                 target: MotionTarget::Scale,
                 inputs: vec![0.0, 30.0],
+                tangent_fps: 1.0,
                 values: MotionValues::Scales(vec![
                     Vec3 {
                         x: 1.0,
@@ -846,6 +861,7 @@ mod tests {
                 part_index: 0,
                 target: MotionTarget::Rotation,
                 inputs: vec![0.0, 30.0],
+                tangent_fps: 1.0,
                 values: MotionValues::Rotations(vec![
                     identity_quat(),
                     *rc_ref!(&Quat::from_axis_angle(&y_axis, 90.0)),

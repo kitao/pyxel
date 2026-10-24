@@ -3,7 +3,7 @@
 
 use crate::cube::camera::Camera;
 use crate::cube::shading::{Shading, LEVEL_COUNT};
-use crate::cube::vec3::Vec3;
+use crate::cube::vec3::{sum_wide_products, Vec3};
 use crate::image::Image;
 use crate::utils::{f32_to_i32, f32_to_u32};
 
@@ -27,12 +27,10 @@ impl ScreenPlane {
         if area.abs() < 1e-6 {
             return None;
         }
-        let dz1 = p1.2 - p0.2;
-        let dz2 = p2.2 - p0.2;
         Some(Self {
             origin: p0,
-            dx: (dz1 * (p2.1 - p0.1) - dz2 * (p1.1 - p0.1)) / area,
-            dy: ((p1.0 - p0.0) * dz2 - (p2.0 - p0.0) * dz1) / area,
+            dx: edge_function((p0.2, p0.1), (p1.2, p1.1), (p2.2, p2.1)) / area,
+            dy: edge_function((p0.0, p0.2), (p1.0, p1.2), (p2.0, p2.2)) / area,
         })
     }
 
@@ -106,7 +104,17 @@ pub fn projection_matrix(camera: &Camera, vp_w: f32, vp_h: f32) -> Mat4x4 {
     let near = camera.near;
     let far = camera.far;
 
-    if let Some(size) = camera.ortho_size {
+    let depth_sum = far + near;
+    let depth_delta = far - near;
+    let depth_product = 2.0 * far * near;
+    let needs_width = !depth_sum.is_finite()
+        || !depth_delta.is_finite()
+        || (camera.ortho_size.is_none() && !depth_product.is_normal() && far != 0.0 && near != 0.0);
+    if needs_width && near.is_finite() && far.is_finite() && aspect.is_finite() {
+        return projection_matrix_wide(camera, aspect);
+    }
+
+    let matrix = if let Some(size) = camera.ortho_size {
         let half_h = size * 0.5;
         let half_w = half_h * aspect;
         [
@@ -128,21 +136,93 @@ pub fn projection_matrix(camera: &Camera, vp_w: f32, vp_h: f32) -> Mat4x4 {
             ],
             [0.0, 0.0, -1.0, 0.0],
         ]
+    };
+    if matrix.iter().flatten().any(|value| !value.is_finite())
+        && near.is_finite()
+        && far.is_finite()
+        && aspect.is_finite()
+    {
+        projection_matrix_wide(camera, aspect)
+    } else {
+        matrix
     }
 }
 
-pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
-    let mut r = [[0.0_f32; 4]; 4];
+// A homogeneous matrix may be scaled without changing its projected coordinates.
+// Keep the ordinary f32 path; recover overflowing coefficients or underflowing depth terms.
+#[cold]
+fn projection_matrix_wide(camera: &Camera, aspect: f32) -> Mat4x4 {
+    let near = f64::from(camera.near);
+    let far = f64::from(camera.far);
+    let aspect = f64::from(aspect);
+    let matrix = if let Some(size) = camera.ortho_size {
+        let half_h = f64::from(size) * 0.5;
+        let half_w = half_h * aspect;
+        [
+            [1.0 / half_w, 0.0, 0.0, 0.0],
+            [0.0, 1.0 / half_h, 0.0, 0.0],
+            [0.0, 0.0, -2.0 / (far - near), -(far + near) / (far - near)],
+            [0.0, 0.0, 0.0, 1.0],
+        ]
+    } else {
+        // Match the ordinary angular rounding; only the depth arithmetic needs width.
+        let f = f64::from(1.0 / (camera.fov.to_radians() * 0.5).tan());
+        [
+            [f / aspect, 0.0, 0.0, 0.0],
+            [0.0, f, 0.0, 0.0],
+            [
+                0.0,
+                0.0,
+                (far + near) / (near - far),
+                2.0 * far * near / (near - far),
+            ],
+            [0.0, 0.0, -1.0, 0.0],
+        ]
+    };
+    let largest = matrix
+        .iter()
+        .flatten()
+        .map(|value| value.abs())
+        .fold(0.0_f64, f64::max);
+    let scale = if largest.is_finite() {
+        (largest / f64::from(f32::MAX)).max(1.0)
+    } else {
+        1.0
+    };
+    matrix.map(|row| row.map(|value| (value / scale) as f32))
+}
 
+pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
+    let mut result = [[0.0_f32; 4]; 4];
     for i in 0..4 {
         for j in 0..4 {
             for k in 0..4 {
-                r[i][j] += a[i][k] * b[k][j];
+                result[i][j] += a[i][k] * b[k][j];
             }
         }
     }
+    if result.iter().flatten().all(|value| value.is_finite()) {
+        result
+    } else {
+        recover_projective_product(a, b, result)
+    }
+}
 
-    r
+#[cold]
+fn recover_projective_product(a: &Mat4x4, b: &Mat4x4, fallback: Mat4x4) -> Mat4x4 {
+    if !a.iter().chain(b).flatten().all(|value| value.is_finite()) {
+        return fallback;
+    }
+    let wide: [[f64; 4]; 4] = std::array::from_fn(|i| {
+        std::array::from_fn(|j| sum_wide_products(std::array::from_fn(|k| (a[i][k], b[k][j]))))
+    });
+    let largest = wide
+        .iter()
+        .flatten()
+        .map(|value| value.abs())
+        .fold(0.0_f64, f64::max);
+    let scale = (largest / f64::from(f32::MAX)).max(1.0);
+    wide.map(|row| row.map(|value| (value / scale) as f32))
 }
 
 // Dot with a world position (w = 1) to get distance in front of the camera.
@@ -172,9 +252,27 @@ pub fn world_to_screen(
     let cz = m[2][0] * pos.x + m[2][1] * pos.y + m[2][2] * pos.z + m[2][3];
     let cw = m[3][0] * pos.x + m[3][1] * pos.y + m[3][2] * pos.z + m[3][3];
 
-    let ndc_x = cx / cw;
-    let ndc_y = cy / cw;
-    let ndc_z = cz / cw;
+    let [ndc_x, ndc_y, ndc_z] = if [cx, cy, cz, cw].iter().all(|value| value.is_finite()) {
+        [cx / cw, cy / cw, cz / cw]
+    } else if pos.is_finite() && m.iter().flatten().all(|value| value.is_finite()) {
+        // Divide wide homogeneous components before narrowing: the ratio can fit
+        // even when a component or a cancelling partial sum does not.
+        let clip = m.map(|row| {
+            sum_wide_products([
+                (row[0], pos.x),
+                (row[1], pos.y),
+                (row[2], pos.z),
+                (row[3], 1.0),
+            ])
+        });
+        [
+            (clip[0] / clip[3]) as f32,
+            (clip[1] / clip[3]) as f32,
+            (clip[2] / clip[3]) as f32,
+        ]
+    } else {
+        [cx / cw, cy / cw, cz / cw]
+    };
     let sx = vp_x + (ndc_x + 1.0) * 0.5 * vp_w;
     let sy = vp_y + (1.0 - (ndc_y + 1.0) * 0.5) * vp_h;
     Some((sx, sy, ndc_z))
@@ -485,10 +583,78 @@ fn write_visible_pixel(
 
 // Rasterizers
 
-// Signed doubled area, used as the barycentric divisor.
+// Signed doubled area, also used for culling and the border plane's determinants.
+// Four epsilons conservatively bound rounding in the two differences per
+// product and their subtraction; subnormal uncertainty also takes the wide path.
 #[inline]
-fn edge_function(a: (f32, f32), b: (f32, f32), c: (f32, f32)) -> f32 {
-    (b.0 - a.0) * (c.1 - a.1) - (b.1 - a.1) * (c.0 - a.0)
+pub(crate) fn edge_function(a: (f32, f32), b: (f32, f32), c: (f32, f32)) -> f32 {
+    let left = (b.0 - a.0) * (c.1 - a.1);
+    let right = (b.1 - a.1) * (c.0 - a.0);
+    let edge = left - right;
+    let error = (4.0 * f32::EPSILON * (left.abs() + right.abs())).max(f32::MIN_POSITIVE);
+    if edge.abs() > error {
+        edge
+    } else {
+        edge_function_wide(a, b, c)
+    }
+}
+
+// Hoist a conservative cancellation bound over the clipped pixel rectangle.
+// Ordinary weights retain their f32 operation order. Only uncertain edge signs
+// use a wider, shared expression, preserving complementary boundary ownership.
+struct CoverageEdge {
+    a: (f32, f32),
+    b: (f32, f32),
+    error: f32,
+}
+
+impl CoverageEdge {
+    fn new(a: (f32, f32), b: (f32, f32), clip: ClipRect) -> Self {
+        let max_dx = (clip.left as f32 + 0.5 - a.0)
+            .abs()
+            .max((clip.right as f32 + 0.5 - a.0).abs());
+        let max_dy = (clip.top as f32 + 0.5 - a.1)
+            .abs()
+            .max((clip.bottom as f32 + 0.5 - a.1).abs());
+        let magnitude = (b.0 - a.0).abs() * max_dy + (b.1 - a.1).abs() * max_dx;
+        Self {
+            a,
+            b,
+            error: (4.0 * f32::EPSILON * magnitude).max(f32::MIN_POSITIVE),
+        }
+    }
+
+    #[inline]
+    fn inside_weight(&self, p: (f32, f32), include_boundary: bool, pos_area: bool) -> Option<f32> {
+        let edge =
+            (self.b.0 - self.a.0) * (p.1 - self.a.1) - (self.b.1 - self.a.1) * (p.0 - self.a.0);
+        if pos_area {
+            if edge > self.error {
+                return Some(edge);
+            }
+            if edge < -self.error {
+                return None;
+            }
+        } else {
+            if edge < -self.error {
+                return Some(edge);
+            }
+            if edge > self.error {
+                return None;
+            }
+        }
+        let edge = edge_function_wide(self.a, self.b, p);
+        edge_inside(edge, include_boundary, pos_area).then_some(edge)
+    }
+}
+
+#[cold]
+fn edge_function_wide(a: (f32, f32), b: (f32, f32), p: (f32, f32)) -> f32 {
+    let reverse = a.0 > b.0 || (a.0 == b.0 && a.1 > b.1);
+    let (a, b) = if reverse { (b, a) } else { (a, b) };
+    let edge = (f64::from(b.0) - f64::from(a.0)) * (f64::from(p.1) - f64::from(a.1))
+        - (f64::from(b.1) - f64::from(a.1)) * (f64::from(p.0) - f64::from(a.0));
+    (if reverse { -edge } else { edge }) as f32
 }
 
 #[inline]
@@ -556,6 +722,15 @@ pub fn rasterize_triangle(
     let include_w0 = includes_edge_boundary((p1.0, p1.1), (p2.0, p2.1), pos_area);
     let include_w1 = includes_edge_boundary((p2.0, p2.1), (p0.0, p0.1), pos_area);
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
+    let pixel_bounds = ClipRect {
+        left: bx_min,
+        top: by_min,
+        right: bx_max,
+        bottom: by_max,
+    };
+    let edge0 = CoverageEdge::new((p1.0, p1.1), (p2.0, p2.1), pixel_bounds);
+    let edge1 = CoverageEdge::new((p2.0, p2.1), (p0.0, p0.1), pixel_bounds);
+    let edge2 = CoverageEdge::new((p0.0, p0.1), (p1.0, p1.1), pixel_bounds);
 
     for y in by_min..=by_max {
         let py = y as f32 + 0.5;
@@ -565,29 +740,26 @@ pub fn rasterize_triangle(
 
         for x in bx_min..=bx_max {
             let p = (x as f32 + 0.5, py);
-            let w0 = edge_function((p1.0, p1.1), (p2.0, p2.1), p);
-            if !edge_inside(w0, include_w0, pos_area) {
+            let Some(w0) = edge0.inside_weight(p, include_w0, pos_area) else {
                 if was_inside {
                     break;
                 }
                 continue;
-            }
+            };
 
-            let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
-            if !edge_inside(w1, include_w1, pos_area) {
+            let Some(w1) = edge1.inside_weight(p, include_w1, pos_area) else {
                 if was_inside {
                     break;
                 }
                 continue;
-            }
+            };
 
-            let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
-            if !edge_inside(w2, include_w2, pos_area) {
+            let Some(w2) = edge2.inside_weight(p, include_w2, pos_area) else {
                 if was_inside {
                     break;
                 }
                 continue;
-            }
+            };
             was_inside = true;
 
             let bary0 = w0 * inv_area;
@@ -645,6 +817,15 @@ pub fn rasterize_textured_triangle<F>(
     let include_w0 = includes_edge_boundary((p1.0, p1.1), (p2.0, p2.1), pos_area);
     let include_w1 = includes_edge_boundary((p2.0, p2.1), (p0.0, p0.1), pos_area);
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
+    let pixel_bounds = ClipRect {
+        left: bx_min,
+        top: by_min,
+        right: bx_max,
+        bottom: by_max,
+    };
+    let edge0 = CoverageEdge::new((p1.0, p1.1), (p2.0, p2.1), pixel_bounds);
+    let edge1 = CoverageEdge::new((p2.0, p2.1), (p0.0, p0.1), pixel_bounds);
+    let edge2 = CoverageEdge::new((p0.0, p0.1), (p1.0, p1.1), pixel_bounds);
 
     for y in by_min..=by_max {
         let py = y as f32 + 0.5;
@@ -653,29 +834,26 @@ pub fn rasterize_textured_triangle<F>(
 
         for x in bx_min..=bx_max {
             let p = (x as f32 + 0.5, py);
-            let w0 = edge_function((p1.0, p1.1), (p2.0, p2.1), p);
-            if !edge_inside(w0, include_w0, pos_area) {
+            let Some(w0) = edge0.inside_weight(p, include_w0, pos_area) else {
                 if was_inside {
                     break;
                 }
                 continue;
-            }
+            };
 
-            let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
-            if !edge_inside(w1, include_w1, pos_area) {
+            let Some(w1) = edge1.inside_weight(p, include_w1, pos_area) else {
                 if was_inside {
                     break;
                 }
                 continue;
-            }
+            };
 
-            let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
-            if !edge_inside(w2, include_w2, pos_area) {
+            let Some(w2) = edge2.inside_weight(p, include_w2, pos_area) else {
                 if was_inside {
                     break;
                 }
                 continue;
-            }
+            };
             was_inside = true;
 
             let bary0 = w0 * inv_area;
@@ -3026,6 +3204,348 @@ mod tests {
                     4,
                     "textured={textured} sloped_first={sloped_first} near flat face"
                 );
+            }
+        }
+    }
+
+    #[test]
+    fn test_projection_retains_finite_depth_across_camera_scales() {
+        for (near, far, distance) in [
+            (1e-30_f32, 1e-29_f32, 5e-30_f32),
+            (1e20, 1e21, 5e20),
+            (1e38, 2e38, 1.5e38),
+            (2e38, 3e38, 2.5e38),
+        ] {
+            for ortho in [false, true] {
+                let camera = Camera::new();
+                let mut camera = rc_mut!(&camera);
+                camera.near = near;
+                camera.far = far;
+                camera.ortho_size = ortho.then_some(4.0);
+                let view = view_matrix(&camera);
+                let projection = projection_matrix(&camera, 8.0, 8.0);
+                let vp = matmul(&projection, &view);
+                let result = world_to_screen(
+                    &vec3(0.0, 0.0, -distance),
+                    &vp,
+                    &camera_clip_row(&view),
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0,
+                )
+                .unwrap();
+                assert_eq!((result.0, result.1), (4.0, 4.0));
+                let (n, f, d) = (f64::from(near), f64::from(far), f64::from(distance));
+                // Independent normalized distance formula, evaluated before f32 storage.
+                let expected = if ortho {
+                    2.0 * (d - n) / (f - n) - 1.0
+                } else {
+                    1.0 - 2.0 * n * (f - d) / (d * (f - n))
+                };
+                assert!(
+                    (f64::from(result.2) - expected).abs() < 2e-6,
+                    "near={near} far={far} ortho={ortho} result={result:?}"
+                );
+                let (image, mut depth, _) = make_target_and_depth(8, 8);
+                write_pixel(
+                    &mut rc_mut!(&image),
+                    &mut depth,
+                    8,
+                    4,
+                    4,
+                    result.2,
+                    7,
+                    1.0,
+                    true,
+                    true,
+                );
+                assert_eq!(rc_ref!(&image).canvas.read_data(4, 4), 7);
+            }
+        }
+    }
+
+    #[test]
+    fn test_projection_retains_finite_depth_with_shifted_diagonal_camera() {
+        for scale in [1.0_f32, 1e20, 1e38] {
+            let axis = vec3(
+                -std::f32::consts::FRAC_1_SQRT_2,
+                -std::f32::consts::FRAC_1_SQRT_2,
+                0.0,
+            );
+            let eye = vec3(axis.x * scale, axis.y * scale, 0.0);
+            let point = vec3(
+                eye.x + axis.x * (2.5 * scale),
+                eye.y + axis.y * (2.5 * scale),
+                0.0,
+            );
+            let target = vec3(eye.x + axis.x * scale, eye.y + axis.y * scale, 0.0);
+            for ortho in [false, true] {
+                let camera = Camera::new();
+                let mut camera = rc_mut!(&camera);
+                camera.near = 2.0 * scale;
+                camera.far = 3.0 * scale;
+                camera.ortho_size = ortho.then_some(scale);
+                camera.transform = Mat4::look_at(&eye, &target, &vec3(0.0, 1.0, 0.0));
+                let view = view_matrix(&camera);
+                let projection = projection_matrix(&camera, 8.0, 8.0);
+                let vp = matmul(&projection, &view);
+                assert!(vp.iter().flatten().all(|value| value.is_finite()));
+                let result =
+                    world_to_screen(&point, &vp, &camera_clip_row(&view), 0.0, 0.0, 8.0, 8.0)
+                        .unwrap();
+                assert!((result.0 - 4.0).abs() < 2e-6 && (result.1 - 4.0).abs() < 2e-6);
+                assert!(
+                    (result.2 - if ortho { 0.0 } else { 0.2 }).abs() < 2e-6,
+                    "scale={scale} ortho={ortho} result={result:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_rasterize_adjacent_triangles_have_exact_shared_edge_ownership() {
+        // The first rectangle comes from a projected, finite translated scene.
+        // Integer coordinates at 2^-20 pixel units give an independent exact
+        // half-plane oracle for every pixel, including its internal diagonal.
+        for (left, top, right, bottom) in [
+            (10.4574375, 10.4574375, 21.542564, 21.542562),
+            (1.25, 2.75, 29.125, 28.5),
+            (0.5, 0.5, 31.5, 31.5),
+        ] {
+            let points = [
+                (left, top, 0.25),
+                (right, top, 0.25),
+                (left, bottom, 0.25),
+                (right, bottom, 0.25),
+            ];
+            for diagonal in [[[0, 1, 2], [1, 3, 2]], [[0, 1, 3], [0, 3, 2]]] {
+                for reversed in [false, true] {
+                    for textured in [false, true] {
+                        for depth_test in [false, true] {
+                            let mut masks = Vec::new();
+                            for indices in diagonal {
+                                let mut triangle = indices.map(|index| points[index]);
+                                if reversed {
+                                    triangle.swap(0, 1);
+                                }
+                                let (image, mut depth, clip) = make_target_and_depth(32, 32);
+                                let mut target = rc_mut!(&image);
+                                if textured {
+                                    rasterize_textured_triangle(
+                                        &mut target,
+                                        &mut depth,
+                                        32,
+                                        triangle[0],
+                                        triangle[1],
+                                        triangle[2],
+                                        (triangle[0].0, triangle[0].1),
+                                        (triangle[1].0, triangle[1].1),
+                                        (triangle[2].0, triangle[2].1),
+                                        |u, v, x, y| {
+                                            assert!((u - (x as f32 + 0.5)).abs() < 1e-4);
+                                            assert!((v - (y as f32 + 0.5)).abs() < 1e-4);
+                                            Some(7)
+                                        },
+                                        clip,
+                                        1.0,
+                                        depth_test,
+                                        depth_test,
+                                    );
+                                } else {
+                                    rasterize_triangle(
+                                        &mut target,
+                                        &mut depth,
+                                        32,
+                                        triangle[0],
+                                        triangle[1],
+                                        triangle[2],
+                                        7,
+                                        7,
+                                        clip,
+                                        1.0,
+                                        depth_test,
+                                        depth_test,
+                                    );
+                                }
+                                let fixed = |value: f32| (f64::from(value) * 1_048_576.0) as i128;
+                                let cross =
+                                    |a: (f32, f32, f32), b: (f32, f32, f32), x: f32, y: f32| {
+                                        (fixed(b.0) - fixed(a.0)) * (fixed(y) - fixed(a.1))
+                                            - (fixed(b.1) - fixed(a.1)) * (fixed(x) - fixed(a.0))
+                                    };
+                                let positive =
+                                    cross(triangle[0], triangle[1], triangle[2].0, triangle[2].1)
+                                        > 0;
+                                for y in 0..32 {
+                                    for x in 0..32 {
+                                        let expected = (0..3).all(|i| {
+                                            let mut a = triangle[i];
+                                            let mut b = triangle[(i + 1) % 3];
+                                            if !positive {
+                                                std::mem::swap(&mut a, &mut b);
+                                            }
+                                            let determinant =
+                                                cross(a, b, x as f32 + 0.5, y as f32 + 0.5);
+                                            determinant > 0
+                                                || (determinant == 0
+                                                    && (b.1 < a.1 || (b.1 == a.1 && b.0 > a.0)))
+                                        });
+                                        assert_eq!(target.canvas.read_data(x, y) != 0, expected,
+                                            "pixel=({x},{y}) triangle={triangle:?} textured={textured} depth={depth_test}");
+                                    }
+                                }
+                                masks.push(target.canvas.data.clone());
+                            }
+                            for y in 0..32 {
+                                for x in 0..32 {
+                                    let count = usize::from(masks[0][y * 32 + x] != 0)
+                                        + usize::from(masks[1][y * 32 + x] != 0);
+                                    let inside = x as f32 + 0.5 >= left
+                                        && x as f32 + 0.5 < right
+                                        && y as f32 + 0.5 >= top
+                                        && y as f32 + 0.5 < bottom;
+                                    assert_eq!(
+                                        count,
+                                        usize::from(inside),
+                                        "shared pixel=({x},{y})"
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_coverage_edge_sign_near_collinear_pixel_centers() {
+        let fixed = |value: f32| (f64::from(value) * 1_073_741_824.0) as i128;
+        for x in 0..32 {
+            for y in 0..32 {
+                let p = (x as f32 + 0.5, y as f32 + 0.5);
+                for direction in [(0.0, 4.125), (7.25, 0.0), (3.375, 9.125), (-5.125, 8.625)] {
+                    let a = (p.0 - direction.0, p.1 - direction.1);
+                    for ratio in [0.3, 1.0, 1.7] {
+                        let b = (p.0 + direction.0 * ratio, p.1 + direction.1 * ratio);
+                        for offset in [-1, 0, 1] {
+                            if b.0 == 0.0 || b.0.abs() < 0.125 {
+                                continue;
+                            }
+                            let b = (
+                                f32::from_bits(b.0.to_bits().wrapping_add_signed(offset)),
+                                b.1,
+                            );
+                            for coordinate in [a.0, a.1, b.0, b.1, p.0, p.1] {
+                                assert_eq!(
+                                    fixed(coordinate) as f64 / 1_073_741_824.0,
+                                    f64::from(coordinate)
+                                );
+                            }
+                            let exact = (fixed(b.0) - fixed(a.0)) * (fixed(p.1) - fixed(a.1))
+                                - (fixed(b.1) - fixed(a.1)) * (fixed(p.0) - fixed(a.0));
+                            let clip = ClipRect {
+                                left: 0,
+                                top: 0,
+                                right: 31,
+                                bottom: 31,
+                            };
+                            for positive in [false, true] {
+                                let inside = CoverageEdge::new(a, b, clip)
+                                    .inside_weight(p, false, positive)
+                                    .is_some();
+                                let reverse = CoverageEdge::new(b, a, clip)
+                                    .inside_weight(p, false, !positive)
+                                    .is_some();
+                                assert_eq!(
+                                    inside,
+                                    if positive { exact > 0 } else { exact < 0 },
+                                    "a={a:?} b={b:?} p={p:?}"
+                                );
+                                assert_eq!(inside, reverse);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rasterize_thin_triangle_with_representable_area() {
+        let points = [
+            (21.542564, 10.4574375, 0.25),
+            (10.4574375, 21.542562, 0.25),
+            (12.5, 19.5, 0.25),
+        ];
+        let area = edge_function(
+            (points[0].0, points[0].1),
+            (points[1].0, points[1].1),
+            (points[2].0, points[2].1),
+        );
+        assert!(area > 1e-6);
+        let plane = ScreenPlane::from_triangle(points[0], points[1], points[2]).unwrap();
+        assert_eq!(plane.z_at(11.5, 20.5), 0.25);
+        for x_slope in [false, true] {
+            let sloped = points.map(|(x, y, _)| (x, y, if x_slope { x } else { y } / 32.0));
+            let plane = ScreenPlane::from_triangle(sloped[0], sloped[1], sloped[2]).unwrap();
+            assert_eq!(plane.dx, if x_slope { 1.0 / 32.0 } else { 0.0 });
+            assert_eq!(plane.dy, if x_slope { 0.0 } else { 1.0 / 32.0 });
+            assert_eq!(
+                plane.z_at(11.5, 20.5),
+                if x_slope { 11.5 } else { 20.5 } / 32.0
+            );
+        }
+        for reversed in [false, true] {
+            for textured in [false, true] {
+                let mut points = points;
+                if reversed {
+                    points.swap(0, 1);
+                }
+                let (image, mut depth, clip) = make_target_and_depth(32, 32);
+                let mut target = rc_mut!(&image);
+                if textured {
+                    rasterize_textured_triangle(
+                        &mut target,
+                        &mut depth,
+                        32,
+                        points[0],
+                        points[1],
+                        points[2],
+                        (0.0, 0.0),
+                        (0.0, 0.0),
+                        (0.0, 0.0),
+                        |_, _, _, _| Some(7),
+                        clip,
+                        1.0,
+                        true,
+                        true,
+                    );
+                } else {
+                    rasterize_triangle(
+                        &mut target,
+                        &mut depth,
+                        32,
+                        points[0],
+                        points[1],
+                        points[2],
+                        7,
+                        7,
+                        clip,
+                        1.0,
+                        true,
+                        true,
+                    );
+                }
+                for (x, y) in [(11, 20), (10, 21)] {
+                    assert_eq!(
+                        target.canvas.read_data(x, y),
+                        7,
+                        "pixel=({x},{y}) reversed={reversed} textured={textured}"
+                    );
+                    assert!((depth[y * 32 + x] - 0.25).abs() < 1e-6);
+                }
             }
         }
     }
