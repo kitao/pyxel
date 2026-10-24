@@ -1,6 +1,3 @@
-// ResourceData owns only plain resource values, so Serde derivation is intentional here.
-#![allow(clippy::unsafe_derive_deserialize)]
-
 use serde::{Deserialize, Serialize};
 
 use crate::image::{Color, Image, RcImage};
@@ -104,55 +101,6 @@ impl TilemapData {
     }
 }
 
-fn validate_grid<T>(
-    bank: &str,
-    index: usize,
-    width: u32,
-    height: u32,
-    data: &[Vec<T>],
-    values_per_cell: u32,
-) -> Result<(), String> {
-    if width == 0 || height == 0 {
-        return Err(format!(
-            "Invalid resource data: {bank}[{index}] dimensions must be greater than 0"
-        ));
-    }
-    if width.checked_mul(height).is_none() {
-        return Err(format!(
-            "Invalid resource data: {bank}[{index}] dimensions are too large"
-        ));
-    }
-    let row_width = width
-        .checked_mul(values_per_cell)
-        .ok_or_else(|| format!("Invalid resource data: {bank}[{index}] row width is too large"))?
-        as usize;
-    if data.is_empty() {
-        return Err(format!(
-            "Invalid resource data: {bank}[{index}].data must not be empty"
-        ));
-    }
-    if data.len() > height as usize {
-        return Err(format!(
-            "Invalid resource data: {bank}[{index}].data has {} rows, maximum is {height}",
-            data.len()
-        ));
-    }
-    for (row_index, row) in data.iter().enumerate() {
-        if row.is_empty() {
-            return Err(format!(
-                "Invalid resource data: {bank}[{index}].data[{row_index}] must not be empty"
-            ));
-        }
-        if row.len() > row_width {
-            return Err(format!(
-                "Invalid resource data: {bank}[{index}].data[{row_index}] has {} values, maximum is {row_width}",
-                row.len()
-            ));
-        }
-    }
-    Ok(())
-}
-
 #[derive(Clone, Serialize, Deserialize)]
 struct SoundData {
     notes: Vec<SoundNote>,
@@ -163,12 +111,6 @@ struct SoundData {
 }
 
 impl SoundData {
-    fn validate(&self, index: usize) -> Result<(), String> {
-        Sound::validate_speed(self.speed).map_err(|_| {
-            format!("Invalid resource data: sounds[{index}].speed must be greater than 0")
-        })
-    }
-
     fn from_sound(sound: &RcSound) -> Self {
         let sound = audio_ref!(sound);
         Self {
@@ -191,6 +133,12 @@ impl SoundData {
         drop(sound);
         rc
     }
+
+    fn validate(&self, index: usize) -> Result<(), String> {
+        Sound::validate_speed(self.speed).map_err(|_| {
+            format!("Invalid resource data: sounds[{index}].speed must be greater than 0")
+        })
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -202,7 +150,6 @@ impl MusicData {
     fn from_music(music: &RcMusic) -> Self {
         let music = audio_ref!(music);
         let seqs = trim_empty_vec(&music.seqs);
-
         Self { seqs }
     }
 
@@ -222,30 +169,43 @@ pub struct ResourceData {
     musics: Vec<MusicData>,
 }
 
-#[derive(Serialize)]
-struct ResourceDataView<'a> {
-    format_version: u32,
-    images: &'a [ImageData],
-    tilemaps: &'a [TilemapData],
-    sounds: &'a [SoundData],
-    musics: &'a [MusicData],
-}
-
 impl ResourceData {
     pub fn from_toml(toml_text: &str) -> Result<Self, String> {
         toml::from_str(toml_text).map_err(|_| "Failed to parse resource data".to_string())
     }
 
-    pub fn from_runtime(_pyxel: &Pyxel) -> Self {
+    pub fn from_runtime(
+        _pyxel: &Pyxel,
+        exclude_images: bool,
+        exclude_tilemaps: bool,
+        exclude_sounds: bool,
+        exclude_musics: bool,
+    ) -> Self {
         Self {
             format_version: 1, // Write as the oldest format version for backward compatibility
-            images: pyxel::images().iter().map(ImageData::from_image).collect(),
-            tilemaps: pyxel::tilemaps()
-                .iter()
-                .map(TilemapData::from_tilemap)
-                .collect(),
-            sounds: pyxel::sounds().iter().map(SoundData::from_sound).collect(),
-            musics: pyxel::musics().iter().map(MusicData::from_music).collect(),
+            images: if exclude_images {
+                Vec::new()
+            } else {
+                pyxel::images().iter().map(ImageData::from_image).collect()
+            },
+            tilemaps: if exclude_tilemaps {
+                Vec::new()
+            } else {
+                pyxel::tilemaps()
+                    .iter()
+                    .map(TilemapData::from_tilemap)
+                    .collect()
+            },
+            sounds: if exclude_sounds {
+                Vec::new()
+            } else {
+                pyxel::sounds().iter().map(SoundData::from_sound).collect()
+            },
+            musics: if exclude_musics {
+                Vec::new()
+            } else {
+                pyxel::musics().iter().map(MusicData::from_music).collect()
+            },
         }
     }
 
@@ -257,6 +217,7 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) -> Result<(), String> {
+        // A failure in any selected bank must leave all live banks unchanged.
         if !exclude_images {
             for (index, image) in self.images.iter().enumerate() {
                 image.validate(index)?;
@@ -273,6 +234,7 @@ impl ResourceData {
                 tilemap.validate(index, image_count)?;
             }
         }
+
         if !exclude_sounds {
             for (index, sound) in self.sounds.iter().enumerate() {
                 sound.validate(index)?;
@@ -295,6 +257,7 @@ impl ResourceData {
                 }
             };
         }
+
         restore!(images, pyxel::images);
         restore!(tilemaps, pyxel::tilemaps);
         restore!(sounds, pyxel::sounds);
@@ -302,25 +265,80 @@ impl ResourceData {
         Ok(())
     }
 
-    pub fn to_toml(
-        &self,
-        exclude_images: bool,
-        exclude_tilemaps: bool,
-        exclude_sounds: bool,
-        exclude_musics: bool,
-    ) -> String {
-        // Serialize excluded banks as empty arrays without cloning retained banks.
-        let view = ResourceDataView {
-            format_version: self.format_version,
-            images: if exclude_images { &[] } else { &self.images },
-            tilemaps: if exclude_tilemaps {
-                &[]
-            } else {
-                &self.tilemaps
-            },
-            sounds: if exclude_sounds { &[] } else { &self.sounds },
-            musics: if exclude_musics { &[] } else { &self.musics },
-        };
-        toml::to_string(&view).unwrap()
+    pub fn to_toml(&self) -> String {
+        toml::to_string(self).unwrap()
+    }
+}
+
+fn validate_grid<T>(
+    bank: &str,
+    index: usize,
+    width: u32,
+    height: u32,
+    data: &[Vec<T>],
+    values_per_cell: u32,
+) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}] dimensions must be greater than 0"
+        ));
+    }
+    if width.checked_mul(height).is_none() {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}] dimensions are too large"
+        ));
+    }
+    let row_width = width
+        .checked_mul(values_per_cell)
+        .ok_or_else(|| format!("Invalid resource data: {bank}[{index}] row width is too large"))?
+        as usize;
+
+    if data.is_empty() {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}].data must not be empty"
+        ));
+    }
+    if data.len() > height as usize {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}].data has {} rows, maximum is {height}",
+            data.len()
+        ));
+    }
+
+    for (row_index, row) in data.iter().enumerate() {
+        if row.is_empty() {
+            return Err(format!(
+                "Invalid resource data: {bank}[{index}].data[{row_index}] must not be empty"
+            ));
+        }
+        if row.len() > row_width {
+            return Err(format!(
+                "Invalid resource data: {bank}[{index}].data[{row_index}] has {} values, maximum is {row_width}",
+                row.len()
+            ));
+        }
+    }
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_grid_rejects_empty_row() {
+        assert_eq!(
+            validate_grid::<u8>("images", 0, 1, 1, &[vec![]], 1),
+            Err("Invalid resource data: images[0].data[0] must not be empty".to_string())
+        );
+    }
+
+    #[test]
+    fn test_grid_rejects_dimension_overflow_before_allocation() {
+        assert_eq!(
+            validate_grid("images", 0, 65536, 65536, &[vec![0_u8]], 1),
+            Err("Invalid resource data: images[0] dimensions are too large".to_string())
+        );
     }
 }

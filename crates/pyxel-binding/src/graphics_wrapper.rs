@@ -171,7 +171,9 @@ fn bltm(
             pyxel().draw_tilemap(x, y, tm, u, v, w, h, colkey, rotate, scale);
         }),
 
-        (Tilemap, { rc_mut!(pyxel::screen()).draw_tilemap(x, y, &tm.inner, u, v, w, h, colkey, rotate, scale); })
+        (Tilemap, {
+            rc_mut!(pyxel::screen()).draw_tilemap(x, y, &tm.inner, u, v, w, h, colkey, rotate, scale);
+        })
     }
     Ok(())
 }
@@ -225,12 +227,12 @@ fn bltm3d(
             pyxel().draw_tilemap_3d(x, y, w, h, tm, pos, rot, fov, colkey);
         }),
 
-        (Tilemap, { rc_mut!(pyxel::screen()).draw_tilemap_3d(x, y, w, h, &tm.inner, pos, rot, fov, colkey); })
+        (Tilemap, {
+            rc_mut!(pyxel::screen()).draw_tilemap_3d(x, y, w, h, &tm.inner, pos, rot, fov, colkey);
+        })
     }
     Ok(())
 }
-
-// Text drawing
 
 #[pyfunction]
 #[pyo3(signature = (x, y, s, col, font=None))]
@@ -267,8 +269,6 @@ fn tilemap(tm: u32) -> PyResult<Tilemap> {
         .ok_or_else(|| invalid_index_error!("tm", "tilemap"))
 }
 
-// Module registration
-
 pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(clip, m)?)?;
     m.add_function(wrap_pyfunction!(camera, m)?)?;
@@ -296,6 +296,5 @@ pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Deprecated functions
     m.add_function(wrap_pyfunction!(image, m)?)?;
     m.add_function(wrap_pyfunction!(tilemap, m)?)?;
-
     Ok(())
 }

@@ -39,13 +39,13 @@ format_version = 1
 ...
 ```
 
-The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty fields inside an entry use empty arrays (e.g., `notes = []`), and a section intentionally skipped by `save(..., exclude_*)` is written as an empty array. A normal save writes the runtime banks (3 images, 8 tilemaps, 64 sounds, 8 musics); files with fewer entries are accepted on load.
+The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty fields inside an entry use empty arrays (e.g., `notes = []`), and a section intentionally skipped by `save(..., exclude_*)` is written as an empty array. A save records the current runtime banks, including non-default bank counts and dimensions.
 
-Pyxel currently writes `format_version = 1` for maximum backward compatibility. On load, files with format version up to **4** (the current maximum) are accepted. Files that contain the legacy archive layout (`pyxel_resource/version` + separate files) are detected and loaded with automatic conversion.
+Pyxel writes `format_version = 1` and accepts format versions up to **4** when loading.
 
 ## Images
 
-Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette; 0–255 for the extended palette of up to 256 colors).
+By default, **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0-15 for the default palette; 0-255 for the extended palette of up to 256 colors).
 
 ```toml
 [[images]]
@@ -68,7 +68,7 @@ For example, a row `[0, 0, 5, 5, 5, 5]` is stored as `[0, 0, 5]`, and an image w
 
 ## Tilemaps
 
-Up to **8 tilemaps**, each **256×256 tiles**. Each tile references an 8×8 pixel region in an image bank.
+By default, **8 tilemaps**, each **256×256 tiles**. Each tile references an 8×8 pixel region in an image bank.
 
 ```toml
 [[tilemaps]]
@@ -84,10 +84,10 @@ All fields are required.
 | --- | --- | --- |
 | `width` | u32 | Tilemap width in tiles |
 | `height` | u32 | Tilemap height in tiles |
-| `imgsrc` | u32 | Source image bank index (0–2) |
+| `imgsrc` | u32 | Source image bank index (0-based) |
 | `data` | array of arrays of u16 | 2D tile data in interleaved format (see below) |
 
-Each tile in the tilemap is a coordinate pair `(tile_x, tile_y)` (`u16`, `u16`) pointing to the position of the 8×8 tile in the source image bank. In the TOML data, these pairs are **interleaved** within each row: `[tx0, ty0, tx1, ty1, ...]`, so each row has `width × 2` elements.
+Each tile is an `(image_tx, image_ty)` pair of `u16` coordinates in the source image bank's 8×8 tile grid. TOML rows interleave the pairs as `[tx0, ty0, tx1, ty1, ...]`, with `width × 2` elements per uncompressed row.
 
 For example, a tilemap row of 3 tiles referencing image positions (10, 6), (11, 6), and (12, 6) is stored as `[10, 6, 11, 6, 12, 6]`.
 
@@ -95,7 +95,7 @@ The same trailing-value compression as images is applied.
 
 ## Sounds
 
-Up to **64 sounds**. Each sound is a sequence of notes with per-note tone, volume, and effect settings.
+By default, **64 sounds**. Each sound is a sequence of notes with per-note tone, volume, and effect settings.
 
 ```toml
 [[sounds]]
@@ -111,7 +111,7 @@ All fields are required. Empty sounds use empty arrays (e.g., `notes = []`).
 | Field | Type | Description |
 | --- | --- | --- |
 | `notes` | array of i8 | Note values. -1 = rest, 0 (C0) to 59 (B4) |
-| `tones` | array of u8 | 0 = Triangle, 1 = Square, 2 = Pulse, 3 = Noise |
+| `tones` | array of u8 | Index into the tone bank. Default tones: 0 = Triangle, 1 = Square, 2 = Pulse, 3 = Noise |
 | `volumes` | array of u8 | 0 (silent) to 7 (max) |
 | `effects` | array of u8 | 0 = None, 1 = Slide, 2 = Vibrato, 3 = FadeOut, 4 = Half-FadeOut, 5 = Quarter-FadeOut |
 | `speed` | u16 | Playback speed in ticks per note (1 tick = 1/120 second). Default: 30 |
@@ -120,11 +120,11 @@ The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the so
 
 **Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11, and octave ranges from 0 to 4. For example, C0=0, A4=57, B4=59.
 
-**MML-defined sounds:** Sounds defined with `Sound.mml()` cannot be saved to `.pyxres`; only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are persisted. To preserve MML-based sounds, keep the MML strings in your source code and call `sound.mml()` at runtime.
+**MML and PCM:** Only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are saved to `.pyxres`. Keep MML strings and audio files separately, and call `sound.mml(code)` or `sound.pcm(filename)` at runtime.
 
-## Musics
+## Music
 
-Up to **8 music tracks**. Each track arranges sounds across up to **4 channels** for sequential playback.
+By default, **8 music tracks** with **4 channels**. Each track arranges sounds for sequential playback.
 
 ```toml
 [[musics]]
@@ -135,7 +135,7 @@ The `seqs` field is required. Empty music uses an empty array (`seqs = []`).
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `seqs` | array of arrays of u32 | Sound sequences per channel. `seqs[0]` is channel 0, `seqs[1]` is channel 1, etc. Each value is a sound index (0–63) |
+| `seqs` | array of arrays of u32 | Sound sequences per channel. `seqs[0]` is channel 0, `seqs[1]` is channel 1, etc. Each value is a sound index (0-based) |
 
 Trailing empty channels are omitted when saving.
 
@@ -157,23 +157,6 @@ An optional text file with one RGB color per line in 6-digit hexadecimal format.
 | Maximum colors | 256 |
 | Format | One `RRGGBB` hex value per line |
 
-If no `.pyxpal` file is present, the built-in default palette is used:
-
-| Index | Color | Hex |
-| --- | --- | --- |
-| 0 | Black | `000000` |
-| 1 | Navy | `2b335f` |
-| 2 | Purple | `7e2072` |
-| 3 | Green | `19959c` |
-| 4 | Brown | `8b4852` |
-| 5 | Dark Blue | `395c98` |
-| 6 | Light Blue | `a9c1ff` |
-| 7 | White | `eeeeee` |
-| 8 | Red | `d4186c` |
-| 9 | Orange | `d38441` |
-| 10 | Yellow | `e9c35b` |
-| 11 | Lime | `70c6a9` |
-| 12 | Cyan | `7696de` |
-| 13 | Gray | `a3a3a3` |
-| 14 | Pink | `ff9798` |
-| 15 | Peach | `edc7b0` |
+If no `.pyxpal` file is present, the current palette is unchanged. See the
+[user guide](user-guide.md#color-palette) for the default palette and its
+downloadable color values.

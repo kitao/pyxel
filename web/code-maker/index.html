@@ -15,12 +15,37 @@
       #left-pane.res-mode {
         background-color: var(--pyxel-bg);
       }
+
+      @media (max-width: 639px) {
+        #main-splitter {
+          flex-direction: column;
+        }
+
+        #left-pane {
+          flex: 1 1 50%;
+          width: 100% !important;
+          height: 50%;
+          min-width: 0 !important;
+          max-width: none !important;
+        }
+
+        #splitter-handle {
+          width: 100% !important;
+          height: 3px;
+          cursor: default !important;
+          pointer-events: none !important;
+        }
+
+        #right-pane {
+          flex: 1 1 50%;
+          width: 100%;
+        }
+      }
     </style>
   </head>
 
   <body class="page h-full">
     <div id="app" class="flex flex-col h-full min-h-0">
-      <!-- Toolbar -->
       <div class="flex-wrap toolbar">
         <div
           class="flex flex-wrap items-baseline gap-x-2 min-w-0 basis-full sm:basis-auto"
@@ -32,39 +57,38 @@
             Playground for
             <a
               class="link"
-              href="https://github.com/kitao/pyxel"
+              href="https://kitao.dev/pyxel/"
               target="_blank"
               rel="noopener noreferrer"
-              tabindex="-1"
               >Pyxel</a
             >, a retro game engine for Python. (<a
               class="link"
               href="manual.html"
               target="_blank"
               rel="noopener noreferrer"
-              tabindex="-1"
               >Manual</a
             >)
           </div>
         </div>
-        <!-- Controls -->
         <div
           class="flex flex-wrap items-center gap-2 mt-0.5 max-w-full shrink-0"
         >
-          <!-- Load dropdown -->
           <div class="flex items-center gap-2 shrink-0">
             <div class="relative">
               <button
                 id="load-button"
                 class="btn-dropdown"
-                tabindex="-1"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="load-menu"
                 title="Ctrl(Cmd)+L: Load File"
               >
                 Load ▼
               </button>
-              <div id="load-menu" class="hidden dropdown-menu">
+              <div id="load-menu" class="hidden dropdown-menu" role="menu">
                 <button
                   class="dropdown-item"
+                  role="menuitem"
                   tabindex="-1"
                   data-action="load-local"
                 >
@@ -72,6 +96,7 @@
                 </button>
                 <button
                   class="dropdown-item"
+                  role="menuitem"
                   tabindex="-1"
                   data-action="load-gist"
                 >
@@ -79,6 +104,7 @@
                 </button>
                 <button
                   class="dropdown-item"
+                  role="menuitem"
                   tabindex="-1"
                   data-action="load-github"
                 >
@@ -86,6 +112,7 @@
                 </button>
                 <button
                   class="dropdown-item"
+                  role="menuitem"
                   tabindex="-1"
                   data-action="load-url"
                 >
@@ -93,19 +120,21 @@
                 </button>
               </div>
             </div>
-            <!-- Save dropdown -->
             <div class="relative">
               <button
                 id="save-button"
                 class="btn-dropdown"
-                tabindex="-1"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="save-menu"
                 title="Ctrl(Cmd)+S: Save File"
               >
                 Save ▼
               </button>
-              <div id="save-menu" class="hidden dropdown-menu">
+              <div id="save-menu" class="hidden dropdown-menu" role="menu">
                 <button
                   class="dropdown-item"
+                  role="menuitem"
                   tabindex="-1"
                   data-action="save-local"
                 >
@@ -113,6 +142,7 @@
                 </button>
                 <button
                   class="dropdown-item"
+                  role="menuitem"
                   tabindex="-1"
                   data-action="save-gist"
                 >
@@ -121,7 +151,6 @@
               </div>
             </div>
           </div>
-          <!-- Code / Res toggle -->
           <div class="flex items-center shrink-0">
             <div class="seg" role="group">
               <button
@@ -130,7 +159,6 @@
                 type="button"
                 aria-pressed="true"
                 title="Ctrl(Cmd)+,: Toggle Code/Res"
-                tabindex="-1"
               >
                 Code
               </button>
@@ -140,20 +168,18 @@
                 type="button"
                 aria-pressed="false"
                 title="Ctrl(Cmd)+,: Toggle Code/Res"
-                tabindex="-1"
+                disabled
               >
                 Res
               </button>
             </div>
           </div>
-          <!-- Run -->
           <div class="flex items-center gap-2 shrink-0">
             <button
               id="run-button"
               class="btn"
               disabled
               title="Ctrl(Cmd)+Enter: Run"
-              tabindex="-1"
             >
               Run
             </button>
@@ -166,20 +192,16 @@
         <div id="focus-line-right" class="focus-line-segment"></div>
       </div>
 
-      <!-- Main content -->
       <div id="main-splitter" class="flex flex-1 min-h-0">
-        <!-- Left pane -->
         <div
           id="left-pane"
           class="flex flex-col min-h-0"
           style="width: 50%; min-width: 200px; max-width: 80%"
         >
-          <!-- Code editor -->
           <div id="code-pane" class="flex flex-1 min-h-0">
             <div id="code-editor" class="w-full h-full"></div>
           </div>
 
-          <!-- Resource editor -->
           <div id="resource-pane" class="hidden flex flex-1 min-h-0">
             <iframe
               id="resource-editor"
@@ -190,7 +212,6 @@
           </div>
         </div>
 
-        <!-- Splitter -->
         <div
           id="splitter-handle"
           class="z-50 relative w-3 cursor-col-resize select-none"
@@ -202,8 +223,8 @@
           title="Ctrl(Cmd)+.: Toggle Left/Right Focus"
         ></div>
 
-        <!-- Right pane -->
         <div
+          id="right-pane"
           class="flex flex-col flex-1 min-h-0"
           style="background-color: var(--pyxel-bg)"
         >
@@ -225,13 +246,19 @@
       tabindex="-1"
     />
 
-    <!-- Load from Gist modal -->
-    <div id="modal-load-gist" class="hidden modal-overlay">
+    <div
+      id="modal-load-gist"
+      class="hidden modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-load-gist-title"
+    >
       <div class="modal">
-        <div class="modal-title">Load from Gist</div>
+        <h2 id="modal-load-gist-title" class="modal-title">Load from Gist</h2>
         <input
           id="input-load-gist"
           type="text"
+          aria-label="Gist URL or ID"
           placeholder="https://gist.github.com/USER/GIST_ID"
           class="modal-input"
         />
@@ -246,13 +273,21 @@
       </div>
     </div>
 
-    <!-- Load from GitHub modal -->
-    <div id="modal-load-github" class="hidden modal-overlay">
+    <div
+      id="modal-load-github"
+      class="hidden modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-load-github-title"
+    >
       <div class="modal">
-        <div class="modal-title">Load from GitHub</div>
+        <h2 id="modal-load-github-title" class="modal-title">
+          Load from GitHub
+        </h2>
         <input
           id="input-load-github"
           type="text"
+          aria-label="GitHub project URL"
           placeholder="https://github.com/USER/REPO/blob/BRANCH/PATH/TO/PROJECT.zip"
           class="modal-input"
         />
@@ -267,13 +302,19 @@
       </div>
     </div>
 
-    <!-- Load from URL modal -->
-    <div id="modal-load-url" class="hidden modal-overlay">
+    <div
+      id="modal-load-url"
+      class="hidden modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-load-url-title"
+    >
       <div class="modal">
-        <div class="modal-title">Load from URL</div>
+        <h2 id="modal-load-url-title" class="modal-title">Load from URL</h2>
         <input
           id="input-load-url"
           type="text"
+          aria-label="Project ZIP URL"
           placeholder="https://example.com/PROJECT.zip"
           class="modal-input"
         />
@@ -288,10 +329,15 @@
       </div>
     </div>
 
-    <!-- Save to Gist modal -->
-    <div id="modal-save-gist" class="hidden modal-overlay">
+    <div
+      id="modal-save-gist"
+      class="hidden modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-save-gist-title"
+    >
       <div class="modal">
-        <div class="modal-title">Save to Gist</div>
+        <h2 id="modal-save-gist-title" class="modal-title">Save to Gist</h2>
         <p class="flex items-center gap-1 mb-3 text-green-400 text-xs">
           <svg
             class="w-3.5 h-3.5 shrink-0"
@@ -339,103 +385,24 @@
       };
       window._isCopyingResource = false;
 
-      // uint8ToBase64 and base64ToUint8 provided by shared.js
-
-      // Project state synchronization between editors and the archive model
-      function copyCodeToProject() {
-        window._project.code = window._codeEditor.getValue();
-      }
-
-      // Persist the resource editor's current file into the project model.
-      async function copyResourceToProject() {
-        if (!resourceEditor.contentWindow?.pyxelContext?.pyodide) {
-          return;
-        }
-
-        window._isCopyingResource = true;
-
-        try {
-          const doc = resourceEditor.contentWindow.document;
-          doc.dispatchEvent(
-            new KeyboardEvent("keydown", {
-              key: "F13",
-              code: "F13",
-              bubbles: true,
-            }),
-          );
-          doc.dispatchEvent(
-            new KeyboardEvent("keyup", {
-              key: "F13",
-              code: "F13",
-              bubbles: true,
-            }),
-          );
-
-          await new Promise((resolve) => setTimeout(resolve, 100));
-
-          window._project.resource = uint8ToBase64(
-            resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
-              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres",
-            ),
-          );
-        } finally {
-          window._isCopyingResource = false;
-        }
-      }
-
-      // Pane reset helpers for embedded Pyxel runtimes
-      function resetRuntimeScreen() {
-        runtimeScreen.contentWindow?.resetPyxel?.();
-      }
-
-      function resetResourceEditor() {
-        resourceEditor.contentWindow?.resetPyxel?.();
-      }
-
-      // Load a project archive into the in-memory project model and panes.
-      async function loadProjectFromZip(buf, name) {
-        const zip = await JSZip.loadAsync(buf);
-        const files = {};
-
-        for (const [path, entry] of Object.entries(zip.files)) {
-          if (!entry.dir) {
-            const relativePath = path.split("/").slice(1).join("/");
-            const content = await entry.async("uint8array");
-            files[relativePath] = uint8ToBase64(content);
-          }
-        }
-
-        if (!files["main.py"]) {
-          throw new Error("Missing main.py");
-        }
-        if (!files["my_resource.pyxres"]) {
-          throw new Error("Missing my_resource.pyxres");
-        }
-
-        window._project.name = name;
-        window._project.files = files;
-        window._project.code = new TextDecoder().decode(
-          base64ToUint8(files["main.py"]),
-        );
-        window._project.resource = files["my_resource.pyxres"];
-
-        window._codeEditor.setValue(window._project.code, -1);
-        resetRuntimeScreen();
-        resetResourceEditor();
-      }
+      // Project operations
 
       async function loadProject(file) {
+        const load = (window._projectLoad = Symbol());
         try {
           const buf = await file.arrayBuffer();
           const name = file.name.replace(/\.zip$/i, "");
-          await loadProjectFromZip(buf, name);
+          await loadProjectFromZip(buf, name, load);
+          if (load !== window._projectLoad) return;
           updateShareUrl();
         } catch (e) {
+          if (load !== window._projectLoad) return;
           alert(`Load failed: ${e.message}`);
         }
       }
 
       async function loadFromGist(input) {
+        const load = (window._projectLoad = Symbol());
         const match = input.match(/([a-f0-9]{20,})\s*$/i);
         if (!match) {
           throw new Error("Invalid Gist URL");
@@ -443,7 +410,7 @@
         const gistId = match[1];
         const res = await fetch(`https://api.github.com/gists/${gistId}`);
         if (!res.ok) {
-          throw new Error("Gist not found");
+          throw new Error(`Failed to fetch Gist: ${res.status}`);
         }
         const gist = await res.json();
         const gistFiles = Object.values(gist.files);
@@ -456,21 +423,37 @@
         if (file.truncated) {
           const raw = await fetch(file.raw_url);
           if (!raw.ok) {
-            throw new Error("Gist file not found");
+            throw new Error(`Failed to fetch Gist file: ${raw.status}`);
           }
           content = await raw.text();
         }
 
         const buf = base64ToUint8(content).buffer;
         const name = file.filename.replace(/\.[^.]+$/, "") || "untitled";
-        await loadProjectFromZip(buf, name);
+        await loadProjectFromZip(buf, name, load);
+        if (load !== window._projectLoad) return;
         updateShareUrl("gist", gistId);
       }
 
-      async function loadFromGitHub(input) {
-        const { user, repo, ref, sha, path } =
-          await resolveGitHubBlobUrl(input);
-        const url = `https://raw.githubusercontent.com/${user}/${repo}/${sha}/${path}`;
+      async function loadFromGitHub(
+        input,
+        preferredRef = null,
+        fallbackSha = null,
+      ) {
+        const load = (window._projectLoad = Symbol());
+        const { user, repo, ref, sha, path } = await resolveGitHubBlobUrl(
+          input,
+          fetch,
+          preferredRef,
+        );
+        const savedSha = /^[0-9a-f]{40}$/i.test(fallbackSha)
+          ? fallbackSha
+          : null;
+        const revision = sha ?? savedSha ?? ref;
+        if (!sha && !savedSha && ref.includes("/")) {
+          throw new Error("Failed to resolve the GitHub ref");
+        }
+        const url = `https://raw.githubusercontent.com/${user}/${repo}/${revision}/${encodeUrlPath(path)}`;
         const name =
           path
             .split("/")
@@ -479,59 +462,63 @@
 
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error("File not found");
+          throw new Error(`Failed to fetch file: ${res.status}`);
         }
-        await loadProjectFromZip(await res.arrayBuffer(), name);
+        await loadProjectFromZip(await res.arrayBuffer(), name, load);
+        if (load !== window._projectLoad) return;
         updateShareUrl(
           "github",
           `${user}/${repo}/${ref}/${path.replace(/\.zip$/i, "")}`,
+          ref,
+          sha ?? savedSha,
         );
       }
 
       async function loadFromUrl(input) {
+        const load = (window._projectLoad = Symbol());
         const url = input.trim();
         if (!/^https?:\/\/.+/i.test(url)) {
           throw new Error("Invalid URL");
         }
-        const name =
-          url
-            .split("/")
-            .pop()
-            .replace(/\.zip$/i, "") || "untitled";
+        const encodedName = new URL(url).pathname.split("/").pop();
+        let decodedName = encodedName;
+        try {
+          decodedName = decodeURIComponent(encodedName);
+        } catch {
+          // Preserve malformed escapes as a literal filename.
+        }
+        const name = sanitizeProjectName(decodedName.replace(/\.zip$/i, ""));
+
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error("File not found");
+          throw new Error(`Failed to fetch file: ${res.status}`);
         }
-        await loadProjectFromZip(await res.arrayBuffer(), name);
+        await loadProjectFromZip(await res.arrayBuffer(), name, load);
+        if (load !== window._projectLoad) return;
         updateShareUrl("url", url);
       }
 
-      // Archive helpers
-      async function buildArchiveBlob() {
-        const archive = new JSZip();
-        const prefix = window._project.name;
-        for (const [path, b64] of Object.entries(window._project.files)) {
-          archive.file(`${prefix}/${path}`, base64ToUint8(b64));
-        }
-        archive.file(`${prefix}/main.py`, window._project.code);
-        archive.file(
-          `${prefix}/my_resource.pyxres`,
-          base64ToUint8(window._project.resource),
-        );
-        return archive.generateAsync({ type: "blob" });
+      async function loadFromGitHubShare(
+        value,
+        preferredRef = null,
+        fallbackSha = null,
+      ) {
+        const revision = value.split("/")[2] ?? "";
+        const ref =
+          preferredRef ?? (/^[0-9a-f]{40}$/i.test(revision) ? revision : null);
+        await loadFromGitHub(buildGitHubProjectUrl(value), ref, fallbackSha);
       }
 
-      // Save the current project through the browser file API or download.
       async function saveToFile() {
         if (window._isCopyingResource) {
           return;
         }
 
-        copyCodeToProject();
-        await copyResourceToProject();
+        try {
+          copyCodeToProject();
+          await copyResourceToProject();
 
-        if (window.showSaveFilePicker) {
-          try {
+          if (window.showSaveFilePicker) {
             const handle = await window.showSaveFilePicker({
               suggestedName: `${window._project.name}.zip`,
               types: [
@@ -541,49 +528,50 @@
                 },
               ],
             });
-            window._project.name = handle.name.replace(/\.zip$/i, "");
+            window._project.name = sanitizeProjectName(
+              handle.name.replace(/\.zip$/i, ""),
+            );
             const writable = await handle.createWritable();
             await writable.write(await buildArchiveBlob());
             await writable.close();
             return;
-          } catch (e) {
-            if (e.name === "AbortError") {
-              return;
-            }
+          }
+
+          const blob = await buildArchiveBlob();
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `${window._project.name}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+        } catch (e) {
+          if (e.name !== "AbortError") {
             alert(`Save failed: ${e.message}`);
           }
         }
-
-        // Browser fallback: synthesize and click a temporary download link.
-        const blob = await buildArchiveBlob();
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `${window._project.name}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(a.href), 3000);
       }
 
       async function saveToGist() {
         if (window._isCopyingResource) {
           return;
         }
-        copyCodeToProject();
-        await copyResourceToProject();
-        const blob = await buildArchiveBlob();
-        const buf = await blob.arrayBuffer();
-        const b64 = uint8ToBase64(new Uint8Array(buf));
+
         try {
+          copyCodeToProject();
+          await copyResourceToProject();
+          const blob = await buildArchiveBlob();
+          const buf = await blob.arrayBuffer();
+          const b64 = uint8ToBase64(new Uint8Array(buf));
           await navigator.clipboard.writeText(b64);
-        } catch {
-          alert("Copy failed");
-          return;
+          showModal("modal-save-gist");
+        } catch (e) {
+          alert(`Copy failed: ${e.message}`);
         }
-        showModal("modal-save-gist");
       }
 
-      // Configure the code editor and its visual integration.
+      // Initialization
+
       function initAceEditor() {
         const codeEditor = ace.edit("code-editor");
         // ACE's hidden textarea has no id by default; set one so browser
@@ -604,7 +592,6 @@
         });
 
         codeEditor.container.style.backgroundColor = "#111827";
-
         const gutter = codeEditor.renderer.$gutter;
         if (gutter?.style) {
           gutter.style.background = "#232d3b";
@@ -627,67 +614,6 @@
         window._codeEditor = codeEditor;
       }
 
-      // Share URL helpers keep the current load source in the address bar.
-      function updateShareUrl(param, value) {
-        const base = location.href.split("?")[0];
-        if (param && value) {
-          const encoded = encodeURIComponent(value)
-            .replace(/%3A/g, ":")
-            .replace(/%2F/g, "/");
-          history.replaceState(null, "", `${base}?${param}=${encoded}`);
-        } else {
-          history.replaceState(null, "", base);
-        }
-      }
-
-      // Button feedback for short-lived pressed states
-      function animateButton(button) {
-        button.classList.add("active");
-        setTimeout(() => button.classList.remove("active"), 150);
-      }
-
-      // Dropdown helpers keep only one toolbar menu open at a time.
-      function toggleDropdown(menuId) {
-        const menu = document.getElementById(menuId);
-        const wasHidden = menu.classList.contains("hidden");
-        closeAllDropdowns();
-        if (wasHidden) {
-          menu.classList.remove("hidden");
-          menu.parentElement
-            .querySelector(".btn-dropdown")
-            .classList.add("active");
-          document.activeElement?.blur();
-        }
-      }
-
-      function closeAllDropdowns() {
-        document.querySelectorAll(".dropdown-menu").forEach((m) => {
-          m.classList.add("hidden");
-          m.parentElement
-            .querySelector(".btn-dropdown")
-            .classList.remove("active");
-        });
-      }
-
-      // Modal helpers reset input state and close overlays.
-      function showModal(modalId) {
-        const modal = document.getElementById(modalId);
-        modal.classList.remove("hidden");
-        const input = modal.querySelector(".modal-input");
-        if (input) {
-          input.value = "";
-          setTimeout(() => input.focus(), 0);
-        }
-      }
-
-      function closeModal(el) {
-        const overlay = el.closest(".modal-overlay");
-        if (overlay) {
-          overlay.classList.add("hidden");
-        }
-      }
-
-      // Wire toolbar, dropdown, modal, tab, and run button interactions.
       function setupButtonHandlers() {
         const loadButton = document.getElementById("load-button");
         const loadFileInput = document.getElementById("load-file");
@@ -701,13 +627,10 @@
         const leftPane = document.getElementById("left-pane");
         const runButton = document.getElementById("run-button");
 
-        // Load menu toggle
         loadButton.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleDropdown("load-menu");
         });
-
-        // Save menu toggle
         saveButton.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleDropdown("save-menu");
@@ -721,33 +644,15 @@
           closeAllDropdowns();
         });
 
-        // Dispatch load/save menu actions
         document.querySelectorAll(".dropdown-item").forEach((item) => {
           item.addEventListener("click", (e) => {
             e.stopPropagation();
-            closeAllDropdowns();
-            const action = item.dataset.action;
-            switch (action) {
-              case "load-local":
-                loadFileInput.value = "";
-                loadFileInput.click();
-                break;
-              case "load-gist":
-                showModal("modal-load-gist");
-                break;
-              case "load-github":
-                showModal("modal-load-github");
-                break;
-              case "load-url":
-                showModal("modal-load-url");
-                break;
-              case "save-local":
-                saveToFile();
-                break;
-              case "save-gist":
-                saveToGist();
-                break;
-            }
+            activateMenuItem(item, loadFileInput);
+          });
+        });
+        document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+          menu.addEventListener("keydown", (event) => {
+            handleMenuKeydown(menu, event);
           });
         });
 
@@ -758,33 +663,48 @@
           }
         });
 
-        // Modal cancel and close buttons
         document.querySelectorAll("[data-modal-close]").forEach((btn) => {
           btn.addEventListener("click", () => closeModal(btn));
         });
 
-        // Close modal when clicking its overlay background.
         document.querySelectorAll(".modal-overlay").forEach((overlay) => {
           overlay.addEventListener("click", (e) => {
             if (e.target === overlay) {
-              overlay.classList.add("hidden");
+              closeModal(overlay);
             }
           });
         });
 
-        // Close modal and dropdown overlays on Escape.
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") {
-            document
-              .querySelectorAll(".modal-overlay:not(.hidden)")
-              .forEach((m) => {
-                m.classList.add("hidden");
-              });
+            const openModals = document.querySelectorAll(
+              ".modal-overlay:not(.hidden)",
+            );
+            openModals.forEach(closeModal);
+            const openMenu = document.querySelector(
+              ".dropdown-menu:not(.hidden)",
+            );
+            const menuTrigger =
+              openMenu?.parentElement.querySelector(".btn-dropdown");
             closeAllDropdowns();
+            if (openModals.length === 0) menuTrigger?.focus();
+          }
+
+          const modal = document.querySelector(".modal-overlay:not(.hidden)");
+          if (e.key === "Tab" && modal) {
+            const focusables = getModalFocusables(modal);
+            const first = focusables[0];
+            const last = focusables.at(-1);
+            if (e.shiftKey && document.activeElement === first) {
+              e.preventDefault();
+              last?.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+              e.preventDefault();
+              first?.focus();
+            }
           }
         });
 
-        // Load modal submit buttons share URL validation and error handling.
         function setupModalSubmit(buttonId, inputId, loadFn) {
           document
             .getElementById(buttonId)
@@ -792,9 +712,12 @@
               const value = document.getElementById(inputId).value.trim();
               if (!value) return;
               closeModal(document.getElementById(buttonId));
+              const pending = loadFn(value);
+              const load = window._projectLoad;
               try {
-                await loadFn(value);
+                await pending;
               } catch (e) {
+                if (load !== window._projectLoad) return;
                 alert(`Load failed: ${e.message}`);
               }
             });
@@ -807,7 +730,6 @@
         );
         setupModalSubmit("btn-load-url", "input-load-url", loadFromUrl);
 
-        // Enter key submits whichever modal input is active.
         document.querySelectorAll(".modal-input").forEach((input) => {
           input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
@@ -853,19 +775,28 @@
 
         runButton.addEventListener("click", async () => {
           animateButton(runButton);
-          copyCodeToProject();
-          await copyResourceToProject();
-          resetRuntimeScreen();
+          try {
+            copyCodeToProject();
+            await copyResourceToProject();
+            resetRuntimeScreen();
+          } catch (e) {
+            alert(`Run failed: ${e.message}`);
+          }
         });
       }
 
-      // Load the bundled starter project and focus the code editor.
       async function loadInitialFiles() {
+        const load = (window._projectLoad = Symbol());
         const res = await fetch("pyxel-project.zip");
         if (!res.ok) {
-          throw new Error("Starter project not found");
+          throw new Error(`Failed to fetch starter project: ${res.status}`);
         }
-        await loadProjectFromZip(await res.arrayBuffer(), "pyxel-project");
+        await loadProjectFromZip(
+          await res.arrayBuffer(),
+          "pyxel-project",
+          load,
+        );
+        if (load !== window._projectLoad) return;
         window._codeEditor.focus();
       }
 
@@ -874,7 +805,6 @@
         const screenLoaded = new Promise((resolve) => {
           runtimeScreen.onload = () => resolve();
         });
-
         const editorLoaded = new Promise((resolve) => {
           resourceEditor.onload = () => resolve();
         });
@@ -895,8 +825,10 @@
       function onPyxelReady() {
         waitForPyxelReady(
           () =>
-            runtimeScreen?.contentWindow?.pyxelContext?.resolveInput &&
-            resourceEditor?.contentWindow?.pyxelContext?.resolveInput,
+            [runtimeScreen, resourceEditor].every((frame) => {
+              const context = frame?.contentWindow?.pyxelContext;
+              return context?.resolveInput || context?.initialized;
+            }),
           () => {
             resourceEditor.contentWindow._savePyxelFile = () => {
               saveToFile();
@@ -904,32 +836,17 @@
 
             const runButton = document.getElementById("run-button");
             runButton.disabled = false;
-
             const resourceTabButton = document.getElementById(
               "resource-tab-button",
             );
             resourceTabButton.disabled = false;
             resourceTabButton.classList.remove("disabled");
-
             const splitterHandle = document.getElementById("splitter-handle");
             splitterHandle.style.pointerEvents = "auto";
           },
         );
       }
 
-      // Focus-line state for editor, resource editor, and runtime panes
-      function updateFocusLine(state) {
-        focusLineLeft.classList.toggle(
-          "focus-line-segment-active",
-          state === "left",
-        );
-        focusLineRight.classList.toggle(
-          "focus-line-segment-active",
-          state === "right",
-        );
-      }
-
-      // Track whether keyboard focus belongs to the editor or runtime pane.
       function setupFocusIndicator() {
         const leftPane = document.getElementById("left-pane");
         const rightPane =
@@ -941,11 +858,9 @@
           "pointerdown",
           (e) => {
             const target = e.target;
-
             if (toolbar && toolbar.contains(target)) {
               return;
             }
-
             if (splitterHandle && splitterHandle.contains(target)) {
               return;
             }
@@ -982,7 +897,6 @@
         }
       }
 
-      // Manage the resizable split between editor and runtime panes.
       function setupSplitter() {
         const mainSplitter = document.getElementById("main-splitter");
         const leftPane = document.getElementById("left-pane");
@@ -997,20 +911,26 @@
 
         function updateFocusLineLayout() {
           const containerRect = mainSplitter.getBoundingClientRect();
+          focusLineLeft.style.flex = "0 0 auto";
+          focusLineCenter.style.flex = "0 0 auto";
+          focusLineRight.style.flex = "0 0 auto";
+
+          if (window.matchMedia("(max-width: 639px)").matches) {
+            const paneWidth = containerRect.width / 2;
+            focusLineLeft.style.width = `${paneWidth}px`;
+            focusLineCenter.style.width = "0px";
+            focusLineRight.style.width = `${paneWidth}px`;
+            return;
+          }
+
           const leftRect = leftPane.getBoundingClientRect();
           const handleRect = splitterHandle.getBoundingClientRect();
-
           const leftWidth = leftRect.width;
           const centerWidth = handleRect.width;
           const rightWidth = Math.max(
             containerRect.width - leftWidth - centerWidth,
             0,
           );
-
-          focusLineLeft.style.flex = "0 0 auto";
-          focusLineCenter.style.flex = "0 0 auto";
-          focusLineRight.style.flex = "0 0 auto";
-
           focusLineLeft.style.width = `${leftWidth}px`;
           focusLineCenter.style.width = `${centerWidth}px`;
           focusLineRight.style.width = `${rightWidth}px`;
@@ -1050,6 +970,7 @@
         }
 
         function onDown(e) {
+          if (window.matchMedia("(max-width: 639px)").matches) return;
           dragging = true;
           startX = e.clientX;
           startWidth = leftPane.getBoundingClientRect().width;
@@ -1068,11 +989,8 @@
         window.addEventListener("resize", updateFocusLineLayout);
       }
 
-      // Bind global keyboard shortcuts across the window and embedded panes.
       function setupShortcuts() {
-        // Dispatch command shortcuts to load, save, focus, tab, and run actions.
         function handleShortcutKeydown(e) {
-          // Ctrl(Cmd)+L: Load file
           if ((e.ctrlKey || e.metaKey) && e.key === "l") {
             e.preventDefault();
             e.stopPropagation();
@@ -1082,7 +1000,6 @@
             return;
           }
 
-          // Ctrl(Cmd)+S: Save file
           if ((e.ctrlKey || e.metaKey) && e.key === "s") {
             e.preventDefault();
             e.stopPropagation();
@@ -1090,7 +1007,6 @@
             return;
           }
 
-          // Ctrl(Cmd)+,: Toggle Code/Res
           if ((e.ctrlKey || e.metaKey) && e.key === ",") {
             e.preventDefault();
             e.stopPropagation();
@@ -1109,7 +1025,6 @@
             return;
           }
 
-          // Ctrl(Cmd)+.: Toggle focus between left and right panes
           if ((e.ctrlKey || e.metaKey) && e.key === ".") {
             e.preventDefault();
             e.stopPropagation();
@@ -1118,15 +1033,12 @@
             const resourceTabButton = document.getElementById(
               "resource-tab-button",
             );
-
             const leftActive = focusLineLeft.classList.contains(
               "focus-line-segment-active",
             );
             const rightActive = focusLineRight.classList.contains(
               "focus-line-segment-active",
             );
-
-            // Decide next target: if right is active, move to left, otherwise to right.
             const moveToLeft = rightActive || (!leftActive && !rightActive);
 
             if (moveToLeft) {
@@ -1150,7 +1062,6 @@
             return;
           }
 
-          // Ctrl(Cmd)+Enter: Run
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
             e.preventDefault();
             e.stopPropagation();
@@ -1178,33 +1089,63 @@
         bindTarget(resourceEditor.contentWindow);
       }
 
-      // File-drop import for Python scripts into the code editor
       function setupFileDrop() {
-        document.addEventListener("dragover", (e) => e.preventDefault());
-        document.addEventListener("drop", (e) => e.preventDefault());
-
-        const codeEditorEl = document.getElementById("code-editor");
-        codeEditorEl.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = "copy";
-        });
-        codeEditorEl.addEventListener("drop", (e) => {
+        async function handleDrop(e) {
           e.preventDefault();
           const file = e.dataTransfer.files?.[0];
-          if (file && file.name.endsWith(".py")) {
-            file.text().then((text) => {
+          if (!file) return;
+          const isCode = file.name.endsWith(".py");
+          if (!isCode && !file.name.endsWith(".pyxres")) return;
+
+          // Handle project files before Ace or an embedded app handles the drop.
+          e.stopPropagation();
+          try {
+            if (isCode) {
+              let text = await file.text();
               text = text.replace(
-                /((?:\w+\.)?\bload\()(["'])[^"']*\.pyxres\2/g,
+                /((?:\w+\.)?\bload\s*\(\s*)(["'])[^"']*\.pyxres\2/g,
                 "$1$2my_resource.pyxres$2",
               );
+              document.getElementById("code-tab-button").click();
               window._codeEditor.setValue(text, -1);
               window._project.code = text;
               window._project.files["main.py"] = uint8ToBase64(
                 new TextEncoder().encode(text),
               );
-            });
+            } else {
+              const data = await file.arrayBuffer();
+              waitForPyxelReady(
+                () => {
+                  const context = resourceEditor.contentWindow?.pyxelContext;
+                  context?.resolveInput?.();
+                  return context?.initialized;
+                },
+                () => {
+                  document.getElementById("resource-tab-button").click();
+                  resourceEditor.contentWindow.dropFileToPyxel(file.name, data);
+                },
+              );
+            }
+          } catch (e) {
+            alert(`Load failed: ${e.message}`);
           }
-        });
+        }
+
+        function bindDocument(doc) {
+          doc.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+          });
+          doc.addEventListener("drop", handleDrop, { capture: true });
+        }
+
+        bindDocument(document);
+        for (const frame of [runtimeScreen, resourceEditor]) {
+          bindDocument(frame.contentWindow.document);
+          frame.addEventListener("load", () => {
+            bindDocument(frame.contentWindow.document);
+          });
+        }
       }
 
       // Runtime input unlock forwarded to both embedded Pyxel contexts.
@@ -1214,7 +1155,6 @@
           if (runtimeScreen?.contentWindow?.pyxelContext?.resolveInput) {
             runtimeScreen.contentWindow.pyxelContext.resolveInput();
           }
-
           if (resourceEditor?.contentWindow?.pyxelContext?.resolveInput) {
             resourceEditor.contentWindow.pyxelContext.resolveInput();
           }
@@ -1225,43 +1165,331 @@
         });
       }
 
+      // Project helpers
+
+      async function loadProjectFromZip(buf, name, load = window._projectLoad) {
+        const zip = await JSZip.loadAsync(buf);
+        const files = {};
+
+        for (const [path, entry] of Object.entries(zip.files)) {
+          if (!entry.dir) {
+            const relativePath = path.split("/").slice(1).join("/");
+            const content = await entry.async("uint8array");
+            files[relativePath] = uint8ToBase64(content);
+          }
+        }
+
+        if (load !== window._projectLoad) return;
+        if (!Object.hasOwn(files, "main.py")) {
+          throw new Error("Missing main.py");
+        }
+        if (!Object.hasOwn(files, "my_resource.pyxres")) {
+          throw new Error("Missing my_resource.pyxres");
+        }
+
+        window._project.name = sanitizeProjectName(name);
+        window._project.files = files;
+        window._project.code = new TextDecoder().decode(
+          base64ToUint8(files["main.py"]),
+        );
+        window._project.resource = files["my_resource.pyxres"];
+
+        window._codeEditor.setValue(window._project.code, -1);
+        resetRuntimeScreen();
+        resetResourceEditor();
+      }
+
+      async function buildArchiveBlob() {
+        const archive = new JSZip();
+        const prefix = sanitizeProjectName(window._project.name);
+        window._project.name = prefix;
+        for (const [path, b64] of Object.entries(window._project.files)) {
+          archive.file(`${prefix}/${path}`, base64ToUint8(b64));
+        }
+        archive.file(`${prefix}/.pyxapp_startup_script`, "main.py");
+        archive.file(`${prefix}/main.py`, window._project.code);
+        archive.file(
+          `${prefix}/my_resource.pyxres`,
+          base64ToUint8(window._project.resource),
+        );
+        return archive.generateAsync({ type: "blob" });
+      }
+
+      function copyCodeToProject() {
+        window._project.code = window._codeEditor.getValue();
+      }
+
+      async function copyResourceToProject() {
+        // Unwind a Python save callback before entering its runtime again.
+        await Promise.resolve();
+        const context = resourceEditor.contentWindow?.pyxelContext;
+        // Project loading replaces the resource editor asynchronously.
+        while (context?.resetPromise) {
+          await context.resetPromise;
+        }
+        const pyodide = context?.pyodide;
+        if (!pyodide) {
+          return;
+        }
+
+        // Prevent the editor's save callback from re-entering saveToFile.
+        window._isCopyingResource = true;
+        try {
+          const filename = PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres";
+          pyodide.runPython(
+            `import pyxel; pyxel.save(${JSON.stringify(filename)})`,
+          );
+          window._project.resource = uint8ToBase64(
+            pyodide.FS.readFile(filename),
+          );
+        } finally {
+          window._isCopyingResource = false;
+        }
+      }
+
+      function resetRuntimeScreen() {
+        runtimeScreen.contentWindow?.resetPyxel?.();
+      }
+
+      function resetResourceEditor() {
+        resourceEditor.contentWindow?.resetPyxel?.();
+      }
+
+      function buildGitHubProjectUrl(value) {
+        const parts = value.split("/");
+        const user = encodeURIComponent(parts[0]);
+        const repo = encodeURIComponent(parts[1]);
+        const refAndPath = encodeUrlPath(parts.slice(2).join("/"));
+        return `https://github.com/${user}/${repo}/blob/${refAndPath}.zip`;
+      }
+
+      function sanitizeProjectName(name) {
+        let safeName = name
+          .replace(/[\/\\<>:"|?*\u0000-\u001f\u007f-\u009f]/g, "_")
+          .trim()
+          .replace(/[ .]+$/g, "");
+        if (!safeName) {
+          return "untitled";
+        }
+
+        const windowsBaseName = safeName.split(".", 1)[0].trimEnd();
+        if (
+          /^(?:CON|PRN|AUX|NUL|CONIN\$|CONOUT\$|COM[1-9¹²³]|LPT[1-9¹²³])$/i.test(
+            windowsBaseName,
+          )
+        ) {
+          safeName = `_${safeName}`;
+        }
+        return safeName;
+      }
+
+      function updateShareUrl(param, value, ref = null, sha = null) {
+        const base = new URL(location.href);
+        base.search = "";
+        base.hash = "";
+        if (param && value) {
+          const encoded = encodeURIComponent(value)
+            .replace(/%3A/g, ":")
+            .replace(/%2F/g, "/");
+          const refParam = ref ? `&ref=${encodeURIComponent(ref)}` : "";
+          const shaParam = /^[0-9a-f]{40}$/i.test(sha) ? `&sha=${sha}` : "";
+          history.replaceState(
+            null,
+            "",
+            `${base}?${param}=${encoded}${refParam}${shaParam}`,
+          );
+        } else {
+          history.replaceState(null, "", base);
+        }
+      }
+
+      // UI helpers
+
+      function handleMenuKeydown(menu, event) {
+        const items = [...menu.querySelectorAll(".dropdown-item")];
+        if (items.length === 0) return;
+
+        const currentIndex = items.indexOf(document.activeElement);
+        let targetIndex;
+        switch (event.key) {
+          case "ArrowDown":
+            targetIndex =
+              currentIndex < 0 ? 0 : (currentIndex + 1) % items.length;
+            break;
+          case "ArrowUp":
+            targetIndex =
+              currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
+            break;
+          case "Home":
+            targetIndex = 0;
+            break;
+          case "End":
+            targetIndex = items.length - 1;
+            break;
+          case "Tab":
+            closeAllDropdowns();
+            return;
+          case "Escape":
+            event.preventDefault();
+            closeAllDropdowns();
+            menu.parentElement.querySelector(".btn-dropdown")?.focus();
+            return;
+          default:
+            return;
+        }
+
+        event.preventDefault();
+        items[targetIndex].focus();
+      }
+
+      function activateMenuItem(item, loadFileInput) {
+        const trigger = item
+          .closest(".relative")
+          ?.querySelector(".btn-dropdown");
+        closeAllDropdowns();
+        trigger?.focus();
+
+        switch (item.dataset.action) {
+          case "load-local":
+            loadFileInput.value = "";
+            loadFileInput.click();
+            break;
+          case "load-gist":
+            showModal("modal-load-gist");
+            break;
+          case "load-github":
+            showModal("modal-load-github");
+            break;
+          case "load-url":
+            showModal("modal-load-url");
+            break;
+          case "save-local":
+            saveToFile();
+            break;
+          case "save-gist":
+            saveToGist();
+            break;
+        }
+      }
+
+      function animateButton(button) {
+        button.classList.add("active");
+        setTimeout(() => button.classList.remove("active"), 150);
+      }
+
+      // Dropdown helpers keep only one toolbar menu open at a time.
+      function toggleDropdown(menuId) {
+        const menu = document.getElementById(menuId);
+        const wasHidden = menu.classList.contains("hidden");
+        closeAllDropdowns();
+        if (wasHidden) {
+          menu.classList.remove("hidden");
+          const trigger = menu.parentElement.querySelector(".btn-dropdown");
+          trigger.classList.add("active");
+          trigger.setAttribute("aria-expanded", "true");
+          menu.querySelector(".dropdown-item")?.focus();
+        }
+      }
+
+      function closeAllDropdowns() {
+        document.querySelectorAll(".dropdown-menu").forEach((m) => {
+          m.classList.add("hidden");
+          const trigger = m.parentElement.querySelector(".btn-dropdown");
+          trigger.classList.remove("active");
+          trigger.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modalReturnFocus =
+          document.activeElement
+            ?.closest(".relative")
+            ?.querySelector("button") ?? document.activeElement;
+        modal.classList.remove("hidden");
+        const input = modal.querySelector(".modal-input");
+        if (input) {
+          input.value = "";
+        }
+        setTimeout(() => (input ?? getModalFocusables(modal)[0])?.focus(), 0);
+      }
+
+      function closeModal(el) {
+        const overlay = el.closest(".modal-overlay");
+        if (overlay) {
+          overlay.classList.add("hidden");
+          modalReturnFocus?.focus();
+          modalReturnFocus = null;
+        }
+      }
+
+      function updateFocusLine(state) {
+        focusLineLeft.classList.toggle(
+          "focus-line-segment-active",
+          state === "left",
+        );
+        focusLineRight.classList.toggle(
+          "focus-line-segment-active",
+          state === "right",
+        );
+      }
+
+      let modalReturnFocus = null;
+
+      const getModalFocusables = (modal) =>
+        [...modal.querySelectorAll("a[href], button, input")].filter(
+          (element) => !element.disabled,
+        );
+
       window.addEventListener("DOMContentLoaded", async () => {
-        // Initialize editor widgets and toolbar interactions.
         initAceEditor();
         setupButtonHandlers();
         setupSplitter();
 
-        // Load the starter project into code/resource/runtime panes.
-        await loadInitialFiles();
+        const initialPending = loadInitialFiles();
+        const initialLoad = window._projectLoad;
+        try {
+          await initialPending;
+        } catch (e) {
+          if (initialLoad === window._projectLoad) {
+            alert(`Load failed: ${e.message}`);
+            return;
+          }
+        }
         updateFocusLine("left");
 
-        // Prepare iframes before focus tracking and shortcut binding.
         await setupIframes();
 
-        // Restore an externally shared project source from URL parameters.
         const params = new URL(location.href).searchParams;
         const gistParam = params.get("gist");
         const githubParam = params.get("github");
         const urlParam = params.get("url");
-        try {
-          if (gistParam) {
-            await loadFromGist(gistParam);
-          } else if (githubParam) {
-            const parts = githubParam.split("/");
-            const ghUrl = `https://github.com/${parts[0]}/${parts[1]}/blob/${parts.slice(2).join("/")}.zip`;
-            await loadFromGitHub(ghUrl);
-          } else if (urlParam) {
-            await loadFromUrl(urlParam);
-          }
-        } catch (e) {
-          alert(`Load failed: ${e.message}`);
+        let pending;
+        if (gistParam) {
+          pending = loadFromGist(gistParam);
+        } else if (githubParam) {
+          pending = loadFromGitHubShare(
+            githubParam,
+            params.get("ref"),
+            params.get("sha"),
+          );
+        } else if (urlParam) {
+          pending = loadFromUrl(urlParam);
         }
+        const load = window._projectLoad;
+        try {
+          await pending;
+        } catch (e) {
+          if (load === window._projectLoad) {
+            alert(`Load failed: ${e.message}`);
+          }
+        }
+
         setupFocusIndicator();
         setupShortcuts();
         setupPyxelInput();
         setupFileDrop();
 
-        // Enable Pyxel controls after runtime readiness checks pass.
         onPyxelReady();
       });
     </script>

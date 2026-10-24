@@ -4,7 +4,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::RcImage;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::{f32_to_u32, simplify_string};
+use crate::utils::{f32_to_i32, simplify_string};
 
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -40,15 +40,13 @@ pub struct Tilemap {
 define_rc_type!(RcTilemap, Tilemap);
 
 impl Tilemap {
-    // Constructors
-
     pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> RcTilemap {
-        Self::try_new(width, height, imgsrc).expect("tilemap dimensions are too large")
+        Self::try_new(width, height, imgsrc).expect("width and height are too large")
     }
 
     pub fn try_new(width: u32, height: u32, imgsrc: ImageSource) -> Result<RcTilemap, String> {
         let canvas = Canvas::try_new(width, height)
-            .ok_or_else(|| "tilemap dimensions are too large".to_string())?;
+            .ok_or_else(|| "width and height are too large".to_string())?;
         Ok(new_rc_type!(Self { imgsrc, canvas }))
     }
 
@@ -56,7 +54,7 @@ impl Tilemap {
         parse_tmx(filename, layer_index)
     }
 
-    // Public accessors
+    // Accessors
 
     pub const fn width(&self) -> u32 {
         self.canvas.width()
@@ -70,9 +68,8 @@ impl Tilemap {
         self.canvas.data_ptr()
     }
 
-    // Public data operations
+    // Data operations
 
-    // Parse inline tile data before drawing it into the map.
     pub fn set<S: AsRef<str>>(&mut self, x: i32, y: i32, data: &[S]) -> Result<(), String> {
         if data.is_empty() {
             return Err("Invalid tilemap data: no rows".to_string());
@@ -91,6 +88,7 @@ impl Tilemap {
                 "Invalid tilemap data at row 0: hexadecimal digit count {digit_count} is not divisible by 4"
             ));
         }
+
         for (row_index, row) in rows.iter().enumerate() {
             let row_digit_count = row.chars().count();
             if row_digit_count != digit_count {
@@ -100,6 +98,7 @@ impl Tilemap {
             }
         }
 
+        // Each four hexadecimal digits encode tile x then tile y as bytes.
         let width = (digit_count / 4) as u32;
         let height = rows.len() as u32;
         let rc = Self::new(width, height, self.imgsrc.clone());
@@ -113,6 +112,7 @@ impl Tilemap {
                             "Invalid tilemap data at row {y}, column {column}: expected hexadecimal digit, got '{digit}'"
                         )
                     })?;
+
                     tile = (tile << 4) | value;
                     if column % 4 == 3 {
                         tilemap.canvas.write_data(
@@ -128,6 +128,7 @@ impl Tilemap {
                 }
             }
         }
+
         self.draw_tilemap(
             x as f32,
             y as f32,
@@ -147,6 +148,7 @@ impl Tilemap {
         let rc = Self::from_tmx(filename, layer_index)?;
         let w = rc_ref!(rc).width();
         let h = rc_ref!(rc).height();
+
         self.draw_tilemap(
             x as f32, y as f32, &rc, 0.0, 0.0, w as f32, h as f32, None, None, None,
         );
@@ -246,7 +248,6 @@ impl Tilemap {
 
     // Blit operations
 
-    // Dispatch plain blits, transforms, and self-blits.
     pub fn draw_tilemap(
         &mut self,
         x: f32,
@@ -262,32 +263,40 @@ impl Tilemap {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
+
+        // Preserve source tiles when the destination overlaps the source.
+        let borrowed;
+        let copied_canvas;
+        let src = if ptr::eq(tilemap.as_ptr(), self) {
+            if f32_to_i32(width) == 0 || f32_to_i32(height) == 0 {
+                return;
+            }
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
+        } else {
+            borrowed = rc_ref!(tilemap);
+            &borrowed.canvas
+        };
+
         if rotate != 0.0 || scale != 1.0 {
-            self.draw_tilemap_with_transform(
+            self.canvas.blit_with_transform(
                 x,
                 y,
-                tilemap,
+                src,
                 tilemap_x,
                 tilemap_y,
                 width,
                 height,
                 transparent,
+                None,
                 rotate,
                 scale,
             );
-            return;
-        }
-
-        let tilemap = rc_ref!(tilemap);
-        if self.is_self_blit(&tilemap) {
-            let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
-            self.canvas
-                .blit(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
         } else {
             self.canvas.blit(
                 x,
                 y,
-                &tilemap.canvas,
+                src,
                 tilemap_x,
                 tilemap_y,
                 width,
@@ -297,8 +306,6 @@ impl Tilemap {
             );
         }
     }
-
-    // Collision detection
 
     pub fn collide(
         &self,
@@ -315,6 +322,7 @@ impl Tilemap {
         let mut cur_y = y;
         let mut ndx = dx;
         let mut ndy = dy;
+
         if dx.abs() >= dy.abs() {
             ndx = self.collide_resolve_x(cur_x, cur_y, width, height, ndx, walls);
             cur_x += ndx;
@@ -324,74 +332,12 @@ impl Tilemap {
             cur_y += ndy;
             ndx = self.collide_resolve_x(cur_x, cur_y, width, height, ndx, walls);
         }
+
         (ndx, ndy)
     }
 
     // Internal helpers
 
-    fn is_self_blit(&self, tilemap: &Tilemap) -> bool {
-        ptr::eq(tilemap, self)
-    }
-
-    // Copy first to avoid aliasing on self-blit.
-    fn copy_region(&self, x: f32, y: f32, width: f32, height: f32) -> Canvas<Tile> {
-        let w = f32_to_u32(width.abs());
-        let h = f32_to_u32(height.abs());
-        let mut canvas = Canvas::new(w, h);
-        canvas.blit(0.0, 0.0, &self.canvas, x, y, w as f32, h as f32, None, None);
-        canvas
-    }
-
-    // Copy self-blits before applying tilemap transforms.
-    fn draw_tilemap_with_transform(
-        &mut self,
-        x: f32,
-        y: f32,
-        tilemap: &RcTilemap,
-        tilemap_x: f32,
-        tilemap_y: f32,
-        width: f32,
-        height: f32,
-        transparent: Option<Tile>,
-        rotate: f32,
-        scale: f32,
-    ) {
-        let tilemap = rc_ref!(tilemap);
-        if self.is_self_blit(&tilemap) {
-            let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
-            self.canvas.blit_with_transform(
-                x,
-                y,
-                &canvas,
-                0.0,
-                0.0,
-                width,
-                height,
-                transparent,
-                None,
-                rotate,
-                scale,
-                false,
-            );
-        } else {
-            self.canvas.blit_with_transform(
-                x,
-                y,
-                &tilemap.canvas,
-                tilemap_x,
-                tilemap_y,
-                width,
-                height,
-                transparent,
-                None,
-                rotate,
-                scale,
-                false,
-            );
-        }
-    }
-
-    // Sweep one axis against wall tiles.
     fn collide_resolve_axis(
         &self,
         pos: f32,
@@ -399,20 +345,23 @@ impl Tilemap {
         delta: f32,
         cross_start: i32,
         cross_end: i32,
+        primary_limit: i32,
         walls: &[Tile],
         make_tile_coords: impl Fn(i32, i32) -> (i32, i32),
     ) -> f32 {
-        if delta == 0.0 {
+        if delta == 0.0 || cross_start > cross_end {
             return delta;
         }
 
         let tile_size = TILE_SIZE as f32;
-
         if delta > 0.0 {
             let cur_edge = pos + size - 1.0;
             let new_edge = cur_edge + delta;
-            let start = (cur_edge / tile_size).floor() as i32 + 1;
-            let end = (new_edge / tile_size).floor() as i32;
+            let start = ((cur_edge / tile_size).floor() as i32)
+                .saturating_add(1)
+                .max(0);
+            let end = ((new_edge / tile_size).floor() as i32).min(primary_limit.saturating_sub(1));
+
             for primary in start..=end {
                 for cross in cross_start..=cross_end {
                     let (tx, ty) = make_tile_coords(primary, cross);
@@ -423,8 +372,11 @@ impl Tilemap {
             }
         } else {
             let new_edge = pos + delta;
-            let start = (pos / tile_size).floor() as i32 - 1;
-            let end = (new_edge / tile_size).floor() as i32;
+            let start = ((pos / tile_size).floor() as i32)
+                .saturating_sub(1)
+                .min(primary_limit.saturating_sub(1));
+            let end = ((new_edge / tile_size).floor() as i32).max(0);
+
             for primary in (end..=start).rev() {
                 for cross in cross_start..=cross_end {
                     let (tx, ty) = make_tile_coords(primary, cross);
@@ -448,11 +400,19 @@ impl Tilemap {
         walls: &[Tile],
     ) -> f32 {
         let tile_size = TILE_SIZE as f32;
-        let ty0 = (y / tile_size).floor() as i32;
-        let ty1 = ((y + height - 1.0) / tile_size).floor() as i32;
-        self.collide_resolve_axis(x, width, dx, ty0, ty1, walls, |primary, cross| {
-            (primary, cross)
-        })
+        let ty0 = ((y / tile_size).floor() as i32).max(0);
+        let ty1 = (((y + height - 1.0) / tile_size).floor() as i32)
+            .min((self.canvas.height() as i32).saturating_sub(1));
+        self.collide_resolve_axis(
+            x,
+            width,
+            dx,
+            ty0,
+            ty1,
+            self.canvas.width() as i32,
+            walls,
+            |primary, cross| (primary, cross),
+        )
     }
 
     fn collide_resolve_y(
@@ -465,11 +425,19 @@ impl Tilemap {
         walls: &[Tile],
     ) -> f32 {
         let tile_size = TILE_SIZE as f32;
-        let tx0 = (x / tile_size).floor() as i32;
-        let tx1 = ((x + width - 1.0) / tile_size).floor() as i32;
-        self.collide_resolve_axis(y, height, dy, tx0, tx1, walls, |primary, cross| {
-            (cross, primary)
-        })
+        let tx0 = ((x / tile_size).floor() as i32).max(0);
+        let tx1 = (((x + width - 1.0) / tile_size).floor() as i32)
+            .min((self.canvas.width() as i32).saturating_sub(1));
+        self.collide_resolve_axis(
+            y,
+            height,
+            dy,
+            tx0,
+            tx1,
+            self.canvas.height() as i32,
+            walls,
+            |primary, cross| (cross, primary),
+        )
     }
 
     fn is_wall(&self, tx: i32, ty: i32, walls: &[Tile]) -> bool {

@@ -2,6 +2,7 @@ import pyxel
 
 from .settings import (
     EDITOR_IMAGE,
+    MAX_MUSIC_LENGTH,
     MUSIC_FIELD_BACKGROUND_COLOR,
     MUSIC_FIELD_CURSOR_EDIT_COLOR,
     MUSIC_FIELD_CURSOR_PLAY_COLOR,
@@ -29,12 +30,9 @@ class MusicField(Widget):
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
-
-    # Helpers
 
     @property
     def data(self):
@@ -96,17 +94,19 @@ class MusicField(Widget):
                 else MUSIC_FIELD_CURSOR_EDIT_COLOR
             )
 
+        pyxel.clip(self.x + 20, self.y + 1, 191, 19)
+
         # Draw cursor highlight
         if cursor_y == self._ch:
             data_len = len(self.data)
-            for i in range(data_len + 1):
+            for i in range(min(data_len + 1, MAX_MUSIC_LENGTH)):
                 if cursor_x <= i < cursor_x + cursor_width:
                     x = self.x + (i % 16) * 12 + 21
                     y = self.y + (i // 16) * 10 + 2
                     pyxel.rect(x, y, 9, 7, cursor_col)
 
         # Draw sound indices
-        for i, snd in enumerate(self.data):
+        for i, snd in enumerate(self.data[:MAX_MUSIC_LENGTH]):
             x = self.x + 22 + (i % 16) * 12
             y = self.y + (i // 16) * 10 + 3
             is_selected = (
@@ -118,3 +118,5 @@ class MusicField(Widget):
                 else MUSIC_FIELD_SOUND_NORMAL_COLOR
             )
             pyxel.text(x, y, f"{snd:0>2}", col)
+
+        pyxel.clip()

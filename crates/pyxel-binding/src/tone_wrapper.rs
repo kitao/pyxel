@@ -3,14 +3,6 @@ use pyo3::prelude::*;
 
 use crate::utils::MutexFieldMut;
 
-fn wavetable_mut(inner: &pyxel::RcTone) -> MutexFieldMut<'_, pyxel::Tone, Vec<pyxel::ToneSample>> {
-    MutexFieldMut::new(
-        audio_mut!(inner),
-        |tone| &tone.wavetable,
-        |tone| &mut tone.wavetable,
-    )
-}
-
 // Python sequence wrapper for the mutable wavetable
 
 wrap_as_python_primitive_sequence!(
@@ -31,8 +23,6 @@ define_audio_wrapper!(Tone, pyxel::Tone, pyxel::RcTone);
 
 #[pymethods]
 impl Tone {
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Tone::new())
@@ -112,7 +102,13 @@ impl Tone {
     }
 }
 
-// Module registration
+fn wavetable_mut(inner: &pyxel::RcTone) -> MutexFieldMut<'_, pyxel::Tone, Vec<pyxel::ToneSample>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |tone| &tone.wavetable,
+        |tone| &mut tone.wavetable,
+    )
+}
 
 pub fn add_tone_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Wavetable>()?;

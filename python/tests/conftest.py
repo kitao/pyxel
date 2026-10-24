@@ -6,7 +6,6 @@ from _capture import compare_or_update_all  # type: ignore[reportMissingImports]
 
 ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
 
-
 # Pytest option and ordering hooks
 
 
@@ -22,12 +21,14 @@ def pytest_collection_modifyitems(items):
     # Run subprocess-based regression tests last so cheap failures surface early.
     regression = []
     others = []
+
     for item in items:
         path = str(item.fspath)
         if any(name in path for name in ("test_apps", "test_examples", "test_editor")):
             regression.append(item)
         else:
             others.append(item)
+
     items[:] = others + regression
 
 

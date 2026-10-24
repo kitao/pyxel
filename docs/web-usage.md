@@ -2,9 +2,9 @@
 
 # How to Use Pyxel for Web
 
-*This document was auto-generated from the [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.dev/pyxel/web-usage/).*
 
-Pyxel for Web is a version of Pyxel that runs in web browsers using WebAssembly technology. No installation of Python or Pyxel is required, and it is accessible from PCs, smartphones, and tablets.
+Pyxel for Web runs in your browser on PCs, smartphones, and tablets, without installing Python or Pyxel.
 
 ## Ways to Use Pyxel for Web
 
@@ -12,28 +12,30 @@ There are four ways to use Pyxel for Web.
 
 | Method | Description |
 | --- | --- |
-| Pyxel Code Maker | An online development environment for writing and running code in the browser |
-| Pyxel Web Launcher | Run a GitHub repository in the browser by specifying its URL |
-| app2html Command | Convert a Pyxel application file (.pyxapp) to an HTML file |
-| HTML Custom Elements | Add HTML custom elements to run Pyxel apps on any HTML page |
+| [Pyxel Code Maker](https://kitao.dev/pyxel/web-usage/#s-code-maker) | An online development environment for writing and running code in the browser |
+| [Pyxel Web Launcher](https://kitao.dev/pyxel/web-usage/#s-launcher) | Run a GitHub repository in the browser by specifying its URL |
+| [app2html Command](https://kitao.dev/pyxel/web-usage/#s-app2html) | Convert a Pyxel application file (.pyxapp) to an HTML file |
+| [HTML Custom Elements](https://kitao.dev/pyxel/web-usage/#s-custom-elements) | Add HTML custom elements to run Pyxel apps on any HTML page |
 
 ## Pyxel Code Maker
 
-[Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) is an online development environment that lets you develop and run Pyxel apps in the browser without installing Python or Pyxel. Just open it in your browser with no setup required, making it a great way to try Pyxel.
+Use [Pyxel Code Maker](https://kitao.dev/pyxel/code-maker/) to edit code and resources and run Pyxel apps in your browser. No installation is needed.
 
-For detailed usage, see the [Pyxel Code Maker Manual](https://kitao.github.io/pyxel/web/code-maker/manual.html).
+For detailed usage, see the [Pyxel Code Maker Manual](https://kitao.dev/pyxel/code-maker/manual.html).
 
 ## Pyxel Web Launcher
 
-[Pyxel Web Launcher](https://kitao.github.io/pyxel/web/launcher/) is a tool that runs Python scripts and Pyxel apps (.pyxapp) published on GitHub simply by specifying their URL.
+[Pyxel Web Launcher](https://kitao.dev/pyxel/launcher/) is a tool that runs Python scripts and Pyxel apps (.pyxapp) published on GitHub simply by specifying their URL.
 
-Launch URLs can be created on the [Pyxel Web Launcher](https://kitao.github.io/pyxel/web/launcher/) page by entering the required information, or manually using the format below. Note that Pyxel Web Launcher always uses the latest version of Pyxel.
+Launch URLs can be created on the [Pyxel Web Launcher](https://kitao.dev/pyxel/launcher/) page by entering the required information, or manually using the format below. Note that Pyxel Web Launcher always uses the latest version of Pyxel.
 
 ### URL Format
 
 ```
-https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>
+https://kitao.dev/pyxel/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>
 ```
+
+For branch names containing /, URL Builder makes the branch and file path unambiguous. It also handles characters such as # and ? in paths and filenames.
 
 ### Commands
 
@@ -48,13 +50,13 @@ https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<b
 To run `src/scenes/title.py` in user `taro`'s repository `my_repo`, branch `main`:
 
 ```
-https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title
+https://kitao.dev/pyxel/launcher/?run=taro/my_repo/main/src/scenes/title
 ```
 
 To run `dist/games/shooter.pyxapp` in the same repository:
 
 ```
-https://kitao.github.io/pyxel/web/launcher/?play=taro/my_repo/main/dist/games/shooter
+https://kitao.dev/pyxel/launcher/?play=taro/my_repo/main/dist/games/shooter
 ```
 
 ### Additional Parameters
@@ -68,7 +70,7 @@ The following additional parameters can be specified for the `run` and `play` co
 Example URL with additional parameters for the `run` command:
 
 ```
-https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled
+https://kitao.dev/pyxel/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled
 ```
 
 The `edit` command has the `editor` parameter to specify which editor to launch: `image`, `tilemap`, `sound`, `music`
@@ -76,42 +78,36 @@ The `edit` command has the `editor` parameter to specify which editor to launch:
 Example URL for the `edit` command:
 
 ```
-https://kitao.github.io/pyxel/web/launcher/?edit=taro/my_repo/main/assets/shooter&editor=tilemap
+https://kitao.dev/pyxel/launcher/?edit=taro/my_repo/main/assets/shooter&editor=tilemap
 ```
 
 Apps consisting of multiple Python files load faster when bundled into a `.pyxapp` file with `pyxel package` and run with `play`.
 
 ## app2html Command
 
-The `pyxel app2html` command converts a Pyxel application file (.pyxapp) into a standalone HTML file.
+The `pyxel app2html` command converts a Pyxel application file (.pyxapp) into a single HTML file.
 
 ```sh
 pyxel app2html your_app.pyxapp
 ```
 
-All code and resource data are embedded in the HTML, so the generated file can be published simply by distributing it.
+Application code and resources are embedded in the HTML, so only this file needs to be published. At runtime, it loads the same Pyxel version used for conversion from kitao.dev, so a network connection is required.
 
-The Pyxel version is pinned to the one used at conversion time, so future updates will not affect behavior.
-
-The virtual gamepad is enabled by default and automatically displayed on touch devices. To disable it, remove `gamepad: "enabled"` from the generated HTML.
+The virtual gamepad is enabled by default and automatically displayed on touch devices. To disable it, remove `gamepad: "enabled",` from the generated HTML.
 
 ## HTML Custom Elements
 
-By adding HTML custom elements provided by Pyxel to an HTML file, you can run Pyxel apps on any HTML page.
+Use HTML custom elements to embed Pyxel apps in your own HTML pages.
 
 ### Setup
 
-Add the following script tag to your HTML. If no version is specified, the latest version of Pyxel is always used.
+Add the following script tag to your HTML.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+<script src="https://kitao.dev/pyxel/2.9.9/pyxel.js"></script>
 ```
 
-You can pin the Pyxel version by specifying a version number after `@`.
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js"></script>
-```
+Replace `2.9.9` in the URL with the Pyxel version you want to use.
 
 Loading this script makes three HTML custom elements available, corresponding to Pyxel's `run`, `play`, and `edit` commands: `pyxel-run`, `pyxel-play`, and `pyxel-edit`.
 
@@ -125,6 +121,7 @@ To run Python code directly, write the code in the `script` attribute.
 <pyxel-run
   script="
 import pyxel
+
 pyxel.init(200, 150)
 pyxel.cls(8)
 pyxel.line(20, 20, 180, 130, 7)
@@ -149,7 +146,7 @@ A URL can also be specified for `root`.
 
 ```html
 <pyxel-play
-  root="https://cdn.jsdelivr.net/gh/kitao/pyxel/python/pyxel/examples/apps"
+  root="https://kitao.dev/pyxel/assets/examples/apps"
   name="megaball.pyxapp"
 ></pyxel-play>
 ```

@@ -13,7 +13,7 @@ Pyxel のサンプルコードを以下の順に試すのがおすすめです�
 4. 04_sound_api — サウンド API
 5. 02_jump_game — ゲーム実装
 
-サンプルコードは `pyxel copy_examples` でコピーできるほか、[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) でブラウザ上でも実行できます。
+サンプルコードは [ユーザーガイドの手順](https://kitao.dev/pyxel/user-guide/#s-usage) でコピーできるほか、[Pyxel Showcase](https://kitao.dev/pyxel/showcase/) でブラウザ上でも実行できます。
 
 </details>
 
@@ -29,16 +29,16 @@ Pyxel のサンプルコードを以下の順に試すのがおすすめです�
 <details>
 <summary><code>update</code> 関数と <code>draw</code> 関数の違いは何ですか？</summary>
 
-`update` 関数は毎フレーム呼び出されますが、`draw` 関数は処理時間が許容限界を超えた場合にスキップされることがあります。Pyxel はこの設計により、レンダリング負荷や OS の割り込み処理の影響を軽減して、滑らかなアニメーションを実現しています。
+`update` は毎フレームの状態を更新し、`draw` は画面を描画します。処理が遅れると `draw` はスキップされることがあるため、移動や当たり判定などは `update` に書きます。
 
 </details>
 
 <details>
 <summary>Pyxel MML の使い方を教えてください</summary>
 
-MML (Music Macro Language) は、音符やテンポなどを文字列で記述してサウンドを定義する言語です。
+MML (Music Macro Language) は、音符やテンポを文字列で指定する言語です。
 
-Sound クラスの `mml` 関数に MML 文字列を渡すと、その Sound が MML の内容に沿って再生されるようになります。`mml()` を引数なしで呼ぶと MML 設定を解除できます。
+Sound の `mml` メソッドで設定し、引数なしの `mml()` で解除します。
 
 ```python
 pyxel.sounds[0].mml("CDEFGAB>C")
@@ -50,9 +50,9 @@ pyxel.sounds[0].mml("CDEFGAB>C")
 pyxel.play(0, "CDEFG")
 ```
 
-利用できる MML コマンドは [Pyxel MML コマンド](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html) を参照してください。使用例はサンプル 09_shooter.py の [デモ](https://kitao.github.io/pyxel/web/showcase/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
+利用できる MML コマンドは [Pyxel MML コマンド](https://kitao.dev/pyxel/mml-studio/mml-commands.html) を参照してください。使用例はサンプル 09_shooter.py の [デモ](https://kitao.dev/pyxel/showcase/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
 
-また、[Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/) を使えば、MML をブラウザ上で作成・共有できます。
+また、[Pyxel MML Studio](https://kitao.dev/pyxel/mml-studio/) を使えば、MML をブラウザ上で作成・共有できます。
 
 </details>
 
@@ -61,16 +61,14 @@ pyxel.play(0, "CDEFG")
 <details>
 <summary>環境が変わるとファイルを読み込めなくなるのはなぜですか？</summary>
 
-ファイルを読み込む際に、カレントディレクトリが意図したものになっているかを確認してください。
-
-Pyxel の `init` 関数が呼ばれると、カレントディレクトリはそのスクリプトファイルと同じ場所に変更され、それ以降は相対パスでファイルを指定できます。しかし、`init` を呼ぶ前にファイルを開こうとした場合や `init` の後にカレントディレクトリを変更した場合には読み込みに失敗する可能性があります。
+相対パスはカレントディレクトリを基準にします。`pyxel.init()` はこれをスクリプトのあるディレクトリに変更します。`init` より前に読み込む場合や、後で作業ディレクトリを変更した場合は、パスの基準を確認してください。
 
 </details>
 
 <details>
 <summary>ハイスコアやゲームの進行状況など、アプリケーション固有のデータを保存する方法はありますか？</summary>
 
-開発者名 (`vendor_name`) とアプリ名 (`app_name`) を `user_data_dir(vendor_name, app_name)` 関数に渡すと、プラットフォームに適したデータ保存用のディレクトリを作成し、そのパスを返します。このディレクトリの下でアプリケーション用のファイルの保存や読み込みを行ってください。
+`pyxel.user_data_dir(vendor_name, app_name)` に開発者名とアプリ名を渡すと、環境に適した保存用ディレクトリを作成し、そのパスを返します。このディレクトリにデータを保存してください。
 
 </details>
 
@@ -79,16 +77,16 @@ Pyxel の `init` 関数が呼ばれると、カレントディレクトリはそ
 <details>
 <summary>インストールせずに Pyxel を試せますか？</summary>
 
-[Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) を使えば、ブラウザ上で Pyxel アプリの作成・実行ができます。ただし、複数ファイル構成には対応していないため、本格的な開発にはローカル環境をおすすめします。
+[Pyxel Code Maker](https://kitao.dev/pyxel/code-maker/) を使えば、ブラウザ上で Pyxel アプリを作成して実行できます。ただし、コードエディタで編集できるのは `main.py` だけです。複数の Python ファイルを編集する場合は、ローカル環境をおすすめします。
 
-[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) では、サンプルコードやアプリをブラウザ上で一覧・実行できます。
+[Pyxel Showcase](https://kitao.dev/pyxel/showcase/) では、サンプルコードやアプリをブラウザ上で一覧・実行できます。
 
 </details>
 
 <details>
 <summary>自作の Pyxel アプリを Web で公開するにはどうすればいいですか？</summary>
 
-Pyxel Web Launcher、app2html、HTML カスタム要素の 3 つの方法があります。詳しくは [Web 版 Pyxel の使い方](https://kitao.github.io/pyxel/web/web-usage/) を参照してください。
+Pyxel Code Maker、Pyxel Web Launcher、app2html、HTML カスタム要素の 4 つの方法があります。詳しくは [Web 版 Pyxel の使い方](https://kitao.dev/pyxel/web-usage/) を参照してください。
 
 </details>
 
@@ -109,11 +107,11 @@ Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されていま�
 コードをバージョン 2.4 に対応させるには、以下の変更を行ってください。
 
 - Tone クラスの `waveform` フィールドを `wavetable` にリネームする
-- `play` 関数、`playm` 関数の `tick` 引数を `sec`（小数形式の秒数）に変更する
+- `play` 関数、`playm` 関数の `tick` 引数を `sec` に変更し、値を `tick / 120` 秒に換算する
 - `play_pos` 関数の戻り値が `(sound_index, sec)` に変わったことに対応する
-- Sound クラス、Music クラスの `save` 関数の `count` 引数を `sec` に変更する
+- Sound クラス、Music クラスの `save` 関数では、再生回数 `count` の代わりに保存する秒数を `sec` に指定する
 - サウンドの再生秒数が必要な場合は、Sound クラスの `total_sec` 関数を利用する
-- Sound クラスの `mml` 関数には新 MML 文法に沿ったコードを指定する（旧文法は自動検出される。`old_mml` 関数は非推奨）
+- Sound クラスの `mml` 関数には、新 MML 文法に書き換えたコードを指定する
 - `save`、`load` 関数の `excl_*` オプションを `exclude_*` に変更する
 - `save`、`load` 関数の `incl_*` オプションの指定を削除する
 

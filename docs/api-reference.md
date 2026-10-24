@@ -2,7 +2,7 @@
 
 # Pyxel API Reference
 
-*This document was auto-generated from the [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/) web page, which also offers multilingual support.*
+*[Read online in other languages](https://kitao.dev/pyxel/api-reference/).*
 
 ## System
 
@@ -35,7 +35,7 @@ Initialize the Pyxel application with the screen size (width, height).
 - `title` (*str*) — Window title. Defaults to "Pyxel".
 - `fps` (*int*) — Frame rate. Defaults to 30.
 - `quit_key` (*int*) — Key to quit the application. Defaults to KEY_ESCAPE.
-- `display_scale` (*int*) — Display scale factor. If omitted, automatically determined.
+- `display_scale` (*int | None*) — Display scale factor. If omitted, automatically determined.
 - `capture_scale` (*int*) — Screen capture scale factor. Defaults to 2.
 - `capture_sec` (*int*) — Maximum recording time for screen capture video. Defaults to 10.
 - `headless` (*bool*) — Run without a window. Defaults to False.
@@ -61,7 +61,7 @@ Start the Pyxel application and call the update function for frame update and th
 **Parameters:**
 
 - `update` (*callable*) — Function to update game logic each frame
-- `draw` (*callable*) — Function to draw the screen each frame
+- `draw` (*callable*) — Function to draw the screen
 
 ### `show()` — function
 
@@ -93,9 +93,9 @@ Set the application icon. Specify the icon image as a list of strings.
 
 **Parameters:**
 
-- `data` (*list[str]*) — Icon image as a list of strings
+- `data` (*list[str]*) — List of strings, each representing one row using hexadecimal color indices (0-f)
 - `scale` (*int*) — Scale factor
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
 ### `fullscreen(enabled)` — function *(Advanced)*
 
@@ -152,7 +152,7 @@ Load the resource file (.pyxres). If an option is set to True, the corresponding
 - `exclude_sounds` (*bool*) — Exclude sounds. Defaults to False.
 - `exclude_musics` (*bool*) — Exclude music tracks. Defaults to False.
 
-**Note:** If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.
+**Note:** If a palette file (.pyxpal) with the same name exists in the same directory as the resource file, the palette display colors will also be updated.
 
 ### `user_data_dir(vendor_name, app_name)` — function *(Advanced)*
 
@@ -163,7 +163,7 @@ Return the user data directory created based on vendor_name and app_name. If the
 - `vendor_name` (*str*) — Vendor name
 - `app_name` (*str*) — Application name
 
-**Returns:** `str` — Path to the user data directory
+**Returns:** `str`
 
 **Example:**
 
@@ -183,23 +183,23 @@ Save the resource file (.pyxres). If an option is set to True, the corresponding
 - `exclude_sounds` (*bool*) — Exclude sounds. Defaults to False.
 - `exclude_musics` (*bool*) — Exclude music tracks. Defaults to False.
 
-### `screenshot(filename=None, scale=2)` — function *(Advanced)*
+### `screenshot(filename=None, scale=None)` — function *(Advanced)*
 
-Take a screenshot.
+Save a screenshot as a PNG file.
 
 **Parameters:**
 
-- `filename` (*str/None*) — File name. If omitted, saved to desktop.
-- `scale` (*int/None*) — Scale factor. Defaults to capture_scale.
+- `filename` (*str | None*) — File name. In the desktop version, omitting it saves the file to the desktop. In the web version, the browser downloads the file.
+- `scale` (*int | None*) — Scale factor. Defaults to capture_scale.
 
-### `screencast(filename=None, scale=2)` — function *(Advanced)*
+### `screencast(filename=None, scale=None)` — function *(Advanced)*
 
 Save the screen recording as a GIF file.
 
 **Parameters:**
 
-- `filename` (*str/None*) — File name. If omitted, saved to desktop.
-- `scale` (*int/None*) — Scale factor. Defaults to capture_scale.
+- `filename` (*str | None*) — File name. In the desktop version, omitting it saves the file to the desktop. In the web version, the browser downloads the file.
+- `scale` (*int | None*) — Scale factor. Defaults to capture_scale.
 
 ### `reset_screencast()` — function *(Advanced)*
 
@@ -267,7 +267,7 @@ Return True if the key is pressed, otherwise return False.
 
 - `key` (*int*) — Key code
 
-**Returns:** `bool` — True if pressed
+**Returns:** `bool`
 
 ### `btnp(key, hold=0, repeat=0)` — function
 
@@ -279,7 +279,7 @@ Return True if the key is pressed in that frame. When hold and repeat are specif
 - `hold` (*int*) — Frames to hold before repeat starts. Defaults to 0.
 - `repeat` (*int*) — Repeat interval in frames. If 0, no repeat.
 
-**Returns:** `bool` — True if pressed in that frame
+**Returns:** `bool`
 
 ### `btnr(key)` — function
 
@@ -289,7 +289,7 @@ Return True if the key is released in that frame, otherwise return False.
 
 - `key` (*int*) — Key code
 
-**Returns:** `bool` — True if released in that frame
+**Returns:** `bool`
 
 ### `mouse(visible)` — function
 
@@ -307,7 +307,7 @@ Return the analog value of the specified key (e.g., gamepad axis value).
 
 - `key` (*int*) — Key code
 
-**Returns:** `int` — Analog value of the key
+**Returns:** `int`
 
 ### `set_btn(key, state)` — function *(Advanced)*
 
@@ -422,7 +422,7 @@ Set the dropped file list for the current frame. Replaces any existing list. Mai
 
 ### `colors` — variable
 
-List of the palette display colors. Specified by 24-bit numerical value. Supports Python list operations.
+List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations.
 
 - **Type:** `list[int]`
 
@@ -471,7 +471,7 @@ The font image (Image class instance).
 
 ### `clip(x, y, w, h)` — function
 
-Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen.
+Set the drawing area of the screen from (x, y) with a width of w and a height of h.
 
 **Parameters:**
 
@@ -508,7 +508,7 @@ Replace color col1 with col2 when drawing.
 
 ### `pal()` — function
 
-Reset the palette to the initial state.
+Clear the drawing color replacements set by pal.
 
 ### `dither(alpha)` — function
 
@@ -535,7 +535,7 @@ Get the color of the pixel at (x, y). The coordinates are absolute and not affec
 - `x` (*float*) — X coordinate
 - `y` (*float*) — Y coordinate
 
-**Returns:** `int` — Color of the pixel
+**Returns:** `int`
 
 ### `pset(x, y, col)` — function
 
@@ -667,7 +667,7 @@ Fill the area connected with the same color as (x, y) with color col.
 - `y` (*float*) — Y coordinate
 - `col` (*int*) — Fill color
 
-### `blt(x, y, img, u, v, w, h, colkey=None, rotate=0, scale=1)` — function
+### `blt(x, y, img, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
 Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
@@ -675,33 +675,33 @@ Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image insta
 
 - `x` (*float*) — Destination X
 - `y` (*float*) — Destination Y
-- `img` (*int/Image*) — Image bank number (0-2) or Image instance
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 - `u` (*float*) — Source X in the image bank
 - `v` (*float*) — Source Y in the image bank
 - `w` (*float*) — Width (negative to flip)
 - `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
-### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0, scale=1)` — function
+### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
 Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
 **Parameters:**
 
-- `x` (*float*) — Destination X
-- `y` (*float*) — Destination Y
-- `tm` (*int/Tilemap*) — Tilemap number (0-7) or Tilemap instance
-- `u` (*float*) — Source X in the tilemap
-- `v` (*float*) — Source Y in the tilemap
-- `w` (*float*) — Width (negative to flip)
-- `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `x` (*float*) — Destination X (in pixels)
+- `y` (*float*) — Destination Y (in pixels)
+- `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
+- `u` (*float*) — Source X in the tilemap (in pixels)
+- `v` (*float*) — Source Y in the tilemap (in pixels)
+- `w` (*float*) — Width in pixels (negative to flip)
+- `h` (*float*) — Height in pixels (negative to flip)
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
-### `blt3d(x, y, w, h, img, pos, rot, fov=60, colkey=None)` — function *(Advanced)*
+### `blt3d(x, y, w, h, img, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
 Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -711,13 +711,13 @@ Draw the image bank img (0-2 or Image instance) with perspective projection onto
 - `y` (*float*) — Destination Y
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
-- `img` (*int/Image*) — Image bank number (0-2) or Image instance
-- `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
-- `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
+- `pos` (*tuple[float, float, float]*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
+- `rot` (*tuple[float, float, float]*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
-### `bltm3d(x, y, w, h, tm, pos, rot, fov=60, colkey=None)` — function *(Advanced)*
+### `bltm3d(x, y, w, h, tm, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
 Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -727,11 +727,11 @@ Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto t
 - `y` (*float*) — Destination Y
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
-- `tm` (*int/Tilemap*) — Tilemap number (0-7) or Tilemap instance
-- `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
-- `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
+- `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
+- `pos` (*tuple[float, float, float]*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
+- `rot` (*tuple[float, float, float]*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
-- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
+- `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 
 ### `text(x, y, s, col, font=None)` — function
 
@@ -743,7 +743,7 @@ Draw a string s in color col at (x, y).
 - `y` (*float*) — Y coordinate
 - `s` (*str*) — String to draw
 - `col` (*int*) — Color
-- `font` (*Font*) — Custom font. If omitted, the standard font is used.
+- `font` (*Font | None*) — Custom font. If omitted, the standard font is used.
 
 ### Color Constants
 
@@ -814,7 +814,7 @@ Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list
 **Parameters:**
 
 - `ch` (*int*) — Channel number (0-3)
-- `snd` (*int/list/Sound/str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
+- `snd` (*int | list | Sound | str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
 - `sec` (*float*) — Playback start position in seconds. Defaults to 0.
 - `loop` (*bool*) — Loop playback. Defaults to False.
 - `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.
@@ -849,7 +849,7 @@ Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, 
 
 - `ch` (*int*) — Channel number (0-3)
 
-**Returns:** `tuple[int, float]/None` — (sound_index, sec) or None
+**Returns:** `tuple[int, float] | None` — (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.
 
 ### `gen_bgm(preset, transp, instr, seed, play=False)` — function
 
@@ -863,7 +863,7 @@ Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, ins
 - `seed` (*int*) — Random seed
 - `play` (*bool*) — Play the generated MML. Defaults to False.
 
-**Returns:** `list[str]` — List of MML strings
+**Returns:** `list[str]`
 
 ### Tone & Effect Constants
 
@@ -900,7 +900,7 @@ Return the smallest integer greater than or equal to x.
 
 - `x` (*float*) — Value
 
-**Returns:** `int` — Smallest integer >= x
+**Returns:** `int`
 
 ### `floor(x)` — function
 
@@ -910,7 +910,7 @@ Return the largest integer less than or equal to x.
 
 - `x` (*float*) — Value
 
-**Returns:** `int` — Largest integer <= x
+**Returns:** `int`
 
 ### `clamp(x, lower, upper)` — function
 
@@ -918,11 +918,11 @@ Return x clamped between lower and upper.
 
 **Parameters:**
 
-- `x` (*float*) — Value to clamp
-- `lower` (*float*) — Minimum value
-- `upper` (*float*) — Maximum value
+- `x` (*int | float*) — Value to clamp
+- `lower` (*int | float*) — Minimum value
+- `upper` (*int | float*) — Maximum value
 
-**Returns:** `float` — Clamped value
+**Returns:** `int | float`
 
 ### `sgn(x)` — function
 
@@ -930,9 +930,9 @@ Return 1 when x is positive, 0 when it is 0, and -1 when it is negative.
 
 **Parameters:**
 
-- `x` (*int/float*) — Value
+- `x` (*int | float*) — Value
 
-**Returns:** `int/float` — Sign of the value (1, 0, or -1)
+**Returns:** `int | float`
 
 ### `sqrt(x)` — function
 
@@ -942,7 +942,7 @@ Return the square root of x.
 
 - `x` (*float*) — Value
 
-**Returns:** `float` — Square root of x
+**Returns:** `float`
 
 ### `sin(deg)` — function
 
@@ -952,7 +952,7 @@ Return the sine of deg degrees.
 
 - `deg` (*float*) — Angle in degrees
 
-**Returns:** `float` — Sine value
+**Returns:** `float`
 
 ### `cos(deg)` — function
 
@@ -962,11 +962,11 @@ Return the cosine of deg degrees.
 
 - `deg` (*float*) — Angle in degrees
 
-**Returns:** `float` — Cosine value
+**Returns:** `float`
 
 ### `atan2(y, x)` — function
 
-Return the arctangent of y/x in degrees.
+Return the two-argument arctangent of y and x in degrees, accounting for the quadrant.
 
 **Parameters:**
 
@@ -992,7 +992,7 @@ Return a random integer from a to b (inclusive).
 - `a` (*int*) — Minimum value (inclusive)
 - `b` (*int*) — Maximum value (inclusive)
 
-**Returns:** `int` — Random integer from a to b
+**Returns:** `int`
 
 ### `rndf(a, b)` — function
 
@@ -1003,7 +1003,7 @@ Return a random float from a to b (inclusive).
 - `a` (*float*) — Minimum value (inclusive)
 - `b` (*float*) — Maximum value (inclusive)
 
-**Returns:** `float` — Random float from a to b
+**Returns:** `float`
 
 ### `nseed(seed)` — function
 
@@ -1023,7 +1023,7 @@ Return the Perlin noise value for the specified coordinates.
 - `y` (*float*) — Y coordinate. Defaults to 0.
 - `z` (*float*) — Z coordinate. Defaults to 0.
 
-**Returns:** `float` — Perlin noise value
+**Returns:** `float`
 
 ## Font Class
 
@@ -1036,7 +1036,7 @@ Create a Font instance from a font file (BDF/OTF/TTF/TTC).
 - `filename` (*str*) — Font file name (BDF/OTF/TTF/TTC)
 - `font_size` (*float*) — Font size. Defaults to 10.0. Not used for BDF.
 
-**Returns:** `Font` — New Font instance
+**Returns:** `Font`
 
 ### `Font.text_width(s)` — function *(Advanced)*
 
@@ -1059,7 +1059,7 @@ Create a new Image instance with the specified size.
 - `width` (*int*) — Image width
 - `height` (*int*) — Image height
 
-**Returns:** `Image` — New Image instance
+**Returns:** `Image`
 
 ### `Image.from_image(filename, include_colors=False)` — class *(Advanced)*
 
@@ -1068,9 +1068,9 @@ Create an Image instance from an image file.
 **Parameters:**
 
 - `filename` (*str*) — Image file name
-- `include_colors` (*bool*) — Include palette colors from file. Defaults to False.
+- `include_colors` (*bool*) — If True, replace all of pyxel.colors with the image colors (at most 256 colors). If False, convert to similar colors in the current palette. Defaults to False.
 
-**Returns:** `Image` — Image instance from file
+**Returns:** `Image`
 
 ### `Image.width` — variable
 
@@ -1109,7 +1109,7 @@ Load an image file (PNG/GIF/JPEG) at (x, y).
 - `x` (*int*) — X coordinate
 - `y` (*int*) — Y coordinate
 - `filename` (*str*) — Image file name (PNG/GIF/JPEG)
-- `include_colors` (*bool*) — Include palette colors from file. Defaults to False.
+- `include_colors` (*bool*) — If True, replace all of pyxel.colors with the image colors (at most 256 colors). If False, convert to similar colors in the current palette. Defaults to False.
 
 ### `Image.pget(x, y)` — function
 
@@ -1120,7 +1120,7 @@ Get the color of the pixel at (x, y). The coordinates are absolute and not affec
 - `x` (*float*) — X coordinate
 - `y` (*float*) — Y coordinate
 
-**Returns:** `int` — Color of the pixel
+**Returns:** `int`
 
 ### `Image.pset(x, y, col)` — function
 
@@ -1140,15 +1140,15 @@ Image instances support all drawing functions from the Graphics section. They wo
 
 Return the raw data pointer of the image as a ctypes c_uint8 array.
 
-**Returns:** `Any` — Raw data pointer
+**Returns:** `Any`
 
 ### `Image.save(filename, scale)` — function *(Advanced)*
 
-Save the image to a file.
+Save the image as a PNG file.
 
 **Parameters:**
 
-- `filename` (*str*) — Output file name
+- `filename` (*str*) — Output file name. Appends .png unless the name already ends with that extension.
 - `scale` (*int*) — Scale factor
 
 ## Tilemap Class
@@ -1159,11 +1159,11 @@ Create a new Tilemap instance.
 
 **Parameters:**
 
-- `width` (*int*) — Tilemap width
-- `height` (*int*) — Tilemap height
-- `img` (*int/Image*) — Image bank number (0-2) or Image instance
+- `width` (*int*) — Tilemap width (in tiles)
+- `height` (*int*) — Tilemap height (in tiles)
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 
-**Returns:** `Tilemap` — New Tilemap instance
+**Returns:** `Tilemap`
 
 ### `Tilemap.from_tmx(filename, layer)` — class *(Advanced)*
 
@@ -1172,19 +1172,19 @@ Create a Tilemap instance from a TMX file.
 **Parameters:**
 
 - `filename` (*str*) — TMX file name
-- `layer` (*int*) — Layer number (0-)
+- `layer` (*int*) — Zero-based layer number
 
-**Returns:** `Tilemap` — Tilemap instance from TMX file
+**Returns:** `Tilemap`
 
 ### `Tilemap.width` — variable
 
-The width of the tilemap.
+Tilemap width (in tiles)
 
 - **Type:** `int`
 
 ### `Tilemap.height` — variable
 
-The height of the tilemap.
+Tilemap height (in tiles)
 
 - **Type:** `int`
 
@@ -1192,7 +1192,7 @@ The height of the tilemap.
 
 The image bank (0-2) or Image instance referenced by the tilemap.
 
-- **Type:** `int/Image`
+- **Type:** `int | Image`
 
 ### `Tilemap.set(x, y, data)` — function
 
@@ -1200,8 +1200,8 @@ Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex va
 
 **Parameters:**
 
-- `x` (*int*) — X coordinate
-- `y` (*int*) — Y coordinate
+- `x` (*int*) — X coordinate (in tiles)
+- `y` (*int*) — Y coordinate (in tiles)
 - `data` (*list[str]*) — Tilemap data as a list of strings
 
 **Example:**
@@ -1212,14 +1212,14 @@ pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])
 
 ### `Tilemap.load(x, y, filename, layer)` — function
 
-Load the layer (0-) from the TMX file at (x, y).
+Load the specified TMX layer at (x, y). Layer numbering starts at 0.
 
 **Parameters:**
 
-- `x` (*int*) — X coordinate
-- `y` (*int*) — Y coordinate
+- `x` (*int*) — X coordinate (in tiles)
+- `y` (*int*) — Y coordinate (in tiles)
 - `filename` (*str*) — TMX file name
-- `layer` (*int*) — Layer number (0-)
+- `layer` (*int*) — Zero-based layer number
 
 ### `Tilemap.pget(x, y)` — function
 
@@ -1227,8 +1227,8 @@ Get the tile at (x, y). The coordinates are absolute and not affected by the cam
 
 **Parameters:**
 
-- `x` (*float*) — X coordinate
-- `y` (*float*) — Y coordinate
+- `x` (*float*) — X coordinate (in tiles)
+- `y` (*float*) — Y coordinate (in tiles)
 
 **Returns:** `tuple[int, int]` — (image_tx, image_ty)
 
@@ -1238,13 +1238,13 @@ Set a tile at (x, y). A tile is a tuple of (image_tx, image_ty).
 
 **Parameters:**
 
-- `x` (*float*) — X coordinate
-- `y` (*float*) — Y coordinate
+- `x` (*float*) — X coordinate (in tiles)
+- `y` (*float*) — Y coordinate (in tiles)
 - `tile` (*tuple[int, int]*) — Tile as (image_tx, image_ty)
 
 ### `Tilemap.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, clip, camera}` — function
 
-Tilemap instances support drawing functions from the Graphics section. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value.
+Tilemap instances support drawing functions from the Graphics section, with coordinates and dimensions specified in tiles. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value. For blt, the source is a Tilemap and tilekey replaces colkey.
 
 ### `Tilemap.collide(x, y, w, h, dx, dy, walls)` — function
 
@@ -1266,7 +1266,7 @@ Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle
 
 Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
 
-**Returns:** `Any` — Raw data pointer
+**Returns:** `Any`
 
 ## Sound Class
 
@@ -1274,7 +1274,7 @@ Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes p
 
 Create a new Sound instance.
 
-**Returns:** `Sound` — New Sound instance
+**Returns:** `Sound`
 
 ### `Sound.notes` — variable
 
@@ -1376,7 +1376,7 @@ pyxel.sounds[0].set_effects("nfnf nvvs")
 
 ### `Sound.mml(code)` — function
 
-Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page.
+Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the [Pyxel MML Commands](https://kitao.dev/pyxel/mml-studio/mml-commands.html) page.
 
 **Parameters:**
 
@@ -1424,7 +1424,7 @@ Create a WAV file from the sound with the specified duration in seconds.
 
 Return the playback time in seconds. Return None for infinite loops.
 
-**Returns:** `float/None` — Playback time in seconds, or None for infinite loops
+**Returns:** `float | None` — Playback time in seconds, or None for infinite loops
 
 ## Music Class
 
@@ -1432,7 +1432,7 @@ Return the playback time in seconds. Return None for infinite loops.
 
 Create a new Music instance.
 
-**Returns:** `Music` — New Music instance
+**Returns:** `Music`
 
 ### `Music.seqs` — variable
 
@@ -1470,7 +1470,7 @@ Create a WAV file from the music with the specified duration in seconds.
 
 Create a new Channel instance.
 
-**Returns:** `Channel` — New Channel instance
+**Returns:** `Channel`
 
 ### `Channel.gain` — variable *(Advanced)*
 
@@ -1490,7 +1490,7 @@ Play the sound snd on this channel. snd can be a sound number, a list, a Sound i
 
 **Parameters:**
 
-- `snd` (*int/list/Sound/str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
+- `snd` (*int | list | Sound | str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
 - `sec` (*float*) — Playback start position in seconds. Defaults to 0.
 - `loop` (*bool*) — Loop playback. Defaults to False.
 - `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.
@@ -1503,7 +1503,7 @@ Stop playback on this channel.
 
 Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
-**Returns:** `tuple[int, float]/None` — (sound_index, sec) or None
+**Returns:** `tuple[int, float] | None` — (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.
 
 ## Tone Class
 
@@ -1511,7 +1511,7 @@ Get the playback position as a tuple of (sound_index, sec). Return None when pla
 
 Create a new Tone instance.
 
-**Returns:** `Tone` — New Tone instance
+**Returns:** `Tone`
 
 ### `Tone.mode` — variable *(Advanced)*
 
@@ -1527,7 +1527,7 @@ Sample bits for the wavetable (1-16). Defaults to 4.
 
 ### `Tone.wavetable` — variable *(Advanced)*
 
-Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1).
+List of nonnegative wavetable sample values. Values above (2^sample_bits - 1) are clamped when generating the waveform; stored values remain unchanged.
 
 - **Type:** `list[int]`
 

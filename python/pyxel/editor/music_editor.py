@@ -22,7 +22,6 @@ class MusicEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
         self._history_data = None
-
         self.new_var("is_playing_var", False)
 
         self.field_cursor = FieldCursor(
@@ -68,10 +67,8 @@ class MusicEditor(EditorBase):
         self.copy_var("should_loop_var", self._loop_button, "is_checked_var")
 
         self._music_fields = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
-
         self._sound_selector = SoundSelector(self)
 
-        # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("hide", self.__on_hide)
@@ -89,8 +86,6 @@ class MusicEditor(EditorBase):
         seqs_len = len(music.seqs)
         if seqs_len < pyxel.NUM_CHANNELS:
             music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
-        elif seqs_len > pyxel.NUM_CHANNELS:
-            del music.seqs[pyxel.NUM_CHANNELS :]
         return music.seqs[index]
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):

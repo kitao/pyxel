@@ -3,6 +3,14 @@ import pyxel
 
 
 class TestClamp:
+    @pytest.mark.parametrize(
+        ("lower", "upper"),
+        [(float("nan"), 1.0), (0.0, float("nan"))],
+    )
+    def test_nan_bound_panics(self, lower, upper, panic_exception):
+        with pytest.raises(panic_exception):
+            pyxel.clamp(0.5, lower, upper)
+
     def test_int_returns_int(self):
         result = pyxel.clamp(5, 0, 10)
         assert result == 5
@@ -94,13 +102,12 @@ class TestTrig:
     def test_sin_negative(self):
         assert pyxel.sin(-90) == pytest.approx(-1.0, abs=1e-6)
 
-    def test_atan2_quadrants(self):
+    def test_atan2_axis_angles(self):
         assert pyxel.atan2(1, 0) == pytest.approx(90.0, abs=1e-3)
         assert pyxel.atan2(0, 1) == pytest.approx(0.0, abs=1e-3)
         assert pyxel.atan2(-1, 0) == pytest.approx(-90.0, abs=1e-3)
 
     def test_sin_cos_identity(self):
-        # sin^2 + cos^2 = 1 for any angle.
         for deg in [0, 30, 45, 60, 90, 120, 180, 270]:
             s = pyxel.sin(deg)
             c = pyxel.cos(deg)
@@ -127,16 +134,24 @@ class TestBasicMath:
         assert pyxel.floor(3.0) == 3
 
     def test_sqrt(self):
-        assert pyxel.sqrt(4.0) == pytest.approx(2.0)
+        assert pyxel.sqrt(4.0) == 2.0
 
     def test_sqrt_zero(self):
-        assert pyxel.sqrt(0.0) == pytest.approx(0.0)
+        assert pyxel.sqrt(0.0) == 0.0
 
     def test_sqrt_one(self):
-        assert pyxel.sqrt(1.0) == pytest.approx(1.0)
+        assert pyxel.sqrt(1.0) == 1.0
 
 
 class TestRandom:
+    @pytest.mark.parametrize(
+        ("a", "b"),
+        [(float("nan"), 1.0), (0.0, float("inf"))],
+    )
+    def test_rndf_nonfinite_bound_panics(self, a, b, panic_exception):
+        with pytest.raises(panic_exception):
+            pyxel.rndf(a, b)
+
     def test_rndi_in_range(self):
         for _ in range(100):
             val = pyxel.rndi(0, 10)
@@ -144,7 +159,6 @@ class TestRandom:
             assert isinstance(val, int)
 
     def test_rndi_single_value(self):
-        # When min == max, always returns that value.
         for _ in range(10):
             assert pyxel.rndi(5, 5) == 5
 
@@ -189,9 +203,9 @@ class TestNoise:
 
     def test_noise_seed_reproducible(self):
         pyxel.nseed(42)
-        val1 = pyxel.noise(1.0, 2.0, 3.0)
+        val1 = pyxel.noise(1.5, 2.5, 3.5)
         pyxel.nseed(42)
-        val2 = pyxel.noise(1.0, 2.0, 3.0)
+        val2 = pyxel.noise(1.5, 2.5, 3.5)
         assert val1 == val2
 
     def test_noise_different_seeds_differ(self):
@@ -202,12 +216,10 @@ class TestNoise:
         assert val1 != val2
 
     def test_noise_1d(self):
-        val = pyxel.noise(0.5)
-        assert -1.0 <= val <= 1.0
+        assert pyxel.noise(0.5) == pyxel.noise(0.5, 0.0, 0.0)
 
     def test_noise_2d(self):
-        val = pyxel.noise(0.5, 0.3)
-        assert -1.0 <= val <= 1.0
+        assert pyxel.noise(0.5, 0.3) == pyxel.noise(0.5, 0.3, 0.0)
 
     def test_noise_continuity(self):
         # Nearby inputs should produce nearby outputs (Perlin noise is smooth).

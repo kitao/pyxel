@@ -49,7 +49,6 @@ class SoundEditor(EditorBase):
         )
 
         self.new_var("octave_var", 2)
-
         self.new_var("is_playing_var", None)
         self.add_var_event_listener("is_playing_var", "get", self.__on_is_playing_get)
 
@@ -64,7 +63,13 @@ class SoundEditor(EditorBase):
         self.copy_var("sound_index_var", self._sound_picker, "value_var")
 
         self._speed_picker = NumberPicker(
-            self, 105, 17, min_value=1, max_value=99, value=pyxel.sounds[0].speed
+            self,
+            105,
+            17,
+            min_value=1,
+            max_value=99,
+            value=pyxel.sounds[0].speed,
+            allow_out_of_range=True,
         )
         self._speed_picker.add_event_listener("change", self.__on_speed_picker_change)
         self.add_number_picker_help(self._speed_picker)
@@ -94,15 +99,11 @@ class SoundEditor(EditorBase):
 
         self._piano_keyboard = PianoKeyboard(self)
         self.copy_var("note_var", self._piano_keyboard)
-
         self._piano_roll = PianoRoll(self)
-
         self._sound_field = SoundField(self)
-
         self._left_octave_bar = OctaveBar(self, 12, 25)
         self._right_octave_bar = OctaveBar(self, 224, 25)
 
-        # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("hide", self.__on_hide)
@@ -151,6 +152,11 @@ class SoundEditor(EditorBase):
 
     # Helpers
 
+    def _sync_speed_picker(self):
+        sound = pyxel.sounds[self.sound_index_var]
+        if self.speed_var != sound.speed:
+            self.speed_var = sound.speed
+
     def _play(self, is_partial):
         self._sound_picker.is_enabled_var = False
         self._speed_picker.is_enabled_var = False
@@ -191,7 +197,7 @@ class SoundEditor(EditorBase):
         return pyxel.play_pos(0) is not None
 
     def __on_sound_picker_change(self, value):
-        self._speed_picker.value_var = pyxel.sounds[value].speed
+        self._sync_speed_picker()
 
     def __on_sound_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
@@ -224,9 +230,7 @@ class SoundEditor(EditorBase):
         self._stop()
 
     def __on_update(self):
-        sound = pyxel.sounds[self.sound_index_var]
-        if self.speed_var != sound.speed:
-            self.speed_var = sound.speed
+        self._sync_speed_picker()
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self.is_playing_var:

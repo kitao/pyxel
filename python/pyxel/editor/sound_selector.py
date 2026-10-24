@@ -22,7 +22,6 @@ class SoundSelector(Widget):
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_repeat", self.__on_mouse_down)

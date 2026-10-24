@@ -8,10 +8,12 @@ pub struct Profiler {
 }
 
 impl Profiler {
-    // Constructor
-
     pub fn new(measure_frame_count: u32) -> Self {
-        assert!(measure_frame_count >= 1, "invalid measure frame count");
+        assert!(
+            measure_frame_count >= 1,
+            "measure_frame_count must be greater than 0"
+        );
+
         Self {
             measure_frame_count,
             measured_frame_count: 0,
@@ -46,6 +48,7 @@ impl Profiler {
         if self.measured_frame_count >= self.measure_frame_count {
             self.average_time = self.total_time as f32 / self.measured_frame_count as f32;
             self.average_fps = 1000.0 / self.average_time;
+
             self.measured_frame_count = 0;
             self.total_time = 0;
         }
@@ -64,14 +67,13 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "invalid measure frame count")]
+    #[should_panic(expected = "measure_frame_count must be greater than 0")]
     fn test_new_zero_frames_panics() {
         Profiler::new(0);
     }
 
     #[test]
     fn test_single_measurement_cycle() {
-        // 1-frame profiler: delta = 110 - 100 = 10ms -> fps = 1000/10 = 100
         let mut p = Profiler::new(1);
         p.start(100);
         p.end(110);
@@ -81,20 +83,15 @@ mod tests {
 
     #[test]
     fn test_multi_frame_average() {
-        // 3-frame profiler: averages should only update after 3rd end()
         let mut p = Profiler::new(3);
-
-        // Frame 1: delta = 10
         p.start(0);
         p.end(10);
         assert_eq!(p.average_time(), 0.0, "should not update before 3 frames");
 
-        // Frame 2: delta = 20
         p.start(100);
         p.end(120);
         assert_eq!(p.average_time(), 0.0, "should not update before 3 frames");
 
-        // Frame 3: delta = 30, total = 60, average = 20
         p.start(200);
         p.end(230);
         assert_eq!(p.average_time(), 20.0);
@@ -104,15 +101,12 @@ mod tests {
     #[test]
     fn test_consecutive_cycles() {
         let mut p = Profiler::new(2);
-
-        // Cycle 1: deltas 10, 20 -> average = 15
         p.start(0);
         p.end(10);
         p.start(100);
         p.end(120);
         assert_eq!(p.average_time(), 15.0);
 
-        // Cycle 2: deltas 5, 5 -> average = 5 (previous cycle fully replaced)
         p.start(200);
         p.end(205);
         assert_eq!(p.average_time(), 15.0, "mid-cycle retains previous average");
@@ -125,18 +119,15 @@ mod tests {
 
     #[test]
     fn test_zero_time_frame() {
-        // Starting and ending at the same tick produces a zero millisecond frame.
         let mut p = Profiler::new(1);
         p.start(100);
         p.end(100);
         assert_eq!(p.average_time(), 0.0);
-        // Dividing by zero frame time yields positive infinity.
         assert_eq!(p.average_fps(), f32::INFINITY);
     }
 
     #[test]
     fn test_tick_count_wraparound() {
-        // Tick counter wrapped past u32::MAX: true delta = 10
         let mut p = Profiler::new(1);
         p.start(u32::MAX - 5);
         p.end(4);

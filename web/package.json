@@ -1,10 +1,18 @@
 {
   "private": true,
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "dev": "node scripts/wrangler.mjs dev --port 4186",
+    "test": "node --test tests/*.test.js tests/*.test.mjs",
+    "test:browser": "playwright test",
+    "check": "npm test && npm run test:browser",
+    "deploy:check": "npm run check && node scripts/wrangler.mjs deploy --dry-run",
+    "deploy": "npm run deploy:check && node scripts/wrangler.mjs deploy --strict"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4",
-    "prettier": "^3.8.4"
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/cli": "4.3.0",
+    "axe-core": "4.11.0",
+    "prettier": "^3.8.4",
+    "wrangler": "4.150.0"
   }
 }

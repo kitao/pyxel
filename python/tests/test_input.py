@@ -1,31 +1,24 @@
+import subprocess
+import sys
+
+import pytest
 import pyxel
 
 
+@pytest.fixture(autouse=True)
+def reset_input_state():
+    yield
+    for letter in "ABCDEFGHIJKLM":
+        pyxel.set_btn(getattr(pyxel, f"KEY_{letter}"), False)
+    pyxel.flip()
+    pyxel.set_mouse_pos(0, 0)
+
+
 class TestInputFunctions:
-    def test_btn_returns_bool(self):
-        result = pyxel.btn(pyxel.KEY_SPACE)
-        assert isinstance(result, bool)
-
-    def test_btnp_returns_bool(self):
-        result = pyxel.btnp(pyxel.KEY_SPACE)
-        assert isinstance(result, bool)
-
-    def test_btnp_with_hold_repeat_returns_bool(self):
-        result = pyxel.btnp(pyxel.KEY_SPACE, hold=10, repeat=5)
-        assert isinstance(result, bool)
-
-    def test_btnr_returns_bool(self):
-        result = pyxel.btnr(pyxel.KEY_SPACE)
-        assert isinstance(result, bool)
-
     def test_btnv_returns_int(self):
         # btnv requires an analog key (mouse position/wheel or gamepad axis)
         result = pyxel.btnv(pyxel.MOUSE_WHEEL_X)
         assert isinstance(result, int)
-
-    def test_mouse_visible(self):
-        pyxel.mouse(True)
-        pyxel.mouse(False)
 
 
 class TestInputAttributes:
@@ -39,6 +32,51 @@ class TestInputAttributes:
     def test_dropped_files_is_list(self):
         files = pyxel.dropped_files
         assert isinstance(files, list)
+
+    @pytest.mark.parametrize("name", ["input_keys", "dropped_files"])
+    def test_list_allows_garbage_collection_reentry(self, name):
+        code = """
+import gc
+import sys
+
+import pyxel
+
+read = pyxel.__getattr__
+name = sys.argv[1]
+active = False
+collected = False
+
+
+def collect(phase, info):
+    global collected
+    if active and phase == "start":
+        collected = True
+        read(name)
+
+
+gc.collect()
+gc.disable()
+retained = [[] for _ in range(1000)]
+gc.callbacks.append(collect)
+gc.set_threshold(1, 1000000, 1000000)
+active = True
+gc.enable()
+result = read(name)
+active = False
+gc.callbacks.remove(collect)
+
+assert collected
+assert result == []
+        """
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code, name],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert result.stderr == ""
 
     def test_mouse_x_is_int(self):
         assert isinstance(pyxel.mouse_x, int)
@@ -70,10 +108,9 @@ class TestSetButtonState:
     def test_btnp_false_after_flip(self):
         pyxel.set_btn(pyxel.KEY_E, True)
         assert pyxel.btnp(pyxel.KEY_E) is True
+
         pyxel.flip()
-        # btnp is false on next frame (no new press)
         assert pyxel.btnp(pyxel.KEY_E) is False
-        # But btn is still true (key held)
         assert pyxel.btn(pyxel.KEY_E) is True
 
     def test_btnr_false_without_release(self):
@@ -89,8 +126,6 @@ class TestSetButtonState:
     def test_input_keys_reflects_pressed(self):
         pyxel.set_btn(pyxel.KEY_I, True)
         assert pyxel.KEY_I in pyxel.input_keys
-        pyxel.set_btn(pyxel.KEY_I, False)
-        pyxel.flip()
 
 
 class TestBtnpHoldRepeat:
@@ -100,42 +135,40 @@ class TestBtnpHoldRepeat:
     def test_first_press_returns_true(self):
         pyxel.set_btn(pyxel.KEY_J, True)
         assert pyxel.btnp(pyxel.KEY_J, hold=3, repeat=2) is True
-        pyxel.set_btn(pyxel.KEY_J, False)
-        pyxel.flip()
 
-    def test_silent_during_hold_window(self):
+    @pytest.mark.parametrize("hold", [3, 2**31, 2**32 - 1])
+    def test_silent_during_hold_window(self, hold):
         pyxel.set_btn(pyxel.KEY_K, True)
-        assert pyxel.btnp(pyxel.KEY_K, hold=3, repeat=2) is True
+        assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is True
+
         pyxel.flip()
-        assert pyxel.btnp(pyxel.KEY_K, hold=3, repeat=2) is False
+        assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is False
         pyxel.flip()
-        assert pyxel.btnp(pyxel.KEY_K, hold=3, repeat=2) is False
-        pyxel.set_btn(pyxel.KEY_K, False)
-        pyxel.flip()
+        assert pyxel.btnp(pyxel.KEY_K, hold=hold, repeat=2) is False
 
     def test_repeat_ticks_after_hold(self):
         pyxel.set_btn(pyxel.KEY_L, True)
         assert pyxel.btnp(pyxel.KEY_L, hold=3, repeat=2) is True
+
         for _ in range(3):
             pyxel.flip()
         # 3 frames after press: hold complete, first repeat tick
         assert pyxel.btnp(pyxel.KEY_L, hold=3, repeat=2) is True
+
         pyxel.flip()
         assert pyxel.btnp(pyxel.KEY_L, hold=3, repeat=2) is False
+
         pyxel.flip()
         # 5 frames after press: next repeat tick
         assert pyxel.btnp(pyxel.KEY_L, hold=3, repeat=2) is True
-        pyxel.set_btn(pyxel.KEY_L, False)
-        pyxel.flip()
 
     def test_repeat_zero_disables_repeat(self):
         pyxel.set_btn(pyxel.KEY_M, True)
         assert pyxel.btnp(pyxel.KEY_M, hold=3, repeat=0) is True
+
         for _ in range(8):
             pyxel.flip()
             assert pyxel.btnp(pyxel.KEY_M, hold=3, repeat=0) is False
-        pyxel.set_btn(pyxel.KEY_M, False)
-        pyxel.flip()
 
 
 class TestSetButtonValue:
@@ -156,7 +189,6 @@ class TestSetButtonValue:
         assert pyxel.mouse_wheel == 5
         pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, -3)
         assert pyxel.mouse_wheel == -3
-        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 0)
 
 
 class TestSetMousePos:

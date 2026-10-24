@@ -4,10 +4,15 @@ const path = require("node:path");
 const test = require("node:test");
 const vm = require("node:vm");
 
+const { loadArrowFunction } = require("./source-loader");
+
 const source = fs.readFileSync(path.join(__dirname, "..", "shared.js"), "utf8");
 
 const loadShared = (overrides = {}) => {
   const context = {
+    atob,
+    btoa,
+    Uint8Array,
     URL,
     console,
     document: { documentElement: {} },
@@ -18,7 +23,7 @@ const loadShared = (overrides = {}) => {
     ...overrides,
   };
   vm.runInNewContext(
-    `${source}\n;globalThis.__test = { initPage, resolveGitHubBlobUrl };`,
+    `${source}\n;globalThis.__test = { initPage, resolveGitHubBlobUrl, uint8ToBase64, base64ToUint8, detectLang, saveLang };`,
     context,
   );
   return context;
@@ -28,13 +33,110 @@ const settlePromises = () => new Promise((resolve) => setImmediate(resolve));
 
 const { resolveGitHubBlobUrl } = loadShared().__test;
 
+test("Base64 preserves exact bytes across its chunk boundary", () => {
+  const { uint8ToBase64, base64ToUint8 } = loadShared().__test;
+  const bytes = Uint8Array.from({ length: 0x8001 }, (_, i) => i % 256);
+  const encoded = uint8ToBase64(bytes);
+  assert.equal(encoded, Buffer.from(bytes).toString("base64"));
+  assert.deepEqual(base64ToUint8(` \n${encoded}\t`), bytes);
+  assert.equal(uint8ToBase64(new Uint8Array()), "");
+  assert.deepEqual(base64ToUint8(""), new Uint8Array());
+});
+
+for (const page of ["api-reference", "user-guide"]) {
+  for (const suffix of ["", "index.html", "cube/", "cube/index.html"]) {
+    const pathname = `/pyxel/web/${page}/${suffix}`;
+    test(`buildVariantSwitch selects the variant and links its sibling at ${pathname}`, () => {
+      const buildVariantSwitch = loadArrowFunction(
+        source,
+        "buildVariantSwitch",
+        {
+          location: { pathname },
+          document: {
+            createElement: (tagName) => ({
+              tagName,
+              children: [],
+              appendChild(child) {
+                this.children.push(child);
+              },
+            }),
+          },
+        },
+      );
+
+      const [base, cube] = buildVariantSwitch().children;
+      const onCube = suffix.startsWith("cube/");
+      const active = onCube ? cube : base;
+      const sibling = onCube ? base : cube;
+      assert.equal(base.textContent, "Base");
+      assert.equal(cube.textContent, "Cube");
+      assert.equal(active.tagName, "span");
+      assert.equal(sibling.tagName, "a");
+      assert.equal(
+        new URL(sibling.href, `https://example.test${pathname}`).pathname,
+        `/pyxel/web/${page}/${onCube ? "" : "cube/"}`,
+      );
+    });
+  }
+}
+
+test("tools keep their other languages and share English or Japanese with kitao.dev", () => {
+  const languages = ["en", "ja", "ko"].map((code) => ({ code }));
+  const storage = new Map();
+  const { detectLang, saveLang } = loadShared({
+    localStorage: {
+      getItem: (key) => storage.get(key) ?? null,
+      setItem: (key, value) => storage.set(key, value),
+    },
+  }).__test;
+  storage.set("pyxel-lang", "en");
+  assert.equal(detectLang(languages), "en");
+  storage.set("kitao.dev.language", "ja");
+  assert.equal(detectLang(languages), "ja");
+  saveLang("ko");
+  assert.deepEqual(Object.fromEntries(storage), {
+    "kitao.dev.language": "ja",
+    "pyxel-lang": "ko",
+  });
+  assert.equal(detectLang(languages), "ko");
+  saveLang("en");
+  assert.deepEqual(Object.fromEntries(storage), {
+    "kitao.dev.language": "en",
+    "pyxel-lang": "en",
+  });
+  storage.delete("pyxel-lang");
+  assert.equal(detectLang(languages), "en");
+});
+
+test("tools choose and switch languages when browser storage is blocked", () => {
+  const blocked = () => {
+    throw new Error("Storage blocked");
+  };
+  const context = loadShared({
+    localStorage: { getItem: blocked, setItem: blocked },
+    navigator: { language: "ja-JP" },
+  });
+  const { detectLang, saveLang } = context.__test;
+  assert.equal(detectLang([{ code: "en" }, { code: "ja" }]), "ja");
+  saveLang("en");
+  assert.equal(context.document.documentElement.lang, "en");
+});
+
+test("encodeUrlPath preserves separators and escapes each path component", () => {
+  assert.equal(
+    loadArrowFunction(source, "encodeUrlPath", {})("apps/demo#preview?.zip"),
+    "apps/demo%23preview%3F.zip",
+  );
+});
+
 test("resolveGitHubBlobUrl finds the longest slash-containing ref", async () => {
   const requested = [];
   const fetchImpl = async (url) => {
     requested.push(url);
+    const ok = url.endsWith("/commits/feature%2Fphysics");
     return {
-      ok: url.endsWith("/commits/feature%2Fphysics"),
-      status: 200,
+      ok,
+      status: ok ? 200 : 404,
       text: async () => "0123456789abcdef0123456789abcdef01234567",
     };
   };
@@ -43,7 +145,6 @@ test("resolveGitHubBlobUrl finds the longest slash-containing ref", async () => 
     "https://github.com/example/game/blob/feature/physics/apps/demo.pyxapp",
     fetchImpl,
   );
-
   assert.deepEqual(
     { ...result },
     {
@@ -57,11 +158,216 @@ test("resolveGitHubBlobUrl finds the longest slash-containing ref", async () => 
   assert.equal(requested.at(-1).endsWith("/commits/feature%2Fphysics"), true);
 });
 
+test("resolveGitHubBlobUrl continues after GitHub rejects a ref candidate", async () => {
+  const sha = "0123456789abcdef0123456789abcdef01234567";
+  const requested = [];
+  const fetchImpl = async (url) => {
+    requested.push(url);
+    const ok = url.endsWith("/commits/main");
+    return {
+      ok,
+      status: ok ? 200 : 422,
+      text: async () =>
+        ok
+          ? sha
+          : JSON.stringify({ message: "No commit found for SHA: main/python" }),
+    };
+  };
+
+  const result = await resolveGitHubBlobUrl(
+    "https://github.com/example/game/blob/main/python/pyproject.toml",
+    fetchImpl,
+  );
+  assert.deepEqual(
+    { ...result },
+    {
+      user: "example",
+      repo: "game",
+      ref: "main",
+      sha,
+      path: "python/pyproject.toml",
+    },
+  );
+  assert.deepEqual(
+    requested.map((url) => url.split("/commits/")[1]),
+    ["main%2Fpython", "main"],
+  );
+});
+
+test("resolveGitHubBlobUrl stops after an unrelated validation error", async () => {
+  let fetchCount = 0;
+  await assert.rejects(
+    resolveGitHubBlobUrl(
+      "https://github.com/example/game/blob/main/python/pyproject.toml",
+      async () => {
+        fetchCount += 1;
+        return {
+          ok: false,
+          status: 422,
+          text: async () => JSON.stringify({ message: "Validation Failed" }),
+        };
+      },
+    ),
+    {
+      name: "Error",
+      message: "Failed to resolve the GitHub ref and file path",
+    },
+  );
+  assert.equal(fetchCount, 1);
+});
+
+test("resolveGitHubBlobUrl preserves an established ref boundary", async () => {
+  const requested = [];
+  const fetchImpl = async (url) => {
+    requested.push(url);
+    return {
+      ok: url.endsWith("/commits/main") || url.endsWith("/commits/main%2Fapps"),
+      status: 200,
+      text: async () => "0123456789abcdef0123456789abcdef01234567",
+    };
+  };
+
+  const result = await resolveGitHubBlobUrl(
+    "https://github.com/example/game/blob/main/apps/demo.pyxapp",
+    fetchImpl,
+    "main",
+  );
+  assert.deepEqual(
+    { ...result },
+    {
+      user: "example",
+      repo: "game",
+      ref: "main",
+      sha: "0123456789abcdef0123456789abcdef01234567",
+      path: "apps/demo.pyxapp",
+    },
+  );
+  assert.equal(requested[0].endsWith("/commits/main"), true);
+});
+
+test("resolveGitHubBlobUrl preserves a missing explicit ref boundary", async () => {
+  for (const status of [404, 422]) {
+    const requested = [];
+    const fetchImpl = async (url) => {
+      requested.push(url);
+      const ok = url.endsWith("/commits/feature%2Ffoo");
+      return {
+        ok,
+        status: ok ? 200 : status,
+        text: async () =>
+          ok
+            ? "0123456789abcdef0123456789abcdef01234567"
+            : JSON.stringify({ message: "No commit found for SHA: feature" }),
+      };
+    };
+
+    const result = await resolveGitHubBlobUrl(
+      "https://github.com/example/game/blob/feature/foo/apps/demo.pyxapp",
+      fetchImpl,
+      "feature",
+    );
+    assert.deepEqual(
+      { ...result },
+      {
+        user: "example",
+        repo: "game",
+        ref: "feature",
+        sha: null,
+        path: "foo/apps/demo.pyxapp",
+      },
+    );
+    assert.deepEqual(requested, [
+      "https://api.github.com/repos/example/game/commits/feature",
+    ]);
+  }
+});
+
+test("resolveGitHubBlobUrl accepts a commit SHA without an API request", async () => {
+  let fetchCount = 0;
+  const sha = "0123456789abcdef0123456789abcdef01234567";
+  const result = await resolveGitHubBlobUrl(
+    `https://github.com/example/game/blob/${sha}/apps/demo.pyxapp`,
+    async () => {
+      fetchCount += 1;
+      return { ok: false, status: 403 };
+    },
+    sha,
+  );
+  assert.deepEqual(
+    { ...result },
+    {
+      user: "example",
+      repo: "game",
+      ref: sha,
+      sha,
+      path: "apps/demo.pyxapp",
+    },
+  );
+  assert.equal(fetchCount, 0);
+});
+
+test("resolveGitHubBlobUrl keeps a preferred ref when the API is unavailable", async () => {
+  const requested = [];
+  const result = await resolveGitHubBlobUrl(
+    "https://github.com/example/game/blob/main/apps/demo.pyxapp",
+    async (url) => {
+      requested.push(url);
+      return { ok: false, status: 403 };
+    },
+    "main",
+  );
+  assert.deepEqual(
+    { ...result },
+    {
+      user: "example",
+      repo: "game",
+      ref: "main",
+      sha: null,
+      path: "apps/demo.pyxapp",
+    },
+  );
+  assert.deepEqual(
+    requested.map((url) => url.split("/commits/")[1]),
+    ["main"],
+  );
+});
+
+test("resolveGitHubBlobUrl keeps a preferred ref when the API body is unreadable", async () => {
+  let fetchCount = 0;
+  const result = await resolveGitHubBlobUrl(
+    "https://github.com/example/game/blob/main/apps/demo.pyxapp",
+    async () => {
+      fetchCount += 1;
+      return {
+        ok: true,
+        status: 200,
+        text: async () => {
+          throw new Error("response stream failed");
+        },
+      };
+    },
+    "main",
+  );
+  assert.deepEqual(
+    { ...result },
+    {
+      user: "example",
+      repo: "game",
+      ref: "main",
+      sha: null,
+      path: "apps/demo.pyxapp",
+    },
+  );
+  assert.equal(fetchCount, 1);
+});
+
 test("resolveGitHubBlobUrl does not decode a failed response body", async () => {
+  let textCalls = 0;
   const fetchImpl = async () => ({
     ok: false,
     status: 404,
     text: async () => {
+      textCalls += 1;
       throw new Error("failed response body was decoded");
     },
   });
@@ -71,8 +377,12 @@ test("resolveGitHubBlobUrl does not decode a failed response body", async () => 
       "https://github.com/example/game/blob/missing/apps/demo.py",
       fetchImpl,
     ),
-    /Failed to resolve the GitHub ref and file path/,
+    {
+      name: "Error",
+      message: "Failed to resolve the GitHub ref and file path",
+    },
   );
+  assert.equal(textCalls, 0);
 });
 
 test("resolveGitHubBlobUrl rejects non-blob GitHub URLs before fetching", async () => {
@@ -81,7 +391,7 @@ test("resolveGitHubBlobUrl rejects non-blob GitHub URLs before fetching", async 
     resolveGitHubBlobUrl("https://github.com/example/game", async () => {
       fetchCount += 1;
     }),
-    /Invalid GitHub blob URL/,
+    { name: "Error", message: "Invalid GitHub blob URL" },
   );
   assert.equal(fetchCount, 0);
 });
@@ -100,9 +410,68 @@ test("initPage builds after a successful JSON response", async () => {
     buildCount += 1;
   });
   await settlePromises();
-
   assert.equal(buildCount, 1);
   assert.equal(context.lang, "en");
+});
+
+for (const tagName of ["SECTION", "DETAILS"]) {
+  test(`initPage reaches a linked ${tagName} created by the page builder`, async () => {
+    const events = [];
+    let target;
+    const context = loadShared({
+      document: {
+        location: { hash: "#linked-section" },
+        getElementById: (id) => {
+          assert.equal(id, "linked-section");
+          return target;
+        },
+      },
+      fetch: async () => ({
+        ok: true,
+        json: async () => ({ languages: [{ code: "en", name: "English" }] }),
+      }),
+    });
+
+    context.__test.initPage("data.json", () => {
+      events.push("build");
+      target = {
+        tagName,
+        open: false,
+        scrollIntoView() {
+          events.push("scroll");
+        },
+      };
+    });
+    assert.deepEqual(events, []);
+    await settlePromises();
+
+    assert.deepEqual(events, ["build", "scroll"]);
+    assert.equal(target.open, tagName === "DETAILS");
+  });
+}
+
+test("initPage leaves an absent fragment target alone", async () => {
+  let buildCount = 0;
+  const errors = [];
+  const context = loadShared({
+    console: { error: (...args) => errors.push(args) },
+    document: {
+      location: { hash: "#missing" },
+      getElementById: () => null,
+    },
+    fetch: async () => ({
+      ok: true,
+      json: async () => ({ languages: [{ code: "en", name: "English" }] }),
+    }),
+  });
+
+  context.__test.initPage("data.json", () => {
+    buildCount += 1;
+  });
+  await settlePromises();
+
+  assert.equal(buildCount, 1);
+  assert.deepEqual(errors, []);
 });
 
 test("initPage rejects an HTTP error before decoding JSON", async () => {
@@ -124,7 +493,6 @@ test("initPage rejects an HTTP error before decoding JSON", async () => {
     buildCount += 1;
   });
   await settlePromises();
-
   assert.equal(jsonCount, 0);
   assert.equal(buildCount, 0);
   assert.equal(errors[0][1].message, "Failed to fetch data.json: 503");
@@ -148,7 +516,6 @@ test("initPage reports malformed JSON without building", async () => {
     buildCount += 1;
   });
   await settlePromises();
-
   assert.equal(buildCount, 0);
   assert.equal(errors[0][1].message, "invalid JSON");
 });

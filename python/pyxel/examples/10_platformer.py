@@ -31,14 +31,44 @@ def is_wall(x, y):
     return tile == TILE_FLOOR or tile[0] >= WALL_TILE_X
 
 
-def cleanup_entities(entities):
-    entities[:] = [e for e in entities if e.is_alive]
-
-
 def push_back(x, y, dx, dy):
     walls = WALL_TILES_WITH_FLOOR if dy > 0 else WALL_TILES
     dx, dy = pyxel.tilemaps[0].collide(x, y, 8, 8, dx, dy, walls)
     return x + dx, y + dy
+
+
+def cleanup_entities(entities):
+    entities[:] = [e for e in entities if e.is_alive]
+
+
+def spawn_enemy(left_x, right_x):
+    left_x = pyxel.ceil(left_x / 8)
+    right_x = pyxel.floor(right_x / 8)
+
+    for x in range(left_x, right_x + 1):
+        for y in range(16):
+            tile = get_tile(x, y)
+            if tile == TILE_SPAWN1:
+                enemies.append(Enemy1(x * 8, y * 8))
+            elif tile == TILE_SPAWN2:
+                enemies.append(Enemy2(x * 8, y * 8))
+            elif tile == TILE_SPAWN3:
+                enemies.append(Enemy3(x * 8, y * 8))
+
+
+def game_over():
+    global scroll_x, enemies
+
+    scroll_x = 0
+    player.x = 0
+    player.y = 0
+    player.dx = 0
+    player.dy = 0
+
+    enemies = []
+    spawn_enemy(0, 127)
+
+    pyxel.play(3, 9)
 
 
 class Player:
@@ -68,7 +98,6 @@ class Player:
             pyxel.play(3, 8)
 
         self.x, self.y = push_back(self.x, self.y, self.dx, self.dy)
-
         self.x = max(self.x, scroll_x)
         self.y = max(self.y, 0)
 
@@ -160,7 +189,6 @@ class Enemy3:
             dx = player.x - self.x
             dy = player.y - self.y
             sq_dist = dx * dx + dy * dy
-
             if sq_dist < 60**2:
                 dist = pyxel.sqrt(sq_dist)
                 enemies.append(Enemy3Bullet(self.x, self.y, dx / dist, dy / dist))
@@ -186,21 +214,6 @@ class Enemy3Bullet:
     def draw(self):
         u = pyxel.frame_count // 2 % 2 * 8 + 16
         pyxel.blt(self.x, self.y, 0, u, 32, 8, 8, TRANSPARENT_COLOR)
-
-
-def spawn_enemy(left_x, right_x):
-    left_x = pyxel.ceil(left_x / 8)
-    right_x = pyxel.floor(right_x / 8)
-
-    for x in range(left_x, right_x + 1):
-        for y in range(16):
-            tile = get_tile(x, y)
-            if tile == TILE_SPAWN1:
-                enemies.append(Enemy1(x * 8, y * 8))
-            elif tile == TILE_SPAWN2:
-                enemies.append(Enemy2(x * 8, y * 8))
-            elif tile == TILE_SPAWN3:
-                enemies.append(Enemy3(x * 8, y * 8))
 
 
 class App:
@@ -249,21 +262,6 @@ class App:
         player.draw()
         for enemy in enemies:
             enemy.draw()
-
-
-def game_over():
-    global scroll_x, enemies
-
-    scroll_x = 0
-    player.x = 0
-    player.y = 0
-    player.dx = 0
-    player.dy = 0
-
-    enemies = []
-    spawn_enemy(0, 127)
-
-    pyxel.play(3, 9)
 
 
 App()

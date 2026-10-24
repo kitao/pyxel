@@ -6,10 +6,6 @@ def _user_pal():
         pyxel.pal(i, pyxel.NUM_COLORS + i)
 
 
-def _normalize_rect(x1, y1, x2, y2):
-    return min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)
-
-
 def _rect2(self, x1, y1, x2, y2, val):
     x1, y1, x2, y2 = _normalize_rect(x1, y1, x2, y2)
     self.rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
@@ -43,6 +39,10 @@ def _set_slice(self, x, y, data):
             self.pset(x + xi, y + yi, data[yi][xi])
 
 
+def _normalize_rect(x1, y1, x2, y2):
+    return min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)
+
+
 pyxel.user_pal = _user_pal  # type: ignore
 
 # Attach editor-only drawing extensions to Image and Tilemap.
@@ -55,5 +55,5 @@ _EXTENSIONS = {
     "set_slice": _set_slice,
 }
 for _name, _func in _EXTENSIONS.items():
-    setattr(pyxel.Image, _name, _func)  # type: ignore
-    setattr(pyxel.Tilemap, _name, _func)  # type: ignore
+    setattr(pyxel.Image, _name, _func)
+    setattr(pyxel.Tilemap, _name, _func)

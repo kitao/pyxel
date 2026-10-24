@@ -5,26 +5,10 @@ use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::Tilemap;
 use crate::utils::ctypes_array_from_address;
 
-// Deprecated option compatibility
-
-fn resolve_include_colors(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
-    if deprecated.is_some() {
-        deprecation_warning!(
-            INCL_COLORS_OPTION_ONCE,
-            "incl_colors option is deprecated. Use include_colors instead."
-        );
-        deprecated
-    } else {
-        preferred
-    }
-}
-
 define_wrapper!(Image, pyxel::Image);
 
 #[pymethods]
 impl Image {
-    // Constructors
-
     #[new]
     fn new(width: u32, height: u32) -> PyResult<Self> {
         pyxel::Image::try_new(width, height)
@@ -59,11 +43,14 @@ impl Image {
 
     // Data operations
 
-    fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
-        let mut inner = self.inner_mut();
-        let length = inner.width() as usize * inner.height() as usize;
-        let address = inner.data_ptr() as usize;
-        ctypes_array_from_address(py, "c_uint8", length, address)
+    fn data_ptr(slf: PyRef<'_, Self>, py: Python) -> PyResult<Py<PyAny>> {
+        let (length, address) = {
+            let mut inner = slf.inner_mut();
+            let length = inner.width() as usize * inner.height() as usize;
+            (length, inner.data_ptr() as usize)
+        };
+        let owner = slf.into_pyobject(py)?.into_any();
+        ctypes_array_from_address(py, "c_uint8", length, address, &owner)
     }
 
     fn set(&self, x: i32, y: i32, data: Vec<String>) -> PyResult<()> {
@@ -209,9 +196,10 @@ impl Image {
             "img must be int or Image",
 
             (u32, {
-                let image = pyxel::images().get(img as usize).cloned()
+                let images = pyxel::images();
+                let image = images.get(img as usize)
                     .ok_or_else(|| invalid_index_error!("img", "image"))?;
-                self.inner_mut().draw_image(x, y, &image, u, v, w, h, colkey, rotate, scale);
+                self.inner_mut().draw_image(x, y, image, u, v, w, h, colkey, rotate, scale);
             }),
 
             (Image, {
@@ -240,9 +228,10 @@ impl Image {
             "tm must be int or Tilemap",
 
             (u32, {
-                let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
+                let tilemaps = pyxel::tilemaps();
+                let tilemap = tilemaps.get(tm as usize)
                     .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
-                self.inner_mut().draw_tilemap(x, y, &tilemap, u, v, w, h, colkey, rotate, scale);
+                self.inner_mut().draw_tilemap(x, y, tilemap, u, v, w, h, colkey, rotate, scale);
             }),
 
             (Tilemap, {
@@ -270,9 +259,10 @@ impl Image {
             "img must be int or Image",
 
             (u32, {
-                let image = pyxel::images().get(img as usize).cloned()
+                let images = pyxel::images();
+                let image = images.get(img as usize)
                     .ok_or_else(|| invalid_index_error!("img", "image"))?;
-                self.inner_mut().draw_image_3d(x, y, w, h, &image, pos, rot, fov, colkey);
+                self.inner_mut().draw_image_3d(x, y, w, h, image, pos, rot, fov, colkey);
             }),
 
             (Image, {
@@ -300,9 +290,10 @@ impl Image {
             "tm must be int or Tilemap",
 
             (u32, {
-                let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
+                let tilemaps = pyxel::tilemaps();
+                let tilemap = tilemaps.get(tm as usize)
                     .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
-                self.inner_mut().draw_tilemap_3d(x, y, w, h, &tilemap, pos, rot, fov, colkey);
+                self.inner_mut().draw_tilemap_3d(x, y, w, h, tilemap, pos, rot, fov, colkey);
             }),
 
             (Tilemap, {
@@ -312,8 +303,6 @@ impl Image {
         Ok(())
     }
 
-    // Text drawing
-
     #[pyo3(signature = (x, y, s, col, font=None))]
     fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
         let font_ref = font.as_ref().map(|f| &f.inner);
@@ -321,7 +310,17 @@ impl Image {
     }
 }
 
-// Module registration
+fn resolve_include_colors(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
+    if deprecated.is_some() {
+        deprecation_warning!(
+            INCL_COLORS_OPTION_ONCE,
+            "incl_colors option is deprecated. Use include_colors instead."
+        );
+        deprecated
+    } else {
+        preferred
+    }
+}
 
 pub fn add_image_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Image>()?;

@@ -1,9 +1,11 @@
-import subprocess
-import sys
-
 import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
+
+
+class TestRemovedApis:
+    def test_old_mml_is_absent(self):
+        assert not hasattr(pyxel.Sound, "old_mml")
 
 
 class TestTypeErrors:
@@ -228,11 +230,11 @@ class TestValueErrors:
     @pytest.mark.parametrize(
         ("factory", "args", "message"),
         [
-            (pyxel.Image, (65536, 65536), "image dimensions are too large"),
+            (pyxel.Image, (65536, 65536), "width and height are too large"),
             (
                 pyxel.Tilemap,
                 (65536, 65536, 0),
-                "tilemap dimensions are too large",
+                "width and height are too large",
             ),
         ],
         ids=["image", "tilemap"],
@@ -324,47 +326,6 @@ class TestValueErrors:
         with raises_exact(ValueError, message):
             operation()
 
-    def test_legacy_resource_index_messages_in_isolated_process(self):
-        code = """
-import pyxel
-
-
-def assert_value_error(operation, expected):
-    try:
-        operation()
-    except ValueError as exc:
-        assert str(exc) == expected
-    else:
-        raise AssertionError(f"ValueError not raised: {expected}")
-
-
-checks = [
-    (lambda: pyxel.channel(999), "ch must be a valid channel index"),
-    (lambda: pyxel.sound(999), "snd must be a valid sound index"),
-    (lambda: pyxel.music(999), "msc must be a valid music index"),
-    (lambda: pyxel.image(999), "img must be a valid image index"),
-    (lambda: pyxel.tilemap(999), "tm must be a valid tilemap index"),
-]
-for operation, expected in checks:
-    assert_value_error(operation, expected)
-
-tilemap = pyxel.Tilemap(8, 8, 0)
-tilemap.refimg = 999
-assert_value_error(
-    lambda: tilemap.image,
-    "imgsrc references an invalid image index",
-)
-"""
-
-        result = subprocess.run(
-            [sys.executable, "-c", code],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-
-        assert result.returncode == 0, result.stdout + result.stderr
-
     @pytest.mark.parametrize(
         "dimensions",
         [{}, {"width": 8, "height": 8}],
@@ -416,7 +377,6 @@ class TestInlineDataErrors:
     def test_image_set_rejects_malformed_data_without_writing(self, data, message):
         image = pyxel.Image(2, 2)
         image.cls(7)
-
         with raises_exact(ValueError, message):
             image.set(0, 0, data)
         assert [image.pget(x, y) for y in range(2) for x in range(2)] == [7] * 4
@@ -456,14 +416,16 @@ class TestInlineDataErrors:
     def test_tilemap_set_rejects_malformed_data_without_writing(self, data, message):
         tilemap = pyxel.Tilemap(2, 2, 0)
         tilemap.cls((7, 7))
-
         with raises_exact(ValueError, message):
             tilemap.set(0, 0, data)
         assert [tilemap.pget(x, y) for y in range(2) for x in range(2)] == [(7, 7)] * 4
 
 
 class TestMmlErrors:
-    # Binding raises plain Exception; pin via message to verify error specificity.
+    def test_old_mml_syntax_is_not_auto_detected(self):
+        with raises_exact(Exception, "MML:0: Unexpected character 'X'"):
+            pyxel.Sound().mml("X1 C")
+
     def test_sound_mml_invalid_syntax(self):
         snd = pyxel.Sound()
         with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
@@ -472,27 +434,6 @@ class TestMmlErrors:
     def test_play_mml_invalid_syntax(self):
         with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
             pyxel.play(0, "Z")
-
-    def test_sound_mml_old_syntax_uses_legacy_error_contract(self):
-        code = """
-import pyxel
-
-snd = pyxel.Sound()
-try:
-    snd.mml("x8c")
-except Exception as exc:
-    assert str(exc) == "Invalid envelope value '8' in MML"
-else:
-    raise AssertionError("invalid legacy MML succeeded")
-"""
-        result = subprocess.run(
-            [sys.executable, "-c", code],
-            capture_output=True,
-            text=True,
-            timeout=10,
-            check=False,
-        )
-        assert result.returncode == 0, result.stderr
 
     def test_sound_set_notes_invalid(self):
         snd = pyxel.Sound()
@@ -529,7 +470,6 @@ class TestFileErrors:
             pyxel.Image.from_image("/nonexistent/path/image.png")
 
     def test_failed_from_image_keeps_palette(self):
-        # A failed load must not clear the shared palette even with include_colors.
         colors_before = list(pyxel.colors)
         with raises_exact(
             Exception, "Failed to open file '/nonexistent/path/image.png'"
@@ -552,22 +492,23 @@ class TestFileErrors:
 
 
 class TestPanicErrors:
-    # Pin the exact type so a future migration to ValueError shows up as a test diff.
+    @pytest.mark.parametrize("function", [pyxel.btn, pyxel.btnp, pyxel.btnr])
+    def test_button_state_analog_key_panics(self, function, panic_exception):
+        with raises_exact(panic_exception, "key must be a non-analog key"):
+            function(pyxel.GAMEPAD1_AXIS_LEFTX)
 
     def test_btnv_non_analog_key_panics(self, panic_exception):
-        with raises_exact(
-            panic_exception, "button_value is called with a non-analog key 0x61"
-        ):
+        with raises_exact(panic_exception, "key must be an analog key"):
             pyxel.btnv(pyxel.KEY_A)
 
     def test_gen_bgm_invalid_preset_panics(self, panic_exception):
-        with raises_exact(panic_exception, "invalid preset"):
+        with raises_exact(panic_exception, "preset must be between 0 and 7"):
             pyxel.gen_bgm(99, 0, 0, 1)
 
     def test_gen_bgm_invalid_transpose_panics(self, panic_exception):
-        with raises_exact(panic_exception, "invalid transpose"):
+        with raises_exact(panic_exception, "transp must be between -5 and 5"):
             pyxel.gen_bgm(0, 99, 0, 1)
 
     def test_gen_bgm_invalid_instrumentation_panics(self, panic_exception):
-        with raises_exact(panic_exception, "invalid instrumentation"):
+        with raises_exact(panic_exception, "instr must be between 0 and 3"):
             pyxel.gen_bgm(0, 0, 99, 1)

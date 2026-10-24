@@ -18,12 +18,10 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
     // Open and probe audio file
     let file = File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
     let media_stream = MediaSourceStream::new(Box::new(file), MediaSourceStreamOptions::default());
-
     let mut hint = Hint::new();
     if let Some(ext) = Path::new(filename).extension().and_then(|s| s.to_str()) {
         hint.with_extension(ext);
     }
-
     let mut format_reader = get_probe()
         .probe(
             &hint,
@@ -43,7 +41,8 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
         .and_then(|params| params.audio())
         .ok_or_else(|| format!("No audio track found in file '{filename}'"))?
         .clone();
-    // Trim encoder delay/padding (gapless); pinned so a default change can't shift decoded length
+
+    // Trim encoder delay and padding to preserve the decoded sample count.
     let mut decoder = get_codecs()
         .make_audio_decoder(&codec_params, &AudioDecoderOptions::default().gapless(true))
         .map_err(|_| format!("Failed to decode file '{filename}'"))?;
@@ -61,7 +60,6 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
             Ok(None) => break,
             Err(_) => return Err(format!("Failed to read file '{filename}'")),
         };
-
         if packet.track_id != track_id {
             continue;
         }
@@ -99,7 +97,6 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
     } else {
         resample_linear(&mono_samples, sample_rate, target_rate)
     };
-
     let samples = mono_samples.into_iter().map(f32_to_i16).collect();
     Ok(PcmData { samples })
 }
@@ -134,5 +131,19 @@ fn f32_to_i16(sample: f32) -> i16 {
         i16::MIN
     } else {
         (sample * i16::MAX as f32) as i16
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_resampling_length_interpolation_and_last_sample() {
+        assert_eq!(
+            resample_linear(&[0.0, 0.5, 1.0], 22050, 44100),
+            [0.0, 0.25, 0.5, 0.75, 1.0, 1.0]
+        );
+        assert_eq!(resample_linear(&[0.0, 0.5, 1.0], 44100, 22050), [0.0, 1.0]);
     }
 }

@@ -1,5 +1,25 @@
+import subprocess
+import sys
+
+import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
+
+DEPRECATED_SEQUENCE_CASES = [
+    pytest.param("music-seq", id="music-seq"),
+    pytest.param("sound-notes", id="sound-notes"),
+    pytest.param("sound-tones", id="sound-tones"),
+    pytest.param("sound-volumes", id="sound-volumes"),
+    pytest.param("sound-effects", id="sound-effects"),
+    pytest.param("tone-wavetable", id="tone-wavetable"),
+    pytest.param("colors", id="colors"),
+    pytest.param("images", id="images"),
+    pytest.param("tilemaps", id="tilemaps"),
+    pytest.param("channels", id="channels"),
+    pytest.param("tones", id="tones"),
+    pytest.param("sounds", id="sounds"),
+    pytest.param("musics", id="musics"),
+]
 
 
 class TestSeqLen:
@@ -40,10 +60,6 @@ class TestSeqGetitem:
         assert len(imgs) == 2
         assert all(isinstance(img, pyxel.Image) for img in imgs)
 
-    def test_images_out_of_range_raises(self):
-        with raises_exact(IndexError, "list index out of range"):
-            _ = pyxel.images[999]
-
     def test_channels_index_access(self):
         ch = pyxel.channels[0]
         assert isinstance(ch, pyxel.Channel)
@@ -63,72 +79,150 @@ class TestSeqGetitem:
 
 
 class TestSeqSetitem:
+    @pytest.mark.parametrize("kind", ["notes", "seqs"])
+    def test_out_of_range_raises_standard_message(self, kind):
+        sequence = pyxel.Sound().notes if kind == "notes" else pyxel.Music().seqs
+        value = 1 if kind == "notes" else [1]
+        with raises_exact(IndexError, "list assignment index out of range"):
+            sequence[0] = value
+
+    def test_value_conversion_can_resize_sequence(self):
+        notes = pyxel.Sound().notes
+        notes[:] = [1]
+
+        class Value:
+            def __index__(self):
+                notes.clear()
+                return 2
+
+        with raises_exact(IndexError, "list assignment index out of range"):
+            notes[0] = Value()
+        assert list(notes) == []
+
     def test_images_set_by_index(self):
         original = pyxel.images[0]
         new_img = pyxel.Image(64, 64)
-        pyxel.images[0] = new_img
-        assert pyxel.images[0].width == 64
-        pyxel.images[0] = original
+        try:
+            pyxel.images[0] = new_img
+            assert pyxel.images[0].width == 64
+        finally:
+            pyxel.images[0] = original
+
+
+@pytest.mark.parametrize("kind", ["notes", "seqs"])
+@pytest.mark.parametrize("operation", ["get", "set", "delete"])
+def test_slice_index_conversion_can_resize_sequence(kind, operation):
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            f"""
+import pyxel
+
+seq = pyxel.Sound().notes if {kind!r} == "notes" else pyxel.Music().seqs
+value = 1 if {kind!r} == "notes" else [1]
+seq[:] = [value, value]
+
+
+class Start:
+    def __index__(self):
+        seq.clear()
+        return 0
+
+
+if {operation!r} == "get":
+    assert seq[Start():] == []
+elif {operation!r} == "set":
+    seq[Start():] = [value]
+    assert list(seq) == [value]
+else:
+    del seq[Start():]
+    assert list(seq) == []
+""",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=5,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_add_conversion_can_resize_sequence():
+    notes = pyxel.Sound().notes
+    notes[:] = [1]
+
+    class Value:
+        def __index__(self):
+            notes.clear()
+            return 2
+
+    assert notes + [Value()] == [2]
+
+
+def test_slice_value_conversion_can_resize_sequence():
+    notes = pyxel.Sound().notes
+    notes[:] = [1, 2]
+
+    class Value:
+        def __index__(self):
+            notes.clear()
+            return 3
+
+    notes[:] = [Value()]
+    assert list(notes) == [3]
 
 
 class TestSeqDelitem:
+    @pytest.mark.parametrize("kind", ["notes", "seqs"])
+    def test_out_of_range_raises_standard_message(self, kind):
+        sequence = pyxel.Sound().notes if kind == "notes" else pyxel.Music().seqs
+        with raises_exact(IndexError, "list assignment index out of range"):
+            del sequence[0]
+
     def test_sounds_delete_appended_item(self):
-        original_len = len(pyxel.sounds)
-        pyxel.sounds.append(pyxel.Sound())
-        assert len(pyxel.sounds) == original_len + 1
-        del pyxel.sounds[-1]
-        assert len(pyxel.sounds) == original_len
+        original = list(pyxel.sounds)
+        try:
+            pyxel.sounds.append(pyxel.Sound())
+            assert len(pyxel.sounds) == len(original) + 1
+
+            del pyxel.sounds[-1]
+            assert len(pyxel.sounds) == len(original)
+        finally:
+            pyxel.sounds[:] = original
 
 
 class TestSeqAppendPop:
-    def test_sounds_append_and_pop(self):
-        original_len = len(pyxel.sounds)
-        snd = pyxel.Sound()
-        pyxel.sounds.append(snd)
-        assert len(pyxel.sounds) == original_len + 1
-        popped = pyxel.sounds.pop()
-        assert len(pyxel.sounds) == original_len
-        assert isinstance(popped, pyxel.Sound)
+    @pytest.mark.parametrize("kind", ["notes", "seqs"])
+    def test_out_of_range_raises_standard_message(self, kind):
+        sequence = pyxel.Sound().notes if kind == "notes" else pyxel.Music().seqs
+        value = 1 if kind == "notes" else [1]
+        sequence.append(value)
+        with raises_exact(IndexError, "pop index out of range"):
+            sequence.pop(1)
 
-    def test_channels_append_and_pop(self):
-        original_len = len(pyxel.channels)
-        ch = pyxel.Channel()
-        pyxel.channels.append(ch)
-        assert len(pyxel.channels) == original_len + 1
-        pyxel.channels.pop()
-        assert len(pyxel.channels) == original_len
+    @pytest.mark.parametrize(
+        ("bank_name", "item_type", "args"),
+        [
+            ("sounds", pyxel.Sound, ()),
+            ("musics", pyxel.Music, ()),
+            ("images", pyxel.Image, (32, 32)),
+            ("tilemaps", pyxel.Tilemap, (8, 8, 0)),
+        ],
+    )
+    def test_append_and_pop(self, bank_name, item_type, args):
+        sequence = getattr(pyxel, bank_name)
+        original = list(sequence)
+        item = item_type(*args)
+        try:
+            sequence.append(item)
+            assert len(sequence) == len(original) + 1
 
-    def test_tones_append_and_pop(self):
-        original_len = len(pyxel.tones)
-        tone = pyxel.Tone()
-        pyxel.tones.append(tone)
-        assert len(pyxel.tones) == original_len + 1
-        pyxel.tones.pop()
-        assert len(pyxel.tones) == original_len
-
-    def test_musics_append_and_pop(self):
-        original_len = len(pyxel.musics)
-        msc = pyxel.Music()
-        pyxel.musics.append(msc)
-        assert len(pyxel.musics) == original_len + 1
-        pyxel.musics.pop()
-        assert len(pyxel.musics) == original_len
-
-    def test_images_append_and_pop(self):
-        original_len = len(pyxel.images)
-        img = pyxel.Image(32, 32)
-        pyxel.images.append(img)
-        assert len(pyxel.images) == original_len + 1
-        pyxel.images.pop()
-        assert len(pyxel.images) == original_len
-
-    def test_tilemaps_append_and_pop(self):
-        original_len = len(pyxel.tilemaps)
-        tm = pyxel.Tilemap(8, 8, 0)
-        pyxel.tilemaps.append(tm)
-        assert len(pyxel.tilemaps) == original_len + 1
-        pyxel.tilemaps.pop()
-        assert len(pyxel.tilemaps) == original_len
+            popped = sequence.pop()
+            assert len(sequence) == len(original)
+            assert isinstance(popped, item_type)
+        finally:
+            sequence[:] = original
 
 
 class TestSeqIteration:
@@ -173,28 +267,65 @@ class TestSeqIteration:
 class TestSeqSliceOperations:
     def test_setitem_slice(self):
         original = list(pyxel.colors)
-        pyxel.colors[0:2] = [0x000000, 0xFFFFFF]
-        assert pyxel.colors[0] == 0x000000
-        assert pyxel.colors[1] == 0xFFFFFF
-        pyxel.colors[0:2] = original[0:2]
+        try:
+            pyxel.colors[0:2] = [0x000000, 0xFFFFFF]
+            assert pyxel.colors[0] == 0x000000
+            assert pyxel.colors[1] == 0xFFFFFF
+        finally:
+            pyxel.colors[:] = original
 
     def test_reversed_step_one_slice_assignment_inserts(self):
         original = list(pyxel.colors)
-        pyxel.colors[2:0] = [0x123456]
-        assert list(pyxel.colors[:4]) == [
-            original[0],
-            original[1],
-            0x123456,
-            original[2],
-        ]
-        pyxel.colors[:] = original
+        try:
+            pyxel.colors[2:0] = [0x123456]
+            assert list(pyxel.colors[:4]) == [
+                original[0],
+                original[1],
+                0x123456,
+                original[2],
+            ]
+        finally:
+            pyxel.colors[:] = original
 
-    def test_delitem_slice(self):
-        for _ in range(3):
-            pyxel.sounds.append(pyxel.Sound())
-        before_len = len(pyxel.sounds)
-        del pyxel.sounds[-3:]
-        assert len(pyxel.sounds) == before_len - 3
+    def test_setitem_extended_slice_with_primitive_values(self):
+        original = [pyxel.colors[0], pyxel.colors[2]]
+        try:
+            pyxel.colors[0:3:2] = [0x123456, 0xABCDEF]
+            assert pyxel.colors[0] == 0x123456
+            assert pyxel.colors[2] == 0xABCDEF
+        finally:
+            pyxel.colors[0:3:2] = original
+
+    def test_setitem_extended_slice_with_object_values(self):
+        original = [pyxel.images[0], pyxel.images[2]]
+        untouched_size = (pyxel.images[1].width, pyxel.images[1].height)
+        try:
+            pyxel.images[0:3:2] = [pyxel.Image(3, 5), pyxel.Image(7, 9)]
+            assert (pyxel.images[0].width, pyxel.images[0].height) == (3, 5)
+            assert (pyxel.images[1].width, pyxel.images[1].height) == untouched_size
+            assert (pyxel.images[2].width, pyxel.images[2].height) == (7, 9)
+        finally:
+            pyxel.images[0:3:2] = original
+
+    @pytest.mark.parametrize("kind", ["notes", "seqs"])
+    @pytest.mark.parametrize(
+        "key",
+        [
+            slice(-3, None),
+            slice(None, None, 2),
+            slice(None, None, -2),
+            slice(2, 2),
+            slice(1, None, sys.maxsize),
+            slice(1, None, -sys.maxsize),
+        ],
+    )
+    def test_delitem_slice(self, kind, key):
+        seq = pyxel.Sound().notes if kind == "notes" else pyxel.Music().seqs
+        values = list(range(6)) if kind == "notes" else [[i] for i in range(6)]
+        seq[:] = values
+        del seq[key]
+        del values[key]
+        assert list(seq) == values
 
     def test_getitem_slice_returns_list(self):
         sliced = pyxel.sounds[0:3]
@@ -204,58 +335,62 @@ class TestSeqSliceOperations:
 
 class TestSeqExtendClear:
     def test_sounds_extend(self):
-        original_len = len(pyxel.sounds)
+        original = list(pyxel.sounds)
         new_sounds = [pyxel.Sound(), pyxel.Sound()]
-        pyxel.sounds.extend(new_sounds)
-        assert len(pyxel.sounds) == original_len + 2
-        pyxel.sounds.pop()
-        pyxel.sounds.pop()
+        try:
+            pyxel.sounds.extend(new_sounds)
+            assert len(pyxel.sounds) == len(original) + 2
+        finally:
+            pyxel.sounds[:] = original
 
     def test_colors_clear_and_restore(self):
         original_colors = list(pyxel.colors)
-        pyxel.colors.clear()
-        assert len(pyxel.colors) == 0
-        for c in original_colors:
-            pyxel.colors.append(c)
-        assert len(pyxel.colors) == len(original_colors)
+        try:
+            pyxel.colors.clear()
+            assert len(pyxel.colors) == 0
+        finally:
+            pyxel.colors[:] = original_colors
 
 
 class TestColorsExtendBeyondDefault:
     def test_append_beyond_16(self):
         original = list(pyxel.colors)
-        pyxel.colors.append(0x123456)
-        assert len(pyxel.colors) == len(original) + 1
-        assert pyxel.colors[-1] == 0x123456
-        pyxel.colors.pop()
-        assert len(pyxel.colors) == len(original)
+        try:
+            pyxel.colors.append(0x123456)
+            assert len(pyxel.colors) == len(original) + 1
+            assert pyxel.colors[-1] == 0x123456
+        finally:
+            pyxel.colors[:] = original
 
     def test_multiple_appends(self):
         original = list(pyxel.colors)
-        for i in range(10):
-            pyxel.colors.append(0x100000 + i)
-        assert len(pyxel.colors) == len(original) + 10
-        for _ in range(10):
-            pyxel.colors.pop()
-        assert len(pyxel.colors) == len(original)
+        try:
+            for i in range(10):
+                pyxel.colors.append(0x100000 + i)
+            assert len(pyxel.colors) == len(original) + 10
+        finally:
+            pyxel.colors[:] = original
 
 
 class TestSeqInsert:
     def test_insert_colors(self):
         original = list(pyxel.colors)
-        pyxel.colors.insert(0, 0xABCDEF)
-        assert pyxel.colors[0] == 0xABCDEF
-        assert len(pyxel.colors) == len(original) + 1
-        assert pyxel.colors[1] == original[0]
-        del pyxel.colors[0]
-        assert len(pyxel.colors) == len(original)
+        try:
+            pyxel.colors.insert(0, 0xABCDEF)
+            assert pyxel.colors[0] == 0xABCDEF
+            assert len(pyxel.colors) == len(original) + 1
+            assert pyxel.colors[1] == original[0]
+        finally:
+            pyxel.colors[:] = original
 
     def test_insert_sounds(self):
-        original_len = len(pyxel.sounds)
+        original = list(pyxel.sounds)
         snd = pyxel.Sound()
-        pyxel.sounds.insert(0, snd)
-        assert len(pyxel.sounds) == original_len + 1
-        del pyxel.sounds[0]
-        assert len(pyxel.sounds) == original_len
+        try:
+            pyxel.sounds.insert(0, snd)
+            assert len(pyxel.sounds) == len(original) + 1
+        finally:
+            pyxel.sounds[:] = original
 
 
 class TestSeqReversed:
@@ -265,22 +400,20 @@ class TestSeqReversed:
         assert rev == list(reversed(colors_list))
 
     def test_reversed_images(self):
-        rev = list(reversed(pyxel.images))
-        assert len(rev) == len(pyxel.images)
+        original = list(pyxel.images)
+        try:
+            pyxel.images[:] = [pyxel.Image(1, 2), pyxel.Image(3, 4)]
+            assert [(img.width, img.height) for img in reversed(pyxel.images)] == [
+                (3, 4),
+                (1, 2),
+            ]
+        finally:
+            pyxel.images[:] = original
 
 
 class TestSeqRepr:
     def test_colors_repr(self):
-        # Value-type sequences have a deterministic wrapper-name + list repr.
         assert repr(pyxel.colors) == f"Colors{list(pyxel.colors)!r}"
-
-    def test_images_repr(self):
-        r = repr(pyxel.images)
-        assert isinstance(r, str)
-
-    def test_sounds_repr(self):
-        r = repr(pyxel.sounds)
-        assert isinstance(r, str)
 
 
 class TestSeqBool:
@@ -291,30 +424,31 @@ class TestSeqBool:
 
     def test_empty_is_falsy(self):
         original = list(pyxel.colors)
-        pyxel.colors.clear()
-        assert not bool(pyxel.colors)
-        for c in original:
-            pyxel.colors.append(c)
+        try:
+            pyxel.colors.clear()
+            assert not bool(pyxel.colors)
+        finally:
+            pyxel.colors[:] = original
 
 
 class TestSeqIadd:
     def test_iadd_colors(self):
         original = list(pyxel.colors)
-        pyxel.colors += [0xAAAAAA, 0xBBBBBB]
-        assert len(pyxel.colors) == len(original) + 2
-        assert pyxel.colors[-2] == 0xAAAAAA
-        assert pyxel.colors[-1] == 0xBBBBBB
-        pyxel.colors.pop()
-        pyxel.colors.pop()
-        assert len(pyxel.colors) == len(original)
+        try:
+            pyxel.colors += [0xAAAAAA, 0xBBBBBB]
+            assert len(pyxel.colors) == len(original) + 2
+            assert pyxel.colors[-2] == 0xAAAAAA
+            assert pyxel.colors[-1] == 0xBBBBBB
+        finally:
+            pyxel.colors[:] = original
 
     def test_iadd_sounds(self):
-        original_len = len(pyxel.sounds)
-        pyxel.sounds += [pyxel.Sound(), pyxel.Sound()]
-        assert len(pyxel.sounds) == original_len + 2
-        pyxel.sounds.pop()
-        pyxel.sounds.pop()
-        assert len(pyxel.sounds) == original_len
+        original = list(pyxel.sounds)
+        try:
+            pyxel.sounds += [pyxel.Sound(), pyxel.Sound()]
+            assert len(pyxel.sounds) == len(original) + 2
+        finally:
+            pyxel.sounds[:] = original
 
     def test_iadd_empty_list(self):
         original_len = len(pyxel.colors)
@@ -333,12 +467,253 @@ class TestSeqValueOps:
         assert pyxel.colors != colors_list
 
     def test_add(self):
-        result = pyxel.colors + list(pyxel.colors)
-        assert len(result) == len(pyxel.colors) * 2
+        colors = list(pyxel.colors)
+        result = pyxel.colors + colors
+        assert result == colors + colors
         assert isinstance(result, list)
 
     def test_mul(self):
-        original_len = len(pyxel.colors)
+        colors = list(pyxel.colors)
         result = pyxel.colors * 2
-        assert len(result) == original_len * 2
+        assert result == colors * 2
         assert isinstance(result, list)
+
+
+class TestSeqReentry:
+    @pytest.mark.parametrize("method", ["__iter__", "__reversed__"])
+    def test_resource_results_retain_owners_during_garbage_collection(self, method):
+        code = """
+import gc
+
+import pyxel
+
+seq = pyxel.images
+owners = [pyxel.Image(width, 1) for width in (1, 2, 3)]
+seq[:] = owners
+# Bind the native reader before enabling collection.
+read = getattr(seq, METHOD)
+active = False
+collected = False
+
+
+def collect(phase, info):
+    global collected
+    if active and phase == "start":
+        seq.clear()
+        collected = True
+
+
+gc.callbacks.append(collect)
+gc.collect()
+gc.disable()
+# Exhaust the list free list so the result allocation can collect the source bank.
+retained = [[] for _ in range(1000)]
+gc.set_threshold(1, 1000000, 1000000)
+active = True
+gc.enable()
+
+result = read()
+active = False
+gc.callbacks.remove(collect)
+
+assert collected
+assert len(seq) == 0
+result = list(result)
+expected = owners[::-1] if REVERSED else owners
+assert [image.width for image in result] == [image.width for image in expected]
+
+# Returned resources share the retained owners rather than copying their pixels.
+owners[0].pset(0, 0, 7)
+assert [image.pget(0, 0) for image in result] == [
+    image.pget(0, 0) for image in expected
+]
+"""
+        code = code.replace("METHOD", repr(method)).replace(
+            "REVERSED", repr(method == "__reversed__")
+        )
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    @pytest.mark.parametrize(
+        ("operation", "expected"),
+        [
+            ("iter(seq)", [1, 2, 3]),
+            ("repr(seq)", "Wavetable[1, 2, 3]"),
+            ("operator.mul(seq, 2)", [1, 2, 3, 1, 2, 3]),
+        ],
+    )
+    def test_sequence_results_allow_garbage_collection_reentry(
+        self, operation, expected
+    ):
+        code = """
+import gc
+import operator
+
+import pyxel
+
+seq = pyxel.Tone().wavetable
+seq[:] = [1, 2, 3]
+active = False
+collected = False
+
+
+def collect(phase, info):
+    global collected
+    if active and phase == "start":
+        seq.clear()
+        collected = True
+
+
+gc.callbacks.append(collect)
+gc.collect()
+gc.disable()
+# Exhaust the list free list so constructing a result can trigger collection.
+retained = [[] for _ in range(1000)]
+gc.set_threshold(1, 1000000, 1000000)
+active = True
+gc.enable()
+
+result = OPERATION
+active = False
+gc.callbacks.remove(collect)
+
+assert collected
+if not isinstance(result, str):
+    result = list(result)
+assert result == EXPECTED
+assert len(seq) == 0
+    """
+        code = code.replace("OPERATION", operation).replace("EXPECTED", repr(expected))
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+
+class TestDeprecatedSequenceMethods:
+    @pytest.mark.parametrize("case", DEPRECATED_SEQUENCE_CASES)
+    def test_from_list_replaces_values_and_warns(self, capfd, case):
+        sequence, replacements = make_deprecated_sequence_case(case)
+        wrapper_name = type(sequence).__name__
+        original = list(sequence)
+        try:
+            result = sequence.from_list(replacements)  # type: ignore[attr-defined]
+            assert result is None
+            assert sequence_snapshot(case, sequence) == sequence_snapshot(
+                case, replacements
+            )
+            assert (
+                capfd.readouterr().out == f"{wrapper_name}.from_list() is deprecated. "
+                "Use slice assignment instead.\n"
+            )
+        finally:
+            sequence[:] = original
+
+    @pytest.mark.parametrize("case", DEPRECATED_SEQUENCE_CASES)
+    def test_to_list_returns_values_and_warns(self, capfd, case):
+        sequence, _ = make_deprecated_sequence_case(case)
+        wrapper_name = type(sequence).__name__
+        result = sequence.to_list()  # type: ignore[attr-defined]
+        assert isinstance(result, list)
+        assert sequence_snapshot(case, result) == sequence_snapshot(case, sequence)
+        assert (
+            capfd.readouterr().out
+            == f"{wrapper_name}.to_list() is deprecated. Use list(seq) instead.\n"
+        )
+
+
+def make_deprecated_sequence_case(case):
+    if case == "music-seq":
+        music = pyxel.Music()
+        music.set([1, 2])
+        return music.seqs[0], [3, 4]
+
+    if case.startswith("sound-"):
+        sound = pyxel.Sound()
+        sound.set("c2e2", "sp", "76", "nf", 10)
+        attribute = case.removeprefix("sound-")
+        replacements = {
+            "notes": [12, 24],
+            "tones": [0, 2],
+            "volumes": [3, 7],
+            "effects": [0, 2],
+        }
+        return getattr(sound, attribute), replacements[attribute]
+
+    if case == "tone-wavetable":
+        tone = pyxel.Tone()
+        tone.wavetable[:] = [1, 2]
+        return tone.wavetable, [3, 12]
+
+    if case == "colors":
+        return pyxel.colors, [0x123456, 0xABCDEF]
+    if case == "images":
+        return pyxel.images, [pyxel.Image(3, 5)]
+    if case == "tilemaps":
+        return pyxel.tilemaps, [pyxel.Tilemap(4, 6, 0)]
+
+    if case == "channels":
+        channel = pyxel.Channel()
+        channel.gain = 0.25
+        channel.detune = 7
+        return pyxel.channels, [channel]
+
+    if case == "tones":
+        tone = pyxel.Tone()
+        tone.mode = 2
+        tone.gain = 0.5
+        return pyxel.tones, [tone]
+
+    if case == "sounds":
+        sound = pyxel.Sound()
+        sound.set("c2e2", "sp", "76", "nf", 9)
+        return pyxel.sounds, [sound]
+
+    if case == "musics":
+        music = pyxel.Music()
+        music.set([3, 4])
+        return pyxel.musics, [music]
+
+    raise AssertionError(f"unknown deprecated sequence case: {case}")
+
+
+def sequence_snapshot(case, sequence):
+    if case == "images":
+        return [(item.width, item.height) for item in sequence]
+    if case == "tilemaps":
+        return [(item.width, item.height, item.imgsrc) for item in sequence]
+    if case == "channels":
+        return [(item.gain, item.detune) for item in sequence]
+
+    if case == "tones":
+        return [
+            (item.mode, item.sample_bits, list(item.wavetable), item.gain)
+            for item in sequence
+        ]
+
+    if case == "sounds":
+        return [
+            (
+                list(item.notes),
+                list(item.tones),
+                list(item.volumes),
+                list(item.effects),
+                item.speed,
+            )
+            for item in sequence
+        ]
+
+    if case == "musics":
+        return [[list(seq) for seq in item.seqs] for item in sequence]
+
+    return list(sequence)

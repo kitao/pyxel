@@ -10,8 +10,6 @@ pub struct WindowWatcher {
 }
 
 impl WindowWatcher {
-    // Constructor
-
     pub fn new() -> Self {
         let (watch_state_file, raw_state) = if let Ok(path) = var(WATCH_STATE_FILE_ENV) {
             let content = read_to_string(&path).unwrap_or_default();
@@ -19,13 +17,13 @@ impl WindowWatcher {
         } else {
             (None, var(WINDOW_STATE_ENV).unwrap_or_default())
         };
-
         let restored_state = Self::parse_window_state(&raw_state);
 
         if let Some((x, y, w, h)) = restored_state {
             platform::set_window_pos(x, y);
             platform::set_window_size(w, h);
         }
+
         let (x, y) = platform::window_pos();
         let (w, h) = platform::window_size();
 

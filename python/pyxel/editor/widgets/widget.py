@@ -128,6 +128,7 @@ class Widget:
         if not self.is_visible_var or not self.is_enabled_var:
             return False
 
+        # Hit-test in reverse draw order so the topmost child receives input first.
         for widget in reversed(self._children):
             if widget._process_input():
                 return True
@@ -191,7 +192,8 @@ class Widget:
         ):
             self.trigger_event("mouse_repeat", capture_info.key, x, y)
 
-        if pyxel.btnr(capture_info.key):
+        # A quick click can release before capture is processed on the next frame.
+        if pyxel.btnr(capture_info.key) or not pyxel.btn(capture_info.key):
             self.trigger_event("mouse_up", capture_info.key, x, y)
             press_x, press_y = capture_info.press_pos
             if (
@@ -228,6 +230,7 @@ class Widget:
         pyxel.line(x + 1, y, x + w - 2, y, WIDGET_PANEL_COLOR)
         pyxel.rect(x, y + 1, w, h - 2, WIDGET_PANEL_COLOR)
         pyxel.line(x + 1, y + h - 1, x + w - 2, y + h - 1, WIDGET_PANEL_COLOR)
+
         if with_shadow:
             pyxel.line(x + 2, y + h, x + w - 1, y + h, WIDGET_SHADOW_COLOR)
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
@@ -253,6 +256,7 @@ class Widget:
         self._bind_var_property(name, member_name)
 
     def copy_var(self, name, src_widget, src_name=None):
+        # Share the variable and its listeners so both widgets stay in sync.
         member_name = self._widget_var_name(name)
         src_member_name = self._widget_var_name(src_name or name)
         setattr(self, member_name, getattr(src_widget, src_member_name))

@@ -70,6 +70,10 @@ impl System {
 }
 
 impl Pyxel {
+    pub(crate) fn frame_seconds(&self) -> f32 {
+        1.0 / self.system.fps as f32
+    }
+
     // Main loop
 
     pub fn run<T: PyxelCallback>(mut callback: T) {
@@ -109,6 +113,7 @@ impl Pyxel {
 
         impl PyxelCallback for App {
             fn update(&mut self) {}
+
             fn draw(&mut self) {
                 rc_mut!(pyxel::screen()).draw_image(
                     0.0,
@@ -148,7 +153,7 @@ impl Pyxel {
         let fps = {
             let mut pyxel = pyxel::pyxel();
             pyxel.system.update_profiler.end(platform::ticks());
-            pyxel.draw_frame(None);
+            pyxel.draw_frame();
             pyxel.system.fps
         };
         *pyxel::frame_count() += 1;
@@ -175,10 +180,14 @@ impl Pyxel {
 
     pub fn restart() {
         #[cfg(not(target_os = "emscripten"))]
-        if let Some(mut callback) = pyxel::reset_callback().take() {
-            let window_state = pyxel::pyxel().system.window_watcher.state_string();
-            platform::close_audio();
-            callback(window_state);
+        {
+            // Release the callback-slot borrow before Python restarts the process.
+            let callback = pyxel::reset_callback().take();
+            if let Some(mut callback) = callback {
+                let window_state = pyxel::pyxel().system.window_watcher.state_string();
+                platform::close_audio();
+                callback(window_state);
+            }
         }
 
         #[cfg(target_os = "emscripten")]
@@ -212,7 +221,6 @@ impl Pyxel {
         platform::set_window_title(title);
     }
 
-    // Convert icon pattern data into scaled RGBA pixels.
     pub fn set_icon<S: AsRef<str>>(
         &self,
         data: &[S],
@@ -223,6 +231,7 @@ impl Pyxel {
         if scale == 0 {
             return Err("scale must be greater than 0".to_string());
         }
+
         let colors = pyxel::colors();
         let image = rc_ref!(rc);
         let width = image.width();
@@ -242,7 +251,7 @@ impl Pyxel {
         for (index, &color) in image_data.iter().enumerate() {
             if color as usize >= colors.len() {
                 return Err(format!(
-                    "Invalid icon data at row {}, column {}: color {color} exceeds palette size {}",
+                    "Invalid icon data at row {}, column {}: color {color} is out of range for palette size {}",
                     index / width as usize,
                     index % width as usize,
                     colors.len()
@@ -304,19 +313,14 @@ impl Pyxel {
 
         *pyxel::width() = width;
         *pyxel::height() = height;
-
         rc_mut!(pyxel::screen()).canvas = Canvas::new(width, height);
-
         if let Some(graphics) = &mut self.graphics {
             graphics.invalidate_screen_texture();
         }
-
         self.reset_screencast();
 
         if !*pyxel::is_headless() {
-            // Keep the current effective scale when possible, so the window
-            // follows a resize naturally in windowed mode on native platforms.
-            // Cap the scale so the new window fits within the display.
+            // Preserve the current scale, capped to fit the resized window on the display.
             #[cfg(not(target_os = "emscripten"))]
             if !platform::is_fullscreen() {
                 let (display_w, display_h) = platform::display_size();
@@ -332,12 +336,12 @@ impl Pyxel {
             }
             self.update_screen_params();
         }
+
         Ok(())
     }
 
     // Event & input processing
 
-    // Poll platform events and update input/window state.
     fn process_events(&mut self) -> Option<LifecycleAction> {
         let mut lifecycle_action = None;
         if platform::is_sigint_received() {
@@ -345,7 +349,6 @@ impl Pyxel {
         }
 
         self.start_input_frame();
-
         platform::poll_events(&mut self.system.event_buf);
         let mut events = std::mem::take(&mut self.system.event_buf);
 
@@ -368,7 +371,6 @@ impl Pyxel {
             }
         }
 
-        // Return the buffer for reuse
         self.system.event_buf = events;
         lifecycle_action
     }
@@ -442,6 +444,7 @@ impl Pyxel {
                 self.set_fullscreen(!platform::is_fullscreen());
             }
         }
+
         None
     }
 
@@ -479,15 +482,12 @@ impl Pyxel {
 
     fn begin_update_frame(&mut self) -> (bool, Option<LifecycleAction>) {
         self.system.update_profiler.start(platform::ticks());
-
         if let Some(action) = self.process_events() {
             return (false, Some(action));
         }
-
         if self.system.paused {
             return (false, None);
         }
-
         if let Some(action) = self.check_special_input() {
             return (false, Some(action));
         }
@@ -513,6 +513,7 @@ impl Pyxel {
         let camera_y = screen.canvas.camera_y;
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
+        let palette_is_identity = screen.palette_is_identity;
         let alpha = screen.canvas.alpha;
 
         screen.reset_clip_rect();
@@ -538,6 +539,7 @@ impl Pyxel {
         screen.canvas.camera_y = camera_y;
         screen.map_color(1, palette1);
         screen.map_color(2, palette2);
+        screen.palette_is_identity = palette_is_identity;
         screen.set_dithering(alpha);
     }
 
@@ -545,18 +547,14 @@ impl Pyxel {
     fn draw_cursor(&self) {
         let x = *pyxel::mouse_x();
         let y = *pyxel::mouse_y();
-
         platform::set_mouse_visible(
             x < 0 || x >= *pyxel::width() as i32 || y < 0 || y >= *pyxel::height() as i32,
         );
-
         if !self.is_mouse_visible() {
             return;
         }
-
         let width = rc_ref!(pyxel::cursor_image()).width() as i32;
         let height = rc_ref!(pyxel::cursor_image()).height() as i32;
-
         if x <= -width
             || x >= *pyxel::width() as i32
             || y <= -height
@@ -570,7 +568,6 @@ impl Pyxel {
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
-        let palette = screen.palette;
 
         screen.reset_clip_rect();
         screen.reset_camera();
@@ -590,18 +587,12 @@ impl Pyxel {
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
         screen.canvas.camera_y = camera_y;
-        screen.palette = palette;
     }
 
-    fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+    fn draw_frame(&mut self) {
         if !self.begin_draw_frame() {
             return;
         }
-
-        if let Some(callback) = callback {
-            callback.draw();
-        }
-
         self.finish_draw_frame();
     }
 
@@ -618,11 +609,9 @@ impl Pyxel {
 
     fn begin_draw_frame(&mut self) -> bool {
         self.system.draw_profiler.start(platform::ticks());
-
         if self.system.paused {
             return false;
         }
-
         self.update_screen_params();
         true
     }
@@ -633,7 +622,40 @@ impl Pyxel {
         self.draw_cursor();
         self.render_screen();
         self.capture_screen();
-
         self.system.draw_profiler.end(platform::ticks());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn perf_monitor_preserves_palette_mapping() {
+        let mut pyxel = Pyxel {
+            system: System::new(30, crate::key::KEY_ESCAPE, true),
+            resource: crate::resource::Resource::new(None, Some(0), 30),
+            input: crate::input::Input::new(),
+            graphics: None,
+        };
+        pyxel.set_perf_monitor(true);
+
+        for identity in [true, false] {
+            let palette = {
+                let screen_rc = pyxel::screen();
+                let mut screen = rc_mut!(screen_rc);
+                screen.reset_color_map();
+                if !identity {
+                    screen.map_color(1, 3);
+                }
+                screen.palette
+            };
+
+            pyxel.draw_perf_monitor();
+            let screen_rc = pyxel::screen();
+            let screen = rc_ref!(screen_rc);
+            assert_eq!(screen.palette, palette);
+            assert_eq!(screen.palette_is_identity, identity);
+        }
     }
 }

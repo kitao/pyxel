@@ -49,26 +49,6 @@ impl Pyxel {
             .map_err(|_| format!("Failed to open file '{filename}'"))?;
         let mut archive =
             ZipArchive::new(file).map_err(|_| format!("Failed to parse file '{filename}'"))?;
-
-        // Old resource file
-        if archive.index_for_name("pyxel_resource/version").is_some() {
-            println!("An old Pyxel resource file '{filename}' is loaded. Please re-save it with the latest Pyxel.");
-            let palette = Self::read_palette(filename)?;
-            self.load_old_resource(
-                &mut archive,
-                !exclude_images.unwrap_or(false),
-                !exclude_tilemaps.unwrap_or(false),
-                !exclude_sounds.unwrap_or(false),
-                !exclude_musics.unwrap_or(false),
-            )
-            .map_err(|detail| {
-                format!("Failed to load legacy resource file '{filename}': {detail}")
-            })?;
-            Self::apply_palette(palette);
-            return Ok(());
-        }
-
-        // New resource file
         let mut file = archive
             .by_name(RESOURCE_ARCHIVE_NAME)
             .map_err(|_| format!("Failed to read file '{filename}'"))?;
@@ -104,16 +84,17 @@ impl Pyxel {
         exclude_sounds: Option<bool>,
         exclude_musics: Option<bool>,
     ) -> Result<(), String> {
-        let toml_text = ResourceData::from_runtime(self).to_toml(
+        let toml_text = ResourceData::from_runtime(
+            self,
             exclude_images.unwrap_or(false),
             exclude_tilemaps.unwrap_or(false),
             exclude_sounds.unwrap_or(false),
             exclude_musics.unwrap_or(false),
-        );
+        )
+        .to_toml();
 
         let path = Path::new(&filename);
         let file = File::create(path).map_err(|_| format!("Failed to create file '{filename}'"))?;
-
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())
             .map_err(|_| format!("Failed to save file '{filename}'"))?;
@@ -136,13 +117,11 @@ impl Pyxel {
 
     fn read_palette(filename: &str) -> Result<Option<Vec<Rgb24>>, String> {
         let filename = Self::palette_filename(filename);
-
         let mut file = match File::open(Path::new(&filename)) {
             Ok(file) => file,
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(_) => return Err(format!("Failed to open file '{filename}'")),
         };
-
         let mut contents = String::new();
         file.read_to_string(&mut contents)
             .map_err(|_| format!("Failed to read file '{filename}'"))?;
@@ -157,6 +136,8 @@ impl Pyxel {
                     .map_err(|_| format!("Failed to parse line {} in '{filename}': '{s}'", i + 1))
             })
             .collect::<Result<_, _>>()?;
+
+        // An empty palette file still yields one color so the palette stays non-empty.
         Ok(Some(if colors.is_empty() {
             vec![0x00ff_ffff]
         } else {
@@ -197,8 +178,8 @@ impl Pyxel {
         );
         let filename = add_file_extension(&filename, ".png");
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
-        rc_ref!(pyxel::screen()).save(&filename, scale)?;
 
+        rc_ref!(pyxel::screen()).save(&filename, scale)?;
         platform::export_browser_file(&filename);
         Ok(())
     }
@@ -214,6 +195,7 @@ impl Pyxel {
         );
         let filename = add_file_extension(&filename, ".gif");
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
+
         if self.resource.screencast.save(&filename, scale)? {
             platform::export_browser_file(&filename);
         }
@@ -234,8 +216,6 @@ impl Pyxel {
         );
     }
 
-    // User data
-
     pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> Result<String, String> {
         let home_dir = UserDirs::new()
             .map_or_else(PathBuf::new, |user_dirs| user_dirs.home_dir().to_path_buf());
@@ -255,7 +235,6 @@ impl Pyxel {
         if !app_data_dir.ends_with(MAIN_SEPARATOR) {
             app_data_dir.push(MAIN_SEPARATOR);
         }
-
         Ok(app_data_dir)
     }
 
@@ -281,9 +260,11 @@ impl Pyxel {
         let num_colors = pyxel::colors().len();
         let rc = Image::new(num_colors as u32, 1);
         let mut image = rc_mut!(rc);
+
         for i in 0..num_colors {
             image.set_pixel(i as f32, 0.0, i as Color);
         }
+
         let result = image.save(&filename, 16);
         if let Err(e) = result {
             println!("{e}");
@@ -304,12 +285,23 @@ impl Pyxel {
     }
 
     fn parse_format_version(toml_text: &str) -> Result<u32, String> {
-        toml_text
-            .lines()
-            .find(|line| line.trim().starts_with("format_version"))
-            .and_then(|line| line.split_once('='))
-            .and_then(|(_, value)| value.trim().parse::<u32>().ok())
-            .ok_or_else(|| "Failed to parse resource format version".to_string())
+        for line in toml_text.lines() {
+            if line.trim_start().starts_with('[') {
+                break;
+            }
+            let Ok(table) = toml::from_str::<toml::Table>(line) else {
+                continue;
+            };
+            if let Some(version) = table
+                .get("format_version")
+                .and_then(toml::Value::as_integer)
+                .and_then(|version| u32::try_from(version).ok())
+            {
+                return Ok(version);
+            }
+        }
+
+        Err("Failed to parse resource format version".to_string())
     }
 
     fn datetime_string() -> String {

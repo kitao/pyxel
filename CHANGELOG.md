@@ -1,156 +1,124 @@
 # Change Log
 
+## 3.0.0
+
+- Added Pyxel Cube software-rendered 3D and Blockbench model references
+- Removed old MML syntax and pre-2.0 resource loading
+- Updated Rust to nightly-2026-10-06 and Pyodide to 314.0.7
+- Updated pyo3 to 0.29.3, libc to 0.2.190, rand to 0.10.3, and toml to 1.1.6
+- Updated Tailwind CSS to 4.3.0 and Prettier to 3.9.9
+- Updated WebAssembly wheel platform tags
+- Added an app2exe install extra for PyInstaller
+- Improved Python type hints and catchable API errors
+- Fixed blit clipping, primitive and text drawing, and tilemap collisions
+- Fixed capture and image saving with large images or extended palettes
+- Fixed key repeat, modifier states, and mouse positioning
+- Fixed duplicate gamepad startup registration and hotplug key mapping
+- Fixed frame timing during long-running sessions
+- Fixed MML timing, sound playback, audio exports, and BGM generation hangs
+- Fixed resource saving, version parsing, and TMX imports
+- Fixed data view lifetimes, sequence loss, and garbage collection deadlocks
+- Fixed resource editing, input, and saving in Pyxel Editor and examples
+- Fixed collisions in the shooter example
+- Fixed app packaging, startup paths, overwrites, and directory handling
+- Fixed app2exe imports and concurrent builds
+- Updated app2html to use the official versioned web runtime
+- Fixed play and watch process cleanup
+- Fixed web startup, resets, imports, and virtual gamepad resizing
+- Improved virtual gamepad diagonals, touch tracking, and short taps
+- Fixed project loading, saving, downloads, and share URLs in web tools
+- Improved web layouts, accessibility, and API reference search
+- Fixed local web preview serving and restricted access to public files
+- Improved rendering, audio, tilemap collision, and editor performance
+- Fixed OpenGL cleanup on application shutdown
+- Fixed gamepad cleanup during resets and application shutdown
+- Improved wheel builds, validation, and SDL2 download verification
+- Fixed Windows development setup and partial version updates
+- Fixed playback timing in documentation GIFs
+- Improved documentation and translations
+
 ## 2.9.9
 
-- Updated Rust to version nightly-2026-08-12
-- Updated Pyodide to version 314.0.4
-- Updated blip_buf crate to version 0.2
-- Updated pyo3 crate to version 0.29.2
-- Aligned code and generated docs with ruff 0.16 defaults
+- Updated Rust to nightly-2026-08-12 and Pyodide to 314.0.4
+- Updated blip_buf to 0.2 and pyo3 to 0.29.2
 - Added browser downloads for sound and music saves on Pyxel Web
-- Fixed browser export filenames for captures saved with extensions
-- Fixed empty screencasts exporting a nonexistent file on Pyxel Web
-- Fixed palette corruption when Image.from_image exceeds 256 colors
-- Fixed app2exe hidden imports for from-package submodule imports
-- Fixed Pyxel Editor image bank display after resource file drops
-- Fixed initial button states of Pyxel Editor number pickers
-- Fixed Pyxel Web Launcher URLs pinning apps to a commit SHA
-- Fixed Pyxel Code Maker URLs pinning projects to a commit SHA
-- Extracted shared web page headers into shared.js
-- Extracted the API reference page logic into api-reference.js
-- Unified rotate/scale blit setup into TransformProjection
+- Fixed browser export filenames and empty screencast saves
+- Fixed Image.from_image palette corruption with more than 256 colors
+- Fixed app2exe imports of package submodules
+- Fixed Pyxel Editor resource drops and number picker input
+- Fixed Web Launcher and Code Maker share URLs pinning to a commit SHA
 
 ## 2.9.8
 
-- Updated Rust to version nightly-2026-07-14
-- Updated glow crate to version 0.18
-- Updated GitHub Actions dependencies and wheel verification workflow
-- Fixed malformed resource and inline data causing crashes or partial updates
-- Fixed oversized screen, image, and tilemap dimensions creating invalid buffers
-- Fixed invalid MML repeat counts being treated as infinite repeats
-- Fixed high MML effect slot numbers causing excessive memory use
-- Fixed frame callbacks retaining mutable runtime borrows during API re-entry
-- Fixed window state preservation without per-frame environment mutation
-- Fixed Web loaders decoding failed HTTP responses as valid assets
-- Fixed Pyxel Web imports probing unrelated current-directory names
-- Fixed memory retained across Pyxel Web resets
-- Fixed documentation generation silently skipping malformed web pages
-- Fixed example runner masking child process failures
-- Fixed fadeout effects silencing short notes
-- Fixed vibrato and glide timing drifting with playback history
-- Fixed sound resume position after 40 minutes of playback
-- Fixed sound dropouts when switching between PCM and notes
-- Fixed play sec option skipping sounds after a PCM part
-- Fixed looping PCM sounds stopping when sec exceeds their length
-- Fixed extreme tempos and pitches hanging audio rendering
-- Fixed zero-duration MML repeats hanging audio playback
-- Fixed empty tone banks causing audio playback and save panics
-- Fixed long-note playback, seek positions, and MML duration calculation
+- Updated Rust to nightly-2026-07-14 and glow to 0.18
+- Fixed crashes and partial updates from malformed resource and image data
+- Fixed API calls during frame callbacks and window state preservation
+- Fixed Web asset loading, imports, and memory retained across resets
+- Fixed MML timing, note transitions, and resuming mixed PCM/note playback
+- Fixed audio hangs from extreme tempos, pitches, and zero-duration repeats
+- Fixed playing and saving sounds with empty tone banks
 - Rejected invalid playback start times and zero-sample save durations
-- Rejected zero sound speeds and invalid music sound indexes
-- Rejected out-of-range Tone.sample_bits assignments
+- Rejected invalid sound speeds, music indexes, and tone sample widths
 - Fixed FFmpeg failures being reported as successful saves
-- Improved transformed tilemap and audio command performance
-- Improved wavetable and PyO3 data access performance
-- Improved synthesized note transitions and attack sharpness
+- Improved rendering and audio performance
 
 ## 2.9.7
 
 - Added a GIMP palette file for Pyxel's default colors
-- Updated Pyodide to version 314.0.2
-- Updated Rust to version nightly-2026-07-05
-- Updated SDL2 to version 2.32.10 for Linux builds
+- Updated Pyodide to 314.0.2 and Rust to nightly-2026-07-05
+- Updated SDL2 to 2.32.10 for Linux builds
 - Fixed TMX imports with flipped tiles
 - Fixed reversed slice assignment for Pyxel sequence objects
-- Fixed possible channel desync when starting music playback
-- Fixed escaping for generated HTML and browser file exports
-- Fixed startup script cleanup after failed Pyxel app packaging
-- Fixed palette loss when Image.from_image fails to load a file
-- Fixed crash when playing or saving sounds with out-of-range tones
-- Fixed audio playback after repeated macOS app restarts
-- Improved audio/MML/BGM processing and resource save performance
-- Improved web export and Pyxel Editor shortcut performance
-- Refined Japanese, Chinese, and web documentation wording and typography
+- Fixed music channel synchronization and audio after macOS app restarts
+- Fixed playing or saving sounds with out-of-range tones
+- Fixed escaping in generated HTML and browser file exports
+- Fixed app packaging cleanup and palette loss on failed image imports
+- Improved audio, resource saving, Web export, and editor performance
+- Improved documentation and translations
 
 ## 2.9.6
 
-- Updated Pyodide to version 314.0
-- Updated Emscripten to version 5.0.3
-- Updated SDL2 to version 2.32.10
-- Fixed WASM SDL2 PIC linking and wheel README packaging
-- Updated Rust to version nightly-2026-06-12
-- Updated pyo3 crate to version 0.29
-- Updated symphonia crate to version 0.6
-- Updated sysinfo crate to version 0.39
-- Trimmed encoder delay and padding from decoded PCM audio
-- Fixed mistyped notes in Pyxel MML Studio sample tune A URL
 - Raised the minimum Python version to 3.11
-- Avoided Rc clone when refreshing voice tone state
+- Updated Pyodide to 314.0, Emscripten to 5.0.3, and SDL2 to 2.32.10
+- Updated Rust to nightly-2026-06-12
+- Updated pyo3 to 0.29, symphonia to 0.6, and sysinfo to 0.39
+- Fixed WASM linking and wheel README packaging
+- Trimmed encoder delay and padding from decoded PCM audio
 - Rejected unresolved ties, invalid lengths, and unmatched repeats in MML
-- Fixed profiler frame time on tick counter wraparound
-- Optimized line, rectb, circ, and elli drawing with span fills
-- Lazy-loaded below-the-fold images in the web user guide
-- Cached API reference element lookups for search input
-- Debounced Pyxel MML Studio URL and QR updates while typing
-- Fixed old MML parser panic on zero tempo or note length
-- Fixed Pyxel Editor crash when cutting a bank in tilemap mode
-- Fixed sound editor speed display not updating when switching sounds
-- Fixed negative sample rounding bias in voice gain processing
-- Removed unused semver dependency, constants, and dead code
-- Fixed flipped blt and bltm clipping when the source overhangs
-- Fixed elli and ellib drawing with zero width or height
-- Fixed tri fill when all three vertices share one row
-- Fixed PCM sounds being skipped after note sounds in a playlist
-- Fixed seek into sounds following a PCM sound in a playlist
-- Fixed ghost notes when resuming PCM playback after an interrupting sound
-- Fixed BGM generator hang on custom chords without tones
-- Fixed old MML parser panic on trailing whitespace
-- Fixed old resource load crashing on malformed palette files
-- Fixed BDF font parse crash on overlong bitmap rows
-- Fixed Pyxel Editor color pick offset at pixel boundaries
-- Fixed Pyxel MML Studio legacy share URLs failing to load
-- Fixed doubled HTML escaping in web user guide link labels
-- Refined wording, translations, and data across web pages and docs
+- Fixed primitive drawing and flipped blit clipping
+- Fixed PCM playlist playback, seeking, and resuming after interruptions
+- Fixed BGM generation hanging on empty custom chords
+- Fixed crashes on malformed MML, resource palettes, and BDF fonts
+- Fixed Pyxel Editor bank cutting, speed display, and color picking
+- Fixed Pyxel MML Studio sample and legacy share URLs
+- Improved drawing performance and Web page responsiveness
+- Improved audio gain accuracy and profiler timing
+- Improved documentation and translations
 
 ## 2.9.5
 
-- Fixed aliasing UB when tilemap imgsrc points to the target image
+- Fixed self-referencing tilemap rendering
 - Switched image color matching to plain RGB Euclidean distance
-- Removed unused string allocation in PyO3 type cast macro
-- Hoisted clip checks out of dithered row fill loop
-- Reduced WASM virtual gamepad input from 10 JS calls per frame to 1
-- Cached WASM keyboard scancode correction scripts per scancode
-- Prefetched WASM wheel and import hook in parallel with Pyodide load
-- Enabled WASM SIMD128 and gated -Zbuild-std by the WASM target
-- Switched shared types to Rc-based ownership and resolved sound leaks
-- Fixed missing audio lock in several audio API call paths
-- Fixed audio_bgm2 sample using off-palette colors
 - Fixed Image.from_image accepting over 256 colors with include_colors
 - Fixed Tone.sample_bits range allowing zero or shift-overflow values
 - Fixed vibrato modulation skipped when MML period equals initial value
 - Made Tone wavetable, sample_bits, and gain take effect mid-note
+- Fixed sound memory leaks and audio synchronization
+- Enabled WASM SIMD128 and improved Web startup and input performance
+- Improved drawing performance
 - Removed Tone.waveform and replaced Seq[T] with list[T] in type hints
 - Added Tone.sample_bits and Channel.detune docs and refined translations
 
 ## 2.9.4
 
-- Fixed Pyxel Editor mismapping user palettes with more than 16 colors
-- Fixed Pyxel Editor color picker cursor shape across palette sizes
-- Fixed missing id attributes on web pages
-- Added cfg(pyxel_core) gates to audio save APIs
-- Reused waveform buffer when updating tone wavetable
-- Gated reset_statics and pid_exists by target OS
-- Replaced gen_bgm preset clamp with a bounds assertion
+- Fixed Pyxel Editor palettes and color picking with more than 16 colors
+- Rejected invalid gen_bgm presets
 - Added explicit error for BDF fonts wider than 32 pixels
 - Added Python 3.14 to PyPI classifiers
 
 ## 2.9.3
 
-- Added a JSON API to the BGM generator for Pyxel Composer integration
-- Reorganized BGM generator internals and added determinism snapshot test
-- Refactored editor widgets and cleaned up state handling
-- Simplified Rust binding error handling
-- Refined web pages, share links, and translation terminology
+- Improved Web pages, share links, and translations
 
 ## 2.9.2
 
@@ -165,14 +133,11 @@
 - Enabled thin LTO and inlining hints in release builds
 - Prevented zip path traversal in the play and app2exe commands
 - Fixed relative path handling in the package command
-- Fixed duplicate startup script entry in packaged Pyxel apps
 - Fixed app2exe output colliding with the Pyxel app source directory
 - Renamed get_pixel/tile/value accessor methods to pixel/tile/value
 - Added custom chord progression support to bgm_generator
 - Added Pyxel Web Launcher to the showcase
-- Added shortcut keys for editors
 - Optimized rendering, audio, and parsing performance
-- Preserved MML input case and whitespace
 - Refined documentation terminology and translations
 
 ## 2.9.0
@@ -189,17 +154,12 @@
 
 - Fixed WASM public API functions lost by const refactor
 - Renamed user guide 'Tools' section to 'Examples & Tools'
-- Pinned WASM CDN imports to @main branch
 
 ## 2.8.9
 
-- Removed unnecessary allocations in rendering and audio
-- Unified editor undo/redo and input handling patterns
-- Optimized drawing hot paths
-- Optimized audio command processing
-- Fixed memory leak in MML playback on channels
-- Fixed tilemap editor selection
-- Fixed tilemap viewer rendering
+- Improved rendering and audio performance
+- Fixed memory leaks in MML playback
+- Fixed tilemap editor selection and rendering
 - Removed undefined constants from type hints and API reference
 - Added frame pipeline and input injection to headless mode
 
@@ -223,48 +183,31 @@
 
 ## 2.8.6
 
-- Refactored Canvas blit paths and palette handling
-- Constrained the chord note range in the BGM generator
-- Renamed web i18n variables for clarity
-- Fixed WASM key sticking by switching to a scancode correction map
+- Fixed Web keyboard keys sticking
 
 ## 2.8.5
 
-- Optimized blt and bltm rendering with fast paths
-- Optimized tilemap, text, and perspective rendering
-- Optimized screen and palette texture uploads
+- Improved drawing, display updates, and GIF capture performance
 - Increased the maximum color palette size from 255 to 256
-- Optimized GIF screencast saving with buffer reuse
 - Enabled Python atexit handlers on program termination
 - Enabled audio playback in headless mode
-- Fixed WASM keyboard keys sticking on rapid input
+- Fixed Web keyboard keys sticking on rapid input
 - Migrated User Examples from GitHub wiki to a dedicated gh-pages site
 
 ## 2.8.4
 
-- Added the multilingual user guide
-- Simplified the README
-- Added shared CSS for WASM document pages
-- Fixed translation inconsistencies across WASM pages
-- Fixed crash in sound editor when playback reaches end of notes
-- Extracted shared language detection into pyxel-pages.js
-- Replaced Tailwind CDN with local CLI build for web pages
-- Moved web pages from wasm/ to web/ with redirect support
-- Added web usage guide page with multilingual support
-- Fixed arrow keys not working in Safari on web
-- Added auto-generated markdown docs from web pages
-- Added auto-generated MML Commands documentation page
-- Added resource file format documentation
-- Opened showcase links in new tabs
+- Added multilingual guides and simplified the README
+- Moved Web pages to web/ with redirects from their previous URLs
+- Replaced Tailwind CDN with a local build
+- Fixed arrow keys not working in Safari
+- Fixed sound editor crashes when playback reaches the end of notes
 
 ## 2.8.3
 
 - Added URL loading support to Pyxel Code Maker
-- Changed Pyxel Code Maker to load default project from zip file
-- Moved WASM-only images from docs/images to wasm/images
-- Added docstrings to type hints from API reference
-- Added multilingual editor manual with 12 language support
-- Unified default width of WASM tool pages
+- Changed Pyxel Code Maker to load its initial project from a ZIP file
+- Added docstrings to type hints from the API reference
+- Added the editor manual in 12 languages
 
 ## 2.8.2
 
@@ -284,7 +227,7 @@
 - Added project sharing via Gist, GitHub, and URL to Pyxel Code Maker
 - Changed Pyxel Web Launcher URL format from dot to slash separators
 - Added drag-and-drop for .py and .pyxres files in Pyxel Code Maker
-- Fixed deprecated warning in voxatron.pyxapp
+- Fixed deprecated warning in vortexion.pyxapp
 
 ## 2.7.12
 
@@ -351,6 +294,7 @@
 - Added manual pages for Pyxel Code Maker and Pyxel MML Studio
 - Removed the version number from the pyxel command in the README files
 - Revamped Pyxel Web documentation and the FAQ for clarity
+- Removed keyword-only separators from pyi and PyO3 bindings
 
 ## 2.7.1
 
@@ -358,7 +302,6 @@
 - Improved web tools with i18n support and other enhancements
 - Added API Reference page for Pyxel Web
 - Fixed type hints in pyi for Seq, Tilemap, Sound, and Music
-- Removed keyword-only separators from pyi and PyO3 bindings
 
 ## 2.7.0
 
@@ -476,7 +419,7 @@
 ## 2.5.9
 
 - Added the load_pal and save_pal functions
-- Enabled palette file download for new files in Pyxel Editor
+- Enabled palette file loading for new files in Pyxel Editor
 - Enabled automatic color picker size adjustment in Pyxel Editor
 - Updated Pyodide to version 0.28.3
 - Updated Emscripten to version 4.0.9
@@ -517,7 +460,7 @@
 
 ## 2.5.4
 
-- Added two Pyxel apps by Adam for Pyxel Web Launcher
+- Added two Pyxel apps by Adam for the app launcher
 - Fixed Example 17 Python command execution issue
 - Fixed the reset function issue when called inside pyxapp
 - Updated design of the web pages
@@ -535,7 +478,7 @@
 - Fixed cargo publish error by adding features sdl2_bundle
 - Added an environment variable for the reset function's window state
 - Added three sample games from the Pyxel book
-- Added Example 17 for Pyxel Web Launcher and the reset function
+- Added Example 17 for the app launcher and the reset function
 - Updated pyo3 crate to version 0.26
 - Added gamepad support to Example 15
 

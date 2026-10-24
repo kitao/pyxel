@@ -1,0 +1,772 @@
+import inspect
+import math
+from pathlib import Path
+
+import pytest
+import pyxel
+from _assertions import raises_exact  # type: ignore[reportMissingImports]
+from pyxel import Image
+from pyxel.cube import Camera, Mat4, Mesh, Motion, Node, Vec3
+
+from ._glb_fixtures import (
+    write_alpha_texture_glb,
+    write_authored_normals_glb,
+    write_blockbench_profile_glb,
+    write_external_buffer_glb,
+    write_external_image_glb,
+    write_gray_alpha_texture_glb,
+    write_gray_texture_glb,
+    write_line_mode_glb,
+    write_material_animation_glb,
+    write_materialless_primitive_glb,
+    write_matrix_transform_glb,
+    write_morph_target_glb,
+    write_non_indexed_glb,
+    write_normal_texture_glb,
+    write_rgb_texture_glb,
+    write_single_texture_motion_glb,
+    write_skin_glb,
+    write_tangent_attribute_glb,
+    write_tinted_texture_glb,
+    write_two_material_glb,
+    write_two_material_two_texture_glb,
+    write_two_texture_glb,
+)
+
+
+def test_motion_not_user_constructible():
+    with raises_exact(TypeError, "cannot create 'pyxel.cube.Motion' instances"):
+        Motion()
+
+
+def test_from_glb_loads_single_texture_mesh(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    assert len(mesh.primitives) == 2
+    assert mesh.primitives[0] is None
+    assert mesh.primitives[1] is not None
+    assert mesh.names == ["actor", "actor_primitive_0"]
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.colkey == 0
+
+
+def test_from_glb_loads_blockbench_profile_textured_model(tmp_path):
+    path = write_blockbench_profile_glb(tmp_path / "blockbench.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0, fps=20.0)
+
+    assert mesh.names == [
+        "bb_scene",
+        "body",
+        "body_primitive_0",
+        "face",
+        "face_primitive_0",
+    ]
+    assert len(mesh.primitives) == 5
+    assert mesh.primitives[0] is None
+    assert mesh.primitives[1] is None
+    assert mesh.primitives[2] is not None
+    assert mesh.primitives[3] is None
+    assert mesh.primitives[4] is not None
+    assert isinstance(mesh.col_img, Image)
+
+    colors = _render_mesh_colors(mesh)
+    assert 8 in colors
+    assert 10 in colors
+
+
+def test_from_glb_loads_blockbench_profile_motion(tmp_path):
+    path = write_blockbench_profile_glb(tmp_path / "blockbench_motion.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0, fps=20.0)
+    root = Node.from_mesh(mesh)
+    assert len(mesh.motions) == 1
+    assert mesh.motions[0].name == "idle"
+    assert mesh.motions[0].length == 20.0
+
+    root.apply_motion(mesh.motions[0], 10.0)
+    body = root.find_by_name("body")[0]
+    assert root.find_by_name("bb_scene")[0].transform.pos == Vec3(0.25, 0.0, 0.0)
+    assert body.transform.scale == Vec3(1.0, 1.5, 1.0)
+    assert body.transform.rot.to_euler().z == pytest.approx(45.0, abs=1e-5)
+
+
+def test_from_glb_loads_blockbench_profile_smooth_motion(tmp_path):
+    path = write_blockbench_profile_glb(
+        tmp_path / "blockbench_smooth.glb", smooth_motion=True
+    )
+    mesh = Mesh.from_glb(str(path), colkey=0, fps=20.0)
+    root = Node.from_mesh(mesh)
+
+    root.apply_motion(mesh.motions[0], 5.0)
+    # Asymmetric tangents put the cubic midpoint above the linear value, 0.125.
+    assert root.find_by_name("bb_scene")[0].transform.pos.x == 0.15625
+
+
+def test_actor_cube_is_closed_and_outward_wound():
+    path = Path(__file__).parent / "fixtures" / "actor.glb"
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    primitives = [primitive for primitive in mesh.primitives if primitive is not None]
+
+    assert primitives
+    for primitive in primitives:
+        positions = list(primitive.positions)
+        indices = list(primitive.indices)
+        coord_edges = {}
+
+        for offset in range(0, len(indices), 3):
+            ia, ib, ic = indices[offset : offset + 3]
+            a = _vec3(positions, ia)
+            b = _vec3(positions, ib)
+            c = _vec3(positions, ic)
+            normal = _cross(_sub(b, a), _sub(c, a))
+            assert _dot(normal, _center(a, b, c)) > 0.0
+
+            for edge in ((a, b), (b, c), (c, a)):
+                key = tuple(sorted(edge))
+                coord_edges[key] = coord_edges.get(key, 0) + 1
+
+        assert set(coord_edges.values()) == {2}
+
+
+def test_from_glb_converts_rgb_texture(tmp_path):
+    path = write_rgb_texture_glb(tmp_path / "rgb.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    assert isinstance(mesh.col_img, Image)
+    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 8, 3]
+
+
+def test_from_glb_converts_gray_texture(tmp_path):
+    path = write_gray_texture_glb(tmp_path / "gray.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    assert isinstance(mesh.col_img, Image)
+    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 7, 0]
+
+
+def test_from_glb_converts_gray_alpha_texture(tmp_path):
+    path = write_gray_alpha_texture_glb(tmp_path / "gray_alpha.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    assert isinstance(mesh.col_img, Image)
+    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 7, 0]
+
+
+def test_from_glb_loads_non_indexed_primitive(tmp_path):
+    path = write_non_indexed_glb(tmp_path / "non_indexed.glb")
+    mesh = Mesh.from_glb(str(path))
+    primitive = next(p for p in mesh.primitives if p is not None)
+    assert len(primitive.positions) == 18
+    assert len(primitive.indices) == 0
+
+
+def test_from_glb_uses_authored_normals_when_present(tmp_path):
+    path = write_authored_normals_glb(tmp_path / "authored_normals.glb")
+    mesh = Mesh.from_glb(str(path))
+    primitive = next(p for p in mesh.primitives if p is not None)
+    assert tuple(primitive.normals) == (0.0, 0.0, -1.0)
+
+
+@pytest.mark.parametrize(
+    "positions,expected",
+    [
+        ((0, 0, 0, 3, 0, 0, 0, 4, 0), [0, 0, 1]),
+        ((0, 0, 0, 3e20, 0, 0, 0, 4e20, 0), [0, 0, 1]),
+        ((-2e38, 0, 0, 2e38, 0, 0, 0, 1e38, 0), [0, 0, 1]),
+        ((0, 0, 0, 3e-6, 0, 0, 0, 4e-6, 0), [0, 0, 0]),
+    ],
+)
+def test_from_glb_uses_geometry_when_authored_normals_cancel(
+    tmp_path, positions, expected
+):
+    # Three unit directions at 120 degrees sum to zero, selecting geometry normals.
+    normals = (1, 0, 0, -0.5, math.sqrt(3) / 2, 0, -0.5, -math.sqrt(3) / 2, 0)
+    path = write_authored_normals_glb(
+        tmp_path / "cancelled_normals.glb", positions=positions, normals=normals
+    )
+    mesh = Mesh.from_glb(str(path))
+    primitive = next(p for p in mesh.primitives if p is not None)
+    assert list(primitive.normals) == expected
+
+
+def test_from_glb_loads_motion(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    assert len(mesh.motions) == 1
+    assert isinstance(mesh.motions[0], Motion)
+    assert mesh.motions[0].name == "slide"
+    assert mesh.motions[0].length == 30.0
+
+
+def test_from_glb_ignores_alpha_texture_without_colkey(tmp_path):
+    path = write_alpha_texture_glb(tmp_path / "alpha.glb")
+    mesh = Mesh.from_glb(str(path))
+    assert isinstance(mesh.col_img, Image)
+    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 8, 3]
+    assert mesh.colkey is None
+
+
+def test_from_glb_converts_mask_alpha_texture_pixels_to_auto_colkey(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_auto_colkey.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 0),
+            (0, 0, 255, 255),
+        ],
+        alpha_mode="MASK",
+    )
+
+    mesh = Mesh.from_glb(str(path))
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.col_img.pget(0, 1) == 0
+    assert mesh.colkey == 0
+
+
+def test_from_glb_converts_mask_alpha_texture_pixels_to_requested_colkey(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_requested_colkey.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 0),
+            (0, 0, 255, 255),
+        ],
+        alpha_mode="MASK",
+    )
+
+    mesh = Mesh.from_glb(str(path), colkey=2)
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.col_img.pget(0, 1) == 2
+    assert mesh.colkey == 2
+
+
+def test_from_glb_uses_mask_alpha_cutoff(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_alpha_cutoff.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 20),
+            (0, 0, 255, 0),
+        ],
+        alpha_mode="MASK",
+        alpha_cutoff=0.05,
+    )
+
+    mesh = Mesh.from_glb(str(path))
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.col_img.pget(0, 1) != mesh.colkey
+    assert mesh.col_img.pget(1, 1) == mesh.colkey
+
+
+def test_from_glb_warns_and_autoselects_mask_colkey_on_collision(tmp_path, capfd):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_colkey_collision.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 0),
+            (0, 0, 255, 255),
+        ],
+        alpha_mode="MASK",
+    )
+
+    mesh = Mesh.from_glb(str(path), colkey=8)
+    _, err = capfd.readouterr()
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.colkey == 0
+    assert mesh.col_img.pget(0, 1) == mesh.colkey
+    assert err == (
+        "Pyxel warning: GLB alpha mask colkey collides with an opaque texture color; "
+        "selecting a fallback colkey\n"
+    )
+
+
+def test_from_glb_warns_and_ignores_mask_when_palette_is_full(tmp_path, capfd):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_full_palette.glb",
+        texture_pixels=[
+            (
+                (color >> 16) & 0xFF,
+                (color >> 8) & 0xFF,
+                color & 0xFF,
+                255,
+            )
+            for color in pyxel.DEFAULT_COLORS
+        ]
+        + [(0, 0, 0, 0)],
+        texture_size=(17, 1),
+        alpha_mode="MASK",
+    )
+
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.colkey is None
+    assert err == (
+        "Pyxel warning: GLB alpha mask requires an unused colkey color; alpha mask is "
+        "ignored\n"
+    )
+
+
+def test_from_glb_warns_when_mask_colkey_collision_has_no_fallback(tmp_path, capfd):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_full_palette_colkey.glb",
+        texture_pixels=[
+            (
+                (color >> 16) & 0xFF,
+                (color >> 8) & 0xFF,
+                color & 0xFF,
+                255,
+            )
+            for color in pyxel.DEFAULT_COLORS
+        ]
+        + [(0, 0, 0, 0)],
+        texture_size=(17, 1),
+        alpha_mode="MASK",
+    )
+
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    _, err = capfd.readouterr()
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.colkey is None
+    assert err == (
+        "Pyxel warning: GLB alpha mask colkey collides with an opaque texture color; "
+        "selecting a fallback colkey\n"
+        "Pyxel warning: GLB alpha mask requires an unused colkey color; alpha mask is "
+        "ignored\n"
+    )
+
+
+def test_from_glb_loads_multiple_flat_materials(tmp_path):
+    path = write_two_material_two_texture_glb(
+        tmp_path / "flat_materials.glb", textured=False
+    )
+    mesh = Mesh.from_glb(str(path))
+    colors = _render_mesh_colors(mesh)
+    assert 8 in colors
+    assert 3 in colors
+
+
+def test_from_glb_loads_multiple_base_color_textures(tmp_path):
+    path = write_two_material_two_texture_glb(
+        tmp_path / "two_textures.glb", textured=True
+    )
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    colors = _render_mesh_colors(mesh)
+    assert 8 in colors
+    assert 3 in colors
+
+
+def test_from_glb_applies_textured_material_factor(tmp_path):
+    path = write_tinted_texture_glb(tmp_path / "tinted_texture.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    assert isinstance(mesh.col_img, Image)
+    assert {mesh.col_img.pget(x, y) for y in range(2) for x in range(2)} == {8}
+
+
+def test_from_glb_warns_and_loads_materialless_primitive(tmp_path, capfd):
+    path = write_materialless_primitive_glb(tmp_path / "materialless.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    _, err = capfd.readouterr()
+    assert len(mesh.primitives) == 3
+    assert mesh.primitives[2] is not None
+    assert 8 in _render_mesh_colors(mesh)
+    assert err == (
+        "Pyxel warning: GLB primitive material is missing; default mesh material is used\n"
+    )
+
+
+def test_from_glb_loads_unused_extra_texture(tmp_path):
+    path = write_two_texture_glb(tmp_path / "two_textures.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_loads_unused_extra_material(tmp_path):
+    path = write_two_material_glb(tmp_path / "two_materials.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_warns_for_unsupported_texture_usage(tmp_path, capfd):
+    path = write_normal_texture_glb(tmp_path / "normal_texture.glb")
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+    assert isinstance(mesh.col_img, Image)
+    assert err == (
+        "Pyxel warning: GLB unsupported texture usage; non-base-color textures are "
+        "ignored\n"
+    )
+
+
+def test_from_glb_warns_and_ignores_material_animation(tmp_path, capfd):
+    path = write_material_animation_glb(tmp_path / "material_animation.glb")
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+    assert mesh.motions == []
+    assert err == (
+        "Pyxel warning: GLB animation pointer/material animation is not supported; "
+        "animations are ignored\n"
+    )
+
+
+@pytest.mark.parametrize("metadata", ["generator", "node_name", "extras"])
+def test_from_glb_keeps_motion_for_extension_name_in_metadata(
+    tmp_path, capfd, metadata
+):
+    path = write_single_texture_motion_glb(
+        tmp_path / "metadata.glb", animation_pointer_metadata=metadata
+    )
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+    assert len(mesh.motions) == 1
+    assert err == ""
+
+
+@pytest.mark.parametrize(
+    ("material_animation", "metadata"), [(False, None), (True, None), (False, "extras")]
+)
+def test_from_glb_preserves_other_required_extensions(
+    tmp_path, material_animation, metadata
+):
+    extension = "UNKNOWN_required_extension"
+    path = write_single_texture_motion_glb(
+        tmp_path / "required.glb",
+        material_animation=material_animation,
+        animation_pointer_metadata=metadata,
+        required_extension=extension,
+    )
+
+    with raises_exact(
+        ValueError,
+        f"Failed to parse file '{path}': invalid glTF: "
+        f'extensionsRequired[0] = "{extension}": Unsupported extension;',
+    ):
+        Mesh.from_glb(str(path))
+
+
+@pytest.mark.parametrize(
+    "times", [(math.nan, 1.0), (0.0, math.inf), (-1.0, 1.0), (1.0, 0.0), (0.0, 0.0)]
+)
+def test_from_glb_rejects_invalid_animation_times(tmp_path, times):
+    path = write_single_texture_motion_glb(
+        tmp_path / "times.glb", animation_times=times
+    )
+
+    with raises_exact(
+        ValueError,
+        "GLB animation input times must be finite, nonnegative, and strictly increasing",
+    ):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_animation_frame_overflow(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "overflow.glb", animation_times=(0.0, 2.0)
+    )
+    with raises_exact(ValueError, "GLB animation frame times must be finite"):
+        Mesh.from_glb(str(path), fps=3e38)
+
+
+def test_from_glb_rejects_nonpositive_fps():
+    with raises_exact(ValueError, "fps must be finite and greater than 0"):
+        Mesh.from_glb("missing.glb", fps=0)
+
+
+def test_from_glb_accepts_animation_times_rounded_to_same_frame(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "rounded.glb", animation_times=(0.0, 2**-149)
+    )
+
+    mesh = Mesh.from_glb(str(path), fps=0.25)
+    node = Node.from_mesh(mesh)
+    node.apply_motion(mesh.motions[0], 0.0)
+    assert mesh.motions[0].length == 0.0
+    assert node.find_by_name("actor")[0].transform.pos == Vec3.ZERO
+
+
+def test_from_glb_rejects_external_buffer(tmp_path):
+    path = write_external_buffer_glb(tmp_path / "external_buffer.glb")
+    with raises_exact(ValueError, "GLB external buffers are not supported"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_external_image(tmp_path):
+    path = write_external_image_glb(tmp_path / "external_image.glb")
+
+    # The gltf import of a GLB slice rejects any image URI itself, so
+    # the failure surfaces as an import error rather than the parser's
+    # own external-image message.
+    with raises_exact(
+        ValueError,
+        f"Failed to parse file '{path}': external reference in slice only import",
+    ):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_non_triangle_mode(tmp_path):
+    path = write_line_mode_glb(tmp_path / "lines.glb")
+    with raises_exact(ValueError, "GLB only triangle primitives are supported"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_non_indexed_vertex_count_not_multiple_of_3(tmp_path):
+    path = write_non_indexed_glb(tmp_path / "ragged.glb", vertex_count=4)
+    with raises_exact(ValueError, "GLB triangle vertex count must be a multiple of 3"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_warns_and_loads_base_mesh_for_morph_targets(tmp_path, capfd):
+    path = write_morph_target_glb(tmp_path / "morph.glb")
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+    _assert_base_quad(mesh)
+    assert err == (
+        "Pyxel warning: GLB mesh morph targets are not supported; base mesh is used\n"
+    )
+
+
+def test_from_glb_warns_and_loads_base_mesh_for_skins(tmp_path, capfd):
+    path = write_skin_glb(tmp_path / "skin.glb")
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+    _assert_base_quad(mesh)
+    assert err == "Pyxel warning: GLB skins are not supported; skinning is ignored\n"
+
+
+def test_from_glb_warns_and_decomposes_matrix_node_transforms(tmp_path, capfd):
+    path = write_matrix_transform_glb(tmp_path / "matrix_transform.glb")
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    transform = mesh.transforms[0]
+    assert transform.pos == Vec3(1, 2, 3)
+    assert tuple(transform.scale) == pytest.approx((2, 3, 4), abs=1e-6)
+    assert tuple(transform.rot * Vec3.RIGHT) == pytest.approx((0, 0, -1), abs=1e-6)
+    assert tuple(transform * Vec3(1, 1, 1)) == pytest.approx((5, 5, 1), abs=1e-6)
+    assert err == (
+        "Pyxel warning: GLB matrix node transforms are not supported; transform is "
+        "decomposed\n"
+    )
+
+
+def test_from_glb_warns_and_loads_base_mesh_with_extra_vertex_attributes(
+    tmp_path, capfd
+):
+    path = write_tangent_attribute_glb(tmp_path / "tangent_attribute.glb")
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+    _assert_base_quad(mesh)
+    assert err == (
+        "Pyxel warning: GLB unsupported vertex attribute: Tangents; attribute is ignored\n"
+    )
+
+
+def test_apply_motion_updates_imported_node_tree(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    root.apply_motion(mesh.motions[0], 15.0)
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(0.5, 0.0, 0.0)
+
+
+def test_play_motion_advances_during_update(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    root.play_motion(mesh.motions[0], start_frame=0.0)
+    root.update()
+    # One update advances the playhead by the default speed (1.0), so
+    # the linear 0-to-1 slide over 30 frames sits at x = 1 / 30.
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
+
+
+def test_play_motion_pauses_under_inactive_ancestor(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    parent, root = Node(), Node.from_mesh(mesh)
+    parent.add_child(root)
+    root.play_motion(mesh.motions[0])
+
+    parent.active = False
+    root.update()
+    assert root.find_by_name("actor")[0].transform.pos == Vec3.ZERO
+
+    parent.active = True
+    root.update()
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
+
+
+def test_play_motion_keeps_advancing_past_f32_integer_precision(tmp_path):
+    # f32 cannot represent consecutive integers beyond 2^24.
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    root.play_motion(mesh.motions[0], start_frame=float(2**24))
+    root.update()
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(17.0 / 30.0, 0.0, 0.0)
+
+    root.update()
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(18.0 / 30.0, 0.0, 0.0)
+
+
+@pytest.mark.parametrize("scale", [1.0, 1e20, 1e38])
+@pytest.mark.parametrize("looping", [False, True])
+@pytest.mark.parametrize("direction", [-1, 1])
+def test_play_motion_retains_finite_remainder_after_large_increment(
+    tmp_path, scale, looping, direction
+):
+    path = write_single_texture_motion_glb(
+        tmp_path / "actor.glb", animation_times=(0.0, 3.0 * scale)
+    )
+    mesh = Mesh.from_glb(str(path), fps=1.0)
+    root = Node.from_mesh(mesh)
+    actor = root.find_by_name("actor")[0]
+    root.play_motion(
+        mesh.motions[0],
+        loop=looping,
+        start_frame=1.75 * scale,
+        speed=direction * 2.0 * scale,
+    )
+    if direction > 0:
+        expected = (0.25, 11.0 / 12.0) if looping else (1.0, 1.0)
+    else:
+        expected = (11.0 / 12.0, 0.25) if looping else (0.0, 0.0)
+    for x in expected:
+        root.update()
+        # The imported times, playhead, and pose each round to f32.
+        assert actor.transform.pos.x == pytest.approx(x, abs=8e-7)
+        assert actor.transform.pos.y == 0.0
+        assert actor.transform.pos.z == 0.0
+
+
+@pytest.mark.parametrize(
+    "start_frame,speed,expected_frame", [(31.0, -1.0, 30.0), (-1.0, 1.0, 0.0)]
+)
+def test_nonloop_motion_advances_before_clamping_start(
+    tmp_path, start_frame, speed, expected_frame
+):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    root.play_motion(mesh.motions[0], loop=False, speed=speed, start_frame=start_frame)
+    root.update()
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(
+        expected_frame / 30.0, 0.0, 0.0
+    )
+
+
+def test_stop_motion_leaves_current_pose(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    root.play_motion(mesh.motions[0], start_frame=9.0)
+    root.update()
+    assert root.find_by_name("actor")[0].transform.pos == Vec3(1.0 / 3.0, 0.0, 0.0)
+
+    root.stop_motion()
+    before = root.find_by_name("actor")[0].transform
+    root.update()
+    assert root.find_by_name("actor")[0].transform == before
+
+
+def test_apply_motion_rejects_unrelated_node_tree(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+
+    with raises_exact(
+        ValueError, "Node motion methods require a tree created by Node.from_mesh"
+    ):
+        Node().apply_motion(mesh.motions[0], 0.0)
+
+
+def test_apply_motion_rejects_motion_from_another_mesh(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    other = Mesh.from_glb(str(path), fps=30.0)
+
+    with raises_exact(
+        ValueError, "motion must come from the same Mesh as the Node.from_mesh tree"
+    ):
+        Node.from_mesh(other).apply_motion(mesh.motions[0], 0.0)
+
+
+def test_play_motion_rejects_non_finite_speed_and_start_frame(tmp_path):
+    path = write_single_texture_motion_glb(tmp_path / "actor.glb")
+    mesh = Mesh.from_glb(str(path), fps=30.0)
+    root = Node.from_mesh(mesh)
+
+    with raises_exact(ValueError, "speed must be finite"):
+        root.play_motion(mesh.motions[0], speed=math.inf)
+    with raises_exact(ValueError, "start_frame must be finite"):
+        root.play_motion(mesh.motions[0], start_frame=math.nan)
+
+
+def test_motion_api_signatures():
+    assert (
+        str(inspect.signature(Mesh.from_glb)) == "(filename, *, colkey=None, fps=30.0)"
+    )
+    assert (
+        str(inspect.signature(Node.apply_motion))
+        == "(self, /, motion, frame, *, loop=True)"
+    )
+    assert str(inspect.signature(Node.play_motion)) == (
+        "(self, /, motion, *, loop=True, speed=1.0, start_frame=0.0)"
+    )
+
+
+def _sub(a, b):
+    return tuple(a[i] - b[i] for i in range(3))
+
+
+def _cross(a, b):
+    return (
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+
+
+def _dot(a, b):
+    return sum(a[i] * b[i] for i in range(3))
+
+
+def _center(a, b, c):
+    return tuple((a[i] + b[i] + c[i]) / 3.0 for i in range(3))
+
+
+def _render_mesh_colors(mesh):
+    pyxel.cls(0)
+    scene = Node()
+    scene.camera = Camera()
+    scene.camera.clear_color = 0
+    scene.camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
+    scene.add_child(Node.from_mesh(mesh))
+
+    scene.draw(0, 0, pyxel.width, pyxel.height)
+    return {pyxel.pget(x, y) for y in range(pyxel.height) for x in range(pyxel.width)}
+
+
+def _assert_base_quad(mesh):
+    primitives = [primitive for primitive in mesh.primitives if primitive is not None]
+    assert len(primitives) == 1
+    primitive = primitives[0]
+    assert len(primitive.positions) == 12
+    assert [_vec3(primitive.positions, i) for i in range(4)] == [
+        (-0.5, -0.5, 0.0),
+        (0.5, -0.5, 0.0),
+        (0.5, 0.5, 0.0),
+        (-0.5, 0.5, 0.0),
+    ]
+    assert list(primitive.indices) == [0, 1, 2, 0, 2, 3]
+    assert list(primitive.normals) == [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+
+
+def _vec3(values, index):
+    base = index * 3
+    return tuple(values[base : base + 3])

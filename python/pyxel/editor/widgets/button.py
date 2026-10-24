@@ -19,7 +19,6 @@ class Button(Widget):
     def __init__(self, parent, x, y, width, height, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)
         self._pressing_time = 0
-
         self.new_var("is_pressed_var", None)
         self.add_var_event_listener("is_pressed_var", "get", self.__on_is_pressed_get)
         self.add_var_event_listener("is_pressed_var", "set", self.__on_is_pressed_set)
@@ -28,8 +27,6 @@ class Button(Widget):
         self.add_event_listener("mouse_repeat", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("update", self.__on_update)
-
-    # Helpers
 
     @property
     def button_color(self):
@@ -47,6 +44,7 @@ class Button(Widget):
 
     def __on_is_pressed_set(self, value):
         if value:
+            # Allow for the countdown decrement later in this frame.
             self._pressing_time = BUTTON_PRESSING_TIME + 1
             self.trigger_event("press")
         else:

@@ -2,6 +2,8 @@ import importlib.util
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
+import pytest
+
 # format_prose is an extensionless script under scripts/, so load it via an
 # explicit source loader (spec_from_file_location needs a .py suffix).
 _MODULE_PATH = Path(__file__).parent.parent.parent / "scripts" / "format_prose"
@@ -16,7 +18,7 @@ class TestJapaneseSpacing:
     def test_inserts_space_between_alphanumeric_and_kana(self):
         assert format_prose.format_text("Pyxelで", "ja") == "Pyxel で"
 
-    def test_inserts_space_between_kana_and_alphanumeric(self):
+    def test_inserts_space_between_kanji_and_alphanumeric(self):
         assert format_prose.format_text("画面640", "ja") == "画面 640"
 
     def test_keeps_middle_dot_separated_acronyms(self):
@@ -75,14 +77,14 @@ class TestCodeSpan:
 
     def test_preserves_api_call_parentheses(self):
         assert (
-            format_prose.format_text("pyxel.run()が呼ばれる", "ja")
-            == "pyxel.run() が呼ばれる"
+            format_prose.format_text("Node.draw()が呼ばれる", "ja")
+            == "Node.draw() が呼ばれる"
         )
 
     def test_preserves_api_call_inside_code_span(self):
         assert (
-            format_prose.format_text("`pyxel.run ()`の例", "ja")
-            == "`pyxel.run ()` の例"
+            format_prose.format_text("`Node.draw ()`の例", "ja")
+            == "`Node.draw ()` の例"
         )
 
     def test_repairs_api_call_spacing(self):
@@ -96,11 +98,44 @@ class TestCodeSpan:
             == "画面を clip() で戻す"
         )
 
+    def test_preserves_function_calls_with_ascii_arguments(self):
+        assert (
+            format_prose.format_text("半径max(radius, 0)の球、長さabs(h)", "ja")
+            == "半径 max(radius, 0) の球、長さ abs(h)"
+        )
+        assert (
+            format_prose.format_text("半径max(radius, 0)的球", "cn")
+            == "半径 max(radius, 0) 的球"
+        )
+
     def test_repairs_api_call_spacing_flush_against_kana(self):
         assert (
             format_prose.format_text("画面をclip ()で戻す", "ja")
             == "画面を clip() で戻す"
         )
+
+    @pytest.mark.parametrize("lang", ["ja", "cn"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("init()の後で`pyxel`を使う", "init() の後で `pyxel` を使う"),
+            ("`pyxel`でinit()を呼ぶ", "`pyxel` で init() を呼ぶ"),
+            (
+                "init()と{0}を指定して[API](#api)でdraw()を呼ぶ",
+                "init() と {0} を指定して [API](#api) で draw() を呼ぶ",
+            ),
+            ("値max({0}, 0)を使う", "値 max({0}, 0) を使う"),
+            ("値max(`radius`, 0)を使う", "値 max(`radius`, 0) を使う"),
+            (
+                "0とinit()の後で`pyxel`を使う",
+                "0 と init() の後で `pyxel` を使う",
+            ),
+        ],
+    )
+    def test_preserves_mixed_span_order(self, lang, text, expected):
+        formatted = format_prose.format_text(text, lang)
+        assert formatted == expected
+        assert format_prose.format_text(formatted, lang) == expected
 
 
 class TestParentheses:
@@ -148,7 +183,6 @@ class TestJsonFormatting:
         )
 
         format_prose._format_json(path)
-
         assert (
             path.read_text(encoding="utf-8")
             == '{\n  "en": "検索API",\n  "ja": "検索 API"\n}\n'
@@ -162,8 +196,47 @@ class TestJsonFormatting:
         )
 
         format_prose._format_json(path)
-
         assert (
             path.read_text(encoding="utf-8")
             == '{\n  "items": [\n    {"ja": "画面 640"},\n    {"ja": "画面 640"}\n  ]\n}\n'
         )
+
+
+def test_language_tagged_guides_preserve_code_and_untargeted_peers(tmp_path):
+    import json
+
+    prose = '<p data-label="Ａ（原文）">调用<code class="chip">f(Ａ)</code>（坐标）</p>'
+    document = {
+        "guides": [
+            {"language": "en", "sections": [{"title": "API指南", "text": prose}]},
+            {
+                "language": "cn",
+                "sections": [{"title": "API指南", "text": prose, "code": "f(Ａ)"}],
+            },
+        ]
+    }
+    path = tmp_path / "page.json"
+    path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n")
+
+    format_prose._format_json(path)
+
+    actual = json.loads(path.read_text())
+    assert actual["guides"][0] == document["guides"][0]
+    assert actual["guides"][1]["sections"] == [
+        {
+            "title": "API 指南",
+            "text": '<p data-label="Ａ（原文）">调用 <code class="chip">f(Ａ)</code> (坐标)</p>',
+            "code": "f(Ａ)",
+        }
+    ]
+
+    settled = path.read_bytes()
+    format_prose._format_json(path)
+    assert path.read_bytes() == settled
+
+
+def test_guide_markup_placeholder_collision_and_japanese_code_spacing():
+    text = "<p>\ue0000\ue000と<code>Ａ()</code>を使う</p>"
+    assert format_prose._format_guide_text(text, "ja") == (
+        "<p>\ue0000\ue000と <code>Ａ()</code> を使う</p>"
+    )

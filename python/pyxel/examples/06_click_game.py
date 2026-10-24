@@ -12,6 +12,17 @@ NUM_INITIAL_BUBBLES = 50
 NUM_EXPLODE_BUBBLES = 11
 
 
+def random_bubble():
+    r = pyxel.rndf(3, 10)
+    return Bubble(
+        pyxel.rndf(r, pyxel.width - r),
+        pyxel.rndf(r, pyxel.height - r),
+        r,
+        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
+        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
+    )
+
+
 class Bubble:
     def __init__(self, x, y, r, vx, vy):
         self.x = x
@@ -35,17 +46,6 @@ class Bubble:
             self.vy *= -1
 
 
-def random_bubble():
-    r = pyxel.rndf(3, 10)
-    return Bubble(
-        pyxel.rndf(r, pyxel.width - r),
-        pyxel.rndf(r, pyxel.height - r),
-        r,
-        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
-        pyxel.rndf(-MAX_SPEED, MAX_SPEED),
-    )
-
-
 class App:
     def __init__(self):
         pyxel.init(256, 256, title="Pyxel Bubbles", capture_scale=1)
@@ -64,7 +64,7 @@ class App:
 
         # Split a clicked bubble into smaller moving bubbles.
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-            for i, b in enumerate(self.bubbles[:num_bubbles]):
+            for i, b in enumerate(self.bubbles):
                 dx = b.x - pyxel.mouse_x
                 dy = b.y - pyxel.mouse_y
 

@@ -1,5 +1,8 @@
 import math
+import os
 import struct
+import subprocess
+import sys
 import wave
 
 import pytest
@@ -16,12 +19,250 @@ def isolate_audio_resources():
     original_music = pyxel.musics[7]
     pyxel.sounds[60:64] = [pyxel.Sound() for _ in range(4)]
     pyxel.musics[7] = pyxel.Music()
+
     try:
         yield
     finally:
         pyxel.stop()
         pyxel.sounds[60:64] = original_sounds
         pyxel.musics[7] = original_music
+
+
+class TestPcmSynthBoundary:
+    def test_music_save_pcm_then_synth(self, tmp_path):
+        pcm_path = tmp_path / "pcm.wav"
+        _write_pcm_wav(pcm_path)
+        pyxel.sounds[60].pcm(str(pcm_path))
+        pyxel.sounds[61].set("c2", "t", "7", "n", 30)
+        pyxel.musics[7].set([60, 61], [], [], [])
+
+        out = tmp_path / "out.wav"
+        pyxel.musics[7].save(str(out), 0.4)
+        samples = _read_samples(out)
+        assert _rms(samples, 0.0, 0.045) > 100, "PCM part is silent"
+        assert _rms(samples, 0.06, 0.25) > 100, "synth part after PCM is silent"
+
+    def test_music_save_synth_then_pcm(self, tmp_path):
+        pcm_path = tmp_path / "pcm.wav"
+        _write_pcm_wav(pcm_path)
+        pyxel.sounds[60].pcm(str(pcm_path))
+        pyxel.sounds[61].set("c2", "t", "7", "n", 30)
+        pyxel.musics[7].set([61, 60], [], [], [])
+
+        out = tmp_path / "out.wav"
+        pyxel.musics[7].save(str(out), 0.4)
+        samples = _read_samples(out)
+        assert _rms(samples, 0.0, 0.24) > 100, "synth part is silent"
+        assert _rms(samples, 0.26, 0.295) > 100, "PCM part after synth is silent"
+
+
+class TestSynthPhaseContinuity:
+    def test_repeated_note_timbre_is_speed_independent(self, tmp_path):
+        fast = pyxel.Sound()
+        fast.set("c2" * 120, "s", "7", "n", 1)
+        slow = pyxel.Sound()
+        slow.set("c2" * 24, "s", "7", "n", 5)
+        fast_path = tmp_path / "fast.wav"
+        slow_path = tmp_path / "slow.wav"
+
+        fast.save(str(fast_path), 0.5)
+        slow.save(str(slow_path), 0.5)
+        assert _read_samples(fast_path) == _read_samples(slow_path)
+
+
+class TestPcmSeek:
+    def test_playback_stays_in_loop_after_seek(self, tmp_path):
+        pcm_path = tmp_path / "pcm.wav"
+        _write_pcm_wav(pcm_path)
+        pyxel.sounds[60].pcm(str(pcm_path))
+        pyxel.play(3, 60, sec=1.0, loop=True)
+        pos = pyxel.play_pos(3)
+        pyxel.stop(3)
+        _assert_looping_position(pos, 0.05)
+
+    def test_seek_across_pcm_lands_in_following_sound(self, tmp_path):
+        pcm_path = tmp_path / "pcm.wav"
+        _write_pcm_wav(pcm_path)
+        pyxel.sounds[60].pcm(str(pcm_path))
+        pyxel.sounds[61].set("c2", "t", "7", "n", 12)
+        pyxel.sounds[62].set("e2", "t", "7", "n", 12)
+
+        pyxel.play(3, [61, 60, 62], sec=0.2)
+        pos = pyxel.play_pos(3)
+        pyxel.stop(3)
+        assert pos is not None
+        assert pos[0] == 2, f"seek landed at {pos} instead of the last sound"
+
+
+class TestExtremeInputs:
+    def test_high_tempo_renders(self, tmp_path):
+        snd = pyxel.Sound()
+        snd.mml("T5000000 C")
+        out = tmp_path / "out.wav"
+        snd.save(str(out), 0.1)
+        assert len(_read_samples(out)) == RATE // 10
+
+    def test_long_wavetable_renders(self, tmp_path):
+        original = list(pyxel.tones[0].wavetable)
+        try:
+            pyxel.tones[0].wavetable[:] = [8, 0] * 8192
+            pyxel.sounds[63].set("c2", "t", "7", "n", 30)
+            out = tmp_path / "out.wav"
+            pyxel.sounds[63].save(str(out), 0.1)
+            assert len(_read_samples(out)) == RATE // 10
+        finally:
+            pyxel.tones[0].wavetable[:] = original
+
+    def test_long_mml_total_sec(self):
+        snd = pyxel.Sound()
+        snd.mml("T1 L1 C&C&C&C&C&C&C&C&C&C")
+        assert snd.total_sec() == 2399.999755859375
+
+    def test_long_mml_note_renders_audio(self, tmp_path):
+        snd = pyxel.Sound()
+        snd.mml("T1 L1 C&C&C&C&C&C&C&C&C&C")
+        out = tmp_path / "out.wav"
+        snd.save(str(out), 0.1)
+        assert any(_read_samples(out))
+
+    def test_playback_stays_in_loop_after_long_seek(self):
+        pyxel.sounds[63].set("c2c2c2c2c2c2c2c2", "t", "7", "n", 15)
+        pyxel.play(3, 63, sec=2400.5, loop=True)
+        pos = pyxel.play_pos(3)
+        pyxel.stop(3)
+        clock_rate = 1789773
+        loop_clocks = 8 * 15 * (clock_rate // 120)
+        _assert_looping_position(pos, loop_clocks / clock_rate)
+
+
+class TestInvalidInputs:
+    def test_sound_index_conversion_revalidates_channel(self):
+        code = """
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+
+
+class SoundIndex:
+    def __index__(self):
+        pyxel.channels.clear()
+        return 0
+
+
+try:
+    pyxel.play(0, SoundIndex())
+except ValueError as exc:
+    assert str(exc) == "ch must be a valid channel index"
+else:
+    raise AssertionError("ValueError not raised")
+"""
+
+        env = os.environ.copy()
+        env["SDL_AUDIODRIVER"] = "dummy"
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_speed_zero_raises(self):
+        with raises_exact(ValueError, "speed must be greater than 0"):
+            pyxel.sounds[63].speed = 0
+        with raises_exact(ValueError, "speed must be greater than 0"):
+            pyxel.sounds[63].set("c2", "t", "7", "n", 0)
+
+    def test_sub_sample_duration_raises(self, tmp_path):
+        sound_path = tmp_path / "sound.wav"
+        music_path = tmp_path / "music.wav"
+        message = "sec is too short to produce an audio sample"
+        with raises_exact(Exception, message):
+            pyxel.sounds[63].save(str(sound_path), 1e-9)
+        with raises_exact(Exception, message):
+            pyxel.musics[7].save(str(music_path), 1e-9)
+        assert not sound_path.exists()
+        assert not music_path.exists()
+
+    def test_sample_bits_out_of_range_raises(self):
+        for bits in [0, 17]:
+            with raises_exact(ValueError, "sample_bits must be between 1 and 16"):
+                pyxel.tones[0].sample_bits = bits
+
+    def test_empty_tone_bank_raises(self, tmp_path):
+        original_tones = list(pyxel.tones)
+        pyxel.sounds[63].set("c2", "t", "7", "n", 30)
+        try:
+            pyxel.tones.clear()
+            message = "tones must not be empty"
+            with raises_exact(Exception, message):
+                pyxel.sounds[63].save(str(tmp_path / "out.wav"), 0.1)
+            with raises_exact(ValueError, message):
+                pyxel.play(3, 63)
+        finally:
+            pyxel.tones[:] = original_tones
+
+    def test_empty_tone_bank_rejects_music_atomically(self, tmp_path):
+        pcm_path = tmp_path / "pcm.wav"
+        _write_pcm_wav(pcm_path)
+        pyxel.sounds[60].pcm(str(pcm_path))
+        pyxel.sounds[61].set("c2", "t", "7", "n", 30)
+        pyxel.musics[7].set([60], [61], [], [])
+
+        original_tones = list(pyxel.tones)
+        try:
+            pyxel.tones.clear()
+            with raises_exact(Exception, "tones must not be empty"):
+                pyxel.playm(7, loop=True)
+            assert pyxel.play_pos(0) is None
+            assert pyxel.play_pos(1) is None
+        finally:
+            pyxel.stop()
+            pyxel.tones[:] = original_tones
+
+    def test_gen_bgm_handles_empty_tone_bank(self):
+        original_tones = list(pyxel.tones)
+        try:
+            pyxel.tones.clear()
+            assert pyxel.gen_bgm(0, 0, 0, 0, play=True)
+        finally:
+            pyxel.stop()
+            pyxel.tones[:] = original_tones
+
+    def test_music_invalid_sound_index_raises(self, tmp_path):
+        pyxel.musics[7].set([999999], [], [], [])
+        message = "Music contains an invalid sound index"
+        with raises_exact(Exception, message):
+            pyxel.musics[7].save(str(tmp_path / "out.wav"), 0.1)
+        with raises_exact(Exception, message):
+            pyxel.playm(7)
+
+    def test_non_finite_duration_raises(self, tmp_path):
+        pyxel.sounds[63].set("c2", "t", "7", "n", 30)
+        with raises_exact(Exception, "sec must be finite"):
+            pyxel.sounds[63].save(str(tmp_path / "out.wav"), float("nan"))
+        with raises_exact(Exception, "sec must be finite"):
+            pyxel.musics[7].save(str(tmp_path / "out.wav"), float("nan"))
+
+    def test_invalid_playback_sec_raises(self):
+        pyxel.sounds[63].set("c2", "t", "7", "n", 30)
+        channel = pyxel.Channel()
+        calls = [
+            lambda sec: pyxel.play(3, 63, sec=sec, loop=True),
+            lambda sec: pyxel.playm(7, sec=sec, loop=True),
+            lambda sec: channel.play(pyxel.sounds[63], sec=sec, loop=True),
+        ]
+
+        for call in calls:
+            with raises_exact(ValueError, "sec must be finite"):
+                call(float("nan"))
+
+        message = "sec must be greater than or equal to 0"
+        for call in calls:
+            with raises_exact(ValueError, message):
+                call(-1.0)
 
 
 def _write_pcm_wav(path, sec=0.05, freq=440.0):
@@ -54,212 +295,3 @@ def _assert_looping_position(pos, duration_sec):
     assert pos[0] == 0
     # Audio-thread timing may advance playback before play_pos obtains the lock.
     assert 0.0 <= pos[1] < duration_sec
-
-
-class TestPcmSynthBoundary:
-    def test_music_save_pcm_then_synth(self, tmp_path):
-        pcm_path = tmp_path / "pcm.wav"
-        _write_pcm_wav(pcm_path)
-        pyxel.sounds[60].pcm(str(pcm_path))
-        pyxel.sounds[61].set("c2", "t", "7", "n", 30)
-        pyxel.musics[7].set([60, 61], [], [], [])
-        out = tmp_path / "out.wav"
-        pyxel.musics[7].save(str(out), 0.4)
-
-        samples = _read_samples(out)
-        assert _rms(samples, 0.0, 0.045) > 100, "PCM part is silent"
-        assert _rms(samples, 0.06, 0.25) > 100, "synth part after PCM is silent"
-
-    def test_music_save_synth_then_pcm(self, tmp_path):
-        pcm_path = tmp_path / "pcm.wav"
-        _write_pcm_wav(pcm_path)
-        pyxel.sounds[60].pcm(str(pcm_path))
-        pyxel.sounds[61].set("c2", "t", "7", "n", 30)
-        pyxel.musics[7].set([61, 60], [], [], [])
-        out = tmp_path / "out.wav"
-        pyxel.musics[7].save(str(out), 0.4)
-
-        samples = _read_samples(out)
-        assert _rms(samples, 0.0, 0.24) > 100, "synth part is silent"
-        assert _rms(samples, 0.26, 0.295) > 100, "PCM part after synth is silent"
-
-
-class TestSynthPhaseContinuity:
-    def test_repeated_note_timbre_is_speed_independent(self, tmp_path):
-        fast = pyxel.Sound()
-        fast.set("c2" * 120, "s", "7", "n", 1)
-        slow = pyxel.Sound()
-        slow.set("c2" * 24, "s", "7", "n", 5)
-        fast_path = tmp_path / "fast.wav"
-        slow_path = tmp_path / "slow.wav"
-
-        fast.save(str(fast_path), 0.5)
-        slow.save(str(slow_path), 0.5)
-
-        assert _read_samples(fast_path) == _read_samples(slow_path)
-
-
-class TestPcmSeek:
-    def test_loop_seek_wraps(self, tmp_path):
-        pcm_path = tmp_path / "pcm.wav"
-        _write_pcm_wav(pcm_path)
-        pyxel.sounds[60].pcm(str(pcm_path))
-        pyxel.play(3, 60, sec=1.0, loop=True)
-        pos = pyxel.play_pos(3)
-        pyxel.stop(3)
-
-        _assert_looping_position(pos, 0.05)
-
-    def test_seek_across_pcm_lands_in_following_sound(self, tmp_path):
-        pcm_path = tmp_path / "pcm.wav"
-        _write_pcm_wav(pcm_path)
-        pyxel.sounds[60].pcm(str(pcm_path))
-        pyxel.sounds[61].set("c2", "t", "7", "n", 12)
-        pyxel.sounds[62].set("e2", "t", "7", "n", 12)
-        pyxel.play(3, [61, 60, 62], sec=0.2)
-        pos = pyxel.play_pos(3)
-        pyxel.stop(3)
-        assert pos is not None
-        assert pos[0] == 2, f"seek landed at {pos} instead of the last sound"
-
-
-class TestExtremeInputs:
-    def test_high_tempo_renders(self, tmp_path):
-        snd = pyxel.Sound()
-        snd.mml("T5000000 C")
-        snd.save(str(tmp_path / "out.wav"), 0.1)
-
-    def test_long_wavetable_renders(self, tmp_path):
-        original = list(pyxel.tones[0].wavetable)
-        try:
-            pyxel.tones[0].wavetable[:] = [8, 0] * 8192
-            pyxel.sounds[63].set("c2", "t", "7", "n", 30)
-            pyxel.sounds[63].save(str(tmp_path / "out.wav"), 0.1)
-        finally:
-            pyxel.tones[0].wavetable[:] = original
-
-    def test_long_mml_total_sec(self):
-        snd = pyxel.Sound()
-        snd.mml("T1 L1 C&C&C&C&C&C&C&C&C&C")
-        assert snd.total_sec() == 2399.999755859375
-
-    def test_long_mml_note_renders_audio(self, tmp_path):
-        snd = pyxel.Sound()
-        snd.mml("T1 L1 C&C&C&C&C&C&C&C&C&C")
-        out = tmp_path / "out.wav"
-
-        snd.save(str(out), 0.1)
-
-        assert any(_read_samples(out))
-
-    def test_long_seek_position(self):
-        pyxel.sounds[63].set("c2c2c2c2c2c2c2c2", "t", "7", "n", 15)
-        pyxel.play(3, 63, sec=2400.5, loop=True)
-        pos = pyxel.play_pos(3)
-        pyxel.stop(3)
-        clock_rate = 1789773
-        loop_clocks = 8 * 15 * (clock_rate // 120)
-        _assert_looping_position(pos, loop_clocks / clock_rate)
-
-
-class TestInvalidInputs:
-    def test_speed_zero_raises(self):
-        with raises_exact(ValueError, "speed must be greater than 0"):
-            pyxel.sounds[63].speed = 0
-        with raises_exact(ValueError, "speed must be greater than 0"):
-            pyxel.sounds[63].set("c2", "t", "7", "n", 0)
-
-    def test_sub_sample_duration_raises(self, tmp_path):
-        sound_path = tmp_path / "sound.wav"
-        music_path = tmp_path / "music.wav"
-        message = "duration_sec is too short to produce an audio sample"
-
-        with raises_exact(Exception, message):
-            pyxel.sounds[63].save(str(sound_path), 1e-9)
-        with raises_exact(Exception, message):
-            pyxel.musics[7].save(str(music_path), 1e-9)
-
-        assert not sound_path.exists()
-        assert not music_path.exists()
-
-    def test_sample_bits_out_of_range_raises(self):
-        for bits in [0, 17]:
-            with raises_exact(ValueError, "sample_bits must be between 1 and 16"):
-                pyxel.tones[0].sample_bits = bits
-
-    def test_empty_tone_bank_raises(self, tmp_path):
-        original_tones = list(pyxel.tones)
-        pyxel.sounds[63].set("c2", "t", "7", "n", 30)
-        try:
-            pyxel.tones.clear()
-            message = "tones must not be empty"
-
-            with raises_exact(Exception, message):
-                pyxel.sounds[63].save(str(tmp_path / "out.wav"), 0.1)
-            with raises_exact(ValueError, message):
-                pyxel.play(3, 63)
-        finally:
-            pyxel.tones[:] = original_tones
-
-    def test_empty_tone_bank_rejects_music_atomically(self, tmp_path):
-        pcm_path = tmp_path / "pcm.wav"
-        _write_pcm_wav(pcm_path)
-        pyxel.sounds[60].pcm(str(pcm_path))
-        pyxel.sounds[61].set("c2", "t", "7", "n", 30)
-        pyxel.musics[7].set([60], [61], [], [])
-        original_tones = list(pyxel.tones)
-        try:
-            pyxel.tones.clear()
-
-            with raises_exact(Exception, "tones must not be empty"):
-                pyxel.playm(7, loop=True)
-
-            assert pyxel.play_pos(0) is None
-            assert pyxel.play_pos(1) is None
-        finally:
-            pyxel.stop()
-            pyxel.tones[:] = original_tones
-
-    def test_gen_bgm_handles_empty_tone_bank(self):
-        original_tones = list(pyxel.tones)
-        try:
-            pyxel.tones.clear()
-
-            assert pyxel.gen_bgm(0, 0, 0, 0, play=True)
-        finally:
-            pyxel.stop()
-            pyxel.tones[:] = original_tones
-
-    def test_music_invalid_sound_index_raises(self, tmp_path):
-        pyxel.musics[7].set([999999], [], [], [])
-        message = "Music contains an invalid sound index"
-
-        with raises_exact(Exception, message):
-            pyxel.musics[7].save(str(tmp_path / "out.wav"), 0.1)
-        with raises_exact(Exception, message):
-            pyxel.playm(7)
-
-    def test_non_finite_duration_raises(self, tmp_path):
-        pyxel.sounds[63].set("c2", "t", "7", "n", 30)
-        with raises_exact(Exception, "duration_sec must be finite"):
-            pyxel.sounds[63].save(str(tmp_path / "out.wav"), float("nan"))
-        with raises_exact(Exception, "duration_sec must be finite"):
-            pyxel.musics[7].save(str(tmp_path / "out.wav"), float("nan"))
-
-    def test_invalid_playback_sec_raises(self):
-        pyxel.sounds[63].set("c2", "t", "7", "n", 30)
-        channel = pyxel.Channel()
-
-        calls = [
-            lambda sec: pyxel.play(3, 63, sec=sec, loop=True),
-            lambda sec: pyxel.playm(7, sec=sec, loop=True),
-            lambda sec: channel.play(pyxel.sounds[63], sec=sec, loop=True),
-        ]
-        for call in calls:
-            with raises_exact(ValueError, "sec must be finite"):
-                call(float("nan"))
-
-        message = "sec must be greater than or equal to 0"
-        for call in calls:
-            with raises_exact(ValueError, message):
-                call(-1.0)
