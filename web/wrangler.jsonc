@@ -17,6 +17,8 @@
       "editor-manual",
       "launcher",
       "mml-studio",
+      "pyodide-files.json",
+      "pyodide-NOTICE.txt",
       "showcase",
       "user-guide",
       "web-usage",

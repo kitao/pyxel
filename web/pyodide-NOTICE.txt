@@ -1,0 +1,22 @@
+Pyodide runtime distribution
+
+These runtime files are redistributed without modification. The version is
+identified by this directory's name; the source URLs and SHA-256 digests are
+recorded in web/pyodide-files.json in the Pyxel repository:
+https://github.com/kitao/pyxel
+
+Pyodide is licensed under the Mozilla Public License 2.0. Its corresponding
+source, including the CPython patches and build configuration, is available at:
+https://github.com/pyodide/pyodide/releases
+Select the release matching this directory's version. LICENSE-Pyodide.txt
+contains the license text.
+
+CPython is distributed under the Python Software Foundation License Agreement
+and the additional notices in LICENSE-Python.txt. Its source is available at:
+https://github.com/python/cpython
+The exact Python version is recorded in pyodide-lock.json's info.python field.
+
+Emscripten is distributed under the MIT and University of Illinois/NCSA
+licenses in LICENSE-Emscripten.txt. Its corresponding source is available at:
+https://github.com/emscripten-core/emscripten
+The Emscripten version is recorded in pyodide-lock.json's info.platform field.

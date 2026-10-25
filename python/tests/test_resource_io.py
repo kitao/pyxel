@@ -1,3 +1,4 @@
+import tomllib
 import zipfile
 from pathlib import Path
 from uuid import uuid4
@@ -5,7 +6,6 @@ from uuid import uuid4
 import PIL.Image
 import pytest
 import pyxel
-import tomllib
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 
 

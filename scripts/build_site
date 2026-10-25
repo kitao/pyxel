@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import hashlib
 import io
 import json
 import os
@@ -13,6 +14,7 @@ import zipfile
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from urllib.parse import unquote, urlsplit
+from urllib.request import urlopen
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PAGE_DIRS = (
@@ -96,6 +98,7 @@ def build_site(output, runtime_tags=("v2.9.9",), root=ROOT_DIR):
             site / PROVISIONAL_VERSION,
             PROVISIONAL_VERSION,
         )
+        copy_pyodide(root, site)
 
         for name in (*PAGE_DIRS, "index.html", "shared.js"):
             for source in tracked_files(root, "web/" + name):
@@ -138,6 +141,9 @@ def build_site(output, runtime_tags=("v2.9.9",), root=ROOT_DIR):
                 if release != PROVISIONAL_VERSION
             )
             + f"/pyxel/{PROVISIONAL_VERSION}/*\n"
+            "  Access-Control-Allow-Origin: *\n\n"
+            "/pyxel/pyodide/*\n"
+            "  Cache-Control: public, max-age=31536000, immutable\n"
             "  Access-Control-Allow-Origin: *\n\n"
             "/pyxel/assets/examples/*\n"
             "  Access-Control-Allow-Origin: *\n",
@@ -277,6 +283,38 @@ def copy_page(source, target, version):
         shutil.copyfile(source, target)
 
 
+def copy_pyodide(root, site):
+    releases = json.loads((root / "web/pyodide-files.json").read_text(encoding="utf-8"))
+    script = (root / "wasm/pyxel.js").read_text(encoding="utf-8")
+    match = re.search(r'const PYODIDE_VERSION = "([\d.]+)";', script)
+    if not match or match[1] not in releases:
+        raise ValueError(
+            "The Pyodide runtime version must have pinned distribution files"
+        )
+
+    # Keep older entries when upgrading: published runtimes can still load them.
+    for version, files in releases.items():
+        target = site / "pyodide" / f"v{version}"
+        target.mkdir(parents=True, exist_ok=True)
+        cache = root / "dist/pyodide" / f"v{version}"
+        for name, source in files.items():
+            cached = cache / name
+            data = cached.read_bytes() if cached.is_file() else b""
+            if hashlib.sha256(data).hexdigest() != source["sha256"]:
+                with urlopen(source["url"], timeout=60) as response:
+                    data = response.read(25 * 1024 * 1024 + 1)
+                if hashlib.sha256(data).hexdigest() != source["sha256"]:
+                    raise ValueError(
+                        f"The Pyodide file checksum does not match: {name}"
+                    )
+                cache.mkdir(parents=True, exist_ok=True)
+                cached.write_bytes(data)
+            if len(data) > 25 * 1024 * 1024:
+                raise ValueError(f"The Pyodide file exceeds the hosting limit: {name}")
+            (target / name).write_bytes(data)
+        shutil.copyfile(root / "web/pyodide-NOTICE.txt", target / "NOTICE.txt")
+
+
 def rewrite_urls(text, version, html=False):
     runtime_url = f"{SITE_URL}/{version}/pyxel.js"
     text = text.replace(f"{CDN_URL}/wasm/pyxel.js", runtime_url)
@@ -362,6 +400,13 @@ def verify_releases(stage, output):
         if before != after and not (release.name == PROVISIONAL_VERSION and after):
             raise ValueError(
                 f"An existing release would change or disappear: {release.name}"
+            )
+    for release in (output / "pyxel/pyodide").glob("v*"):
+        if release_files(release) != release_files(
+            stage / "pyxel/pyodide" / release.name
+        ):
+            raise ValueError(
+                f"An existing Pyodide release would change or disappear: {release.name}"
             )
 
 

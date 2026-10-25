@@ -1,4 +1,7 @@
+import hashlib
 import importlib.util
+import io
+import json
 import os
 import subprocess
 import sys
@@ -279,4 +282,73 @@ def test_provisional_runtime_can_be_replaced_but_not_removed(builder, tmp_path):
 
     (new / "pyxel.js").unlink()
     with pytest.raises(ValueError, match="3.0.0"):
+        builder.verify_releases(tmp_path / "new", tmp_path / "old")
+
+
+@pytest.mark.parametrize("cached", [None, b"corrupt cache", b"runtime"])
+def test_pyodide_distribution_checks_cache_before_reusing_it(
+    builder, tmp_path, monkeypatch, cached
+):
+    root = tmp_path / "repository"
+    (root / "web").mkdir(parents=True)
+    (root / "wasm").mkdir()
+    (root / "wasm/pyxel.js").write_text('const PYODIDE_VERSION = "314.0.7";\n')
+    (root / "web/pyodide-files.json").write_text(
+        json.dumps(
+            {
+                "314.0.7": {
+                    "pyodide.js": {
+                        "url": "https://example.invalid/pyodide.js",
+                        "sha256": hashlib.sha256(b"runtime").hexdigest(),
+                    }
+                }
+            }
+        )
+    )
+    (root / "web/pyodide-NOTICE.txt").write_text("Upstream licenses and sources")
+    cache = root / "dist/pyodide/v314.0.7/pyodide.js"
+    if cached is not None:
+        cache.parent.mkdir(parents=True)
+        cache.write_bytes(cached)
+    requests = []
+
+    def download(url, timeout):
+        requests.append(url)
+        return io.BytesIO(b"runtime")
+
+    monkeypatch.setattr(builder, "urlopen", download)
+    site = tmp_path / "site"
+    builder.copy_pyodide(root, site)
+    assert (site / "pyodide/v314.0.7/pyodide.js").read_bytes() == b"runtime"
+    assert (
+        site / "pyodide/v314.0.7/NOTICE.txt"
+    ).read_text() == "Upstream licenses and sources"
+    assert len(requests) == (0 if cached == b"runtime" else 1)
+
+    cache.write_bytes(b"corrupt cache")
+    monkeypatch.setattr(
+        builder, "urlopen", lambda *args, **kwargs: io.BytesIO(b"wrong download")
+    )
+    with pytest.raises(ValueError, match="checksum"):
+        builder.copy_pyodide(root, site)
+    assert (site / "pyodide/v314.0.7/pyodide.js").read_bytes() == b"runtime"
+
+    (root / "wasm/pyxel.js").write_text('const PYODIDE_VERSION = "314.0.8";\n')
+    with pytest.raises(ValueError, match="pinned distribution"):
+        builder.copy_pyodide(root, site)
+
+
+def test_previous_pyodide_release_cannot_change_or_disappear(builder, tmp_path):
+    old = tmp_path / "old/pyxel/pyodide/v314.0.7"
+    new = tmp_path / "new/pyxel/pyodide/v314.0.7"
+    old.mkdir(parents=True)
+    new.mkdir(parents=True)
+    (old / "pyodide.js").write_text("published")
+    (new / "pyodide.js").write_text("published")
+    builder.verify_releases(tmp_path / "new", tmp_path / "old")
+    (new / "pyodide.js").write_text("changed")
+    with pytest.raises(ValueError, match="Pyodide release"):
+        builder.verify_releases(tmp_path / "new", tmp_path / "old")
+    (new / "pyodide.js").unlink()
+    with pytest.raises(ValueError, match="Pyodide release"):
         builder.verify_releases(tmp_path / "new", tmp_path / "old")

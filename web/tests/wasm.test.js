@@ -805,6 +805,54 @@ test("launchPyxel reports command failures and resolves for external callers", a
   assert.equal(reportedError, failure);
 });
 
+test("bootstrap hosts Pyodide on kitao.dev and keeps package downloads on the CDN", async () => {
+  const configSource = pyxelSource.slice(
+    0,
+    pyxelSource.indexOf("const PYXEL_WHEEL_PATH"),
+  );
+  const config = vm.runInNewContext(
+    `${configSource}\n({ PYODIDE_URL, PYODIDE_PACKAGE_URL });`,
+  );
+  let scriptUrl;
+  let options;
+  const pyodide = {
+    _api: {},
+    canvas: { setCanvas2D() {} },
+    loadPackage: async () => {},
+    FS: { mkdir() {}, chdir() {} },
+    runPython() {},
+  };
+  const bootstrap = loadArrowFunction(pyxelSource, "_loadPyodideAndPyxel", {
+    ...config,
+    PYXEL_WHEEL_PATH: "pyxel-test.whl",
+    IMPORT_HOOK_PATH: "import_hook.py",
+    _scriptDir: "/wasm/",
+    _fetchAsset: async () => ({
+      arrayBuffer: async () => new ArrayBuffer(0),
+      text: async () => "",
+    }),
+    _loadScript: async (url) => {
+      scriptUrl = url;
+    },
+    loadPyodide: async (value) => {
+      options = value;
+      return pyodide;
+    },
+    PYXEL_WORKING_DIRECTORY: "/pyxel_working_directory",
+  });
+  assert.equal(await bootstrap({}), pyodide);
+  const runtime = new URL(scriptUrl);
+  const packages = new URL(options.packageBaseUrl);
+  assert.equal(runtime.origin, "https://kitao.dev");
+  assert.match(runtime.pathname, /^\/pyxel\/pyodide\/v[\d.]+\/pyodide\.js$/);
+  assert.equal(packages.origin, "https://cdn.jsdelivr.net");
+  assert.equal(
+    packages.pathname,
+    runtime.pathname.replace("/pyxel/", "/").replace("pyodide.js", "full/"),
+  );
+  assert.equal(options.indexURL, undefined);
+});
+
 test("simultaneous bootstrap failures have one fatal path and no unhandled rejection", async () => {
   const scriptFailure = new Error("script failed");
   const fetchFailures = [

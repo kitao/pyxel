@@ -2,12 +2,12 @@ import importlib.util
 import json
 import shutil
 import subprocess
+import tomllib
 import zipfile
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
 import pytest
-import tomllib
 
 ROOT_DIR = Path(__file__).parents[2]
 EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"

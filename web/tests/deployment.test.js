@@ -11,7 +11,7 @@ const { rawConfig: config } = experimental_readRawConfig({
   config: path.join(WEB_DIR, "wrangler.jsonc"),
 });
 
-// Repository paths that scripts/build_site publishes, read from its literal path lists.
+// Published sources, read from the build script's path lists and direct web inputs.
 const buildSources = () => {
   const script = fs.readFileSync(
     path.join(ROOT_DIR, "scripts", "build_site"),
@@ -27,6 +27,9 @@ const buildSources = () => {
     ...pages.map((name) => `web/${name}`),
     `web/${script.match(/"-i",\s*"([^"]+)"/)[1]}`,
     ...[...script.matchAll(/tracked_files\(root, "([^"]+)"\)/g)].map(
+      (match) => match[1],
+    ),
+    ...[...script.matchAll(/root \/ "(web\/(?!node_modules\/)[^"]+)"/g)].map(
       (match) => match[1],
     ),
     ...[

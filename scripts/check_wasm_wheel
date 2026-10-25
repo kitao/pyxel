@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
+import tomllib
 import zipfile
 from email.parser import Parser
 from pathlib import Path, PurePosixPath
-
-import tomllib
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DIST_DIR = ROOT_DIR / "dist"
