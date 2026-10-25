@@ -54,7 +54,7 @@ wrap_as_python_primitive_sequence!(
 );
 
 // Indexing returns live Seq views; pop returns a detached list.
-#[pyclass(sequence, unsendable, skip_from_py_object)]
+#[pyclass(sequence, unsendable)]
 #[derive(Clone)]
 pub struct Seqs {
     inner: pyxel::RcMusic,

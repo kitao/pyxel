@@ -2,7 +2,8 @@ use std::ops::{Deref, DerefMut};
 use std::sync::MutexGuard;
 
 use pyo3::prelude::*;
-use pyo3::types::{PySlice, PySliceIndices};
+use pyo3::types::slice::PySliceIndices;
+use pyo3::types::PySlice;
 
 pub(crate) struct MutexFieldMut<'a, T, U> {
     owner: MutexGuard<'a, T>,
@@ -671,7 +672,7 @@ macro_rules! wrap_as_python_object_sequence {
         $raw_item:ty, $list_mut:expr, $to_raw:expr, $from_raw:expr,
         $list_type:ty, $from_list:expr, $to_list:expr
     ) => {
-        #[pyclass(sequence, unsendable, skip_from_py_object)]
+        #[pyclass(sequence, unsendable)]
         #[derive(Clone)]
         pub struct $wrapper_name {
             inner: $inner_type,

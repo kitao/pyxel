@@ -1,0 +1,36 @@
+{
+  "314.0.7": {
+    "LICENSE-Emscripten.txt": {
+      "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/5.0.3/LICENSE",
+      "sha256": "620a78084fc7ca97c0b5dea9abf891f3ffcadfdbf305276f099c9c4e12fc1d86"
+    },
+    "LICENSE-Pyodide.txt": {
+      "url": "https://raw.githubusercontent.com/pyodide/pyodide/314.0.7/LICENSE",
+      "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
+    },
+    "LICENSE-Python.txt": {
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.14.2/LICENSE",
+      "sha256": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231"
+    },
+    "pyodide-lock.json": {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "sha256": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+    },
+    "pyodide.asm.mjs": {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "sha256": "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635"
+    },
+    "pyodide.asm.wasm": {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "sha256": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6"
+    },
+    "pyodide.js": {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.js",
+      "sha256": "3141b814715a72e59b51b1b18b9ceae5bf19f7c852417e431bb0a34feadf825c"
+    },
+    "python_stdlib.zip": {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "sha256": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a"
+    }
+  }
+}

@@ -1,4 +1,6 @@
-const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.js";
+const PYODIDE_VERSION = "314.0.7";
+const PYODIDE_URL = `https://kitao.dev/pyxel/pyodide/v${PYODIDE_VERSION}/pyodide.js`;
+const PYODIDE_PACKAGE_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 const PYXEL_WHEEL_PATH =
   "pyxel-3.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl";
 const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
@@ -481,7 +483,7 @@ const _loadPyodideAndPyxel = async (canvas) => {
   void importHookFetch.catch(() => {});
 
   await _loadScript(PYODIDE_URL);
-  const pyodide = await loadPyodide();
+  const pyodide = await loadPyodide({ packageBaseUrl: PYODIDE_PACKAGE_URL });
   // Keep Pyodide from treating Emscripten's main-loop unwind as a fatal error.
   pyodide._api._skip_unwind_fatal_error = true;
   pyodide.canvas.setCanvas2D(canvas);
