@@ -391,6 +391,19 @@ Python function does not accept.
 
 ## Editor
 
+### Editor palette loading
+
+**Decision:** Pyxel Editor loads resource palettes of at most 240 colors. At
+startup and resource drop, reject a larger palette. On rejection, preserve the
+active resource, palette, and undo history. Use the existing error path,
+explaining that 16 colors are reserved for the editor, without adding a dialog.
+
+**Reason:** The [editor](../../../python/pyxel/editor/app.py) reserves 16 entries
+of the runtime's 256-color palette for its controls. The editor and resource
+colors therefore occupy distinct indexes within one palette. This loading
+boundary is separate from the runtime API's palette capacity and the color
+picker's editing range.
+
 ### Editor save failures
 
 **Decision:** When an editor save raises an ordinary Python exception, keep the

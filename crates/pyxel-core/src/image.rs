@@ -898,9 +898,17 @@ impl Image {
         let mut y = i64::from(utils::f32_to_i32(y)) - i64::from(self.canvas.camera_y);
         let color = self.palette[color as usize];
         let font_image_rc = pyxel::font_image();
-        let font_image = rc_ref!(font_image_rc);
-        let font_data = &font_image.canvas.data;
-        let font_w = font_image.canvas.width() as usize;
+        let borrowed;
+        let copied_canvas;
+        let font_canvas = if ptr::eq(font_image_rc.as_ptr(), self) {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
+        } else {
+            borrowed = rc_ref!(font_image_rc);
+            &borrowed.canvas
+        };
+        let font_data = &font_canvas.data;
+        let font_w = font_canvas.width() as usize;
 
         let start_x = x;
         for c in string.chars() {

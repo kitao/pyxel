@@ -68,6 +68,18 @@ pub enum MmlCommand {
         duration_ticks: u32,
     },
 
+    // Same-pitch ties may span more ticks than one authored note, or hold forever.
+    SustainedNote {
+        midi_note: u32,
+        duration_ticks: Option<u128>,
+    },
+
+    // Shared phrases keep normalized repeat boundaries independent of the count.
+    Sequence {
+        commands: Arc<[MmlCommand]>,
+        play_count: u32,
+    },
+
     // Repeat control
     RepeatStart,
     RepeatEnd {

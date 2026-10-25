@@ -21,6 +21,7 @@ from ._glb_fixtures import (
     write_materialless_primitive_glb,
     write_matrix_transform_glb,
     write_morph_target_glb,
+    write_node_graph_glb,
     write_non_indexed_glb,
     write_normal_texture_glb,
     write_rgb_texture_glb,
@@ -37,6 +38,20 @@ from ._glb_fixtures import (
 def test_motion_not_user_constructible():
     with raises_exact(TypeError, "cannot create 'pyxel.cube.Motion' instances"):
         Motion()
+
+
+@pytest.mark.parametrize(
+    ("nodes", "roots"),
+    [
+        ([{"children": [0]}], [0]),
+        ([{"children": [1]}, {"children": [0]}], [0]),
+        ([{"children": [2]}, {"children": [2]}, {}], [0, 1]),
+    ],
+)
+def test_from_glb_rejects_repeated_scene_nodes(tmp_path, nodes, roots):
+    path = write_node_graph_glb(tmp_path / "invalid_tree.glb", nodes, roots)
+    with raises_exact(ValueError, "GLB scene nodes must form a tree"):
+        Mesh.from_glb(str(path))
 
 
 def test_from_glb_loads_single_texture_mesh(tmp_path):

@@ -14,5 +14,10 @@
     "axe-core": "4.11.0",
     "prettier": "^3.8.4",
     "wrangler": "4.150.0"
+  },
+  "overrides": {
+    "miniflare": {
+      "undici": "7.30.1"
+    }
   }
 }

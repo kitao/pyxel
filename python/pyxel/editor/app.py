@@ -20,6 +20,19 @@ from .widgets.settings import (
 _EDITOR_TYPES = {"image": 0, "tilemap": 1, "sound": 2, "music": 3}
 
 
+def _check_palette_size(resource_file):
+    colors = list(pyxel.colors)
+    try:
+        pyxel.load_pal(resource_file)
+        if len(pyxel.colors) > 256 - pyxel.NUM_COLORS:
+            raise ValueError(
+                "Pyxel Editor supports at most 240 colors "
+                "(16 colors are reserved for the editor)"
+            )
+    finally:
+        pyxel.colors[:] = colors
+
+
 class App(Widget):
     # Variables:
     #   editor_type_var
@@ -46,6 +59,7 @@ class App(Widget):
         self._set_title(original_resource_file)
 
         resource_file = str(resource_path)
+        _check_palette_size(resource_file)
         if resource_path.exists():
             pyxel.load(resource_file)
         else:
@@ -171,6 +185,7 @@ class App(Widget):
                 colors = list(pyxel.colors)
                 pyxel.colors[:] = colors[pyxel.NUM_COLORS :]
                 try:
+                    _check_palette_size(dropped_file)
                     pyxel.load(dropped_file)
                 except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
                     print(f"Failed to load resource: {e}")

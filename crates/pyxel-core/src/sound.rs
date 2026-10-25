@@ -302,11 +302,14 @@ impl Sound {
     }
 
     pub(crate) fn requires_tone(&mut self) -> bool {
-        self.pcm.is_none()
-            && self
-                .command_snapshot()
-                .iter()
-                .any(|command| matches!(command, MmlCommand::Note { .. }))
+        fn has_note(commands: &[MmlCommand]) -> bool {
+            commands.iter().any(|command| match command {
+                MmlCommand::Note { .. } | MmlCommand::SustainedNote { .. } => true,
+                MmlCommand::Sequence { commands, .. } => has_note(commands),
+                _ => false,
+            })
+        }
+        self.pcm.is_none() && has_note(&self.command_snapshot())
     }
 
     fn matches_legacy_source(&self, source: &LegacyCommandSource) -> bool {
@@ -553,5 +556,15 @@ mod tests {
             _ => None,
         });
         assert_eq!(midi_note, Some(163));
+    }
+
+    #[test]
+    fn repeat_ties_still_require_a_tone() {
+        for mml in ["[D E&] F", "[C&]2147483647 C"] {
+            let sound = Sound::new();
+            let mut sound = audio_mut!(sound);
+            sound.set_mml(mml).unwrap();
+            assert!(sound.requires_tone());
+        }
     }
 }

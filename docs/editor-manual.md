@@ -21,7 +21,7 @@ Launch Pyxel Editor with the following command:
 pyxel edit [PYXEL_RESOURCE_FILE]
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, `my_resource.pyxres` is used.
+If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, `my_resource.pyxres` is used. Pyxel Editor can load resources with palettes of up to 240 colors.
 
 ## Common Operations
 

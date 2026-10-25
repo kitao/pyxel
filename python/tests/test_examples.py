@@ -126,6 +126,158 @@ FLIP_EXAMPLES = {"99_flip_animation"}
 
 
 class TestExamples:
+    def test_megaball_sound_effects_start_on_an_idle_channel(self):
+        code = """
+import os
+import sys
+from pathlib import Path
+
+import pyxel
+import pyxel.cli
+
+init = pyxel.init
+def init_headless(*args, **kwargs):
+    script_dir = Path(sys._getframe(1).f_code.co_filename).parent
+    init(*args, **kwargs, headless=True)
+    os.chdir(script_dir)
+pyxel.init = init_headless
+pyxel.run = lambda update, draw: None
+pyxel.cli.play_pyxel_app(sys.argv[1])
+import audio
+
+calls = []
+play = pyxel.play
+def record_play(*args, **kwargs):
+    calls.append(args)
+    return play(*args, **kwargs)
+pyxel.play = record_play
+
+for sound in audio.SOUNDS:
+    pyxel.stop()
+    calls.clear()
+    audio.play_sound(sound)
+    assert calls == [(3, sound)]
+    assert pyxel.play_pos(3) is not None
+    audio.play_sound(sound)
+    assert calls == [(3, sound)]
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(EXAMPLES_DIR / "apps/megaball.pyxapp")],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_laser_jetman_spawned_enemies_update_once_per_frame(self):
+        code = """
+import os
+import sys
+from pathlib import Path
+
+import pyxel
+import pyxel.cli
+
+init = pyxel.init
+def init_headless(*args, **kwargs):
+    script_dir = Path(sys._getframe(1).f_code.co_filename).parent
+    init(*args, **kwargs, headless=True)
+    os.chdir(script_dir)
+pyxel.init = init_headless
+pyxel.run = lambda update, draw: None
+pyxel.cli.play_pyxel_app(sys.argv[1])
+
+import input
+from en_lander import EnLander
+from en_mutant import EnMutant
+from en_pod import EnPod
+from en_swarmer import EnSwarmer
+from gameplay import Gameplay
+
+pyxel.rseed(0)
+game = Gameplay(4)
+EnPod(game, 64, 48).destroy()
+swarmers = [enemy for enemy in game.enemies if isinstance(enemy, EnSwarmer)]
+assert 3 <= len(swarmers) <= 5
+assert len(swarmers) == len(set(swarmers))
+game._update_objects(input.poll())
+assert all(enemy.total_frames == 1 for enemy in swarmers)
+
+game.enemies.clear()
+lander = EnLander(game, game.humans[0].x, 24)
+assert lander._scanned_human_below()
+for _ in range(301):
+    lander._update_beam_up()
+mutants = [enemy for enemy in game.enemies if isinstance(enemy, EnMutant)]
+assert len(mutants) == 1
+game._update_objects(input.poll())
+assert mutants[0].total_frames == 1
+"""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                code,
+                str(EXAMPLES_DIR / "apps/laser-jetman.pyxapp"),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_vortexion_terrain_collision_matches_the_scrolled_view(self):
+        code = """
+import os
+import sys
+from pathlib import Path
+
+import pyxel
+import pyxel.cli
+
+init = pyxel.init
+def init_headless(*args, **kwargs):
+    script_dir = Path(sys._getframe(1).f_code.co_filename).parent
+    init(*args, **kwargs, headless=True)
+    os.chdir(script_dir)
+pyxel.init = init_headless
+pyxel.run = lambda update, draw: None
+pyxel.cli.play_pyxel_app(sys.argv[1])
+
+from stage_background import StageBackground
+
+# Give solid and empty tiles distinct colors, then compare the actual drawing
+# with collision queries at the same screen positions.
+pyxel.images[0].cls(0)
+pyxel.images[0].rect(0, 176, 256, 80, 1)
+observed = set()
+for stage in range(1, 6):
+    background = StageBackground(None, f"stage_{stage}.tmx", stage % 2 == 0)
+    for scroll in (0, 64, 128, 256):
+        background.scroll_x = scroll
+        pyxel.cls(0)
+        background.draw()
+        for y in range(20, 176, 8):
+            for x in range(4, 256, 8):
+                solid = pyxel.pget(x, y) == 1
+                observed.add(solid)
+                assert background.is_point_colliding(x, y) == solid, (stage, scroll, x, y)
+assert observed == {False, True}
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(EXAMPLES_DIR / "apps/vortexion.pyxapp")],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+            env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
     def test_custom_shapes_laser_texture_and_lifecycle(self):
         code = """
 import os

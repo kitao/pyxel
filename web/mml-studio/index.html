@@ -315,10 +315,14 @@
             }
           };
 
-          runtime.resetPyxel().then(finish, (error) => {
-            finish();
-            console.error("Playback reset failed", error);
-          });
+          if (runtime.pyxelContext?.initialized) {
+            runtime.resetPyxel().then(finish, (error) => {
+              finish();
+              console.error("Playback reset failed", error);
+            });
+          } else {
+            waitForPyxelReady(() => runtime.pyxelContext?.initialized, finish);
+          }
         }
       }
 

@@ -16,13 +16,15 @@
 - Fixed key repeat, modifier states, and mouse positioning
 - Fixed duplicate gamepad startup registration and hotplug key mapping
 - Fixed frame timing during long-running sessions
-- Fixed MML timing, sound playback, audio exports, and BGM generation hangs
+- Fixed MML timing, sound playback, and audio exports
+- Fixed generated BGM timing and generation hangs
 - Fixed resource saving, version parsing, and TMX imports
 - Fixed data view lifetimes, sequence loss, and garbage collection deadlocks
 - Fixed resource editing, input, and saving in Pyxel Editor and examples
 - Fixed collisions in the shooter example
+- Fixed sound, enemy updates, and terrain collisions in bundled games
 - Fixed app packaging, startup paths, overwrites, and directory handling
-- Fixed app2exe imports and concurrent builds
+- Fixed app2exe imports, app names, and concurrent builds
 - Updated app2html to use the official versioned web runtime
 - Moved web apps' Pyodide runtime downloads to kitao.dev
 - Fixed play and watch process cleanup
@@ -35,6 +37,7 @@
 - Fixed OpenGL cleanup on application shutdown
 - Fixed gamepad cleanup during resets and application shutdown
 - Improved wheel builds, validation, and SDL2 download verification
+- Updated the web development HTTP client to fix security vulnerabilities
 - Fixed Windows development setup and partial version updates
 - Fixed playback timing in documentation GIFs
 - Improved documentation and translations

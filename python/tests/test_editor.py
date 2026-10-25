@@ -44,6 +44,47 @@ def _param_id(editor, palette_count):
 
 
 class TestEditor:
+    @pytest.mark.parametrize("count", [240, 241, 256])
+    @pytest.mark.parametrize("existing", [False, True])
+    def test_palette_limit_on_startup(self, count, existing, tmp_path):
+        path = tmp_path / "palette.pyxres"
+        colors = list(pyxel.colors)
+        try:
+            pyxel.colors[:] = [0x010101 * i for i in range(count)]
+            pyxel.save_pal(str(path))
+            if existing:
+                pyxel.save(str(path))
+        finally:
+            pyxel.colors[:] = colors
+
+        code = """
+import sys
+
+import pyxel
+from pyxel.editor.app import App
+
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(sys.argv[1], "image")
+app.draw_all()
+pyxel.flip()
+assert pyxel.num_user_colors == 240
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(path)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        if count == 240:
+            assert result.returncode == 0, result.stderr
+        else:
+            assert result.returncode == 1
+            assert "Pyxel Editor supports at most 240 colors" in result.stderr
+            assert "16 colors are reserved for the editor" in result.stderr
+
     @pytest.mark.parametrize("component", ["piano", "music", "sound"])
     def test_audio_fields_draw_only_visible_data(self, component, monkeypatch):
         monkeypatch.setattr(pyxel, "play_pos", lambda _ch: None)
@@ -431,6 +472,25 @@ app.update_all()
 app.draw_all()
 assert list(pyxel.colors) == system + expected
 assert pyxel.num_user_colors == len(expected)
+
+for count in (241, 256):
+    path = str(folder / f"oversized-{count}.pyxres")
+    pyxel.images[0].pset(0, 0, 2)
+    pyxel.save(path)
+    pyxel.images[0].pset(0, 0, 1)
+    colors = list(pyxel.colors)
+    pyxel.colors[:] = [0x010101 * i for i in range(count)]
+    pyxel.save_pal(path)
+    pyxel.colors[:] = colors
+    editor.add_history({"marker": count})
+    history = list(editor._history_list)
+    pyxel._dropped_files = [path]
+    app.update_all()
+    app.draw_all()
+    assert list(pyxel.colors) == colors
+    assert pyxel.num_user_colors == len(expected)
+    assert pyxel.images[0].pget(0, 0) == 1
+    assert editor._history_list == history
 """
 
         result = subprocess.run(
@@ -442,9 +502,16 @@ assert pyxel.num_user_colors == len(expected)
         )
         assert result.returncode == 0, result.stderr
         missing = tmp_path / "missing.pyxres"
-        assert result.stdout.splitlines()[-1] == (
-            f"Failed to load resource: Failed to open file '{missing}'"
-        )
+        assert result.stdout.splitlines()[-3:] == [
+            f"Failed to load resource: Failed to open file '{missing}'",
+            *[
+                (
+                    "Failed to load resource: Pyxel Editor supports at most 240 colors "
+                    "(16 colors are reserved for the editor)"
+                )
+            ]
+            * 2,
+        ]
 
     def test_resource_drop_keeps_title_on_save_destination(self, tmp_path):
         code = """
