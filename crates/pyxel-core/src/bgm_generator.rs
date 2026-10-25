@@ -1886,10 +1886,8 @@ fn notes_to_mml(
 
     // Encode note events into bar-aligned MML tokens
     while i < notes.len() {
-        let Some(event) = notes[i] else {
-            i += 1;
-            continue;
-        };
+        // Leading holds have no previous note, but still occupy song time.
+        let event = notes[i].unwrap_or(-1);
 
         let mut len = 1usize;
         while i + len < notes.len() && notes[i + len].is_none() {
@@ -2420,6 +2418,27 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_leading_holds_preserve_silent_time() {
+        use crate::mml_command::MmlCommand;
+
+        for leading in [1, 4, 16] {
+            let mut notes = vec![None; leading + 1];
+            notes[leading] = Some(24);
+            let mml = notes_to_mml(&notes, 120, 0, 96, 88, false);
+            let events: Vec<_> = crate::mml_parser::parse_mml(&mml)
+                .unwrap()
+                .into_iter()
+                .filter_map(|command| match command {
+                    MmlCommand::Rest { duration_ticks } => Some((false, duration_ticks)),
+                    MmlCommand::Note { duration_ticks, .. } => Some((true, duration_ticks)),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(events, [(false, leading as u32 * 12), (true, 12)]);
+        }
+    }
+
     // The Composer JSON helpers stay out of production pyxel-core builds but
     // compile in test builds so both integrations exercise the wire format.
     #[test]
@@ -2504,13 +2523,13 @@ mod tests {
             (3, 0, 3, 7, [
                 "T104 L8 @ENV1{0,0,127,15,13,20,0} Q88 V96 @1 @ENV1 @VIB0 R2R2 O5D<G#B2. >E1 E8.E8.<E>E2 R2R2 D<G#B2. >CD<A2. >E1",
                 "T104 L16 @ENV1{127} @VIB1{60,20,25} Q94 V112 @0 @ENV1 @VIB1 O3FFR4FFR4<F4 >EER4EER4<E4 >AAR4AAR4<A4 O4CCR4CCR4<C4 FFR4FFR4<F4 >EER4EER4<E4 >AAR4AAR4<A4 >AAR4AAR4AA<A8",
-                "T104 L4 @ENV1{0,0,127,15,13,20,0} Q94 V64 @1 @ENV1 @VIB0 O4E>C O3A>B8E8 G#<B>D>C <B8A8G8F8E>C8.C16& C8R8C<G2& G2.B8E8 G#2.A EE<E O5C# <C#C#G",
+                "T104 L4 @ENV1{0,0,127,15,13,20,0} Q94 V64 @1 @ENV1 @VIB0 R O4E>C O3A >B8E8G#<B>D >C<B8A8G8F8E >C8.C8.R8C<G& G1 B8E8G#2. AEE<E O5C#<C#C#G",
                 "T104 L16 @ENV1{0,0,127,12,0} @ENV2{127,8,0} @ENV3{38,10,0} Q94 V80 @3 @ENV1 @VIB0 @ENV2 O5C4.<C4. @ENV3 O6A#A#A#8 [@ENV2 <C4.<C4. @ENV3 O6A#A#A#8]2 @ENV2 <C4.<C4. @ENV3 O6A#A# @ENV2 <C8 <C4.>C4. @ENV3 >A#A#A#8 [@ENV2 O4C4.>C4. @ENV3 >A#A#A#8]2 @ENV2 O4C4.>C4. @ENV3 >A#A# @ENV2 O4C8",
             ]),
             (5, 2, 0, 99, [
                 "T133 L8 @ENV1{0,0,127,40,25,10,0} Q88 V96 @2 @ENV1 @VIB0 R4. O5F#EDDD <B2>D4<B4 >C#A16C#16E2A<A A>DDF#4E16D16F#4 R4.F#EDDD <B2>D4<B4 >C#A16C#16E2A<A GF#A2.",
                 "T133 L8 @ENV1{127} @VIB1{60,20,25} Q88 V112 @0 @ENV1 @VIB1 R O2B>B<BRB>B<B RG>G<GRG>G<G RA>A<ARA>A<A R>D>D<DRC#>C#<C# R<B>B<BRB>B<B RG>G<GRG>G<G RA>A<ARA>A<A R>D>D<DC#>C# O2F#>F#",
-                "T133 L8 @ENV1{0,0,127,40,25,10,0} Q88 V32 @2 @ENV1 @VIB0 R4. O5F#EDDD <B2>D4<B4 >C#A16C#16E2A<A A>DDF#4E16D16F#4 R4.F#EDDD <B2>D4<B4 >C#A16C#16E2A<A GF#A2&8.",
+                "T133 L8 @ENV1{0,0,127,40,25,10,0} Q88 V32 @2 @ENV1 @VIB0 R16R4. O5F#EDDD16& D16<B2>D4<B8.& B16>C#A16C#16E2A<A16& A16A>DDF#4E16D16F#8.& F#16R4.F#EDDD16& D16<B2>D4<B8.& B16>C#A16C#16E2A<A16& A16GF#A2&8.",
                 "T133 L16 @ENV1{127} Q100 V112 @0 @ENV1 @VIB0",
             ]),
         ];

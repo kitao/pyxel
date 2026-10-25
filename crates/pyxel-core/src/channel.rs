@@ -18,6 +18,13 @@ pub type ChannelDetune = i32;
 // Bias negative fixed-point products so the right shift truncates toward zero.
 const PCM_MIX_TRUNC_BIAS: i64 = AUDIO_GAIN_SCALE - 1;
 
+struct SequenceFrame {
+    commands: Arc<[MmlCommand]>,
+    return_index: usize,
+    remaining: u32,
+    iteration_start_clock: u64,
+}
+
 pub struct Channel {
     pub sounds: Vec<RcSound>,
     pub gain: ChannelGain,
@@ -35,6 +42,7 @@ pub struct Channel {
     commands: Arc<[MmlCommand]>,
     command_index: usize,
     repeat_points: Vec<(usize, u32, u64)>,
+    sequence_frames: Vec<SequenceFrame>,
     clocks_per_tick: u32,
     gate_ratio: f32,
     volume_level: f32,
@@ -74,6 +82,7 @@ impl Channel {
             commands: Arc::from([]),
             command_index: 0,
             repeat_points: Vec::new(),
+            sequence_frames: Vec::new(),
             clocks_per_tick: 0,
             gate_ratio: 1.0,
             volume_level: 1.0,
@@ -199,6 +208,7 @@ impl Channel {
         self.note_duration_clocks = 0;
         self.sound_elapsed_clocks = 0;
         self.command_index = 0;
+        self.sequence_frames.clear();
         self.last_midi_note = None;
         self.pcm_position = 0;
 
@@ -308,6 +318,7 @@ impl Channel {
                 self.note_duration_clocks = 0;
                 self.command_index = 0;
                 self.repeat_points.clear();
+                self.sequence_frames.clear();
                 {
                     let mut sound = audio_mut!(self.sounds[self.sound_index]);
                     self.commands = sound.command_snapshot();
@@ -387,7 +398,29 @@ impl Channel {
         let tones = pyxel::tones();
 
         // Execute MML commands until the next note, rest, or end of stream
-        while self.command_index < self.commands.len() {
+        loop {
+            if self.command_index == self.commands.len() {
+                let Some(frame) = self.sequence_frames.last_mut() else {
+                    break;
+                };
+                if self.sound_elapsed_clocks == frame.iteration_start_clock && frame.remaining == 0
+                {
+                    self.sequence_frames.clear();
+                    break;
+                }
+                if self.sound_elapsed_clocks != frame.iteration_start_clock
+                    && (frame.remaining == 0 || frame.remaining > 1)
+                {
+                    frame.remaining = frame.remaining.saturating_sub(1);
+                    frame.iteration_start_clock = self.sound_elapsed_clocks;
+                    self.command_index = 0;
+                } else {
+                    let frame = self.sequence_frames.pop().unwrap();
+                    self.commands = frame.commands;
+                    self.command_index = frame.return_index;
+                }
+                continue;
+            }
             let command = &self.commands[self.command_index];
             self.command_index += 1;
             match command {
@@ -514,28 +547,40 @@ impl Channel {
                     midi_note,
                     duration_ticks,
                 } => {
-                    let midi_note = *midi_note as f32
-                        + self.transpose_semitones
-                        + self.detune_semitones
-                        + self.detune as f32 / 100.0;
-                    let velocity = self.gain * self.volume_level;
-
-                    self.note_duration_clocks =
-                        u64::from(self.clocks_per_tick) * u64::from(*duration_ticks);
-                    let playback_clocks = (self.note_duration_clocks as f64
-                        * f64::from(self.gate_ratio))
-                    .round() as u64;
-
-                    if let Some((pending_offset, pending_ticks)) = self.glide_pending_params {
-                        let resolved_offset = pending_offset
-                            .unwrap_or(self.last_midi_note.unwrap_or(midi_note) - midi_note);
-                        let resolved_ticks = pending_ticks.unwrap_or(*duration_ticks);
-                        self.voice.glide.set(resolved_offset, resolved_ticks);
-                    }
-
-                    self.voice.play_note(midi_note, velocity, playback_clocks);
-                    self.last_midi_note = Some(midi_note);
+                    self.start_mml_note(
+                        *midi_note,
+                        *duration_ticks,
+                        u64::from(self.clocks_per_tick) * u64::from(*duration_ticks),
+                    );
                     return;
+                }
+                MmlCommand::SustainedNote {
+                    midi_note,
+                    duration_ticks,
+                } => {
+                    let clocks = duration_ticks
+                        .and_then(|ticks| ticks.checked_mul(u128::from(self.clocks_per_tick)))
+                        .and_then(|clocks| u64::try_from(clocks).ok())
+                        .unwrap_or(u64::MAX);
+                    let ticks = duration_ticks
+                        .and_then(|ticks| u32::try_from(ticks).ok())
+                        .unwrap_or(u32::MAX);
+                    self.start_mml_note(*midi_note, ticks, clocks);
+                    return;
+                }
+                MmlCommand::Sequence {
+                    commands,
+                    play_count,
+                } => {
+                    let body = commands.clone();
+                    let remaining = *play_count;
+                    self.sequence_frames.push(SequenceFrame {
+                        commands: std::mem::replace(&mut self.commands, body),
+                        return_index: self.command_index,
+                        remaining,
+                        iteration_start_clock: self.sound_elapsed_clocks,
+                    });
+                    self.command_index = 0;
                 }
                 MmlCommand::Rest { duration_ticks } => {
                     self.note_duration_clocks =
@@ -568,6 +613,25 @@ impl Channel {
                 }
             }
         }
+    }
+
+    fn start_mml_note(&mut self, midi_note: u32, duration_ticks: u32, duration_clocks: u64) {
+        let midi_note = midi_note as f32
+            + self.transpose_semitones
+            + self.detune_semitones
+            + self.detune as f32 / 100.0;
+        let velocity = self.gain * self.volume_level;
+        self.note_duration_clocks = duration_clocks;
+        let playback_clocks =
+            (self.note_duration_clocks as f64 * f64::from(self.gate_ratio)).round() as u64;
+        if let Some((pending_offset, pending_ticks)) = self.glide_pending_params {
+            let resolved_offset =
+                pending_offset.unwrap_or(self.last_midi_note.unwrap_or(midi_note) - midi_note);
+            let resolved_ticks = pending_ticks.unwrap_or(duration_ticks);
+            self.voice.glide.set(resolved_offset, resolved_ticks);
+        }
+        self.voice.play_note(midi_note, velocity, playback_clocks);
+        self.last_midi_note = Some(midi_note);
     }
 
     // PCM mixing
@@ -1041,5 +1105,79 @@ mod tests {
         channel.process(None, 1);
         assert!(channel.is_playing);
         assert_eq!(channel.sound_elapsed_clocks, 1);
+    }
+
+    #[test]
+    fn test_repeat_boundary_ties_match_expanded_pcm() {
+        fn samples(mml: &str) -> Vec<i16> {
+            let channel = Channel::new();
+            audio_mut!(channel)
+                .play_mml(
+                    &format!("T240 L16 @1 @ENV1{{0,4,127,2,40,6,0}} @ENV1 Q50 V100 {mml}"),
+                    None,
+                    false,
+                    false,
+                )
+                .unwrap();
+            let mut blip = BlipBuf::new(AUDIO_SAMPLE_RATE);
+            blip.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
+                .unwrap();
+            let mut samples = vec![0; AUDIO_SAMPLE_RATE as usize * 3];
+            crate::audio::Audio::render_samples(&[channel], &mut blip, &mut samples);
+            assert!(samples.iter().any(|sample| *sample != 0));
+            samples
+        }
+        for (repeated, expanded) in [
+            (
+                "Q80 [C Q50 D]2 E&F G&[G]2",
+                "Q80 C Q50 D Q80 C Q50 D E&F G&G G",
+            ),
+            (
+                "Q100 [C Q50 D]2 E&F G&[G]2",
+                "Q100 C Q50 D C Q50 D E&F G&G G",
+            ),
+            (
+                "C&[@ENV2{127,1,0} C]2 D",
+                "C& @ENV2{127,1,0} C @ENV2{127,1,0} C D",
+            ),
+            (
+                "Q100 [C& Q50 C& Q100 C Q50 D]2 E&F G&[G]2",
+                "Q100 C8. Q50 D Q100 C8. Q50 D E&F G&G G",
+            ),
+            (
+                "Q100 [C& Q50 C& Q100 C Q50 D]2 E&F",
+                "Q100 C8. Q50 D Q100 C8. Q50 D E&F",
+            ),
+            ("Q100 [C& Q50 D]2 E", "Q100 C Q50 D Q100 C Q50 D E"),
+            ("C&[C]2 D", "C&C C D"),
+            ("[C&]2 C D", "C&C&C D"),
+            ("C&[[C]2]2 D", "C&C C C C D"),
+            ("[C& D C&]2 C E", "C& D C& C& D C& C E"),
+            (
+                "Q20 C&[Q80 C& T480 C&]2 Q40 C D",
+                "Q20 C& Q80 C& T480 C& Q80 C& T480 C& Q40 C D",
+            ),
+            ("[C C&] D", "C [C8]"),
+            ("[C&] D", "Q100 C1&1&1&1&1&1"),
+            ("C&[T120] D", "Q100 C T120"),
+        ] {
+            assert_eq!(samples(repeated), samples(expanded), "{repeated}");
+        }
+    }
+
+    #[test]
+    fn test_shared_repeat_ties_do_not_scan_large_counts_at_startup() {
+        for mml in [
+            "[[C&]2147483647]2147483647 C",
+            "C&[T120]2147483647 C",
+            "C&[T120] C",
+        ] {
+            let channel = Channel::new();
+            let mut channel = audio_mut!(channel);
+            channel.play_mml(mml, None, false, false).unwrap();
+            channel.process(None, 1);
+            assert!(channel.is_playing);
+            assert_eq!(channel.sound_elapsed_clocks, 1);
+        }
     }
 }

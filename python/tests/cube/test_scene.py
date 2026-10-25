@@ -361,6 +361,56 @@ class TestCollisionPipeline:
         )
         return Mesh([primitive], [Mat4.IDENTITY], [-1])
 
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("overlap", [0, 0.1])
+    @pytest.mark.parametrize("motion", ["approach", "exit", "slide"])
+    @pytest.mark.parametrize(
+        "size,radius,height",
+        [((0, 0, 0), 1, 1), ((0, 2, 0), 1, 2), ((2, 2, 2), 0, 1), ((1, 1, 1), 0.5, 1)],
+    )
+    def test_mesh_motion_from_contact(
+        self, reverse, overlap, motion, size, radius, height
+    ):
+        class Body(Node):
+            def on_collide(self, other, contact):
+                self.transform = Mat4.from_translation(
+                    self.transform.pos + contact.normal * contact.depth
+                )
+                self.collider.velocity += contact.delta_velocity
+
+        velocity = {
+            "approach": Vec3(0, -10, 0),
+            "exit": Vec3(0, 10, 0),
+            "slide": Vec3(1, 0, 0),
+        }[motion]
+        root, body, floor = Node(), Body(), Node()
+        floor.collider = Collider(mesh=self._plane_mesh(1, reverse), mass=0, friction=0)
+        body.transform = Mat4.from_translation(Vec3(0, height - overlap, 0))
+        body.collider = Collider(
+            size=Vec3(*size),
+            radius=radius,
+            velocity=velocity,
+            gravity=0,
+            linear_damp=0,
+            angular_damp=0,
+            friction=0,
+        )
+        root.add_child(floor)
+        root.add_child(body)
+        root.update()
+
+        expected = (
+            (0, height - overlap + 10, 0)
+            if motion == "exit"
+            else (int(motion == "slide"), height, 0)
+        )
+        # The analytic plane contact is exact apart from f32 position rounding.
+        assert tuple(body.transform.pos) == pytest.approx(expected, rel=0, abs=2e-5)
+        expected_velocity = velocity if motion != "approach" else Vec3.ZERO
+        assert tuple(body.collider.velocity) == pytest.approx(
+            tuple(expected_velocity), rel=0, abs=2e-5
+        )
+
     @pytest.mark.parametrize("scale", [1, 1e10, 1e20])
     @pytest.mark.parametrize(
         "target", ["sphere", "capsule", "box", "plane", "capsule_end"]
@@ -1677,6 +1727,25 @@ class _ColoredBox(Node):
 
 
 class TestViewportClear:
+    def test_builtin_text_can_draw_on_its_font_image(self):
+        class Label(Node):
+            def on_draw(self):
+                self.text(Vec3(0, 0, -5), "AA", 0)
+
+        font = pyxel.font
+        original = list(font.data_ptr())
+        expected = pyxel.Image(font.width, font.height)
+        expected.blt(0, 0, font, 0, 0, font.width, font.height)
+        root = Label()
+        root.camera = Camera()
+        root.draw(-24, -3, 64, 36, expected)
+        assert list(expected.data_ptr()) != original
+        try:
+            root.draw(-24, -3, 64, 36, font)
+            assert list(font.data_ptr()) == list(expected.data_ptr())
+        finally:
+            font.data_ptr()[:] = original
+
     @pytest.mark.parametrize("offscreen", [False, True])
     @pytest.mark.parametrize("color", [None, 3])
     @pytest.mark.parametrize(

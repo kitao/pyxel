@@ -17,18 +17,27 @@ const wasmSource = fs.readFileSync(
 const controller = (runtime) => {
   const timers = [];
   const errors = [];
+  const ready = [];
   const press = loadNamedFunction(source, "handleButtonPress", {
     runtimeScreen: { contentWindow: runtime },
     setButtonStyle() {},
     setTimeout: (callback, delay) => timers.push({ callback, delay }),
     console: { error: (...args) => errors.push(args) },
+    waitForPyxelReady: (condition, callback) =>
+      ready.push({ condition, callback }),
   });
-  return { press: (action) => press({ dataset: { action } }), timers, errors };
+  return {
+    press: (action) => press({ dataset: { action } }),
+    timers,
+    errors,
+    ready,
+  };
 };
 
 const deferredRuntime = () => {
   const resets = [];
   const runtime = {
+    pyxelContext: { initialized: true },
     resetPyxel: () =>
       new Promise((resolve, reject) => resets.push({ resolve, reject })),
   };
@@ -36,6 +45,33 @@ const deferredRuntime = () => {
 };
 
 const settle = () => new Promise((resolve) => setImmediate(resolve));
+
+test("first PLAY stays pending until initial startup consumes it", async () => {
+  const { runtime, press, timers, resets, ready } = deferredRuntime();
+  runtime.pyxelContext.initialized = false;
+  press("play");
+  timers[0].callback();
+  await settle();
+  assert.equal(runtime.js_play, true);
+  assert.equal(resets.length, 0);
+  assert.equal(ready[0].condition(), false);
+
+  runtime.pyxelContext.initialized = true;
+  assert.equal(ready[0].condition(), true);
+  ready[0].callback();
+  assert.equal(runtime.js_play, false);
+});
+
+test("STOP cancels the first PLAY before runtime startup", () => {
+  const { runtime, press, ready } = deferredRuntime();
+  runtime.pyxelContext.initialized = false;
+  press("play");
+  press("stop");
+  assert.equal(runtime.js_play, false);
+  assert.equal(runtime.js_stop, true);
+  ready[0].callback();
+  assert.equal(runtime.js_stop, true);
+});
 
 test("PLAY outlives button feedback and completes only after its reset", async () => {
   const { runtime, resets, press, timers } = deferredRuntime();

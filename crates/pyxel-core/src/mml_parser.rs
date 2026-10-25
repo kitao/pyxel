@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::mml_command::MmlCommand;
 use crate::settings::{AUDIO_CLOCK_RATE, TICKS_PER_QUARTER_NOTE};
 
@@ -53,8 +55,15 @@ macro_rules! parse_error {
 }
 
 pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
+    parse_mml_inner(mml, true)
+}
+
+fn parse_mml_inner(mml: &str, detect_repeat_ties: bool) -> Result<Vec<MmlCommand>, String> {
     let mut stream = CharStream::new(mml);
     let mut commands = Vec::new();
+    let normalize_ties = detect_repeat_ties && mml.contains('&') && mml.contains('[');
+    let mut crosses_repeat = false;
+    let mut note_connections = Vec::new();
     let mut octave: i32 = DEFAULT_OCTAVE;
     let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE * 4 / DEFAULT_LENGTH;
     let mut quantize: u32 = DEFAULT_QUANTIZE;
@@ -130,39 +139,43 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
         } else if parse_string(&mut stream, "L").is_ok() {
             note_ticks = parse_length_ticks(&mut stream, note_ticks)?;
         } else if let Some((command, is_connected)) = parse_note(&mut stream, octave, note_ticks)? {
-            // Combine durations if this note is tied to the previous one.
-            if let Some(prev_note) = connected_note.take() {
-                if let MmlCommand::Note {
-                    midi_note,
-                    duration_ticks,
-                } = &command
-                {
-                    if *midi_note == prev_note {
-                        if let Some(index) = last_note_index {
-                            if let MmlCommand::Note {
-                                duration_ticks: prev_ticks,
-                                ..
-                            } = &mut commands[index]
-                            {
-                                *prev_ticks += *duration_ticks;
-                            }
-                        }
-                        if is_connected {
-                            connected_note = Some(prev_note);
-                        } else {
-                            // A same-pitch tie plays as one note, so its gate follows
-                            // the Q in effect where the tie ends.
-                            let gate_ratio = gate_time_to_gate_ratio(quantize);
-                            if let Some(index) = connected_gate_index.take() {
-                                commands[index] = MmlCommand::Quantize { gate_ratio };
-                            } else if quantize != 100 {
-                                if let Some(index) = last_note_index {
-                                    commands.insert(index, MmlCommand::Quantize { gate_ratio });
-                                    last_note_index = Some(index + 1);
+            if normalize_ties {
+                connected_note = None;
+            } else {
+                // Combine durations if this note is tied to the previous one.
+                if let Some(prev_note) = connected_note.take() {
+                    if let MmlCommand::Note {
+                        midi_note,
+                        duration_ticks,
+                    } = &command
+                    {
+                        if *midi_note == prev_note {
+                            if let Some(index) = last_note_index {
+                                if let MmlCommand::Note {
+                                    duration_ticks: prev_ticks,
+                                    ..
+                                } = &mut commands[index]
+                                {
+                                    *prev_ticks += *duration_ticks;
                                 }
                             }
+                            if is_connected {
+                                connected_note = Some(prev_note);
+                            } else {
+                                // A same-pitch tie plays as one note, so its gate follows
+                                // the Q in effect where the tie ends.
+                                let gate_ratio = gate_time_to_gate_ratio(quantize);
+                                if let Some(index) = connected_gate_index.take() {
+                                    commands[index] = MmlCommand::Quantize { gate_ratio };
+                                } else if quantize != 100 {
+                                    if let Some(index) = last_note_index {
+                                        commands.insert(index, MmlCommand::Quantize { gate_ratio });
+                                        last_note_index = Some(index + 1);
+                                    }
+                                }
+                            }
+                            continue;
                         }
-                        continue;
                     }
                 }
             }
@@ -213,7 +226,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             ensure_set!(is_glide_set, MmlCommand::Glide { slot: 0 });
 
             connected_gate_index = None;
-            if quantize != 100 {
+            if !normalize_ties && (is_connected || quantize != 100) {
                 if is_connected {
                     connected_gate_index = Some(commands.len());
                     commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
@@ -228,6 +241,9 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 if let MmlCommand::Note { midi_note, .. } = &command {
                     connected_note = Some(*midi_note);
                 }
+            }
+            if normalize_ties {
+                note_connections.push((commands.len(), quantize, is_connected));
             }
             last_note_index = Some(commands.len());
             commands.push(command);
@@ -244,9 +260,11 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             commands.push(command);
             last_note_index = None;
         } else if parse_string(&mut stream, "[").is_ok() {
+            crosses_repeat |= connected_note.is_some();
             repeat_depth += 1;
             commands.push(MmlCommand::RepeatStart);
         } else if parse_string(&mut stream, "]").is_ok() {
+            crosses_repeat |= connected_note.is_some();
             if repeat_depth == 0 {
                 parse_error!(stream, "Repeat end ']' has no matching '['");
             }
@@ -269,7 +287,355 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     if repeat_depth > 0 {
         parse_error!(stream, "Repeat start '[' has no matching ']'");
     }
-    Ok(commands)
+    if normalize_ties && crosses_repeat {
+        normalize_repeat_ties(commands, note_connections).map_err(|error| stream.error(&error))
+    } else if normalize_ties {
+        parse_mml_inner(mml, false)
+    } else {
+        Ok(commands)
+    }
+}
+
+// Normalize ties at event boundaries while retaining shared repeat bodies.
+// Controls between tied notes stay after the merged note; only the final Q
+// determines its gate, as in ordinary same-pitch ties.
+#[derive(Clone)]
+struct TieNote {
+    midi_note: u32,
+    ticks: Option<u128>,
+    quantize: u32,
+    // Untied Q100 notes inherit the live gate; connected notes always set it.
+    force_gate: bool,
+    connected: bool,
+}
+
+#[derive(Clone)]
+enum TieItem {
+    Command(MmlCommand),
+    Note(TieNote),
+    Repeat(Arc<TiePhrase>, u32),
+}
+
+#[derive(Clone, Default)]
+struct TiePhrase {
+    items: Vec<TieItem>,
+    has_event: bool,
+    terminal: bool,
+}
+
+impl TiePhrase {
+    fn new(items: Vec<TieItem>) -> Self {
+        let has_event = items.iter().any(|item| match item {
+            TieItem::Note(_) | TieItem::Command(MmlCommand::Rest { .. }) => true,
+            TieItem::Repeat(body, _) => body.has_event,
+            TieItem::Command(_) => false,
+        });
+        let terminal = items.last().is_some_and(|item| match item {
+            TieItem::Note(note) => note.ticks.is_none(),
+            TieItem::Repeat(body, count) => *count == 0 || body.terminal,
+            TieItem::Command(_) => false,
+        });
+        Self {
+            items,
+            has_event,
+            terminal,
+        }
+    }
+
+    fn raw_join(mut self, other: Self) -> Self {
+        if !self.terminal {
+            self.has_event |= other.has_event;
+            if !other.items.is_empty() {
+                self.terminal = other.terminal;
+            }
+            self.items.extend(other.items);
+        }
+        self
+    }
+
+    fn edge(&self, last: bool) -> Option<&TieItem> {
+        for offset in 0..self.items.len() {
+            let index = if last {
+                self.items.len() - 1 - offset
+            } else {
+                offset
+            };
+            match &self.items[index] {
+                item @ (TieItem::Note(_) | TieItem::Command(MmlCommand::Rest { .. })) => {
+                    return Some(item)
+                }
+                TieItem::Repeat(body, _) if body.has_event => return body.edge(last),
+                _ => {}
+            }
+        }
+        None
+    }
+
+    fn raw_repeat(body: Arc<Self>, count: u32) -> Self {
+        Self::new(vec![TieItem::Repeat(body, count)])
+    }
+
+    fn split_first(mut self) -> (Self, TieItem, Self) {
+        let index = self
+            .items
+            .iter()
+            .position(|item| match item {
+                TieItem::Note(_) | TieItem::Command(MmlCommand::Rest { .. }) => true,
+                TieItem::Repeat(body, _) => body.has_event,
+                TieItem::Command(_) => false,
+            })
+            .expect("phrase contains an event");
+        let tail = self.items.split_off(index + 1);
+        let event = self.items.pop().unwrap();
+        let prefix = Self::new(self.items);
+        match event {
+            TieItem::Repeat(body, count) => {
+                let (before, event, after) = (*body).clone().split_first();
+                let remaining = if count == 1 {
+                    Self::default()
+                } else {
+                    Self::raw_repeat(body, if count == 0 { 0 } else { count - 1 })
+                };
+                (
+                    prefix.raw_join(before),
+                    event,
+                    after.raw_join(remaining).raw_join(Self::new(tail)),
+                )
+            }
+            _ => (prefix, event, Self::new(tail)),
+        }
+    }
+
+    fn split_last(mut self) -> (Self, TieItem, Self) {
+        let index = self
+            .items
+            .iter()
+            .rposition(|item| match item {
+                TieItem::Note(_) | TieItem::Command(MmlCommand::Rest { .. }) => true,
+                TieItem::Repeat(body, _) => body.has_event,
+                TieItem::Command(_) => false,
+            })
+            .expect("phrase contains an event");
+        let suffix = Self::new(self.items.split_off(index + 1));
+        let event = self.items.pop().unwrap();
+        let prefix = Self::new(self.items);
+        match event {
+            TieItem::Repeat(body, count) => {
+                debug_assert!(count > 0);
+                let (before, event, after) = (*body).clone().split_last();
+                let preceding = if count == 1 {
+                    Self::default()
+                } else {
+                    Self::raw_repeat(body, count - 1)
+                };
+                (
+                    prefix.raw_join(preceding).raw_join(before),
+                    event,
+                    after.raw_join(suffix),
+                )
+            }
+            _ => (prefix, event, suffix),
+        }
+    }
+
+    fn join(self, other: Self) -> Result<Self, String> {
+        if self.terminal {
+            return Ok(self);
+        }
+        let Some(TieItem::Note(previous)) = self.edge(true) else {
+            return Ok(self.raw_join(other));
+        };
+        if !previous.connected || !other.has_event {
+            return Ok(self.raw_join(other));
+        }
+        let Some(TieItem::Note(next)) = other.edge(false) else {
+            return Err("Tie '&' is not followed by a note".to_string());
+        };
+        if previous.midi_note != next.midi_note {
+            return Ok(self.raw_join(other));
+        }
+        let (before, TieItem::Note(previous), controls) = self.split_last() else {
+            unreachable!()
+        };
+        let (prefix, TieItem::Note(next), after) = other.split_first() else {
+            unreachable!()
+        };
+        let note = TieNote {
+            midi_note: previous.midi_note,
+            ticks: previous
+                .ticks
+                .and_then(|a| next.ticks.and_then(|b| a.checked_add(b))),
+            quantize: next.quantize,
+            force_gate: previous.force_gate || (!next.connected && next.quantize != 100),
+            connected: next.connected,
+        };
+        Ok(before
+            .raw_join(Self::new(vec![TieItem::Note(note)]))
+            .raw_join(controls)
+            .raw_join(prefix)
+            .raw_join(after))
+    }
+
+    fn repeated(self, count: u32) -> Result<Self, String> {
+        if count == 1 || self.terminal {
+            return Ok(self);
+        }
+        let Some(TieItem::Note(tail)) = self.edge(true) else {
+            return Ok(Self::raw_repeat(Arc::new(self), count));
+        };
+        if !tail.connected {
+            return Ok(Self::raw_repeat(Arc::new(self), count));
+        }
+        let Some(TieItem::Note(head)) = self.edge(false) else {
+            return Err("Tie '&' is not followed by a note".to_string());
+        };
+        if tail.midi_note != head.midi_note {
+            return Ok(Self::raw_repeat(Arc::new(self), count));
+        }
+        let (prefix, TieItem::Note(head), remainder) = self.split_first() else {
+            unreachable!()
+        };
+        if !remainder.has_event {
+            let note = TieNote {
+                ticks: if count == 0 {
+                    None
+                } else {
+                    head.ticks
+                        .and_then(|ticks| ticks.checked_mul(u128::from(count)))
+                },
+                quantize: if count == 0 { 100 } else { head.quantize },
+                force_gate: count == 0 || head.force_gate,
+                connected: count != 0 && head.connected,
+                ..head
+            };
+            if count == 0 {
+                return Ok(prefix.raw_join(Self::new(vec![TieItem::Note(note)])));
+            }
+            let controls = prefix.clone().raw_join(remainder.clone());
+            return Ok(prefix
+                .raw_join(Self::new(vec![TieItem::Note(note)]))
+                .raw_join(remainder)
+                .raw_join(Self::raw_repeat(Arc::new(controls), count - 1)));
+        }
+        let (middle, TieItem::Note(tail), suffix) = remainder.split_last() else {
+            unreachable!()
+        };
+        let middle = Self::raw_repeat(Arc::new(middle), 1);
+        let merged = TieNote {
+            force_gate: tail.force_gate || (!head.connected && head.quantize != 100),
+            ticks: tail
+                .ticks
+                .and_then(|a| head.ticks.and_then(|b| a.checked_add(b))),
+            ..head.clone()
+        };
+        let center = Self::new(vec![TieItem::Note(merged)])
+            .raw_join(suffix.clone())
+            .raw_join(prefix.clone())
+            .raw_join(middle.clone());
+        let result = prefix
+            .raw_join(Self::new(vec![TieItem::Note(head)]))
+            .raw_join(middle)
+            .raw_join(Self::raw_repeat(
+                Arc::new(center),
+                if count == 0 { 0 } else { count - 1 },
+            ));
+        Ok(if count == 0 {
+            result
+        } else {
+            result
+                .raw_join(Self::new(vec![TieItem::Note(tail)]))
+                .raw_join(suffix)
+        })
+    }
+}
+
+fn compile_tie_phrase(
+    phrase: &TiePhrase,
+    cache: &mut std::collections::HashMap<usize, Arc<[MmlCommand]>>,
+) -> Vec<MmlCommand> {
+    let mut commands = Vec::new();
+    for item in &phrase.items {
+        match item {
+            TieItem::Command(command) => commands.push(command.clone()),
+            TieItem::Note(note) => {
+                if note.force_gate {
+                    commands.push(MmlCommand::Quantize {
+                        gate_ratio: if note.connected {
+                            1.0
+                        } else {
+                            gate_time_to_gate_ratio(note.quantize)
+                        },
+                    });
+                }
+                match note.ticks.and_then(|ticks| u32::try_from(ticks).ok()) {
+                    Some(duration_ticks) => commands.push(MmlCommand::Note {
+                        midi_note: note.midi_note,
+                        duration_ticks,
+                    }),
+                    None => commands.push(MmlCommand::SustainedNote {
+                        midi_note: note.midi_note,
+                        duration_ticks: note.ticks,
+                    }),
+                }
+            }
+            TieItem::Repeat(body, play_count) => {
+                let identity = Arc::as_ptr(body) as usize;
+                let body_commands = if let Some(commands) = cache.get(&identity) {
+                    commands.clone()
+                } else {
+                    let commands: Arc<[MmlCommand]> = compile_tie_phrase(body, cache).into();
+                    cache.insert(identity, commands.clone());
+                    commands
+                };
+                commands.push(MmlCommand::Sequence {
+                    commands: body_commands,
+                    play_count: *play_count,
+                });
+            }
+        }
+    }
+    commands
+}
+
+fn normalize_repeat_ties(
+    commands: Vec<MmlCommand>,
+    connections: Vec<(usize, u32, bool)>,
+) -> Result<Vec<MmlCommand>, String> {
+    let mut connections = connections.into_iter();
+    let mut next_connection = connections.next();
+    let mut phrases = vec![TiePhrase::default()];
+    for (index, command) in commands.into_iter().enumerate() {
+        let phrase = match command {
+            MmlCommand::RepeatStart => {
+                phrases.push(TiePhrase::default());
+                continue;
+            }
+            MmlCommand::RepeatEnd { play_count } => phrases.pop().unwrap().repeated(play_count)?,
+            MmlCommand::Note {
+                midi_note,
+                duration_ticks,
+            } => {
+                let (note_index, quantize, connected) =
+                    next_connection.take().expect("note metadata");
+                debug_assert_eq!(index, note_index);
+                next_connection = connections.next();
+                TiePhrase::new(vec![TieItem::Note(TieNote {
+                    midi_note,
+                    ticks: Some(u128::from(duration_ticks)),
+                    quantize,
+                    force_gate: connected || quantize != 100,
+                    connected,
+                })])
+            }
+            command => TiePhrase::new(vec![TieItem::Command(command)]),
+        };
+        let previous = std::mem::take(phrases.last_mut().unwrap());
+        *phrases.last_mut().unwrap() = previous.join(phrase)?;
+    }
+    Ok(compile_tie_phrase(
+        &phrases.pop().unwrap(),
+        &mut std::collections::HashMap::new(),
+    ))
 }
 
 // A duration is input_tempo_ticks * incoming clocks-per-tick + fixed_clocks.
@@ -333,6 +699,13 @@ impl DurationTransform {
 }
 
 fn duration_transform(commands: &[MmlCommand]) -> Option<DurationTransform> {
+    duration_transform_cached(commands, &mut std::collections::HashMap::new())
+}
+
+fn duration_transform_cached(
+    commands: &[MmlCommand],
+    cache: &mut std::collections::HashMap<usize, DurationTransform>,
+) -> Option<DurationTransform> {
     let mut transforms = vec![DurationTransform::default()];
 
     for command in commands {
@@ -346,6 +719,24 @@ fn duration_transform(commands: &[MmlCommand]) -> Option<DurationTransform> {
                     input_tempo_ticks: u128::from(*duration_ticks),
                     ..DurationTransform::default()
                 }
+            }
+            MmlCommand::SustainedNote { duration_ticks, .. } => DurationTransform {
+                input_tempo_ticks: (*duration_ticks)?,
+                ..DurationTransform::default()
+            },
+            MmlCommand::Sequence {
+                commands,
+                play_count,
+            } => {
+                let identity = commands.as_ptr() as usize;
+                let transform = if let Some(transform) = cache.get(&identity) {
+                    *transform
+                } else {
+                    let transform = duration_transform_cached(commands, cache)?;
+                    cache.insert(identity, transform);
+                    transform
+                };
+                transform.repeated(*play_count)?
             }
             MmlCommand::RepeatStart => {
                 transforms.push(DurationTransform::default());
@@ -955,6 +1346,64 @@ mod tests {
         assert!(cmds
             .iter()
             .any(|cmd| matches!(cmd, MmlCommand::RepeatEnd { play_count: 0 })));
+    }
+
+    #[test]
+    fn test_repeat_boundary_ties_keep_expanded_duration() {
+        for (mml, quarters) in [
+            ("C&[C]2", 3_u128),
+            ("[C&]2C", 3),
+            ("C&[[C]2]2", 5),
+            ("[[C&]2]2C", 5),
+            ("[C& D C&]2 C", 7),
+            ("C&[]2C", 2),
+        ] {
+            assert_eq!(
+                total_duration_clocks(&parse(&format!("T120 L4 {mml}"))),
+                Some(quarters * 48 * 18_643),
+                "{mml}"
+            );
+        }
+        let count = 2_147_483_647_u128;
+        let commands = parse("T120 L4 [[C&]2147483647]2147483647 C");
+        assert_eq!(
+            total_duration_clocks(&commands),
+            Some((count * count + 1) * 48 * 18_643)
+        );
+        assert_eq!(total_duration_clocks(&parse("[C&] D")), None);
+        assert_eq!(total_duration_clocks(&parse("[C C&] D")), None);
+    }
+
+    #[test]
+    fn test_nested_repeat_ties_keep_shared_command_size() {
+        fn graph_size(
+            commands: &[MmlCommand],
+            seen: &mut std::collections::HashSet<usize>,
+        ) -> usize {
+            let mut size = commands.len();
+            for command in commands {
+                if let MmlCommand::Sequence { commands, .. } = command {
+                    if seen.insert(commands.as_ptr() as usize) {
+                        size += graph_size(commands, seen);
+                    }
+                }
+            }
+            size
+        }
+        let depth = 30;
+        let mut mml = "D".to_string();
+        for _ in 0..depth {
+            mml = format!("[C D {mml} E C&]2");
+        }
+        mml.push_str(" D");
+        let commands = parse(&mml);
+        // A count of two also needs sharing: peeling one iteration must not
+        // recursively duplicate the previously normalized middle phrase.
+        assert!(graph_size(&commands, &mut std::collections::HashSet::new()) < mml.len() * 16);
+        assert_eq!(
+            total_duration_clocks(&commands),
+            Some((9 * (1_u128 << depth) - 7) * 48 * 18_643)
+        );
     }
 
     // Parameter commands: Tempo

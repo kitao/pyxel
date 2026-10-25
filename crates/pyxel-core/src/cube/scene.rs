@@ -3363,7 +3363,7 @@ impl Scene {
         });
 
         best.map(|(toi, mut geom)| {
-            geom.depth = (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom.depth += (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
             geom
         })
     }
@@ -3419,7 +3419,7 @@ impl Scene {
         });
 
         best.map(|(toi, mut geom)| {
-            geom.depth = (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
+            geom.depth += (-vec_dot(rel_vel, geom.normal) * (1.0 - toi)).max(0.0);
             geom
         })
     }
@@ -5240,13 +5240,17 @@ fn refine_swept_segment_vs_triangle(
     let a0 = vec_add(prev_a0, vec_mul(velocity, hi));
     let a1 = vec_add(prev_a1, vec_mul(velocity, hi));
     let (on_seg, on_tri) = closest_points_segment_triangle(a0, a1, v0, v1, v2);
-    let normal = normalized_or(vec_sub(on_seg, on_tri), vec_mul(velocity, -1.0))?;
+    let separation = vec_sub(on_seg, on_tri);
+    let normal = normalize_axis(separation);
+    // A crossed centerline has no geometric side for a penetration correction.
+    let depth = normal.map_or(0.0, |_| (reach - vec_len(separation)).max(0.0));
+    let normal = normal.or_else(|| normalize_axis(vec_mul(velocity, -1.0)))?;
     Some((
         hi,
         ContactGeom {
             point: on_tri,
             normal,
-            depth: 0.0,
+            depth,
         },
     ))
 }
@@ -5664,7 +5668,7 @@ fn swept_obb_vs_triangle(
         let axis_entry = t0.min(t1);
         let axis_exit = t0.max(t1);
 
-        if axis_entry > entry {
+        if axis_entry > entry || (entry_normal.is_none() && axis_entry == entry) {
             entry = axis_entry;
             let tri_mid = (tri_min + tri_max) * 0.5;
             let center_at_entry = center_proj + speed * axis_entry;
@@ -5683,7 +5687,30 @@ fn swept_obb_vs_triangle(
     if !(0.0..=1.0).contains(&entry) {
         return None;
     }
-    let normal = entry_normal?;
+    let Some(normal) = entry_normal else {
+        // An initial overlap has no entering axis. Reuse the discrete contact
+        // at the start pose so the sweep also retains its penetration depth.
+        let mut start = *world_box;
+        start.data[0][3] = center0.x;
+        start.data[1][3] = center0.y;
+        start.data[2][3] = center0.z;
+        let inverse = start.try_inverse_value()?;
+        let contact = local_box_vs_triangle(
+            half,
+            radius,
+            inverse.mul_vec_value(&v0),
+            inverse.mul_vec_value(&v1),
+            inverse.mul_vec_value(&v2),
+        )?;
+        return Some((
+            0.0,
+            ContactGeom {
+                point: start.mul_vec_value(&contact.point),
+                normal: start.mul_dir_value(&contact.normal),
+                depth: contact.depth,
+            },
+        ));
+    };
     let center = vec_add(center0, vec_mul(velocity, entry));
     let support = obb_projection_radius(&box_axes, &half_arr, normal) + radius.max(0.0);
     Some((

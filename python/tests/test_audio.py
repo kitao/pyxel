@@ -138,6 +138,25 @@ class TestGenBgm:
             assert isinstance(result, list)
             assert len(result) == 4
 
+    @pytest.mark.parametrize("preset", range(8))
+    @pytest.mark.parametrize("transp", [-5, 0, 5])
+    @pytest.mark.parametrize("seed", [0, 42, 99, 12345])
+    @pytest.mark.parametrize("instr", range(4))
+    def test_channels_preserve_song_duration(self, preset, transp, seed, instr):
+        mml = pyxel.gen_bgm(preset, transp, instr, seed)
+        reference = pyxel.Sound()
+        reference.mml(f"{mml[0].split()[0]} [R1]8")
+        durations = []
+        for channel in mml:
+            sound = pyxel.Sound()
+            sound.mml(channel)
+            if sound.total_sec() > 0:
+                durations.append(sound.total_sec())
+        # Active eight-bar channels share a duration; allow f32 seconds rounding.
+        assert durations == pytest.approx(
+            [reference.total_sec()] * len(durations), rel=0, abs=1e-5
+        )
+
     def test_transpose_changes_output(self):
         result_default = pyxel.gen_bgm(0, 0, 3, 42)
         result_transposed = pyxel.gen_bgm(0, 3, 3, 42)

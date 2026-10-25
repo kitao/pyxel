@@ -157,6 +157,19 @@ for alpha in (0.0, 0.25, 0.5, 1.0, float("nan")):
         img.text(0, 0, "A", 7, font)
         assert [img.pget(x, 6) for x in range(6)] == [7, 7, 7, 7, 7, 0]
 
+    def test_text_on_builtin_font_preserves_source_glyphs(self):
+        font = pyxel.font
+        original = list(font.data_ptr())
+        expected = pyxel.Image(font.width, font.height)
+        expected.blt(0, 0, font, 0, 0, font.width, font.height)
+        # The first A overwrites its own atlas glyph; the second uses its original pixels.
+        expected.text(4, 12, "AA", 0)
+        try:
+            font.text(4, 12, "AA", 0)
+            assert list(font.data_ptr()) == list(expected.data_ptr())
+        finally:
+            font.data_ptr()[:] = original
+
 
 class TestImageBlt:
     @pytest.mark.parametrize("method", ["blt", "blt3d"])

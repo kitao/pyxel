@@ -5,6 +5,7 @@
 
 use std::sync::OnceLock;
 
+use crate::canvas::Canvas;
 use crate::cube::camera::RcCamera;
 use crate::cube::mat4::Mat4;
 use crate::cube::primitive::{
@@ -20,7 +21,7 @@ use crate::cube::scene::DrawContext;
 use crate::cube::shading::Shading;
 use crate::cube::vec3::{sum_wide_products, Vec3};
 use crate::font::Font;
-use crate::image::{Image, RcImage};
+use crate::image::{Color, Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
 
 type ScreenPoint = (f32, f32, f32);
@@ -2025,11 +2026,13 @@ fn measure_text(font: Option<&mut Font>, text: &str) -> (i64, i64) {
     (text_w, line_count * line_height)
 }
 
-fn for_each_builtin_text_pixel(text: &str, mut emit: impl FnMut(i64, i64)) {
-    let font_image = crate::pyxel::font_image();
-    let img_ref = rc_ref!(&font_image);
-    let font_data = &img_ref.canvas.data;
-    let font_w = img_ref.canvas.width() as usize;
+fn for_each_builtin_text_pixel(
+    font_canvas: &Canvas<Color>,
+    text: &str,
+    mut emit: impl FnMut(i64, i64),
+) {
+    let font_data = &font_canvas.data;
+    let font_w = font_canvas.width() as usize;
     let mut cur_x = 0_i64;
     let mut cur_y = 0_i64;
 
@@ -2101,6 +2104,22 @@ pub fn text(
     let cx = i64::from(sx) - text_w / 2;
     let cy = i64::from(sy) - text_h / 2;
 
+    let font_image;
+    let borrowed;
+    let copied_canvas;
+    let font_canvas = if font.is_none() {
+        font_image = crate::pyxel::font_image();
+        if std::rc::Rc::ptr_eq(&font_image, &ctx.target) {
+            copied_canvas = rc_ref!(&font_image).canvas.clone();
+            Some(&copied_canvas)
+        } else {
+            borrowed = rc_ref!(&font_image);
+            Some(&borrowed.canvas)
+        }
+    } else {
+        None
+    };
+
     let mut target_mut = rc_mut!(&ctx.target);
     let depth_w = ctx.depth_w;
     let depth = ctx.depth.as_mut_slice();
@@ -2135,7 +2154,7 @@ pub fn text(
     if let Some(font) = font {
         font.for_each_pixel(0, 0, text_str, &mut plot_pixel);
     } else {
-        for_each_builtin_text_pixel(text_str, &mut plot_pixel);
+        for_each_builtin_text_pixel(font_canvas.unwrap(), text_str, &mut plot_pixel);
     }
 }
 

@@ -19,11 +19,16 @@ or preserve an external notice.
 
 ### Comment language and forms
 
-**Decision:** Write comments in English. Use ordinary comments rather than Rust
-documentation comments, Python docstrings, or JSDoc blocks. The exception is the
-generated docstrings in `python/pyxel/__init__.pyi`, whose descriptions come
-from the [documentation
+**Decision:** In Pyxel's implementation, tools, and repository-owned examples,
+write comments in English. Use ordinary comments rather than Rust documentation
+comments, Python docstrings, or JSDoc blocks. Generated docstrings in
+`python/pyxel/__init__.pyi` keep the descriptions supplied by the [documentation
 sources](documentation.md#sources-of-generated-guides-and-stub-docstrings).
+
+For separately authored applications bundled as deliverables, preserve the
+original comment language and forms, including explanations for their intended
+learners. Correct factual errors in that language; ownership does not exempt
+behavior, dependencies, or explanatory accuracy from review.
 
 A one-line group label uses sentence case without decorative banners or a
 terminal period. Sentence comments use normal punctuation; a single sentence
@@ -34,6 +39,8 @@ from deciding whether a comment supplies information the reader needs.
 explain local intent; public API descriptions have their own authoritative
 sources and reach editor help through generation. Maintaining another set of
 API prose inside implementation files would create competing descriptions.
+Bundled works serve their authors' readers; their instructional comments and
+data descriptions are not another Pyxel API reference.
 
 ### Definition-group headings
 

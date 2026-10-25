@@ -256,7 +256,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
         app2exe_dir = Path(temp_dir)
         pyxel_app_path = Path(pyxel_app_file)
         pyxel_app_name = pyxel_app_path.stem
-        bootstrap_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
+        bootstrap_script_file = str(app2exe_dir / "_pyxel_bootstrap.py")
         pyxel_app_filename = pyxel_app_path.name
         Path(bootstrap_script_file).write_text(
             "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
@@ -282,6 +282,8 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
             "PyInstaller",
             "--windowed",
             "--onedir",
+            "--name",
+            pyxel_app_name,
             "--workpath",
             str(app2exe_dir / "build"),
             "--specpath",

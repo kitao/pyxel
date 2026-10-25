@@ -611,6 +611,10 @@ fn import_node(
     node: &gltf::Node,
     parent: i32,
 ) -> Result<(), String> {
+    if node_parts.contains_key(&node.index()) {
+        return Err("GLB scene nodes must form a tree".to_string());
+    }
+
     let node_name = node.name().unwrap_or("").to_string();
     let node_part = add_part(
         mesh,

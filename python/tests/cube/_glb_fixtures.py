@@ -10,6 +10,19 @@ from pathlib import Path
 # Fixture writers
 
 
+def write_node_graph_glb(path: Path, nodes: list[dict], roots: list[int]) -> Path:
+    return _write_glb(
+        path,
+        {
+            "asset": {"version": "2.0"},
+            "scene": 0,
+            "scenes": [{"nodes": roots}],
+            "nodes": nodes,
+        },
+        b"",
+    )
+
+
 def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> Path:
     def cuboid(width: float, height: float, depth: float):
         hx = width / 2.0

@@ -682,10 +682,11 @@ class TestApp2exe:
         assert "Demo.PYXAPP" in bootstrap_script
         assert "Demo.pyxapp" not in bootstrap_script
 
-    def test_exe_runs_with_resource(self, tmp_path, monkeypatch):
+    @pytest.mark.parametrize("app_name", ["my_app", "pyxel", "pathlib"])
+    def test_exe_runs_with_resource(self, tmp_path, monkeypatch, app_name):
         pytest.importorskip("PyInstaller")
         monkeypatch.setenv("PYINSTALLER_CONFIG_DIR", str(tmp_path / "pyinstaller"))
-        app_dir = tmp_path / "my_app"
+        app_dir = tmp_path / app_name
         (app_dir / "assets").mkdir(parents=True)
         shutil.copy(
             Path(pyxel.__file__).parent / "examples" / "assets" / "sample.pyxres",
@@ -715,11 +716,11 @@ class TestApp2exe:
         )
 
         monkeypatch.chdir(tmp_path)
-        pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-        pyxel.cli.create_executable_from_pyxel_app("my_app.pyxapp")
+        pyxel.cli.package_pyxel_app(app_name, f"{app_name}/main.py")
+        pyxel.cli.create_executable_from_pyxel_app(f"{app_name}.pyxapp")
 
-        exe_name = "my_app.exe" if sys.platform == "win32" else "my_app"
-        exe = tmp_path / "dist" / "my_app" / exe_name
+        exe_name = f"{app_name}.exe" if sys.platform == "win32" else app_name
+        exe = tmp_path / "dist" / app_name / exe_name
         assert exe.is_file()
         result = subprocess.run(
             [str(exe)], capture_output=True, timeout=60, check=False
