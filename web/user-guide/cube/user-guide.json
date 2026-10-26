@@ -135,18 +135,18 @@
       "uk": "Посібник користувача Pyxel"
     },
     "overview_advanced": {
-      "en": "Advanced content marked ADV can be skipped on your first read.",
-      "cn": "标有 ADV 的内容面向进阶用户，初次阅读时可以跳过。",
-      "de": "Mit ADV gekennzeichnete Inhalte für Fortgeschrittene können Sie beim ersten Lesen überspringen.",
-      "es": "Puede omitir el contenido avanzado marcado con ADV en la primera lectura.",
-      "fr": "Vous pouvez passer les contenus avancés marqués ADV lors de votre première lecture.",
-      "it": "È possibile saltare i contenuti avanzati contrassegnati con ADV alla prima lettura.",
-      "ja": "ADV が付いた上級者向けの内容は、最初は読み飛ばしても構いません。",
-      "ko": "ADV가 표시된 고급 내용은 처음 읽을 때 건너뛰어도 괜찮습니다.",
-      "pt": "Você pode pular o conteúdo avançado marcado com ADV na primeira leitura.",
-      "ru": "Материал для опытных пользователей, отмеченный ADV, можно пропустить при первом чтении.",
-      "tr": "ADV ile işaretlenmiş ileri düzey içeriği ilk okumada atlayabilirsiniz.",
-      "uk": "Матеріал для досвідчених користувачів, позначений ADV, можна пропустити під час першого читання."
+      "en": "ADV (Advanced) marks content for advanced users. If you have little experience with 3D programming, learning Pyxel Cube's basic concepts and usage in the sections without ADV first will make the sections marked ADV easier to understand.",
+      "cn": "ADV (Advanced) 表示面向进阶用户的内容。如果您的 3D 编程经验较少，先阅读未标有 ADV 的部分，理解 Pyxel Cube 的基本概念和用法，再以此为基础阅读标有 ADV 的部分，会更容易理解。",
+      "de": "ADV (Advanced) kennzeichnet Inhalte für Fortgeschrittene. Wenn Sie wenig Erfahrung mit 3D-Programmierung haben, sind die mit ADV gekennzeichneten Inhalte leichter verständlich, wenn Sie zunächst anhand der Abschnitte ohne ADV die grundlegenden Konzepte und die Verwendung von Pyxel Cube kennenlernen.",
+      "es": "ADV (Advanced) identifica el contenido para usuarios avanzados. Si tiene poca experiencia en programación 3D, conocer primero los conceptos básicos y el uso de Pyxel Cube mediante las secciones sin ADV le facilitará la comprensión de las secciones marcadas con ADV.",
+      "fr": "ADV (Advanced) signale les contenus destinés aux utilisateurs avancés. Si vous avez peu d'expérience en programmation 3D, les sections marquées ADV seront plus faciles à comprendre après avoir acquis les concepts de base et appris à utiliser Pyxel Cube dans les sections sans ADV.",
+      "it": "ADV (Advanced) indica i contenuti per utenti avanzati. Per chi ha poca esperienza di programmazione 3D, apprendere prima i concetti di base e le modalità di utilizzo di Pyxel Cube nelle sezioni senza ADV facilita la comprensione delle sezioni contrassegnate con ADV.",
+      "ja": "ADV (Advanced) は上級者向けの内容です。3D プログラミングの経験が少ない方は、まず ADV の付いていない項目で Pyxel Cube の基本的な概念と使い方を理解したうえで、ADV の付いた項目を読むと理解しやすくなります。",
+      "ko": "ADV(Advanced)는 고급 사용자를 위한 내용입니다. 3D 프로그래밍 경험이 적은 분은 먼저 ADV가 표시되지 않은 항목에서 Pyxel Cube의 기본 개념과 사용법을 이해한 뒤, 이를 바탕으로 ADV가 표시된 항목을 읽으면 내용을 더 쉽게 이해할 수 있습니다.",
+      "pt": "ADV (Advanced) indica conteúdo para usuários avançados. Se você tem pouca experiência com programação 3D, aprender primeiro os conceitos básicos e o uso do Pyxel Cube nas seções sem ADV facilitará a compreensão das seções marcadas com ADV.",
+      "ru": "ADV (Advanced) обозначает материал для опытных пользователей. Если у вас мало опыта в 3D-программировании, сначала изучите основные понятия и способы использования Pyxel Cube в разделах без отметки ADV: полученные знания помогут понять разделы с этой отметкой.",
+      "tr": "ADV (Advanced), ileri düzey kullanıcılara yönelik içeriği belirtir. 3D programlama deneyiminiz azsa önce ADV işareti olmayan bölümlerde Pyxel Cube'un temel kavramlarını ve kullanımını öğrenmeniz, bu bilgilerden yararlanarak ADV işaretli bölümleri daha kolay anlamanızı sağlar.",
+      "uk": "ADV (Advanced) позначає матеріал для досвідчених користувачів. Якщо у вас мало досвіду в 3D-програмуванні, спочатку вивчіть основні поняття та способи використання Pyxel Cube у розділах без позначки ADV: здобуті знання допоможуть зрозуміти розділи з цією позначкою."
     }
   },
   "guides": [
