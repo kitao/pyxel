@@ -10,7 +10,7 @@
 
 For installation and basic usage, see the [Pyxel User Guide](https://kitao.dev/pyxel/user-guide/).
 
-Advanced content marked ADV can be skipped on your first read.
+ADV (Advanced) marks content for advanced users. If you have little experience with 3D programming, learning Pyxel Cube's basic concepts and usage in the sections without ADV first will make the sections marked ADV easier to understand.
 
 ## Running Examples
 
