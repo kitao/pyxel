@@ -1475,7 +1475,7 @@
             "uk": "Компонент обертання матриці у вигляді одиничного Quat. Припускає композицію перенесення, обертання та масштабу (TRS). Повертає Quat.IDENTITY, якщо масштаб хоча б однієї осі дорівнює 0."
           },
           "value_type": "Quat",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "scale",
@@ -1625,7 +1625,7 @@
           "returns": {
             "type": "Mat4"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Mat4.from_scale",
@@ -1811,7 +1811,7 @@
           "examples": [
             "mat = Mat4.compose(Vec3(0, 1, 0), Quat.from_euler(Vec3(0, 45, 0)), Vec3.ONE)"
           ],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Mat4.look_at",
@@ -2542,7 +2542,7 @@
             "tr": "Başka bir Quat ile * (bileşim) veya Vec3 ile * (dönmeyi uygular), tekil -, ==, indeksleme ve yinelemeyi destekler. Dönme işlemleri birim kuaterniyon gerektirir. Bileşenleri doğrudan belirtirken normalize() kullanın.",
             "uk": "Підтримує * з іншим Quat (композиція) або Vec3 (застосовує обертання), унарний -, ==, індексацію та ітерацію. Операції обертання потребують одиничного кватерніона. При прямому заданні компонентів використовуйте normalize()."
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "IDENTITY",
@@ -2563,7 +2563,7 @@
             "uk": "Тотожне обертання."
           },
           "value_type": "Quat",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "x",
@@ -2584,7 +2584,7 @@
             "uk": "Компонент x кватерніона."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "y",
@@ -2605,7 +2605,7 @@
             "uk": "Компонент y кватерніона."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "z",
@@ -2626,7 +2626,7 @@
             "uk": "Компонент z кватерніона."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "w",
@@ -2647,7 +2647,7 @@
             "uk": "Компонент w кватерніона."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Quat.from_axis_angle",
@@ -2708,7 +2708,7 @@
           "returns": {
             "type": "Quat"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Quat.from_euler",
@@ -2751,7 +2751,7 @@
           "returns": {
             "type": "Quat"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Quat.from_two_vectors",
@@ -2812,7 +2812,7 @@
           "returns": {
             "type": "Quat"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Quat.from_matrix",
@@ -2916,7 +2916,7 @@
           "returns": {
             "type": "Quat"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "conjugate",
@@ -2962,7 +2962,7 @@
           "returns": {
             "type": "Quat"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "normalize",
@@ -2985,7 +2985,7 @@
           "returns": {
             "type": "Quat"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "length",
@@ -3131,7 +3131,7 @@
               "uk": "Кут у градусах."
             }
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "to_matrix",
@@ -3154,7 +3154,7 @@
           "returns": {
             "type": "Mat4"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "to_euler",
@@ -3191,7 +3191,7 @@
               "uk": "Обертання навколо кожної осі в градусах."
             }
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "to_axis_angle",
@@ -3228,7 +3228,7 @@
               "uk": "Кортеж з осі та кута в градусах."
             }
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "slerp",
@@ -3289,7 +3289,7 @@
           "returns": {
             "type": "Quat"
           },
-          "advanced": false
+          "advanced": true
         }
       ]
     },
@@ -3506,7 +3506,7 @@
             "uk": "Форма зіткнення та стан руху. None виключає вузол зі зіткнень."
           },
           "value_type": "Collider | None",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "tags",
@@ -4274,7 +4274,7 @@
           "returns": {
             "type": "None"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "on_destroy",
@@ -6206,7 +6206,7 @@
           "returns": {
             "type": "None"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "text",
@@ -6602,7 +6602,7 @@
           "examples": [
             "hit = scene.raycast(self.world_transform.pos, Vec3.DOWN, max_distance=2.0)"
           ],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "raycast_all",
@@ -6717,7 +6717,7 @@
           "returns": {
             "type": "list"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "overlap_sphere",
@@ -6814,7 +6814,7 @@
           "returns": {
             "type": "list"
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "overlap_box",
@@ -6911,7 +6911,7 @@
           "returns": {
             "type": "list"
           },
-          "advanced": false
+          "advanced": true
         }
       ]
     },
@@ -7427,7 +7427,7 @@
             "tr": "Liste özniteliklerini elemanları düzenleyerek veya dilim atayarak (positions[:] = ...) değiştirin; tüm özniteliğe atama desteklenmez.",
             "uk": "Редагуйте спискові атрибути через їхні елементи або призначення зрізів (positions[:] = ...); призначення всього атрибута не підтримується."
           },
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Primitive.plane",
@@ -7489,7 +7489,7 @@
             "type": "Primitive"
           },
           "examples": ["prim = Primitive.plane(2, 2)"],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Primitive.box",
@@ -7533,7 +7533,7 @@
             "type": "Primitive"
           },
           "examples": ["prim = Primitive.box(Vec3(1, 2, 1))"],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Primitive.sphere",
@@ -7577,7 +7577,7 @@
             "type": "Primitive"
           },
           "examples": ["prim = Primitive.sphere(0.5)"],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "Primitive.capsule",
@@ -7639,7 +7639,7 @@
             "type": "Primitive"
           },
           "examples": ["prim = Primitive.capsule(1.0, 0.5)"],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "MODE_POINTS",
@@ -7660,7 +7660,7 @@
             "uk": "Малює кожну вершину як точку."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "MODE_LINES",
@@ -7681,7 +7681,7 @@
             "uk": "Малює кожні 2 вершини як відрізок."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "MODE_TRIANGLES",
@@ -7702,7 +7702,7 @@
             "uk": "Малює кожні 3 вершини як заповнений трикутник."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "CULL_NONE",
@@ -7723,7 +7723,7 @@
             "uk": "Малює обидва боки кожної грані."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "CULL_BACK",
@@ -7744,7 +7744,7 @@
             "uk": "Пропускає грані, видимі ззаду (обхід проти годинникової стрілки — передня сторона)."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "CULL_FRONT",
@@ -7765,7 +7765,7 @@
             "uk": "Пропускає грані, видимі спереду."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "mode",
@@ -7786,7 +7786,7 @@
             "uk": "Режим малювання: MODE_POINTS, MODE_LINES або MODE_TRIANGLES."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "positions",
@@ -7807,7 +7807,7 @@
             "uk": "Координати вершин як плоский список повторів x, y, z."
           },
           "value_type": "list",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "indices",
@@ -7828,7 +7828,7 @@
             "uk": "Індекси вершин. Порожній список використовує вершини за порядком."
           },
           "value_type": "list",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "normals",
@@ -7849,7 +7849,7 @@
             "uk": "Нормалі за гранями як плоский список. Порожньо означає, що вони виводяться з вершин під час малювання."
           },
           "value_type": "list",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "uvs",
@@ -7870,7 +7870,7 @@
             "uk": "UV за вершинами як плоский список повторів u, v."
           },
           "value_type": "list",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "cull",
@@ -7891,7 +7891,7 @@
             "uk": "Режим відсікання граней: CULL_NONE, CULL_BACK або CULL_FRONT."
           },
           "value_type": "int",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "compute_normals",
@@ -7914,7 +7914,7 @@
           "returns": {
             "type": "None"
           },
-          "advanced": false
+          "advanced": true
         }
       ]
     },
@@ -8069,7 +8069,7 @@
             "mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)",
             "node = Node.from_mesh(mesh)"
           ],
-          "advanced": false,
+          "advanced": true,
           "notes": {
             "en": "Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared. Imported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image; col_img exposes the first imported texture, not all material slots.",
             "cn": "部件列表属性返回副本。修改列表后需将其重新赋给属性；列表中的 Primitive 对象仍然共享。 导入的逐部件材质优先于 col_img 和 colkey。替换这些默认值不会替换导入材质，也不会更新已有节点。编辑共享 Image 的像素会影响该图像的所有使用者；col_img 只暴露第一个导入纹理，并非所有材质槽。",
@@ -8104,7 +8104,7 @@
             "uk": "Primitive для кожної частини. None означає групову частину лише з перетворенням."
           },
           "value_type": "list",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "transforms",
@@ -8754,7 +8754,7 @@
             "node.collider = Collider(radius=0.5)",
             "floor.collider = Collider(size=Vec3(20, 0.5, 20), mass=0.0)"
           ],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "size",
@@ -8775,7 +8775,7 @@
             "uk": "Основні розміри та вибір форми. Знаки компонентів ігноруються; під час визначення форми компоненти з абсолютним значенням менше 1e-9 вважаються нульовими. Якщо всі компоненти дорівнюють нулю, створюється сфера радіуса max(radius, 0). Значення (0, h, 0) створює капсулу з центральним осьовим відрізком завдовжки abs(h) і повною висотою abs(h) + 2 * max(radius, 0). Будь-яке інше значення створює заокруглену коробку з основними розмірами abs(size) і повними розмірами abs(size) + 2 * max(radius, 0) уздовж кожної осі."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "radius",
@@ -8796,7 +8796,7 @@
             "uk": "Радіус сфери або капсули та скруглення кутів коробки. Від'ємні значення вважаються рівними 0."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "mesh",
@@ -8817,7 +8817,7 @@
             "uk": "Статичний terrain mesh. Якщо його задано, фізика зіткнень ігнорує size, radius, mass, rolls, velocity та angular_velocity цього колайдера."
           },
           "value_type": "Mesh | None",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "trigger",
@@ -8838,7 +8838,7 @@
             "uk": "Якщо True, повідомляє про контакти без будь-якого виштовхування."
           },
           "value_type": "bool",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "rolls",
@@ -8859,7 +8859,7 @@
             "uk": "Якщо True, контакти також створюють delta_angular_velocity."
           },
           "value_type": "bool",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "mass",
@@ -8880,7 +8880,7 @@
             "uk": "Маса для розв'язання контактів. Значення має бути скінченним і невід'ємним. Для колайдера без mesh значення 0.0 вимикає корекції контакту для цього боку; саме значення mass не вимикає ні velocity, ні angular_velocity. Колайдери з mesh ігнорують це значення."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "restitution",
@@ -8901,7 +8901,7 @@
             "uk": "Пружність. Використовується більше з двох контактних значень."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "friction",
@@ -8922,7 +8922,7 @@
             "uk": "Тертя. Використовується середнє двох контактних значень."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "velocity",
@@ -8943,7 +8943,7 @@
             "uk": "Зміщення у світовому просторі, що застосовується під час кожного оновлення до колайдера без mesh. Якщо світове перетворення батьківського вузла вироджене, зміщення не застосовується й вважається нульовим під час перевірки зіткнень уздовж траєкторії та розрахунку контактної реакції. Те саме правило діє, якщо обернену матрицю або перетворене локальне зміщення не можна подати скінченними 32-бітними числами з рухомою комою."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "angular_velocity",
@@ -8964,7 +8964,7 @@
             "uk": "Вісь, помножена на кут (у градусах), що застосовується під час кожного оновлення як обертання в локальних координатах вузла. Значення ігнорується для mesh-колайдерів, але продовжує застосовуватися за виродженого світового перетворення батьківського вузла."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "gravity",
@@ -8985,7 +8985,7 @@
             "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію. Кожне оновлення додає до velocity нормалізований gravity_direction × gravity × 100 / fps². fps задається в pyxel.init; 100 світових одиниць відповідають метру. Діє лише без mesh і за mass > 0. Від'ємне значення змінює напрямок на протилежний. До pyxel.init значення fps дорівнює 30."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "gravity_direction",
@@ -9006,7 +9006,7 @@
             "uk": "Напрямок гравітації у світовому просторі. Типово Vec3.DOWN. Нормалізується всередині: довжина не впливає на величину. Vec3.ZERO не застосовує гравітацію. Не залежить від обертань вузла та його батьків."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "linear_damp",
@@ -9097,7 +9097,7 @@
             "    self.transform = push * self.transform",
             "    self.collider.velocity += contact.delta_velocity"
           ],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "point",
@@ -9118,7 +9118,7 @@
             "uk": "Точка контакту у світовому просторі."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "normal",
@@ -9139,7 +9139,7 @@
             "uk": "Нормаль контакту у світовому просторі, спрямована від іншого вузла до цього вузла."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "depth",
@@ -9160,7 +9160,7 @@
             "uk": "Рекомендована відстань виштовхування вздовж normal, уже розподілена за співвідношенням мас. Інші контакти твердих тіл у тому самому update враховуються разом; для розв'язання контактів застосовуйте всі отримані корекції."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "delta_velocity",
@@ -9181,7 +9181,7 @@
             "uk": "Запропонована додаткова корекція швидкості для приймального вузла у світових координатах."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "delta_angular_velocity",
@@ -9202,7 +9202,7 @@
             "uk": "Запропонована додаткова корекція кутової швидкості в локальних координатах приймального вузла. Ненульова лише якщо колайдер цього вузла має rolls=True."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         }
       ]
     },
@@ -9246,7 +9246,7 @@
             "if hit is not None:",
             "    ground_y = hit.point.y"
           ],
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "node",
@@ -9267,7 +9267,7 @@
             "uk": "Вузол, у який сталося влучання."
           },
           "value_type": "Node",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "point",
@@ -9288,7 +9288,7 @@
             "uk": "Позиція влучання у світовому просторі."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "normal",
@@ -9309,7 +9309,7 @@
             "uk": "Нормаль поверхні у світовому просторі. Для мешів спрямована до початку променя, для решти форм — назовні."
           },
           "value_type": "Vec3",
-          "advanced": false
+          "advanced": true
         },
         {
           "name": "distance",
@@ -9330,7 +9330,7 @@
             "uk": "Відстань від початку променя до влучання."
           },
           "value_type": "float",
-          "advanced": false
+          "advanced": true
         }
       ]
     }

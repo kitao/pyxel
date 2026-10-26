@@ -133,6 +133,20 @@
       "ru": "Руководстве пользователя Pyxel",
       "tr": "Pyxel Kullanım Kılavuzu",
       "uk": "Посібник користувача Pyxel"
+    },
+    "overview_advanced": {
+      "en": "Advanced content marked ADV can be skipped on your first read.",
+      "cn": "标有 ADV 的内容面向进阶用户，初次阅读时可以跳过。",
+      "de": "Mit ADV gekennzeichnete Inhalte für Fortgeschrittene können Sie beim ersten Lesen überspringen.",
+      "es": "Puede omitir el contenido avanzado marcado con ADV en la primera lectura.",
+      "fr": "Vous pouvez passer les contenus avancés marqués ADV lors de votre première lecture.",
+      "it": "È possibile saltare i contenuti avanzati contrassegnati con ADV alla prima lettura.",
+      "ja": "ADV が付いた上級者向けの内容は、最初は読み飛ばしても構いません。",
+      "ko": "ADV가 표시된 고급 내용은 처음 읽을 때 건너뛰어도 괜찮습니다.",
+      "pt": "Você pode pular o conteúdo avançado marcado com ADV na primeira leitura.",
+      "ru": "Материал для опытных пользователей, отмеченный ADV, можно пропустить при первом чтении.",
+      "tr": "ADV ile işaretlenmiş ileri düzey içeriği ilk okumada atlayabilirsiniz.",
+      "uk": "Матеріал для досвідчених користувачів, позначений ADV, можна пропустити під час першого читання."
     }
   },
   "guides": [
@@ -268,7 +282,8 @@
               "text": "<p>The components of <code class=\"chip\">Mat4</code> cannot be changed directly either. Assign the result of an operation or transform method to a variable or property.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternions (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> Class)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternions (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> Class)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>A <strong>quaternion</strong> is a value representing a rotation in 3D space. The <code class=\"chip\">Quat</code> class stores a rotation as a quaternion.</p><p class=\"mt-2\">For <strong>interpolation</strong>—finding an intermediate orientation between two orientations—use <code class=\"chip\">slerp</code>. Convert the resulting rotation to a transform matrix with <code class=\"chip\">Mat4.from_quat</code> to combine it with translation or scaling.</p><p class=\"mt-2\">The following example finds the halfway orientation between no rotation and a 90-degree rotation around the Y axis.</p>"
@@ -527,7 +542,8 @@
               "text": "<p>In the <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> example, <code class=\"chip\">PlaneShape</code> uses <code class=\"chip\">plane</code> and <code class=\"chip\">SpriteShape</code> uses <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Shape Data (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> Class)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Shape Data (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> Class)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Shape data</strong> describes vertex positions and the lines or faces that connect them. The <code class=\"chip\">Primitive</code> class stores shape data made up of points, lines, or triangles.</p><p class=\"mt-2\">To define a custom shape, pass a drawing mode, a list of vertex coordinates, and a list of vertex indices to <code class=\"chip\">Primitive(mode, positions, indices)</code>. The <code class=\"chip\">mode</code> argument selects whether the vertices are drawn as points, lines, or triangles. <code class=\"chip\">positions</code> is a flat list of vertex coordinates in the form <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. For triangles, for example, set <code class=\"chip\">mode</code> to <code class=\"chip\">Primitive.MODE_TRIANGLES</code> and supply three vertex indices per face in <code class=\"chip\">indices</code>.</p><p class=\"mt-2\">Helper methods such as <code class=\"chip\">Primitive.plane</code> and <code class=\"chip\">Primitive.box</code> generate vertex data for planes and boxes and return a <code class=\"chip\">Primitive</code> instance.</p>"
@@ -701,7 +717,8 @@
             {
               "text": "<p>This example searches the colliders of nodes tagged <code class=\"chip\">ground</code> within the parent node and its descendants.</p><p class=\"mt-2\">A hit returns a <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>, and <code class=\"chip\">hit.point</code> gives the hit position. If nothing is hit, the result is <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> returns a result for each collider hit, ordered by distance.</p><p class=\"mt-2\">Overlap queries take a search region in world coordinates. <code class=\"chip\">overlap_sphere</code> takes a center position and radius, while <code class=\"chip\">overlap_box</code> takes a transform matrix and size. They return a list of nodes whose colliders overlap that region.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -931,7 +948,8 @@
               "text": "<p><code class=\"chip\">Mat4</code> 的分量也不能直接修改。将运算或变换方法的结果赋给变量或属性后使用。</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">四元数 (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> 类)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">四元数 (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> 类)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>四元数</strong>是表示 3D 空间旋转的值。<code class=\"chip\">Quat</code> 类以四元数保存旋转。</p><p class=\"mt-2\">要进行<strong>插值</strong>，即求出两个朝向之间的中间朝向，请使用 <code class=\"chip\">slerp</code>。得到的旋转可通过 <code class=\"chip\">Mat4.from_quat</code> 转为变换矩阵，再与平移或缩放组合。</p><p class=\"mt-2\">以下示例求出未旋转状态与绕 Y 轴旋转 90 度状态之间的中间朝向。</p>"
@@ -1190,7 +1208,8 @@
               "text": "<p>示例 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> 的 <code class=\"chip\">PlaneShape</code> 使用 <code class=\"chip\">plane</code>，<code class=\"chip\">SpriteShape</code> 使用 <code class=\"chip\">sprite</code>。</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">形状数据 (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> 类)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">形状数据 (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> 类)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>形状数据</strong>包含顶点位置以及连接顶点形成的线或面的信息。<code class=\"chip\">Primitive</code> 类保存由点、线或三角形构成的形状数据。</p><p class=\"mt-2\">要定义自定义形状，请向 <code class=\"chip\">Primitive(mode, positions, indices)</code> 传入绘制模式、顶点坐标列表和顶点索引列表。<code class=\"chip\">mode</code> 选择将顶点绘制为点、线还是三角形。<code class=\"chip\">positions</code> 是按 <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code> 排列各顶点坐标的一维列表。例如，绘制三角形时，<code class=\"chip\">mode</code> 指定为 <code class=\"chip\">Primitive.MODE_TRIANGLES</code>，<code class=\"chip\">indices</code> 中每个面指定三个顶点索引。</p><p class=\"mt-2\"><code class=\"chip\">Primitive.plane</code>、<code class=\"chip\">Primitive.box</code> 等辅助方法会生成平面或箱体的顶点数据，并返回 <code class=\"chip\">Primitive</code> 实例。</p>"
@@ -1364,7 +1383,8 @@
             {
               "text": "<p>这个示例查询父节点及其下所有节点中带有 <code class=\"chip\">ground</code> 标签的节点的碰撞体。</p><p class=\"mt-2\">命中物体时返回 <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>，可通过 <code class=\"chip\">hit.point</code> 获取命中位置；未命中则返回 <code class=\"chip\">None</code>。<code class=\"chip\">raycast_all</code> 按距离顺序返回各个被命中碰撞体的结果。</p><p class=\"mt-2\">范围查询使用世界坐标指定查询区域。<code class=\"chip\">overlap_sphere</code> 接收中心位置和半径，<code class=\"chip\">overlap_box</code> 接收变换矩阵和大小；两者都返回碰撞体与该区域重叠的节点列表。</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -1594,7 +1614,8 @@
               "text": "<p>Auch die Komponenten von <code class=\"chip\">Mat4</code> lassen sich nicht direkt ändern. Weisen Sie das Ergebnis einer Operation oder Transformationsmethode einer Variablen oder Eigenschaft zu.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternionen (Klasse <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternionen (Klasse <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Ein <strong>Quaternion</strong> ist ein Wert, der eine Drehung im 3D-Raum beschreibt. Die Klasse <code class=\"chip\">Quat</code> speichert eine Drehung als Quaternion.</p><p class=\"mt-2\">Zur <strong>Interpolation</strong>, also zur Berechnung einer Zwischenausrichtung zwischen zwei Ausrichtungen, verwenden Sie <code class=\"chip\">slerp</code>. Wandeln Sie die resultierende Drehung mit <code class=\"chip\">Mat4.from_quat</code> in eine Transformationsmatrix um, um sie mit Verschiebung oder Skalierung zu kombinieren.</p><p class=\"mt-2\">Das folgende Beispiel berechnet die Ausrichtung auf halbem Weg zwischen keiner Drehung und einer Drehung um 90 Grad um die Y-Achse.</p>"
@@ -1853,7 +1874,8 @@
               "text": "<p>Im Beispiel <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> verwendet <code class=\"chip\">PlaneShape</code> die Methode <code class=\"chip\">plane</code> und <code class=\"chip\">SpriteShape</code> die Methode <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Formdaten (Klasse <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Formdaten (Klasse <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Formdaten</strong> beschreiben die Positionen von Eckpunkten und die Linien oder Flächen, die sie verbinden. Die Klasse <code class=\"chip\">Primitive</code> speichert Formdaten aus Punkten, Linien oder Dreiecken.</p><p class=\"mt-2\">Um eine eigene Form zu definieren, übergeben Sie <code class=\"chip\">Primitive(mode, positions, indices)</code> einen Zeichenmodus, eine Liste von Eckpunktkoordinaten und eine Liste von Eckpunktindizes. Das Argument <code class=\"chip\">mode</code> wählt, ob die Eckpunkte als Punkte, Linien oder Dreiecke gezeichnet werden. <code class=\"chip\">positions</code> ist eine eindimensionale Liste der Eckpunktkoordinaten in der Form <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. Für Dreiecke setzen Sie beispielsweise <code class=\"chip\">mode</code> auf <code class=\"chip\">Primitive.MODE_TRIANGLES</code> und geben in <code class=\"chip\">indices</code> pro Fläche drei Eckpunktindizes an.</p><p class=\"mt-2\">Hilfsmethoden wie <code class=\"chip\">Primitive.plane</code> und <code class=\"chip\">Primitive.box</code> erzeugen Eckpunktdaten für Flächen und Kästen und geben eine Instanz von <code class=\"chip\">Primitive</code> zurück.</p>"
@@ -2027,7 +2049,8 @@
             {
               "text": "<p>Dieses Beispiel durchsucht die Kollisionskörper der mit <code class=\"chip\">ground</code> markierten Knoten unterhalb des Elternknotens einschließlich des Elternknotens selbst.</p><p class=\"mt-2\">Bei einem Treffer wird ein <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a> zurückgegeben; <code class=\"chip\">hit.point</code> liefert die Trefferposition. Ohne Treffer ist das Ergebnis <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> gibt für jeden getroffenen Kollisionskörper ein Ergebnis zurück, nach Entfernung sortiert.</p><p class=\"mt-2\">Überlappungsabfragen erhalten einen Suchbereich in Weltkoordinaten. <code class=\"chip\">overlap_sphere</code> nimmt Mittelpunkt und Radius entgegen, <code class=\"chip\">overlap_box</code> eine Transformationsmatrix und eine Größe. Beide geben eine Liste der Knoten zurück, deren Kollisionskörper diesen Bereich überlappen.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -2257,7 +2280,8 @@
               "text": "<p>Las componentes de <code class=\"chip\">Mat4</code> tampoco se pueden modificar directamente. Asigne a una variable o propiedad el resultado de una operación o de un método de transformación.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Cuaterniones (clase <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Cuaterniones (clase <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Un <strong>cuaternión</strong> es un valor que representa una rotación en el espacio 3D. La clase <code class=\"chip\">Quat</code> almacena una rotación como cuaternión.</p><p class=\"mt-2\">Para la <strong>interpolación</strong>, que permite obtener una orientación intermedia entre dos orientaciones, utilice <code class=\"chip\">slerp</code>. Convierta la rotación resultante en una matriz de transformación con <code class=\"chip\">Mat4.from_quat</code> para combinarla con una traslación o un cambio de escala.</p><p class=\"mt-2\">El siguiente ejemplo obtiene la orientación intermedia entre la ausencia de rotación y una rotación de 90 grados alrededor del eje Y.</p>"
@@ -2516,7 +2540,8 @@
               "text": "<p>En el ejemplo <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a>, <code class=\"chip\">PlaneShape</code> utiliza <code class=\"chip\">plane</code> y <code class=\"chip\">SpriteShape</code> utiliza <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Datos de formas (clase <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Datos de formas (clase <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Los <strong>datos de una forma</strong> describen las posiciones de los vértices y las líneas o caras que los conectan. La clase <code class=\"chip\">Primitive</code> almacena datos de formas compuestas por puntos, líneas o triángulos.</p><p class=\"mt-2\">Para definir una forma personalizada, pase un modo de dibujo, una lista de coordenadas de vértices y una lista de índices de vértices a <code class=\"chip\">Primitive(mode, positions, indices)</code>. El argumento <code class=\"chip\">mode</code> selecciona si los vértices se dibujan como puntos, líneas o triángulos. <code class=\"chip\">positions</code> es una lista plana de coordenadas con el formato <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. Por ejemplo, para los triángulos, establezca <code class=\"chip\">mode</code> en <code class=\"chip\">Primitive.MODE_TRIANGLES</code> e indique tres índices de vértices por cara en <code class=\"chip\">indices</code>.</p><p class=\"mt-2\">Los métodos auxiliares como <code class=\"chip\">Primitive.plane</code> y <code class=\"chip\">Primitive.box</code> generan los datos de los vértices de planos y cajas y devuelven una instancia de <code class=\"chip\">Primitive</code>.</p>"
@@ -2690,7 +2715,8 @@
             {
               "text": "<p>Este ejemplo busca en los colisionadores de los nodos etiquetados como <code class=\"chip\">ground</code> dentro del nodo padre y sus descendientes.</p><p class=\"mt-2\">Si hay un impacto, se devuelve un <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>, y <code class=\"chip\">hit.point</code> proporciona la posición del impacto. Si no hay ninguno, el resultado es <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> devuelve un resultado por cada colisionador alcanzado, ordenados por distancia.</p><p class=\"mt-2\">Las consultas de solapamiento reciben una región de búsqueda en coordenadas globales. <code class=\"chip\">overlap_sphere</code> recibe una posición central y un radio, mientras que <code class=\"chip\">overlap_box</code> recibe una matriz de transformación y un tamaño. Devuelven una lista de nodos cuyos colisionadores se solapan con esa región.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -2920,7 +2946,8 @@
               "text": "<p>Les composantes de <code class=\"chip\">Mat4</code> ne peuvent pas non plus être modifiées directement. Affectez le résultat d'une opération ou d'une méthode de transformation à une variable ou à une propriété.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternions (classe <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternions (classe <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Un <strong>quaternion</strong> est une valeur représentant une rotation dans l'espace 3D. La classe <code class=\"chip\">Quat</code> stocke une rotation sous forme de quaternion.</p><p class=\"mt-2\">Pour effectuer une <strong>interpolation</strong>, c'est-à-dire calculer une orientation intermédiaire entre deux orientations, utilisez <code class=\"chip\">slerp</code>. Convertissez la rotation obtenue en matrice de transformation avec <code class=\"chip\">Mat4.from_quat</code> pour la combiner à une translation ou à une mise à l'échelle.</p><p class=\"mt-2\">L'exemple suivant calcule l'orientation à mi-chemin entre l'absence de rotation et une rotation de 90 degrés autour de l'axe Y.</p>"
@@ -3179,7 +3206,8 @@
               "text": "<p>Dans l'exemple <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a>, <code class=\"chip\">PlaneShape</code> utilise <code class=\"chip\">plane</code> et <code class=\"chip\">SpriteShape</code> utilise <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Données de forme (classe <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Données de forme (classe <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Les <strong>données de forme</strong> décrivent les positions des sommets et les lignes ou faces qui les relient. La classe <code class=\"chip\">Primitive</code> stocke les données de formes composées de points, de lignes ou de triangles.</p><p class=\"mt-2\">Pour définir une forme personnalisée, passez un mode de dessin, une liste de coordonnées de sommets et une liste d'indices de sommets à <code class=\"chip\">Primitive(mode, positions, indices)</code>. L'argument <code class=\"chip\">mode</code> détermine si les sommets sont dessinés comme des points, des lignes ou des triangles. <code class=\"chip\">positions</code> est une liste à une dimension de coordonnées de sommets de la forme <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. Pour des triangles, par exemple, définissez <code class=\"chip\">mode</code> sur <code class=\"chip\">Primitive.MODE_TRIANGLES</code> et fournissez trois indices de sommets par face dans <code class=\"chip\">indices</code>.</p><p class=\"mt-2\">Les méthodes utilitaires telles que <code class=\"chip\">Primitive.plane</code> et <code class=\"chip\">Primitive.box</code> génèrent les données de sommets de plans et de boîtes et renvoient une instance de <code class=\"chip\">Primitive</code>.</p>"
@@ -3353,7 +3381,8 @@
             {
               "text": "<p>Cet exemple recherche les collisionneurs des nœuds portant le tag <code class=\"chip\">ground</code> parmi le nœud parent et ses descendants.</p><p class=\"mt-2\">Si le rayon touche un objet, un <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a> est renvoyé, et <code class=\"chip\">hit.point</code> donne la position du point d'impact. Sans impact, le résultat est <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> renvoie un résultat par collisionneur touché, trié par distance.</p><p class=\"mt-2\">Les recherches de chevauchement reçoivent une zone en coordonnées mondiales. <code class=\"chip\">overlap_sphere</code> prend une position centrale et un rayon, tandis que <code class=\"chip\">overlap_box</code> prend une matrice de transformation et une taille. Ces méthodes renvoient la liste des nœuds dont les collisionneurs recoupent cette zone.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -3583,7 +3612,8 @@
               "text": "<p>Nemmeno le componenti di <code class=\"chip\">Mat4</code> possono essere modificate direttamente. Assegnare a una variabile o proprietà il risultato di un'operazione o di un metodo di trasformazione.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternioni (classe <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quaternioni (classe <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Un <strong>quaternione</strong> è un valore che rappresenta una rotazione nello spazio 3D. La classe <code class=\"chip\">Quat</code> memorizza una rotazione sotto forma di quaternione.</p><p class=\"mt-2\">Per l'<strong>interpolazione</strong>, ossia il calcolo di un orientamento intermedio tra due orientamenti, utilizzare <code class=\"chip\">slerp</code>. Convertire la rotazione ottenuta in una matrice di trasformazione con <code class=\"chip\">Mat4.from_quat</code> per combinarla con una traslazione o un ridimensionamento.</p><p class=\"mt-2\">L'esempio seguente calcola l'orientamento a metà tra l'assenza di rotazione e una rotazione di 90 gradi attorno all'asse Y.</p>"
@@ -3842,7 +3872,8 @@
               "text": "<p>Nell'esempio <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a>, <code class=\"chip\">PlaneShape</code> usa <code class=\"chip\">plane</code> e <code class=\"chip\">SpriteShape</code> usa <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Dati delle forme (classe <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Dati delle forme (classe <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>I <strong>dati di una forma</strong> descrivono le posizioni dei vertici e le linee o facce che li collegano. La classe <code class=\"chip\">Primitive</code> memorizza i dati di forme composte da punti, linee o triangoli.</p><p class=\"mt-2\">Per definire una forma personalizzata, passare a <code class=\"chip\">Primitive(mode, positions, indices)</code> una modalità di disegno, un elenco di coordinate dei vertici e un elenco di indici dei vertici. L'argomento <code class=\"chip\">mode</code> seleziona se disegnare i vertici come punti, linee o triangoli. <code class=\"chip\">positions</code> è un elenco piatto di coordinate nel formato <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. Per i triangoli, ad esempio, impostare <code class=\"chip\">mode</code> su <code class=\"chip\">Primitive.MODE_TRIANGLES</code> e fornire tre indici di vertici per faccia in <code class=\"chip\">indices</code>.</p><p class=\"mt-2\">Metodi ausiliari come <code class=\"chip\">Primitive.plane</code> e <code class=\"chip\">Primitive.box</code> generano i dati dei vertici di piani e scatole e restituiscono un'istanza di <code class=\"chip\">Primitive</code>.</p>"
@@ -4016,7 +4047,8 @@
             {
               "text": "<p>Questo esempio cerca nei collisori dei nodi con tag <code class=\"chip\">ground</code> all'interno del nodo padre e dei suoi discendenti.</p><p class=\"mt-2\">Se viene colpito un collisore, viene restituito un <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>, e <code class=\"chip\">hit.point</code> fornisce il punto d'impatto. Se non viene colpito nulla, il risultato è <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> restituisce un risultato per ogni collisore colpito, in ordine di distanza.</p><p class=\"mt-2\">Le ricerche di sovrapposizione ricevono una regione di ricerca in coordinate globali. <code class=\"chip\">overlap_sphere</code> riceve una posizione centrale e un raggio, mentre <code class=\"chip\">overlap_box</code> riceve una matrice di trasformazione e le dimensioni. Restituiscono un elenco dei nodi i cui collisori si sovrappongono a quella regione.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -4246,7 +4278,8 @@
               "text": "<p><code class=\"chip\">Mat4</code> も成分を直接変更できません。演算や変換メソッドの結果を、変数やプロパティに代入して使います。</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">クォータニオン（<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> クラス）</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">クォータニオン（<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> クラス）</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>クォータニオン</strong>は、3D 空間の回転を表す値です。<code class=\"chip\">Quat</code> は、クォータニオンによる回転を保持するクラスです。</p><p class=\"mt-2\">2 つの向きから途中の向きを求める<strong>補間</strong>には、<code class=\"chip\">slerp</code> を使用します。求めた回転は <code class=\"chip\">Mat4.from_quat</code> で変換行列に変換し、移動や拡大縮小と組み合わせられます。</p><p class=\"mt-2\">次の例では、回転していない状態と、Y 軸まわりに 90 度回転した状態の中間を求めています。</p>"
@@ -4505,7 +4538,8 @@
               "text": "<p>サンプル <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> の <code class=\"chip\">PlaneShape</code> で <code class=\"chip\">plane</code>、<code class=\"chip\">SpriteShape</code> で <code class=\"chip\">sprite</code> を使っています。</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">形状データ（<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> クラス）</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">形状データ（<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> クラス）</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>形状データ</strong>は、頂点の位置と、それらを結んで作る線や面の情報です。<code class=\"chip\">Primitive</code> は、点・線・三角形からなる形状データを保持するクラスです。</p><p class=\"mt-2\">独自の形状を定義するには、<code class=\"chip\">Primitive(mode, positions, indices)</code> に、描画モード、頂点座標のリスト、頂点番号のリストを渡します。<code class=\"chip\">mode</code> は、頂点を点・線・三角形のどれとして描くかを選ぶ引数です。<code class=\"chip\">positions</code> は、各頂点の座標を <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code> と 1 次元に並べたリストです。例えば、三角形を描く場合は、<code class=\"chip\">mode</code> に <code class=\"chip\">Primitive.MODE_TRIANGLES</code>、<code class=\"chip\">indices</code> に 1 面につき 3 つの頂点番号を指定します。</p><p class=\"mt-2\"><code class=\"chip\">Primitive.plane</code>・<code class=\"chip\">Primitive.box</code> などの補助メソッドは、板や箱の頂点データを生成し、<code class=\"chip\">Primitive</code> のインスタンスを返します。</p>"
@@ -4679,7 +4713,8 @@
             {
               "text": "<p>この例では、親ノード以下で <code class=\"chip\">ground</code> タグを持つノードのコライダーを検索しています。</p><p class=\"mt-2\">物体に当たると <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a> が返り、<code class=\"chip\">hit.point</code> で位置を取得できます。当たらなければ <code class=\"chip\">None</code> が返ります。<code class=\"chip\">raycast_all</code> は、当たったコライダーごとの結果を距離順に返します。</p><p class=\"mt-2\">範囲検索では、ワールド座標で検索領域を指定します。<code class=\"chip\">overlap_sphere</code> は中心位置と半径、<code class=\"chip\">overlap_box</code> は変換行列と大きさを受け取り、領域に重なるコライダーを持つノードのリストを返します。</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -4909,7 +4944,8 @@
               "text": "<p><code class=\"chip\">Mat4</code>의 성분도 직접 변경할 수 없습니다. 연산이나 변환 메서드의 결과를 변수 또는 속성에 대입하여 사용하세요.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">쿼터니언 (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> 클래스)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">쿼터니언 (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> 클래스)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>쿼터니언</strong>은 3D 공간의 회전을 나타내는 값입니다. <code class=\"chip\">Quat</code> 클래스는 쿼터니언으로 회전을 저장합니다.</p><p class=\"mt-2\">두 방향 사이의 중간 방향을 구하는 <strong>보간</strong>에는 <code class=\"chip\">slerp</code>를 사용합니다. 구한 회전은 <code class=\"chip\">Mat4.from_quat</code>으로 변환 행렬로 바꾸어 이동이나 확대·축소와 결합할 수 있습니다.</p><p class=\"mt-2\">다음 예제는 회전하지 않은 상태와 Y축 주위로 90도 회전한 상태의 중간을 구합니다.</p>"
@@ -5168,7 +5204,8 @@
               "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> 예제에서는 <code class=\"chip\">PlaneShape</code>가 <code class=\"chip\">plane</code>을, <code class=\"chip\">SpriteShape</code>가 <code class=\"chip\">sprite</code>를 사용합니다.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">형상 데이터 (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> 클래스)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">형상 데이터 (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> 클래스)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>형상 데이터</strong>는 꼭짓점의 위치와 이를 연결하여 만든 선이나 면의 정보입니다. <code class=\"chip\">Primitive</code> 클래스는 점, 선, 삼각형으로 이루어진 형상 데이터를 저장합니다.</p><p class=\"mt-2\">사용자 정의 도형을 만들려면 <code class=\"chip\">Primitive(mode, positions, indices)</code>에 그리기 모드, 꼭짓점 좌표 리스트, 꼭짓점 번호 리스트를 전달하세요. <code class=\"chip\">mode</code>는 꼭짓점을 점, 선, 삼각형 중 무엇으로 그릴지 선택하는 인수입니다. <code class=\"chip\">positions</code>는 각 꼭짓점의 좌표를 <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code> 형태로 나열한 1차원 리스트입니다. 예를 들어 삼각형을 그릴 때는 <code class=\"chip\">mode</code>에 <code class=\"chip\">Primitive.MODE_TRIANGLES</code>를, <code class=\"chip\">indices</code>에 면 하나당 꼭짓점 번호 세 개를 지정합니다.</p><p class=\"mt-2\"><code class=\"chip\">Primitive.plane</code>, <code class=\"chip\">Primitive.box</code> 등의 보조 메서드는 판이나 상자의 꼭짓점 데이터를 생성하고 <code class=\"chip\">Primitive</code> 인스턴스를 반환합니다.</p>"
@@ -5342,7 +5379,8 @@
             {
               "text": "<p>이 예제는 부모 노드와 그 아래에서 <code class=\"chip\">ground</code> 태그를 가진 노드의 콜라이더를 검색합니다.</p><p class=\"mt-2\">물체에 닿으면 <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>가 반환되며, <code class=\"chip\">hit.point</code>로 닿은 위치를 얻을 수 있습니다. 닿지 않으면 <code class=\"chip\">None</code>을 반환합니다. <code class=\"chip\">raycast_all</code>은 닿은 콜라이더별 결과를 거리순으로 반환합니다.</p><p class=\"mt-2\">범위 검색은 월드 좌표로 검색 영역을 지정합니다. <code class=\"chip\">overlap_sphere</code>는 중심 위치와 반지름을, <code class=\"chip\">overlap_box</code>는 변환 행렬과 크기를 받으며, 해당 영역과 겹치는 콜라이더를 가진 노드의 리스트를 반환합니다.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -5572,7 +5610,8 @@
               "text": "<p>Os componentes de <code class=\"chip\">Mat4</code> também não podem ser alterados diretamente. Atribua o resultado de uma operação ou de um método de transformação a uma variável ou propriedade.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quatérnios (classe <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Quatérnios (classe <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Um <strong>quatérnio</strong> é um valor que representa uma rotação no espaço 3D. A classe <code class=\"chip\">Quat</code> armazena uma rotação como um quatérnio.</p><p class=\"mt-2\">Para fazer uma <strong>interpolação</strong>, ou seja, obter uma orientação intermediária entre duas orientações, use <code class=\"chip\">slerp</code>. Converta a rotação resultante em uma matriz de transformação com <code class=\"chip\">Mat4.from_quat</code> para combiná-la com translação ou escala.</p><p class=\"mt-2\">O exemplo a seguir obtém a orientação intermediária entre a ausência de rotação e uma rotação de 90 graus em torno do eixo Y.</p>"
@@ -5831,7 +5870,8 @@
               "text": "<p>No exemplo <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a>, <code class=\"chip\">PlaneShape</code> usa <code class=\"chip\">plane</code> e <code class=\"chip\">SpriteShape</code> usa <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Dados de formas (classe <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Dados de formas (classe <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p>Os <strong>dados de uma forma</strong> descrevem as posições dos vértices e as linhas ou faces que os conectam. A classe <code class=\"chip\">Primitive</code> armazena dados de formas compostas por pontos, linhas ou triângulos.</p><p class=\"mt-2\">Para definir uma forma personalizada, passe um modo de desenho, uma lista de coordenadas dos vértices e uma lista de índices dos vértices para <code class=\"chip\">Primitive(mode, positions, indices)</code>. O argumento <code class=\"chip\">mode</code> seleciona se os vértices serão desenhados como pontos, linhas ou triângulos. <code class=\"chip\">positions</code> é uma lista unidimensional de coordenadas no formato <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. Para triângulos, por exemplo, defina <code class=\"chip\">mode</code> como <code class=\"chip\">Primitive.MODE_TRIANGLES</code> e forneça três índices de vértices por face em <code class=\"chip\">indices</code>.</p><p class=\"mt-2\">Métodos auxiliares como <code class=\"chip\">Primitive.plane</code> e <code class=\"chip\">Primitive.box</code> geram os dados dos vértices de planos e caixas e retornam uma instância de <code class=\"chip\">Primitive</code>.</p>"
@@ -6005,7 +6045,8 @@
             {
               "text": "<p>Este exemplo busca nos colisores dos nós com a tag <code class=\"chip\">ground</code> dentro do nó pai e de seus descendentes.</p><p class=\"mt-2\">Se houver um impacto, o resultado será um <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>, e <code class=\"chip\">hit.point</code> fornecerá a posição atingida. Se nada for atingido, o resultado será <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> retorna um resultado para cada colisor atingido, em ordem de distância.</p><p class=\"mt-2\">As consultas de sobreposição recebem uma região de busca em coordenadas globais. <code class=\"chip\">overlap_sphere</code> recebe uma posição central e um raio, enquanto <code class=\"chip\">overlap_box</code> recebe uma matriz de transformação e um tamanho. Elas retornam uma lista de nós cujos colisores se sobrepõem a essa região.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -6235,7 +6276,8 @@
               "text": "<p>Компоненты <code class=\"chip\">Mat4</code> также нельзя изменять напрямую. Присваивайте результат операции или метода преобразования переменной либо свойству.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Кватернионы (класс <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Кватернионы (класс <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Кватернион</strong> — это значение, представляющее поворот в 3D-пространстве. Класс <code class=\"chip\">Quat</code> хранит поворот в виде кватерниона.</p><p class=\"mt-2\">Для <strong>интерполяции</strong> — вычисления промежуточной ориентации между двумя заданными — используйте <code class=\"chip\">slerp</code>. Преобразуйте полученный поворот в матрицу с помощью <code class=\"chip\">Mat4.from_quat</code>, чтобы объединить его с переносом или масштабированием.</p><p class=\"mt-2\">Следующий пример находит ориентацию посередине между отсутствием поворота и поворотом на 90 градусов вокруг оси Y.</p>"
@@ -6494,7 +6536,8 @@
               "text": "<p>В примере <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> класс <code class=\"chip\">PlaneShape</code> использует <code class=\"chip\">plane</code>, а <code class=\"chip\">SpriteShape</code> — <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Данные фигуры (класс <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Данные фигуры (класс <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Данные фигуры</strong> описывают положения вершин и соединяющие их линии или грани. Класс <code class=\"chip\">Primitive</code> хранит данные фигур из точек, линий или треугольников.</p><p class=\"mt-2\">Чтобы определить собственную фигуру, передайте в <code class=\"chip\">Primitive(mode, positions, indices)</code> режим рисования, список координат вершин и список индексов вершин. Аргумент <code class=\"chip\">mode</code> выбирает, рисуются ли вершины как точки, линии или треугольники. <code class=\"chip\">positions</code> — одномерный список координат вершин вида <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. Например, для треугольников задайте <code class=\"chip\">mode</code> равным <code class=\"chip\">Primitive.MODE_TRIANGLES</code> и укажите по три индекса вершин на грань в <code class=\"chip\">indices</code>.</p><p class=\"mt-2\">Вспомогательные методы, например <code class=\"chip\">Primitive.plane</code> и <code class=\"chip\">Primitive.box</code>, создают данные вершин для плоскостей и коробок и возвращают экземпляр <code class=\"chip\">Primitive</code>.</p>"
@@ -6668,7 +6711,8 @@
             {
               "text": "<p>В этом примере поиск выполняется по коллайдерам узлов с тегом <code class=\"chip\">ground</code> среди родительского узла и всех его потомков.</p><p class=\"mt-2\">При попадании возвращается <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>, а <code class=\"chip\">hit.point</code> даёт точку попадания. Если попадания нет, возвращается <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> возвращает по результату на каждый пересечённый коллайдер, в порядке расстояния.</p><p class=\"mt-2\">Для поиска пересечений область задаётся в мировых координатах. <code class=\"chip\">overlap_sphere</code> принимает центр и радиус, а <code class=\"chip\">overlap_box</code> — матрицу преобразования и размер. Они возвращают список узлов, коллайдеры которых пересекают эту область.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -6898,7 +6942,8 @@
               "text": "<p><code class=\"chip\">Mat4</code> bileşenleri de doğrudan değiştirilemez. Bir işlemin veya dönüşüm metodunun sonucunu bir değişkene ya da özelliğe atayın.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Kuaterniyonlar (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> sınıfı)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Kuaterniyonlar (<a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a> sınıfı)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Kuaterniyon</strong>, 3D uzayda dönüşü temsil eden bir değerdir. <code class=\"chip\">Quat</code> sınıfı, dönüşü kuaterniyon olarak saklar.</p><p class=\"mt-2\">İki yönelim arasındaki bir ara yönelimi bulma işlemi olan <strong>enterpolasyon</strong> için <code class=\"chip\">slerp</code> kullanın. Elde edilen dönüşü <code class=\"chip\">Mat4.from_quat</code> ile dönüşüm matrisine çevirerek öteleme veya ölçeklemeyle birleştirebilirsiniz.</p><p class=\"mt-2\">Aşağıdaki örnek, dönüş uygulanmamış durum ile Y ekseni etrafında 90 derece döndürülmüş durumun ortasındaki yönelimi bulur.</p>"
@@ -7157,7 +7202,8 @@
               "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> örneğinde <code class=\"chip\">PlaneShape</code> sınıfı <code class=\"chip\">plane</code>, <code class=\"chip\">SpriteShape</code> sınıfı <code class=\"chip\">sprite</code> kullanır.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Şekil verileri (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> sınıfı)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Şekil verileri (<a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a> sınıfı)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Şekil verileri</strong>, köşelerin konumlarını ve bunları birleştiren çizgi ya da yüzleri tanımlar. <code class=\"chip\">Primitive</code> sınıfı, nokta, çizgi veya üçgenlerden oluşan şekil verilerini saklar.</p><p class=\"mt-2\">Özel bir şekil tanımlamak için <code class=\"chip\">Primitive(mode, positions, indices)</code> kurucusuna çizim modunu, köşe koordinatlarının listesini ve köşe indekslerinin listesini verin. <code class=\"chip\">mode</code>, köşelerin nokta, çizgi veya üçgen olarak çizilmesini seçer. <code class=\"chip\">positions</code>, her köşenin koordinatlarını <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code> biçiminde tutan tek boyutlu bir listedir. Örneğin üçgenler için <code class=\"chip\">mode</code> değerini <code class=\"chip\">Primitive.MODE_TRIANGLES</code> yapın ve <code class=\"chip\">indices</code> içinde her yüz için üç köşe indeksi belirtin.</p><p class=\"mt-2\"><code class=\"chip\">Primitive.plane</code> ve <code class=\"chip\">Primitive.box</code> gibi yardımcı metotlar düzlem veya kutunun köşe verilerini üretir ve bir <code class=\"chip\">Primitive</code> örneği döndürür.</p>"
@@ -7331,7 +7377,8 @@
             {
               "text": "<p>Bu örnek, üst düğüm ve onun altındaki düğümler arasında <code class=\"chip\">ground</code> etiketli düğümlerin çarpıştırıcılarını arar.</p><p class=\"mt-2\">Bir nesneye çarparsa <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a> döner; <code class=\"chip\">hit.point</code> çarpma konumunu verir. Çarpma yoksa sonuç <code class=\"chip\">None</code> olur. <code class=\"chip\">raycast_all</code>, çarpılan her çarpıştırıcı için sonucu mesafe sırasıyla döndürür.</p><p class=\"mt-2\">Örtüşme sorgularında arama bölgesi dünya koordinatlarıyla belirtilir. <code class=\"chip\">overlap_sphere</code> merkez konumu ve yarıçap, <code class=\"chip\">overlap_box</code> dönüşüm matrisi ve boyut alır. Bölgeyle örtüşen çarpıştırıcılara sahip düğümlerin listesini döndürürler.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",
@@ -7561,7 +7608,8 @@
               "text": "<p>Компоненти <code class=\"chip\">Mat4</code> також не можна змінювати безпосередньо. Присвойте результат операції або методу перетворення змінній чи властивості.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Кватерніони (клас <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-quaternions\">Кватерніони (клас <a class=\"link\" href=\"../../api-reference/cube/#quat\">Quat</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Кватерніон</strong> — значення, що задає поворот у 3D-просторі. Клас <code class=\"chip\">Quat</code> зберігає поворот як кватерніон.</p><p class=\"mt-2\">Для <strong>інтерполяції</strong>, тобто пошуку проміжної орієнтації між двома орієнтаціями, використовуйте <code class=\"chip\">slerp</code>. Отриманий поворот можна перетворити на матрицю через <code class=\"chip\">Mat4.from_quat</code> і поєднати з перенесенням або масштабуванням.</p><p class=\"mt-2\">Наведений приклад знаходить середню орієнтацію між станом без повороту та поворотом на 90 градусів навколо осі Y.</p>"
@@ -7820,7 +7868,8 @@
               "text": "<p>У прикладі <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py\">c02_basic_shapes.py</a> клас <code class=\"chip\">PlaneShape</code> використовує <code class=\"chip\">plane</code>, а <code class=\"chip\">SpriteShape</code> — <code class=\"chip\">sprite</code>.</p>"
             },
             {
-              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Дані геометрії (клас <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>"
+              "text": "<h3 class=\"sub-title\" id=\"s-primitives\">Дані геометрії (клас <a class=\"link\" href=\"../../api-reference/cube/#primitive\">Primitive</a>)</h3>",
+              "advanced": true
             },
             {
               "text": "<p><strong>Дані геометрії</strong> описують положення вершин і лінії або грані, що їх з'єднують. Клас <code class=\"chip\">Primitive</code> зберігає геометрію з точок, ліній або трикутників.</p><p class=\"mt-2\">Щоб визначити власну фігуру, передайте до <code class=\"chip\">Primitive(mode, positions, indices)</code> режим малювання, список координат вершин і список індексів вершин. Аргумент <code class=\"chip\">mode</code> визначає, чи малюються вершини як точки, лінії або трикутники. <code class=\"chip\">positions</code> — одновимірний список координат у вигляді <code class=\"chip\">[x0, y0, z0, x1, y1, z1, ...]</code>. Наприклад, для трикутників задайте <code class=\"chip\">mode</code> як <code class=\"chip\">Primitive.MODE_TRIANGLES</code>, а в <code class=\"chip\">indices</code> укажіть три індекси вершин на кожну грань.</p><p class=\"mt-2\">Допоміжні методи, як-от <code class=\"chip\">Primitive.plane</code> та <code class=\"chip\">Primitive.box</code>, генерують вершини площини або коробки й повертають екземпляр <code class=\"chip\">Primitive</code>.</p>"
@@ -7994,7 +8043,8 @@
             {
               "text": "<p>Цей приклад шукає колайдери вузлів із тегом <code class=\"chip\">ground</code> серед батьківського вузла та всіх вузлів під ним.</p><p class=\"mt-2\">У разі влучання повертається <a class=\"link\" href=\"../../api-reference/cube/#raycasthit\"><code class=\"chip\">RaycastHit</code></a>, а <code class=\"chip\">hit.point</code> дає положення влучання. Якщо влучання немає, повертається <code class=\"chip\">None</code>. <code class=\"chip\">raycast_all</code> повертає результат для кожного колайдера, у який влучив промінь, за порядком відстані.</p><p class=\"mt-2\">Для пошуку перекриттів область задається у світових координатах. <code class=\"chip\">overlap_sphere</code> приймає центр і радіус, а <code class=\"chip\">overlap_box</code> — матрицю перетворення та розмір. Вони повертають список вузлів, колайдери яких перекриваються із заданою областю.</p>"
             }
-          ]
+          ],
+          "advanced": true
         },
         {
           "id": "s-resources",

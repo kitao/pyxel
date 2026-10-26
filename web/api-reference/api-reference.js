@@ -49,6 +49,7 @@ function buildPage() {
   const toggleWrap = document.createElement("label");
   toggleWrap.className = "toggle-label text-gray-400 hover:text-gray-200";
   const toggleCheck = document.createElement("input");
+  toggleCheck.id = "advanced-toggle";
   toggleCheck.type = "checkbox";
   toggleCheck.className = "checkbox";
   toggleCheck.checked = showAdvanced;
@@ -242,6 +243,27 @@ function buildPage() {
   cacheDomRefs();
   updateTexts();
   updateVisibility();
+  revealLinkedCategory();
+  window.addEventListener("hashchange", revealLinkedCategory);
+}
+
+function revealLinkedCategory() {
+  const category = data.categories.find(
+    (cat) => cat.id === document.location?.hash.slice(1),
+  );
+  if (!category) return;
+
+  if (category.items?.length && category.items.every((item) => item.advanced)) {
+    // Following a link must not change the user's saved Advanced preference.
+    showAdvanced = true;
+    document.getElementById("advanced-toggle").checked = true;
+  }
+  searchQuery = "";
+  document.getElementById("search-input").value = "";
+  updateVisibility();
+  const section = document.getElementById(category.id);
+  section.open = true;
+  section.scrollIntoView();
 }
 
 function updateTexts() {

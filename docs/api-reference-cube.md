@@ -302,7 +302,7 @@ The translation part of the matrix.
 
 - **Type:** `Vec3`
 
-### `rot` — variable
+### `rot` — variable *(Advanced)*
 
 The rotation part of the matrix as a unit Quat. Assumes a translation-rotation-scale (TRS) composition. Returns Quat.IDENTITY if any axis has zero scale.
 
@@ -334,7 +334,7 @@ Create a rotation matrix from Euler angles in degrees, applied around fixed X, Y
 
 **Returns:** `Mat4`
 
-### `Mat4.from_quat(rot)` — class
+### `Mat4.from_quat(rot)` — class *(Advanced)*
 
 Create a rotation matrix from a Quat.
 
@@ -365,7 +365,7 @@ Create a rotation matrix around an axis.
 
 **Returns:** `Mat4`
 
-### `Mat4.compose(pos, rot, scale)` — class
+### `Mat4.compose(pos, rot, scale)` — class *(Advanced)*
 
 Create a matrix combining translation, rotation, and scale, applied in scale, rotation, translation order.
 
@@ -522,7 +522,7 @@ Convert a local-space transform into world space, ignoring translation.
 
 ## Quat
 
-### `Quat(x=0.0, y=0.0, z=0.0, w=1.0)` — class
+### `Quat(x=0.0, y=0.0, z=0.0, w=1.0)` — class *(Advanced)*
 
 A quaternion representing a rotation. The default is the identity rotation. Values are immutable; operations that change the rotation return a new Quat.
 
@@ -544,37 +544,37 @@ rotated = q * Vec3.FORWARD
 
 **Note:** Supports * with another Quat (composition) or a Vec3 (applies the rotation), unary -, ==, indexing, and iteration. Rotation operations require a unit quaternion. Use normalize() when specifying components directly.
 
-### `Quat.IDENTITY` — constant
+### `Quat.IDENTITY` — constant *(Advanced)*
 
 The identity rotation.
 
 - **Type:** `Quat`
 
-### `x` — variable
+### `x` — variable *(Advanced)*
 
 The x component of the quaternion.
 
 - **Type:** `float`
 
-### `y` — variable
+### `y` — variable *(Advanced)*
 
 The y component of the quaternion.
 
 - **Type:** `float`
 
-### `z` — variable
+### `z` — variable *(Advanced)*
 
 The z component of the quaternion.
 
 - **Type:** `float`
 
-### `w` — variable
+### `w` — variable *(Advanced)*
 
 The w component of the quaternion.
 
 - **Type:** `float`
 
-### `Quat.from_axis_angle(axis, deg)` — class
+### `Quat.from_axis_angle(axis, deg)` — class *(Advanced)*
 
 Create a rotation around an axis.
 
@@ -585,7 +585,7 @@ Create a rotation around an axis.
 
 **Returns:** `Quat`
 
-### `Quat.from_euler(euler)` — class
+### `Quat.from_euler(euler)` — class *(Advanced)*
 
 Create a rotation from Euler angles in degrees, applied around fixed X, Y, Z axes in that order.
 
@@ -595,7 +595,7 @@ Create a rotation from Euler angles in degrees, applied around fixed X, Y, Z axe
 
 **Returns:** `Quat`
 
-### `Quat.from_two_vectors(from_vec, to_vec)` — class
+### `Quat.from_two_vectors(from_vec, to_vec)` — class *(Advanced)*
 
 Create the shortest rotation that turns from_vec to face the same direction as to_vec.
 
@@ -616,7 +616,7 @@ Returns the same rotation as mat.rot.
 
 **Returns:** `Quat`
 
-### `Quat.from_direction(forward, up=Vec3.UP)` — class
+### `Quat.from_direction(forward, up=Vec3.UP)` — class *(Advanced)*
 
 Create a rotation facing the forward direction (the forward axis is -Z), keeping up as close as possible.
 
@@ -633,13 +633,13 @@ Return the conjugate quaternion.
 
 **Returns:** `Quat`
 
-### `inverse()` — function
+### `inverse()` — function *(Advanced)*
 
 Return the inverse rotation.
 
 **Returns:** `Quat`
 
-### `normalize()` — function
+### `normalize()` — function *(Advanced)*
 
 Return a unit quaternion representing the same rotation.
 
@@ -667,7 +667,7 @@ Return the dot product with another quaternion.
 
 **Returns:** `float`
 
-### `angle_to(other)` — function
+### `angle_to(other)` — function *(Advanced)*
 
 Return the angle between two rotations in degrees.
 
@@ -677,25 +677,25 @@ Return the angle between two rotations in degrees.
 
 **Returns:** `float` — The angle in degrees.
 
-### `to_matrix()` — function
+### `to_matrix()` — function *(Advanced)*
 
 Convert the rotation to a Mat4.
 
 **Returns:** `Mat4`
 
-### `to_euler()` — function
+### `to_euler()` — function *(Advanced)*
 
 Convert the rotation to Euler angles in degrees (same convention as Quat.from_euler).
 
 **Returns:** `Vec3` — Rotation around each axis in degrees.
 
-### `to_axis_angle()` — function
+### `to_axis_angle()` — function *(Advanced)*
 
 Convert the rotation to an axis and an angle in degrees.
 
 **Returns:** `tuple[Vec3, float]` — A tuple of the axis and the angle in degrees.
 
-### `slerp(other, t)` — function
+### `slerp(other, t)` — function *(Advanced)*
 
 Spherically interpolate toward another rotation.
 
@@ -771,7 +771,7 @@ Face-brightness table used for drawing. None inherits from the closest ancestor 
 
 - **Type:** `Shading | None`
 
-### `collider` — variable
+### `collider` — variable *(Advanced)*
 
 Collision shape and motion state. None keeps the node out of collision.
 
@@ -922,7 +922,7 @@ Per-frame update hook, called by update() in tree order. Override it in a subcla
 
 Per-frame draw hook, called by draw() in tree order. Call draw commands from here.
 
-### `on_collide(other, contact)` — function
+### `on_collide(other, contact)` — function *(Advanced)*
 
 Collision hook called by update(). A solid mesh can report multiple contacts with the same node; apply contact.depth and contact.delta_velocity in callback order. Triggers report once per contacting pair.
 
@@ -1171,7 +1171,7 @@ Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 - `colkey` (*int | None*) — Transparent color. Defaults to None.
 - `rotate` (*float*) — Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.
 
-### `prim(mat, primitive, col_img=7, *, colkey=None)` — function
+### `prim(mat, primitive, col_img=7, *, colkey=None)` — function *(Advanced)*
 
 Draw a Primitive asset with its own mode and culling.
 
@@ -1219,7 +1219,7 @@ scene.draw(0, 0, pyxel.width, pyxel.height)
 
 **Note:** Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.
 
-### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
+### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function *(Advanced)*
 
 Cast a ray against the colliders in this subtree and return the closest hit.
 
@@ -1239,7 +1239,7 @@ Cast a ray against the colliders in this subtree and return the closest hit.
 hit = scene.raycast(self.world_transform.pos, Vec3.DOWN, max_distance=2.0)
 ```
 
-### `raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
+### `raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function *(Advanced)*
 
 Cast a ray and return the nearest hit for each collider hit, sorted by distance.
 
@@ -1253,7 +1253,7 @@ Cast a ray and return the nearest hit for each collider hit, sorted by distance.
 
 **Returns:** `list`
 
-### `overlap_sphere(center, radius, *, hit_triggers=False, tags=None)` — function
+### `overlap_sphere(center, radius, *, hit_triggers=False, tags=None)` — function *(Advanced)*
 
 Return every node in this subtree whose collider overlaps the given sphere.
 
@@ -1266,7 +1266,7 @@ Return every node in this subtree whose collider overlaps the given sphere.
 
 **Returns:** `list`
 
-### `overlap_box(mat, size, *, hit_triggers=False, tags=None)` — function
+### `overlap_box(mat, size, *, hit_triggers=False, tags=None)` — function *(Advanced)*
 
 Return every node in this subtree whose collider overlaps the given box.
 
@@ -1381,7 +1381,7 @@ shading.build(pyxel.colors)
 
 ## Primitive
 
-### `Primitive(mode, positions, indices, normals=[], uvs=[], cull=Primitive.CULL_BACK)` — class
+### `Primitive(mode, positions, indices, normals=[], uvs=[], cull=Primitive.CULL_BACK)` — class *(Advanced)*
 
 A vertex-data asset: positions, optional normals and UVs, plus the topology (indices and draw mode). One Primitive can be shared by many Node.prim() draws and Mesh parts.
 
@@ -1405,7 +1405,7 @@ node.prim(Mat4.IDENTITY, prim, 11)
 
 **Note:** Edit list attributes through their elements or slices (positions[:] = ...); whole-attribute assignment is not supported.
 
-### `Primitive.plane(width=1.0, height=1.0)` — class
+### `Primitive.plane(width=1.0, height=1.0)` — class *(Advanced)*
 
 Create a texture-ready XY-plane Primitive with flat normals.
 
@@ -1422,7 +1422,7 @@ Create a texture-ready XY-plane Primitive with flat normals.
 prim = Primitive.plane(2, 2)
 ```
 
-### `Primitive.box(size=Vec3.ONE)` — class
+### `Primitive.box(size=Vec3.ONE)` — class *(Advanced)*
 
 Create a texture-ready box Primitive with flat normals.
 
@@ -1438,7 +1438,7 @@ Create a texture-ready box Primitive with flat normals.
 prim = Primitive.box(Vec3(1, 2, 1))
 ```
 
-### `Primitive.sphere(radius=0.5)` — class
+### `Primitive.sphere(radius=0.5)` — class *(Advanced)*
 
 Create a texture-ready low-poly sphere Primitive with flat normals.
 
@@ -1454,7 +1454,7 @@ Create a texture-ready low-poly sphere Primitive with flat normals.
 prim = Primitive.sphere(0.5)
 ```
 
-### `Primitive.capsule(height=1.0, radius=0.5)` — class
+### `Primitive.capsule(height=1.0, radius=0.5)` — class *(Advanced)*
 
 Create a texture-ready low-poly capsule Primitive centered at the origin along the Y axis, with flat normals. UVs wrap once around the capsule; V runs from 0 at the top to 1 at the bottom. A height of 0 creates a sphere.
 
@@ -1471,85 +1471,85 @@ Create a texture-ready low-poly capsule Primitive centered at the origin along t
 prim = Primitive.capsule(1.0, 0.5)
 ```
 
-### `Primitive.MODE_POINTS` — constant
+### `Primitive.MODE_POINTS` — constant *(Advanced)*
 
 Draw each vertex as a point.
 
 - **Type:** `int`
 
-### `Primitive.MODE_LINES` — constant
+### `Primitive.MODE_LINES` — constant *(Advanced)*
 
 Draw every 2 vertices as a line segment.
 
 - **Type:** `int`
 
-### `Primitive.MODE_TRIANGLES` — constant
+### `Primitive.MODE_TRIANGLES` — constant *(Advanced)*
 
 Draw every 3 vertices as a filled triangle.
 
 - **Type:** `int`
 
-### `Primitive.CULL_NONE` — constant
+### `Primitive.CULL_NONE` — constant *(Advanced)*
 
 Draw both sides of each face.
 
 - **Type:** `int`
 
-### `Primitive.CULL_BACK` — constant
+### `Primitive.CULL_BACK` — constant *(Advanced)*
 
 Skip faces seen from the back (counterclockwise winding is the front).
 
 - **Type:** `int`
 
-### `Primitive.CULL_FRONT` — constant
+### `Primitive.CULL_FRONT` — constant *(Advanced)*
 
 Skip faces seen from the front.
 
 - **Type:** `int`
 
-### `mode` — variable
+### `mode` — variable *(Advanced)*
 
 Draw mode: MODE_POINTS, MODE_LINES, or MODE_TRIANGLES.
 
 - **Type:** `int`
 
-### `positions` — variable
+### `positions` — variable *(Advanced)*
 
 Vertex coordinates as a flat list of x, y, z repeats.
 
 - **Type:** `list`
 
-### `indices` — variable
+### `indices` — variable *(Advanced)*
 
 Vertex indices. An empty list consumes the vertices in order.
 
 - **Type:** `list`
 
-### `normals` — variable
+### `normals` — variable *(Advanced)*
 
 Per-face normals as a flat list. Empty means derived from the vertices while drawing.
 
 - **Type:** `list`
 
-### `uvs` — variable
+### `uvs` — variable *(Advanced)*
 
 Per-vertex UVs as a flat list of u, v repeats.
 
 - **Type:** `list`
 
-### `cull` — variable
+### `cull` — variable *(Advanced)*
 
 Face culling mode: CULL_NONE, CULL_BACK, or CULL_FRONT.
 
 - **Type:** `int`
 
-### `compute_normals()` — function
+### `compute_normals()` — function *(Advanced)*
 
 Compute flat per-face normals from positions and indices and store them in normals. Only meaningful for MODE_TRIANGLES.
 
 ## Mesh
 
-### `Mesh(primitives=[], transforms=[], parents=[], names=None, col_img=7, colkey=None)` — class
+### `Mesh(primitives=[], transforms=[], parents=[], names=None, col_img=7, colkey=None)` — class *(Advanced)*
 
 A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.
 
@@ -1574,7 +1574,7 @@ node = Node.from_mesh(mesh)
 
 **Note:** Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared. Imported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image; col_img exposes the first imported texture, not all material slots.
 
-### `primitives` — variable
+### `primitives` — variable *(Advanced)*
 
 Primitive per part. None means a transform-only group part.
 
@@ -1675,7 +1675,7 @@ Clip length in Pyxel frames.
 
 ## Collider
 
-### `Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO, gravity=9.8, gravity_direction=Vec3.DOWN, linear_damp=0.1, angular_damp=0.1)` — class
+### `Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO, gravity=9.8, gravity_direction=Vec3.DOWN, linear_damp=0.1, angular_damp=0.1)` — class *(Advanced)*
 
 Collision shape, physical coefficients, and motion state for a Node. It represents a sphere, capsule, or rounded box derived from size and radius, or static triangle terrain when mesh is set. Analytic shapes require a rigid effective world transform (translation and rotation only); terrain accepts a fixed invertible affine transform.
 
@@ -1705,73 +1705,73 @@ node.collider = Collider(radius=0.5)
 floor.collider = Collider(size=Vec3(20, 0.5, 20), mass=0.0)
 ```
 
-### `size` — variable
+### `size` — variable *(Advanced)*
 
 Core dimensions and shape selector. Component signs are ignored; for shape classification, components with an absolute value less than 1e-9 are treated as zero. An all-zero size produces a sphere of radius max(radius, 0). A size of (0, h, 0) produces a capsule whose central axis segment has length abs(h) and whose total height is abs(h) + 2 * max(radius, 0). Any other size produces a rounded box with core dimensions abs(size) and overall dimensions abs(size) + 2 * max(radius, 0), component-wise.
 
 - **Type:** `Vec3`
 
-### `radius` — variable
+### `radius` — variable *(Advanced)*
 
 Sphere or capsule radius, and the corner rounding of a box. Negative values are treated as 0.
 
 - **Type:** `float`
 
-### `mesh` — variable
+### `mesh` — variable *(Advanced)*
 
 Static terrain mesh. When set, collision physics ignores size, radius, mass, rolls, velocity, and angular_velocity for this collider.
 
 - **Type:** `Mesh | None`
 
-### `trigger` — variable
+### `trigger` — variable *(Advanced)*
 
 When True, reports contacts without any push-back.
 
 - **Type:** `bool`
 
-### `rolls` — variable
+### `rolls` — variable *(Advanced)*
 
 When True, contacts also produce delta_angular_velocity.
 
 - **Type:** `bool`
 
-### `mass` — variable
+### `mass` — variable *(Advanced)*
 
 Mass used for contact resolution. It must be finite and greater than or equal to 0. For a non-mesh collider, 0.0 makes this side receive no contact correction; the mass value itself does not disable velocity or angular_velocity. Mesh colliders ignore this value.
 
 - **Type:** `float`
 
-### `restitution` — variable
+### `restitution` — variable *(Advanced)*
 
 Bounciness. The larger of the two contacting values is used.
 
 - **Type:** `float`
 
-### `friction` — variable
+### `friction` — variable *(Advanced)*
 
 Friction. The average of the two contacting values is used.
 
 - **Type:** `float`
 
-### `velocity` — variable
+### `velocity` — variable *(Advanced)*
 
 World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. The same rule applies if the inverse or converted local displacement cannot be represented by finite 32-bit floats.
 
 - **Type:** `Vec3`
 
-### `angular_velocity` — variable
+### `angular_velocity` — variable *(Advanced)*
 
 Axis times angle (in degrees), applied every update as a spin in the node's local coordinates. It is ignored for mesh colliders but still applied when the parent world transform is singular.
 
 - **Type:** `Vec3`
 
-### `gravity` — variable
+### `gravity` — variable *(Advanced)*
 
 Gravity strength in m/s². Defaults to 9.8; 0 disables gravity. Each update adds gravity_direction normalized × gravity × 100 / fps² to velocity, using the fps configured by pyxel.init and 100 world units per meter. Only non-mesh colliders with mass > 0 are affected. A negative value reverses the direction. Before pyxel.init, fps is 30.
 
 - **Type:** `float`
 
-### `gravity_direction` — variable
+### `gravity_direction` — variable *(Advanced)*
 
 World-space gravity direction. Defaults to Vec3.DOWN. Normalized internally, so its length does not change the strength; Vec3.ZERO applies no gravity. Independent of the node and parent rotations.
 
@@ -1791,7 +1791,7 @@ Angular damping per second. Defaults to 0.1. Before gravity, each update multipl
 
 ## Contact
 
-### `Contact` — class
+### `Contact` — class *(Advanced)*
 
 Collision payload passed to Node.on_collide(). It is engine-built and not user-constructible, and carries the contact geometry and engine-resolved motion corrections for the receiving side.
 
@@ -1808,31 +1808,31 @@ def on_collide(self, other, contact):
     self.collider.velocity += contact.delta_velocity
 ```
 
-### `point` — variable
+### `point` — variable *(Advanced)*
 
 The contact point in world space.
 
 - **Type:** `Vec3`
 
-### `normal` — variable
+### `normal` — variable *(Advanced)*
 
 The contact normal in world space, pointing from the other node toward this node.
 
 - **Type:** `Vec3`
 
-### `depth` — variable
+### `depth` — variable *(Advanced)*
 
 Suggested push-out distance along normal, already split by the mass ratio. Other solid contacts in the same update are considered together; apply every reported correction when resolving contacts.
 
 - **Type:** `float`
 
-### `delta_velocity` — variable
+### `delta_velocity` — variable *(Advanced)*
 
 Suggested additive velocity correction for the receiving node, in world coordinates.
 
 - **Type:** `Vec3`
 
-### `delta_angular_velocity` — variable
+### `delta_angular_velocity` — variable *(Advanced)*
 
 Suggested additive angular velocity correction in the receiving node's local coordinates. Non-zero only when that node's collider has rolls=True.
 
@@ -1840,7 +1840,7 @@ Suggested additive angular velocity correction in the receiving node's local coo
 
 ## RaycastHit
 
-### `RaycastHit` — class
+### `RaycastHit` — class *(Advanced)*
 
 Hit information returned by Node.raycast() and Node.raycast_all(). It is engine-built and not user-constructible.
 
@@ -1852,25 +1852,25 @@ if hit is not None:
     ground_y = hit.point.y
 ```
 
-### `node` — variable
+### `node` — variable *(Advanced)*
 
 The node that was hit.
 
 - **Type:** `Node`
 
-### `point` — variable
+### `point` — variable *(Advanced)*
 
 The hit position in world space.
 
 - **Type:** `Vec3`
 
-### `normal` — variable
+### `normal` — variable *(Advanced)*
 
 World-space surface normal. Points toward the ray origin for meshes, outward for other shapes.
 
 - **Type:** `Vec3`
 
-### `distance` — variable
+### `distance` — variable *(Advanced)*
 
 The distance from the ray origin to the hit.
 
