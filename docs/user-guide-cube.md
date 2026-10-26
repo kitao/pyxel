@@ -471,7 +471,7 @@ Playback updates the `transform` of each part's node. It does not affect `actor.
 
 `play_motion` loops by default; `loop=False` plays the motion once. To play at the original speed, set `Mesh.from_glb`'s `fps` argument to the same value as `pyxel.init`'s `fps` argument, because GLB times are converted from seconds to frames when loaded.
 
-In the [c04_mesh_and_motion.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py) example, `play` switches which `Motion` is played.
+For implementations of model loading and motion playback, see [c04_mesh_and_motion.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py). You can also open the included editable project [assets/gazelle.bbmodel](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel) in Blockbench and try changing the model's shape or textures.
 
 ## Physics Engine
 
@@ -539,7 +539,7 @@ def on_collide(self, other, contact):
 
 Use the collider's `restitution` to adjust bounciness and `friction` to adjust resistance to sliding. Set `rolls=True` to calculate rotation caused by collisions as well.
 
-In the [c06_3d_physics.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py) example, `on_collide` implements bouncing and rolling.
+For an implementation of collision response, see `Body.on_collide` in [c06_3d_physics.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py). You can also add values for `restitution` or `friction` to `Collider(...)` in `Body` and explore differences in how the objects move.
 
 ### Raycasts and Overlap Queries
 
