@@ -623,7 +623,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> loops by default; <code class=\"chip\">loop=False</code> plays the motion once. To play at the original speed, set <code class=\"chip\">Mesh.from_glb</code>'s <code class=\"chip\">fps</code> argument to the same value as <code class=\"chip\">pyxel.init</code>'s <code class=\"chip\">fps</code> argument, because GLB times are converted from seconds to frames when loaded.</p>"
             },
             {
-              "text": "<p>In the <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> example, <code class=\"chip\">play</code> switches which <code class=\"chip\">Motion</code> is played.</p>"
+              "text": "<p>For implementations of model loading and motion playback, see <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. You can also open the included editable project <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a> in Blockbench and try changing the model's shape or textures.</p>"
             }
           ]
         },
@@ -686,7 +686,7 @@
               "text": "<p>Use the collider's <code class=\"chip\">restitution</code> to adjust bounciness and <code class=\"chip\">friction</code> to adjust resistance to sliding. Set <code class=\"chip\">rolls=True</code> to calculate rotation caused by collisions as well.</p>"
             },
             {
-              "text": "<p>In the <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> example, <code class=\"chip\">on_collide</code> implements bouncing and rolling.</p>"
+              "text": "<p>For an implementation of collision response, see <code class=\"chip\">Body.on_collide</code> in <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. You can also add values for <code class=\"chip\">restitution</code> or <code class=\"chip\">friction</code> to <code class=\"chip\">Collider(...)</code> in <code class=\"chip\">Body</code> and explore differences in how the objects move.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Raycasts and Overlap Queries</h3>"
@@ -1286,7 +1286,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> 默认循环播放，<code class=\"chip\">loop=False</code> 则只播放一次。要按原速播放，请将 <code class=\"chip\">Mesh.from_glb</code> 的 <code class=\"chip\">fps</code> 与 <code class=\"chip\">pyxel.init</code> 的 <code class=\"chip\">fps</code> 设为相同值，因为加载时会将 GLB 的时间从秒换算为帧。</p>"
             },
             {
-              "text": "<p>示例 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> 在 <code class=\"chip\">play</code> 中切换播放的 <code class=\"chip\">Motion</code>。</p>"
+              "text": "<p>模型加载和动作播放的实现可以参见 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>。也可以在 Blockbench 中打开随附的可编辑项目 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a>，尝试修改模型的形状或纹理。</p>"
             }
           ]
         },
@@ -1349,7 +1349,7 @@
               "text": "<p>通过碰撞体的 <code class=\"chip\">restitution</code> 调整反弹程度，通过 <code class=\"chip\">friction</code> 调整滑动阻力。需要计算碰撞引起的旋转时，指定 <code class=\"chip\">rolls=True</code>。</p>"
             },
             {
-              "text": "<p>示例 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> 在 <code class=\"chip\">on_collide</code> 中实现了物体的反弹和滚动。</p>"
+              "text": "<p>碰撞响应的实现可以参见 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> 中的 <code class=\"chip\">Body.on_collide</code>。也可以在 <code class=\"chip\">Body</code> 的 <code class=\"chip\">Collider(...)</code> 中添加 <code class=\"chip\">restitution</code> 或 <code class=\"chip\">friction</code> 的值，试试看物体的运动有何变化。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">射线检测与范围查询</h3>"
@@ -1949,7 +1949,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> wiederholt die Bewegung standardmäßig; mit <code class=\"chip\">loop=False</code> wird sie einmal abgespielt. Für die ursprüngliche Geschwindigkeit müssen bei <code class=\"chip\">Mesh.from_glb</code> das Argument <code class=\"chip\">fps</code> und bei <code class=\"chip\">pyxel.init</code> das Argument <code class=\"chip\">fps</code> übereinstimmen, da die Zeitangaben aus GLB beim Laden von Sekunden in Frames umgerechnet werden.</p>"
             },
             {
-              "text": "<p>Im Beispiel <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> wechselt <code class=\"chip\">play</code> das abgespielte <code class=\"chip\">Motion</code>.</p>"
+              "text": "<p>Implementierungen zum Laden von Modellen und zur Wiedergabe von Bewegungen finden Sie in <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. Sie können auch das mitgelieferte bearbeitbare Projekt <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a> in Blockbench öffnen und ausprobieren, wie sich Form oder Texturen des Modells ändern lassen.</p>"
             }
           ]
         },
@@ -2012,7 +2012,7 @@
               "text": "<p>Mit <code class=\"chip\">restitution</code> des Kollisionskörpers stellen Sie die Stärke des Abprallens und mit <code class=\"chip\">friction</code> den Gleitwiderstand ein. Setzen Sie <code class=\"chip\">rolls=True</code>, um auch die durch Kollisionen verursachte Drehung zu berechnen.</p>"
             },
             {
-              "text": "<p>Im Beispiel <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> implementiert <code class=\"chip\">on_collide</code> Abprallen und Rollen.</p>"
+              "text": "<p>Eine Implementierung der Kollisionsreaktion finden Sie in <code class=\"chip\">Body.on_collide</code> in <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. Sie können auch in <code class=\"chip\">Body</code> beim Aufruf von <code class=\"chip\">Collider(...)</code> Werte für <code class=\"chip\">restitution</code> oder <code class=\"chip\">friction</code> ergänzen und die Unterschiede im Bewegungsverhalten der Objekte ausprobieren.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Raycasts und Überlappungsabfragen</h3>"
@@ -2612,7 +2612,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> reproduce en bucle de forma predeterminada; <code class=\"chip\">loop=False</code> reproduce el movimiento una sola vez. Para mantener la velocidad original, establezca el argumento <code class=\"chip\">fps</code> de <code class=\"chip\">Mesh.from_glb</code> en el mismo valor que el argumento <code class=\"chip\">fps</code> de <code class=\"chip\">pyxel.init</code>, porque al cargar el GLB los tiempos se convierten de segundos a fotogramas.</p>"
             },
             {
-              "text": "<p>En el ejemplo <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>, <code class=\"chip\">play</code> cambia el <code class=\"chip\">Motion</code> que se reproduce.</p>"
+              "text": "<p>Puede consultar la implementación de la carga de modelos y la reproducción de movimientos en <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. También puede abrir el proyecto editable incluido, <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a>, en Blockbench y probar a cambiar la forma o las texturas del modelo.</p>"
             }
           ]
         },
@@ -2675,7 +2675,7 @@
               "text": "<p>Utilice <code class=\"chip\">restitution</code> del colisionador para ajustar el rebote y <code class=\"chip\">friction</code> para ajustar la resistencia al deslizamiento. Establezca <code class=\"chip\">rolls=True</code> para calcular también la rotación causada por las colisiones.</p>"
             },
             {
-              "text": "<p>En el ejemplo <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>, <code class=\"chip\">on_collide</code> implementa el rebote y la rodadura.</p>"
+              "text": "<p>Puede consultar la implementación de la respuesta a las colisiones en <code class=\"chip\">Body.on_collide</code>, en <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. También puede añadir valores para <code class=\"chip\">restitution</code> o <code class=\"chip\">friction</code> a <code class=\"chip\">Collider(...)</code> en <code class=\"chip\">Body</code> y observar cómo cambia el movimiento de los objetos.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Lanzamiento de rayos y consultas de solapamiento</h3>"
@@ -3275,7 +3275,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> lit le mouvement en boucle par défaut ; <code class=\"chip\">loop=False</code> ne le lit qu'une fois. Pour conserver la vitesse d'origine, donnez à l'argument <code class=\"chip\">fps</code> de <code class=\"chip\">Mesh.from_glb</code> la même valeur qu'à l'argument <code class=\"chip\">fps</code> de <code class=\"chip\">pyxel.init</code>, car les temps du GLB sont convertis de secondes en images lors du chargement.</p>"
             },
             {
-              "text": "<p>Dans l'exemple <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>, <code class=\"chip\">play</code> change le <code class=\"chip\">Motion</code> en cours de lecture.</p>"
+              "text": "<p>Vous trouverez une implémentation du chargement de modèles et de la lecture de mouvements dans <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. Vous pouvez aussi ouvrir le projet modifiable fourni, <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a>, dans Blockbench et essayer de changer la forme ou les textures du modèle.</p>"
             }
           ]
         },
@@ -3338,7 +3338,7 @@
               "text": "<p>Utilisez <code class=\"chip\">restitution</code> du collisionneur pour régler l'intensité du rebond et <code class=\"chip\">friction</code> pour régler la résistance au glissement. Définissez <code class=\"chip\">rolls=True</code> pour calculer aussi la rotation due aux collisions.</p>"
             },
             {
-              "text": "<p>Dans l'exemple <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>, <code class=\"chip\">on_collide</code> implémente les rebonds et le roulement.</p>"
+              "text": "<p>Vous trouverez une implémentation de la réponse aux collisions dans <code class=\"chip\">Body.on_collide</code>, dans <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. Vous pouvez aussi ajouter des valeurs pour <code class=\"chip\">restitution</code> ou <code class=\"chip\">friction</code> à <code class=\"chip\">Collider(...)</code> dans <code class=\"chip\">Body</code> et observer les différences dans le mouvement des objets.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Lancer de rayons et recherches de chevauchement</h3>"
@@ -3938,7 +3938,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> riproduce in ciclo per impostazione predefinita; <code class=\"chip\">loop=False</code> riproduce il movimento una sola volta. Per mantenere la velocità originale, impostare l'argomento <code class=\"chip\">fps</code> di <code class=\"chip\">Mesh.from_glb</code> allo stesso valore dell'argomento <code class=\"chip\">fps</code> di <code class=\"chip\">pyxel.init</code>, poiché i tempi GLB vengono convertiti da secondi a fotogrammi durante il caricamento.</p>"
             },
             {
-              "text": "<p>Nell'esempio <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>, <code class=\"chip\">play</code> cambia il <code class=\"chip\">Motion</code> in riproduzione.</p>"
+              "text": "<p>Per le implementazioni del caricamento dei modelli e della riproduzione dei movimenti, consultare <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. È anche possibile aprire in Blockbench il progetto modificabile incluso, <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a>, e provare a cambiare la forma o le texture del modello.</p>"
             }
           ]
         },
@@ -4001,7 +4001,7 @@
               "text": "<p>Utilizzare <code class=\"chip\">restitution</code> del collisore per regolare il rimbalzo e <code class=\"chip\">friction</code> per regolare la resistenza allo scorrimento. Impostare <code class=\"chip\">rolls=True</code> per calcolare anche la rotazione causata dalle collisioni.</p>"
             },
             {
-              "text": "<p>Nell'esempio <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>, <code class=\"chip\">on_collide</code> implementa rimbalzi e rotolamenti.</p>"
+              "text": "<p>Per un'implementazione della risposta alle collisioni, consultare <code class=\"chip\">Body.on_collide</code> in <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. È anche possibile aggiungere valori per <code class=\"chip\">restitution</code> o <code class=\"chip\">friction</code> a <code class=\"chip\">Collider(...)</code> in <code class=\"chip\">Body</code> e osservare come cambia il movimento degli oggetti.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Raycast e ricerche di sovrapposizione</h3>"
@@ -4601,7 +4601,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> は既定でループ再生し、<code class=\"chip\">loop=False</code> なら 1 回だけ再生します。元の速さで再生するには、<code class=\"chip\">Mesh.from_glb</code> の <code class=\"chip\">fps</code> と <code class=\"chip\">pyxel.init</code> の <code class=\"chip\">fps</code> をそろえます。読み込み時に GLB の時刻を秒からフレームへ換算するためです。</p>"
             },
             {
-              "text": "<p>サンプル <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> の <code class=\"chip\">play</code> では、再生する <code class=\"chip\">Motion</code> を切り替えています。</p>"
+              "text": "<p>モデルの読み込みとモーション再生の実装は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> で確認できます。同梱の編集用データ <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a> を Blockbench で開いて、モデルの形やテクスチャを変えてみるのもよいでしょう。</p>"
             }
           ]
         },
@@ -4664,7 +4664,7 @@
               "text": "<p>コライダーの <code class=\"chip\">restitution</code> で反発の強さ、<code class=\"chip\">friction</code> で滑りにくさを調整できます。衝突による回転も計算するときは <code class=\"chip\">rolls=True</code> を指定します。</p>"
             },
             {
-              "text": "<p>サンプル <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> の <code class=\"chip\">on_collide</code> では、物体の反発と転がりを実装しています。</p>"
+              "text": "<p>衝突への応答の実装は、<a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> の <code class=\"chip\">Body.on_collide</code> で確認できます。<code class=\"chip\">Body</code> の <code class=\"chip\">Collider(...)</code> に <code class=\"chip\">restitution</code> や <code class=\"chip\">friction</code> の値の指定を追加して、物体の動きの違いを試してみるのもよいでしょう。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">レイキャストと範囲検索</h3>"
@@ -5264,7 +5264,7 @@
               "text": "<p><code class=\"chip\">play_motion</code>은 기본적으로 반복 재생하며, <code class=\"chip\">loop=False</code>이면 한 번만 재생합니다. 원래 속도로 재생하려면 <code class=\"chip\">Mesh.from_glb</code>의 <code class=\"chip\">fps</code>와 <code class=\"chip\">pyxel.init</code>의 <code class=\"chip\">fps</code>를 맞추세요. GLB를 읽을 때 시간을 초에서 프레임으로 환산하기 때문입니다.</p>"
             },
             {
-              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> 예제의 <code class=\"chip\">play</code>는 재생할 <code class=\"chip\">Motion</code>을 전환합니다.</p>"
+              "text": "<p>모델 로드와 모션 재생 구현은 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>에서 확인할 수 있습니다. 함께 제공되는 편집용 프로젝트 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a>을 Blockbench에서 열어 모델의 형태나 텍스처를 바꿔 보는 것도 좋습니다.</p>"
             }
           ]
         },
@@ -5327,7 +5327,7 @@
               "text": "<p>콜라이더의 <code class=\"chip\">restitution</code>으로 반발 정도를, <code class=\"chip\">friction</code>으로 미끄러짐에 대한 저항을 조정할 수 있습니다. 충돌에 의한 회전도 계산하려면 <code class=\"chip\">rolls=True</code>를 지정하세요.</p>"
             },
             {
-              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> 예제의 <code class=\"chip\">on_collide</code>는 물체의 반발과 구르기를 구현합니다.</p>"
+              "text": "<p>충돌 응답 구현은 <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>의 <code class=\"chip\">Body.on_collide</code>에서 확인할 수 있습니다. <code class=\"chip\">Body</code>의 <code class=\"chip\">Collider(...)</code>에 <code class=\"chip\">restitution</code>이나 <code class=\"chip\">friction</code>의 값 지정을 추가하여 물체의 움직임이 어떻게 달라지는지 살펴보는 것도 좋습니다.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">레이캐스트와 범위 검색</h3>"
@@ -5927,7 +5927,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> repete a reprodução por padrão; <code class=\"chip\">loop=False</code> reproduz o movimento uma única vez. Para manter a velocidade original, defina o argumento <code class=\"chip\">fps</code> de <code class=\"chip\">Mesh.from_glb</code> com o mesmo valor do argumento <code class=\"chip\">fps</code> de <code class=\"chip\">pyxel.init</code>, pois os tempos do GLB são convertidos de segundos para quadros durante o carregamento.</p>"
             },
             {
-              "text": "<p>No exemplo <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>, <code class=\"chip\">play</code> troca o <code class=\"chip\">Motion</code> em reprodução.</p>"
+              "text": "<p>Você pode consultar as implementações do carregamento de modelos e da reprodução de movimentos em <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. Também pode abrir o projeto editável incluído, <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a>, no Blockbench e experimentar alterações na forma ou nas texturas do modelo.</p>"
             }
           ]
         },
@@ -5990,7 +5990,7 @@
               "text": "<p>Use <code class=\"chip\">restitution</code> do colisor para ajustar o rebote e <code class=\"chip\">friction</code> para ajustar a resistência ao deslizamento. Defina <code class=\"chip\">rolls=True</code> para calcular também a rotação causada pelas colisões.</p>"
             },
             {
-              "text": "<p>No exemplo <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>, <code class=\"chip\">on_collide</code> implementa rebotes e rolamentos.</p>"
+              "text": "<p>Você pode consultar uma implementação da resposta a colisões em <code class=\"chip\">Body.on_collide</code>, em <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. Também pode adicionar valores para <code class=\"chip\">restitution</code> ou <code class=\"chip\">friction</code> a <code class=\"chip\">Collider(...)</code> em <code class=\"chip\">Body</code> e observar as diferenças no movimento dos objetos.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Raycasts e consultas de sobreposição</h3>"
@@ -6590,7 +6590,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> по умолчанию повторяет движение циклически; с <code class=\"chip\">loop=False</code> оно воспроизводится один раз. Чтобы сохранить исходную скорость, задайте в <code class=\"chip\">Mesh.from_glb</code> аргументу <code class=\"chip\">fps</code> то же значение, что и аргументу <code class=\"chip\">fps</code> в <code class=\"chip\">pyxel.init</code>: при загрузке время GLB переводится из секунд в кадры.</p>"
             },
             {
-              "text": "<p>В примере <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> метод <code class=\"chip\">play</code> переключает воспроизводимый <code class=\"chip\">Motion</code>.</p>"
+              "text": "<p>Реализацию загрузки моделей и воспроизведения движений можно посмотреть в <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. Также можно открыть в Blockbench прилагаемый редактируемый проект <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a> и попробовать изменить форму или текстуры модели.</p>"
             }
           ]
         },
@@ -6653,7 +6653,7 @@
               "text": "<p>Свойство <code class=\"chip\">restitution</code> коллайдера регулирует силу отскока, а <code class=\"chip\">friction</code> — сопротивление скольжению. Укажите <code class=\"chip\">rolls=True</code>, чтобы также рассчитывать вращение, вызванное столкновениями.</p>"
             },
             {
-              "text": "<p>В примере <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> метод <code class=\"chip\">on_collide</code> реализует отскоки и качение.</p>"
+              "text": "<p>Реализацию реакции на столкновения можно посмотреть в <code class=\"chip\">Body.on_collide</code> в <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. Также можно добавить значения <code class=\"chip\">restitution</code> или <code class=\"chip\">friction</code> в вызов <code class=\"chip\">Collider(...)</code> в <code class=\"chip\">Body</code> и посмотреть, как меняется движение объектов.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Трассировка лучей и поиск пересечений</h3>"
@@ -7253,7 +7253,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> varsayılan olarak döngüde oynatır; <code class=\"chip\">loop=False</code> yalnızca bir kez oynatır. Orijinal hız için <code class=\"chip\">Mesh.from_glb</code> çağrısının <code class=\"chip\">fps</code> değeri ile <code class=\"chip\">pyxel.init</code> çağrısının <code class=\"chip\">fps</code> değerini eşitleyin; yükleme sırasında GLB zamanları saniyeden kareye dönüştürülür.</p>"
             },
             {
-              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> örneğinde <code class=\"chip\">play</code>, oynatılan <code class=\"chip\">Motion</code> nesnesini değiştirir.</p>"
+              "text": "<p>Model yükleme ve hareket oynatma kodunu <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> dosyasında inceleyebilirsiniz. Ayrıca birlikte verilen düzenlenebilir proje <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a> dosyasını Blockbench ile açıp modelin şeklini veya dokularını değiştirmeyi deneyebilirsiniz.</p>"
             }
           ]
         },
@@ -7316,7 +7316,7 @@
               "text": "<p>Çarpıştırıcının <code class=\"chip\">restitution</code> özelliği sekme miktarını, <code class=\"chip\">friction</code> özelliği kaymaya direnci ayarlar. Çarpışmanın neden olduğu dönüşü de hesaplamak için <code class=\"chip\">rolls=True</code> belirtin.</p>"
             },
             {
-              "text": "<p><a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> örneğinde <code class=\"chip\">on_collide</code>, sekme ve yuvarlanmayı uygular.</p>"
+              "text": "<p>Çarpışma tepkisinin kodunu <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> dosyasındaki <code class=\"chip\">Body.on_collide</code> metodunda inceleyebilirsiniz. Ayrıca <code class=\"chip\">Body</code> içindeki <code class=\"chip\">Collider(...)</code> çağrısına <code class=\"chip\">restitution</code> veya <code class=\"chip\">friction</code> değerleri ekleyerek nesnelerin hareketlerinin nasıl değiştiğini deneyebilirsiniz.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Işın atma ve örtüşme sorguları</h3>"
@@ -7916,7 +7916,7 @@
               "text": "<p><code class=\"chip\">play_motion</code> типово повторює рух циклічно, а <code class=\"chip\">loop=False</code> відтворює його один раз. Для початкової швидкості задайте однакові значення <code class=\"chip\">fps</code> у <code class=\"chip\">Mesh.from_glb</code> та <code class=\"chip\">fps</code> у <code class=\"chip\">pyxel.init</code>, оскільки під час завантаження час GLB переводиться із секунд у кадри.</p>"
             },
             {
-              "text": "<p>У прикладі <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> метод <code class=\"chip\">play</code> перемикає <code class=\"chip\">Motion</code> для відтворення.</p>"
+              "text": "<p>Реалізацію завантаження моделей і відтворення рухів можна переглянути в <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a>. Також можна відкрити в Blockbench доданий редагований проєкт <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a> і спробувати змінити форму чи текстури моделі.</p>"
             }
           ]
         },
@@ -7979,7 +7979,7 @@
               "text": "<p>Властивість <code class=\"chip\">restitution</code> колайдера регулює відскок, а <code class=\"chip\">friction</code> — опір ковзанню. Задайте <code class=\"chip\">rolls=True</code>, щоб обчислювати також обертання внаслідок зіткнення.</p>"
             },
             {
-              "text": "<p>У прикладі <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a> метод <code class=\"chip\">on_collide</code> реалізує відскоки й кочення.</p>"
+              "text": "<p>Реалізацію реакції на зіткнення можна переглянути в <code class=\"chip\">Body.on_collide</code> у <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c06_3d_physics.py\">c06_3d_physics.py</a>. Також можна додати значення <code class=\"chip\">restitution</code> або <code class=\"chip\">friction</code> до виклику <code class=\"chip\">Collider(...)</code> у <code class=\"chip\">Body</code> і подивитися, як змінюється рух об'єктів.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-raycast\">Променеві запити та пошук перекриттів</h3>"
