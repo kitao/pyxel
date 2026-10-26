@@ -149,8 +149,10 @@ def test_detailed_guide_selection_preserves_content(tmp_path):
         "sections": [
             {
                 "title": "Detailed guide",
+                "advanced": True,
                 "blocks": [
-                    {"text": "<h3>Subtopic</h3><h4>Detail</h4>"},
+                    {"text": "<h3>Subtopic</h3>", "advanced": True},
+                    {"text": "<h4>Detail</h4>"},
                     {
                         "text": '<ul><li><a href="../#s-dist">Package</a> <code>pyxel package</code></li></ul>'
                     },
@@ -180,8 +182,8 @@ def test_detailed_guide_selection_preserves_content(tmp_path):
     generate_docs.generate_from_html(html_path, json_path, "guide", "user-guide/cube")
     result = (generate_docs.DOCS_DIR / "guide.md").read_text()
     assert "Overview" in result
-    assert "## Detailed guide" in result
-    assert "### Subtopic\n" in result
+    assert "## Detailed guide ADV\n" in result
+    assert "### Subtopic ADV\n" in result
     assert "#### Detail\n" in result
     assert (
         "- [Package](https://kitao.dev/pyxel/user-guide/#s-dist) `pyxel package`"

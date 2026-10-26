@@ -138,6 +138,7 @@ test("API reference restores the Advanced preference after reload", () => {
         getItem: (key) => storage.get(key) ?? null,
         setItem: (key, value) => storage.set(key, value),
       },
+      window: { addEventListener() {} },
       buildPageHeader() {},
       buildVariantSwitch() {},
     });
@@ -191,6 +192,7 @@ test("API reference keeps working when browser storage is blocked", () => {
       },
     },
     localStorage: { getItem: blocked, setItem: blocked },
+    window: { addEventListener() {} },
     buildPageHeader() {},
     buildVariantSwitch() {},
   });
@@ -230,6 +232,7 @@ test("API categories expose stable targets for class links", () => {
       }),
     },
     localStorage: { getItem: () => null },
+    window: { addEventListener() {} },
     buildPageHeader() {},
     buildVariantSwitch() {},
   });

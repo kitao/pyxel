@@ -53,7 +53,8 @@
         document.getElementById("s-overview").innerHTML = `
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel Cube</strong>")}</p>
-          <p class="body mt-2">${t("overview_beginner").replace("{0}", link("https://kitao.dev/pyxel/user-guide/", t("base_guide")))}</p>`;
+          <p class="body mt-2">${t("overview_beginner").replace("{0}", link("https://kitao.dev/pyxel/user-guide/", t("base_guide")))}</p>
+          <p class="body mt-2">${t("overview_advanced")}</p>`;
 
         const guide = data.guides.find((guide) => guide.language === lang);
         document.getElementById("guide").innerHTML = renderGuide(guide);
@@ -63,16 +64,18 @@
       }
 
       function renderGuide(guide) {
+        const advanced =
+          ' <span class="adv-mark text-amber-500/70 text-[10px] leading-none ml-1.5 align-middle">ADV</span>';
         return guide.sections
           .map(
             (section) => `
               <section class="card" id="${esc(section.id)}">
-                <h2 class="section-title">${esc(section.title)}</h2>
+                <h2 class="section-title">${esc(section.title)}${section.advanced ? advanced : ""}</h2>
                 ${section.blocks
                   .map((block) =>
                     block.code !== undefined
                       ? code(block.code, block.syntax || "python")
-                      : `<div class="body mt-2">${block.text}</div>`,
+                      : `<div class="body mt-2">${block.advanced ? block.text.replace("</h3>", `${advanced}</h3>`) : block.text}</div>`,
                   )
                   .join("")}
               </section>`,

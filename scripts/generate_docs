@@ -963,13 +963,17 @@ def _transform_url(url, web_path=None):
 def _guide_html(guide):
     sections = []
     for section in guide["sections"]:
-        blocks = [f"<h2>{html.escape(section['title'])}</h2>"]
+        advanced = " ADV" if section.get("advanced") else ""
+        blocks = [f"<h2>{html.escape(section['title'])}{advanced}</h2>"]
         for block in section["blocks"]:
             if "code" in block:
                 syntax = block.get("syntax") or "python"
                 blocks.append(f"\n```{syntax}\n{block['code']}\n```\n")
             else:
-                blocks.append(block["text"])
+                text = block["text"]
+                if block.get("advanced"):
+                    text = text.replace("</h3>", " ADV</h3>")
+                blocks.append(text)
         sections.append("\n".join(blocks))
     return "\n".join(sections)
 

@@ -10,6 +10,8 @@
 
 For installation and basic usage, see the [Pyxel User Guide](https://kitao.dev/pyxel/user-guide/).
 
+Advanced content marked ADV can be skipped on your first read.
+
 ## Running Examples
 
 To run the examples locally, enter the following command in a terminal. It creates a `pyxel_examples` directory in the current directory and copies the examples into it. If a directory with that name already exists, it will be replaced, so move any edited files elsewhere first.
@@ -114,7 +116,7 @@ scale = Mat4.from_scale(Vec3(2, 2, 2))  # Double the size
 
 The components of `Mat4` cannot be changed directly either. Assign the result of an operation or transform method to a variable or property.
 
-### Quaternions ([Quat](https://kitao.dev/pyxel/api-reference/cube/#quat) Class)
+### Quaternions ([Quat](https://kitao.dev/pyxel/api-reference/cube/#quat) Class) ADV
 
 A **quaternion** is a value representing a rotation in 3D space. The `Quat` class stores a rotation as a quaternion.
 
@@ -374,7 +376,7 @@ To make a particular color transparent, pass its color index as the drawing meth
 
 In the [c02_basic_shapes.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py) example, `PlaneShape` uses `plane` and `SpriteShape` uses `sprite`.
 
-### Shape Data ([Primitive](https://kitao.dev/pyxel/api-reference/cube/#primitive) Class)
+### Shape Data ([Primitive](https://kitao.dev/pyxel/api-reference/cube/#primitive) Class) ADV
 
 **Shape data** describes vertex positions and the lines or faces that connect them. The `Primitive` class stores shape data made up of points, lines, or triangles.
 
@@ -473,7 +475,7 @@ Playback updates the `transform` of each part's node. It does not affect `actor.
 
 For implementations of model loading and motion playback, see [c04_mesh_and_motion.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py). You can also open the included editable project [assets/gazelle.bbmodel](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel) in Blockbench and try changing the model's shape or textures.
 
-## Physics Engine
+## Physics Engine ADV
 
 This section explains how to use the physics engine for falling under gravity, bouncing on collision, and rolling.
 
