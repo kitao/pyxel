@@ -35,8 +35,9 @@ def test_editor_manual_images_exist():
     data = json.loads(
         (ROOT_DIR / "web/editor-manual/editor-manual.json").read_text(encoding="utf-8")
     )
-    images = set(re.findall(r"images/[\w.-]+\.(?:png|gif)", page))
-    images.update(re.findall(r"images/[\w.-]+\.(?:png|gif)", json.dumps(data)))
+    local_image = r"(?<![\w/.-])images/[\w.-]+\.(?:png|gif)"
+    images = set(re.findall(local_image, page))
+    images.update(re.findall(local_image, json.dumps(data)))
     for editor, index in re.findall(r'areaCrop\("(\w+)", (\d+)\)', page):
         images.add(
             f"images/{editor}_{data['annotations'][editor][int(index)]['id']}.png"
