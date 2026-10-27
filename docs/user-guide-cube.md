@@ -359,7 +359,7 @@ self.box(Mat4.IDENTITY, Vec3(30, 30, 30), self.texture)
 
 `plane` suits signs on walls, while `sprite` suits pixel-art characters, explosions, and similar effects.
 
-To apply the same image to a plane with a width and height of 30, use the following code in `on_draw` to call `plane`. `uvs` gives the image coordinates corresponding to the plane's top-left, top-right, bottom-left, and bottom-right corners, with (0, 0) at the image's top-left and (1, 1) at its bottom-right. Change this range to use only part of the image.
+To apply the same image to a plane with a width and height of 30, use the following code in `on_draw` to call `plane`. `uvs` gives the UV coordinates on the image corresponding to the plane's top-left, top-right, bottom-left, and bottom-right corners, with (0, 0) at the image's top-left and (1, 1) at its bottom-right. Change this range to use only part of the image.
 
 ```python
 uvs = ((0, 0), (1, 0), (0, 1), (1, 1))
@@ -376,9 +376,9 @@ To make a particular color transparent, pass its color index as the drawing meth
 
 In the [c02_basic_shapes.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c02_basic_shapes.py) example, `PlaneShape` uses `plane` and `SpriteShape` uses `sprite`.
 
-### Shape Data ([Primitive](https://kitao.dev/pyxel/api-reference/cube/#primitive) Class) ADV
+### Primitives ([Primitive](https://kitao.dev/pyxel/api-reference/cube/#primitive) Class) ADV
 
-**Shape data** describes vertex positions and the lines or faces that connect them. The `Primitive` class stores shape data made up of points, lines, or triangles.
+**Primitives** are the basic shapes used for drawing, such as points, lines, and triangles. The `Primitive` class stores their vertex positions and how the vertices are connected.
 
 To define a custom shape, pass a drawing mode, a list of vertex coordinates, and a list of vertex indices to `Primitive(mode, positions, indices)`. The `mode` argument selects whether the vertices are drawn as points, lines, or triangles. `positions` is a flat list of vertex coordinates in the form `[x0, y0, z0, x1, y1, z1, ...]`. For triangles, for example, set `mode` to `Primitive.MODE_TRIANGLES` and supply three vertex indices per face in `indices`.
 
@@ -572,7 +572,7 @@ GLB loading supports the following features and has the following limitations.
   Triangle geometry, parent-child relationships between parts, and translation, rotation, and scaling are supported. Loading fails if the geometry uses a drawing mode other than triangles.
 - **Colors and textures**
 
-  GLB stores surface colors, textures, and related settings as **materials**. Pyxel Cube can load multiple materials and use each material's base color (the basic surface color) and image. If there are multiple sets of image coordinates, only the first set (`TEXCOORD_0`) is loaded.
+  GLB stores surface colors, textures, and related settings as **materials**. Pyxel Cube can load multiple materials and use each material's base color (the basic surface color) and image. If there are multiple sets of UV coordinates, only the first set (`TEXCOORD_0`) is loaded.
 
   Colors absent from `pyxel.colors` are converted to similar colors when loaded. To use a custom palette, assign a list of RGB values for 1-256 colors to `pyxel.colors[:]` before loading.
 
