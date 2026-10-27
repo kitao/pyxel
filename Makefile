@@ -30,6 +30,7 @@
 #
 # Web pages:
 #   - Build: make pages
+#   - Social image: node web/scripts/build-og.mjs
 #   - Test: npm test --prefix web (Node.js), npm run test:browser --prefix web
 #
 
