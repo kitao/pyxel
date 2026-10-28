@@ -49,25 +49,66 @@
         box-sizing: border-box;
         max-width: 848px;
         margin: 0 auto;
-        padding: 32px 24px;
+        padding: 10px 24px 32px;
       }
 
       header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: start;
+        gap: 16px 12px;
         margin: 0 0 16px;
         padding-bottom: 8px;
         border-bottom: 1px solid #3d444d;
       }
 
       h1 {
+        grid-column: 1 / -1;
         margin: 0;
       }
 
+      .parent-link {
+        display: inline-flex;
+        align-items: center;
+        justify-self: start;
+        min-height: 32px;
+        margin-left: -2px;
+        padding: 0 2px;
+        color: #a4afbd;
+        font-size: 13px;
+        font-weight: 500;
+        text-underline-offset: 3px;
+      }
+
+      .parent-link:hover {
+        color: #79b8ff;
+      }
+
+      .parent-link:focus-visible {
+        outline: none;
+      }
+
+      .parent-link:focus-visible span {
+        outline: 1px solid #8b949e;
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 480px) {
+        main {
+          padding-top: 8px;
+        }
+
+        header {
+          row-gap: 14px;
+        }
+
+        .parent-link {
+          min-height: 36px;
+        }
+      }
+
       .language-switch {
-        max-width: 50%;
+        max-width: 100%;
         padding: 4px 8px;
         border: 1px solid #3d444d;
         border-radius: 8px;
@@ -229,14 +270,9 @@
   <body>
     <main>
       <header>
-        <h1>
-          <img
-            src="../docs/images/pyxel_logo_152x64.png"
-            alt="Pyxel"
-            width="152"
-            height="64"
-          />
-        </h1>
+        <a class="parent-link" href="https://kitao.dev/"
+          ><span>kitao.dev</span></a
+        >
         <select
           id="lang-select"
           class="language-switch"
@@ -256,6 +292,14 @@
           <option value="tr" lang="tr">Türkçe</option>
           <option value="uk" lang="uk">Українська</option>
         </select>
+        <h1>
+          <img
+            src="../docs/images/pyxel_logo_152x64.png"
+            alt="Pyxel"
+            width="152"
+            height="64"
+          />
+        </h1>
       </header>
       <p class="badges">
         <a href="https://github.com/kitao/pyxel"
