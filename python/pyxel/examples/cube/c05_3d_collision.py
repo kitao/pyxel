@@ -126,12 +126,17 @@ class Player(Node):
 
     def on_collide(self, other, contact):
         if "coin" in other.tags:
+            # Contacts for this update are already queued; collect each coin once.
+            if not other.active:
+                return
             other.active = other.visible = False
             self.coins += 1
             pyxel.play(1, 1)
             return
 
         if other is self.parent.goal:
+            if not other.active:
+                return
             other.active = False
             pyxel.play(2, 2)
             return
@@ -190,6 +195,7 @@ class App(Node):
         # Placement markers are saved with the stage in the model editor.
         self.coins = stage.find_by_name("Coins")[0].children
         coin_mesh = Mesh.from_glb("assets/garden_coin.glb")
+        # Share geometry, but give each coin its own collision and motion state.
         for coin in self.coins:
             coin.add_child(Node.from_mesh(coin_mesh))
             coin.collider = Collider(radius=5, trigger=True, mass=0)

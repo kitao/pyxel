@@ -8,7 +8,7 @@ use crate::cube::motion::{
     CubicQuatKey, CubicVec3Key, Motion, MotionChannel, MotionInterpolation, MotionTarget,
     MotionValues,
 };
-use crate::cube::primitive::{Primitive, RcPrimitive, MODE_TRIANGLES};
+use crate::cube::primitive::{Primitive, RcPrimitive, CULL_BACK, CULL_NONE, MODE_TRIANGLES};
 use crate::cube::quat::Quat;
 use crate::cube::vec3::Vec3;
 use crate::image::{Color, Image, RcImage, Rgb24};
@@ -774,6 +774,11 @@ fn import_primitive(
         p.uvs = uvs;
         p.indices = indices;
         p.mode = MODE_TRIANGLES;
+        p.cull = if primitive.material().double_sided() {
+            CULL_NONE
+        } else {
+            CULL_BACK
+        };
 
         p.compute_normals();
         if let Some(vertex_normals) = vertex_normals {

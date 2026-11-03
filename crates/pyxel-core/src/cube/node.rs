@@ -56,6 +56,9 @@ impl Node {
     // Hierarchy operations
 
     pub fn add_child(parent: &RcNode, child: &RcNode) -> bool {
+        if rc_ref!(parent).destroyed || rc_ref!(child).destroyed {
+            return false;
+        }
         if Rc::ptr_eq(parent, child) || Self::is_ancestor_of(child, parent) {
             return false;
         }

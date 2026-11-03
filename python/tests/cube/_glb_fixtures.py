@@ -344,6 +344,7 @@ def write_single_texture_motion_glb(
     tangent_attribute: bool = False,
     alpha_mode: str | None = None,
     alpha_cutoff: float | None = None,
+    double_sided: bool | None = None,
 ) -> Path:
     positions = struct.pack(
         "<ffffffffffff",
@@ -438,6 +439,8 @@ def write_single_texture_motion_glb(
             material["alphaMode"] = alpha_mode
         if alpha_cutoff is not None:
             material["alphaCutoff"] = alpha_cutoff
+        if double_sided is not None:
+            material["doubleSided"] = double_sided
         materials.append(material)
     if normal_texture:
         materials[0]["normalTexture"] = {"index": 0}

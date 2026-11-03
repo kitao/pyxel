@@ -460,7 +460,12 @@ test("parse payload uses embedded pixels and leaves unrelated project objects in
 
 // Execute the registered action as well as the document helpers. This catches an
 // accidental pre-refresh, which would overwrite edits or require missing originals.
-function nativeHarness(document, selected = "a", deferTextures = false) {
+function nativeHarness(
+  document,
+  selected = "a",
+  deferTextures = false,
+  modules = {},
+) {
   const vm = require("node:vm");
   const fs = require("node:fs");
   const script = fs.readFileSync(
@@ -477,6 +482,7 @@ function nativeHarness(document, selected = "a", deferTextures = false) {
   const exports = [];
   const sandbox = {
     require(name) {
+      if (Object.hasOwn(modules, name)) return modules[name];
       if (name === "fs")
         return {
           readFileSync() {
@@ -638,6 +644,105 @@ test("native Unique action never refreshes and retains authored geometry, textur
   assert.equal(uniqueTexture.relative_path, undefined);
   assert.equal(uniqueTexture.internal, true);
 });
+
+test("Windows registrations save portable visual and collision paths", async () => {
+  const path = require("node:path").win32;
+  const original = source("data:image/png;base64,AAAA");
+  original.animations = [];
+  const files = new Map(
+    ["tree", "solid"].map((name) => [
+      `C:\\game\\models\\${name}.bbmodel`,
+      JSON.stringify(original),
+    ]),
+  );
+  const document = scene();
+  document[KEY] = {};
+  document.groups = [];
+  document.outliner = [];
+  const harness = nativeHarness(document, null, false, {
+    path,
+    fs: {
+      existsSync: (filename) => files.has(filename),
+      readFileSync: (filename) => {
+        assert(files.has(filename), filename);
+        return files.get(filename);
+      },
+    },
+  });
+  harness.sandbox.Project.save_path = "C:\\game\\scene.bbmodel";
+  let dialog;
+  harness.sandbox.Dialog = function (definition) {
+    dialog = definition;
+    return { show() {} };
+  };
+  await harness.actions.pyxel_cube_link();
+  dialog.onConfirm.call(
+    { hide() {} },
+    {
+      id: "tree",
+      registered: "",
+      visual: "C:\\game\\models\\tree.bbmodel",
+      collision: "C:\\game\\models\\solid.bbmodel",
+      pivot: [0, 0, 0],
+    },
+  );
+  await new Promise(setImmediate);
+  assert.deepEqual(harness.errors, []);
+  assert.deepEqual(harness.parsed()[KEY].tree, {
+    visual: "models/tree.bbmodel",
+    collision: "models/solid.bbmodel",
+    pivot: [0, 0, 0],
+  });
+});
+
+for (const legacy of [false, true]) {
+  for (const literalBackslash of legacy ? [false, true] : [false]) {
+    test(`POSIX refresh and dialog resolve ${legacy ? "Windows" : "portable"} registrations, native filename ${literalBackslash}`, async () => {
+      const path = require("node:path").posix;
+      const original = source("data:image/png;base64,AAAA");
+      original.animations = [];
+      const separator = legacy ? "\\" : "/";
+      const document = scene();
+      document.groups = document.groups.slice(0, 1);
+      document.outliner = document.outliner.slice(0, 1);
+      document[KEY] = {
+        tree: {
+          visual: `models${separator}tree.bbmodel`,
+          collision: `models${separator}solid.bbmodel`,
+          pivot: [0, 0, 0],
+        },
+      };
+      const filenames = ["tree", "solid"].map(
+        (name) => `/game/models${literalBackslash ? "\\" : "/"}${name}.bbmodel`,
+      );
+      const reads = [];
+      const harness = nativeHarness(document, "a", false, {
+        path,
+        fs: {
+          existsSync: (filename) => filenames.includes(filename),
+          readFileSync: (filename) => {
+            assert(filenames.includes(filename), filename);
+            reads.push(filename);
+            return JSON.stringify(original);
+          },
+        },
+      });
+      harness.sandbox.Project.save_path = "/game/scene.bbmodel";
+      harness.sandbox.Project[KEY] = document[KEY];
+      let dialog;
+      harness.sandbox.Dialog = function (definition) {
+        dialog = definition;
+        return { show() {} };
+      };
+      await harness.actions.pyxel_cube_link();
+      assert.equal(dialog.form.visual.value, filenames[0]);
+      assert.equal(dialog.form.collision.value, filenames[1]);
+      await harness.actions.pyxel_cube_refresh();
+      assert.deepEqual(harness.errors, []);
+      assert.deepEqual(reads, filenames);
+    });
+  }
+}
 
 test("native apply normalizes clean baselines without blessing edits remaining after partial unique", async () => {
   for (const dirty of [false, true]) {

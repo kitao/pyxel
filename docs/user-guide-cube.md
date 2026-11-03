@@ -215,15 +215,21 @@ Setting a child node's `transform` transforms it relative to its parent. You can
 
 Coordinates relative to a node are called **local coordinates**; coordinates relative to the entire 3D space are called **world coordinates**. `node.world_transform` returns the transform matrix in world coordinates, including the parent's transform.
 
+`node.forward`, `right`, and `up` give directions in the parent's coordinate system. Use `to_world_dir` and `normalize` as follows to obtain a world-space forward direction for a collider's velocity or a raycast.
+
+```python
+direction = Vec3.FORWARD.to_world_dir(node.world_transform).normalize()
+```
+
 ### Controlling Updates and Visibility
 
-`node.active = True` enables updates and collision detection; `node.active = False` disables them. If updates are disabled for a parent, its children and all nodes below them also skip updates and collision detection. This does not change the children's `active` values or whether drawing is enabled.
+`node.active` controls update hooks, motion playback, and collision physics for the node and its descendants: `True` enables them and `False` skips them. It does not change the children's `active` values or visibility. A motion playing on an active ancestor can still change the transforms of inactive parts.
 
 `node.visible = True` makes a node visible; `node.visible = False` hides it. If a parent is hidden, its children and all nodes below them are not drawn either. This does not change the children's `visible` values or whether updates and collision detection are enabled.
 
 ### Destroying and Detaching Nodes
 
-`node.destroy()` marks this node and all nodes below it as destroyed. At the end of update processing, it calls each node's `on_destroy` and removes their parent-child relationships. Python instances remain as long as references to them exist.
+`node.destroy()` permanently marks this node and its descendants as destroyed. At the end of the update, each node's `on_destroy` runs and its tree links are removed. Python instances remain while references exist, but destroyed nodes cannot be added as children or receive new children.
 
 Calling the parent node's `remove_child(node)` detaches a node without destroying it. You can add it as a child again with `add_child(node)`.
 
@@ -366,7 +372,7 @@ uvs = ((0, 0), (1, 0), (0, 1), (1, 1))
 self.plane(Mat4.IDENTITY, self.texture, uvs, 30, 30)
 ```
 
-To keep the image facing the camera, replace the `plane` call above with the following `sprite` call. Images drawn with `sprite` are not shaded.
+To keep the image facing the camera, replace the `plane` call above with the following `sprite` call. Camera-facing shapes (`sprite`, `circ`, and `circb`) have world-unit sizes that are unaffected by node or ancestor scaling. Images drawn with `sprite` are not shaded.
 
 ```python
 self.sprite(Vec3.ZERO, self.texture, uvs, 30, 30)
@@ -471,7 +477,7 @@ for motion in mesh.motions:
 
 Playback updates the `transform` of each part's node. It does not affect `actor.transform`, which positions the model as a whole.
 
-`play_motion` loops by default; `loop=False` plays the motion once. To play at the original speed, set `Mesh.from_glb`'s `fps` argument to the same value as `pyxel.init`'s `fps` argument, because GLB times are converted from seconds to frames when loaded.
+`play_motion` loops by default. With `loop=False`, playback stops at the end and leaves the last pose; later updates no longer overwrite changes you make to the parts. To play at the original speed, match the `fps` arguments of `Mesh.from_glb` and `pyxel.init`, because GLB times are converted from seconds to frames when loaded.
 
 For implementations of model loading and motion playback, see [c04_mesh_and_motion.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py). You can also open the included editable project [assets/gazelle.bbmodel](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel) in Blockbench and try changing the model's shape or textures.
 
@@ -483,7 +489,7 @@ This section explains how to use the physics engine for falling under gravity, b
 
 A **collider** is a shape used to detect collisions with an object. The `Collider` class stores this shape and physical properties such as mass and friction.
 
-Create a collider, such as a sphere, capsule, or box, separately from the shape you draw, and assign it to the node's `collider` property.
+Create a separate sphere, capsule, or box collider for each node and assign it to `collider`. A `Collider` stores velocity as well as shape, so sharing one between nodes also shares their motion state. `Mesh` geometry can be shared independently.
 
 The following example creates a box collider with a width, height, and depth of 26 and a mass of 1 during node initialization.
 
@@ -527,6 +533,8 @@ In the [c05_3d_collision.py](https://github.com/kitao/pyxel/blob/main/python/pyx
 ### Responding to Collisions
 
 When colliders touch, the node's `on_collide(other, contact)` is called with the other node and contact information ([`Contact`](https://kitao.dev/pyxel/api-reference/cube/#contact)). In the contact information, `normal` is the direction of separation in world coordinates, and `depth` is the amount needed to correct the overlap.
+
+Contacts are computed together before `on_collide` is called. Setting `active=False` inside a callback does not cancel the remaining notifications for that update. For an item that can be collected once, check whether it has already been collected, as in `Player.on_collide` in [c05_3d_collision.py](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c05_3d_collision.py).
 
 Separation and bouncing are not applied automatically. In `on_collide`, adjust the node's position and the collider's velocity and angular velocity. The contact's `delta_velocity` and `delta_angular_velocity` give the collision corrections to velocity and angular velocity. The following example assumes that the parent node's `world_transform` is `Mat4.IDENTITY`.
 
@@ -572,7 +580,7 @@ GLB loading supports the following features and has the following limitations.
   Triangle geometry, parent-child relationships between parts, and translation, rotation, and scaling are supported. Loading fails if the geometry uses a drawing mode other than triangles.
 - **Colors and textures**
 
-  GLB stores surface colors, textures, and related settings as **materials**. Pyxel Cube can load multiple materials and use each material's base color (the basic surface color) and image. If there are multiple sets of UV coordinates, only the first set (`TEXCOORD_0`) is loaded.
+  GLB stores surface colors, textures, and related settings as **materials**. Pyxel Cube can load multiple materials and use each material's base color (the basic surface color) and image. Materials with `doubleSided` set to `true` are drawn from both sides; `false` or omission hides their back faces. If there are multiple sets of UV coordinates, only the first set (`TEXCOORD_0`) is loaded. Textures use nearest-neighbor sampling and clamp UV coordinates outside 0-1 to the image edges; glTF sampler filter and wrap settings are ignored. Bake repeating patterns into the image and keep their UVs within 0-1.
 
   Colors absent from `pyxel.colors` are converted to similar colors when loaded. To use a custom palette, assign a list of RGB values for 1-256 colors to `pyxel.colors[:]` before loading.
 

@@ -170,3 +170,58 @@ def test_empty_clip_restores_animation_owned_parts(animated_mesh):
     model.apply_motion(animated_mesh.motions[0], 30, loop=False)
     model.play_motion(animated_mesh.motions[2])
     assert model.children[0].transform.pos == Vec3(3, 0, 0)
+
+
+@pytest.mark.parametrize(
+    "start_frame,speed,endpoint",
+    [(29, 1, 5), (29, 4, 5), (1, -1, 3), (1, -4, 3)],
+)
+def test_nonloop_motion_stops_at_endpoint_and_releases_pose(
+    animated_mesh, start_frame, speed, endpoint
+):
+    model = Node.from_mesh(animated_mesh)
+    actor = model.children[0]
+    model.play_motion(
+        animated_mesh.motions[0], loop=False, start_frame=start_frame, speed=speed
+    )
+    model.update()
+    assert actor.transform.pos == Vec3(endpoint, 0, 0)
+    model.update()
+    assert actor.transform.pos == Vec3(endpoint, 0, 0)
+    actor.transform = Mat4.from_translation(Vec3(123, 0, 0))
+    model.update()
+    assert actor.transform.pos == Vec3(123, 0, 0)
+
+
+@pytest.mark.parametrize("start_frame,speed", [(30, 1), (31, 1), (0, -1), (-1, -1)])
+def test_nonloop_motion_starting_at_finished_endpoint_releases_pose(
+    animated_mesh, start_frame, speed
+):
+    model = Node.from_mesh(animated_mesh)
+    model.play_motion(
+        animated_mesh.motions[0], loop=False, start_frame=start_frame, speed=speed
+    )
+    actor = model.children[0]
+    assert actor.transform.pos == Vec3(5 if speed > 0 else 3, 0, 0)
+    actor.transform = Mat4.from_translation(Vec3(123, 0, 0))
+    model.update()
+    assert actor.transform.pos == Vec3(123, 0, 0)
+
+
+def test_nonloop_motion_can_pause_inside_clip_and_restart_after_finishing(
+    animated_mesh,
+):
+    model = Node.from_mesh(animated_mesh)
+    actor = model.children[0]
+    motion = animated_mesh.motions[0]
+    model.play_motion(motion, loop=False, start_frame=15, speed=0)
+    actor.transform = Mat4.IDENTITY
+    model.update()
+    assert actor.transform.pos == Vec3(4, 0, 0)
+    model.play_motion(motion, loop=False, start_frame=29)
+    model.update()
+    assert actor.transform.pos == Vec3(5, 0, 0)
+    model.play_motion(motion, loop=False)
+    model.update()
+    # Linear interpolation and matrix storage round to f32.
+    assert actor.transform.pos.x == pytest.approx(3 + 2 / 30, abs=3e-7)

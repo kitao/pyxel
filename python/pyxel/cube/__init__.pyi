@@ -329,7 +329,7 @@ class RaycastHit:
 class Node:
     name: str
     transform: Mat4
-    active: bool  # parent-dominant; False halts update + collision
+    active: bool  # parent-dominant; gates on_update, playback, and physics
     visible: bool  # parent-dominant; False halts drawing
     opacity: float  # 0-1; multiplied by ancestors and each draw command's dither
     # Camera and shading inherit the closest non-None ancestor value.
