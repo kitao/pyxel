@@ -837,6 +837,12 @@ assert len(coin_channels) == 2
 assert len(goal_channels) == 1
 assert goal_channels[0] not in coin_channels
 assert pyxel.play_pos(goal_channels[0]) is not None
+# Already computed contacts may still arrive after an item becomes inactive.
+previous_calls = list(calls)
+scene.player.on_collide(coins[0], None)
+scene.player.on_collide(scene.goal, None)
+assert scene.player.coins == 2
+assert calls == previous_calls
 pyxel.set_btn(pyxel.KEY_R, True)
 old_player = app.player
 step()

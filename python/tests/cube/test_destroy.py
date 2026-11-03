@@ -61,6 +61,31 @@ def test_destroying_update_root_fires_once():
     assert _DestroyTracker.fire_log == ["root"]
 
 
+@pytest.mark.parametrize("processed", [False, True])
+@pytest.mark.parametrize("destroy_parent", [False, True])
+def test_add_child_rejects_destroyed_nodes_without_reparenting(
+    processed, destroy_parent
+):
+    old_parent, new_parent, child = Node(), Node(), Node()
+    old_parent.add_child(child)
+    destroyed = new_parent if destroy_parent else child
+    destroyed.destroy()
+    if processed:
+        destroyed.update()
+    previous_parent = child.parent
+    previous_children = old_parent.children
+
+    with pytest.raises(
+        ValueError, match="^add_child requires nodes that are not destroyed$"
+    ):
+        new_parent.add_child(child)
+
+    assert child.parent is previous_parent
+    assert old_parent.children == previous_children
+    assert new_parent.children == ()
+    assert destroyed.destroyed
+
+
 def test_direct_subtree_update_cleans_up_under_inactive_ancestor():
     root_node, root, _mid, _leaf = _setup_root_with_subtree()
     root_node.active = False

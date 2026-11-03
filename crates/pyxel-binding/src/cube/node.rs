@@ -61,6 +61,16 @@ pub struct Node {
     motion_player: RefCell<Option<MotionPlayer>>,
 }
 
+impl MotionPlayer {
+    fn is_finished(&self) -> bool {
+        let length = rc_ref!(&self.motion).length;
+        !self.looping
+            && (length <= 0.0
+                || (self.speed >= 0.0 && self.frame >= length)
+                || (self.speed < 0.0 && self.frame <= 0.0))
+    }
+}
+
 impl Clone for Node {
     fn clone(&self) -> Self {
         Python::try_attach(|py| Self {
@@ -627,7 +637,12 @@ impl Node {
     fn add_child(slf: Bound<'_, Self>, py: Python<'_>, node: Py<Node>) -> PyResult<()> {
         let node_inner = node.bind(py).borrow().inner.clone();
         if !InnerNode::add_child(&slf.borrow().inner, &node_inner) {
-            return Err(PyValueError::new_err("add_child would create a cycle"));
+            let message = if slf.borrow().inner_ref().destroyed || rc_ref!(&node_inner).destroyed {
+                "add_child requires nodes that are not destroyed"
+            } else {
+                "add_child would create a cycle"
+            };
+            return Err(PyValueError::new_err(message));
         }
         let previous_parent = node.bind(py).borrow().detach_from_parent_py(py);
         let self_py: Py<Node> = slf.clone().unbind();
@@ -704,12 +719,14 @@ impl Node {
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
         Self::reset_motion_pose(&self_py, py, &instance);
         Self::apply_motion_inner(&self_py, py, &instance, &motion_inner, start_frame, r#loop);
-        *self_py.bind(py).borrow().motion_player.borrow_mut() = Some(MotionPlayer {
+        let player = MotionPlayer {
             motion: motion_inner,
             frame: start_frame,
             looping: r#loop,
             speed,
-        });
+        };
+        *self_py.bind(py).borrow().motion_player.borrow_mut() =
+            (!player.is_finished()).then_some(player);
         Ok(())
     }
 
@@ -1369,7 +1386,8 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
                 player.frame,
                 player.looping,
             );
-            *node_py.bind(node.py()).borrow().motion_player.borrow_mut() = Some(player);
+            *node_py.bind(node.py()).borrow().motion_player.borrow_mut() =
+                (!player.is_finished()).then_some(player);
         }
 
         push_children_reverse(node_bound, py, &mut stack);

@@ -564,6 +564,13 @@
     return path.dirname(Project.save_path);
   }
 
+  function resolveModelPath(base, filename) {
+    const native = path.resolve(base, filename);
+    // Keep literal POSIX backslashes before trying older Windows registrations.
+    if (fs.existsSync(native) || path.sep === "\\") return native;
+    return path.resolve(base, filename.replaceAll("\\", "/"));
+  }
+
   function readModel(filename) {
     const document = JSON.parse(fs.readFileSync(filename, "utf8"));
     for (const texture of document.textures || []) {
@@ -595,7 +602,9 @@
       sources[id] = {};
       for (const role of ["visual", "collision"]) {
         if (definition[role])
-          sources[id][role] = readModel(path.resolve(base, definition[role]));
+          sources[id][role] = readModel(
+            resolveModelPath(base, definition[role]),
+          );
       }
     }
     return refresh(model, sources, guid);
@@ -627,7 +636,9 @@
     let shownId = selected?.[REF] || "";
     const initial = registry[shownId] || {};
     const absolute = (filename) =>
-      filename ? path.resolve(base, filename) : "";
+      filename ? resolveModelPath(base, filename) : "";
+    const relative = (filename) =>
+      path.relative(base, filename).split(path.sep).join("/");
 
     new Dialog({
       id: "pyxel_cube_reference",
@@ -691,10 +702,8 @@
             throw new Error("Choose the original .bbmodel file.");
 
           model[KEY][id] = {
-            visual: path.relative(base, values.visual),
-            collision: values.collision
-              ? path.relative(base, values.collision)
-              : "",
+            visual: relative(values.visual),
+            collision: values.collision ? relative(values.collision) : "",
             pivot: values.pivot,
           };
 

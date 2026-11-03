@@ -743,7 +743,7 @@ Local transform relative to the parent.
 
 ### `active` — variable
 
-When False, stops update and collision for this node and its descendants.
+When False, skips this node's and its descendants' on_update, motion playback, and collision physics. An active ancestor's motion can still change their part transforms. Collision callback timing is described under update().
 
 - **Type:** `bool`
 
@@ -803,19 +803,19 @@ True once destroy() has been called. Remains True after the node is detached.
 
 ### `forward` — variable
 
-The transform's forward direction (-Z axis) as a unit vector.
+The transform's forward direction (-Z axis) as a unit vector, in the parent's coordinate system.
 
 - **Type:** `Vec3`
 
 ### `right` — variable
 
-The transform's right direction (+X axis) as a unit vector.
+The transform's right direction (+X axis) as a unit vector, in the parent's coordinate system.
 
 - **Type:** `Vec3`
 
 ### `up` — variable
 
-The transform's up direction (+Y axis) as a unit vector.
+The transform's up direction (+Y axis) as a unit vector, in the parent's coordinate system.
 
 - **Type:** `Vec3`
 
@@ -849,7 +849,7 @@ Create an independent model instance beneath a new identity placement root. Impo
 
 ### `add_child(node)` — function
 
-Add a node as a child. A node that already has a parent is reparented.
+Add a node as a child, keeping its local transform. A node with a parent is reparented. Raises ValueError if either node is destroyed or the attachment would create a cycle.
 
 **Parameters:**
 
@@ -884,7 +884,7 @@ Start per-update playback of a Motion on this Node.from_mesh() subtree.
 **Parameters:**
 
 - `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
-- `loop` (*bool*) — When True, wrap playback inside the clip length. Defaults to True.
+- `loop` (*bool*) — When True, loop playback. When False, stop at the end in the playback direction and leave the last pose without further writes. Negative speed stops at frame 0. A zero-length clip stops immediately. Defaults to True.
 - `speed` (*float*) — Frames advanced per update. Defaults to 1.0.
 - `start_frame` (*float*) — Initial frame sampled when playback starts. Defaults to 0.0.
 
@@ -1061,7 +1061,7 @@ Draw a filled circle that always faces the camera.
 **Parameters:**
 
 - `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in world units.
+- `r` (*float*) — Radius in world units, unaffected by node or ancestor scaling.
 - `col` (*int*) — Color number.
 
 ### `circb(pos, r, col)` — function
@@ -1071,7 +1071,7 @@ Draw a circle outline that always faces the camera.
 **Parameters:**
 
 - `pos` (*Vec3*) — Center position.
-- `r` (*float*) — Radius in world units.
+- `r` (*float*) — Radius in world units, unaffected by node or ancestor scaling.
 - `col` (*int*) — Color number.
 
 ### `elli(mat, w, h, col)` — function
@@ -1171,6 +1171,8 @@ Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 - `colkey` (*int | None*) — Transparent color. Defaults to None.
 - `rotate` (*float*) — Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.
 
+**Note:** Width and height are in world units. Node and ancestor transforms move the center but do not scale the sprite's size.
+
 ### `prim(mat, primitive, col_img=7, *, colkey=None)` — function *(Advanced)*
 
 Draw a Primitive asset with its own mode and culling.
@@ -1198,6 +1200,8 @@ Draw a screen-space string centered at the projected position. Glyphs keep their
 Advance this subtree by one frame: on_update hooks, node motion playback, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.
 
 **Note:** on_update: At each hook traversal, visit the nodes present at its start at most once, in the original tree order. Check current subtree membership and ancestor active state before each call. Nodes added during that traversal join the next traversal; existing nodes enabled before their turn can run immediately.
+
+on_collide: Compute all contacts before delivering callbacks. Changes to active or tree membership during a callback do not cancel contacts already computed for this update. Guard one-shot events such as item collection against repeated callbacks.
 
 ### `draw(x, y, w, h, target=None)` — function
 
@@ -1572,7 +1576,9 @@ mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img
 node = Node.from_mesh(mesh)
 ```
 
-**Note:** Part-list attributes return copies. To edit a list, assign the modified list back to the attribute; the Primitive objects within it remain shared. Imported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image; col_img exposes the first imported texture, not all material slots.
+**Note:** Part-list attributes return copies. Edit entries and assign the list back without changing the part count; the Primitive objects remain shared. To change the part count, create a new Mesh.
+
+Imported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image. For an imported mesh, col_img exposes the first material's color or image, even if that material is unused; it does not expose all material slots.
 
 ### `primitives` — variable *(Advanced)*
 
@@ -1635,7 +1641,9 @@ mesh = Mesh.from_glb("actor.glb", colkey=0)
 actor = Node.from_mesh(mesh)
 ```
 
-**Note:** This targets Blockbench's GLTF Model export with Binary (.glb), embedded textures, and armature off; it is not a general glTF loader. Supported vertex attributes are POSITION, NORMAL, and TEXCOORD_0, and LINEAR, STEP, and CUBICSPLINE transform animation channels are supported. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted or collides with opaque pixels, an unused current palette color is selected when possible. Unsupported display features such as non-base-color material textures, alpha blending, skins, morph targets, material animation, matrix transforms, missing materials, and other vertex attributes print console warnings and fall back to the closest displayable base mesh or material. External files, invalid buffers, missing POSITION, missing TEXCOORD_0 for textured primitives, invalid indices, non-triangle primitive modes, morph-target weight animations, and malformed triangle data still raise errors.
+**Note:** This targets Blockbench's GLTF Model export with Binary (.glb), embedded textures, and armature off; it is not a general glTF loader. Supported vertex attributes are POSITION, NORMAL, and TEXCOORD_0, and LINEAR, STEP, and CUBICSPLINE transform animation channels are supported.
+
+When a material has doubleSided=true, its primitives use CULL_NONE; false or omission uses CULL_BACK. Textures use nearest-neighbor sampling and clamp UV coordinates outside 0-1 to the image edges; glTF sampler filter and wrap settings are ignored. Bake repeating patterns into the image and keep their UVs within 0-1. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted or collides with opaque pixels, an unused current palette color is selected when possible. Unsupported display features such as non-base-color material textures, alpha blending, skins, morph targets, material animation, matrix transforms, missing materials, and other vertex attributes print console warnings and fall back to the closest displayable base mesh or material. External files, invalid buffers, missing POSITION, missing TEXCOORD_0 for textured primitives, invalid indices, non-triangle primitive modes, morph-target weight animations, and malformed triangle data still raise errors.
 
 ### `descendants(i)` — function *(Advanced)*
 
@@ -1704,6 +1712,8 @@ from pyxel.cube import Collider, Vec3
 node.collider = Collider(radius=0.5)
 floor.collider = Collider(size=Vec3(20, 0.5, 20), mass=0.0)
 ```
+
+**Note:** Create a separate Collider for each node. Assigning one Collider to several nodes shares its velocity and other mutable state; physics updates that state once per node. The underlying Mesh geometry can be shared.
 
 ### `size` — variable *(Advanced)*
 

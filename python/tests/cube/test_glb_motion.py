@@ -6,7 +6,7 @@ import pytest
 import pyxel
 from _assertions import raises_exact  # type: ignore[reportMissingImports]
 from pyxel import Image
-from pyxel.cube import Camera, Mat4, Mesh, Motion, Node, Vec3
+from pyxel.cube import Camera, Mat4, Mesh, Motion, Node, Primitive, Vec3
 
 from ._glb_fixtures import (
     write_alpha_texture_glb,
@@ -352,6 +352,25 @@ def test_from_glb_warns_when_mask_colkey_collision_has_no_fallback(tmp_path, cap
     )
 
 
+@pytest.mark.parametrize(
+    "double_sided,expected_cull",
+    [
+        (True, Primitive.CULL_NONE),
+        (False, Primitive.CULL_BACK),
+        (None, Primitive.CULL_BACK),
+    ],
+    ids=["double-sided", "single-sided", "omitted"],
+)
+def test_from_glb_applies_material_double_sided(tmp_path, double_sided, expected_cull):
+    path = write_single_texture_motion_glb(
+        tmp_path / "sidedness.glb", double_sided=double_sided
+    )
+    mesh = Mesh.from_glb(str(path))
+    primitives = [primitive for primitive in mesh.primitives if primitive is not None]
+    assert len(primitives) == 1
+    assert primitives[0].cull == expected_cull
+
+
 def test_from_glb_loads_multiple_flat_materials(tmp_path):
     path = write_two_material_two_texture_glb(
         tmp_path / "flat_materials.glb", textured=False
@@ -498,6 +517,11 @@ def test_from_glb_accepts_animation_times_rounded_to_same_frame(tmp_path):
     node.apply_motion(mesh.motions[0], 0.0)
     assert mesh.motions[0].length == 0.0
     assert node.find_by_name("actor")[0].transform.pos == Vec3.ZERO
+    node.play_motion(mesh.motions[0], loop=False)
+    actor = node.find_by_name("actor")[0]
+    actor.transform = Mat4.from_translation(Vec3(123, 0, 0))
+    node.update()
+    assert actor.transform.pos == Vec3(123, 0, 0)
 
 
 def test_from_glb_rejects_external_buffer(tmp_path):

@@ -9,7 +9,7 @@ This local tool for **Blockbench 5 or later on desktop** keeps a scene linked to
 3. Deselect groups and choose **Tools → Cube: Place / Link Model Reference…**. Give the original a short model ID, such as `tree`, and select its saved `.bbmodel`. An optional second `.bbmodel` supplies its static collision shape. The source pivot is the point of the original model that meets the placement group's origin; it defaults to `(0, 0, 0)`.
 4. Move, rotate, rename, and duplicate the resulting group with ordinary Blockbench controls. To place another registered model, use the same dialog and select its ID. Different models may use different texture images and the same internal group names.
 
-The scene stores its model registrations and reference IDs inside the `.bbmodel`. There is no separate registry to maintain in Python. The generated children are previews of the original: edit the original file rather than these children. Keep the plugin enabled when saving reference scenes.
+The scene stores its model registrations and reference IDs inside the `.bbmodel`. New registrations use `/` as the path separator on every operating system. Older Windows paths are also read; an existing native filename takes precedence if it contains literal backslashes. There is no separate registry to maintain in Python. The generated children are previews of the original: edit the original file rather than these children. Keep the plugin enabled when saving reference scenes.
 
 ## Change originals and update placements
 

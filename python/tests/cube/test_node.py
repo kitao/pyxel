@@ -110,8 +110,12 @@ class TestHierarchy:
 
         class PreviousParent(Node):
             def __del__(self):
-                redirected.add_child(child)
-                finalizer_calls.append("redirected")
+                try:
+                    redirected.add_child(child)
+                except ValueError as error:
+                    finalizer_calls.append(str(error))
+                else:
+                    finalizer_calls.append("redirected")
 
         previous = PreviousParent()
         previous.add_child(child)
@@ -123,11 +127,20 @@ class TestHierarchy:
             child.update()
             assert child.destroyed
 
-        assert finalizer_calls == ["redirected"]
-        parent = child.parent
-        assert parent is not None
-        assert child in parent.children
-        assert sum(child in node.children for node in (destination, redirected)) == 1
+        if operation == "destroy":
+            assert finalizer_calls == [
+                "add_child requires nodes that are not destroyed"
+            ]
+            assert child.parent is None
+            assert destination.children == redirected.children == ()
+        else:
+            assert finalizer_calls == ["redirected"]
+            parent = child.parent
+            assert parent is not None
+            assert child in parent.children
+            assert (
+                sum(child in node.children for node in (destination, redirected)) == 1
+            )
 
     def test_add_child_and_remove_child_keep_canonical_signature(self):
         assert str(inspect.signature(Node.add_child)) == "(self, /, node)"
