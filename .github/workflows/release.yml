@@ -6,32 +6,43 @@ on:
       - "v*"
 
 permissions:
-  contents: write
-
-env:
-  PYTHON_VERSION: "3.15.2"
+  contents: read
 
 jobs:
   build:
     uses: ./.github/workflows/build.yml
 
-  release:
-    runs-on: macos-15
+  publish:
+    runs-on: ubuntu-24.04
     needs: build
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyxel
+    permissions:
+      id-token: write
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Download wheels
-        uses: actions/download-artifact@v8
+      - &download-wheels
+        name: Download wheels
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
+          merge-multiple: true
           path: dist
+          pattern: pyxel-*
 
-      - name: Flatten wheels
-        run: |
-          find dist -type f -name "*.whl" -exec mv {} dist/ \;
-          find dist -type d -empty -delete
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          verbose: false
+
+  release:
+    runs-on: ubuntu-24.04
+    needs: publish
+    permissions:
+      contents: write
+
+    steps:
+      - *download-wheels
 
       - name: Get Pyxel version
         run: |
@@ -47,22 +58,9 @@ jobs:
           fi
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: dist/*
           name: Pyxel ${{ env.PYXEL_VERSION }}
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
           tag_name: ${{ github.ref }}
-
-      - name: Install Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Publish to PyPI
-        run: |
-          pip install twine
-          twine upload dist/*
-        env:
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
