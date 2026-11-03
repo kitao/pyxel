@@ -38,6 +38,7 @@
 - Fixed OpenGL cleanup on application shutdown
 - Fixed gamepad cleanup during resets and application shutdown
 - Improved wheel builds, validation, and SDL2 download verification
+- Switched PyPI publishing to short-lived OIDC authentication
 - Updated the web development HTTP client to fix security vulnerabilities
 - Fixed Windows development setup and partial version updates
 - Fixed playback timing in documentation GIFs
