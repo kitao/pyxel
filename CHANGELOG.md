@@ -5,6 +5,7 @@
 - Added Pyxel Cube software-rendered 3D and Blockbench model references
 - Removed old MML syntax and pre-2.0 resource loading
 - Updated Rust to nightly-2026-10-25 and Pyodide to 314.0.7
+- Updated native wheel builds to Python 3.15.2
 - Updated pyo3 to 0.30.1, libc to 0.2.191, rand to 0.10.3, and toml to 1.1.8
 - Updated zip to 9.1.0
 - Updated Tailwind CSS to 4.3.0 and Prettier to 3.9.9
