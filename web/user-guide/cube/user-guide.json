@@ -744,7 +744,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Creating Resources in Blockbench</h3>"
             },
             {
-              "text": "<p>For a demonstration of the steps, watch the <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">3D asset creation tutorial</a> (English subtitles, about 10 minutes).</p>"
+              "text": "<p>This section explains how to create 3D assets for Pyxel Cube using Blockbench. You can also follow the process in the <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">video tutorial</a> (English subtitles, about 10 minutes).</p>"
             },
             {
               "text": "<p>Create a project in <strong>Generic Model</strong> format and build the shapes for your character or terrain. Put moving parts in separate groups.</p>"
@@ -1417,7 +1417,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">在 Blockbench 中制作</h3>"
             },
             {
-              "text": "<p>具体操作可参见<a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">3D 资产制作教程视频</a> (英文字幕，约 10 分钟)。</p>"
+              "text": "<p>本节介绍如何使用 Blockbench 为 Pyxel Cube 制作 3D 资源。您也可以通过<a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">教学视频</a> (英文字幕，约 10 分钟) 了解完整的操作流程。</p>"
             },
             {
               "text": "<p>创建 <strong>Generic Model</strong> 格式的项目，制作角色或地形的形状。将需要运动的部件放入各自的组。</p>"
@@ -2090,7 +2090,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Ressourcen in Blockbench erstellen</h3>"
             },
             {
-              "text": "<p>Die einzelnen Schritte zeigt das <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">Video-Tutorial zur Erstellung von 3D-Assets</a> (englische Untertitel, etwa 10 Minuten).</p>"
+              "text": "<p>Dieser Abschnitt erklärt, wie Sie mit Blockbench 3D-Assets für Pyxel Cube erstellen. Sie können den Ablauf auch im <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">Video-Tutorial</a> (englische Untertitel, etwa 10 Minuten) verfolgen.</p>"
             },
             {
               "text": "<p>Erstellen Sie ein Projekt im Format <strong>Generic Model</strong> und modellieren Sie Ihre Figur oder Ihr Gelände. Fassen Sie bewegliche Teile in getrennten Gruppen zusammen.</p>"
@@ -2763,7 +2763,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Creación de recursos en Blockbench</h3>"
             },
             {
-              "text": "<p>Para ver los pasos en la práctica, consulte el <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">tutorial en vídeo sobre la creación de recursos 3D</a> (subtítulos en inglés, unos 10 minutos).</p>"
+              "text": "<p>Esta sección explica cómo crear recursos 3D para Pyxel Cube con Blockbench. También puede seguir el proceso en el <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">videotutorial</a> (subtítulos en inglés, unos 10 minutos).</p>"
             },
             {
               "text": "<p>Cree un proyecto en formato <strong>Generic Model</strong> y modele las formas del personaje o terreno. Coloque las piezas móviles en grupos separados.</p>"
@@ -3436,7 +3436,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Création dans Blockbench</h3>"
             },
             {
-              "text": "<p>Pour voir les étapes en pratique, regardez le <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">tutoriel vidéo de création de ressources 3D</a> (sous-titres anglais, environ 10 minutes).</p>"
+              "text": "<p>Cette section explique comment créer des ressources 3D pour Pyxel Cube avec Blockbench. Vous pouvez aussi suivre les étapes dans le <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">tutoriel vidéo</a> (sous-titres en anglais, environ 10 minutes).</p>"
             },
             {
               "text": "<p>Créez un projet au format <strong>Generic Model</strong> et modelez votre personnage ou votre terrain. Placez les parties mobiles dans des groupes distincts.</p>"
@@ -4109,7 +4109,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Creazione di risorse in Blockbench</h3>"
             },
             {
-              "text": "<p>Per vedere i passaggi in pratica, guardare il <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">tutorial video sulla creazione di risorse 3D</a> (sottotitoli in inglese, circa 10 minuti).</p>"
+              "text": "<p>Questa sezione spiega come creare risorse 3D per Pyxel Cube con Blockbench. La procedura è illustrata anche nel <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">tutorial video</a> (sottotitoli in inglese, circa 10 minuti).</p>"
             },
             {
               "text": "<p>Creare un progetto in formato <strong>Generic Model</strong> e modellare le forme del personaggio o del terreno. Inserire le parti mobili in gruppi separati.</p>"
@@ -4782,7 +4782,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Blockbench での制作</h3>"
             },
             {
-              "text": "<p>具体的な操作は、<a class=\"link\" href=\"videos/blockbench-3d-assets-ja.mp4\">3D アセット制作の解説動画</a>（日本語字幕・約 10 分）で確認できます。</p>"
+              "text": "<p>この節では、Blockbench を使って Pyxel Cube 向けの 3D アセットを作る手順を説明します。<a class=\"link\" href=\"videos/blockbench-3d-assets-ja.mp4\">解説動画</a>（日本語字幕・約 10 分）でも、一連の操作を確認できます。</p>"
             },
             {
               "text": "<p><strong>Generic Model</strong> 形式のプロジェクトを作成し、キャラクターや地形の形状を作ります。動かすパーツはグループに分けておきます。</p>"
@@ -5455,7 +5455,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Blockbench에서 제작</h3>"
             },
             {
-              "text": "<p>구체적인 조작 방법은 <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">3D 에셋 제작 튜토리얼 영상</a>(영어 자막, 약 10분)에서 확인할 수 있습니다.</p>"
+              "text": "<p>이 절에서는 Blockbench로 Pyxel Cube용 3D 에셋을 만드는 방법을 설명합니다. <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">튜토리얼 영상</a>(영어 자막, 약 10분)에서도 전체 작업 과정을 확인할 수 있습니다.</p>"
             },
             {
               "text": "<p><strong>Generic Model</strong> 형식으로 프로젝트를 만들고 캐릭터나 지형의 모양을 제작하세요. 움직일 부품은 그룹으로 나눠 두세요.</p>"
@@ -6128,7 +6128,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Criação de recursos no Blockbench</h3>"
             },
             {
-              "text": "<p>Para ver as etapas na prática, assista ao <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">tutorial em vídeo sobre a criação de recursos 3D</a> (legendas em inglês, cerca de 10 minutos).</p>"
+              "text": "<p>Esta seção explica como criar recursos 3D para o Pyxel Cube usando o Blockbench. Você também pode acompanhar o processo no <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">tutorial em vídeo</a> (legendas em inglês, cerca de 10 minutos).</p>"
             },
             {
               "text": "<p>Crie um projeto no formato <strong>Generic Model</strong> e modele as formas do personagem ou terreno. Coloque as partes móveis em grupos separados.</p>"
@@ -6801,7 +6801,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Создание ресурсов в Blockbench</h3>"
             },
             {
-              "text": "<p>Пошаговый пример показан в <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">видеоуроке по созданию 3D-ресурсов</a> (английские субтитры, около 10 минут).</p>"
+              "text": "<p>В этом разделе описано, как создавать 3D-ресурсы для Pyxel Cube в Blockbench. Весь процесс также показан в <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">видеоуроке</a> (английские субтитры, около 10 минут).</p>"
             },
             {
               "text": "<p>Создайте проект в формате <strong>Generic Model</strong> и постройте форму персонажа или рельефа. Движущиеся части распределите по отдельным группам.</p>"
@@ -7474,7 +7474,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Blockbench ile oluşturma</h3>"
             },
             {
-              "text": "<p>Adımların uygulanışını görmek için <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">3D varlık oluşturma eğitim videosunu</a> izleyin (İngilizce altyazılı, yaklaşık 10 dakika).</p>"
+              "text": "<p>Bu bölümde, Blockbench ile Pyxel Cube için 3D varlıkların nasıl oluşturulacağı açıklanmaktadır. İşlem adımlarını <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">eğitim videosundan</a> da (İngilizce altyazılı, yaklaşık 10 dakika) takip edebilirsiniz.</p>"
             },
             {
               "text": "<p><strong>Generic Model</strong> biçiminde bir proje oluşturup karakter veya arazi şekillerini hazırlayın. Hareket edecek parçaları ayrı gruplara yerleştirin.</p>"
@@ -8147,7 +8147,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-authoring\">Створення в Blockbench</h3>"
             },
             {
-              "text": "<p>Покроковий приклад показано у <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">відеоуроці зі створення 3D-ресурсів</a> (англійські субтитри, близько 10 хвилин).</p>"
+              "text": "<p>У цьому розділі описано, як створювати 3D-ресурси для Pyxel Cube у Blockbench. Увесь процес також показано у <a class=\"link\" href=\"videos/blockbench-3d-assets-en.mp4\">відеоуроці</a> (англійські субтитри, близько 10 хвилин).</p>"
             },
             {
               "text": "<p>Створіть проєкт у форматі <strong>Generic Model</strong> і побудуйте геометрію персонажа чи місцевості. Помістіть рухомі частини в окремі групи.</p>"
