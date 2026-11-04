@@ -4,11 +4,11 @@
 
 - Added Pyxel Cube software-rendered 3D and Blockbench model references
 - Removed old MML syntax and pre-2.0 resource loading
-- Updated Rust to nightly-2026-10-25 and Pyodide to 314.0.7
+- Updated Rust to nightly-2026-11-04 and Pyodide to 314.0.7
 - Updated native wheel builds to Python 3.15.2
-- Updated pyo3 to 0.30.1, libc to 0.2.191, rand to 0.10.3, and toml to 1.1.8
-- Updated zip to 9.1.0
-- Updated Tailwind CSS to 4.3.0 and Prettier to 3.9.9
+- Updated pyo3 to 0.30.1, libc to 0.2.191, rand to 0.10.3, and toml to 1.2.0
+- Updated zip to 9.3.0 and sysinfo to 0.40.1
+- Updated Tailwind CSS to 4.3.4, Prettier to 3.9.10, and Wrangler to 4.157.0
 - Updated WebAssembly wheel platform tags
 - Added an app2exe install extra for PyInstaller
 - Improved Python type hints and catchable API errors

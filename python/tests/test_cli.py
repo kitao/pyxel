@@ -994,6 +994,40 @@ class TestErrorHelpers:
 
 
 class TestWatchHelpers:
+    @pytest.mark.parametrize("kind", ["play", "watch"])
+    def test_cleanup_keeps_live_process_files_and_removes_exited_ones(
+        self, kind, tmp_path, monkeypatch
+    ):
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+        child = subprocess.Popen(
+            [sys.executable, "-c", "import sys; sys.stdin.buffer.read(1)"],
+            stdin=subprocess.PIPE,
+        )
+        try:
+            parent = tmp_path / pyxel.BASE_DIR / kind
+            parent.mkdir(parents=True)
+            if kind == "play":
+                path = parent / f"{child.pid}_active"
+                path.mkdir()
+                create = pyxel.cli._create_app_dir
+            else:
+                path = parent / str(child.pid)
+                path.touch()
+                create = pyxel.cli._create_watch_state_file
+            os.utime(path, (1_000_000_000, 1_000_000_000))
+
+            create()
+            assert path.exists()
+
+            child.communicate(input=b"x", timeout=10)
+            assert child.returncode == 0
+            create()
+            assert not path.exists()
+        finally:
+            if child.poll() is None:
+                child.kill()
+            child.wait(timeout=10)
+
     @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
     def test_directory_links_preserve_aliases_without_following_cycles(self, tmp_path):
         app_dir = tmp_path / "app"

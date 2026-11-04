@@ -231,7 +231,7 @@ fn _reset_statics() {
 #[allow(clippy::used_underscore_items)]
 #[pyfunction]
 fn _pid_exists(pid: u32) -> bool {
-    let system = sysinfo::System::new_all();
+    let system = sysinfo::System::new_all().expect("failed to query processes");
     system.process(sysinfo::Pid::from_u32(pid)).is_some()
 }
 

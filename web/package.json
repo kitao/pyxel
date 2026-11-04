@@ -9,11 +9,11 @@
     "deploy": "npm run deploy:check && node scripts/wrangler.mjs deploy --strict"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0",
-    "@tailwindcss/cli": "4.3.0",
-    "axe-core": "4.11.0",
-    "prettier": "^3.8.4",
-    "wrangler": "4.150.0"
+    "@playwright/test": "1.64.1",
+    "@tailwindcss/cli": "4.3.4",
+    "axe-core": "4.14.0",
+    "prettier": "^3.9.10",
+    "wrangler": "4.157.0"
   },
   "overrides": {
     "miniflare": {
