@@ -599,6 +599,8 @@ GLB loading supports the following features and has the following limitations.
 
 ### Creating Resources in Blockbench
 
+For a demonstration of the steps, watch the [3D asset creation tutorial](https://kitao.dev/pyxel/user-guide/cube/videos/blockbench-3d-assets-en.mp4) (English subtitles, about 10 minutes).
+
 Create a project in **Generic Model** format and build the shapes for your character or terrain. Put moving parts in separate groups.
 
 To paint textures with Pyxel's default colors, set up the palette as follows.
