@@ -146,7 +146,12 @@ def build_site(output, runtime_tags=("v2.9.9",), root=ROOT_DIR):
             "  Cache-Control: public, max-age=31536000, immutable\n"
             "  Access-Control-Allow-Origin: *\n\n"
             "/pyxel/assets/examples/*\n"
-            "  Access-Control-Allow-Origin: *\n",
+            "  Access-Control-Allow-Origin: *\n"
+            + "".join(
+                f"\n/{video.relative_to(stage).as_posix()}\n"
+                f"  X-Video-Size: {video.stat().st_size}\n"
+                for video in sorted((site / "user-guide/cube/videos").glob("*.mp4"))
+            ),
             encoding="utf-8",
         )
         verify_links(stage)

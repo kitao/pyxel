@@ -49,14 +49,19 @@ test("the Pyxel Worker serves only the built site", () => {
   } = config;
   assert.equal($schema, "./node_modules/wrangler/config-schema.json");
   assert.match(compatibilityDate, /^\d{4}-\d{2}-\d{2}$/);
-  // An exact match also rejects additions such as "main", which would run Worker code.
+  // Worker code handles ranges only for tutorial videos; other assets stay static.
   assert.deepEqual(deployment, {
     name: "pyxel",
+    main: "video-worker.mjs",
     workers_dev: false,
     preview_urls: false,
     // A pattern ending in * also matches /pyxel with a query string.
     routes: [{ pattern: "kitao.dev/pyxel*", zone_name: "kitao.dev" }],
-    assets: { directory: "../dist/site" },
+    assets: {
+      directory: "../dist/site",
+      binding: "ASSETS",
+      run_worker_first: ["/pyxel/user-guide/cube/videos/*"],
+    },
   });
   assert.equal(build.command, "python3 ../scripts/build_site");
 });
