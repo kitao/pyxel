@@ -12,6 +12,11 @@ For installation and basic usage, see the [Pyxel User Guide](https://kitao.dev/p
 
 ADV marks content for advanced users. If you are new to 3D programming, start with the sections without ADV to learn the basics of Pyxel Cube.
 
+You can also watch the following video tutorials to see the code in action and follow the steps for creating 3D assets.
+
+- [Using Pyxel Cube](https://kitao.dev/pyxel/user-guide/cube/videos/pyxel-cube-usage-en.mp4) (English version, about 15 minutes)
+- [Creating 3D Assets for Pyxel Cube](https://kitao.dev/pyxel/user-guide/cube/videos/pyxel-cube-assets-en.mp4) (English version, about 13 minutes)
+
 ## Running Examples
 
 To run the examples locally, enter the following command in a terminal. It creates a `pyxel_examples` directory in the current directory and copies the examples into it. If a directory with that name already exists, it will be replaced, so move any edited files elsewhere first.
@@ -599,7 +604,7 @@ GLB loading supports the following features and has the following limitations.
 
 ### Creating Resources in Blockbench
 
-This section explains how to create 3D assets for Pyxel Cube using Blockbench. You can also follow the process in the [video tutorial](https://kitao.dev/pyxel/user-guide/cube/videos/blockbench-3d-assets-en.mp4) (English subtitles, about 10 minutes).
+This section explains how to create 3D assets for Pyxel Cube using Blockbench. You can also follow the process in the [video tutorial](https://kitao.dev/pyxel/user-guide/cube/videos/pyxel-cube-assets-en.mp4) (English version, about 13 minutes).
 
 Create a project in **Generic Model** format and build the shapes for your character or terrain. Put moving parts in separate groups.
 
