@@ -1092,6 +1092,62 @@ test("Web runtime escapes reserved characters in fetched file paths", () => {
   ]);
 });
 
+test("a named web run retries a missing script and preserves its source bytes", async () => {
+  const source = Buffer.from("\uFEFF# 日本語のコメント\nprint(1)\n");
+  const requests = [];
+  const seenByPython = [];
+  const files = new Map();
+  const filename = "/work/src/game.py";
+  const pyodide = {
+    FS: {
+      cwd: () => "/work",
+      analyzePath: (path) => ({ exists: files.has(path) }),
+      mkdir: (path) => files.set(path, null),
+      open() {},
+      stat() {},
+      writeFile: (path, bytes) => files.set(path, Buffer.from(bytes)),
+    },
+    runPython() {
+      this.FS.stat(filename);
+      seenByPython.push(files.get(filename));
+    },
+  };
+  const context = {
+    console: { log() {} },
+    window: {},
+    Uint8Array,
+    PYXEL_WORKING_DIRECTORY: "/work",
+    PYXEL_WATCH_INFO_FILE: ".pyxel_watch_info",
+    _addVirtualGamepad() {},
+    _displayFatalErrorOverlay(error) {
+      throw error;
+    },
+    fetch: async (url) => {
+      requests.push(url);
+      return requests.length === 1
+        ? new Response(null, { status: 404 })
+        : new Response(source);
+    },
+  };
+  for (const name of [
+    "_encodeUrlPath",
+    "_hookFileOperations",
+    "_installBuiltinPackages",
+    "_copyFileFromBase64",
+    "_escapePythonString",
+    "_executePyxelCommand",
+  ]) {
+    context[name] = loadArrowFunction(pyxelSource, name, context);
+  }
+  const root = "https://game.test";
+  context._preloadRunScript = context._hookFileOperations(pyodide, root);
+  const params = { command: "run", name: "src/game" };
+  await context._executePyxelCommand(pyodide, params);
+  await context._executePyxelCommand(pyodide, params);
+  assert.deepEqual(requests, [`${root}/src/game.py`, `${root}/src/game.py`]);
+  assert.deepEqual(seenByPython, [undefined, source]);
+});
+
 test("file hooks preserve stat's symlink option and result", () => {
   const result = {};
   const fs = {
@@ -1321,6 +1377,7 @@ test("runtime resets serialize command execution and await each request", async 
     _displayFatalErrorOverlay: (error) => errors.push(error),
     _displayErrorOverlay: (error) => errors.push(error),
     _addVirtualGamepad() {},
+    _preloadRunScript() {},
   };
   for (const name of [
     "_copyFileFromBase64",

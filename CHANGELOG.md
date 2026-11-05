@@ -30,6 +30,7 @@
 - Moved web apps' Pyodide runtime downloads to kitao.dev
 - Fixed play and watch process cleanup
 - Fixed web startup, resets, imports, and virtual gamepad resizing
+- Fixed Web Launcher startup scripts with a UTF-8 BOM and non-ASCII text
 - Improved virtual gamepad diagonals, touch tracking, and short taps
 - Fixed project loading, saving, downloads, and share URLs in web tools
 - Improved web layouts, accessibility, and API reference search

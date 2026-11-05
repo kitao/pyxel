@@ -105,7 +105,7 @@ async function launchPyxel(params) {
   const pyodide = await _loadPyodideAndPyxel(canvas);
 
   _hookPythonError(pyodide);
-  _hookFileOperations(pyodide, params.root || ".");
+  _preloadRunScript = _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
 
   window.pyxelContext.initialized = true;
@@ -581,6 +581,8 @@ const _displayFatalErrorOverlay = (error) => {
 
 // File operations
 
+let _preloadRunScript;
+
 const _encodeUrlPath = (path) =>
   path.split("/").map(encodeURIComponent).join("/");
 
@@ -604,7 +606,8 @@ const _hookFileOperations = (pyodide, root) => {
     }
   };
 
-  const copyPath = (path) => {
+  let missingStartupFile;
+  const resolveFile = (path) => {
     if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
       return;
     }
@@ -628,15 +631,28 @@ const _hookFileOperations = (pyodide, root) => {
     path = path.slice(PYXEL_WORKING_DIRECTORY.length + 1);
     const srcPath = `${root}/${_encodeUrlPath(path)}`;
     const dstPath = `${PYXEL_WORKING_DIRECTORY}/${path}`;
-    if (fs.analyzePath(dstPath).exists) {
+    if (dstPath === missingStartupFile || fs.analyzePath(dstPath).exists) {
       return;
     }
 
-    // Python file operations need the bytes before the synchronous call returns.
     console.log(`Attempting to fetch '${path}'`);
+    return { path, srcPath, dstPath };
+  };
+
+  const writeFile = ({ srcPath, dstPath }, bytes) => {
+    createDirs(dstPath, true);
+    fs.writeFile(dstPath, bytes, { encoding: "binary" });
+    console.log(`Copied '${srcPath}' to '${dstPath}'`);
+  };
+
+  const copyPath = (path) => {
+    const file = resolveFile(path);
+    if (!file) return;
+
+    // Python file operations need the bytes before the synchronous call returns.
     const request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
-    request.open("GET", srcPath, false);
+    request.open("GET", file.srcPath, false);
     try {
       request.send();
     } catch {
@@ -650,13 +666,11 @@ const _hookFileOperations = (pyodide, root) => {
     );
 
     const contentType = request.getResponseHeader("Content-Type") || "";
-    if (contentType.includes("text/html") && !path.includes(".")) {
-      console.log(`Created directory '${dstPath}'`);
-      createDirs(dstPath, false);
+    if (contentType.includes("text/html") && !file.path.includes(".")) {
+      console.log(`Created directory '${file.dstPath}'`);
+      createDirs(file.dstPath, false);
     } else {
-      createDirs(dstPath, true);
-      fs.writeFile(dstPath, fileBinary, { encoding: "binary" });
-      console.log(`Copied '${srcPath}' to '${dstPath}'`);
+      writeFile(file, fileBinary);
     }
   };
 
@@ -693,6 +707,29 @@ const _hookFileOperations = (pyodide, root) => {
       document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
     }, 2000);
+  };
+
+  // Fetch the startup script as bytes. Text XHR decodes a BOM before
+  // Python can interpret the source encoding.
+  return async ({ command, name }) => {
+    missingStartupFile = null;
+    if (command !== "run" || !name) return;
+    const basename = name.split("/").pop().replace(/^\.+/, "");
+    if (!basename.includes(".")) name += ".py";
+    else if (!basename.toLowerCase().endsWith(".py")) return;
+    const file = resolveFile(name);
+    if (!file) return;
+    let buffer;
+    try {
+      const response = await fetch(file.srcPath);
+      if (response.status === 200) buffer = await response.arrayBuffer();
+    } catch {}
+    if (buffer) {
+      writeFile(file, new Uint8Array(buffer));
+    } else {
+      // Let the CLI report the missing script without retrying it as text.
+      missingStartupFile = file.dstPath;
+    }
   };
 };
 
@@ -1034,6 +1071,7 @@ const _executePyxelCommand = async (pyodide, params) => {
   }
 
   _copyFileFromBase64(pyodide, params.name, params.base64);
+  await _preloadRunScript(params);
 
   let pythonCode = "";
   switch (params.command) {
