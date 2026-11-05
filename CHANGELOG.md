@@ -8,7 +8,9 @@
 - Updated native wheel builds to Python 3.15.2
 - Updated pyo3 to 0.30.1, libc to 0.2.191, rand to 0.10.3, and toml to 1.2.0
 - Updated zip to 9.3.0 and sysinfo to 0.40.1
-- Updated Tailwind CSS to 4.3.4, Prettier to 3.9.10, and Wrangler to 4.157.0
+- Updated Ace to 1.44.0 and highlight.js to 11.12.0 in web pages
+- Updated JSZip to 3.10.2 and lz-string to 1.5.0 in web tools
+- Updated Tailwind CSS to 4.3.4, Prettier to 3.9.10, and Wrangler to 4.158.0
 - Updated WebAssembly wheel platform tags
 - Added an app2exe install extra for PyInstaller
 - Improved Python type hints and catchable API errors
@@ -43,7 +45,7 @@
 - Fixed gamepad cleanup during resets and application shutdown
 - Improved wheel builds, release version checks, and SDL2 download verification
 - Switched PyPI publishing to short-lived OIDC authentication
-- Updated the web development HTTP client to fix security vulnerabilities
+- Updated Undici to 7.30.2 to fix security vulnerabilities in web development
 - Fixed Windows development setup and partial version updates
 - Fixed playback timing in documentation GIFs
 - Improved documentation and translations

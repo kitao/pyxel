@@ -17,11 +17,11 @@ for manual checks of look, sound, and feel.
 The [Makefile](../../../Makefile) provides one automated entry point,
 `make test`, for Python, Rust, and JavaScript. The JavaScript tests run on
 Node.js, and the site's browser tests open the built pages under
-`wrangler dev`; neither executes the web runtime, so calling them `test-wasm`
-would be misleading. `make run` installs the current native package,
+`wrangler dev`, including cases that execute the packaged web runtime. Native
+automated tests use headless Pyxel; browser runtime cases exercise its GL context
+in a headless browser. `make run` installs the current native package,
 then runs the [startup check](../../../scripts/check_window_startup), which opens a
-window in every screen mode, draws, exits, and reports the installed build; the
-automated suites run headless and never create Pyxel's GL context. It then uses
+window in every screen mode, draws, exits, and reports the installed build. It then uses
 the [example runner](../../../scripts/run_examples) for native examples,
 bundled apps, and the editor. `make run-wasm` builds the web wheel and
 serves the web runtime locally through
