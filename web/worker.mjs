@@ -1,3 +1,83 @@
+const sourcePrefix = "/pyxel/launcher/source/";
+
+async function serveSource(request, path) {
+  // Only public Python files from jsDelivr's GitHub namespace can be relayed.
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Cache-Control": "no-store",
+    "Content-Security-Policy": "default-src 'none'; sandbox",
+    "Content-Type": "application/octet-stream",
+    "X-Content-Type-Options": "nosniff",
+  };
+  if (request.method !== "GET") {
+    return new Response(null, {
+      status: 405,
+      headers: { ...headers, Allow: "GET" },
+    });
+  }
+  let decoded;
+  try {
+    decoded = decodeURIComponent(path);
+  } catch {
+    return new Response(null, { status: 404, headers });
+  }
+  if (
+    !/^[\w.-]+\/[\w.-]+(?:@[^/]+)?\/.*\.py$/i.test(path) ||
+    /(?:^|\/)\.{1,2}(?:\/|$)/.test(decoded) ||
+    /\x00/.test(decoded)
+  ) {
+    return new Response(null, { status: 404, headers });
+  }
+  const url = new URL("https://cdn.jsdelivr.net");
+  url.pathname = "/gh/" + path;
+  let upstream;
+  try {
+    upstream = await fetch(url, { redirect: "manual" });
+  } catch {
+    return new Response(null, { status: 502, headers });
+  }
+  if (upstream.status !== 200) {
+    await upstream.body?.cancel();
+    return new Response(null, {
+      status: upstream.status === 404 ? 404 : 502,
+      headers,
+    });
+  }
+
+  // A leading NUL keeps a synchronous browser XHR from decoding the file's BOM.
+  const reader = upstream.body?.getReader();
+  const body = new ReadableStream({
+    start(controller) {
+      controller.enqueue(Uint8Array.of(0));
+    },
+    async pull(controller) {
+      if (!reader) {
+        controller.close();
+        return;
+      }
+      const { done, value } = await reader.read();
+      if (done) controller.close();
+      else controller.enqueue(value);
+    },
+    cancel(reason) {
+      return reader?.cancel(reason);
+    },
+  });
+  const result = new Response(body, {
+    headers: {
+      ...headers,
+      "Cache-Control": upstream.headers.get("Cache-Control") ?? "no-cache",
+      "X-Pyxel-Source": "1",
+      "Access-Control-Expose-Headers": "X-Pyxel-Source",
+    },
+  });
+  for (const name of ["Age", "Date"]) {
+    const value = upstream.headers.get(name);
+    if (value !== null) result.headers.set(name, value);
+  }
+  return result;
+}
+
 function sliceStream(body, start, end) {
   const reader = body.getReader();
   let offset = 0;
@@ -31,6 +111,9 @@ function sliceStream(body, start, end) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith(sourcePrefix)) {
+      return serveSource(request, url.pathname.slice(sourcePrefix.length));
+    }
     const legacyAsset =
       /^\/pyxel\/user-guide\/cube\/videos\/blockbench-3d-assets-(ja|en)\.mp4$/.exec(
         url.pathname,

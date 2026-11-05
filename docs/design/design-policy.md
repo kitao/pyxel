@@ -8,9 +8,11 @@ Concrete choices applying these standards and their rationale are recorded in
 
 ## Principles
 
-- **Design.** Keep Pyxel approachable. Preserve its deliberate constraints and
-  separation of basic and advanced capabilities: they support learning and
-  discovery. Keep differences that serve distinct users or purposes.
+- **Design.** Refine Pyxel by combining simplicity, naturalness, and coherence,
+  so that it is approachable to beginners and makes sense to experienced users.
+  Preserve its deliberate constraints and separation of basic and advanced
+  capabilities: they support learning and discovery. Keep differences that serve
+  distinct users or purposes.
 - **Clarity.** Keep what readers need to understand, use, or maintain the
   project. Prefer direct code and concise explanations that reduce the intended
   reader's effort while preserving necessary behavior, meaning, conditions, and

@@ -176,6 +176,9 @@
                 root,
                 command,
                 name,
+                _moduleRoot: `https://kitao.dev/pyxel/launcher/source/${root.slice(
+                  "https://cdn.jsdelivr.net/gh/".length,
+                )}`,
                 packages: params.get("packages"),
                 gamepad: params.get("gamepad"),
                 editor: params.get("editor"),

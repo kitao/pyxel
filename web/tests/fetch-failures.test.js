@@ -374,7 +374,7 @@ test("sanitizeProjectName neutralizes unsafe archive path syntax", () => {
   assert.equal(sanitizeProjectName("CONIN$"), "_CONIN$");
 });
 
-for (const delay of ["download", "unpack"]) {
+for (const delay of ["download", "unpack", "decode"]) {
   test(`Code Maker keeps the latest project when an earlier ${delay} finishes last`, async () => {
     let resume;
     let entered;
@@ -417,11 +417,24 @@ for (const delay of ["download", "unpack"]) {
     };
     for (const name of [
       "sanitizeProjectName",
+      "decodePythonSource",
       "loadProjectFromZip",
       "loadFromUrl",
     ]) {
       context[name] = loadNamedFunction(codeMakerSource, name, context);
     }
+
+    const decode = context.decodePythonSource;
+    context.decodePythonSource = async (...args) => {
+      if (
+        delay === "decode" &&
+        Buffer.from(args[0]).toString().includes("first.zip")
+      ) {
+        entered();
+        await paused;
+      }
+      return decode(...args);
+    };
 
     const first = context.loadFromUrl("https://example.test/first.zip");
     await waiting;
@@ -458,11 +471,7 @@ test("loadProjectFromZip sanitizes the project name at assignment", async () => 
         },
       }),
     },
-    TextDecoder: class {
-      decode() {
-        return "";
-      }
-    },
+    decodePythonSource: async () => "",
     base64ToUint8: () => new Uint8Array(),
     resetResourceEditor: () => {},
     resetRuntimeScreen: () => {},

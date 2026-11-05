@@ -274,7 +274,7 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
     let dist_sq = dx * dx + dy * dy + dz * dz;
     let r_sum = r_a + r_b;
     let r_sum_sq = r_sum * r_sum;
-    if !(dist_sq.is_finite() && r_sum_sq.is_finite())
+    if ((!dist_sq.is_normal() && c_a != c_b) || !r_sum_sq.is_normal())
         && vec_is_finite(c_a)
         && vec_is_finite(c_b)
         && r_a.is_finite()
@@ -288,7 +288,7 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
 
     let dist = dist_sq.sqrt();
     let depth = r_sum - dist;
-    let normal = if dist > 1e-12 {
+    let normal = if dist > 0.0 {
         Vec3 {
             x: dx / dist,
             y: dy / dist,
@@ -328,7 +328,7 @@ fn sphere_vs_sphere_wide(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Con
     }
 
     let dist = dist_sq.sqrt();
-    let (nx, ny, nz) = if dist > f64::from(1e-12_f32) {
+    let (nx, ny, nz) = if dist > 0.0 {
         (dx / dist, dy / dist, dz / dist)
     } else {
         (0.0, 1.0, 0.0)
@@ -559,7 +559,14 @@ pub fn capsule_vs_sphere(
 
     let on_axis = closest_point_on_segment(c_sphere, top, bot);
     // Reverse the sphere/capsule argument order to get the capsule-to-sphere normal.
-    sphere_vs_sphere(c_sphere, r_sphere, on_axis, cap_r.max(0.0))
+    rounded_segment_contact(
+        [c_sphere; 2],
+        [top, bot],
+        c_sphere,
+        on_axis,
+        r_sphere,
+        cap_r.max(0.0),
+    )
 }
 
 // Capsule vs capsule: sphere-vs-sphere at the closest segment points
@@ -594,7 +601,14 @@ pub fn capsule_vs_capsule(
     });
 
     let (on_a, on_b) = closest_points_segment_segment(a_top, a_bot, b_top, b_bot);
-    sphere_vs_sphere(on_a, r_a.max(0.0), on_b, r_b.max(0.0))
+    rounded_segment_contact(
+        [a_top, a_bot],
+        [b_top, b_bot],
+        on_a,
+        on_b,
+        r_a.max(0.0),
+        r_b.max(0.0),
+    )
 }
 
 // Capsule vs rounded OBB: take the capsule segment into the box-local
@@ -2024,6 +2038,9 @@ fn ray_vs_triangle_wide(
 // toward the sphere center.
 pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Option<ContactGeom> {
     let (closest, face_normal) = closest_triangle_point_and_normal(c, v0, v1, v2);
+    if face_normal.is_none() && triangle_has_zero_area(v0, v1, v2) {
+        return rounded_segment_contact([c; 2], triangle_segment(v0, v1, v2), c, closest, r, 0.0);
+    }
     let dx = c.x - closest.x;
     let dy = c.y - closest.y;
     let dz = c.z - closest.z;
@@ -2191,6 +2208,16 @@ pub fn capsule_vs_triangle(
     });
 
     let (on_seg, on_tri) = closest_points_segment_triangle(top, bot, v0, v1, v2);
+    if triangle_has_zero_area(v0, v1, v2) {
+        return rounded_segment_contact(
+            [top, bot],
+            triangle_segment(v0, v1, v2),
+            on_seg,
+            on_tri,
+            cap_r,
+            0.0,
+        );
+    }
     if on_seg == on_tri {
         let (ax, ay, az) = (v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
         let (bx, by, bz) = (v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
@@ -2296,6 +2323,134 @@ fn capsule_triangle_core_wide(
 
 // Closest-point helpers
 
+fn rounded_segment_contact(
+    a: [Vec3; 2],
+    b: [Vec3; 2],
+    on_a: Vec3,
+    on_b: Vec3,
+    r_a: f32,
+    r_b: f32,
+) -> Option<ContactGeom> {
+    let mut contact = sphere_vs_sphere(on_a, r_a, on_b, r_b)?;
+    if contact_points_coincide(
+        &[a[0], a[1], b[0], b[1]],
+        on_a,
+        on_b,
+        f64::from(r_a) + f64::from(r_b),
+    ) {
+        contact.normal = segment_contact_normal(a, b, on_a, on_b);
+        contact.point = Vec3 {
+            x: on_b.x + contact.normal.x * r_b,
+            y: on_b.y + contact.normal.y * r_b,
+            z: on_b.z + contact.normal.z * r_b,
+        };
+    }
+    Some(contact)
+}
+
+fn contact_points_coincide(points: &[Vec3], a: Vec3, b: Vec3, radius: f64) -> bool {
+    let distance_squared = point_dist2_ordering(a, b);
+    if distance_squared == 0.0 {
+        return true;
+    }
+    // Closest-point reconstruction can leave an f64 rounding residue along
+    // the cores. Recover only when it is also below the contact's f32 scale.
+    let contact_resolution = 8.0 * f64::from(f32::EPSILON) * radius;
+    if distance_squared > contact_resolution * contact_resolution {
+        return false;
+    }
+    let magnitude = points
+        .iter()
+        .flat_map(|p| [p.x, p.y, p.z])
+        .map(|value| f64::from(value).abs())
+        .fold(0.0, f64::max);
+    let rounding = 64.0 * f64::EPSILON * magnitude;
+    distance_squared <= rounding * rounding
+}
+
+// Intersecting cores have no reliable offset to normalize. A separating normal
+// is perpendicular to both segment directions; two point cores retain +Y.
+fn segment_contact_normal(a: [Vec3; 2], b: [Vec3; 2], on_a: Vec3, on_b: Vec3) -> Vec3 {
+    let difference = |a: Vec3, b: Vec3| {
+        [
+            f64::from(a.x) - f64::from(b.x),
+            f64::from(a.y) - f64::from(b.y),
+            f64::from(a.z) - f64::from(b.z),
+        ]
+    };
+    let cross = |a: [f64; 3], b: [f64; 3]| {
+        [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0],
+        ]
+    };
+    let length_squared = |v: [f64; 3]| v.iter().map(|value| value * value).sum::<f64>();
+    let a = difference(a[1], a[0]);
+    let b = difference(b[1], b[0]);
+    let mut normal = cross(a, b);
+    if length_squared(normal) == 0.0 {
+        let direction = if length_squared(a) >= length_squared(b) {
+            a
+        } else {
+            b
+        };
+        if length_squared(direction) == 0.0 {
+            return Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            };
+        }
+        let mut axis = 0;
+        for i in 1..3 {
+            if direction[i].abs() < direction[axis].abs() {
+                axis = i;
+            }
+        }
+        let mut basis = [0.0; 3];
+        basis[axis] = 1.0;
+        normal = cross(direction, basis);
+    }
+    let offset = difference(on_a, on_b);
+    let sign = if (0..3).map(|i| normal[i] * offset[i]).sum::<f64>() < 0.0 {
+        -1.0
+    } else {
+        1.0
+    };
+    let length = length_squared(normal).sqrt();
+    Vec3 {
+        x: (normal[0] * sign / length) as f32,
+        y: (normal[1] * sign / length) as f32,
+        z: (normal[2] * sign / length) as f32,
+    }
+}
+
+fn triangle_has_zero_area(a: Vec3, b: Vec3, c: Vec3) -> bool {
+    let ab = [
+        f64::from(b.x) - f64::from(a.x),
+        f64::from(b.y) - f64::from(a.y),
+        f64::from(b.z) - f64::from(a.z),
+    ];
+    let ac = [
+        f64::from(c.x) - f64::from(a.x),
+        f64::from(c.y) - f64::from(a.y),
+        f64::from(c.z) - f64::from(a.z),
+    ];
+    ab[1] * ac[2] == ab[2] * ac[1]
+        && ab[2] * ac[0] == ab[0] * ac[2]
+        && ab[0] * ac[1] == ab[1] * ac[0]
+}
+
+fn triangle_segment(a: Vec3, b: Vec3, c: Vec3) -> [Vec3; 2] {
+    [[a, b], [b, c], [c, a]]
+        .into_iter()
+        .max_by(|a, b| {
+            point_dist2_ordering(a[0], a[1]).total_cmp(&point_dist2_ordering(b[0], b[1]))
+        })
+        .unwrap()
+}
+
 pub(crate) fn closest_points_segment_triangle(
     a0: Vec3,
     a1: Vec3,
@@ -2352,6 +2507,36 @@ fn closest_triangle_point_and_normal(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> (Vec
     };
     let ab = difference(b, a);
     let ac = difference(c, a);
+    let nx = ab[1] * ac[2] - ab[2] * ac[1];
+    let ny = ab[2] * ac[0] - ab[0] * ac[2];
+    let nz = ab[0] * ac[1] - ab[1] * ac[0];
+    if nx == 0.0 && ny == 0.0 && nz == 0.0 {
+        // A collapsed triangle remains a segment or point. Its face-region
+        // divisions are undefined, including when only two vertices coincide.
+        let mut closest = a;
+        let mut distance = point_dist2_ordering(p, a);
+        for (start, end) in [(a, b), (b, c), (c, a)] {
+            let edge = difference(end, start);
+            let length_squared = edge.iter().map(|value| value * value).sum::<f64>();
+            if length_squared == 0.0 {
+                continue;
+            }
+            let relative = difference(p, start);
+            let t = ((0..3).map(|i| relative[i] * edge[i]).sum::<f64>() / length_squared)
+                .clamp(0.0, 1.0);
+            let candidate = Vec3 {
+                x: (f64::from(start.x) + edge[0] * t) as f32,
+                y: (f64::from(start.y) + edge[1] * t) as f32,
+                z: (f64::from(start.z) + edge[2] * t) as f32,
+            };
+            let candidate_distance = point_dist2_ordering(p, candidate);
+            if candidate_distance < distance {
+                closest = candidate;
+                distance = candidate_distance;
+            }
+        }
+        return (closest, None);
+    }
     let ap = difference(p, a);
     let d1 = ab[0] * ap[0] + ab[1] * ap[1] + ab[2] * ap[2];
     let d2 = ac[0] * ap[0] + ac[1] * ap[1] + ac[2] * ap[2];
@@ -2415,9 +2600,6 @@ fn closest_triangle_point_and_normal(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> (Vec
     // Inside the face, project along its normal. Reconstructing the point
     // from barycentric coordinates loses tangential precision on large
     // triangles and makes a flat floor exert a sideways contact force.
-    let nx = ab[1] * ac[2] - ab[2] * ac[1];
-    let ny = ab[2] * ac[0] - ab[0] * ac[2];
-    let nz = ab[0] * ac[1] - ab[1] * ac[0];
     let mut normal = Vec3 {
         x: nx as f32,
         y: ny as f32,
@@ -2459,7 +2641,7 @@ fn closest_point_on_segment(p: Vec3, a: Vec3, b: Vec3) -> Vec3 {
         z: b.z - a.z,
     };
     let ab_len2 = ab.x * ab.x + ab.y * ab.y + ab.z * ab.z;
-    if ab_len2 <= f32::EPSILON {
+    if a == b {
         return a;
     }
 
@@ -2469,7 +2651,7 @@ fn closest_point_on_segment(p: Vec3, a: Vec3, b: Vec3) -> Vec3 {
         z: p.z - a.z,
     };
     let projection = ap.x * ab.x + ap.y * ab.y + ap.z * ab.z;
-    if !(ab_len2.is_finite() && projection.is_finite())
+    if (!ab_len2.is_normal() || !projection.is_finite())
         && vec_is_finite(p)
         && vec_is_finite(a)
         && vec_is_finite(b)
@@ -2529,26 +2711,36 @@ pub(crate) fn closest_points_segment_segment(
     let e = dot(d2, d2);
     let f = dot(d2, r);
     let (s, t);
-    if a <= f64::from(f32::EPSILON) && e <= f64::from(f32::EPSILON) {
+    if a == 0.0 && e == 0.0 {
         return (p1, p2);
     }
 
-    if a <= f64::from(f32::EPSILON) {
+    if a == 0.0 {
         s = 0.0;
         t = (f / e).clamp(0.0, 1.0);
     } else {
         let c = dot(d1, r);
-        if e <= f64::from(f32::EPSILON) {
+        if e == 0.0 {
             t = 0.0;
             s = (-c / a).clamp(0.0, 1.0);
         } else {
             let b = dot(d1, d2);
-            let denom = a * e - b * b;
-            // denom == 0 means parallel segments: any s works, pick 0.
+            // Squared dot products cancel as the axes become parallel.
+            // Cross products retain the angle in both the denominator and
+            // numerator without choosing an angular cutoff.
+            let cross = |a: [f64; 3], b: [f64; 3]| {
+                [
+                    a[1] * b[2] - a[2] * b[1],
+                    a[2] * b[0] - a[0] * b[2],
+                    a[0] * b[1] - a[1] * b[0],
+                ]
+            };
+            let normal = cross(d1, d2);
+            let denom = dot(normal, normal);
             let s0 = if denom == 0.0 {
                 0.0
             } else {
-                ((b * f - c * e) / denom).clamp(0.0, 1.0)
+                (dot(cross(d2, r), normal) / denom).clamp(0.0, 1.0)
             };
 
             let t0 = (b * s0 + f) / e;
@@ -4125,6 +4317,97 @@ mod tests {
         };
         let cp = closest_point_on_triangle(p, a, b, c);
         assert_vec3_close(cp, vec3(0.25, 0.25, 0.0));
+    }
+
+    #[test]
+    fn test_collapsed_triangle_projects_to_its_segment_or_point() {
+        let orders = [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 0, 2],
+            [1, 2, 0],
+            [2, 0, 1],
+            [2, 1, 0],
+        ];
+        for scale in [1e-20, 1.0, 1e20] {
+            for x in [-1.0, 0.25, 2.0] {
+                let p = vec3(x * scale, scale, 0.0);
+                for vertices in [
+                    [
+                        vec3(0.0, 0.0, 0.0),
+                        vec3(0.0, 0.0, 0.0),
+                        vec3(scale, 0.0, 0.0),
+                    ],
+                    [
+                        vec3(0.0, 0.0, 0.0),
+                        vec3(0.5 * scale, 0.0, 0.0),
+                        vec3(scale, 0.0, 0.0),
+                    ],
+                ] {
+                    for order in orders {
+                        let [a, b, c] = order.map(|i| vertices[i]);
+                        let (point, face) = closest_triangle_point_and_normal(p, a, b, c);
+                        assert_eq!(point, vec3(x.clamp(0.0, 1.0) * scale, 0.0, 0.0));
+                        assert!(face.is_none());
+                    }
+                }
+                let vertex = vec3(scale, 0.0, 0.0);
+                assert_eq!(closest_point_on_triangle(p, vertex, vertex, vertex), vertex);
+            }
+        }
+    }
+
+    #[test]
+    fn test_thin_triangle_retains_its_face_projection() {
+        let height = 2.0_f32.powi(-30);
+        let p = vec3(0.25, height * 0.25, 1.0);
+        let (point, face) = closest_triangle_point_and_normal(
+            p,
+            vec3(0.0, 0.0, 0.0),
+            vec3(1.0, 0.0, 0.0),
+            vec3(0.0, height, 0.0),
+        );
+        assert_eq!(point, vec3(p.x, p.y, 0.0));
+        assert!(face.is_some());
+    }
+
+    #[test]
+    fn test_collapsed_triangle_resolves_small_nonzero_offsets() {
+        for scale in [1e-30, 1e-14, 1e-10, 1.0] {
+            let center = vec3(scale * 0.25, 0.0, 0.0);
+            let start = vec3(0.0, -100.0 * scale, 0.0);
+            let end = vec3(0.0, 100.0 * scale, 0.0);
+            let contact = sphere_vs_triangle(center, scale, start, start, end).unwrap();
+            assert_eq!(contact.normal, vec3(1.0, 0.0, 0.0));
+            assert_eq!(contact.point, vec3(0.0, 0.0, 0.0));
+            assert!((contact.depth / scale - 0.75).abs() < 1e-6);
+        }
+    }
+
+    #[test]
+    fn test_segment_closest_points_keep_short_and_nearly_parallel_axes() {
+        for scale in [1e-20, 1e-5, 1.0, 1e20] {
+            let start = vec3(0.0, -2.0 * scale, 0.0);
+            let end = vec3(0.0, scale, 0.0);
+            for slope in [0.0, 1e-10, 1e-5, 1e-3, 1.0] {
+                let other_start = vec3(-100.0 * slope * scale, -100.0 * scale, 0.0);
+                let other_end = vec3(100.0 * slope * scale, 100.0 * scale, 0.0);
+                let (on_a, on_b) =
+                    closest_points_segment_segment(start, end, other_start, other_end);
+                for value in [on_a.x - on_b.x, on_a.y - on_b.y, on_a.z - on_b.z] {
+                    assert!(value.abs() / scale < 1e-5);
+                }
+                if slope != 0.0 {
+                    for value in [on_a.x, on_a.y, on_a.z, on_b.x, on_b.y, on_b.z] {
+                        assert!(value.abs() / scale < 1e-5);
+                    }
+                }
+            }
+            let point = closest_point_on_segment(vec3(scale, 0.0, 0.0), start, end);
+            assert!(point.x.abs() / scale < 1e-5);
+            assert!(point.y.abs() / scale < 1e-5);
+            assert!(point.z.abs() / scale < 1e-5);
+        }
     }
 
     #[test]

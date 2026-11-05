@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "pyxel",
-  "main": "video-worker.mjs",
+  "main": "worker.mjs",
   "compatibility_date": "2026-10-06",
   "workers_dev": false,
   "preview_urls": false,
@@ -9,7 +9,10 @@
   "assets": {
     "directory": "../dist/site",
     "binding": "ASSETS",
-    "run_worker_first": ["/pyxel/user-guide/cube/videos/*"]
+    "run_worker_first": [
+      "/pyxel/user-guide/cube/videos/*",
+      "/pyxel/launcher/source/*",
+    ],
   },
   "build": {
     "command": "python3 ../scripts/build_site",
@@ -32,6 +35,7 @@
       "../python/pyxel/examples",
       "../wasm",
       "../scripts/build_site",
+      "../python/pyproject.toml",
     ],
   },
 }

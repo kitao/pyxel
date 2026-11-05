@@ -77,7 +77,7 @@ class App:
         # Render perspective views
         cam = (self.cam_x, self.cam_y, self.cam_z)
         rot = (self.rot_x, self.rot_y, self.rot_z)
-        hw = pyxel.width // 2
+        hw = (pyxel.width - 2) // 2
         vh = pyxel.height - HUD_HEIGHT
         pyxel.blt3d(0, HUD_HEIGHT, hw, vh, 0, cam, rot, fov=self.fov)
         pyxel.bltm3d(hw + 2, HUD_HEIGHT, hw, vh, 0, cam, rot, fov=self.fov)

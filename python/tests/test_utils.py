@@ -5,6 +5,30 @@ import pytest
 import pyxel.utils
 
 
+@pytest.mark.parametrize("newline", ["\n", "\r\n", "\r"])
+@pytest.mark.parametrize(
+    ("encoding", "text"),
+    [
+        ("latin-1", "Café\x80\x85"),
+        ("cp932", "日本語①"),
+        ("shift_jis", "日本語〜"),
+        ("utf-8", "日本語\u2028"),
+    ],
+)
+def test_source_decoder_reads_second_line_cookie_after_nonascii_comment(
+    newline, encoding, text
+):
+    source = f"# {text}{newline}# coding: {encoding}{newline}value = {text!r}{newline}"
+    assert pyxel.utils._decode_python_source(source.encode(encoding)) == source
+
+
+@pytest.mark.parametrize(
+    "source", [b"", b"\xef\xbb\xbf", b"def unfinished(:\n", b"raise RuntimeError()\n"]
+)
+def test_source_decoder_does_not_parse_or_execute(source):
+    assert pyxel.utils._decode_python_source(source) == source.decode("utf-8-sig")
+
+
 class TestListImportedModules:
     def test_returns_dict_with_system_and_local_keys(self, tmp_path):
         script = tmp_path / "main.py"
@@ -17,6 +41,38 @@ class TestListImportedModules:
         script.write_text("import os\nimport sys\n", encoding="utf-8")
         result = pyxel.utils.list_imported_modules(str(script))
         assert result == {"system": ["os", "sys"], "local": []}
+
+    @pytest.mark.parametrize("encoded_module", ["main.py", "helper.py"])
+    @pytest.mark.parametrize(
+        ("encoding", "header", "comment"),
+        [
+            ("utf-8", "", "日本語"),
+            ("utf-8-sig", "", "日本語"),
+            ("latin-1", "# coding: latin-1\n", "Café"),
+            ("shift_jis", "# coding: shift_jis\n", "日本語"),
+        ],
+    )
+    def test_discovers_imports_in_encoded_source(
+        self, tmp_path, encoded_module, encoding, header, comment
+    ):
+        script = tmp_path / "main.py"
+        helper = tmp_path / "helper.py"
+        sources = {
+            "main.py": "import helper\nimport decimal\n",
+            "helper.py": "import fractions\n",
+        }
+        for name, source in sources.items():
+            if name == encoded_module:
+                source = header + f"# {comment}\n" + source
+                (tmp_path / name).write_bytes(source.encode(encoding))
+            else:
+                (tmp_path / name).write_text(source, encoding="utf-8")
+
+        result = pyxel.utils.list_imported_modules(str(script))
+        assert result == {
+            "system": ["decimal", "fractions"],
+            "local": [str(helper)],
+        }
 
     @pytest.mark.parametrize(
         "source",
@@ -170,13 +226,13 @@ class TestListImportedModules:
             "from .. import sub\nimport zlib\n", encoding="utf-8"
         )
         read_files = []
-        read_text = Path.read_text
+        read_bytes = Path.read_bytes
 
         def record_read(path, *args, **kwargs):
             read_files.append(path.resolve())
-            return read_text(path, *args, **kwargs)
+            return read_bytes(path, *args, **kwargs)
 
-        monkeypatch.setattr(Path, "read_text", record_read)
+        monkeypatch.setattr(Path, "read_bytes", record_read)
 
         result = pyxel.utils.list_imported_modules(str(script))
         assert read_files == [script, pkg / "__init__.py", sub / "__init__.py"]

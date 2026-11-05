@@ -166,6 +166,51 @@ class TestWatchCommand:
 
 
 class TestPyxelAppMetadata:
+    @pytest.mark.parametrize("newline", ["\n", "\r\n", "\r"])
+    def test_nonascii_comment_before_cookie_and_c1_metadata(self, tmp_path, newline):
+        source = (
+            "# Café\n# coding: latin-1\n# title: Café\x85value\n# author: Me\n"
+        ).replace("\n", newline)
+        script = tmp_path / "main.py"
+        script.write_bytes(source.encode("latin-1"))
+        metadata = pyxel.cli._make_metadata_comment(script)
+        assert "Café\x85value" in metadata
+        assert "Me" in metadata
+
+    @pytest.mark.parametrize(
+        ("encoding", "header", "title"),
+        [
+            ("utf-8", "", "日本語"),
+            ("utf-8-sig", "", "日本語"),
+            ("latin-1", "# coding: latin-1\n", "Café"),
+            ("shift_jis", "# coding: shift_jis\n", "日本語"),
+        ],
+    )
+    def test_encoded_startup_preserves_metadata_source_and_execution(
+        self, tmp_path, monkeypatch, capsys, encoding, header, title
+    ):
+        app_dir = _make_app(tmp_path)
+        source = (
+            header + f"# title: {title}\n# author: Me\n" + f"print({title!r})\n"
+        ).encode(encoding)
+        (app_dir / "main.py").write_bytes(source)
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+        monkeypatch.setattr(sys, "path", sys.path.copy())
+
+        pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
+        app_file = str(tmp_path / "my_app.pyxapp")
+        assert pyxel.cli.get_pyxel_app_metadata(app_file) == {
+            "title": title,
+            "author": "Me",
+        }
+        with zipfile.ZipFile(app_file) as archive:
+            assert archive.read("my_app/main.py") == source
+        capsys.readouterr()
+
+        pyxel.cli.play_pyxel_app(app_file)
+        assert capsys.readouterr().out.splitlines()[-1] == title
+
     @pytest.mark.parametrize(
         "metadata",
         [{}, {"title": "My App"}, {"author": "Me"}, {"desc": "Example"}],

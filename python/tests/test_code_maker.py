@@ -12,6 +12,83 @@ import pyxel.cli
 PAGE_PATH = Path(__file__).parents[2] / "web" / "code-maker" / "pyxel-screen.html"
 
 
+def decode_editor_source(source):
+    text = pyxel.utils._decode_python_source(source)
+    return pyxel.utils._normalize_python_source_encoding(text)
+
+
+@pytest.mark.parametrize(
+    ("source", "expected"),
+    [
+        (b"", ""),
+        (b"\xef\xbb\xbf# Japanese\n", "# Japanese\n"),
+        (
+            '# coding: latin-1\nvalue = "café\x80"\n'.encode("latin-1"),
+            '# coding: utf-8\nvalue = "café\x80"\n',
+        ),
+        (
+            '# coding: cp932\nvalue = "日本語①"\n'.encode("cp932"),
+            '# coding: utf-8\nvalue = "日本語①"\n',
+        ),
+        (
+            '# coding: shift_jis\nvalue = "波〜"\n'.encode("shift_jis"),
+            '# coding: utf-8\nvalue = "波〜"\n',
+        ),
+        (
+            '#!/usr/bin/python\r\n# coding=cp932; author: A\r\nvalue="日本語"\r\n'.encode(
+                "cp932"
+            ),
+            '#!/usr/bin/python\r\n# coding=utf-8; author: A\r\nvalue="日本語"\r\n',
+        ),
+        (
+            b'# coding: utf8\nvalue = "coding: cp932"\n# coding: latin-1\n',
+            '# coding: utf-8\nvalue = "coding: cp932"\n# coding: latin-1\n',
+        ),
+        (
+            b'value = "coding: cp932"\n# coding: fake_codec\n',
+            'value = "coding: cp932"\n# coding: fake_codec\n',
+        ),
+        (
+            '#!/usr/bin/python\r# coding: cp932\rvalue="日本語"\r'.encode("cp932"),
+            '#!/usr/bin/python\r# coding: utf-8\rvalue="日本語"\r',
+        ),
+        (
+            b"# first\r# second\r# coding: fake_codec\rvalue=1\r",
+            "# first\r# second\r# coding: fake_codec\rvalue=1\r",
+        ),
+        (
+            b"# ignored+AAo-value = '+ACM coding: utf-7'\n",
+            "# ignored\nvalue = '# coding: utf-7'\n",
+        ),
+    ],
+)
+def test_source_decode_preserves_python_characters_and_utf8_save(
+    tmp_path, source, expected
+):
+    text = decode_editor_source(source)
+    assert text == expected
+    original_path = tmp_path / "original.py"
+    saved_path = tmp_path / "saved.py"
+    original_path.write_bytes(source)
+    saved_path.write_text(text, encoding="utf-8")
+    original = runpy.run_path(str(original_path))
+    saved = runpy.run_path(str(saved_path))
+    assert original.get("value") == saved.get("value")
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        b"# coding: fake_codec\nvalue = 1\n",
+        b'# coding: utf-8\nvalue = "\xff"\n',
+        b"\xef\xbb\xbf# coding: latin-1\nvalue = 1\n",
+    ],
+)
+def test_source_decode_rejects_invalid_encoding(source):
+    with pytest.raises((SyntaxError, UnicodeError)):
+        decode_editor_source(source)
+
+
 class ScriptParser(HTMLParser):
     script = ""
 

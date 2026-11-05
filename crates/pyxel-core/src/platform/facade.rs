@@ -74,9 +74,18 @@ pub fn quit() {
     if let Some(mut callback) = callback {
         callback();
     }
+    #[cfg(not(target_os = "emscripten"))]
     with_platform_mut(Platform::quit);
     #[cfg(target_os = "emscripten")]
-    stop_main_loop();
+    {
+        // Web tools also reset scripts that finish without initializing Pyxel.
+        PLATFORM.with(|current| {
+            if let Some(platform) = current.borrow_mut().as_mut() {
+                platform.quit();
+            }
+        });
+        stop_main_loop();
+    }
 }
 
 #[cfg(target_os = "emscripten")]

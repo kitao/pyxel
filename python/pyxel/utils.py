@@ -1,4 +1,7 @@
 import ast
+import io
+import re
+import tokenize
 from importlib.machinery import PathFinder
 from pathlib import Path
 
@@ -15,6 +18,37 @@ def list_imported_modules(filename: str) -> dict[str, list[str]]:
         _SYSTEM: sorted(imports[_SYSTEM]),
         _LOCAL: sorted(imports[_LOCAL]),
     }
+
+
+# Python source encoding
+
+
+def _decode_python_source(source: bytes) -> str:
+    bom = b"\xef\xbb\xbf" if source.startswith(b"\xef\xbb\xbf") else b""
+    body = source[len(bom) :]
+    header = b"\n".join(re.split(rb"\r\n|\r|\n", body, maxsplit=2)[:2])
+    # Keep Python 3.11 from decoding an initial non-ASCII comment as UTF-8
+    # before it reaches the encoding declaration on the second physical line.
+    header = bom + re.sub(rb"[\x80-\xff]", b"?", header)
+    encoding, _ = tokenize.detect_encoding(io.BytesIO(header).readline)
+    return source.decode(encoding)
+
+
+def _normalize_python_source_encoding(text: str) -> str:
+    # The decoded text may have new physical lines (for example, with UTF-7).
+    # Change only a declaration that will be active when this text is saved.
+    lines = re.split(r"(\r\n|\r|\n)", text, maxsplit=2)
+    for position in range(0, min(len(lines), 4), 2):
+        line = lines[position]
+        # PEP 263 encoding declarations occupy a comment-only physical line.
+        cookie = re.match(r"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)", line)
+        if cookie:
+            start, end = cookie.span(1)
+            lines[position] = line[:start] + "utf-8" + line[end:]
+            break
+        if not re.match(r"^[ \t\f]*(?:#|$)", line):
+            break
+    return "".join(lines)
 
 
 # Recursive import discovery
@@ -34,7 +68,7 @@ def _list_imported_modules(
 
     dir_path = str(Path(filename).parent)
     try:
-        root = ast.parse(Path(filename).read_text(encoding="utf-8"))
+        root = ast.parse(Path(filename).read_bytes())
     except (SyntaxError, UnicodeDecodeError):
         return
 

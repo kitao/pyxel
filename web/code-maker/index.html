@@ -1119,9 +1119,16 @@
 
           // Handle project files before Ace or an embedded app handles the drop.
           e.stopPropagation();
+          const load = isCode
+            ? (window._projectLoad = Symbol())
+            : window._projectLoad;
           try {
             if (isCode) {
-              let text = await file.text();
+              let text = await decodePythonSource(
+                new Uint8Array(await file.arrayBuffer()),
+                load,
+              );
+              if (load !== window._projectLoad) return;
               text = text.replace(
                 /((?:\w+\.)?\bload\s*\(\s*)(["'])[^"']*\.pyxres\2/g,
                 "$1$2my_resource.pyxres$2",
@@ -1147,6 +1154,7 @@
               );
             }
           } catch (e) {
+            if (load !== window._projectLoad) return;
             alert(`Load failed: ${e.message}`);
           }
         }
@@ -1187,6 +1195,51 @@
 
       // Project helpers
 
+      async function decodePythonSource(bytes, load) {
+        // Ordinary UTF-8 projects can load before either runtime starts.
+        // Route possible cookies to Python instead of duplicating its codec rules.
+        try {
+          const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+          if (
+            !text.split(/\r\n|\r|\n/, 2).some((line) => line.includes("coding"))
+          ) {
+            return text;
+          }
+        } catch {
+          // A declared Python encoding may decode bytes that are not UTF-8.
+        }
+
+        while (load === window._projectLoad) {
+          const context = resourceEditor.contentWindow?.pyxelContext;
+          if (context?.hasFatalError) {
+            throw new Error("The Python runtime is unavailable");
+          }
+          if (context?.resetPromise) {
+            await context.resetPromise;
+            continue;
+          }
+          context?.resolveInput?.();
+          if (context?.initialized && context.pyodide) {
+            const pyodide = context.pyodide;
+            const globals = pyodide.toPy({ source: bytes });
+            try {
+              return pyodide.runPython(
+                `
+import pyxel.utils
+source = pyxel.utils._decode_python_source(bytes(source))
+pyxel.utils._normalize_python_source_encoding(source)
+`,
+                { globals },
+              );
+            } finally {
+              globals.destroy();
+            }
+          }
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+        return null;
+      }
+
       async function loadProjectFromZip(buf, name, load = window._projectLoad) {
         const zip = await JSZip.loadAsync(buf);
         const files = {};
@@ -1207,11 +1260,15 @@
           throw new Error("Missing my_resource.pyxres");
         }
 
+        const code = await decodePythonSource(
+          base64ToUint8(files["main.py"]),
+          load,
+        );
+        if (load !== window._projectLoad) return;
+
         window._project.name = sanitizeProjectName(name);
         window._project.files = files;
-        window._project.code = new TextDecoder().decode(
-          base64ToUint8(files["main.py"]),
-        );
+        window._project.code = code;
         window._project.resource = files["my_resource.pyxres"];
 
         window._codeEditor.setValue(window._project.code, -1);

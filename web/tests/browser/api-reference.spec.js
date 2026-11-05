@@ -10,6 +10,30 @@ const advancedClasses = [
 const preferenceKey = "pyxel-api-ref-advanced";
 const cubePath = "/pyxel/api-reference/cube/";
 
+test("API notes preserve paragraphs and escape literal text", async ({
+  page,
+}) => {
+  await page.goto(cubePath);
+  await page.locator("#lang-select").selectOption("en");
+  const paragraphs = ["First <b>literal text</b>.", 'Second & "quoted" text.'];
+  await page.evaluate((notes) => {
+    data.categories[0].items[0].notes.en = notes;
+    updateTexts();
+  }, paragraphs.join("\n\n"));
+
+  const row = page.locator('[data-item-key="vec3-0"]');
+  await row.locator("summary").click();
+  const notes = row.locator("[data-detail-key] > div > div").last();
+  await expect(notes.locator("p")).toHaveText(paragraphs);
+  await expect(notes.locator("b")).toHaveCount(0);
+
+  await page.evaluate((text) => {
+    data.categories[0].items[0].notes.en = text;
+    updateTexts();
+  }, paragraphs[0]);
+  await expect(notes.locator("p")).toHaveText([paragraphs[0]]);
+});
+
 test("Cube keeps drawing and model playback visible and advanced classes optional", async ({
   page,
 }) => {

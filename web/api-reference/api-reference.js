@@ -576,7 +576,13 @@ function buildDetailContent(container, item) {
     const sec = document.createElement("div");
     sec.innerHTML =
       `<div class="text-gray-400 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("notes"))}</div>` +
-      `<p class="text-gray-400 text-xs leading-relaxed">${esc(t(item.notes))}</p>`;
+      t(item.notes)
+        .split("\n\n")
+        .map(
+          (paragraph, index) =>
+            `<p class="text-gray-400 text-xs leading-relaxed${index ? " mt-2" : ""}">${esc(paragraph)}</p>`,
+        )
+        .join("");
     wrap.appendChild(sec);
   }
 

@@ -179,8 +179,8 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        pyxel.text(8, 8, "Arrows/Pad: Rotate  S/Top: Shading  Q: Quit", 7)
-        pyxel.text(8, 18, "1/Bottom: Walk  2/Right: Run  3/Left: Eat", 7)
+        pyxel.text(8, 8, "Arrows: Rotate  S: Shading  Q: Quit", 7)
+        pyxel.text(8, 18, "1: Walk  2: Run  3: Eat", 7)
 
 
 App()

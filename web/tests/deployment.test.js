@@ -29,9 +29,11 @@ const buildSources = () => {
     ...[...script.matchAll(/tracked_files\(root, "([^"]+)"\)/g)].map(
       (match) => match[1],
     ),
-    ...[...script.matchAll(/root \/ "(web\/(?!node_modules\/)[^"]+)"/g)].map(
-      (match) => match[1],
-    ),
+    ...[
+      ...script.matchAll(
+        /root \/ "((?:web|python)\/(?!node_modules\/)[^"]+)"/g,
+      ),
+    ].map((match) => match[1]),
     ...[
       ...script
         .match(/for source_path, target_path in \(([^]*?)\):/)[1]
@@ -40,7 +42,7 @@ const buildSources = () => {
   ];
 };
 
-test("the Pyxel Worker serves only the built site", () => {
+test("the Pyxel Worker handles launcher sources and tutorial video ranges", () => {
   const {
     $schema,
     compatibility_date: compatibilityDate,
@@ -49,10 +51,9 @@ test("the Pyxel Worker serves only the built site", () => {
   } = config;
   assert.equal($schema, "./node_modules/wrangler/config-schema.json");
   assert.match(compatibilityDate, /^\d{4}-\d{2}-\d{2}$/);
-  // Worker code handles ranges only for tutorial videos; other assets stay static.
   assert.deepEqual(deployment, {
     name: "pyxel",
-    main: "video-worker.mjs",
+    main: "worker.mjs",
     workers_dev: false,
     preview_urls: false,
     // A pattern ending in * also matches /pyxel with a query string.
@@ -60,7 +61,10 @@ test("the Pyxel Worker serves only the built site", () => {
     assets: {
       directory: "../dist/site",
       binding: "ASSETS",
-      run_worker_first: ["/pyxel/user-guide/cube/videos/*"],
+      run_worker_first: [
+        "/pyxel/user-guide/cube/videos/*",
+        "/pyxel/launcher/source/*",
+      ],
     },
   });
   assert.equal(build.command, "python3 ../scripts/build_site");

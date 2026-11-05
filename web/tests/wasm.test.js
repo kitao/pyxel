@@ -1092,6 +1092,72 @@ test("Web runtime escapes reserved characters in fetched file paths", () => {
   ]);
 });
 
+test("lazy Python modules use framed bytes while other assets keep their original source", () => {
+  const files = new Map();
+  const requests = [];
+  const source = Buffer.from("\uFEFF# 日本語\n");
+  const image = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x00, 0xff]);
+  const root = "https://cdn.jsdelivr.net/gh/owner/repo@ref";
+  const moduleRoot = "/pyxel/launcher/source/owner/repo@ref";
+  const context = {
+    console: { log() {} },
+    window: {},
+    Uint8Array,
+    PYXEL_WORKING_DIRECTORY: "/work",
+    PYXEL_WATCH_INFO_FILE: ".pyxel_watch_info",
+    XMLHttpRequest: class {
+      overrideMimeType() {}
+      open(_method, url) {
+        this.url = url;
+        requests.push(url);
+      }
+      send() {
+        this.status = 200;
+        if (this.url === moduleRoot + "/pkg/mod%23.py") {
+          this.response = "\0" + source.toString("latin1");
+          this.marked = true;
+        } else if (this.url === root + "/tile.png") {
+          this.response = image.toString("latin1");
+        } else {
+          this.response = "<html>not a module</html>";
+        }
+      }
+      getResponseHeader(name) {
+        return name === "X-Pyxel-Source" && this.marked ? "1" : null;
+      }
+    },
+  };
+  context._encodeUrlPath = loadArrowFunction(
+    pyxelSource,
+    "_encodeUrlPath",
+    context,
+  );
+  const fs = {
+    cwd: () => "/work",
+    analyzePath: (path) => ({ exists: files.has(path) }),
+    mkdir: (path) => files.set(path, null),
+    open() {},
+    stat() {},
+    writeFile: (path, bytes) => files.set(path, Buffer.from(bytes)),
+  };
+  loadArrowFunction(pyxelSource, "_hookFileOperations", context)(
+    { FS: fs },
+    root,
+    moduleRoot,
+  );
+  fs.stat("pkg/mod#.py");
+  fs.stat("pkg/mod#.py");
+  fs.stat("tile.png");
+  assert.deepEqual(files.get("/work/pkg/mod#.py"), source);
+  assert.deepEqual(files.get("/work/tile.png"), image);
+  assert.deepEqual(requests, [
+    moduleRoot + "/pkg/mod%23.py",
+    root + "/tile.png",
+  ]);
+  fs.stat("unframed.py");
+  assert.equal(files.has("/work/unframed.py"), false);
+});
+
 test("a named web run retries a missing script and preserves its source bytes", async () => {
   const source = Buffer.from("\uFEFF# 日本語のコメント\nprint(1)\n");
   const requests = [];

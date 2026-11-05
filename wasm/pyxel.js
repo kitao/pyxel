@@ -105,7 +105,11 @@ async function launchPyxel(params) {
   const pyodide = await _loadPyodideAndPyxel(canvas);
 
   _hookPythonError(pyodide);
-  _preloadRunScript = _hookFileOperations(pyodide, params.root || ".");
+  _preloadRunScript = _hookFileOperations(
+    pyodide,
+    params.root || ".",
+    params._moduleRoot,
+  );
   await _waitForInput();
 
   window.pyxelContext.initialized = true;
@@ -587,7 +591,7 @@ const _encodeUrlPath = (path) =>
   path.split("/").map(encodeURIComponent).join("/");
 
 // Mirror requested files from the hosting page into Pyodide's filesystem.
-const _hookFileOperations = (pyodide, root) => {
+const _hookFileOperations = (pyodide, root, moduleRoot) => {
   const fs = pyodide.FS;
 
   const createDirs = (absPath, isFile) => {
@@ -650,9 +654,14 @@ const _hookFileOperations = (pyodide, root) => {
     if (!file) return;
 
     // Python file operations need the bytes before the synchronous call returns.
+    const framed = moduleRoot && /\.py$/i.test(file.path);
     const request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
-    request.open("GET", file.srcPath, false);
+    request.open(
+      "GET",
+      framed ? `${moduleRoot}/${_encodeUrlPath(file.path)}` : file.srcPath,
+      false,
+    );
     try {
       request.send();
     } catch {
@@ -661,9 +670,19 @@ const _hookFileOperations = (pyodide, root) => {
     if (request.status !== 200) {
       return;
     }
-    const fileBinary = Uint8Array.from(request.response, (c) =>
-      c.charCodeAt(0),
-    );
+    let data = request.response;
+    if (framed) {
+      // The Launcher's source endpoint prefixes a NUL so the browser's BOM
+      // decoder never sees the first bytes of the Python file.
+      if (
+        request.getResponseHeader("X-Pyxel-Source") !== "1" ||
+        data.charCodeAt(0) !== 0
+      ) {
+        return;
+      }
+      data = data.slice(1);
+    }
+    const fileBinary = Uint8Array.from(data, (c) => c.charCodeAt(0));
 
     const contentType = request.getResponseHeader("Content-Type") || "";
     if (contentType.includes("text/html") && !file.path.includes(".")) {

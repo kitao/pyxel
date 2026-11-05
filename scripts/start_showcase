@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
 import io
+import re
 import socket
 import sys
 import threading
 import webbrowser
+from http.client import HTTPException, HTTPSConnection
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse, urlsplit
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_ROOT_DIRS = (
@@ -19,6 +21,7 @@ PUBLIC_ROOT_DIRS = (
 PORT = 8000
 CDN_RUNTIME_URL = "https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"
 LOCAL_RUNTIME_URL = "/wasm/pyxel.js"
+SOURCE_PREFIX = "/pyxel/launcher/source/"
 
 SW_PATH = "/pyxel-sw.js"
 SW_JS = r"""// Pyxel Showcase service worker
@@ -66,6 +69,9 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self):
+        if self.path.startswith(SOURCE_PREFIX):
+            self._serve_launcher_source()
+            return
         if self.path == SW_PATH:
             self.send_response(200)
             self.send_header("Content-Type", "application/javascript; charset=utf-8")
@@ -73,6 +79,46 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(SW_JS.encode("utf-8"))
             return
         return super().do_GET()
+
+    def _serve_launcher_source(self):
+        path = urlsplit(self.path).path[len(SOURCE_PREFIX) :]
+        try:
+            decoded = unquote(path, errors="strict")
+        except UnicodeError:
+            self.send_error(404)
+            return
+        if (
+            not path.isascii()
+            or not re.fullmatch(
+                r"[\w.-]+/[\w.-]+(?:@[^/]+)?/.*\.py", path, re.IGNORECASE | re.ASCII
+            )
+            or re.search(r"%(?![0-9a-fA-F]{2})", path)
+            or re.search(r"(?:^|/)\.{1,2}(?:/|$)|\x00", decoded)
+        ):
+            self.send_error(404)
+            return
+        connection = HTTPSConnection("cdn.jsdelivr.net", timeout=15)
+        try:
+            connection.request("GET", "/gh/" + path)
+            response = connection.getresponse()
+            if response.status != 200:
+                self.send_error(404 if response.status == 404 else 502)
+                return
+            data = response.read()
+        except (HTTPException, OSError):
+            self.send_error(502)
+            return
+        finally:
+            connection.close()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/octet-stream")
+        self.send_header("Content-Length", str(1 + len(data)))
+        self.send_header("Content-Security-Policy", "default-src 'none'; sandbox")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Pyxel-Source", "1")
+        self.end_headers()
+        self.wfile.write(b"\x00")
+        self.wfile.write(data)
 
     def send_head(self):
         parsed = urlparse(self.path)
@@ -145,6 +191,7 @@ def _is_public_path(path: Path) -> bool:
 
 
 def _inject_html(text: str) -> str:
+    text = text.replace("https://kitao.dev" + SOURCE_PREFIX, SOURCE_PREFIX)
     lower = text.lower()
     head_idx = lower.rfind("</head>")
     if head_idx != -1:
