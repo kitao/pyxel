@@ -66,6 +66,17 @@
 
       function updateTexts() {
         const pyxelLink = link("https://kitao.dev/pyxel/", "Pyxel");
+        const videoLang = lang === "ja" ? "ja" : "en";
+        const usageVideo = link(
+          `videos/pyxel-cube-usage-${videoLang}.mp4`,
+          lang === "ja" ? "Pyxel Cube の使い方" : "Using Pyxel Cube",
+        );
+        const assetVideo = link(
+          `videos/pyxel-cube-assets-${videoLang}.mp4`,
+          lang === "ja"
+            ? "Pyxel Cube 向け 3D アセットの作り方"
+            : "Creating 3D Assets for Pyxel Cube",
+        );
 
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
@@ -77,7 +88,12 @@
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel Cube</strong>")}</p>
           <p class="body mt-2">${t("overview_beginner").replace("{0}", link("https://kitao.dev/pyxel/user-guide/", t("base_guide")))}</p>
-          <p class="body mt-2">${t("overview_advanced")}</p>`;
+          <p class="body mt-2">${t("overview_advanced")}</p>
+          <p class="body mt-2">${t("overview_videos_intro")}</p>
+          <ul class="body mt-2 list-disc space-y-1 pl-6">
+            <li>${t("overview_usage_video").replace("{0}", usageVideo)}</li>
+            <li>${t("overview_asset_video").replace("{0}", assetVideo)}</li>
+          </ul>`;
 
         const guide = data.guides.find((guide) => guide.language === lang);
         document.getElementById("guide").innerHTML = renderGuide(guide);

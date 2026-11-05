@@ -30,10 +30,18 @@ function sliceStream(body, start, end) {
 
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    const legacyAsset =
+      /^\/pyxel\/user-guide\/cube\/videos\/blockbench-3d-assets-(ja|en)\.mp4$/.exec(
+        url.pathname,
+      );
+    if (legacyAsset && ["GET", "HEAD"].includes(request.method)) {
+      url.pathname = `/pyxel/user-guide/cube/videos/pyxel-cube-assets-${legacyAsset[1]}.mp4`;
+      return Response.redirect(url.href, 301);
+    }
     const response = await env.ASSETS.fetch(request);
-    const path = new URL(request.url).pathname;
     if (
-      !/^\/pyxel\/user-guide\/cube\/videos\/[^/]+\.mp4$/.test(path) ||
+      !/^\/pyxel\/user-guide\/cube\/videos\/[^/]+\.mp4$/.test(url.pathname) ||
       !["GET", "HEAD"].includes(request.method) ||
       response.status !== 200
     ) {

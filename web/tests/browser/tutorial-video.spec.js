@@ -6,7 +6,14 @@ for (const language of ["ja", "en"]) {
     request,
     baseURL,
   }) => {
-    const url = `${baseURL}/pyxel/user-guide/cube/videos/blockbench-3d-assets-${language}.mp4`;
+    const directory = `${baseURL}/pyxel/user-guide/cube/videos`;
+    const url = `${directory}/pyxel-cube-assets-${language}.mp4`;
+    const oldLink = await request.get(
+      `${directory}/blockbench-3d-assets-${language}.mp4`,
+      { maxRedirects: 0 },
+    );
+    expect(oldLink.status()).toBe(301);
+    expect(oldLink.headers().location).toBe(url);
     const partial = await request.get(url, {
       headers: { Range: "bytes=0-1023" },
     });
