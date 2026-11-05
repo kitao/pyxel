@@ -1,3 +1,4 @@
+import importlib.machinery
 import importlib.util
 import os.path
 import sys
@@ -8,12 +9,10 @@ SKIP_MODULES = frozenset(("_hashlib", "_uuid", "javascript", "js", "ssl"))
 class ImportHook:
     def __init__(self):
         self.imported_modules = set()
-        self.main_dir = None
 
     def invalidate_caches(self):
         # Runtime resets remove downloaded modules and may change the main script.
         self.imported_modules.clear()
-        self.main_dir = None
 
     def find_spec(self, fullname, path, target=None):
         if (
@@ -26,49 +25,28 @@ class ImportHook:
         # Record the name before find_spec re-enters this hook.
         self.imported_modules.add(fullname)
 
-        # Only application imports need host-side file downloads.
+        # Keep modules that Python can already load ahead of remote source files.
         spec = importlib.util.find_spec(fullname)
-        if spec:
-            origin = spec.origin
-            if (
-                origin in (None, "built-in", "builtin", "frozen")
-                or "site-packages" in os.path.normpath(origin).split(os.sep)
-                or "dist-packages" in os.path.normpath(origin).split(os.sep)
-                or os.path.realpath(origin).startswith(
-                    os.path.join(os.path.realpath(sys.base_prefix), "")
-                )
-            ):
-                return
-
-        # Find the script that triggered the import.
-        caller_file = None
-        frame = sys._getframe(1)
-        while frame:
-            if not frame.f_code.co_filename.startswith("<"):
-                caller_file = frame.f_code.co_filename
-                break
-            frame = frame.f_back
-        if not caller_file:
+        if spec and spec.loader is not None:
             return
 
-        # Trigger file download for missing modules in the caller's directory.
-        print(f"Attempting to import '{fullname}'")
-        caller_dir = os.path.dirname(os.path.abspath(caller_file))
-        module_name = fullname.replace(".", os.sep)
-        module_path = os.path.join(caller_dir, f"{module_name}.py")
-        package_path = os.path.join(caller_dir, module_name, "__init__.py")
-        is_found = os.path.exists(module_path) or os.path.exists(package_path)
-        if is_found and self.main_dir is None:
-            self.main_dir = caller_dir
-
-        # Trigger file download from the main directory via hooked stat.
-        if self.main_dir and self.main_dir != caller_dir:
-            main_module_path = os.path.join(self.main_dir, f"{module_name}.py")
-            main_package_path = os.path.join(self.main_dir, module_name, "__init__.py")
-            os.path.exists(main_module_path)
-            os.path.exists(main_package_path)
-
-        return
+        # Follow Python's search path, including package __path__, instead of
+        # inferring a directory from a frame whose filename may be relative.
+        module_name = fullname.rsplit(".", 1)[-1]
+        directories = set()
+        for directory in sys.path if path is None else path:
+            if not isinstance(directory, str):
+                continue
+            directory = os.path.abspath(directory)
+            if directory in directories:
+                continue
+            directories.add(directory)
+            package_path = os.path.join(directory, module_name, "__init__.py")
+            module_path = os.path.join(directory, f"{module_name}.py")
+            if os.path.exists(package_path) or os.path.exists(module_path):
+                # A downloaded file may share the directory's cached timestamp.
+                importlib.machinery.PathFinder.invalidate_caches()
+                return
 
 
 sys.meta_path.insert(0, ImportHook())

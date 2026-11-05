@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import worker from "../video-worker.mjs";
+import worker from "../worker.mjs";
 
 const bytes = Uint8Array.from({ length: 20 }, (_, i) => i);
 const url = "https://kitao.dev/pyxel/user-guide/cube/videos/example.mp4";

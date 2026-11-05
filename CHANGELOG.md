@@ -4,7 +4,7 @@
 
 - Added Pyxel Cube software-rendered 3D and Blockbench model references
 - Removed old MML syntax and pre-2.0 resource loading
-- Updated Rust to nightly-2026-11-04 and Pyodide to 314.0.7
+- Updated Rust to nightly-2026-11-05 and Pyodide to 314.0.7
 - Updated native wheel builds to Python 3.15.2
 - Updated pyo3 to 0.30.1, libc to 0.2.191, rand to 0.10.3, and toml to 1.2.0
 - Updated zip to 9.3.0 and sysinfo to 0.40.1
@@ -23,14 +23,17 @@
 - Fixed data view lifetimes, sequence loss, and garbage collection deadlocks
 - Fixed resource editing, input, and saving in Pyxel Editor and examples
 - Fixed collisions in the shooter example
+- Fixed view widths in the perspective example
 - Fixed sound, enemy updates, and terrain collisions in bundled games
 - Fixed app packaging, startup paths, overwrites, and directory handling
 - Fixed app2exe imports, app names, and concurrent builds
+- Fixed source encoding in app packaging, app2exe, and Code Maker
 - Updated app2html to use the official versioned web runtime
+- Fixed preservation of released web runtimes when building later versions
 - Moved web apps' Pyodide runtime downloads to kitao.dev
 - Fixed play and watch process cleanup
 - Fixed web startup, resets, imports, and virtual gamepad resizing
-- Fixed Web Launcher startup scripts with a UTF-8 BOM and non-ASCII text
+- Fixed loading Python scripts and modules with a UTF-8 BOM in the Web Launcher
 - Improved virtual gamepad diagonals, touch tracking, and short taps
 - Fixed project loading, saving, downloads, and share URLs in web tools
 - Improved web layouts, accessibility, and API reference search
@@ -38,7 +41,7 @@
 - Improved rendering, audio, tilemap collision, and editor performance
 - Fixed OpenGL cleanup on application shutdown
 - Fixed gamepad cleanup during resets and application shutdown
-- Improved wheel builds, validation, and SDL2 download verification
+- Improved wheel builds, release version checks, and SDL2 download verification
 - Switched PyPI publishing to short-lived OIDC authentication
 - Updated the web development HTTP client to fix security vulnerabilities
 - Fixed Windows development setup and partial version updates

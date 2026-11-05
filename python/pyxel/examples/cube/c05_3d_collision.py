@@ -303,7 +303,7 @@ class App(Node):
             self.draw_text(252, 8, "SUMMIT REACHED!")
 
         pyxel.rect(0, 228, 320, 12, 0)
-        help_text = "Arrows/Pad: Move  Space/Bottom: Jump x2  S/Right: Shading  Q: Quit"
+        help_text = "Arrows: Move  Space: Jump x2  S: Shading  Q: Quit"
         pyxel.text((320 - len(help_text) * 4) // 2, 231, help_text, 7)
 
     def draw_text(self, x, y, text):

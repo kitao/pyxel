@@ -27,7 +27,28 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
     validate_glb_header(&bytes)?;
     let (import_bytes, skip_animations) = sanitize_glb_for_import(&bytes)?;
 
-    let (document, buffers, images) = gltf::import_slice(import_bytes.as_ref())
+    let gltf::Gltf { document, blob } = gltf::Gltf::from_slice(import_bytes.as_ref())
+        .map_err(|e| format!("Failed to parse file '{filename}': {e}"))?;
+    for buffer in document.buffers() {
+        if let gltf::buffer::Source::Uri(_) = buffer.source() {
+            return Err("GLB external buffers are not supported".to_string());
+        }
+    }
+    validate_import_sizes(&document)?;
+    let buffers = gltf::import_buffers(&document, None, blob)
+        .map_err(|e| format!("Failed to parse file '{filename}': {e}"))?;
+    // gltf's image decoder slices views directly, so establish their bounds first.
+    for (index, view) in document.as_json().buffer_views.iter().enumerate() {
+        let end = view
+            .byte_offset
+            .unwrap_or_default()
+            .0
+            .checked_add(view.byte_length.0);
+        if end.is_none_or(|end| end > buffers[view.buffer.value()].len() as u64) {
+            return Err(format!("GLB bufferView {index} is out of bounds"));
+        }
+    }
+    let images = gltf::import_images(&document, None, &buffers)
         .map_err(|e| format!("Failed to parse file '{filename}': {e}"))?;
     validate_document(&document, images.len())?;
 
@@ -509,12 +530,6 @@ fn validate_document(document: &gltf::Document, image_count: usize) -> Result<()
         warn_glb("GLB skins are not supported; skinning is ignored");
     }
 
-    for buffer in document.buffers() {
-        if let gltf::buffer::Source::Uri(_) = buffer.source() {
-            return Err("GLB external buffers are not supported".to_string());
-        }
-    }
-
     for image in document.images() {
         match image.source() {
             gltf::image::Source::View { .. } => {}
@@ -600,6 +615,143 @@ fn validate_texture_usage(document: &gltf::Document, image_count: usize) {
             }
         }
     }
+}
+
+fn validate_import_sizes(document: &gltf::Document) -> Result<(), String> {
+    // gltf narrows JSON's u64 sizes to usize, including on the 32-bit web target.
+    let json = document.as_json();
+    for (index, buffer) in json.buffers.iter().enumerate() {
+        if usize::try_from(buffer.byte_length.0).is_err() {
+            return Err(format!(
+                "GLB buffer {index} length exceeds addressable range"
+            ));
+        }
+    }
+    for (index, accessor) in json.accessors.iter().enumerate() {
+        let mut sizes = [
+            accessor.count.0,
+            accessor.byte_offset.unwrap_or_default().0,
+            0,
+            0,
+            0,
+        ];
+        if let Some(sparse) = &accessor.sparse {
+            sizes[2] = sparse.count.0;
+            sizes[3] = sparse.indices.byte_offset.0;
+            sizes[4] = sparse.values.byte_offset.0;
+        }
+        if sizes.into_iter().any(|size| usize::try_from(size).is_err()) {
+            return Err(format!(
+                "GLB accessor {index} size exceeds addressable range"
+            ));
+        }
+    }
+    Ok(())
+}
+
+// The typed gltf readers assume element types, strides and sparse indices are valid.
+// Validate the accessors we consume before entering those iterators.
+fn validate_accessor(
+    accessor: &gltf::Accessor<'_>,
+    dimensions: gltf::accessor::Dimensions,
+    data_types: &[gltf::accessor::DataType],
+    buffers: &[gltf::buffer::Data],
+) -> Result<(), String> {
+    let label = format!("GLB accessor {}", accessor.index());
+    if accessor.dimensions() != dimensions || !data_types.contains(&accessor.data_type()) {
+        return Err(format!("{label} has an incompatible element type"));
+    }
+    if accessor.count() == 0 {
+        return Err(format!("{label} count must be greater than 0"));
+    }
+    // Sparse accessors can omit the base view, but still expand to this full size.
+    let output_size = dimensions.multiplicity() * size_of::<f32>();
+    if accessor
+        .count()
+        .checked_mul(output_size)
+        .is_none_or(|size| isize::try_from(size).is_err())
+    {
+        return Err(format!("{label} expanded size exceeds addressable range"));
+    }
+    if let Some(view) = accessor.view() {
+        accessor_view_bytes(
+            &view,
+            accessor.offset(),
+            accessor.count(),
+            accessor.size(),
+            buffers,
+            &label,
+        )?;
+    }
+
+    if let Some(sparse) = accessor.sparse() {
+        if sparse.count() == 0 || sparse.count() > accessor.count() {
+            return Err(format!("{label} has an invalid sparse count"));
+        }
+        let indices = sparse.indices();
+        let index_size = indices.index_type().size();
+        let (bytes, stride) = accessor_view_bytes(
+            &indices.view(),
+            indices.offset(),
+            sparse.count(),
+            index_size,
+            buffers,
+            &label,
+        )?;
+        let mut previous = None;
+        for bytes in bytes.chunks(stride) {
+            let index = match index_size {
+                1 => usize::from(bytes[0]),
+                2 => usize::from(u16::from_le_bytes([bytes[0], bytes[1]])),
+                _ => u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]) as usize,
+            };
+            if index >= accessor.count() || previous.is_some_and(|previous| index <= previous) {
+                return Err(format!("{label} has invalid sparse indices"));
+            }
+            previous = Some(index);
+        }
+
+        let values = sparse.values();
+        accessor_view_bytes(
+            &values.view(),
+            values.offset(),
+            sparse.count(),
+            accessor.size(),
+            buffers,
+            &label,
+        )?;
+    }
+    Ok(())
+}
+
+fn accessor_view_bytes<'a>(
+    view: &gltf::buffer::View<'_>,
+    offset: usize,
+    count: usize,
+    element_size: usize,
+    buffers: &'a [gltf::buffer::Data],
+    label: &str,
+) -> Result<(&'a [u8], usize), String> {
+    let stride = view.stride().unwrap_or(element_size);
+    if stride < element_size {
+        return Err(format!(
+            "{label} byteStride is smaller than its element size"
+        ));
+    }
+    let end = count
+        .checked_sub(1)
+        .and_then(|last| last.checked_mul(stride))
+        .and_then(|length| length.checked_add(element_size))
+        .and_then(|length| offset.checked_add(length))
+        .filter(|end| *end <= view.length())
+        .ok_or_else(|| format!("{label} is out of bounds"))?;
+    let begin = view.offset().checked_add(offset);
+    let end = view.offset().checked_add(end);
+    let bytes = begin
+        .zip(end)
+        .and_then(|(begin, end)| buffers[view.buffer().index()].get(begin..end))
+        .ok_or_else(|| format!("{label} is out of bounds"))?;
+    Ok((bytes, stride))
 }
 
 // Scene import
@@ -703,8 +855,35 @@ fn import_primitive(
     primitive: &gltf::Primitive,
     buffers: &[gltf::buffer::Data],
 ) -> Result<RcPrimitive, String> {
+    use gltf::accessor::{DataType, Dimensions};
+
     if primitive.mode() != gltf::mesh::Mode::Triangles {
         return Err("GLB only triangle primitives are supported".to_string());
+    }
+
+    for (semantic, accessor) in primitive.attributes() {
+        match semantic {
+            gltf::mesh::Semantic::Positions | gltf::mesh::Semantic::Normals => {
+                validate_accessor(&accessor, Dimensions::Vec3, &[DataType::F32], buffers)?;
+            }
+            gltf::mesh::Semantic::TexCoords(0) => {
+                validate_accessor(
+                    &accessor,
+                    Dimensions::Vec2,
+                    &[DataType::U8, DataType::U16, DataType::F32],
+                    buffers,
+                )?;
+            }
+            _ => {}
+        }
+    }
+    if let Some(accessor) = primitive.indices() {
+        validate_accessor(
+            &accessor,
+            Dimensions::Scalar,
+            &[DataType::U8, DataType::U16, DataType::U32],
+            buffers,
+        )?;
     }
 
     let has_texture = primitive
@@ -839,6 +1018,8 @@ fn import_animations(
     document: &gltf::Document,
     fps: f32,
 ) -> Result<(), String> {
+    use gltf::accessor::{DataType, Dimensions};
+
     let identity_components = (
         Vec3 {
             x: 0.0,
@@ -874,6 +1055,38 @@ fn import_animations(
             let mut m = rc_mut!(&motion);
 
             for channel in animation.channels() {
+                validate_accessor(
+                    &channel.sampler().input(),
+                    Dimensions::Scalar,
+                    &[DataType::F32],
+                    buffers,
+                )?;
+                match channel.target().property() {
+                    gltf::animation::Property::Translation | gltf::animation::Property::Scale => {
+                        validate_accessor(
+                            &channel.sampler().output(),
+                            Dimensions::Vec3,
+                            &[DataType::F32],
+                            buffers,
+                        )?;
+                    }
+                    gltf::animation::Property::Rotation => {
+                        validate_accessor(
+                            &channel.sampler().output(),
+                            Dimensions::Vec4,
+                            &[
+                                DataType::I8,
+                                DataType::U8,
+                                DataType::I16,
+                                DataType::U16,
+                                DataType::F32,
+                            ],
+                            buffers,
+                        )?;
+                    }
+                    gltf::animation::Property::MorphTargetWeights => {}
+                }
+
                 let interpolation = match channel.sampler().interpolation() {
                     gltf::animation::Interpolation::CubicSpline => MotionInterpolation::CubicSpline,
                     gltf::animation::Interpolation::Step => MotionInterpolation::Step,

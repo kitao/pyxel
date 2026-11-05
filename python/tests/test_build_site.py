@@ -86,9 +86,10 @@ def test_rewrite_separates_live_runtime_from_copyable_versioned_snippets(builder
         '<script>const palette = "../../docs/pyxel.gpl";</script>'
         '<iframe src="pyxel-screen.html"></iframe>'
         '<script>resourceEditor.src = "pyxel-editor.html";</script>'
+        "<script>const source = `https://kitao.dev/pyxel/launcher/source/${repo}`;</script>"
         '<a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Launcher input</a>'
     )
-    result = builder.rewrite_urls(source, "2.9.9", html=True)
+    result = builder.rewrite_urls(source, "2.9.9", html=True, current_version="3.0.0")
     assert '<head><script src="/pyxel/3.0.0/pyxel.js">' in result
     assert 'src="https://kitao.dev/pyxel/2.9.9/pyxel.js"' in result
     assert 'root="/pyxel/assets/examples/cube"' in result
@@ -98,6 +99,7 @@ def test_rewrite_separates_live_runtime_from_copyable_versioned_snippets(builder
     assert '"/pyxel/assets/pyxel.gpl"' in result
     assert '<iframe src="pyxel-screen">' in result
     assert 'resourceEditor.src = "pyxel-editor"' in result
+    assert "`/pyxel/launcher/source/${repo}`" in result
     assert (
         'href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py"'
         in result
@@ -278,11 +280,21 @@ def test_provisional_runtime_can_be_replaced_but_not_removed(builder, tmp_path):
     new.mkdir(parents=True)
     (old / "pyxel.js").write_text("provisional runtime")
     (new / "pyxel.js").write_text("replacement runtime")
-    builder.verify_releases(tmp_path / "new", tmp_path / "old")
+    (tmp_path / "old/_headers").write_text(
+        "/pyxel/3.0.0/*\n  Access-Control-Allow-Origin: *\n"
+    )
+    builder.verify_releases(tmp_path / "new", tmp_path / "old", "3.0.0")
+
+    (tmp_path / "old/_headers").write_text(
+        "/pyxel/3.0.0/*\n  Cache-Control: public, max-age=31536000, immutable\n"
+        "  Access-Control-Allow-Origin: *\n"
+    )
+    with pytest.raises(ValueError, match="3.0.0"):
+        builder.verify_releases(tmp_path / "new", tmp_path / "old", "3.0.0")
 
     (new / "pyxel.js").unlink()
     with pytest.raises(ValueError, match="3.0.0"):
-        builder.verify_releases(tmp_path / "new", tmp_path / "old")
+        builder.verify_releases(tmp_path / "new", tmp_path / "old", "3.0.0")
 
 
 @pytest.mark.parametrize("cached", [None, b"corrupt cache", b"runtime"])
@@ -352,3 +364,132 @@ def test_previous_pyodide_release_cannot_change_or_disappear(builder, tmp_path):
     (new / "pyodide.js").unlink()
     with pytest.raises(ValueError, match="Pyodide release"):
         builder.verify_releases(tmp_path / "new", tmp_path / "old")
+
+
+def test_current_runtime_uses_tagged_bytes_after_release(builder, tmp_path):
+    repository = tmp_path / "repository"
+    runtime = repository / "wasm"
+    runtime.mkdir(parents=True)
+    project = repository / "python/pyproject.toml"
+    project.parent.mkdir()
+    subprocess.run(["git", "init", "-q", str(repository)], check=True)
+
+    def write_runtime(version, label):
+        wheel = f"pyxel-{version}-cp311-abi3-pyemscripten_2026_0_wasm32.whl"
+        project.write_text(f'[project]\nversion = "{version}"\n')
+        (runtime / "pyxel.js").write_text(
+            f'const PYXEL_WHEEL_PATH = "{wheel}";\n// {label}\n'
+        )
+        (runtime / "pyxel.css").write_text("body { color: white; }\n")
+        (runtime / "import_hook.py").write_text("# Import hook\n")
+        with zipfile.ZipFile(runtime / wheel, "w") as archive:
+            archive.writestr(
+                f"pyxel-{version}.dist-info/METADATA",
+                f"Name: pyxel\nVersion: {version}\n",
+            )
+        subprocess.run(["git", "-C", str(repository), "add", "."], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(repository),
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.invalid",
+                "commit",
+                "-qm",
+                label,
+            ],
+            check=True,
+        )
+
+    write_runtime("2.9.9", "previous release")
+    subprocess.run(["git", "-C", str(repository), "tag", "v2.9.9"], check=True)
+    write_runtime("3.0.0", "release candidate")
+    expected = (runtime / "pyxel.js").read_bytes()
+    preview = tmp_path / "preview"
+    assert builder.copy_runtimes(repository, preview, ["v2.9.9"]) == (
+        ["2.9.9"],
+        "3.0.0",
+    )
+    assert (preview / "3.0.0/pyxel.js").read_bytes() == expected
+
+    subprocess.run(["git", "-C", str(repository), "tag", "v3.0.0"], check=True)
+    (runtime / "pyxel.js").write_text("later development")
+    released = tmp_path / "released"
+    assert builder.copy_runtimes(repository, released, ["v2.9.9"]) == (
+        ["2.9.9", "3.0.0"],
+        "3.0.0",
+    )
+    assert (released / "3.0.0/pyxel.js").read_bytes() == expected
+    assert (released / "2.9.9/pyxel.js").read_bytes() == (
+        preview / "2.9.9/pyxel.js"
+    ).read_bytes()
+
+    # A fresh output after the version bump must retain already hosted releases.
+    write_runtime("3.0.1", "next release candidate")
+    next_preview = tmp_path / "next-preview"
+    assert builder.copy_runtimes(repository, next_preview) == (
+        ["2.9.9", "3.0.0"],
+        "3.0.1",
+    )
+    assert (next_preview / "3.0.0/pyxel.js").read_bytes() == expected
+    assert (next_preview / "2.9.9/pyxel.js").read_bytes() == (
+        preview / "2.9.9/pyxel.js"
+    ).read_bytes()
+    assert (next_preview / "3.0.1/pyxel.js").read_bytes() == (
+        runtime / "pyxel.js"
+    ).read_bytes()
+
+    selected = tmp_path / "selected-releases"
+    assert builder.copy_runtimes(repository, selected, ["v2.9.9"]) == (
+        ["2.9.9"],
+        "3.0.1",
+    )
+    assert not (selected / "3.0.0").exists()
+
+
+def test_default_runtime_tags_keep_the_hosted_release_family(builder, tmp_path):
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(tmp_path),
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+            "commit",
+            "--allow-empty",
+            "-qm",
+            "Tags",
+        ],
+        check=True,
+    )
+    for tag in (
+        "v2.9.8",
+        "v2.9.9rc1",
+        "v2.9.9",
+        "v2.9.10",
+        "v3.0.0a2",
+        "v3.0.0a10",
+        "v3.0.0b1",
+        "v3.0.0rc1",
+        "v3.0.0",
+        "v3.0.1",
+        "v-next",
+    ):
+        subprocess.run(["git", "-C", str(tmp_path), "tag", tag], check=True)
+
+    assert builder.default_runtime_tags(tmp_path) == [
+        "v2.9.9",
+        "v2.9.10",
+        "v3.0.0a2",
+        "v3.0.0a10",
+        "v3.0.0b1",
+        "v3.0.0rc1",
+        "v3.0.0",
+        "v3.0.1",
+    ]

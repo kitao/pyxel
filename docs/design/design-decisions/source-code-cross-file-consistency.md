@@ -120,6 +120,15 @@ their structures are not universal prescriptions. Technical difficulty changes
 the concepts that must be taught, not the obligation to make their relationship
 to the result understandable.
 
+### Control instructions in examples
+
+**Decision:** For on-screen instructions in basic and Cube examples, show the
+primary keyboard or mouse controls without listing their gamepad equivalents.
+
+**Reason:** These instructions help readers try the demonstrated feature.
+[Shooter](../../../python/pyxel/examples/09_shooter.py) displays `PRESS ENTER`
+while also accepting gamepad START, keeping one instruction for one action.
+
 ### Cube node identity and ownership
 
 **Decision:** Preserve original Python node instances through tree operations,

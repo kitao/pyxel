@@ -60,6 +60,12 @@ jobs:
           architecture: ${{ matrix.arch }}
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - &verify-version
+        name: Verify release version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: python scripts/update_version --check "$GITHUB_REF"
+
       - &install-build-deps
         name: Install build dependencies
         run: pip install -r python/requirements.txt
@@ -107,6 +113,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+      - *verify-version
 
       - *install-build-deps
 

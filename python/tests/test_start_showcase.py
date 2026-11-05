@@ -5,7 +5,7 @@ from http.server import ThreadingHTTPServer
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -65,7 +65,44 @@ def test_start_showcase_preserves_public_paths(showcase_url: str):
 
     status, body = _get(showcase_url + "/web/web-usage/index.html")
     assert status == 200
-    assert b"https://kitao.dev/pyxel/2.9.9/pyxel.js" in body
+    assert b"https://kitao.dev/pyxel/3.0.0/pyxel.js" in body
+
+
+def test_local_launcher_preserves_hosted_module_bytes(
+    showcase_url, showcase_module, monkeypatch
+):
+    data = b"\xef\xbb\xbf" + "# 日本語".encode()
+    requests = []
+
+    class Connection:
+        def __init__(self, host, timeout):
+            assert host == "cdn.jsdelivr.net"
+
+        def request(self, method, path):
+            requests.append((method, path))
+
+        def getresponse(self):
+            return SimpleNamespace(status=200, read=lambda: data)
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(showcase_module, "HTTPSConnection", Connection)
+    status, page = _get(showcase_url + "/web/launcher/")
+    assert status == 200 and b"https://kitao.dev/pyxel/launcher/source/" not in page
+    prefix = showcase_url + "/pyxel/launcher/source/"
+    names = ["pkg/helper.py", ".py", "UPPER.PY", "a%0Ab.py", "a%09b.py", "a%5Cb.py"]
+    for name in names:
+        with urlopen(prefix + "owner/repo@main/" + name) as response:
+            assert response.headers["X-Pyxel-Source"] == "1"
+            assert response.read() == b"\0" + data
+    for target in [
+        "owner/repo/a%2f..%2fescape.py",
+        "owner/repo/game.zip",
+        "https://elsewhere.test/test.py",
+    ]:
+        assert _get(prefix + target)[0] == 404
+    assert requests == [("GET", "/gh/owner/repo@main/" + name) for name in names]
 
 
 def test_inject_html_uses_offsets_from_rewritten_document():

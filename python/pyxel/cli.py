@@ -507,14 +507,14 @@ def _extract_pyxel_app(pyxel_app_file):
 
 def _make_metadata_comment(startup_script_file):
     metadata = {}
-    with Path(startup_script_file).open(encoding="utf-8") as f:
-        for line in f:
-            match = _METADATA_PATTERN.match(line)
-            if match:
-                key, value = match.groups()
-                key = key.strip().lower()
-                if key in _METADATA_FIELDS:
-                    metadata[key] = value.strip()
+    source = pyxel.utils._decode_python_source(Path(startup_script_file).read_bytes())
+    for line in re.split(r"\r\n|\r|\n", source):
+        match = _METADATA_PATTERN.match(line)
+        if match:
+            key, value = match.groups()
+            key = key.strip().lower()
+            if key in _METADATA_FIELDS:
+                metadata[key] = value.strip()
 
     if not metadata:
         return ""

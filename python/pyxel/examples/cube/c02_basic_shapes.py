@@ -201,10 +201,10 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        hud_x, hud_y = pyxel.width // 2 - 40, pyxel.height // 2 - 10
-        pyxel.rect(hud_x, hud_y, 80, 20, 0)
-        pyxel.text(hud_x + 3, hud_y + 3, "Mouse/Pad: Turn", 7)
-        pyxel.text(hud_x + 3, hud_y + 11, "Space/Bottom: Wire", 7)
+        hud_x, hud_y = pyxel.width // 2 - 35, pyxel.height // 2 - 10
+        pyxel.rect(hud_x, hud_y, 70, 20, 0)
+        pyxel.text(hud_x + 3, hud_y + 3, "Mouse: Rotate", 7)
+        pyxel.text(hud_x + 3, hud_y + 11, "Space: Wireframe", 7)
 
 
 App()

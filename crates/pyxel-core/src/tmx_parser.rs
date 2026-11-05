@@ -99,14 +99,11 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
     for (y, row) in tile_ids.chunks(layer.width as usize).enumerate() {
         for (x, &id) in row.iter().enumerate() {
             let id = (id & !TMX_TILE_FLAG_MASK).saturating_sub(tileset.firstgid);
-            tilemap_ref.canvas.write_data(
-                x,
-                y,
-                (
-                    (id % columns) as ImageTileCoord,
-                    (id / columns) as ImageTileCoord,
-                ),
-            );
+            let tile_x = ImageTileCoord::try_from(id % columns)
+                .map_err(|_| err("Tile coordinates are too large in file"))?;
+            let tile_y = ImageTileCoord::try_from(id / columns)
+                .map_err(|_| err("Tile coordinates are too large in file"))?;
+            tilemap_ref.canvas.write_data(x, y, (tile_x, tile_y));
         }
     }
 

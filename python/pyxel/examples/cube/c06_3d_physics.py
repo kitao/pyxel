@@ -276,8 +276,7 @@ class App:
         aim = (pyxel.width // 2, pyxel.height // 2) if self.gamepad else self.mouse_pos
         pyxel.circb(*aim, 4, 7)
         pyxel.pset(*aim, 7)
-        pyxel.text(8, 8, "Mouse: Aim  Click/Space: Fire  R/Right: Reset", 7)
-        pyxel.text(8, 18, "Arrows/Pad: Rotate  Bottom: Fire at center", 7)
+        pyxel.text(8, 8, "Mouse: Aim  Click/Space: Fire  Arrows: Rotate  R: Reset", 7)
 
 
 App()

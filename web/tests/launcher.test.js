@@ -195,6 +195,7 @@ test("launcher preserves dotted archive paths and options without a ref lookup",
   assert.deepEqual(launched, [
     {
       root: "https://cdn.jsdelivr.net/gh/owner/repo",
+      _moduleRoot: "https://kitao.dev/pyxel/launcher/source/owner/repo",
       command: "play",
       name: "apps/game.pyxapp",
       packages: null,
@@ -202,6 +203,34 @@ test("launcher preserves dotted archive paths and options without a ref lookup",
       editor: null,
     },
   ]);
+});
+
+test("run uses the same GitHub repository and revision for lazy modules", async () => {
+  const sha = "0123456789abcdef0123456789abcdef01234567";
+  for (const [target, repo] of [
+    ["owner.repo.apps.game", "owner/repo"],
+    [`owner/repo/${sha}/apps/game`, `owner/repo@${sha}`],
+  ]) {
+    const launched = [];
+    vm.runInNewContext(
+      launcherSource.match(/<script>([\s\S]*?)<\/script>/)[1],
+      {
+        URL,
+        document: { location: "https://example.test/?run=" + target },
+        launchPyxel: (params) => launched.push(params),
+        _displayFatalErrorOverlay: (error) => {
+          throw error;
+        },
+      },
+    );
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(launched[0].name, "apps/game.py");
+    assert.equal(launched[0].root, "https://cdn.jsdelivr.net/gh/" + repo);
+    assert.equal(
+      launched[0]._moduleRoot,
+      "https://kitao.dev/pyxel/launcher/source/" + repo,
+    );
+  }
 });
 
 test("resolveLaunchTarget preserves a legacy ref when a longer tag exists", async () => {

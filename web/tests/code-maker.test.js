@@ -30,6 +30,10 @@ test("Code Maker loads an empty main.py and rejects an absent one", async () => 
   const loadProject = loadNamedFunction(source, "loadProjectFromZip", {
     JSZip: { loadAsync: async () => ({ files }) },
     TextDecoder,
+    decodePythonSource: loadNamedFunction(source, "decodePythonSource", {
+      TextDecoder,
+      window,
+    }),
     window,
     uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
     base64ToUint8: (value) => Buffer.from(value, "base64"),
@@ -46,6 +50,119 @@ test("Code Maker loads an empty main.py and rejects an absent one", async () => 
   await assert.rejects(loadProject(new ArrayBuffer(0), "project"), {
     message: "Missing main.py",
   });
+});
+
+test("UTF-8 source loads without starting a Python runtime", async () => {
+  const decode = loadNamedFunction(source, "decodePythonSource", {
+    TextDecoder,
+  });
+  for (const code of [
+    "",
+    "# 日本語\nvalue = '日本語'\n",
+    "\n\n# coding: cp932\n",
+  ]) {
+    assert.equal(await decode(new TextEncoder().encode(code), 1), code);
+    assert.equal(
+      await decode(new TextEncoder().encode(`\ufeff${code}`), 1),
+      code,
+    );
+  }
+});
+
+test("source decoding waits for editor reset and releases Python globals", async () => {
+  let finishReset;
+  let unlocked = 0;
+  let destroyed = 0;
+  let fail = false;
+  const bytes = new Uint8Array([0xe9]);
+  const globals = { destroy: () => destroyed++ };
+  const window = { _projectLoad: 1 };
+  const context = {
+    initialized: false,
+    resetPromise: new Promise((resolve) => (finishReset = resolve)),
+    resolveInput() {
+      unlocked++;
+      this.initialized = true;
+    },
+    pyodide: {
+      toPy(value) {
+        assert.equal(value.source, bytes);
+        return globals;
+      },
+      runPython(_code, options) {
+        assert.equal(options.globals, globals);
+        if (fail) throw new Error("bad encoding");
+        return "decoded";
+      },
+    },
+  };
+  const decode = loadNamedFunction(source, "decodePythonSource", {
+    TextDecoder,
+    window,
+    resourceEditor: { contentWindow: { pyxelContext: context } },
+  });
+  const pending = decode(bytes, 1);
+  assert.equal(unlocked, 0);
+  context.resetPromise = null;
+  finishReset();
+  assert.equal(await pending, "decoded");
+  assert.equal(unlocked, 1);
+  assert.equal(destroyed, 1);
+  fail = true;
+  await assert.rejects(decode(bytes, 1), /bad encoding/);
+  assert.equal(destroyed, 2);
+  context.hasFatalError = true;
+  await assert.rejects(decode(bytes, 1), /The Python runtime is unavailable/);
+});
+
+test("source decoding stops waiting when a newer project replaces it", async () => {
+  let finishReset;
+  const window = { _projectLoad: 1 };
+  const context = {
+    resetPromise: new Promise((resolve) => (finishReset = resolve)),
+    resolveInput: () =>
+      assert.fail("a superseded load must not start the editor"),
+  };
+  const decode = loadNamedFunction(source, "decodePythonSource", {
+    TextDecoder,
+    window,
+    resourceEditor: { contentWindow: { pyxelContext: context } },
+  });
+  const pending = decode(new Uint8Array([0xff]), 1);
+  window._projectLoad = 2;
+  context.resetPromise = null;
+  finishReset();
+  assert.equal(await pending, null);
+});
+
+test("a failed main.py decode leaves the previous project and editor intact", async () => {
+  const previous = { name: "old", code: "old", files: {}, resource: "old" };
+  const window = {
+    _projectLoad: 1,
+    _project: previous,
+    _codeEditor: { setValue: () => assert.fail("editor must remain intact") },
+  };
+  const entry = { async: async () => new Uint8Array([0xff]) };
+  const load = loadNamedFunction(source, "loadProjectFromZip", {
+    window,
+    JSZip: {
+      loadAsync: async () => ({
+        files: { "app/main.py": entry, "app/my_resource.pyxres": entry },
+      }),
+    },
+    uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
+    base64ToUint8: (value) => Buffer.from(value, "base64"),
+    decodePythonSource: async () => {
+      throw new Error("bad encoding");
+    },
+    resetRuntimeScreen: () => assert.fail("runtime must remain intact"),
+    resetResourceEditor: () =>
+      assert.fail("resource editor must remain intact"),
+  });
+  await assert.rejects(load(new ArrayBuffer(0), "new"), /bad encoding/);
+  assert.equal(window._project, previous);
+  assert.equal(previous.name, "old");
+  assert.equal(previous.code, "old");
 });
 
 test("Code Maker share URLs replace existing queries and fragments", () => {
@@ -147,6 +264,11 @@ for (const surface of ["page", "runtime", "resource"]) {
       }),
       window,
       TextEncoder,
+      decodePythonSource: loadNamedFunction(source, "decodePythonSource", {
+        TextDecoder,
+        window,
+        resourceEditor,
+      }),
       uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
     });
     setupFileDrop();
@@ -169,7 +291,7 @@ for (const surface of ["page", "runtime", "resource"]) {
     ].join("\n");
     const codeEvent = await targets[surface].drop({
       name: "example.py",
-      text: async () => code,
+      arrayBuffer: async () => new TextEncoder().encode(code).buffer,
     });
     assert.deepEqual(displayed, [expected]);
     assert.equal(window._project.code, expected);
@@ -207,7 +329,8 @@ for (const surface of ["page", "runtime", "resource"]) {
       frame.load();
       await frame.contentWindow.document.drop({
         name: "replacement.py",
-        text: async () => "print('after reset')",
+        arrayBuffer: async () =>
+          new TextEncoder().encode("print('after reset')").buffer,
       });
       assert.equal(window._project.code, "print('after reset')");
     }

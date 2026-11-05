@@ -349,6 +349,45 @@ class TestTilemapIO:
         ):
             pyxel.Tilemap.from_tmx(str(tmx_path), 0)
 
+    @pytest.mark.parametrize(
+        ("columns", "gid", "expected"),
+        [(1, 65536, (0, 65535)), (65536, 65536, (65535, 0))],
+    )
+    def test_from_tmx_preserves_maximum_tile_coordinate(
+        self, tmp_path, columns, gid, expected
+    ):
+        path = tmp_path / "maximum.tmx"
+        path.write_text(
+            f'<map tilewidth="8" tileheight="8"><tileset firstgid="1" columns="{columns}"/>'
+            f'<layer width="1" height="1"><data encoding="csv">{gid}</data></layer></map>',
+            encoding="utf-8",
+        )
+        assert pyxel.Tilemap.from_tmx(str(path), 0).pget(0, 0) == expected
+
+    @pytest.mark.parametrize(
+        ("columns", "gid"), [(1, 65537), (65537, 65537), (1, 2147549185)]
+    )
+    def test_from_tmx_rejects_unrepresentable_tile_coordinate(
+        self, tmp_path, columns, gid
+    ):
+        path = tmp_path / "overflow.tmx"
+        path.write_text(
+            f'<map tilewidth="8" tileheight="8"><tileset firstgid="1" columns="{columns}"/>'
+            f'<layer width="1" height="1"><data encoding="csv">{gid}</data></layer></map>',
+            encoding="utf-8",
+        )
+        with raises_exact(
+            Exception, f"Tile coordinates are too large in file '{path}'"
+        ):
+            pyxel.Tilemap.from_tmx(str(path), 0)
+        tilemap = pyxel.Tilemap(1, 1, 0)
+        tilemap.pset(0, 0, (3, 4))
+        with raises_exact(
+            Exception, f"Tile coordinates are too large in file '{path}'"
+        ):
+            tilemap.load(0, 0, str(path), 0)
+        assert tilemap.pget(0, 0) == (3, 4)
+
     def test_load_tmx(self, assets_dir):
         tm = pyxel.Tilemap(32, 32, 0)
         tm.load(0, 0, str(assets_dir / "urban_rpg.tmx"), 0)
