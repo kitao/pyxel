@@ -164,7 +164,7 @@ def main() -> int:
     print(f"Serving HTTP on {ip} port {PORT} (http://{ip}:{PORT}/) ...")
     server = ThreadingHTTPServer(("", PORT), Handler)
     threading.Timer(
-        0.5, lambda: webbrowser.open(f"http://localhost:{PORT}/web/showcase/")
+        0.5, lambda: webbrowser.open(f"http://{ip}:{PORT}/web/showcase/")
     ).start()
 
     try:

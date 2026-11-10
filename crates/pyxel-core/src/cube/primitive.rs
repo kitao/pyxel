@@ -293,6 +293,75 @@ fn make_primitive(
     p
 }
 
+// Call after validating indices and the lengths of any present vertex attributes.
+pub(crate) fn compact_indexed_vertices(
+    positions: &mut Vec<f32>,
+    uvs: &mut Vec<f32>,
+    vertex_normals: Option<&mut Vec<f32>>,
+    indices: &mut [i32],
+) {
+    let Some(used) = remap_used_indices(positions.len() / 3, indices) else {
+        return;
+    };
+    *positions = select_vertices(positions, 3, &used);
+    *uvs = select_vertices(uvs, 2, &used);
+    if let Some(vertex_normals) = vertex_normals {
+        *vertex_normals = select_vertices(vertex_normals, 3, &used);
+    }
+}
+
+pub(crate) fn remap_used_indices(vertex_count: usize, indices: &mut [i32]) -> Option<Vec<usize>> {
+    if indices.is_empty() {
+        return None;
+    }
+    // Sort only very sparse references; dense geometry is cheaper to scan.
+    if indices.len() < vertex_count / 16 {
+        let mut selected = indices
+            .iter()
+            .map(|&index| index as usize)
+            .collect::<Vec<_>>();
+        selected.sort_unstable();
+        selected.dedup();
+        for index in indices {
+            *index = selected.binary_search(&(*index as usize)).unwrap() as i32;
+        }
+        return Some(selected);
+    }
+
+    let mut used = vec![false; vertex_count];
+    for &index in indices.iter() {
+        used[index as usize] = true;
+    }
+    if used.iter().all(|&is_used| is_used) {
+        return None;
+    }
+
+    let mut remap = vec![0; vertex_count];
+    let mut selected = Vec::new();
+    for (old_index, &is_used) in used.iter().enumerate() {
+        if is_used {
+            remap[old_index] = selected.len() as i32;
+            selected.push(old_index);
+        }
+    }
+
+    for index in indices {
+        *index = remap[*index as usize];
+    }
+    Some(selected)
+}
+
+pub(crate) fn select_vertices(values: &[f32], stride: usize, selected: &[usize]) -> Vec<f32> {
+    if values.is_empty() {
+        return Vec::new();
+    }
+    let mut compact = Vec::with_capacity(selected.len() * stride);
+    for &index in selected {
+        compact.extend_from_slice(&values[index * stride..(index + 1) * stride]);
+    }
+    compact
+}
+
 #[rustfmt::skip]
 const UNIT_BOX_POSITIONS: [f32; 24] = [
     -0.5, -0.5, -0.5,   0.5, -0.5, -0.5,   0.5,  0.5, -0.5,  -0.5,  0.5, -0.5,
@@ -531,7 +600,104 @@ fn build_unit_sphere_textured() -> Primitive {
         ));
     }
 
+    let mut indices = split_sphere_uv_seam(&mut positions, &mut uvs, &indices);
+    compact_indexed_vertices(&mut positions, &mut uvs, None, &mut indices);
     make_primitive(MODE_TRIANGLES, CULL_BACK, positions, indices, uvs)
+}
+
+#[derive(Clone, Copy)]
+struct SphereUvVertex {
+    position: Vec3,
+    u: f32,
+    v: f32,
+}
+
+fn split_sphere_uv_seam(positions: &mut Vec<f32>, uvs: &mut Vec<f32>, indices: &[i32]) -> Vec<i32> {
+    let mut result = Vec::with_capacity(indices.len());
+    for triangle in indices.as_chunks::<3>().0 {
+        let source = [0, 1, 2].map(|i| {
+            let index = triangle[i] as usize;
+            SphereUvVertex {
+                position: read_vec3(positions, index),
+                u: uvs[index * 2],
+                v: uvs[index * 2 + 1],
+            }
+        });
+        let min_u = source
+            .iter()
+            .map(|vertex| vertex.u)
+            .fold(f32::INFINITY, f32::min);
+        let max_u = source
+            .iter()
+            .map(|vertex| vertex.u)
+            .fold(f32::NEG_INFINITY, f32::max);
+        if max_u <= 1.0 {
+            result.extend_from_slice(triangle);
+        } else if min_u >= 1.0 {
+            append_sphere_uv_polygon(positions, uvs, &mut result, &source, true);
+        } else {
+            // Split at U=1 before wrapping, so the image sampler can keep
+            // clamping UVs for all other primitives.
+            for (keep_low, wrap) in [(true, false), (false, true)] {
+                let clipped = clip_sphere_uv_polygon(&source, keep_low);
+                append_sphere_uv_polygon(positions, uvs, &mut result, &clipped, wrap);
+            }
+        }
+    }
+    result
+}
+
+fn clip_sphere_uv_polygon(source: &[SphereUvVertex], keep_low: bool) -> Vec<SphereUvVertex> {
+    let mut clipped = Vec::with_capacity(4);
+    for (i, &current) in source.iter().enumerate() {
+        let previous = source[(i + source.len() - 1) % source.len()];
+        let previous_inside = if keep_low {
+            previous.u <= 1.0
+        } else {
+            previous.u >= 1.0
+        };
+        let current_inside = if keep_low {
+            current.u <= 1.0
+        } else {
+            current.u >= 1.0
+        };
+        if previous_inside != current_inside {
+            let t = (1.0 - previous.u) / (current.u - previous.u);
+            clipped.push(SphereUvVertex {
+                position: previous.position.lerp_value(&current.position, t),
+                u: 1.0,
+                v: previous.v + (current.v - previous.v) * t,
+            });
+        }
+        if current_inside {
+            clipped.push(current);
+        }
+    }
+    clipped
+}
+
+fn append_sphere_uv_polygon(
+    positions: &mut Vec<f32>,
+    uvs: &mut Vec<f32>,
+    indices: &mut Vec<i32>,
+    polygon: &[SphereUvVertex],
+    wrap: bool,
+) {
+    for i in 1..polygon.len().saturating_sub(1) {
+        let triangle = [polygon[0], polygon[i], polygon[i + 1]];
+        let a = triangle[0].position;
+        let b = triangle[1].position;
+        let c = triangle[2].position;
+        let cross = vec_cross(vec_sub(b, a), vec_sub(c, a));
+        if cross.x * cross.x + cross.y * cross.y + cross.z * cross.z <= FACE_NORMAL_EPS_SQ {
+            continue;
+        }
+        for vertex in triangle {
+            indices.push((positions.len() / 3) as i32);
+            positions.extend([vertex.position.x, vertex.position.y, vertex.position.z]);
+            uvs.extend([vertex.u - if wrap { 1.0 } else { 0.0 }, vertex.v]);
+        }
+    }
 }
 
 fn add_sphere_uv_vertex(
@@ -648,6 +814,57 @@ fn face_normal(p0: Vec3, p1: Vec3, p2: Vec3) -> Vec3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_remap_sparse_indices_in_source_vertex_order() {
+        let mut indices = [511, 3, 200];
+        let selected = remap_used_indices(8192, &mut indices);
+        assert_eq!(selected, Some(vec![3, 200, 511]));
+        assert_eq!(indices, [2, 0, 1]);
+    }
+
+    #[test]
+    fn test_textured_sphere_uv_range_normals_and_total_area() {
+        let textured = unit_sphere_textured();
+        let solid = unit_sphere_solid();
+        assert_eq!(textured.indices.len(), 86 * 3);
+        assert!(textured.uvs.iter().all(|&uv| (0.0..=1.0).contains(&uv)));
+        assert_eq!(textured.normals.len(), textured.indices.len());
+        for (tri, normal) in textured
+            .indices
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .zip(textured.normals.as_chunks::<3>().0)
+        {
+            let a = read_vec3(&textured.positions, tri[0] as usize);
+            let b = read_vec3(&textured.positions, tri[1] as usize);
+            let c = read_vec3(&textured.positions, tri[2] as usize);
+            let center = Vec3 {
+                x: a.x + b.x + c.x,
+                y: a.y + b.y + c.y,
+                z: a.z + b.z + c.z,
+            };
+            assert!(normal[0] * center.x + normal[1] * center.y + normal[2] * center.z > 0.0);
+        }
+
+        let total_area = |primitive: &Primitive| {
+            primitive
+                .indices
+                .as_chunks::<3>()
+                .0
+                .iter()
+                .map(|tri| {
+                    let a = read_vec3(&primitive.positions, tri[0] as usize);
+                    let b = read_vec3(&primitive.positions, tri[1] as usize);
+                    let c = read_vec3(&primitive.positions, tri[2] as usize);
+                    let cross = vec_cross(vec_sub(b, a), vec_sub(c, a));
+                    (cross.x * cross.x + cross.y * cross.y + cross.z * cross.z).sqrt() * 0.5
+                })
+                .sum::<f32>()
+        };
+        assert!((total_area(textured) - total_area(solid)).abs() < 1e-5);
+    }
 
     #[test]
     fn test_capsule_uv_finite_height_ratio() {

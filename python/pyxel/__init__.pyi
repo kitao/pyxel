@@ -1477,7 +1477,7 @@ def set_dropped_files(files: list[str]) -> None:
 
 # Graphics
 colors: list[int]
-"""List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations."""
+"""List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette."""
 images: list[Image]
 """Image banks (Image instances) (0-2)."""
 tilemaps: list[Tilemap]

@@ -25,6 +25,7 @@ from ._glb_fixtures import (
     write_non_indexed_glb,
     write_normal_texture_glb,
     write_rgb_texture_glb,
+    write_shared_vertices_glb,
     write_single_texture_motion_glb,
     write_skin_glb,
     write_tangent_attribute_glb,
@@ -64,6 +65,33 @@ def test_from_glb_loads_single_texture_mesh(tmp_path):
     assert mesh.names == ["actor", "actor_primitive_0"]
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey == 0
+
+
+def test_from_glb_compacts_shared_indexed_vertices(tmp_path):
+    path = write_shared_vertices_glb(tmp_path / "shared.glb")
+    mesh = Mesh.from_glb(str(path))
+    primitives = [primitive for primitive in mesh.primitives if primitive is not None]
+
+    assert len(primitives) == 2
+    assert [list(primitive.indices) for primitive in primitives] == [[2, 1, 0]] * 2
+    assert [list(primitive.positions) for primitive in primitives] == [
+        [0, 0, 0, 0, 1, 0, 1, 1, 0],
+        [1, 0, 0, 1, 0, 1, 1, 1, 1],
+    ]
+    assert [list(primitive.uvs) for primitive in primitives] == [
+        [0, 0, 0, 1, 1, 1],
+        [0.25, 0.25, 0.25, 0.75, 0.75, 0.75],
+    ]
+    assert [list(primitive.normals) for primitive in primitives] == [
+        [0, 0, 1],
+        [1, 0, 0],
+    ]
+
+
+def test_from_glb_rejects_untextured_mismatched_uv_count(tmp_path):
+    path = write_shared_vertices_glb(tmp_path / "short_uvs.glb", uv_count=6)
+    with raises_exact(ValueError, "GLB TEXCOORD_0 and POSITION count mismatch"):
+        Mesh.from_glb(str(path))
 
 
 def test_from_glb_loads_blockbench_profile_textured_model(tmp_path):

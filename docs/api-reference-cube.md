@@ -1624,7 +1624,7 @@ Transparent color when col_img is an Image.
 
 ### `Mesh.from_glb(filename, *, colkey=None, fps=30.0)` — class
 
-Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube profile supports embedded buffers/images, base-color materials/textures, and transform animations.
+Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube profile supports embedded buffers/images, base-color materials/textures, and transform animations. For indexed primitives, unused vertices are removed and the indices are renumbered.
 
 **Parameters:**
 
@@ -1643,7 +1643,7 @@ actor = Node.from_mesh(mesh)
 
 **Note:** This targets Blockbench's GLTF Model export with Binary (.glb), embedded textures, and armature off; it is not a general glTF loader. Supported vertex attributes are POSITION, NORMAL, and TEXCOORD_0, and LINEAR, STEP, and CUBICSPLINE transform animation channels are supported.
 
-When a material has doubleSided=true, its primitives use CULL_NONE; false or omission uses CULL_BACK. Textures use nearest-neighbor sampling and clamp UV coordinates outside 0-1 to the image edges; glTF sampler filter and wrap settings are ignored. Bake repeating patterns into the image and keep their UVs within 0-1. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted or collides with opaque pixels, an unused current palette color is selected when possible. Unsupported display features such as non-base-color material textures, alpha blending, skins, morph targets, material animation, matrix transforms, missing materials, and other vertex attributes print console warnings and fall back to the closest displayable base mesh or material. External files, invalid buffers, missing POSITION, missing TEXCOORD_0 for textured primitives, invalid indices, non-triangle primitive modes, morph-target weight animations, and malformed triangle data still raise errors.
+When a material has doubleSided=true, its primitives use CULL_NONE; false or omission uses CULL_BACK. Textures use nearest-neighbor sampling and clamp UV coordinates outside 0-1 to the image edges; glTF sampler filter and wrap settings are ignored. Bake repeating patterns into the image and keep their UVs within 0-1. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted or collides with opaque pixels, an unused current palette color is selected when possible. Unsupported display features such as non-base-color material textures, alpha blending, skins, morph targets, material animation, matrix transforms, missing materials, and other vertex attributes print console warnings and fall back to the closest displayable base mesh or material. External files, invalid buffers, missing POSITION, missing TEXCOORD_0 for textured primitives, inconsistent vertex counts among supported vertex attributes, invalid indices, non-triangle primitive modes, morph-target weight animations, and malformed triangle data still raise errors.
 
 ### `descendants(i)` — function *(Advanced)*
 

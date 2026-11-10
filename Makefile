@@ -126,7 +126,7 @@ update:
 	@rustup -q update
 	@cargo -q install cargo-outdated
 	@cd $(CRATES_DIR); cargo -q update
-	@cd $(CRATES_DIR); cargo -q outdated --root-deps-only
+	@cd $(CRATES_DIR); cargo -q outdated --workspace --root-deps-only
 	@pip3 install --upgrade pip
 	@pip3 -q install -U -r $(PYTHON_DIR)/requirements.txt
 

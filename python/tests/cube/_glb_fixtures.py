@@ -10,6 +10,99 @@ from pathlib import Path
 # Fixture writers
 
 
+def write_shared_vertices_glb(path: Path, *, uv_count: int = 8) -> Path:
+    positions = [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+    ]
+    normals = [0.0, 0.0, 1.0] * 4 + [1.0, 0.0, 0.0] * 4
+    uvs = [
+        0.0,
+        0.0,
+        0.5,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.25,
+        0.25,
+        0.5,
+        0.25,
+        0.25,
+        0.75,
+        0.75,
+        0.75,
+    ]
+    uvs = uvs[: uv_count * 2]
+    chunks = [
+        struct.pack("<24f", *positions),
+        struct.pack("<24f", *normals),
+        struct.pack("<" + "f" * len(uvs), *uvs),
+        struct.pack("<3H", 3, 2, 0),
+        struct.pack("<3H", 7, 6, 4),
+    ]
+    blob, offsets = _pack_chunks(chunks)
+    views = [
+        {"buffer": 0, "byteOffset": offset, "byteLength": len(chunk)}
+        for offset, chunk in zip(offsets, chunks)
+    ]
+    accessors = [
+        {
+            "bufferView": 0,
+            "componentType": 5126,
+            "count": 8,
+            "type": "VEC3",
+            "min": [0.0, 0.0, 0.0],
+            "max": [1.0, 1.0, 1.0],
+        },
+        {"bufferView": 1, "componentType": 5126, "count": 8, "type": "VEC3"},
+        {"bufferView": 2, "componentType": 5126, "count": uv_count, "type": "VEC2"},
+        {"bufferView": 3, "componentType": 5123, "count": 3, "type": "SCALAR"},
+        {"bufferView": 4, "componentType": 5123, "count": 3, "type": "SCALAR"},
+    ]
+    primitives = [
+        {"attributes": {"POSITION": 0, "NORMAL": 1, "TEXCOORD_0": 2}, "indices": i}
+        for i in (3, 4)
+    ]
+    return _write_glb(
+        path,
+        {
+            "asset": {"version": "2.0"},
+            "scene": 0,
+            "scenes": [{"nodes": [0]}],
+            "nodes": [{"mesh": 0}],
+            "meshes": [{"primitives": primitives}],
+            "buffers": [{"byteLength": len(blob)}],
+            "bufferViews": views,
+            "accessors": accessors,
+        },
+        blob,
+    )
+
+
 def write_node_graph_glb(path: Path, nodes: list[dict], roots: list[int]) -> Path:
     return _write_glb(
         path,
