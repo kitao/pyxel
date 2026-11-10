@@ -2868,23 +2868,24 @@
           "type": "variable",
           "signature": "colors",
           "description": {
-            "en": "List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations.",
-            "cn": "调色板的显示颜色列表，共 1～256 色，每种颜色用 24 位数值指定。支持与 Python 列表相同的操作。",
-            "de": "Liste mit 1–256 Anzeigefarben der Palette, jeweils als 24-Bit-Wert angegeben. Unterstützt Python-Listenoperationen.",
-            "es": "Lista de 1-256 colores de visualización de la paleta, cada uno especificado como un valor de 24 bits. Admite operaciones de lista de Python.",
-            "fr": "Liste de 1-256 couleurs d'affichage de la palette, chacune définie par une valeur sur 24 bits. Prend en charge les opérations des listes Python.",
-            "it": "Lista di 1-256 colori di visualizzazione della tavolozza, ciascuno specificato come valore a 24 bit. Supporta le operazioni delle liste Python.",
-            "ja": "パレットの表示色リスト（1〜256 色）。各色は 24 ビット数値で指定する。Python リストと同様の操作が可能。",
-            "ko": "팔레트의 표시색 리스트로, 1~256색을 포함합니다. 각 색은 24비트 수치로 지정하며 Python 리스트와 동일한 조작이 가능합니다.",
-            "pt": "Lista de 1-256 cores de exibição da paleta, cada uma especificada como um valor de 24 bits. Suporta operações de listas do Python.",
-            "ru": "Список из 1–256 отображаемых цветов палитры, каждый задан 24-битным числом. Поддерживает операции списков Python.",
-            "tr": "Her biri 24 bitlik bir değerle belirtilen 1-256 palet görüntüleme renginin listesi. Python liste işlemlerini destekler.",
-            "uk": "Список із 1–256 кольорів палітри для відображення, кожен заданий 24-бітним числом. Підтримує операції списків Python."
+            "en": "List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.",
+            "cn": "调色板的显示颜色列表，共 1～256 色，每种颜色用 24 位数值指定。支持与 Python 列表相同的操作。要替换整个调色板，请将列表赋给 pyxel.colors[:]。将列表直接赋给 pyxel.colors 不会更新调色板。",
+            "de": "Liste mit 1–256 Anzeigefarben der Palette, jeweils als 24-Bit-Wert angegeben. Unterstützt Python-Listenoperationen. Um die gesamte Palette zu ersetzen, weisen Sie pyxel.colors[:] eine Liste zu. Wenn Sie pyxel.colors eine Liste zuweisen, wird die Palette nicht aktualisiert.",
+            "es": "Lista de 1-256 colores de visualización de la paleta, cada uno especificado como un valor de 24 bits. Admite operaciones de lista de Python. Para sustituir toda la paleta, asigne una lista a pyxel.colors[:]. Asignar una lista a pyxel.colors no actualiza la paleta.",
+            "fr": "Liste de 1-256 couleurs d'affichage de la palette, chacune définie par une valeur sur 24 bits. Prend en charge les opérations des listes Python. Pour remplacer toute la palette, affectez une liste à pyxel.colors[:]. Affecter une liste à pyxel.colors ne modifie pas la palette.",
+            "it": "Lista di 1-256 colori di visualizzazione della tavolozza, ciascuno specificato come valore a 24 bit. Supporta le operazioni delle liste Python. Per sostituire l'intera tavolozza, assegnare un elenco a pyxel.colors[:]. Assegnare un elenco a pyxel.colors non aggiorna la tavolozza.",
+            "ja": "パレットの表示色リスト（1〜256 色）。各色は 24 ビット数値で指定する。Python リストと同様の操作が可能。パレット全体を置き換えるには、pyxel.colors[:] にリストを代入する。pyxel.colors にリストを代入しても、Pyxel のパレットは更新されない。",
+            "ko": "팔레트의 표시색 리스트로, 1~256색을 포함합니다. 각 색은 24비트 수치로 지정하며 Python 리스트와 동일한 조작이 가능합니다. 팔레트 전체를 바꾸려면 pyxel.colors[:]에 리스트를 대입하세요. pyxel.colors에 리스트를 대입해도 팔레트는 바뀌지 않습니다.",
+            "pt": "Lista de 1-256 cores de exibição da paleta, cada uma especificada como um valor de 24 bits. Suporta operações de listas do Python. Para substituir toda a paleta, atribua uma lista a pyxel.colors[:]. Atribuir uma lista a pyxel.colors não atualiza a paleta.",
+            "ru": "Список из 1–256 отображаемых цветов палитры, каждый задан 24-битным числом. Поддерживает операции списков Python. Чтобы заменить всю палитру, присвойте pyxel.colors[:] список. Присваивание списка pyxel.colors не обновляет палитру.",
+            "tr": "Her biri 24 bitlik bir değerle belirtilen 1-256 palet görüntüleme renginin listesi. Python liste işlemlerini destekler. Paletin tamamını değiştirmek için pyxel.colors[:] ifadesine bir liste atayın. pyxel.colors ifadesine liste atamak paleti güncellemez.",
+            "uk": "Список із 1–256 кольорів палітри для відображення, кожен заданий 24-бітним числом. Підтримує операції списків Python. Щоб замінити всю палітру, присвойте pyxel.colors[:] список. Присвоєння списку pyxel.colors не оновлює палітру."
           },
           "value_type": "list[int]",
           "examples": [
             "old_colors = list(pyxel.colors)",
-            "pyxel.colors[15] = 0x112233"
+            "pyxel.colors[15] = 0x112233",
+            "pyxel.colors[:] = old_colors"
           ],
           "advanced": false
         },

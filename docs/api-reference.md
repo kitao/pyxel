@@ -422,7 +422,7 @@ Set the dropped file list for the current frame. Replaces any existing list. Mai
 
 ### `colors` — variable
 
-List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations.
+List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.
 
 - **Type:** `list[int]`
 
@@ -431,6 +431,7 @@ List of 1-256 palette display colors, each specified as a 24-bit value. Supports
 ```python
 old_colors = list(pyxel.colors)
 pyxel.colors[15] = 0x112233
+pyxel.colors[:] = old_colors
 ```
 
 ### `images` — variable

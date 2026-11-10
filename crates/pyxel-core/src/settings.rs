@@ -5,7 +5,7 @@ use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
 use crate::tone::{ToneMode, ToneSample};
 
 // System defaults
-pub const VERSION: &str = "3.0.0";
+pub const VERSION: &str = "3.0.1";
 pub const BASE_DIR: &str = ".pyxel";
 
 pub const DEFAULT_TITLE: &str = "Pyxel";

@@ -1,6 +1,7 @@
 use std::borrow::Cow;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
+use std::sync::Arc;
 
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::mesh::{ColImage, Material, Mesh, RcMesh};
@@ -8,7 +9,10 @@ use crate::cube::motion::{
     CubicQuatKey, CubicVec3Key, Motion, MotionChannel, MotionInterpolation, MotionTarget,
     MotionValues,
 };
-use crate::cube::primitive::{Primitive, RcPrimitive, CULL_BACK, CULL_NONE, MODE_TRIANGLES};
+use crate::cube::primitive::{
+    remap_used_indices, select_vertices, Primitive, RcPrimitive, CULL_BACK, CULL_NONE,
+    MODE_TRIANGLES,
+};
 use crate::cube::quat::Quat;
 use crate::cube::vec3::Vec3;
 use crate::image::{Color, Image, RcImage, Rgb24};
@@ -67,9 +71,17 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
         .default_scene()
         .or_else(|| document.scenes().next())
         .ok_or_else(|| "GLB has no scene".to_string())?;
+    let mut attribute_cache = AttributeCache::new(&document);
     let mut node_parts = HashMap::<usize, usize>::new();
     for node in scene.nodes() {
-        import_node(&mesh, &buffers, &mut node_parts, &node, -1)?;
+        import_node(
+            &mesh,
+            &buffers,
+            &mut attribute_cache,
+            &mut node_parts,
+            &node,
+            -1,
+        )?;
     }
 
     if !skip_animations {
@@ -759,6 +771,7 @@ fn accessor_view_bytes<'a>(
 fn import_node(
     mesh: &RcMesh,
     buffers: &[gltf::buffer::Data],
+    attribute_cache: &mut AttributeCache,
     node_parts: &mut HashMap<usize, usize>,
     node: &gltf::Node,
     parent: i32,
@@ -787,7 +800,7 @@ fn import_node(
                 format!("{node_name}_primitive_{primitive_index}")
             };
             let material_index = primitive.material().index();
-            let primitive = import_primitive(&primitive, buffers)?;
+            let primitive = import_primitive(&primitive, buffers, attribute_cache)?;
             add_part(
                 mesh,
                 Some(primitive),
@@ -800,7 +813,14 @@ fn import_node(
     }
 
     for child in node.children() {
-        import_node(mesh, buffers, node_parts, &child, node_part as i32)?;
+        import_node(
+            mesh,
+            buffers,
+            attribute_cache,
+            node_parts,
+            &child,
+            node_part as i32,
+        )?;
     }
     Ok(())
 }
@@ -851,9 +871,84 @@ fn node_transform_components(node: &gltf::Node) -> (Vec3, Quat, Vec3) {
 
 // Primitive import
 
+// Cache decoded attributes that may be reused by multiple parts.
+struct AttributeCache {
+    shared: HashSet<usize>,
+    decoded: HashMap<usize, Arc<Vec<f32>>>,
+}
+
+impl AttributeCache {
+    fn new(document: &gltf::Document) -> Self {
+        let mut mesh_uses = HashMap::<usize, usize>::new();
+        for node in document.nodes() {
+            if let Some(mesh) = node.mesh() {
+                *mesh_uses.entry(mesh.index()).or_default() += 1;
+            }
+        }
+
+        let mut accessor_uses = HashMap::<usize, usize>::new();
+        for mesh in document.meshes() {
+            let uses = mesh_uses.get(&mesh.index()).copied().unwrap_or(0);
+            for primitive in mesh.primitives() {
+                for (semantic, accessor) in primitive.attributes() {
+                    if matches!(
+                        semantic,
+                        gltf::mesh::Semantic::Positions
+                            | gltf::mesh::Semantic::Normals
+                            | gltf::mesh::Semantic::TexCoords(0)
+                    ) {
+                        *accessor_uses.entry(accessor.index()).or_default() += uses;
+                    }
+                }
+            }
+        }
+
+        Self {
+            shared: accessor_uses
+                .into_iter()
+                .filter_map(|(index, uses)| (uses > 1).then_some(index))
+                .collect(),
+            decoded: HashMap::new(),
+        }
+    }
+
+    fn read(
+        &mut self,
+        accessor: Option<gltf::Accessor<'_>>,
+        decode: impl FnOnce() -> Result<Vec<f32>, String>,
+    ) -> Result<Arc<Vec<f32>>, String> {
+        let Some(index) = accessor.map(|accessor| accessor.index()) else {
+            return decode().map(Arc::new);
+        };
+        if !self.shared.contains(&index) {
+            return decode().map(Arc::new);
+        }
+        if let Some(values) = self.decoded.get(&index) {
+            return Ok(Arc::clone(values));
+        }
+        let values = Arc::new(decode()?);
+        self.decoded.insert(index, Arc::clone(&values));
+        Ok(values)
+    }
+}
+
+fn take_imported_attribute(
+    values: Arc<Vec<f32>>,
+    stride: usize,
+    selected: Option<&[usize]>,
+) -> Vec<f32> {
+    if let Some(selected) = selected {
+        select_vertices(&values, stride, selected)
+    } else {
+        // Unique accessors can transfer their decoded Vec without a copy.
+        Arc::try_unwrap(values).unwrap_or_else(|shared| (*shared).clone())
+    }
+}
+
 fn import_primitive(
     primitive: &gltf::Primitive,
     buffers: &[gltf::buffer::Data],
+    attribute_cache: &mut AttributeCache,
 ) -> Result<RcPrimitive, String> {
     use gltf::accessor::{DataType, Dimensions};
 
@@ -894,33 +989,43 @@ fn import_primitive(
     let reader =
         primitive.reader(|buffer| buffers.get(buffer.index()).map(|data| data.0.as_slice()));
 
-    let positions = reader
-        .read_positions()
-        .ok_or_else(|| "GLB primitive is missing POSITION".to_string())?
-        .flat_map(std::iter::IntoIterator::into_iter)
-        .collect::<Vec<f32>>();
+    let positions =
+        attribute_cache.read(primitive.get(&gltf::mesh::Semantic::Positions), || {
+            Ok(reader
+                .read_positions()
+                .ok_or_else(|| "GLB primitive is missing POSITION".to_string())?
+                .flat_map(std::iter::IntoIterator::into_iter)
+                .collect())
+        })?;
     let vertex_count = positions.len() / 3;
     if vertex_count == 0 {
         return Err("GLB primitive POSITION count is zero".to_string());
     }
 
     let uvs = match reader.read_tex_coords(0) {
-        Some(tex_coords) => tex_coords
-            .into_f32()
-            .flat_map(std::iter::IntoIterator::into_iter)
-            .collect::<Vec<f32>>(),
+        Some(tex_coords) => {
+            attribute_cache.read(primitive.get(&gltf::mesh::Semantic::TexCoords(0)), || {
+                Ok(tex_coords
+                    .into_f32()
+                    .flat_map(std::iter::IntoIterator::into_iter)
+                    .collect())
+            })?
+        }
         None if has_texture => return Err("GLB primitive is missing TEXCOORD_0".to_string()),
-        None => Vec::new(),
+        None => Arc::new(Vec::new()),
     };
-    if has_texture && uvs.len() / 2 != vertex_count {
+    if (has_texture || !uvs.is_empty()) && uvs.len() != vertex_count * 2 {
         return Err("GLB TEXCOORD_0 and POSITION count mismatch".to_string());
     }
 
     let vertex_normals = match reader.read_normals() {
         Some(normals) => {
-            let normals = normals
-                .flat_map(std::iter::IntoIterator::into_iter)
-                .collect::<Vec<f32>>();
+            let normals =
+                attribute_cache.read(primitive.get(&gltf::mesh::Semantic::Normals), || {
+                    Ok(normals
+                        .flat_map(std::iter::IntoIterator::into_iter)
+                        .collect())
+                })?;
             if normals.len() / 3 != vertex_count {
                 return Err("GLB NORMAL and POSITION count mismatch".to_string());
             }
@@ -932,7 +1037,7 @@ fn import_primitive(
         None => None,
     };
 
-    let indices = reader
+    let mut indices = reader
         .read_indices()
         .map_or_default(|indices| indices.into_u32().map(|i| i as i32).collect::<Vec<i32>>());
     if indices.iter().any(|&index| index as usize >= vertex_count) {
@@ -945,6 +1050,13 @@ fn import_primitive(
     } else if !indices.len().is_multiple_of(3) {
         return Err("GLB triangle indices count must be a multiple of 3".to_string());
     }
+
+    // Exporters may share one accessor across many small indexed primitives.
+    let selected = remap_used_indices(vertex_count, &mut indices);
+    let positions = take_imported_attribute(positions, 3, selected.as_deref());
+    let uvs = take_imported_attribute(uvs, 2, selected.as_deref());
+    let vertex_normals =
+        vertex_normals.map(|normals| take_imported_attribute(normals, 3, selected.as_deref()));
 
     let prim = Primitive::new();
     {
@@ -1347,9 +1459,18 @@ mod tests {
                         gltf::Gltf::from_slice(&serde_json::to_vec(&document).unwrap()).unwrap();
                     let buffers = vec![gltf::buffer::Data(bytes)];
                     let mesh = Mesh::new();
+                    let mut attribute_cache = AttributeCache::new(&gltf.document);
                     let mut node_parts = HashMap::new();
                     let node = gltf.document.nodes().next().unwrap();
-                    import_node(&mesh, &buffers, &mut node_parts, &node, -1).unwrap();
+                    import_node(
+                        &mesh,
+                        &buffers,
+                        &mut attribute_cache,
+                        &mut node_parts,
+                        &node,
+                        -1,
+                    )
+                    .unwrap();
                     import_animations(&mesh, &buffers, &node_parts, &gltf.document, fps).unwrap();
                     let mesh = rc_ref!(&mesh);
                     let motion = rc_ref!(&mesh.motions[0]);
@@ -1439,9 +1560,18 @@ mod tests {
             let gltf = gltf::Gltf::from_slice(&serde_json::to_vec(&document).unwrap()).unwrap();
             let buffers = vec![gltf::buffer::Data(bytes)];
             let mesh = Mesh::new();
+            let mut attribute_cache = AttributeCache::new(&gltf.document);
             let mut node_parts = HashMap::new();
             let node = gltf.document.nodes().next().unwrap();
-            import_node(&mesh, &buffers, &mut node_parts, &node, -1).unwrap();
+            import_node(
+                &mesh,
+                &buffers,
+                &mut attribute_cache,
+                &mut node_parts,
+                &node,
+                -1,
+            )
+            .unwrap();
             import_animations(&mesh, &buffers, &node_parts, &gltf.document, 30.0).unwrap();
 
             let mesh_ref = rc_ref!(&mesh);

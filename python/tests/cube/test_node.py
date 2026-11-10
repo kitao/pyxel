@@ -647,6 +647,34 @@ class TestBoxSphereArguments:
         img = pyxel.images[0]
         Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
 
+    def test_textured_sphere_covers_the_same_pixels_as_solid_sphere(self):
+        texture = Image(4, 4)
+        texture.rect(0, 0, 4, 4, 8)
+
+        class Sphere(Node):
+            def __init__(self, paint):
+                super().__init__()
+                self.paint = paint
+
+            def on_draw(self):
+                self.sphere(Vec3.ZERO, 1, self.paint)
+
+        def covered_pixels(paint, eye, ortho_size):
+            scene = Sphere(paint)
+            scene.camera = Camera()
+            scene.camera.clear_color = 0
+            scene.camera.ortho_size = ortho_size
+            scene.camera.transform = Mat4.look_at(eye, Vec3.ZERO)
+            target = Image(128, 128)
+            scene.draw(0, 0, 128, 128, target)
+            return [target.pget(x, y) != 0 for y in range(128) for x in range(128)]
+
+        for ortho_size in (None, 2.6):
+            for eye in (Vec3(-4, 0.3, 0), Vec3(0, 0.3, 4), Vec3(-3, 2, -3)):
+                assert covered_pixels(texture, eye, ortho_size) == covered_pixels(
+                    8, eye, ortho_size
+                )
+
 
 class TestOnCollideSignature:
     def test_signature_param_names(self):

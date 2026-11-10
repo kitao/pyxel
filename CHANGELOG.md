@@ -1,5 +1,16 @@
 # Change Log
 
+## 3.0.1
+
+- Restored visual guides and improved pacing in Pyxel Cube tutorial videos
+- Clarified palette replacement in the API reference and translations
+- Removed unused vertices from indexed GLB imports to improve rendering speed
+- Rejected GLB primitives whose supported attributes have unequal vertex counts
+- Fixed smeared texture seams on Pyxel Cube spheres
+- Fixed the local Showcase browser URL to use its actual server address
+- Updated Rust to nightly-2026-11-10
+- Fixed crate update checks in the virtual Cargo workspace
+
 ## 3.0.0
 
 - Added Pyxel Cube software-rendered 3D and Blockbench model references

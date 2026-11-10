@@ -68,6 +68,26 @@ def test_start_showcase_preserves_public_paths(showcase_url: str):
     assert b"https://kitao.dev/pyxel/3.0.0/pyxel.js" in body
 
 
+def test_main_opens_the_served_address(showcase_module, monkeypatch, capsys):
+    opened = []
+    monkeypatch.setattr(showcase_module, "_get_ip", lambda: "192.0.2.1")
+    monkeypatch.setattr(
+        showcase_module,
+        "ThreadingHTTPServer",
+        lambda *_args: SimpleNamespace(serve_forever=lambda: None),
+    )
+    monkeypatch.setattr(
+        showcase_module.threading,
+        "Timer",
+        lambda _delay, callback: SimpleNamespace(start=callback),
+    )
+    monkeypatch.setattr(showcase_module.webbrowser, "open", opened.append)
+
+    assert showcase_module.main() == 0
+    assert "http://192.0.2.1:8000/" in capsys.readouterr().out
+    assert opened == ["http://192.0.2.1:8000/web/showcase/"]
+
+
 def test_local_launcher_preserves_hosted_module_bytes(
     showcase_url, showcase_module, monkeypatch
 ):

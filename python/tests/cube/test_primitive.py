@@ -83,9 +83,10 @@ def test_sphere_factory_builds_low_poly_sphere():
     p = Primitive.sphere(2.0)
     assert p.mode == Primitive.MODE_TRIANGLES
     assert p.cull == Primitive.CULL_BACK
-    assert len(p.indices) == 240
-    assert len(p.normals) == 240
+    assert len(p.indices) == 258
+    assert len(p.normals) == 258
     assert len(p.uvs) == len(p.positions) // 3 * 2
+    assert all(0 <= uv <= 1 for uv in p.uvs)
     assert max(abs(v) for v in p.positions) == pytest.approx(2.0, abs=1e-6)
 
 

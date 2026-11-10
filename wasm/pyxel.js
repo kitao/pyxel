@@ -2,7 +2,7 @@ const PYODIDE_VERSION = "314.0.7";
 const PYODIDE_URL = `https://kitao.dev/pyxel/pyodide/v${PYODIDE_VERSION}/pyodide.js`;
 const PYODIDE_PACKAGE_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 const PYXEL_WHEEL_PATH =
-  "pyxel-3.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl";
+  "pyxel-3.0.1-cp311-abi3-pyemscripten_2026_0_wasm32.whl";
 const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "images/click_to_start_114x14.png";
