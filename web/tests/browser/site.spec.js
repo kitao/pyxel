@@ -54,6 +54,7 @@ test("pages on other sites can load the runtime and examples", async ({
   for (const path of [
     "/pyxel/2.9.9/pyxel.js",
     "/pyxel/3.0.0/pyxel.js",
+    "/pyxel/3.0.1/pyxel.js",
     "/pyxel/pyodide/v314.0.7/pyodide.js",
     "/pyxel/pyodide/v314.0.7/pyodide.asm.mjs",
     "/pyxel/pyodide/v314.0.7/pyodide.asm.wasm",
@@ -75,11 +76,14 @@ test("released runtime bundles are immutable and current previews are not", asyn
   expect(await cacheControl("/pyxel/2.9.9/pyxel.js")).toBe(
     "public, max-age=31536000, immutable",
   );
-  const currentTag = execFileSync("git", ["tag", "--list", "v3.0.0"], {
+  expect(await cacheControl("/pyxel/3.0.0/pyxel.js")).toBe(
+    "public, max-age=31536000, immutable",
+  );
+  const currentTag = execFileSync("git", ["tag", "--list", "v3.0.1"], {
     cwd: __dirname,
     encoding: "utf8",
   }).trim();
-  const currentCacheControl = await cacheControl("/pyxel/3.0.0/pyxel.js");
+  const currentCacheControl = await cacheControl("/pyxel/3.0.1/pyxel.js");
   if (currentTag) {
     expect(currentCacheControl).toBe("public, max-age=31536000, immutable");
   } else {

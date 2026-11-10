@@ -65,7 +65,7 @@ def test_start_showcase_preserves_public_paths(showcase_url: str):
 
     status, body = _get(showcase_url + "/web/web-usage/index.html")
     assert status == 200
-    assert b"https://kitao.dev/pyxel/3.0.0/pyxel.js" in body
+    assert b"https://kitao.dev/pyxel/3.0.1/pyxel.js" in body
 
 
 def test_main_opens_the_served_address(showcase_module, monkeypatch, capsys):

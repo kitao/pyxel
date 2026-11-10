@@ -104,10 +104,10 @@ Use HTML custom elements to embed Pyxel apps in your own HTML pages.
 Add the following script tag to your HTML.
 
 ```html
-<script src="https://kitao.dev/pyxel/3.0.0/pyxel.js"></script>
+<script src="https://kitao.dev/pyxel/3.0.1/pyxel.js"></script>
 ```
 
-Replace `3.0.0` in the URL with the Pyxel version you want to use.
+Replace `3.0.1` in the URL with the Pyxel version you want to use.
 
 Loading this script makes three HTML custom elements available, corresponding to Pyxel's `run`, `play`, and `edit` commands: `pyxel-run`, `pyxel-play`, and `pyxel-edit`.
 
