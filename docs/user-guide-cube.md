@@ -637,6 +637,8 @@ Choose **File → Export → Export glTF Model** and export as **Binary (glb)**.
 
 These settings embed textures and export each part's translation, rotation, and scaling as motions.
 
+Closed models can render faster with single-sided drawing. Before exporting, right-click each texture, choose **Properties**, and set **Render Sides** to **Outside**. Use **Inside and Outside** for flat surfaces such as grass or flags that must be visible from both sides. Check the result from several directions, including during motions.
+
 If a GLB material is exported with `BLEND`, transparent areas are drawn as opaque. To use cutout transparency, install the glTF Tools extension in VS Code and edit the material as follows.
 
 1. Open the GLB, right-click its tab, and select `glTF: Import from GLB` to convert it to an editable glTF.
