@@ -817,6 +817,9 @@
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: enabled</li><li><strong>Export Groups as Armature</strong>: disabled</li><li><strong>Export Animations</strong>: enabled when including motions</li></ul><p class=\"mt-2\">These settings embed textures and export each part's translation, rotation, and scaling as motions.</p>"
             },
             {
+              "text": "<p>Closed models can render faster with single-sided drawing. Before exporting, right-click each texture, choose <strong>Properties</strong>, and set <strong>Render Sides</strong> to <strong>Outside</strong>. Use <strong>Inside and Outside</strong> for flat surfaces such as grass or flags that must be visible from both sides. Check the result from several directions, including during motions.</p>"
+            },
+            {
               "text": "<p>If a GLB material is exported with <code class=\"chip\">BLEND</code>, transparent areas are drawn as opaque. To use cutout transparency, install the glTF Tools extension in VS Code and edit the material as follows.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Open the GLB, right-click its tab, and select <code class=\"chip\">glTF: Import from GLB</code> to convert it to an editable glTF.</li><li>In the relevant material under <code class=\"chip\">materials</code>, change <code class=\"chip\">alphaMode</code> to <code class=\"chip\">\"MASK\"</code> and save.</li><li>Right-click the glTF tab and select <code class=\"chip\">glTF: Export to GLB (Binary file)</code> to export a GLB.</li></ol><p class=\"mt-2\">For details on conversion and editing, see <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">Using glTF Tools in VS Code</a>.</p>"
             },
             {
@@ -1488,6 +1491,9 @@
             },
             {
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>：启用</li><li><strong>Export Groups as Armature</strong>：禁用</li><li><strong>Export Animations</strong>：需要包含动作时启用</li></ul><p class=\"mt-2\">这些设置会嵌入纹理，并将各部件的平移、旋转和缩放导出为动作。</p>"
+            },
+            {
+              "text": "<p>封闭的立体模型使用单面绘制可以降低绘制负担。导出前，右键单击各纹理，选择 <strong>Properties</strong>，将 <strong>Render Sides</strong> 设为 <strong>Outside</strong>。草叶、旗帜等需要从正反两面看到的平面应使用 <strong>Inside and Outside</strong>。更改后，请从多个方向检查效果，包括动作播放时的外观。</p>"
             },
             {
               "text": "<p>如果 GLB 材质以 <code class=\"chip\">BLEND</code> 导出，透明区域也会被绘制为不透明。要使用透明裁切，请在 VS Code 中安装 glTF Tools 扩展，并按以下步骤编辑材质。</p><ol class=\"list-decimal pl-6 space-y-2\"><li>打开 GLB，右键单击其标签页，选择 <code class=\"chip\">glTF: Import from GLB</code>，转换为可编辑的 glTF。</li><li>在 <code class=\"chip\">materials</code> 中找到目标材质，将 <code class=\"chip\">alphaMode</code> 改为 <code class=\"chip\">\"MASK\"</code> 后保存。</li><li>右键单击 glTF 标签页，选择 <code class=\"chip\">glTF: Export to GLB (Binary file)</code>，导出为 GLB。</li></ol><p class=\"mt-2\">有关转换和编辑的详情，请参阅 <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">在 VS Code 中使用 glTF Tools 的步骤</a>。</p>"
@@ -2163,6 +2169,9 @@
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: aktiviert</li><li><strong>Export Groups as Armature</strong>: deaktiviert</li><li><strong>Export Animations</strong>: aktiviert, wenn Bewegungen enthalten sein sollen</li></ul><p class=\"mt-2\">Diese Einstellungen betten Texturen ein und exportieren Verschiebung, Drehung und Skalierung jedes Teils als Bewegungen.</p>"
             },
             {
+              "text": "<p>Geschlossene Modelle können mit einseitiger Darstellung schneller gezeichnet werden. Klicken Sie vor dem Export mit der rechten Maustaste auf jede Textur, wählen Sie <strong>Properties</strong> und setzen Sie <strong>Render Sides</strong> auf <strong>Outside</strong>. Verwenden Sie für flache Flächen wie Gras oder Fahnen, die von beiden Seiten sichtbar sein müssen, <strong>Inside and Outside</strong>. Prüfen Sie das Ergebnis aus mehreren Richtungen, auch während der Bewegungen.</p>"
+            },
+            {
               "text": "<p>Wird ein GLB-Material mit <code class=\"chip\">BLEND</code> exportiert, werden auch transparente Bereiche undurchsichtig gezeichnet. Um transparente Bereiche auszuschneiden, installieren Sie die Erweiterung glTF Tools in VS Code und bearbeiten Sie das Material wie folgt.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Öffnen Sie die GLB-Datei, klicken Sie mit der rechten Maustaste auf ihren Tab und wählen Sie <code class=\"chip\">glTF: Import from GLB</code>, um sie in eine bearbeitbare glTF-Datei umzuwandeln.</li><li>Ändern Sie im betreffenden Material unter <code class=\"chip\">materials</code> den Wert von <code class=\"chip\">alphaMode</code> auf <code class=\"chip\">\"MASK\"</code> und speichern Sie.</li><li>Klicken Sie mit der rechten Maustaste auf den glTF-Tab und wählen Sie <code class=\"chip\">glTF: Export to GLB (Binary file)</code>, um eine GLB-Datei zu exportieren.</li></ol><p class=\"mt-2\">Einzelheiten zur Umwandlung und Bearbeitung finden Sie unter <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">glTF Tools in VS Code verwenden</a>.</p>"
             },
             {
@@ -2834,6 +2843,9 @@
             },
             {
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: activado</li><li><strong>Export Groups as Armature</strong>: desactivado</li><li><strong>Export Animations</strong>: activado si se incluyen movimientos</li></ul><p class=\"mt-2\">Estos ajustes integran las texturas y exportan la traslación, la rotación y la escala de cada pieza como movimientos.</p>"
+            },
+            {
+              "text": "<p>Los modelos cerrados pueden dibujarse más rápido con caras de un solo lado. Antes de exportar, haga clic derecho en cada textura, elija <strong>Properties</strong> y establezca <strong>Render Sides</strong> en <strong>Outside</strong>. Use <strong>Inside and Outside</strong> para superficies planas, como hierba o banderas, que deban verse por ambos lados. Compruebe el resultado desde varias direcciones, también durante los movimientos.</p>"
             },
             {
               "text": "<p>Si un material GLB se exporta con <code class=\"chip\">BLEND</code>, las áreas transparentes se dibujan como opacas. Para utilizar la transparencia por recorte, instale la extensión glTF Tools en VS Code y edite el material como se indica a continuación.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Abra el GLB, haga clic con el botón derecho en su pestaña y seleccione <code class=\"chip\">glTF: Import from GLB</code> para convertirlo en un glTF editable.</li><li>En el material correspondiente de <code class=\"chip\">materials</code>, cambie <code class=\"chip\">alphaMode</code> a <code class=\"chip\">\"MASK\"</code> y guarde.</li><li>Haga clic con el botón derecho en la pestaña del glTF y seleccione <code class=\"chip\">glTF: Export to GLB (Binary file)</code> para exportar un GLB.</li></ol><p class=\"mt-2\">Para más información sobre la conversión y la edición, consulte <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">Uso de glTF Tools en VS Code</a>.</p>"
@@ -3509,6 +3521,9 @@
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong> : activé</li><li><strong>Export Groups as Armature</strong> : désactivé</li><li><strong>Export Animations</strong> : activé pour inclure les mouvements</li></ul><p class=\"mt-2\">Ces réglages intègrent les textures et exportent les translations, rotations et mises à l'échelle de chaque partie sous forme de mouvements.</p>"
             },
             {
+              "text": "<p>Le rendu sur une seule face peut accélérer l'affichage des modèles fermés. Avant l'exportation, faites un clic droit sur chaque texture, choisissez <strong>Properties</strong> et réglez <strong>Render Sides</strong> sur <strong>Outside</strong>. Utilisez <strong>Inside and Outside</strong> pour les surfaces planes, comme l'herbe ou les drapeaux, qui doivent être visibles des deux côtés. Vérifiez le résultat depuis plusieurs directions, y compris pendant les mouvements.</p>"
+            },
+            {
               "text": "<p>Si un matériau GLB est exporté avec <code class=\"chip\">BLEND</code>, les zones transparentes sont dessinées comme opaques. Pour découper les zones transparentes, installez l'extension glTF Tools dans VS Code et modifiez le matériau comme suit.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Ouvrez le GLB, faites un clic droit sur son onglet et choisissez <code class=\"chip\">glTF: Import from GLB</code> pour le convertir en glTF modifiable.</li><li>Dans le matériau concerné sous <code class=\"chip\">materials</code>, remplacez la valeur d'<code class=\"chip\">alphaMode</code> par <code class=\"chip\">\"MASK\"</code> et enregistrez.</li><li>Faites un clic droit sur l'onglet glTF et choisissez <code class=\"chip\">glTF: Export to GLB (Binary file)</code> pour exporter un GLB.</li></ol><p class=\"mt-2\">Pour les détails de conversion et d'édition, consultez <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">Utilisation de glTF Tools dans VS Code</a>.</p>"
             },
             {
@@ -4180,6 +4195,9 @@
             },
             {
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: abilitato</li><li><strong>Export Groups as Armature</strong>: disabilitato</li><li><strong>Export Animations</strong>: abilitato quando si includono movimenti</li></ul><p class=\"mt-2\">Queste impostazioni incorporano le texture ed esportano traslazione, rotazione e scala di ogni parte come movimenti.</p>"
+            },
+            {
+              "text": "<p>I modelli chiusi possono essere disegnati più velocemente con il rendering su un solo lato. Prima di esportare, fare clic destro su ogni texture, scegliere <strong>Properties</strong> e impostare <strong>Render Sides</strong> su <strong>Outside</strong>. Usare <strong>Inside and Outside</strong> per le superfici piane, come erba o bandiere, che devono essere visibili da entrambi i lati. Controllare il risultato da più direzioni, anche durante i movimenti.</p>"
             },
             {
               "text": "<p>Se un materiale GLB viene esportato con <code class=\"chip\">BLEND</code>, le aree trasparenti vengono disegnate come opache. Per utilizzare la trasparenza per ritaglio, installare l'estensione glTF Tools in VS Code e modificare il materiale come segue.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Aprire il GLB, fare clic con il pulsante destro sulla sua scheda e selezionare <code class=\"chip\">glTF: Import from GLB</code> per convertirlo in un glTF modificabile.</li><li>Nel materiale interessato sotto <code class=\"chip\">materials</code>, cambiare <code class=\"chip\">alphaMode</code> in <code class=\"chip\">\"MASK\"</code> e salvare.</li><li>Fare clic con il pulsante destro sulla scheda del glTF e selezionare <code class=\"chip\">glTF: Export to GLB (Binary file)</code> per esportare un GLB.</li></ol><p class=\"mt-2\">Per i dettagli sulla conversione e sulla modifica, consultare <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">Uso di glTF Tools in VS Code</a>.</p>"
@@ -4855,6 +4873,9 @@
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>：有効</li><li><strong>Export Groups as Armature</strong>：無効</li><li><strong>Export Animations</strong>：モーションを含める場合は有効</li></ul><p class=\"mt-2\">テクスチャを埋め込み、各パーツの移動・回転・拡大縮小をモーションとして書き出すための設定です。</p>"
             },
             {
+              "text": "<p>閉じた立体は片面描画にすると描画負荷を減らせます。書き出す前に各テクスチャを右クリックし、<strong>Properties</strong> で <strong>Render Sides</strong> を <strong>Outside</strong> に設定します。草や旗など、裏側からも見せる板状の面には <strong>Inside and Outside</strong> を使います。設定を変えたら、モーション中も含めていろいろな方向から見た目を確認してください。</p>"
+            },
+            {
               "text": "<p>GLB の材質が <code class=\"chip\">BLEND</code> で書き出されると、透明部分も不透明に描画されます。切り抜くには、VS Code に glTF Tools 拡張機能を追加し、次の手順で材質を編集します。</p><ol class=\"list-decimal pl-6 space-y-2\"><li>GLB を開き、タブを右クリックして <code class=\"chip\">glTF: Import from GLB</code> を選び、編集用の glTF に変換します。</li><li><code class=\"chip\">materials</code> 内の対象の材質で、<code class=\"chip\">alphaMode</code> を <code class=\"chip\">\"MASK\"</code> に変更して保存します。</li><li>glTF のタブを右クリックし、<code class=\"chip\">glTF: Export to GLB (Binary file)</code> を選んで GLB に書き出します。</li></ol><p class=\"mt-2\">変換・編集操作の詳細は、<a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">VS Code の glTF Tools を使う手順</a>を参照してください。</p>"
             },
             {
@@ -5526,6 +5547,9 @@
             },
             {
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: 활성화</li><li><strong>Export Groups as Armature</strong>: 비활성화</li><li><strong>Export Animations</strong>: 모션을 포함할 때 활성화</li></ul><p class=\"mt-2\">텍스처를 포함하고 각 부품의 이동·회전·확대·축소를 모션으로 내보내기 위한 설정입니다.</p>"
+            },
+            {
+              "text": "<p>닫힌 입체 모델은 단면으로 그리면 그리기 부하를 줄일 수 있습니다. 내보내기 전에 각 텍스처를 마우스 오른쪽 버튼으로 클릭하고 <strong>Properties</strong>에서 <strong>Render Sides</strong>를 <strong>Outside</strong>로 설정하세요. 풀이나 깃발처럼 양쪽에서 보여야 하는 평면에는 <strong>Inside and Outside</strong>를 사용하세요. 설정을 바꾼 뒤에는 모션 재생 중에도 여러 방향에서 모습을 확인하세요.</p>"
             },
             {
               "text": "<p>GLB의 재질이 <code class=\"chip\">BLEND</code>로 내보내지면 투명 영역도 불투명하게 그려집니다. 투명 영역을 잘라내려면 VS Code에 glTF Tools 확장 기능을 설치한 뒤 다음 순서로 재질을 편집하세요.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>GLB를 열고 탭을 오른쪽 클릭하여 <code class=\"chip\">glTF: Import from GLB</code>를 선택하면 편집용 glTF로 변환됩니다.</li><li><code class=\"chip\">materials</code> 안의 해당 재질에서 <code class=\"chip\">alphaMode</code>를 <code class=\"chip\">\"MASK\"</code>로 바꾸고 저장하세요.</li><li>glTF 탭을 오른쪽 클릭하여 <code class=\"chip\">glTF: Export to GLB (Binary file)</code>를 선택하고 GLB로 내보내세요.</li></ol><p class=\"mt-2\">변환과 편집에 관한 자세한 내용은 <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">VS Code에서 glTF Tools 사용하기</a>를 참고하세요.</p>"
@@ -6201,6 +6225,9 @@
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: ativado</li><li><strong>Export Groups as Armature</strong>: desativado</li><li><strong>Export Animations</strong>: ativado ao incluir movimentos</li></ul><p class=\"mt-2\">Essas configurações incorporam as texturas e exportam a translação, a rotação e a escala de cada parte como movimentos.</p>"
             },
             {
+              "text": "<p>Modelos fechados podem ser desenhados mais rápido com renderização de um só lado. Antes de exportar, clique com o botão direito em cada textura, escolha <strong>Properties</strong> e defina <strong>Render Sides</strong> como <strong>Outside</strong>. Use <strong>Inside and Outside</strong> para superfícies planas, como grama ou bandeiras, que precisam ser vistas dos dois lados. Confira o resultado de várias direções, inclusive durante os movimentos.</p>"
+            },
+            {
               "text": "<p>Se um material GLB for exportado com <code class=\"chip\">BLEND</code>, as áreas transparentes serão desenhadas como opacas. Para usar transparência por recorte, instale a extensão glTF Tools no VS Code e edite o material da seguinte forma.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Abra o GLB, clique com o botão direito na aba e selecione <code class=\"chip\">glTF: Import from GLB</code> para convertê-lo em um glTF editável.</li><li>No material correspondente em <code class=\"chip\">materials</code>, altere <code class=\"chip\">alphaMode</code> para <code class=\"chip\">\"MASK\"</code> e salve.</li><li>Clique com o botão direito na aba do glTF e selecione <code class=\"chip\">glTF: Export to GLB (Binary file)</code> para exportar um GLB.</li></ol><p class=\"mt-2\">Para detalhes sobre conversão e edição, consulte <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">Uso do glTF Tools no VS Code</a>.</p>"
             },
             {
@@ -6872,6 +6899,9 @@
             },
             {
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: включено</li><li><strong>Export Groups as Armature</strong>: отключено</li><li><strong>Export Animations</strong>: включено, если нужны движения</li></ul><p class=\"mt-2\">Эти настройки встраивают текстуры и экспортируют перенос, поворот и масштабирование каждой части как движения.</p>"
+            },
+            {
+              "text": "<p>Отрисовка только лицевых сторон может ускорить отображение замкнутых моделей. Перед экспортом щёлкните правой кнопкой мыши по каждой текстуре, выберите <strong>Properties</strong> и установите <strong>Render Sides</strong> в <strong>Outside</strong>. Для плоских поверхностей, таких как трава или флаги, которые должны быть видны с обеих сторон, используйте <strong>Inside and Outside</strong>. Проверьте результат с разных направлений, в том числе во время движений.</p>"
             },
             {
               "text": "<p>Если материал GLB экспортирован с <code class=\"chip\">BLEND</code>, прозрачные участки также рисуются непрозрачными. Для вырезания прозрачных участков установите расширение glTF Tools в VS Code и отредактируйте материал следующим образом.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Откройте GLB, щёлкните правой кнопкой мыши по вкладке и выберите <code class=\"chip\">glTF: Import from GLB</code>, чтобы преобразовать файл в редактируемый glTF.</li><li>У нужного материала в <code class=\"chip\">materials</code> измените <code class=\"chip\">alphaMode</code> на <code class=\"chip\">\"MASK\"</code> и сохраните файл.</li><li>Щёлкните правой кнопкой мыши по вкладке glTF и выберите <code class=\"chip\">glTF: Export to GLB (Binary file)</code>, чтобы экспортировать GLB.</li></ol><p class=\"mt-2\">Подробности преобразования и редактирования приведены в разделе <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">Использование glTF Tools в VS Code</a>.</p>"
@@ -7547,6 +7577,9 @@
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: etkin</li><li><strong>Export Groups as Armature</strong>: devre dışı</li><li><strong>Export Animations</strong>: hareketler dahil edilecekse etkin</li></ul><p class=\"mt-2\">Bu ayarlar dokuları gömer ve her parçanın öteleme, döndürme ve ölçeklemesini hareket olarak dışa aktarır.</p>"
             },
             {
+              "text": "<p>Kapalı modeller tek taraflı çizimle daha hızlı çizilebilir. Dışa aktarmadan önce her dokuya sağ tıklayın, <strong>Properties</strong> seçeneğini açın ve <strong>Render Sides</strong> değerini <strong>Outside</strong> olarak ayarlayın. Çim veya bayrak gibi her iki taraftan da görünmesi gereken düz yüzeylerde <strong>Inside and Outside</strong> kullanın. Sonucu hareketler sırasında da farklı yönlerden kontrol edin.</p>"
+            },
+            {
               "text": "<p>GLB malzemesi <code class=\"chip\">BLEND</code> ile dışa aktarılırsa saydam alanlar da opak çizilir. Saydam alanları kesip çıkarmak için VS Code'a glTF Tools uzantısını kurun ve malzemeyi şu şekilde düzenleyin.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>GLB'yi açın, sekmesine sağ tıklayıp <code class=\"chip\">glTF: Import from GLB</code> seçeneğiyle düzenlenebilir glTF biçimine dönüştürün.</li><li><code class=\"chip\">materials</code> içindeki ilgili malzemenin <code class=\"chip\">alphaMode</code> değerini <code class=\"chip\">\"MASK\"</code> yapıp kaydedin.</li><li>glTF sekmesine sağ tıklayıp <code class=\"chip\">glTF: Export to GLB (Binary file)</code> seçeneğiyle GLB olarak dışa aktarın.</li></ol><p class=\"mt-2\">Dönüştürme ve düzenleme ayrıntıları için <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">VS Code ile glTF Tools kullanma adımlarına</a> bakın.</p>"
             },
             {
@@ -8218,6 +8251,9 @@
             },
             {
               "text": "<ul class=\"list-disc pl-6 space-y-2\"><li><strong>Embed Textures</strong>: увімкнено</li><li><strong>Export Groups as Armature</strong>: вимкнено</li><li><strong>Export Animations</strong>: увімкнено, якщо потрібні рухи</li></ul><p class=\"mt-2\">Ці налаштування вбудовують текстури й експортують перенесення, поворот і масштабування кожної частини як рухи.</p>"
+            },
+            {
+              "text": "<p>Малювання лише лицьових боків може прискорити відображення замкнутих моделей. Перед експортом клацніть правою кнопкою миші кожну текстуру, виберіть <strong>Properties</strong> і встановіть <strong>Render Sides</strong> у <strong>Outside</strong>. Для пласких поверхонь, як-от трава або прапори, які мають бути видимими з обох боків, використовуйте <strong>Inside and Outside</strong>. Перевірте результат із різних напрямків, зокрема під час рухів.</p>"
             },
             {
               "text": "<p>Якщо матеріал GLB експортовано з <code class=\"chip\">BLEND</code>, прозорі ділянки також малюються непрозорими. Щоб вирізати їх, установіть розширення glTF Tools у VS Code та відредагуйте матеріал так.</p><ol class=\"list-decimal pl-6 space-y-2\"><li>Відкрийте GLB, клацніть правою кнопкою його вкладку й виберіть <code class=\"chip\">glTF: Import from GLB</code>, щоб перетворити файл на редагований glTF.</li><li>У потрібному матеріалі в <code class=\"chip\">materials</code> змініть <code class=\"chip\">alphaMode</code> на <code class=\"chip\">\"MASK\"</code> і збережіть.</li><li>Клацніть правою кнопкою вкладку glTF й виберіть <code class=\"chip\">glTF: Export to GLB (Binary file)</code>, щоб експортувати GLB.</li></ol><p class=\"mt-2\">Докладніше про перетворення й редагування читайте в <a class=\"link\" href=\"https://github.com/KhronosGroup/glTF-Tutorials/blob/main/AddingMaterialExtensions/AddingMaterialExtensions_002_UsingVisualStudioCode.md\">інструкції з glTF Tools у VS Code</a>.</p>"

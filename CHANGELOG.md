@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.0.2
+
+- Fixed the Web usage guide to reference the released 3.0.1 runtime
+- Reduced drawing cost for Cube's player, coin, and platform sample models
+- Added single-sided GLB export guidance to the Cube user guide
+
 ## 3.0.1
 
 - Restored visual guides and improved pacing in Pyxel Cube tutorial videos
