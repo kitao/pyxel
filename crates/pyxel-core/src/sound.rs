@@ -137,6 +137,11 @@ impl Sound {
                 } else {
                     return Err(format!("Invalid sound note '{c}'"));
                 }
+
+                // C-0 and B#4 fall outside the note range 0-59, and -1 would be read as a rest
+                if !(0..=59).contains(&note) {
+                    return Err(format!("Sound note out of range '{note}'"));
+                }
             } else if c == 'r' {
                 note = -1;
             } else {
@@ -556,6 +561,16 @@ mod tests {
             _ => None,
         });
         assert_eq!(midi_note, Some(163));
+    }
+
+    #[test]
+    fn set_notes_rejects_notes_outside_range() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.set_notes("c0 c#0 b-4 b4 r").unwrap();
+        assert_eq!(sound.notes, vec![0, 1, 58, 59, -1]);
+        assert!(sound.set_notes("c-0").is_err());
+        assert!(sound.set_notes("b#4").is_err());
     }
 
     #[test]
