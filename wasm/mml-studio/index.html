@@ -6,7 +6,11 @@
     <title>Pyxel MML Studio</title>
     <script>
       location.replace(
-        "../../web/mml-studio/" + location.search + location.hash,
+        (location.hostname === "kitao.github.io" && window.self === window.top
+          ? "https://kitao.dev/pyxel/mml-studio/"
+          : "../../web/mml-studio/") +
+          location.search +
+          location.hash,
       );
     </script>
   </head>

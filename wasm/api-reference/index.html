@@ -6,7 +6,11 @@
     <title>Pyxel API Reference</title>
     <script>
       location.replace(
-        "../../web/api-reference/" + location.search + location.hash,
+        (location.hostname === "kitao.github.io" && window.self === window.top
+          ? "https://kitao.dev/pyxel/api-reference/"
+          : "../../web/api-reference/") +
+          location.search +
+          location.hash,
       );
     </script>
   </head>

@@ -1,6 +1,20 @@
 <!doctype html>
 <html lang="en" class="h-full">
   <head>
+    <script data-legacy-redirect>
+      if (
+        location.hostname === "kitao.github.io" &&
+        location.pathname.startsWith("/pyxel/web/") &&
+        window.self === window.top
+      ) {
+        location.replace(
+          "https://kitao.dev/pyxel/" +
+            location.pathname.slice("/pyxel/web/".length) +
+            location.search +
+            location.hash,
+        );
+      }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta

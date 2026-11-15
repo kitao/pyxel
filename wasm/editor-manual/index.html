@@ -6,7 +6,11 @@
     <title>Pyxel Editor Manual</title>
     <script>
       location.replace(
-        "../../web/editor-manual/" + location.search + location.hash,
+        (location.hostname === "kitao.github.io" && window.self === window.top
+          ? "https://kitao.dev/pyxel/editor-manual/"
+          : "../../web/editor-manual/") +
+          location.search +
+          location.hash,
       );
     </script>
   </head>

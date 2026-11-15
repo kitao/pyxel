@@ -6,7 +6,11 @@
     <title>Pyxel Cube User Guide</title>
     <script>
       location.replace(
-        "../../../web/user-guide/cube/" + location.search + location.hash,
+        (location.hostname === "kitao.github.io" && window.self === window.top
+          ? "https://kitao.dev/pyxel/user-guide/cube/"
+          : "../../../web/user-guide/cube/") +
+          location.search +
+          location.hash,
       );
     </script>
   </head>

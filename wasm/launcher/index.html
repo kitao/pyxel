@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Web Launcher</title>
     <script>
-      location.replace("../../web/launcher/" + location.search + location.hash);
+      location.replace(
+        (location.hostname === "kitao.github.io" && window.self === window.top
+          ? "https://kitao.dev/pyxel/launcher/"
+          : "../../web/launcher/") +
+          location.search +
+          location.hash,
+      );
     </script>
   </head>
 </html>

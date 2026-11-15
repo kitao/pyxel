@@ -6,7 +6,11 @@
     <title>Pyxel Code Maker</title>
     <script>
       location.replace(
-        "../../web/code-maker/" + location.search + location.hash,
+        (location.hostname === "kitao.github.io" && window.self === window.top
+          ? "https://kitao.dev/pyxel/code-maker/"
+          : "../../web/code-maker/") +
+          location.search +
+          location.hash,
       );
     </script>
   </head>
