@@ -1,8 +1,8 @@
 import importlib.util
+import io
 import json
 import shutil
 import subprocess
-import tomllib
 import zipfile
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
@@ -154,21 +154,67 @@ def test_wasm_wheel_check_requires_the_exact_expected_filename(tmp_path):
         checker.find_wheel(dist_dir, pyproject_path)
 
 
-def test_tracked_wasm_wheel_matches_packaged_python_sources():
+def test_tracked_wasm_wheel_matches_its_source(tmp_path):
     checker = _load_script("check_wasm_wheel")
     wheel_paths = sorted((ROOT_DIR / "wasm").glob("pyxel-*-pyemscripten_*.whl"))
-    version = tomllib.loads(
-        (ROOT_DIR / "python" / "pyproject.toml").read_text(encoding="utf-8")
-    )["project"]["version"]
-
     assert len(wheel_paths) == 1
+    version = wheel_paths[0].name.split("-")[1]
+    source_root = ROOT_DIR
+    release_ref = f"refs/tags/v{version}"
+    tag_check = subprocess.run(
+        ["git", "show-ref", "--verify", "--quiet", release_ref],
+        cwd=ROOT_DIR,
+        check=False,
+    )
+    assert tag_check.returncode in (0, 1)
+    if tag_check.returncode == 0:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", f"{release_ref}^{{commit}}"],
+            cwd=ROOT_DIR,
+            text=True,
+        ).strip()
+        entry = subprocess.check_output(
+            ["git", "ls-tree", commit, "--", f"wasm/{wheel_paths[0].name}"],
+            cwd=ROOT_DIR,
+            text=True,
+        )
+        if entry:
+            release_wheel = subprocess.check_output(
+                ["git", "cat-file", "blob", entry.split()[2]], cwd=ROOT_DIR
+            )
+            # Retained releases belong to their tagged source; local rebuilds
+            # must still match the current working tree.
+            if wheel_paths[0].read_bytes() == release_wheel:
+                archive = subprocess.check_output(
+                    [
+                        "git",
+                        "archive",
+                        "--format=zip",
+                        commit,
+                        "python/pyxel",
+                        "python/pyproject.toml",
+                        "LICENSE",
+                        "README.md",
+                    ],
+                    cwd=ROOT_DIR,
+                )
+                with zipfile.ZipFile(io.BytesIO(archive)) as contents:
+                    contents.extractall(tmp_path)
+                for name in ("LICENSE", "README.md"):
+                    shutil.copy2(tmp_path / name, tmp_path / "python" / "pyxel")
+                source_root = tmp_path
+
     assert (
-        checker.find_source_mismatches(wheel_paths[0], ROOT_DIR / "python" / "pyxel")
+        checker.find_wheel(ROOT_DIR / "wasm", source_root / "python" / "pyproject.toml")
+        == wheel_paths[0]
+    )
+    assert (
+        checker.find_source_mismatches(wheel_paths[0], source_root / "python" / "pyxel")
         == []
     )
     assert (
         checker.find_metadata_mismatches(
-            wheel_paths[0], ROOT_DIR / "python" / "pyproject.toml"
+            wheel_paths[0], source_root / "python" / "pyproject.toml"
         )
         == []
     )

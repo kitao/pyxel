@@ -1221,7 +1221,7 @@ Render this subtree into the viewport (x, y, w, h), using this node's effective_
 scene.draw(0, 0, pyxel.width, pyxel.height)
 ```
 
-**Note:** Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.
+**Note:** Uses the same traversal rules as update(), checking visible instead of active. Cube drawing state resets at each on_draw entry; inherited opacity still applies. Rendering, including clear_color, follows the target's 2D camera, clip, pal, and dither settings. Clipping does not change the projection; pal remaps colors after shading.
 
 ### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function *(Advanced)*
 

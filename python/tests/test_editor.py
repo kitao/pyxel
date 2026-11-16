@@ -15,6 +15,7 @@ from _capture import (  # type: ignore[reportMissingImports]
 from pyxel.editor.field_cursor import FieldCursor
 from pyxel.editor.image_editor import ImageEditor
 from pyxel.editor.image_viewer import ImageViewer
+from pyxel.editor.music_editor import MusicEditor
 from pyxel.editor.music_field import MusicField
 from pyxel.editor.piano_roll import PianoRoll
 from pyxel.editor.sound_editor import SoundEditor
@@ -44,6 +45,43 @@ def _param_id(editor, palette_count):
 
 
 class TestEditor:
+    @pytest.mark.parametrize(
+        "editor_class,bank_name",
+        [(SoundEditor, "sounds"), (MusicEditor, "musics")],
+    )
+    @pytest.mark.parametrize("field_index", range(4))
+    def test_audio_undo_restores_deleted_tail_and_cursor(
+        self, editor_class, bank_name, field_index
+    ):
+        banks = getattr(pyxel, bank_name)
+        original = banks[0]
+        try:
+            banks[0] = type(original)()
+            parent = Widget(None, 0, 0, 240, 180)
+            parent.new_var("help_message_var", "")
+            editor = editor_class(parent)
+            field = editor.get_field(field_index)
+            field[:] = [1, 2, 3]
+            cursor = editor.field_cursor
+            cursor.move_to(3, field_index, False)
+            cursor.backspace()
+            assert list(field) == [1, 2]
+            assert (cursor.x, cursor.y) == (2, field_index)
+
+            other_index = (field_index + 1) % 4
+            other_values = list(editor.get_field(other_index))
+            cursor.move_to(0, other_index, False)
+            editor.undo()
+            assert list(field) == [1, 2, 3]
+            assert (cursor.x, cursor.y) == (3, field_index)
+            assert list(editor.get_field(other_index)) == other_values
+
+            editor.redo()
+            assert list(field) == [1, 2]
+            assert (cursor.x, cursor.y) == (2, field_index)
+        finally:
+            banks[0] = original
+
     @pytest.mark.parametrize("count", [240, 241, 256])
     @pytest.mark.parametrize("existing", [False, True])
     def test_palette_limit_on_startup(self, count, existing, tmp_path):
@@ -416,6 +454,210 @@ assert [list(seq) for seq in pyxel.musics[0].seqs] == seqs
         )
         assert result.returncode == 0, result.stderr
 
+    @pytest.mark.parametrize("editor_type", ["image", "tilemap"])
+    @pytest.mark.parametrize(
+        "action", ["right", "down", "tool", "save", "undo", "copy"]
+    )
+    def test_held_canvas_edit_finishes_before_command(
+        self, editor_type, action, tmp_path
+    ):
+        code = """
+import sys
+
+import pyxel
+from pyxel.editor.app import App
+from pyxel.editor.settings import TOOL_PENCIL
+from pyxel.editor.widgets import Widget
+
+editor_type, action, path = sys.argv[1:]
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(path, editor_type)
+editor = app._editor
+panel = editor._canvas_panel
+canvas = editor.canvas_var
+is_tilemap = editor_type == "tilemap"
+zero, old, ink = ((0, 0), (3, 3), (7, 7)) if is_tilemap else (0, 3, 7)
+canvas.cls(zero)
+canvas.rect(8, 8, 16, 16, old)
+editor.focus_x_var = editor.focus_y_var = 1
+editor.tool_var = TOOL_PENCIL
+if is_tilemap:
+    editor.tile_x_var = editor.tile_y_var = 7
+else:
+    editor.color_var = 7
+pyxel.set_mouse_pos(panel.x + 5, panel.y + 5)
+pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, True)
+app.update_all()
+assert Widget._mouse_capture_info.widget is panel
+assert canvas.pget(8, 8) == old
+assert not editor.can_undo
+pyxel.flip()
+
+key = {
+    "right": pyxel.KEY_RIGHT, "down": pyxel.KEY_DOWN, "tool": pyxel.KEY_S,
+    "save": pyxel.KEY_S, "undo": pyxel.KEY_Z, "copy": pyxel.KEY_C,
+}[action]
+pyxel.set_btn(key, True)
+pyxel.set_btn(pyxel.KEY_CTRL, action in ("save", "undo", "copy"))
+pyxel.set_btn(pyxel.KEY_SHIFT, action == "copy")
+app.update_all()
+expected = old if action == "undo" else ink
+assert canvas.pget(8, 8) == expected
+assert Widget._mouse_capture_info.widget is None
+assert editor.can_redo if action == "undo" else editor.can_undo
+if action == "copy":
+    assert panel._bank_buffer["data"][8][8] == ink
+
+# Releasing the original mouse gesture must not write into the new target.
+for key in (key, pyxel.KEY_CTRL, pyxel.KEY_SHIFT, pyxel.MOUSE_BUTTON_LEFT):
+    pyxel.set_btn(key, False)
+pyxel.flip()
+app.update_all()
+assert canvas.pget(8, 8) == expected
+assert canvas.pget(24, 8) == zero
+assert canvas.pget(8, 24) == zero
+if action == "save":
+    pyxel.load(path)
+    assert editor.canvas_var.pget(8, 8) == ink
+"""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                code,
+                editor_type,
+                action,
+                str(tmp_path / "edit.pyxres"),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
+    def test_new_editor_does_not_finish_previous_drag(self):
+        code = """
+from pathlib import Path
+
+import pyxel
+from pyxel.editor.app import App
+from pyxel.editor.settings import TOOL_PENCIL
+from pyxel.editor.widgets import Widget
+
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+resource = Path(pyxel.__file__).parent / "examples/assets/sample.pyxres"
+old_app = App(str(resource), "image")
+old_editor = old_app._editors[0]
+panel = old_editor._canvas_panel
+initial = pyxel.images[0].pget(1, 1)
+color = (initial + 1) % pyxel.num_user_colors
+old_editor.tool_var = TOOL_PENCIL
+old_editor.color_var = color
+pyxel.set_btnv(pyxel.MOUSE_POS_X, panel.x + 13)
+pyxel.set_btnv(pyxel.MOUSE_POS_Y, panel.y + 13)
+pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, True)
+old_app.update_all()
+assert Widget._mouse_capture_info.widget is panel
+assert panel._edit_canvas.pget(1, 1) == color
+assert pyxel.images[0].pget(1, 1) == initial
+assert not old_editor.can_undo
+
+# Native initialization runs once; exercise the next App's construction,
+# resource loading, and input handling without simulating the Web reset API.
+pyxel.init = lambda *args, **kwargs: None
+pyxel.colors[:] = list(pyxel.colors)[: pyxel.NUM_COLORS]
+pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, False)
+pyxel.flip()
+new_app = App(str(resource), "image")
+new_app.update_all()
+assert pyxel.images[0].pget(1, 1) == initial
+assert not old_editor.can_undo
+assert not new_app._editors[0].can_undo
+assert Widget._mouse_capture_info.widget is None
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
+    @pytest.mark.parametrize("kind", ["pyxres", "PYXRES", "PyXrEs", "png", "tmx"])
+    def test_drop_finishes_drawing_before_loading(self, kind, tmp_path):
+        code = """
+import sys
+from pathlib import Path
+
+import pyxel
+from pyxel.editor.app import App
+from pyxel.editor.settings import TOOL_PENCIL
+from pyxel.editor.widgets import Widget
+
+kind, folder = sys.argv[1], Path(sys.argv[2])
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(str(folder / "empty.pyxres"), "tilemap" if kind == "tmx" else "image")
+editor = app._editors[int(kind == "tmx")]
+panel = editor._canvas_panel
+path = folder / f"dropped.{kind}"
+colors = list(pyxel.colors)
+pyxel.colors[:] = colors[pyxel.NUM_COLORS:]
+if kind == "tmx":
+    path.write_text(
+        '<map tilewidth="8" tileheight="8"><tileset firstgid="1" columns="32"/>'
+        '<layer width="2" height="2"><data encoding="csv">3,3,3,3</data></layer></map>'
+    )
+    expected = (2, 0)
+    editor.tile_x_var, editor.tile_y_var = 1, 0
+else:
+    expected = 2
+    editor.color_var = 1
+    if kind == "png":
+        image = pyxel.Image(2, 2)
+        image.cls(2)
+        image.save(str(path), 1)
+    else:
+        pyxel.images[0].pset(1, 1, 2)
+        pyxel.save(str(path))
+        pyxel.images[0].pset(1, 1, 0)
+pyxel.colors[:] = colors
+editor.tool_var = TOOL_PENCIL
+pyxel.set_btnv(pyxel.MOUSE_POS_X, panel.x + 13)
+pyxel.set_btnv(pyxel.MOUSE_POS_Y, panel.y + 13)
+pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, True)
+app.update_all()
+assert Widget._mouse_capture_info.widget is panel
+assert panel.canvas_var.pget(1, 1) != panel._edit_canvas.pget(1, 1)
+pyxel.flip()
+pyxel._dropped_files = [str(path)]
+app.update_all()
+assert panel.canvas_var.pget(1, 1) == expected
+assert not panel._is_dragged
+assert Widget._mouse_capture_info.widget is None
+history = list(editor._history_list)
+pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, False)
+pyxel.flip()
+app.update_all()
+assert panel.canvas_var.pget(1, 1) == expected
+assert editor._history_list == history
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, kind, str(tmp_path)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
     def test_resource_drop_preserves_editor_palette(self, tmp_path):
         code = """
 import sys
@@ -549,9 +791,9 @@ assert titles == [f"Pyxel Editor - {resource}"], titles
 
     @pytest.mark.parametrize("editor_type", [ImageEditor, TilemapEditor])
     def test_failed_drop_reports_load_error(self, editor_type, tmp_path, capsys):
-        state = SimpleNamespace(
-            image_index_var=0, tilemap_index_var=0, focus_x_var=0, focus_y_var=0
-        )
+        state = Widget(None, 0, 0, 0, 0)
+        state.image_index_var = state.tilemap_index_var = 0
+        state.focus_x_var = state.focus_y_var = 0
         path = str(tmp_path / "missing.file")
         colors = list(pyxel.colors)
         handler = getattr(editor_type, f"_{editor_type.__name__}__on_drop")
@@ -848,6 +1090,58 @@ class TestImageViewer:
 
 
 class TestFieldCursor:
+    @pytest.mark.parametrize("with_select_key", [False, True])
+    @pytest.mark.parametrize(
+        "maximum,wrap,length,x,y,direction,expected",
+        [
+            (32, 16, 32, 18, 0, "down", (2, 1)),
+            (32, 16, 32, 2, 1, "up", (18, 0)),
+            (32, 16, 64, 18, 0, "down", (2, 1)),
+            (32, 16, 64, 2, 1, "up", (18, 0)),
+            (48, 48, 48, 2, 0, "down", (2, 1)),
+            (48, 48, 48, 2, 1, "up", (2, 0)),
+            (48, 48, 64, 2, 0, "down", (2, 1)),
+            (48, 48, 64, 2, 1, "up", (2, 0)),
+        ],
+    )
+    def test_vertical_moves_follow_visible_rows(
+        self, maximum, wrap, length, x, y, direction, expected, with_select_key
+    ):
+        fields = [[0] * length, [1] * 8]
+        cursor = FieldCursor(
+            None,
+            max_field_length=maximum,
+            field_wrap_length=wrap,
+            max_field_values=[63, 63],
+            get_field=fields.__getitem__,
+            add_pre_history=lambda *args, **kwargs: None,
+            add_post_history=lambda *args, **kwargs: None,
+            enable_cross_field_copy=True,
+        )
+        cursor.move_to(x, y, False)
+
+        getattr(cursor, "move_" + direction)(with_select_key)
+
+        assert (cursor.x, cursor.y) == expected
+        assert not cursor.is_selecting
+        assert fields == [[0] * length, [1] * 8]
+
+    @pytest.mark.parametrize("with_select_key", [False, True])
+    def test_vertical_move_retains_partial_row_insertion(
+        self, cursor_fields, with_select_key
+    ):
+        cursor, fields = cursor_fields
+        fields[0] = [0] * 16
+        cursor.move_to(2, 0, False)
+
+        cursor.move_down(with_select_key)
+
+        assert cursor.y == 0
+        assert cursor.x == (2 if with_select_key else 16)
+        assert cursor.width == (14 if with_select_key else 1)
+        assert cursor.is_selecting == with_select_key
+        assert fields[0] == [0] * 16
+
     @pytest.fixture
     def cursor_fields(self):
         fields = [[], [10, 11, 12, 13, 14, 15], [3]]

@@ -359,18 +359,18 @@
       "uk": "Область редагування, обрана у виді банку зображень, відображається у збільшеному масштабі. Малювання виконується клацанням та перетягуванням миші."
     },
     "image_bankview_body": {
-      "en": "A thumbnail view of the entire image bank. The white frame indicates the current editing area.",
-      "cn": "图像库整体的缩小显示。白色边框表示当前编辑区域。",
-      "de": "Verkleinerte Ansicht der gesamten Bildbank. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
-      "es": "Vista reducida del banco de imágenes completo. El marco blanco indica el área de edición actual.",
-      "fr": "Vue réduite de la banque d'images complète. Le cadre blanc indique la zone d'édition actuelle.",
-      "it": "Vista ridotta dell'intero banco immagini. La cornice bianca indica l'area di modifica corrente.",
-      "ja": "イメージバンク全体の縮小表示です。白い枠が現在の編集エリアを示しています。",
-      "ko": "이미지 뱅크 전체의 축소 표시입니다. 흰 테두리가 현재 편집 영역을 나타냅니다.",
-      "pt": "Visualização reduzida de todo o banco de imagens. A moldura branca indica a área de edição atual.",
-      "ru": "Уменьшенный вид всего банка изображений. Белая рамка показывает текущую область редактирования.",
-      "tr": "Görüntü bankasının tamamının küçültülmüş görünümü. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
-      "uk": "Зменшений вид усього банку зображень. Біла рамка показує поточну область редагування."
+      "en": "Displays part of the image bank. The white frame indicates the current editing area.",
+      "cn": "显示图像库的一部分。白色边框表示当前编辑区域。",
+      "de": "Zeigt einen Ausschnitt der Bildbank. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
+      "es": "Muestra una parte del banco de imágenes. El marco blanco indica el área de edición actual.",
+      "fr": "Affiche une partie de la banque d'images. Le cadre blanc indique la zone d'édition actuelle.",
+      "it": "Mostra una parte del banco immagini. La cornice bianca indica l'area di modifica corrente.",
+      "ja": "イメージバンクの一部を表示します。白い枠が現在の編集エリアを示しています。",
+      "ko": "이미지 뱅크의 일부를 표시합니다. 흰 테두리가 현재 편집 영역을 나타냅니다.",
+      "pt": "Exibe parte do banco de imagens. A moldura branca indica a área de edição atual.",
+      "ru": "Показывает часть банка изображений. Белая рамка показывает текущую область редактирования.",
+      "tr": "Görüntü bankasının bir bölümünü gösterir. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
+      "uk": "Показує частину банку зображень. Біла рамка показує поточну область редагування."
     },
     "image_tools_body": {
       "en": "Select a tool for drawing.",
@@ -639,18 +639,18 @@
       "uk": "Завантаження файлів TMX"
     },
     "tilemap_tmx_body": {
-      "en": "Drag and drop a TMX file created with Tiled Map Editor ({0}) onto the Tilemap Editor to load the contents of layer 0 at the editing area position.",
-      "cn": "将 Tiled Map Editor ({0}) 创建的 TMX 文件拖放到瓦片地图编辑器，即可在编辑区域的位置加载图层 0 的内容。",
-      "de": "Durch Drag & Drop einer mit Tiled Map Editor ({0}) erstellten TMX-Datei in den Tilemap-Editor wird der Inhalt von Layer 0 an der Position des Bearbeitungsbereichs geladen.",
-      "es": "Al arrastrar y soltar un archivo TMX creado con Tiled Map Editor ({0}) en el editor de tilemaps, el contenido de la capa 0 se carga en la posición del área de edición.",
-      "fr": "Glissez-déposez un fichier TMX créé avec Tiled Map Editor ({0}) dans l'éditeur de tilemap pour charger le contenu du calque 0 à la position de la zone d'édition.",
-      "it": "Trascinando un file TMX creato con Tiled Map Editor ({0}) nell'editor tilemap, il contenuto del livello 0 viene caricato nella posizione dell'area di modifica.",
-      "ja": "Tiled Map Editor ({0}) で作成した TMX ファイルをタイルマップエディタにドラッグ＆ドロップすると、編集エリアの位置にレイヤー 0 の内容が読み込まれます。",
-      "ko": "Tiled Map Editor({0})에서 작성한 TMX 파일을 타일맵 에디터에 드래그 앤 드롭하면 편집 영역 위치에 레이어 0의 내용이 불러와집니다.",
-      "pt": "Ao arrastar e soltar um arquivo TMX criado com o Tiled Map Editor ({0}) no editor de tilemap, o conteúdo da camada 0 será carregado na posição da área de edição.",
-      "ru": "Перетащите файл TMX, созданный в Tiled Map Editor ({0}), в редактор тайловых карт — содержимое слоя 0 будет загружено в область редактирования.",
-      "tr": "Tiled Map Editor ({0}) ile oluşturulan TMX dosyasını tilemap düzenleyicisine sürükleyip bırakarak, katman 0 içeriğini düzenleme alanına yükleyebilirsiniz.",
-      "uk": "Перетягніть файл TMX, створений у Tiled Map Editor ({0}), у редактор тайлових карт — вміст шару 0 буде завантажено в область редагування."
+      "en": "In Tiled Map Editor ({0}), create a finite map with 8×8-pixel tiles, one embedded tileset, and CSV layer data. Drag and drop the TMX file onto the Tilemap Editor to load layer 0 at the editing area position. Load the tileset image separately into the referenced image bank. Tile flips and rotations are not imported. Empty cells become tile (0, 0), at the top-left of the image bank.",
+      "cn": "在 Tiled Map Editor ({0}) 中创建固定大小的地图，使用 8×8 像素的瓦片、一个内嵌瓦片集和 CSV 格式的图层数据。将 TMX 文件拖放到瓦片地图编辑器，即可在编辑区域的位置加载图层 0。将瓦片集图像单独加载到所引用的图像库中。瓦片的翻转和旋转不会被导入。空单元格会变为图像库左上角的瓦片 (0, 0)。",
+      "de": "Erstellen Sie in Tiled Map Editor ({0}) eine Karte mit fester Größe, 8×8-Pixel-Kacheln, einem einzigen eingebetteten Tileset und Ebenendaten im CSV-Format. Ziehen Sie die TMX-Datei in den Tilemap-Editor, um Ebene 0 an der Position des Bearbeitungsbereichs zu laden. Laden Sie das Tileset-Bild separat in die referenzierte Bildbank. Spiegelungen und Drehungen der Kacheln werden nicht importiert. Leere Zellen werden zur Kachel (0, 0) oben links in der Bildbank.",
+      "es": "En Tiled Map Editor ({0}), cree un mapa de tamaño fijo con tiles de 8×8 píxeles, un único conjunto de tiles incrustado y datos de capa en formato CSV. Arrastre y suelte el archivo TMX en el editor de tilemaps para cargar la capa 0 en la posición del área de edición. Cargue la imagen del conjunto de tiles por separado en el banco de imágenes referenciado. No se importan los volteos ni las rotaciones de los tiles. Las celdas vacías se convierten en el tile (0, 0), situado en la esquina superior izquierda del banco de imágenes.",
+      "fr": "Dans Tiled Map Editor ({0}), créez une carte de taille fixe avec des tuiles de 8×8 pixels, un seul jeu de tuiles intégré et des données de calque au format CSV. Glissez-déposez le fichier TMX dans l'éditeur de tilemap pour charger le calque 0 à la position de la zone d'édition. Chargez l'image du jeu de tuiles séparément dans la banque d'images référencée. Les retournements et rotations des tuiles ne sont pas importés. Les cellules vides deviennent la tuile (0, 0), en haut à gauche de la banque d'images.",
+      "it": "In Tiled Map Editor ({0}), creare una mappa di dimensioni fisse con tile di 8×8 pixel, un solo tileset incorporato e dati dei livelli in formato CSV. Trascinare il file TMX nell'editor tilemap per caricare il livello 0 nella posizione dell'area di modifica. Caricare separatamente l'immagine del tileset nel banco immagini di riferimento. I ribaltamenti e le rotazioni dei tile non vengono importati. Le celle vuote diventano il tile (0, 0), nell'angolo superiore sinistro del banco immagini.",
+      "ja": "Tiled Map Editor ({0}) で、8×8 ピクセルのタイル、1 つの埋め込みタイルセット、CSV 形式のレイヤーデータを使い、サイズが固定されたマップを作成してください。TMX ファイルをタイルマップエディタにドラッグ＆ドロップすると、編集エリアの位置にレイヤー 0 が読み込まれます。タイルセットの画像は、参照するイメージバンクに別途読み込んでください。タイルの反転や回転は読み込まれません。空のセルは、イメージバンク左上のタイル (0, 0) になります。",
+      "ko": "Tiled Map Editor({0})에서 8×8 픽셀 타일, 내장 타일셋 하나, CSV 형식의 레이어 데이터를 사용해 크기가 고정된 맵을 만드세요. TMX 파일을 타일맵 에디터에 드래그 앤 드롭하면 편집 영역 위치에 레이어 0이 불러와집니다. 타일셋 이미지는 참조하는 이미지 뱅크에 별도로 불러오세요. 타일의 뒤집기와 회전은 불러오지 않습니다. 빈 셀은 이미지 뱅크 왼쪽 위의 타일 (0, 0)이 됩니다.",
+      "pt": "No Tiled Map Editor ({0}), crie um mapa de tamanho fixo com tiles de 8×8 pixels, um único tileset incorporado e dados de camada no formato CSV. Arraste e solte o arquivo TMX no editor de tilemap para carregar a camada 0 na posição da área de edição. Carregue a imagem do tileset separadamente no banco de imagens referenciado. Inversões e rotações dos tiles não são importadas. Células vazias se tornam o tile (0, 0), no canto superior esquerdo do banco de imagens.",
+      "ru": "В Tiled Map Editor ({0}) создайте карту фиксированного размера с тайлами размером 8×8 пикселей, одним встроенным набором тайлов и данными слоёв в формате CSV. Перетащите TMX-файл в редактор тайловых карт, чтобы загрузить слой 0 в позицию области редактирования. Изображение набора тайлов загрузите отдельно в указанный банк изображений. Отражения и повороты тайлов не импортируются. Пустые ячейки становятся тайлом (0, 0) в левом верхнем углу банка изображений.",
+      "tr": "Tiled Map Editor ({0}) içinde 8×8 piksellik tile'lar, tek bir gömülü tileset ve CSV biçiminde katman verisi kullanarak sabit boyutlu bir harita oluşturun. Katman 0'ı düzenleme alanının konumuna yüklemek için TMX dosyasını tilemap düzenleyicisine sürükleyip bırakın. Tileset görüntüsünü başvurulan görüntü bankasına ayrıca yükleyin. Tile çevirme ve döndürme işlemleri içe aktarılmaz. Boş hücreler, görüntü bankasının sol üst köşesindeki (0, 0) tile'ına dönüşür.",
+      "uk": "У Tiled Map Editor ({0}) створіть мапу фіксованого розміру з тайлами розміром 8×8 пікселів, одним вбудованим набором тайлів і даними шарів у форматі CSV. Перетягніть TMX-файл у редактор тайлових карт, щоб завантажити шар 0 у позицію області редагування. Зображення набору тайлів завантажте окремо у вказаний банк зображень. Віддзеркалення та повороти тайлів не імпортуються. Порожні клітинки стають тайлом (0, 0) у лівому верхньому куті банку зображень."
     },
     "sound_title": {
       "en": "Sound Editor",

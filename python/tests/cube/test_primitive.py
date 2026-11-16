@@ -97,15 +97,20 @@ def test_capsule_surface_normals_and_uvs(height, radius):
     half_height = abs(height) / 2
     assert p.mode == Primitive.MODE_TRIANGLES
     assert p.cull == Primitive.CULL_BACK
-    assert min(y for x, y, z in points) == pytest.approx(-half_height - radius)
-    assert max(y for x, y, z in points) == pytest.approx(half_height + radius)
+    # f32 trigonometry and scaling can accumulate a few ulps at these sizes.
+    assert min(y for x, y, z in points) == pytest.approx(
+        -half_height - radius, abs=1e-6
+    )
+    assert max(y for x, y, z in points) == pytest.approx(half_height + radius, abs=1e-6)
     assert len(p.uvs) == len(points) * 2
     assert len(p.normals) == len(p.indices)
     assert p.indices and len(p.indices) % 3 == 0
 
     for i, (x, y, z) in enumerate(points):
         axis_y = max(-half_height, min(half_height, y))
-        assert math.sqrt(x * x + (y - axis_y) ** 2 + z * z) == pytest.approx(radius)
+        assert math.sqrt(x * x + (y - axis_y) ** 2 + z * z) == pytest.approx(
+            radius, abs=1e-6
+        )
         u, v = p.uvs[i * 2 : i * 2 + 2]
         assert 0 <= u <= 1
         assert v == pytest.approx(

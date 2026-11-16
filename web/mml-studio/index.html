@@ -40,7 +40,6 @@
     <title>Pyxel MML Studio</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
     <link rel="stylesheet" href="../styles.css" />
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
     <script src="../shared.js"></script>
   </head>
@@ -349,13 +348,13 @@
             }
           };
 
-          if (runtime.pyxelContext?.initialized) {
+          if (runtime.js_startup_complete) {
             runtime.resetPyxel().then(finish, (error) => {
               finish();
               console.error("Playback reset failed", error);
             });
           } else {
-            waitForPyxelReady(() => runtime.pyxelContext?.initialized, finish);
+            waitForPyxelReady(() => runtime.js_startup_complete, finish);
           }
         }
       }

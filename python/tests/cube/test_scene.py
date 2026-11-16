@@ -157,19 +157,20 @@ class TestUpdate:
 class TestGravity:
     def test_defaults_and_independent_body_settings(self):
         a, b = Collider(), Collider()
-        assert a.gravity == pytest.approx(9.8)
+        # One rounding to a normal f32 has at most 2**-24 relative error.
+        assert a.gravity == pytest.approx(9.8, rel=2**-24, abs=0)
         assert a.gravity_direction == Vec3.DOWN
-        assert a.linear_damp == a.angular_damp == pytest.approx(0.1)
+        assert a.linear_damp == a.angular_damp == pytest.approx(0.1, rel=2**-24, abs=0)
 
         a.gravity, a.gravity_direction = 1.62, Vec3.RIGHT
         a.linear_damp, a.angular_damp = 0.3, 0.4
-        assert a.gravity == pytest.approx(1.62)
+        assert a.gravity == pytest.approx(1.62, rel=2**-24, abs=0)
         assert a.gravity_direction == Vec3.RIGHT
-        assert a.linear_damp == pytest.approx(0.3)
-        assert a.angular_damp == pytest.approx(0.4)
-        assert b.gravity == pytest.approx(9.8)
+        assert a.linear_damp == pytest.approx(0.3, rel=2**-24, abs=0)
+        assert a.angular_damp == pytest.approx(0.4, rel=2**-24, abs=0)
+        assert b.gravity == pytest.approx(9.8, rel=2**-24, abs=0)
         assert b.gravity_direction == Vec3.DOWN
-        assert b.linear_damp == b.angular_damp == pytest.approx(0.1)
+        assert b.linear_damp == b.angular_damp == pytest.approx(0.1, rel=2**-24, abs=0)
 
     def test_update_preserves_shared_vector_values(self):
         velocity, spin = Vec3(3, 0, 0), Vec3(0, 3, 0)
@@ -240,12 +241,16 @@ assert 0.903 < body.collider.angular_velocity.y / 3 < 0.906
         body.collider = Collider(gravity_direction=Vec3(7, 0, 0), linear_damp=0)
         parent.add_child(body)
         parent.update()
-        assert tuple(body.collider.velocity) == pytest.approx((980 / 900, 0, 0))
+        assert tuple(body.collider.velocity) == pytest.approx(
+            (980 / 900, 0, 0), abs=1e-6
+        )
         assert tuple(body.transform.pos) == pytest.approx((0, -980 / 900, 0), abs=1e-6)
 
         body.collider.gravity_direction = Vec3.ZERO
         parent.update()
-        assert tuple(body.collider.velocity) == pytest.approx((980 / 900, 0, 0))
+        assert tuple(body.collider.velocity) == pytest.approx(
+            (980 / 900, 0, 0), abs=1e-6
+        )
 
     def test_static_and_inactive_bodies_ignore_gravity_and_damping(self):
         body = Node()
@@ -1799,34 +1804,47 @@ class TestViewportClear:
                 expected = (3 if x < 8 else 6) if x < 16 and y < 12 else 7
                 assert target.pget(x, y) == expected
 
-    def test_clear_preserves_palette_and_other_2d_drawing_state(self):
-        scene = Node()
+    @pytest.mark.parametrize("offscreen", [False, True])
+    @pytest.mark.parametrize("clear_color", [None, 3])
+    @pytest.mark.parametrize(
+        "state",
+        ["default", "pal", "clip", "camera", "dither", "combined", "hidden", "empty"],
+    )
+    def test_draw_uses_destination_state_like_blt(self, offscreen, clear_color, state):
+        scene = _ColoredBox(Vec3(0, 0, -8), 6)
         scene.camera = Camera()
-        scene.camera.clear_color = 3
-        target = pyxel.Image(16, 12)
-        target.cls(7)
-        target.pal(3, 11)
-        target.clip(1, 1, 1, 1)
-        target.camera(2, 3)
-        target.dither(0)
+        scene.camera.ortho_size = 10
+        scene.camera.clear_color = clear_color
+        source = pyxel.Image(24, 20)
+        source.cls(255)
+        scene.draw(0, 0, 24, 20, source)
+        target = pyxel.Image(40, 32) if offscreen else pyxel.screen
+        expected = pyxel.Image(target.width, target.height)
 
-        scene.draw(4, 3, 5, 4, target)
-        pixels = target.data_ptr()
+        for image in (target, expected):
+            image.cls(7)
+            if state in ("pal", "combined"):
+                image.pal(3, 11)
+                image.pal(6, 10)
+            if state in ("clip", "combined"):
+                image.clip(8, 7, 14, 10)
+            if state in ("camera", "combined"):
+                image.camera(3, 4)
+            if state in ("dither", "combined"):
+                image.dither(0.5)
+            if state == "hidden":
+                image.dither(0)
+            if state == "empty":
+                image.clip(0, 0, 0, 0)
 
-        # Background clearing uses viewport coordinates, independent of 2D state.
-        for y in range(12):
-            for x in range(16):
-                expected = 11 if 4 <= x < 9 and 3 <= y < 7 else 7
-                assert pixels[y * 16 + x] == expected
+        expected.blt(6, 5, source, 0, 0, 24, 20, 255)
+        scene.draw(6, 5, 24, 20, *((target,) if offscreen else ()))
+        assert list(target.data_ptr()) == list(expected.data_ptr())
 
-        # Subsequent 2D drawing still uses the original dither, offset and clip.
-        target.pset(3, 4, 8)
-        assert pixels[1 * 16 + 1] == 7
-        target.dither(1)
-        target.pset(3, 4, 3)
-        target.pset(4, 4, 8)
-        assert pixels[1 * 16 + 1] == 11
-        assert pixels[1 * 16 + 2] == 7
+        # Drawing the scene leaves the destination state available to later commands.
+        for image in (target, expected):
+            image.rect(10, 10, 6, 4, 3)
+        assert list(target.data_ptr()) == list(expected.data_ptr())
 
 
 class TestVisibility:
@@ -1896,7 +1914,9 @@ class TestStateSetterIsolation:
         camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
         return camera
 
-    def test_sibling_isolation(self):
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("alpha", [0, 0.5, 1])
+    def test_sibling_isolation(self, reverse, alpha):
         class A(Node):
             def on_draw(self):
                 self.dither(0.0)
@@ -1908,12 +1928,20 @@ class TestStateSetterIsolation:
 
         root = Node()
         root.camera = self._camera()
-        root.add_child(A())
-        root.add_child(B())
+        siblings = [A(), B()]
+        for node in reversed(siblings) if reverse else siblings:
+            root.add_child(node)
 
-        pyxel.cls(0)
-        root.draw(0, 0, 160, 120)
-        assert pyxel.pget(80, 60) == 8
+        target = pyxel.Image(32, 24)
+        target.cls(7)
+        target.pal(8, 11)
+        target.dither(alpha)
+        root.draw(0, 0, 32, 24, target)
+        assert target.pget(16, 12) == (11 if alpha else 7)
+
+        # A node's local dither neither leaks to siblings nor changes the target.
+        target.pset(1, 1, 8)
+        assert target.pget(1, 1) == (11 if alpha else 7)
 
     def test_child_isolation(self):
         class Parent(Node):

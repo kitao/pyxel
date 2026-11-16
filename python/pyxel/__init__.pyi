@@ -746,7 +746,7 @@ class Tilemap:
     def height(self) -> int:
         """Tilemap height (in tiles)"""
     imgsrc: int | Image
-    """The image bank (0-2) or Image instance referenced by the tilemap."""
+    """The image bank (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading."""
 
     def __init__(self, width: int, height: int, img: int | Image) -> None:
         """Create a new Tilemap instance.
@@ -758,7 +758,7 @@ class Tilemap:
         """
     @staticmethod
     def from_tmx(filename: str, layer: int) -> Tilemap:
-        """Create a Tilemap instance from a TMX file.
+        """Create a Tilemap instance from a TMX file. For TMX file preparation, see Loading TMX Files (https://kitao.dev/pyxel/editor-manual/#s-tilemap-tmx).
 
         Args:
             filename: TMX file name
@@ -778,7 +778,7 @@ class Tilemap:
             pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])
         """
     def load(self, x: int, y: int, filename: str, layer: int) -> None:
-        """Load the specified TMX layer at (x, y). Layer numbering starts at 0.
+        """Load the specified TMX layer at (x, y). Layer numbering starts at 0. For TMX file preparation, see Loading TMX Files (https://kitao.dev/pyxel/editor-manual/#s-tilemap-tmx).
 
         Args:
             x: X coordinate (in tiles)
@@ -1171,7 +1171,7 @@ class Sound:
 class Music:
     @property
     def seqs(self) -> list[list[int]]:
-        """A two-dimensional list of sounds (0-63) across multiple channels."""
+        """A two-dimensional list of sounds (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy."""
 
     def __init__(self) -> None:
         """Create a new Music instance."""
@@ -1340,6 +1340,9 @@ def save(
         exclude_tilemaps: Exclude tilemaps. Defaults to False.
         exclude_sounds: Exclude sounds. Defaults to False.
         exclude_musics: Exclude music tracks. Defaults to False.
+
+    Note:
+        For sounds, only normal parameters are saved. Keep MML strings and audio files separately.
     """
 
 def load_pal(filename: str) -> None:
@@ -1477,7 +1480,7 @@ def set_dropped_files(files: list[str]) -> None:
 
 # Graphics
 colors: list[int]
-"""List of 1-256 palette display colors, each specified as a 24-bit value. Supports Python list operations. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette."""
+"""List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette."""
 images: list[Image]
 """Image banks (Image instances) (0-2)."""
 tilemaps: list[Tilemap]

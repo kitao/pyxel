@@ -104,6 +104,7 @@ class ImageEditor(EditorBase):
         self._restore_state(data, "new")
 
     def __on_drop(self, filename):
+        self._release_capture()
         colors = list(pyxel.colors)
         user_colors = colors[pyxel.NUM_COLORS :]
         # Load dropped images against the user sub-palette instead of system colors.

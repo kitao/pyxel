@@ -145,7 +145,8 @@ macro_rules! value_to_py_any {
 
 macro_rules! instance_to_py_any {
     ($py:expr, $instance:expr) => {{
-        $instance.into_pyobject($py).unwrap().into_any().unbind()
+        let instance = $instance;
+        instance.into_pyobject($py).unwrap().into_any().unbind()
     }};
 }
 

@@ -45,6 +45,82 @@ class TestImageCreation:
             assert img.pget(4, 4) == col
 
 
+class TestImageReferences:
+    @pytest.mark.parametrize("kind", ["tilemap", "mesh", "screen", "cursor", "font"])
+    def test_image_reference_allows_garbage_collection_reentry(self, kind):
+        code = """
+import gc
+import sys
+
+import pyxel
+from pyxel.cube import Mesh
+
+image = pyxel.Image(8, 8)
+if sys.argv[1] == "tilemap":
+    owner = pyxel.Tilemap(1, 1, image)
+    name = "imgsrc"
+elif sys.argv[1] == "mesh":
+    owner = Mesh(col_img=image)
+    name = "col_img"
+else:
+    pyxel.init(8, 8, headless=True)
+    owner = pyxel
+    name = sys.argv[1]
+    image = getattr(owner, name)
+errors = []
+callbacks = 0
+
+
+def collect(phase, info):
+    global callbacks
+    if phase == "start":
+        callbacks += 1
+        try:
+            if owner is pyxel:
+                getattr(owner, name)
+            else:
+                setattr(owner, name, image)
+        except BaseException as error:
+            errors.append((type(error).__name__, str(error)))
+
+
+getattr(owner, name)
+old_threshold = gc.get_threshold()
+try:
+    # Allocation-triggered GC timing varies between CPython versions.
+    for threshold in (1, 2, 3, 4, 5, 7, 8, 11):
+        gc.collect()
+        retained = []
+        gc.callbacks.append(collect)
+        gc.set_threshold(threshold, 0, 0)
+        for _ in range(40):
+            if owner is pyxel:
+                retained.append(pyxel.__getattr__(name))
+            else:
+                retained.append(getattr(owner, name))
+        gc.set_threshold(*old_threshold)
+        gc.callbacks.remove(collect)
+        retained[-1].pset(0, 0, threshold)
+        assert image.pget(0, 0) == threshold
+finally:
+    gc.set_threshold(*old_threshold)
+    if collect in gc.callbacks:
+        gc.callbacks.remove(collect)
+
+assert callbacks > 0
+assert errors == [], errors
+        """
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code, kind],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert result.stderr == ""
+
+
 class TestImageDrawing:
     def test_bltm_camera_offset_does_not_wrap(self):
         source = pyxel.Image(8, 8)

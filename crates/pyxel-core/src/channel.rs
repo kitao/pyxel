@@ -603,7 +603,7 @@ impl Channel {
                             continue;
                         }
 
-                        let next_count = count + 1;
+                        let next_count = count.saturating_add(1);
                         if *play_count == 0 || next_count < *play_count {
                             self.repeat_points
                                 .push((index, next_count, self.sound_elapsed_clocks));
@@ -1178,6 +1178,26 @@ mod tests {
             channel.process(None, 1);
             assert!(channel.is_playing);
             assert_eq!(channel.sound_elapsed_clocks, 1);
+        }
+    }
+
+    #[test]
+    fn test_repeat_end_preserves_infinite_and_finite_boundaries() {
+        for (play_count, count, expected_ticks) in [(0, u32::MAX, 1), (2, 1, 0)] {
+            let channel = Channel::new();
+            let mut channel = audio_mut!(channel);
+            channel.commands = Arc::from([
+                MmlCommand::Rest { duration_ticks: 1 },
+                MmlCommand::RepeatEnd { play_count },
+            ]);
+            channel.command_index = 1;
+            channel.clocks_per_tick = 1;
+            channel.sound_elapsed_clocks = 1;
+            channel.repeat_points.push((0, count, 0));
+
+            channel.advance_command();
+            assert_eq!(channel.note_duration_clocks, expected_ticks);
+            assert_eq!(channel.repeat_points.is_empty(), expected_ticks == 0);
         }
     }
 }

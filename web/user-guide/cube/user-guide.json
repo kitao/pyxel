@@ -7179,7 +7179,7 @@
               "text": "<h3 class=\"sub-title\" id=\"s-node-removal\">Düğümleri yok etme ve ayırma</h3>"
             },
             {
-              "text": "<p><code class=\"chip\">node.destroy()</code>, bu düğümü ve alt düğümlerini kalıcı olarak yok edilmiş işaretler. Güncellemenin sonunda her düğümün <code class=\"chip\">on_destroy</code> yöntemi çalışır ve ağaç bağlantıları kaldırılır. Referanslar var olduğu sürece Python örnekleri kalır; ancak yok edilmiş düğümler alt düğüm olarak eklenemez ve yeni alt düğüm alamaz.</p>"
+              "text": "<p><code class=\"chip\">node.destroy()</code>, bu düğümü ve alt düğümlerini kalıcı olarak yok edilmiş olarak işaretler. Güncellemenin sonunda her düğümün <code class=\"chip\">on_destroy</code> yöntemi çalışır ve ağaç bağlantıları kaldırılır. Referanslar var olduğu sürece Python örnekleri kalır; ancak yok edilmiş düğümler alt düğüm olarak eklenemez ve yeni alt düğüm alamaz.</p>"
             },
             {
               "text": "<p>Üst düğümün <code class=\"chip\">remove_child(node)</code> metodunu çağırmak, düğümü yok etmeden üst-alt ilişkisini kaldırır. <code class=\"chip\">add_child(node)</code> ile yeniden alt düğüm olarak ekleyebilirsiniz.</p>"
@@ -7442,7 +7442,7 @@
               "text": "<p>Oynatma, her parçanın düğümündeki <code class=\"chip\">transform</code> özelliğini günceller. Modelin tamamını konumlandıran <code class=\"chip\">actor.transform</code> etkilenmez.</p>"
             },
             {
-              "text": "<p><code class=\"chip\">play_motion</code> varsayılan olarak döngülü oynatır. <code class=\"chip\">loop=False</code> ile oynatma sonda durur ve son pozu korur; sonraki güncellemeler parçalarda yaptığınız değişiklikleri artık üzerine yazmaz. Özgün hız için <code class=\"chip\">Mesh.from_glb</code> ve <code class=\"chip\">pyxel.init</code> çağrılarının <code class=\"chip\">fps</code> değerlerini eşitleyin; GLB zamanları yüklenirken saniyeden kareye dönüştürülür.</p>"
+              "text": "<p><code class=\"chip\">play_motion</code> varsayılan olarak döngülü oynatır. <code class=\"chip\">loop=False</code> ile oynatma sonda durur ve son pozu korur; sonraki güncellemeler artık parçalarda yaptığınız değişikliklerin üzerine yazmaz. Özgün hız için <code class=\"chip\">Mesh.from_glb</code> ve <code class=\"chip\">pyxel.init</code> çağrılarının <code class=\"chip\">fps</code> değerlerini eşitleyin; GLB zamanları yüklenirken saniyeden kareye dönüştürülür.</p>"
             },
             {
               "text": "<p>Model yükleme ve hareket oynatma kodunu <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/c04_mesh_and_motion.py\">c04_mesh_and_motion.py</a> dosyasında inceleyebilirsiniz. Ayrıca birlikte verilen düzenlenebilir proje <a class=\"link\" href=\"https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/cube/assets/gazelle.bbmodel\">assets/gazelle.bbmodel</a> dosyasını Blockbench ile açıp modelin şeklini veya dokularını değiştirmeyi deneyebilirsiniz.</p>"

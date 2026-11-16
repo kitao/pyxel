@@ -104,10 +104,8 @@ impl Pyxel {
     pub fn set_mouse_position(&mut self, x: f32, y: f32) {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
-        *pyxel::mouse_x() = x;
-        *pyxel::mouse_y() = y;
-        self.input.key_values.insert(MOUSE_POS_X, x);
-        self.input.key_values.insert(MOUSE_POS_Y, y);
+        self.set_button_value(MOUSE_POS_X, x);
+        self.set_button_value(MOUSE_POS_Y, y);
 
         if !*pyxel::is_headless() {
             platform::set_mouse_pos(
@@ -126,7 +124,13 @@ impl Pyxel {
     }
 
     pub fn set_button_value(&mut self, key: Key, value: KeyValue) {
-        self.set_key_value(key, value);
+        match key {
+            MOUSE_POS_X => *pyxel::mouse_x() = value,
+            MOUSE_POS_Y => *pyxel::mouse_y() = value,
+            MOUSE_WHEEL_Y => *pyxel::mouse_wheel() = value,
+            _ => {}
+        }
+        self.input.key_values.insert(key, value);
     }
 
     pub fn set_input_text(&mut self, text: &str) {
@@ -187,19 +191,19 @@ impl Pyxel {
     pub(crate) fn set_key_value(&mut self, key: Key, mut value: KeyValue) {
         match key {
             MOUSE_POS_X => {
-                value = ((value - self.system.screen_x) as f32 / self.system.screen_scale) as i32;
-                *pyxel::mouse_x() = value;
+                value = ((i64::from(value) - i64::from(self.system.screen_x)) as f32
+                    / self.system.screen_scale) as i32;
             }
             MOUSE_POS_Y => {
-                value = ((value - self.system.screen_y) as f32 / self.system.screen_scale) as i32;
-                *pyxel::mouse_y() = value;
+                value = ((i64::from(value) - i64::from(self.system.screen_y)) as f32
+                    / self.system.screen_scale) as i32;
             }
-            MOUSE_WHEEL_Y => {
-                *pyxel::mouse_wheel() = value;
+            MOUSE_WHEEL_X | MOUSE_WHEEL_Y => {
+                value = value.saturating_add(self.button_value(key));
             }
             _ => {}
         }
-        self.input.key_values.insert(key, value);
+        self.set_button_value(key, value);
     }
 
     pub(crate) fn add_input_text(&mut self, text: &str) {
@@ -239,7 +243,7 @@ fn screen_to_window(position: i32, scale: f32, offset: i32) -> i32 {
     // Keep the product precise so rounding cannot land below the requested pixel.
     let position = position as f64 * scale as f64;
     // Round away from zero to match truncation when reading window coordinates.
-    position.abs().ceil().copysign(position) as i32 + offset
+    (position.abs().ceil().copysign(position) + f64::from(offset)) as i32
 }
 
 #[cfg(test)]
@@ -284,6 +288,54 @@ mod tests {
     }
 
     #[test]
+    fn mouse_window_coordinates_saturate_after_translation() {
+        for (position, scale, offset, expected) in [
+            (i32::MAX, 1.0, 10, i32::MAX),
+            (i32::MIN, 1.0, -10, i32::MIN),
+            (i32::MAX, 2.0, -10, i32::MAX),
+            (i32::MIN, 2.0, 10, i32::MIN),
+            (i32::MAX, 1.0, -10, i32::MAX - 10),
+            (i32::MIN, 1.0, 10, i32::MIN + 10),
+        ] {
+            assert_eq!(screen_to_window(position, scale, offset), expected);
+        }
+    }
+
+    #[test]
+    fn mouse_screen_coordinates_preserve_wide_differences() {
+        let mut pyxel = Pyxel {
+            system: crate::system::System::new(30, crate::key::KEY_ESCAPE, true),
+            resource: crate::resource::Resource::new(None, Some(0), 30),
+            input: Input::new(),
+            graphics: None,
+        };
+        pyxel.system.screen_scale = 2.0;
+        pyxel.system.screen_x = 1024;
+        pyxel.system.screen_y = -1025;
+        let saved_mouse = (*pyxel::mouse_x(), *pyxel::mouse_y());
+
+        // Each difference exceeds i32, but the scaled coordinates fit exactly.
+        pyxel.set_key_value(MOUSE_POS_X, i32::MIN);
+        pyxel.set_key_value(MOUSE_POS_Y, i32::MAX);
+        let actual = (
+            (*pyxel::mouse_x(), *pyxel::mouse_y()),
+            (
+                pyxel.button_value(MOUSE_POS_X),
+                pyxel.button_value(MOUSE_POS_Y),
+            ),
+        );
+        *pyxel::mouse_x() = saved_mouse.0;
+        *pyxel::mouse_y() = saved_mouse.1;
+        assert_eq!(
+            actual,
+            (
+                (-1_073_742_336, 1_073_742_336),
+                (-1_073_742_336, 1_073_742_336)
+            )
+        );
+    }
+
+    #[test]
     fn button_repeat_continues_across_frame_count_wrap() {
         let mut pyxel = Pyxel {
             system: crate::system::System::new(30, crate::key::KEY_ESCAPE, true),
@@ -303,5 +355,44 @@ mod tests {
         });
         *pyxel::frame_count() = saved_frame_count;
         assert_eq!(actual, [true, false, false, true, false, true]);
+    }
+
+    #[test]
+    fn wheel_events_accumulate_per_frame_while_overrides_replace() {
+        let mut pyxel = Pyxel {
+            system: crate::system::System::new(30, crate::key::KEY_ESCAPE, true),
+            resource: crate::resource::Resource::new(None, Some(0), 30),
+            input: Input::new(),
+            graphics: None,
+        };
+        let saved_wheel = *pyxel::mouse_wheel();
+        for (events, expected) in [
+            ([(2, 1), (3, 1), (0, 1)], (5, 3)),
+            ([(4, 3), (-1, -1), (0, 0)], (3, 2)),
+        ] {
+            pyxel.start_input_frame();
+            for (x, y) in events {
+                pyxel.set_key_value(MOUSE_WHEEL_X, x);
+                pyxel.set_key_value(MOUSE_WHEEL_Y, y);
+            }
+            assert_eq!(
+                (
+                    pyxel.button_value(MOUSE_WHEEL_X),
+                    pyxel.button_value(MOUSE_WHEEL_Y)
+                ),
+                expected,
+            );
+            assert_eq!(*pyxel::mouse_wheel(), expected.1);
+        }
+
+        pyxel.start_input_frame();
+        assert_eq!(pyxel.button_value(MOUSE_WHEEL_X), 0);
+        assert_eq!(pyxel.button_value(MOUSE_WHEEL_Y), 0);
+        assert_eq!(*pyxel::mouse_wheel(), 0);
+        pyxel.set_button_value(MOUSE_WHEEL_Y, 7);
+        pyxel.set_button_value(MOUSE_WHEEL_Y, 9);
+        assert_eq!(pyxel.button_value(MOUSE_WHEEL_Y), 9);
+        assert_eq!(*pyxel::mouse_wheel(), 9);
+        *pyxel::mouse_wheel() = saved_wheel;
     }
 }

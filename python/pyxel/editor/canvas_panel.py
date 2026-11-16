@@ -71,10 +71,13 @@ class CanvasPanel(Widget):
         self.add_history = parent.add_history
         self.copy_var("color_var", parent)
         self.copy_var("tool_var", parent)
+        self.add_var_event_listener("tool_var", "set", self.__on_tool_set)
         self.copy_var("image_index_var", parent)
         self.copy_var("canvas_var", parent)
         self.copy_var("focus_x_var", parent)
+        self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
         self.copy_var("focus_y_var", parent)
+        self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
         self.copy_var("help_message_var", parent)
 
         self._h_scroll_bar = ScrollBar(
@@ -109,6 +112,12 @@ class CanvasPanel(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     # Helpers
+
+    @staticmethod
+    def _finish_edit():
+        capture = Widget._mouse_capture_info.widget
+        if isinstance(capture, CanvasPanel) and capture._is_dragged:
+            capture._release_capture()
 
     def _screen_to_focus(self, x, y):
         x = clamp((x - self.x - 1) // 8, 0, 15)
@@ -211,6 +220,21 @@ class CanvasPanel(Widget):
                 self._edit_canvas.pset(x, y, tile)
 
     # Event handlers
+
+    def __on_tool_set(self, value):
+        if value != self.tool_var and self._is_dragged:
+            self._release_capture()
+        return value
+
+    def __on_focus_x_set(self, value):
+        if value != self.focus_x_var and self._is_dragged:
+            self._release_capture()
+        return value
+
+    def __on_focus_y_set(self, value):
+        if value != self.focus_y_var and self._is_dragged:
+            self._release_capture()
+        return value
 
     def __on_h_scroll_bar_change(self, value):
         self.focus_x_var = value
@@ -371,6 +395,13 @@ class CanvasPanel(Widget):
         # Copy/cut/paste bank (Ctrl+Shift or Cmd+Shift)
         has_cmd_or_ctrl = pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
         if pyxel.btn(pyxel.KEY_SHIFT) and has_cmd_or_ctrl:
+            if self._is_dragged and (
+                pyxel.btnp(pyxel.KEY_C)
+                or pyxel.btnp(pyxel.KEY_X)
+                or (pyxel.btnp(pyxel.KEY_V) and self._bank_buffer is not None)
+            ):
+                self._release_capture()
+
             if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
                 self._bank_buffer = {}
                 if self._is_tilemap_mode:

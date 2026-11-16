@@ -115,6 +115,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     // Drawing primitives
 
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, value: T) {
+        if self.alpha <= 0.0 || self.alpha.is_nan() {
+            return;
+        }
+
         let x1 = i64::from(f32_to_i32(x1)) - i64::from(self.camera_x);
         let y1 = i64::from(f32_to_i32(y1)) - i64::from(self.camera_y);
         let x2 = i64::from(f32_to_i32(x2)) - i64::from(self.camera_x);
@@ -223,7 +227,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let top = y.max(i64::from(self.clip_rect.top()));
         let right = (x + width - 1).min(i64::from(self.clip_rect.right()));
         let bottom = (y + height - 1).min(i64::from(self.clip_rect.bottom()));
-        if width == 0 || height == 0 || left > right || top > bottom {
+        if width == 0
+            || height == 0
+            || left > right
+            || top > bottom
+            || self.alpha <= 0.0
+            || self.alpha.is_nan()
+        {
             return;
         }
 
@@ -249,7 +259,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = i64::from(f32_to_i32(y)) - i64::from(self.camera_y);
         let width = i64::from(f32_to_u32(width));
         let height = i64::from(f32_to_u32(height));
-        if width == 0 || height == 0 {
+        if width == 0 || height == 0 || self.alpha <= 0.0 || self.alpha.is_nan() {
             return;
         }
 
@@ -287,7 +297,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         y3: f32,
         value: T,
     ) {
-        if self.clip_rect.is_empty() {
+        if self.clip_rect.is_empty() || self.alpha <= 0.0 || self.alpha.is_nan() {
             return;
         }
 
@@ -464,11 +474,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
     // Blit operations
 
+    // In all three blit paths, None snapshots the destination after clipping
+    // to preserve original pixels during overlapping self draws.
     pub fn blit(
         &mut self,
         x: f32,
         y: f32,
-        canvas: &Self,
+        canvas: Option<&Self>,
         canvas_x: f32,
         canvas_y: f32,
         width: f32,
@@ -504,13 +516,24 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             self.clip_rect,
             canvas_x,
             canvas_y,
-            canvas.self_rect,
+            canvas.unwrap_or(self).self_rect,
             width,
             height,
         );
         if width == 0 || height == 0 {
             return;
         }
+        if self.alpha <= 0.0 || self.alpha.is_nan() {
+            return;
+        }
+
+        let snapshot;
+        let canvas = if let Some(canvas) = canvas {
+            canvas
+        } else {
+            snapshot = self.clone();
+            &snapshot
+        };
 
         macro_rules! copy_row {
             (slice: $dst:expr, $src:expr) => {
@@ -599,7 +622,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         &mut self,
         x: f32,
         y: f32,
-        canvas: &Self,
+        canvas: Option<&Self>,
         canvas_x: f32,
         canvas_y: f32,
         width: f32,
@@ -626,10 +649,21 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         };
 
         let canvas_area = RectArea::new(proj.src_x, proj.src_y, proj.width, proj.height)
-            .intersection(canvas.self_rect);
-        if canvas_area.is_empty() {
+            .intersection(canvas.unwrap_or(self).self_rect);
+        if canvas_area.is_empty() || proj.x1 > proj.x2 || proj.y1 > proj.y2 {
             return;
         }
+        if self.alpha <= 0.0 || self.alpha.is_nan() {
+            return;
+        }
+
+        let snapshot;
+        let canvas = if let Some(canvas) = canvas {
+            canvas
+        } else {
+            snapshot = self.clone();
+            &snapshot
+        };
         let (step_sx, step_sy) = proj.src_step_per_x();
 
         // Fast path: no dithering
@@ -700,7 +734,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         y: f32,
         width: f32,
         height: f32,
-        canvas: &Self,
+        canvas: Option<&Self>,
         pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
@@ -721,8 +755,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         };
 
-        let src_w = canvas.width() as i32;
-        let src_h = canvas.height() as i32;
         let x1 = proj.dst_x.max(self.clip_rect.left());
         let x2 = proj
             .dst_x
@@ -733,6 +765,22 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             .dst_y
             .saturating_add(proj.h - 1)
             .min(self.clip_rect.bottom());
+        if x1 > x2 || y1 > y2 {
+            return;
+        }
+        if self.alpha <= 0.0 || self.alpha.is_nan() {
+            return;
+        }
+
+        let snapshot;
+        let canvas = if let Some(canvas) = canvas {
+            canvas
+        } else {
+            snapshot = self.clone();
+            &snapshot
+        };
+        let src_w = canvas.width() as i32;
+        let src_h = canvas.height() as i32;
         let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
         // Fast path: no dithering
@@ -843,6 +891,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = i64::from(f32_to_i32(y)) - i64::from(self.camera_y);
         let radius = i64::from(f32_to_u32(radius));
         if self.clip_rect.is_empty()
+            || self.alpha <= 0.0
+            || self.alpha.is_nan()
             || x + radius < i64::from(self.clip_rect.left())
             || x - radius > i64::from(self.clip_rect.right())
             || y + radius < i64::from(self.clip_rect.top())
@@ -902,6 +952,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if width == 0
             || height == 0
             || self.clip_rect.is_empty()
+            || self.alpha <= 0.0
+            || self.alpha.is_nan()
             || right < i64::from(self.clip_rect.left())
             || x > i64::from(self.clip_rect.right())
             || bottom < i64::from(self.clip_rect.top())
@@ -1113,7 +1165,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.data[w * y + left as usize..=w * y + right as usize].fill(value);
     }
 
-    fn fill_row_with_dither(&mut self, x1: i32, x2: i32, y: i32, value: T) {
+    pub(crate) fn fill_row_with_dither(&mut self, x1: i32, x2: i32, y: i32, value: T) {
         if self.alpha >= 1.0 {
             self.fill_row(x1, x2, y, value);
             return;
@@ -1658,7 +1710,7 @@ mod tests {
         canvas.blit(
             -2_147_483_648.0,
             0.0,
-            &source,
+            Some(&source),
             0.0,
             0.0,
             2.0,

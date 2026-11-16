@@ -19,12 +19,7 @@ class FieldCursor:
     ):
         self.parent = parent
         self._max_field_length = max_field_length
-        # Use an impossible wrap length to make vertical moves clamp on one row.
-        self._field_wrap_length = (
-            field_wrap_length
-            if field_wrap_length < max_field_length
-            else max_field_length + 1
-        )
+        self._field_wrap_length = field_wrap_length
         self._max_field_values = max_field_values
         self._get_field = get_field
         self._add_pre_history = add_pre_history
@@ -136,7 +131,8 @@ class FieldCursor:
         elif self._cursor_y > 0:
             self._cursor_y -= 1
             self._cursor_x = (
-                self._field_wrap_length * (len(self.field) // self._field_wrap_length)
+                self._field_wrap_length
+                * (self._max_cursor_x // self._field_wrap_length)
                 + self._cursor_x % self._field_wrap_length
             )
             self._select_x = None
@@ -144,7 +140,7 @@ class FieldCursor:
     def move_down(self, with_select_key):
         if (
             self._adjusted_cursor_x // self._field_wrap_length
-            < len(self.field) // self._field_wrap_length
+            < self._max_cursor_x // self._field_wrap_length
         ):
             if not with_select_key:
                 self._select_x = None

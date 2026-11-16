@@ -188,8 +188,9 @@ class SoundEditor(EditorBase):
             for i in range(4):
                 self.get_field(i)[:] = data[f"{prefix}_data"][i]
         else:
-            self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
-            self.field_cursor.field[:] = data[f"{prefix}_field"]
+            x, y = data[f"{prefix}_cursor_pos"]
+            self.get_field(y)[:] = data[f"{prefix}_field"]
+            self.field_cursor.move_to(x, y, False)
 
     # Event handlers
 

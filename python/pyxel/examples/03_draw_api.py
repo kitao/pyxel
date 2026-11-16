@@ -7,7 +7,7 @@ class App:
         pyxel.mouse(True)
 
         pyxel.images[0].load(0, 0, "assets/cat_16x16.png")
-        pyxel.images[1].load(0, 0, "assets/tileset_24x32.png")
+        pyxel.images[1].load(0, 0, "assets/tileset_40x32.png")
 
         pyxel.tilemaps[0].set(
             0,

@@ -8,7 +8,7 @@ use pyo3::types::{PyDict, PyTuple, PyType};
 use pyxel::cube::draw::{DrawState, Uvs as QuadUvs};
 use pyxel::cube::mesh::ColImage;
 use pyxel::cube::raster::{
-    camera_clip_row, clear_viewport, compute_clip_rect, matmul, projection_matrix, view_matrix,
+    camera_clip_row, clear_viewport, matmul, prepare_viewport, projection_matrix, view_matrix,
 };
 use pyxel::cube::scene::{
     reset_draw_state, set_draw_context, take_draw_context, with_draw_context, DrawContext,
@@ -138,16 +138,14 @@ impl Node {
         billboard: i32,
         f: impl FnOnce(&mut pyxel::cube::scene::DrawContext, pyxel::cube::draw::DrawState),
     ) {
-        // Resolve the per-Node cascading shading once. The rasterizer will
-        // only consult it when ctx.shaded is true.
-        let shading_rc = InnerNode::effective_shading(&self.inner);
         let opacity = InnerNode::effective_opacity(&self.inner);
         with_draw_context(|ctx| {
-            let shading_ref = if ctx.shaded {
-                shading_rc.as_ref().map(|s| rc_ref!(s))
+            let shading_rc = if ctx.shaded {
+                InnerNode::effective_shading(&self.inner)
             } else {
                 None
             };
+            let shading_ref = shading_rc.as_ref().map(|s| rc_ref!(s));
             let local_dither = ctx.dither_alpha;
             let state = DrawState {
                 shaded: ctx.shaded,
@@ -1103,7 +1101,7 @@ impl Node {
         };
         let target_w = rc_ref!(&target_rc).width();
         let target_h = rc_ref!(&target_rc).height();
-        let clip = compute_clip_rect(x as f32, y as f32, w as f32, h as f32, target_w, target_h);
+        let (x, y, clip) = prepare_viewport(&rc_ref!(&target_rc), x, y, w, h);
         if let Some(col) = rc_ref!(&cam_inner).clear_color {
             clear_viewport(&mut rc_mut!(&target_rc), &clip, col as u8);
         }
@@ -1123,8 +1121,8 @@ impl Node {
             target: target_rc,
             vp,
             clip_row,
-            vp_x: x as f32,
-            vp_y: y as f32,
+            vp_x: x,
+            vp_y: y,
             vp_w: w as f32,
             vp_h: h as f32,
             clip,

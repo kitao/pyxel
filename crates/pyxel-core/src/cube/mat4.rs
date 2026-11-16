@@ -785,9 +785,7 @@ impl Mat4 {
     // Coordinate system conversions
 
     pub fn to_local(&self, mat: &Self) -> RcMat4 {
-        let inv_rc = mat.inverse();
-        let result = rc_ref!(&inv_rc).mul_mat(self);
-        result
+        mat.inverse_value().mul_mat(self)
     }
 
     pub fn to_world(&self, mat: &Self) -> RcMat4 {
@@ -796,9 +794,7 @@ impl Mat4 {
 
     pub fn to_local_dir(&self, mat: &Self) -> RcMat4 {
         let r_only = Self::strip_translation(mat);
-        let inv_rc = r_only.inverse();
-        let result = rc_ref!(&inv_rc).mul_mat(self);
-        result
+        r_only.inverse_value().mul_mat(self)
     }
 
     pub fn to_world_dir(&self, mat: &Self) -> RcMat4 {
@@ -1409,7 +1405,8 @@ mod tests {
             ordinary.try_projective_inverse_value(),
             ordinary.try_inverse_value()
         );
-        let tiny = 2.0_f32.powi(-140);
+        // Exact 2^-140; an f32 powi can overflow before taking its reciprocal.
+        let tiny = f32::from_bits(1 << 9);
         let matrix = Mat4 {
             data: [
                 [tiny, 0.0, 0.0, 0.0],

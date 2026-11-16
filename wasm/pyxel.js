@@ -104,7 +104,7 @@ async function launchPyxel(params) {
   const canvas = await _createScreenElements();
   const pyodide = await _loadPyodideAndPyxel(canvas);
 
-  _hookPythonError(pyodide);
+  window.pyxelContext.clearPythonError = _hookPythonError(pyodide);
   _preloadRunScript = _hookFileOperations(
     pyodide,
     params.root || ".",
@@ -160,6 +160,7 @@ window.pyxelContext = {
   pyodide: null,
   params: null,
   hasFatalError: false,
+  clearPythonError: null,
   resetPromise: null,
 };
 
@@ -508,29 +509,32 @@ const _loadPyodideAndPyxel = async (canvas) => {
 // Error handling
 
 const _hookPythonError = (pyodide) => {
+  let errorText = "";
+  let flushTimer = null;
+
   pyodide.setStderr({
-    batched: (() => {
-      let errorText = "";
-      let flushTimer = null;
+    batched: (msg) => {
+      if (window.pyxelContext.hasFatalError) return;
+      if (!flushTimer && !msg.startsWith("Traceback")) return;
+      pyodide._module._emscripten_cancel_main_loop();
+      errorText += `${msg}\n`;
 
-      return (msg) => {
-        if (!flushTimer && !msg.startsWith("Traceback")) {
-          return;
-        }
-        pyodide._module._emscripten_cancel_main_loop();
-        errorText += `${msg}\n`;
-
-        if (!flushTimer) {
-          // Batch stderr lines for 100 ms so a multi-line traceback shows as one overlay.
-          flushTimer = setTimeout(() => {
-            _displayErrorOverlay(errorText);
-            errorText = "";
-            flushTimer = null;
-          }, 100);
-        }
-      };
-    })(),
+      if (!flushTimer) {
+        // Batch stderr lines for 100 ms so a multi-line traceback shows as one overlay.
+        flushTimer = setTimeout(() => {
+          _displayErrorOverlay(errorText);
+          errorText = "";
+          flushTimer = null;
+        }, 100);
+      }
+    },
   });
+
+  return () => {
+    clearTimeout(flushTimer);
+    errorText = "";
+    flushTimer = null;
+  };
 };
 
 const _displayErrorOverlay = (message) => {
@@ -580,6 +584,7 @@ const _formatUnknownError = (error) => {
 
 const _displayFatalErrorOverlay = (error) => {
   window.pyxelContext.hasFatalError = true;
+  window.pyxelContext.clearPythonError?.();
   _displayErrorOverlay(_formatUnknownError(error));
 };
 
@@ -996,7 +1001,6 @@ const _resetPyxel = async () => {
   }
 
   try {
-    document.getElementById("pyxel-error-overlay")?.remove();
     window.pyxelContext.pyodide.runPython(`
       import pyxel
       pyxel.quit()
@@ -1010,8 +1014,12 @@ const _resetPyxel = async () => {
       await audioContext.suspend();
     }
 
+    if (window.pyxelContext.hasFatalError) return;
+
     const pyodide = window.pyxelContext.pyodide;
     pyodide._module._emscripten_cancel_main_loop();
+    window.pyxelContext.clearPythonError();
+    document.getElementById("pyxel-error-overlay")?.remove();
 
     pyodide.runPython(`
       import importlib

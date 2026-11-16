@@ -161,12 +161,10 @@ impl Mesh {
 
     #[getter]
     fn col_img(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        match &self.inner_ref().col_img {
+        let col_img = self.inner_ref().col_img.clone();
+        match col_img {
             ColImage::Color(c) => Ok(c.into_pyobject(py)?.into_any().unbind()),
-            ColImage::Image(img) => Ok(Image::wrap(img.clone())
-                .into_pyobject(py)?
-                .into_any()
-                .unbind()),
+            ColImage::Image(img) => Ok(Image::wrap(img).into_pyobject(py)?.into_any().unbind()),
         }
     }
 

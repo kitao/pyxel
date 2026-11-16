@@ -159,13 +159,14 @@ def _track_module(
 
 
 def _to_module_filename(module_path: str) -> str | None:
-    filename = Path(f"{module_path}.py")
-    if filename.is_file():
-        return str(filename)
+    # Python selects a regular package before a same-named module.
     module_dir = Path(module_path)
     init_file = module_dir / "__init__.py"
     if module_dir.is_dir() and init_file.is_file():
         return str(init_file)
+    filename = Path(f"{module_path}.py")
+    if filename.is_file():
+        return str(filename)
     return None
 
 

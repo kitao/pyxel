@@ -28,6 +28,49 @@ test("unknown errors retain their summary without duplicating stack headers", ()
   }
 });
 
+test("fatal errors retain their overlay before and after stderr initialization", () => {
+  for (const initializeStderr of [false, true]) {
+    const tasks = new Set();
+    let stderr;
+    let overlay;
+    const context = {
+      window: {
+        pyxelContext: { hasFatalError: false, clearPythonError: null },
+      },
+      setTimeout(callback) {
+        tasks.add(callback);
+        return callback;
+      },
+      clearTimeout: (callback) => tasks.delete(callback),
+      _displayErrorOverlay: (message) => {
+        overlay = message;
+      },
+    };
+    for (const name of ["_formatUnknownError", "_displayFatalErrorOverlay"]) {
+      context[name] = loadArrowFunction(pyxelSource, name, context);
+    }
+    if (initializeStderr) {
+      context.window.pyxelContext.clearPythonError = loadArrowFunction(
+        pyxelSource,
+        "_hookPythonError",
+        context,
+      )({
+        setStderr({ batched }) {
+          stderr = batched;
+        },
+        _module: { _emscripten_cancel_main_loop() {} },
+      });
+      stderr("Traceback (most recent call last):");
+      stderr("ValueError: pending application error");
+    }
+    context._displayFatalErrorOverlay("fatal runtime error");
+    if (initializeStderr) stderr("ValueError: late application error");
+    for (const callback of tasks) callback();
+    assert.equal(overlay, "fatal runtime error");
+    assert.equal(context.window.pyxelContext.hasFatalError, true);
+  }
+});
+
 test("optional showcase registration failures stay inside its warning handler", async () => {
   const source = fs.readFileSync(
     path.join(__dirname, "..", "..", "scripts", "start_showcase"),
@@ -1391,8 +1434,10 @@ test("MML share updates keep the newest content when compression finishes out of
   assert.deepEqual(replacedUrls, [newestUrl, emptyUrl]);
 });
 
-test("runtime resets serialize command execution and await each request", async () => {
+test("runtime resets serialize requests and discard previous tracebacks", async () => {
   const tasks = [];
+  const stderrTasks = new Set();
+  let stderr;
   const events = [];
   const errors = [];
   let initialized = true;
@@ -1412,6 +1457,9 @@ test("runtime resets serialize command execution and await each request", async 
     },
   };
   const pyodide = {
+    setStderr({ batched }) {
+      stderr = batched;
+    },
     _module: {
       SDL2: { audioContext },
       _emscripten_cancel_main_loop() {},
@@ -1438,7 +1486,14 @@ test("runtime resets serialize command execution and await each request", async 
       },
     },
     document: { getElementById: () => null },
-    setTimeout: (callback) => tasks.push(callback),
+    setTimeout(callback, delay) {
+      if (delay === 100) {
+        stderrTasks.add(callback);
+        return callback;
+      }
+      return tasks.push(callback);
+    },
+    clearTimeout: (callback) => stderrTasks.delete(callback),
     PYXEL_WORKING_DIRECTORY: "/work",
     _displayFatalErrorOverlay: (error) => errors.push(error),
     _displayErrorOverlay: (error) => errors.push(error),
@@ -1453,6 +1508,13 @@ test("runtime resets serialize command execution and await each request", async 
   ]) {
     context[name] = loadArrowFunction(pyxelSource, name, context);
   }
+  context.window.pyxelContext.clearPythonError = loadArrowFunction(
+    pyxelSource,
+    "_hookPythonError",
+    context,
+  )(pyodide);
+  stderr("Traceback (most recent call last):");
+  stderr("ValueError: previous application");
   const reset = loadNamedFunction(pyxelSource, "resetPyxel", context);
   let firstDone = false;
   let secondDone = false;
@@ -1474,34 +1536,64 @@ test("runtime resets serialize command execution and await each request", async 
   tasks.shift()();
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(events, ["suspend"]);
+  stderr("ValueError: previous application during audio drain");
   finishSuspend();
   await Promise.all([first, second]);
   assert.deepEqual(events, ["suspend", "reset", "start", "reset", "start"]);
+  for (const callback of stderrTasks) callback();
+  stderrTasks.clear();
   assert.deepEqual(errors, []);
+  stderr("Traceback (most recent call last):");
+  stderr("ValueError: new application");
+  for (const callback of stderrTasks) callback();
+  assert.deepEqual(errors, [
+    "Traceback (most recent call last):\nValueError: new application\n",
+  ]);
   assert.equal(firstDone, true);
   assert.equal(secondDone, true);
   assert.equal(context.window.pyxelContext.resetPromise, null);
 });
 
 test("a queued reset preserves fatal reload recovery", async () => {
-  const context = {
-    window: { pyxelContext: { initialized: true, hasFatalError: false } },
-    document: { getElementById: () => null },
-    location: { reload: () => calls.push("reload") },
-    _displayFatalErrorOverlay(error) {
-      calls.push(error.message);
-      context.window.pyxelContext.hasFatalError = true;
-    },
-  };
-  const calls = [];
-  context.window.pyxelContext.pyodide = {
-    runPython() {
-      throw new Error("reset failed");
-    },
-  };
-  context._resetPyxel = loadArrowFunction(pyxelSource, "_resetPyxel", context);
-  const reset = loadNamedFunction(pyxelSource, "resetPyxel", context);
-  await Promise.all([reset(), reset()]);
-  assert.deepEqual(calls, ["reset failed", "reload"]);
-  assert.equal(context.window.pyxelContext.resetPromise, null);
+  for (const failDuringSuspend of [false, true]) {
+    const context = {
+      window: { pyxelContext: { initialized: true, hasFatalError: false } },
+      document: { getElementById: () => null },
+      setTimeout: (callback) => callback(),
+      PYXEL_WORKING_DIRECTORY: "/work",
+      _executePyxelCommand: async () => calls.push("start"),
+      location: { reload: () => calls.push("reload") },
+      _displayFatalErrorOverlay(error) {
+        calls.push(error.message);
+        context.window.pyxelContext.hasFatalError = true;
+      },
+    };
+    const calls = [];
+    context.window.pyxelContext.clearPythonError = () => {};
+    context.window.pyxelContext.pyodide = {
+      _module: {
+        _emscripten_cancel_main_loop() {},
+        SDL2: {
+          audioContext: {
+            state: "running",
+            async suspend() {
+              context._displayFatalErrorOverlay(new Error("reset failed"));
+            },
+          },
+        },
+      },
+      runPython() {
+        if (!failDuringSuspend) throw new Error("reset failed");
+      },
+    };
+    context._resetPyxel = loadArrowFunction(
+      pyxelSource,
+      "_resetPyxel",
+      context,
+    );
+    const reset = loadNamedFunction(pyxelSource, "resetPyxel", context);
+    await Promise.all([reset(), reset()]);
+    assert.deepEqual(calls, ["reset failed", "reload"]);
+    assert.equal(context.window.pyxelContext.resetPromise, null);
+  }
 });

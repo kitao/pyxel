@@ -42,9 +42,10 @@ impl Tilemap {
 
     #[getter]
     fn imgsrc(&self, py: Python) -> Py<PyAny> {
-        match &self.inner_ref().imgsrc {
+        let imgsrc = self.inner_ref().imgsrc.clone();
+        match imgsrc {
             pyxel::ImageSource::Index(index) => value_to_py_any!(py, index),
-            pyxel::ImageSource::Image(image) => instance_to_py_any!(py, Image::wrap(image.clone())),
+            pyxel::ImageSource::Image(image) => instance_to_py_any!(py, Image::wrap(image)),
         }
     }
 

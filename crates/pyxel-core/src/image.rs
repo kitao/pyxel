@@ -396,19 +396,12 @@ impl Image {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
 
-        // Preserve source pixels when the destination overlaps the source.
-        let borrowed;
-        let copied_canvas;
-        let src = if ptr::eq(image.as_ptr(), self) {
-            if utils::f32_to_i32(width) == 0 || utils::f32_to_i32(height) == 0 {
-                return;
-            }
-            copied_canvas = self.canvas.clone();
-            &copied_canvas
+        let borrowed = if ptr::eq(image.as_ptr(), self) {
+            None
         } else {
-            borrowed = rc_ref!(image);
-            &borrowed.canvas
+            Some(rc_ref!(image))
         };
+        let src = borrowed.as_ref().map(|image| &image.canvas);
 
         let palette = palette_opt!(self);
         if rotate != 0.0 || scale != 1.0 {
@@ -515,16 +508,24 @@ impl Image {
             return;
         }
 
-        // Preserve source pixels when the tilemap image aliases the destination.
+        // Resolve the image even when alpha prevents writes, preserving source errors.
         let resolved = tilemap.imgsrc.resolve();
-        let borrowed;
+        let borrowed = if ptr::eq(resolved.as_ptr(), self) {
+            None
+        } else {
+            Some(rc_ref!(resolved))
+        };
+        if self.canvas.alpha <= 0.0 || self.canvas.alpha.is_nan() {
+            return;
+        }
+
+        // Snapshot aliased pixels only after ruling out an empty draw.
         let copied_canvas;
-        let image_canvas = if ptr::eq(resolved.as_ptr(), self) {
+        let image_canvas = if let Some(image) = &borrowed {
+            &image.canvas
+        } else {
             copied_canvas = self.canvas.clone();
             &copied_canvas
-        } else {
-            borrowed = rc_ref!(resolved);
-            &borrowed.canvas
         };
         let tile_size = TILE_SIZE as i32;
         let img_w = image_canvas.width() as usize;
@@ -673,16 +674,25 @@ impl Image {
             return;
         }
 
-        // Preserve source pixels when the tilemap image aliases the destination.
         let resolved = tilemap.imgsrc.resolve();
-        let borrowed;
+        let borrowed = if ptr::eq(resolved.as_ptr(), self) {
+            None
+        } else {
+            Some(rc_ref!(resolved))
+        };
+        if proj.x1 > proj.x2 || proj.y1 > proj.y2 {
+            return;
+        }
+        if self.canvas.alpha <= 0.0 || self.canvas.alpha.is_nan() {
+            return;
+        }
+
         let copied_canvas;
-        let image_canvas = if ptr::eq(resolved.as_ptr(), self) {
+        let image_canvas = if let Some(image) = &borrowed {
+            &image.canvas
+        } else {
             copied_canvas = self.canvas.clone();
             &copied_canvas
-        } else {
-            borrowed = rc_ref!(resolved);
-            &borrowed.canvas
         };
         let image_width = image_canvas.width() as i32;
         let image_height = image_canvas.height() as i32;
@@ -765,19 +775,12 @@ impl Image {
         fov: Option<f32>,
         transparent: Option<Color>,
     ) {
-        // Preserve source pixels when the destination overlaps the source.
-        let borrowed;
-        let copied_canvas;
-        let src = if ptr::eq(image.as_ptr(), self) {
-            if utils::f32_to_i32(width) == 0 || utils::f32_to_i32(height) == 0 {
-                return;
-            }
-            copied_canvas = self.canvas.clone();
-            &copied_canvas
+        let borrowed = if ptr::eq(image.as_ptr(), self) {
+            None
         } else {
-            borrowed = rc_ref!(image);
-            &borrowed.canvas
+            Some(rc_ref!(image))
         };
+        let src = borrowed.as_ref().map(|image| &image.canvas);
 
         let palette = palette_opt!(self);
         self.canvas.blit_perspective(
@@ -825,19 +828,12 @@ impl Image {
         let tm_w = tilemap.canvas.width() as i32;
         let tm_h = tilemap.canvas.height() as i32;
 
-        // Preserve source pixels when the tilemap image aliases the destination.
         let resolved = tilemap.imgsrc.resolve();
-        let borrowed;
-        let copied_canvas;
-        let image_canvas = if ptr::eq(resolved.as_ptr(), self) {
-            copied_canvas = self.canvas.clone();
-            &copied_canvas
+        let borrowed = if ptr::eq(resolved.as_ptr(), self) {
+            None
         } else {
-            borrowed = rc_ref!(resolved);
-            &borrowed.canvas
+            Some(rc_ref!(resolved))
         };
-        let img_w = image_canvas.width() as i32;
-        let img_h = image_canvas.height() as i32;
 
         let x1 = proj.dst_x.max(self.canvas.clip_rect.left());
         let x2 = proj
@@ -849,6 +845,22 @@ impl Image {
             .dst_y
             .saturating_add(proj.h - 1)
             .min(self.canvas.clip_rect.bottom());
+        if x1 > x2 || y1 > y2 {
+            return;
+        }
+        if self.canvas.alpha <= 0.0 || self.canvas.alpha.is_nan() {
+            return;
+        }
+
+        let copied_canvas;
+        let image_canvas = if let Some(image) = &borrowed {
+            &image.canvas
+        } else {
+            copied_canvas = self.canvas.clone();
+            &copied_canvas
+        };
+        let img_w = image_canvas.width() as i32;
+        let img_h = image_canvas.height() as i32;
         let palette = palette_opt!(self);
         let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
@@ -901,12 +913,18 @@ impl Image {
         let borrowed;
         let copied_canvas;
         let font_canvas = if ptr::eq(font_image_rc.as_ptr(), self) {
+            if self.canvas.alpha <= 0.0 || self.canvas.alpha.is_nan() {
+                return;
+            }
             copied_canvas = self.canvas.clone();
             &copied_canvas
         } else {
             borrowed = rc_ref!(font_image_rc);
             &borrowed.canvas
         };
+        if self.canvas.alpha <= 0.0 || self.canvas.alpha.is_nan() {
+            return;
+        }
         let font_data = &font_canvas.data;
         let font_w = font_canvas.width() as usize;
 

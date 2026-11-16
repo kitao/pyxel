@@ -403,9 +403,7 @@ impl Vec3 {
     // Coordinate system conversions
 
     pub fn to_local(&self, mat: &Mat4) -> RcVec3 {
-        let inv_rc = mat.inverse();
-        let result = rc_ref!(&inv_rc).mul_vec(self);
-        result
+        mat.inverse_value().mul_vec(self)
     }
 
     pub fn to_world(&self, mat: &Mat4) -> RcVec3 {
@@ -413,9 +411,7 @@ impl Vec3 {
     }
 
     pub fn to_local_dir(&self, mat: &Mat4) -> RcVec3 {
-        let inv_rc = mat.inverse();
-        let result = rc_ref!(&inv_rc).mul_dir(self);
-        result
+        mat.inverse_value().mul_dir(self)
     }
 
     pub fn to_world_dir(&self, mat: &Mat4) -> RcVec3 {

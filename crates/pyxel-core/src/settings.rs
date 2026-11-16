@@ -2,7 +2,7 @@ use crate::channel::ChannelGain;
 use crate::image::{Color, Rgb24};
 use crate::key::{Key, KEY_ESCAPE};
 use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
-use crate::tone::{ToneMode, ToneSample};
+use crate::tone::{ToneGain, ToneMode, ToneSample};
 
 // System defaults
 pub const VERSION: &str = "3.0.1";
@@ -167,7 +167,7 @@ pub const MAX_VOLUME: SoundVolume = 7;
 pub const MAX_EFFECT: SoundEffect = 5;
 
 pub const DEFAULT_TONE_SAMPLE_BITS: u32 = 4;
-pub const DEFAULT_TONE_TRIANGLE: (ToneMode, u32, [ToneSample; 32], ChannelGain) = (
+pub const DEFAULT_TONE_TRIANGLE: (ToneMode, u32, [ToneSample; 32], ToneGain) = (
     ToneMode::Wavetable,
     4,
     [
@@ -178,9 +178,9 @@ pub const DEFAULT_TONE_TRIANGLE: (ToneMode, u32, [ToneSample; 32], ChannelGain) 
     ],
     1.0,
 );
-pub const DEFAULT_TONE_SQUARE: (ToneMode, u32, [ToneSample; 2], ChannelGain) =
+pub const DEFAULT_TONE_SQUARE: (ToneMode, u32, [ToneSample; 2], ToneGain) =
     (ToneMode::Wavetable, 1, [1, 0], 0.3);
-pub const DEFAULT_TONE_PULSE: (ToneMode, u32, [ToneSample; 4], ChannelGain) =
+pub const DEFAULT_TONE_PULSE: (ToneMode, u32, [ToneSample; 4], ToneGain) =
     (ToneMode::Wavetable, 1, [1, 0, 0, 0], 0.3);
-pub const DEFAULT_TONE_NOISE: (ToneMode, u32, [ToneSample; 0], ChannelGain) =
+pub const DEFAULT_TONE_NOISE: (ToneMode, u32, [ToneSample; 0], ToneGain) =
     (ToneMode::LongPeriodNoise, 0, [], 0.6);

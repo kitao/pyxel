@@ -126,6 +126,9 @@ impl Screencast {
         let mut scaled_buf = Vec::<u8>::with_capacity((width * scale * height * scale) as usize);
         let mut palette = Vec::<u8>::with_capacity(256 * 3);
 
+        // Carry fractional GIF ticks between frames instead of rounding each interval.
+        let mut delay_remainder = self.fps as u64 / 2;
+
         // Write the first frame as a full image baseline.
         self.screen_at(0).write_rgb(&mut base_rgb);
         let full_rect = RectArea::new(0, 0, width, height);
@@ -143,7 +146,7 @@ impl Screencast {
 
         encoder
             .write_frame(&Frame {
-                delay: self.screen_delay(0),
+                delay: self.screen_delay(0, &mut delay_remainder),
                 dispose: DisposalMethod::Any,
                 transparent: None,
                 needs_user_input: false,
@@ -190,7 +193,7 @@ impl Screencast {
 
                 encoder
                     .write_frame(&Frame {
-                        delay: self.screen_delay(i),
+                        delay: self.screen_delay(i, &mut delay_remainder),
                         dispose: DisposalMethod::Any,
                         transparent: None,
                         needs_user_input: false,
@@ -207,7 +210,7 @@ impl Screencast {
                 let scaled_rect = Self::scale_rect(diff_rect, scale);
                 encoder
                     .write_frame(&Frame {
-                        delay: self.screen_delay(i),
+                        delay: self.screen_delay(i, &mut delay_remainder),
                         dispose: DisposalMethod::Keep,
                         transparent: Some(0),
                         needs_user_input: false,
@@ -240,20 +243,27 @@ impl Screencast {
     }
 
     // GIF delays use hundredths of a second.
-    fn screen_delay(&self, index: usize) -> u16 {
-        if index + 1 >= self.num_captured_screens {
-            return (100.0 / self.fps as f32).round() as u16;
-        }
-
-        let frame_count = self.screen_at(index).frame_count;
-        let next_frame_count = self.screen_at(index + 1).frame_count;
-        // The frame counter can restart (pyxel.reset); treat it as one frame
-        let num_elapsed_frames = if frame_count > next_frame_count {
+    fn screen_delay(&self, index: usize, delay_remainder: &mut u64) -> u16 {
+        let num_elapsed_frames = if index + 1 >= self.num_captured_screens {
             1
         } else {
-            next_frame_count - frame_count
+            let frame_count = self.screen_at(index).frame_count;
+            let next_frame_count = self.screen_at(index + 1).frame_count;
+            // The frame counter can restart (pyxel.reset); treat it as one frame.
+            if frame_count > next_frame_count {
+                1
+            } else {
+                next_frame_count - frame_count
+            }
         };
-        (100.0 / self.fps as f32 * num_elapsed_frames as f32).round() as u16
+        if self.fps > 50 {
+            // Browsers expand GIF delays below 20 ms; retain the existing high-rate timing.
+            return (100.0 / self.fps as f32 * num_elapsed_frames as f32).round() as u16;
+        }
+
+        let total = *delay_remainder + num_elapsed_frames as u64 * 100;
+        *delay_remainder = total % self.fps as u64;
+        (total / self.fps as u64).min(u16::MAX as u64) as u16
     }
 
     fn compute_diff(
@@ -467,10 +477,10 @@ mod tests {
         let mut screencast = Screencast::new(30, 1);
         capture_solid(&mut screencast, 0x111111, 10);
         capture_solid(&mut screencast, 0x222222, 20);
-        // 10 elapsed frames at 30 fps: 100 / 30 * 10 = 33 (1/100s units)
-        assert_eq!(screencast.screen_delay(0), 33);
-        // Last frame falls back to a single frame interval
-        assert_eq!(screencast.screen_delay(1), 3);
+        let mut remainder = screencast.fps as u64 / 2;
+        // 10 elapsed frames round to 33; 11 elapsed frames round to 37.
+        assert_eq!(screencast.screen_delay(0, &mut remainder), 33);
+        assert_eq!(screencast.screen_delay(1, &mut remainder), 4);
     }
 
     #[test]
@@ -478,7 +488,43 @@ mod tests {
         let mut screencast = Screencast::new(30, 1);
         capture_solid(&mut screencast, 0x111111, 100);
         capture_solid(&mut screencast, 0x222222, 5);
-        assert_eq!(screencast.screen_delay(0), 3);
+        let mut remainder = screencast.fps as u64 / 2;
+        assert_eq!(screencast.screen_delay(0, &mut remainder), 3);
+    }
+
+    #[test]
+    fn test_screen_delays_preserve_cumulative_time_after_wraparound() {
+        for fps in [24, 30, 50] {
+            let mut screencast = Screencast::new(fps, 1);
+            for frame in 0..fps + 5 {
+                capture_solid(&mut screencast, 0, frame);
+            }
+            let mut remainder = fps as u64 / 2;
+            let delays: Vec<_> = (0..screencast.num_captured_screens)
+                .map(|i| screencast.screen_delay(i, &mut remainder))
+                .collect();
+            assert_eq!(delays.iter().map(|&delay| delay as u32).sum::<u32>(), 100);
+            assert!(delays.iter().all(|&delay| delay >= 2));
+        }
+    }
+
+    #[test]
+    fn test_screen_delays_keep_gaps_reset_and_high_rate_behavior() {
+        for (fps, frames, expected) in [
+            (30, vec![100, 102, 106, 1, 2], vec![7, 13, 3, 4, 3]),
+            (60, vec![100, 101, 104, 1], vec![2, 5, 2, 2]),
+            (120, vec![100, 101], vec![1, 1]),
+        ] {
+            let mut screencast = Screencast::new(fps, 1);
+            for frame in frames {
+                capture_solid(&mut screencast, 0, frame);
+            }
+            let mut remainder = fps as u64 / 2;
+            let delays: Vec<_> = (0..screencast.num_captured_screens)
+                .map(|i| screencast.screen_delay(i, &mut remainder))
+                .collect();
+            assert_eq!(delays, expected);
+        }
     }
 
     // Diff computation

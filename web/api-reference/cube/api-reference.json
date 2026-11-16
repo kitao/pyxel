@@ -2179,7 +2179,7 @@
             "en": "Return the inverse matrix. Return the identity if no inverse exists or its components cannot be represented as finite 32-bit floats.",
             "cn": "返回逆矩阵。若逆矩阵不存在或其分量无法表示为有限的 32 位浮点数，则返回单位矩阵。",
             "de": "Gibt die inverse Matrix zurück. Existiert sie nicht oder sind ihre Komponenten nicht als endliche 32-Bit-Gleitkommazahlen darstellbar, wird die Identitätsmatrix zurückgegeben.",
-            "es": "Devuelve la matriz inversa. Devuelve la identidad si no existe o sus componentes no se pueden representar como valores finitos de 32 bits.",
+            "es": "Devuelve la matriz inversa. Devuelve la identidad si no existe o sus componentes no se pueden representar como números de punto flotante finitos de 32 bits.",
             "fr": "Renvoie la matrice inverse. Renvoie l'identité si elle n'existe pas ou si ses composantes ne peuvent pas être représentées par des flottants finis de 32 bits.",
             "it": "Restituisce la matrice inversa. Restituisce l'identità se non esiste o le sue componenti non sono rappresentabili come float finiti a 32 bit.",
             "ja": "逆行列を返す。逆行列が存在しない場合、または各成分を有限の 32 ビット浮動小数点数で表せない場合は単位行列を返す。",
@@ -3324,9 +3324,9 @@
             "ja": "シーングラフのノード。継承して on_update / on_draw を実装し、Mesh アセットは Node.from_mesh() で実体化して、ルートの update() / draw() で木全体を駆動する。描画コマンドはノードのワールド変換を基準に描かれる。",
             "ko": "장면 그래프 노드입니다. 이를 상속해 on_update / on_draw를 구현하고, Node.from_mesh()로 Mesh 에셋을 인스턴스화한 뒤 루트에서 update()와 draw()로 전체 트리를 구동하세요. 그리기 명령은 노드의 월드 변환을 기준으로 렌더링됩니다.",
             "pt": "Um nó de grafo de cena. Subclasse-o e implemente on_update / on_draw, instancie assets Mesh com Node.from_mesh() e então conduza toda a árvore com update() e draw() na raiz. Comandos de desenho renderizam relativos ao transform mundial do nó.",
-            "ru": "Узел графа сцены. Унаследуйте его и реализуйте on_update / on_draw, создавайте ресурсы Mesh через Node.from_mesh(), затем управляйте всем деревом с помощью update() и draw() на корне. Команды рисования рендерятся относительно мирового преобразования узла.",
+            "ru": "Узел графа сцены. Унаследуйте его и реализуйте on_update / on_draw, создавайте экземпляры ресурсов Mesh через Node.from_mesh(), затем управляйте всем деревом с помощью update() и draw() на корне. Команды рисования рендерятся относительно мирового преобразования узла.",
             "tr": "Bir sahne grafiği düğümü. Bundan türetin ve on_update / on_draw uygulayın, Mesh varlıklarını Node.from_mesh() ile örnekleyin, ardından tüm ağacı kökte update() ve draw() ile çalıştırın. Çizim komutları düğümün dünya dönüşümüne göre render edilir.",
-            "uk": "Вузол графа сцени. Успадкуйте його й реалізуйте on_update / on_draw, створюйте ресурси Mesh через Node.from_mesh(), а потім керуйте всім деревом через update() і draw() на корені. Команди малювання рендеряться відносно світового перетворення вузла."
+            "uk": "Вузол графа сцени. Успадкуйте його й реалізуйте on_update / on_draw, створюйте екземпляри ресурсів Mesh через Node.from_mesh(), а потім керуйте всім деревом через update() і draw() на корені. Команди малювання рендеряться відносно світового перетворення вузла."
           },
           "examples": [
             "from pyxel.cube import Camera, Mat4, Node, Shading, Vec3",
@@ -5535,7 +5535,7 @@
               "description": {
                 "en": "Flat color number or a texture Image. Defaults to 7.",
                 "cn": "单色颜色编号或纹理 Image。默认值为 7。",
-                "de": "Flache Farbnummer oder Textur-Image. Standardwert ist 7.",
+                "de": "Farbnummer oder Textur-Image. Standardwert ist 7.",
                 "es": "Número de color plano o Image de textura. El valor predeterminado es 7.",
                 "fr": "Numéro de couleur plate ou Image de texture. La valeur par défaut est 7.",
                 "it": "Numero di colore piatto o Image texture. Il valore predefinito è 7.",
@@ -5712,7 +5712,7 @@
               "description": {
                 "en": "Flat color number or a texture Image. Defaults to 7.",
                 "cn": "单色颜色编号或纹理 Image。默认值为 7。",
-                "de": "Flache Farbnummer oder Textur-Image. Standardwert ist 7.",
+                "de": "Farbnummer oder Textur-Image. Standardwert ist 7.",
                 "es": "Número de color plano o Image de textura. El valor predeterminado es 7.",
                 "fr": "Numéro de couleur plate ou Image de texture. La valeur par défaut est 7.",
                 "it": "Numero di colore piatto o Image texture. Il valore predefinito è 7.",
@@ -6186,7 +6186,7 @@
               "description": {
                 "en": "Flat color number or a texture Image. Defaults to 7.",
                 "cn": "单色颜色编号或纹理 Image。默认值为 7。",
-                "de": "Flache Farbnummer oder Textur-Image. Standardwert ist 7.",
+                "de": "Farbnummer oder Textur-Image. Standardwert ist 7.",
                 "es": "Número de color plano o Image de textura. El valor predeterminado es 7.",
                 "fr": "Numéro de couleur plate ou Image de texture. La valeur par défaut est 7.",
                 "it": "Numero di colore piatto o Image texture. Il valore predefinito è 7.",
@@ -6472,18 +6472,18 @@
           "examples": ["scene.draw(0, 0, pyxel.width, pyxel.height)"],
           "advanced": false,
           "notes": {
-            "en": "Uses the same traversal rules as update(), checking visible instead of active. Draw state resets at each on_draw entry; inherited opacity still applies.",
-            "cn": "使用与 update() 相同的遍历规则，但检查 visible 而非 active。每次进入 on_draw 时重置绘制状态；继承的 opacity 仍然生效。",
-            "de": "Verwendet dieselben Durchlaufregeln wie update(), prüft aber visible statt active. Der Zeichenstatus wird bei jedem on_draw zurückgesetzt; geerbte opacity gilt weiterhin.",
-            "es": "Usa las reglas de recorrido de update(), comprobando visible en lugar de active. El estado de dibujo se reinicia al entrar en cada on_draw; opacity heredada sigue aplicándose.",
-            "fr": "Suit les règles de parcours de update(), en vérifiant visible plutôt que active. L'état de dessin est réinitialisé à chaque entrée dans on_draw ; opacity héritée reste appliquée.",
-            "it": "Usa le regole di visita di update(), controllando visible invece di active. Lo stato di disegno si azzera a ogni ingresso in on_draw; opacity ereditata resta applicata.",
-            "ja": "update() と同じ巡回規則を使い、active の代わりに visible を確認する。描画状態は各 on_draw の開始時にリセットするが、継承した opacity は引き続き適用する。",
-            "ko": "update()와 같은 순회 규칙을 사용하되 active 대신 visible을 확인합니다. 각 on_draw 시작 시 그리기 상태가 초기화되지만 상속한 opacity는 계속 적용됩니다.",
-            "pt": "Usa as regras de percurso de update(), verificando visible em vez de active. O estado de desenho é reiniciado em cada on_draw; opacity herdada continua aplicada.",
-            "ru": "Использует правила обхода update(), проверяя visible вместо active. Состояние рисования сбрасывается при входе в каждый on_draw; унаследованная opacity продолжает действовать.",
-            "tr": "update() ile aynı dolaşım kurallarını kullanır; active yerine visible denetlenir. Her on_draw girişinde çizim durumu sıfırlanır; devralınan opacity uygulanmaya devam eder.",
-            "uk": "Використовує правила обходу update(), перевіряючи visible замість active. Стан малювання скидається на вході до кожного on_draw; успадкована opacity продовжує діяти."
+            "en": "Uses the same traversal rules as update(), checking visible instead of active. Cube drawing state resets at each on_draw entry; inherited opacity still applies. Rendering, including clear_color, follows the target's 2D camera, clip, pal, and dither settings. Clipping does not change the projection; pal remaps colors after shading.",
+            "cn": "使用与 update() 相同的遍历规则，但检查 visible 而非 active。每次进入 on_draw 时重置 Cube 的绘制状态；继承的 opacity 仍然生效。包括 clear_color 在内的绘制均遵循目标的 2D camera、clip、pal 和 dither 设置。clip 不改变投影；pal 在明暗计算后替换颜色。",
+            "de": "Verwendet dieselben Durchlaufregeln wie update(), prüft aber visible statt active. Der Cube-Zeichenstatus wird bei jedem on_draw zurückgesetzt; geerbte opacity gilt weiterhin. Das Rendern einschließlich clear_color berücksichtigt die 2D-Einstellungen camera, clip, pal und dither des Ziels. Das Beschneiden ändert die Projektion nicht; pal ersetzt die Farben nach der Schattierung.",
+            "es": "Usa las reglas de recorrido de update(), comprobando visible en lugar de active. El estado de dibujo de Cube se reinicia al entrar en cada on_draw; opacity heredada sigue aplicándose. El renderizado, incluido clear_color, respeta los ajustes 2D camera, clip, pal y dither del destino. El recorte no cambia la proyección; pal sustituye los colores después del sombreado.",
+            "fr": "Suit les règles de parcours de update(), en vérifiant visible plutôt que active. L'état de dessin de Cube est réinitialisé à chaque entrée dans on_draw ; opacity héritée reste appliquée. Le rendu, y compris clear_color, suit les réglages 2D camera, clip, pal et dither de la cible. Le découpage ne modifie pas la projection ; pal remplace les couleurs après le calcul de l'ombrage.",
+            "it": "Usa le regole di visita di update(), controllando visible invece di active. Lo stato di disegno di Cube si azzera a ogni ingresso in on_draw; opacity ereditata resta applicata. Il rendering, incluso clear_color, rispetta le impostazioni 2D camera, clip, pal e dither della destinazione. Il ritaglio non modifica la proiezione; pal sostituisce i colori dopo il calcolo delle ombre.",
+            "ja": "update() と同じ巡回規則を使い、active の代わりに visible を確認する。Cube の描画状態は各 on_draw の開始時にリセットするが、継承した opacity は引き続き適用する。clear_color を含む描画に、描画先の 2D camera・clip・pal・dither が適用される。clip で投影は変わらず、pal は陰影計算後の色を置換する。",
+            "ko": "update()와 같은 순회 규칙을 사용하되 active 대신 visible을 확인합니다. 각 on_draw 시작 시 Cube의 그리기 상태가 초기화되지만 상속한 opacity는 계속 적용됩니다. clear_color를 포함한 렌더링에는 대상의 2D camera, clip, pal, dither 설정이 적용됩니다. 클리핑은 투영을 변경하지 않으며 pal은 음영 계산 후 색상을 치환합니다.",
+            "pt": "Usa as regras de percurso de update(), verificando visible em vez de active. O estado de desenho do Cube é reiniciado em cada on_draw; opacity herdada continua aplicada. A renderização, incluindo clear_color, segue as configurações 2D camera, clip, pal e dither do destino. O recorte não altera a projeção; pal substitui as cores após o sombreamento.",
+            "ru": "Использует правила обхода update(), проверяя visible вместо active. Состояние рисования Cube сбрасывается при входе в каждый on_draw; унаследованная opacity продолжает действовать. Рисование, включая clear_color, учитывает настройки 2D camera, clip, pal и dither целевого изображения. Обрезка не меняет проекцию; pal заменяет цвета после расчёта освещения.",
+            "tr": "update() ile aynı dolaşım kurallarını kullanır; active yerine visible denetlenir. Her on_draw girişinde Cube çizim durumu sıfırlanır; devralınan opacity uygulanmaya devam eder. clear_color dahil tüm çizim, hedefin 2D camera, clip, pal ve dither ayarlarını kullanır. Kırpma izdüşümü değiştirmez; pal renkleri gölgelendirmeden sonra değiştirir.",
+            "uk": "Використовує правила обходу update(), перевіряючи visible замість active. Стан малювання Cube скидається на вході до кожного on_draw; успадкована opacity продовжує діяти. Малювання, зокрема clear_color, враховує налаштування 2D camera, clip, pal і dither цільового зображення. Обрізання не змінює проєкцію; pal замінює кольори після розрахунку освітлення."
           }
         },
         {
@@ -8046,7 +8046,7 @@
               "description": {
                 "en": "Default flat color number, or texture Image. Defaults to 7.",
                 "cn": "默认单色颜色编号，或默认纹理 Image。默认值为 7。",
-                "de": "Standard-Flachfarbnummer oder Standard-Textur-Image. Standardwert ist 7.",
+                "de": "Standard-Farbnummer oder Standard-Textur-Image. Standardwert ist 7.",
                 "es": "Número de color plano predeterminado, o Image de textura predeterminada. El valor predeterminado es 7.",
                 "fr": "Numéro de couleur plate par défaut, ou Image de texture par défaut. La valeur par défaut est 7.",
                 "it": "Numero di colore piatto predefinito, oppure Image texture predefinita. Il valore predefinito è 7.",
@@ -8211,7 +8211,7 @@
           "description": {
             "en": "Default flat color number, or texture Image.",
             "cn": "默认单色颜色编号，或默认纹理 Image。",
-            "de": "Standard-Flachfarbnummer oder Standard-Textur-Image.",
+            "de": "Standard-Farbnummer oder Standard-Textur-Image.",
             "es": "Número de color plano predeterminado, o Image de textura predeterminada.",
             "fr": "Numéro de couleur plate par défaut, ou Image de texture par défaut.",
             "it": "Numero di colore piatto predefinito, oppure Image texture predefinita.",
@@ -8960,7 +8960,7 @@
             "en": "World-space displacement applied to a non-mesh collider every update. If the parent world transform is singular, this displacement is skipped and treated as zero for swept collision detection and contact response. The same rule applies if the inverse or converted local displacement cannot be represented by finite 32-bit floats.",
             "cn": "非 mesh 碰撞体在每次更新时应用的世界空间位移。若父节点的世界变换为奇异矩阵，则不应用该位移，并在扫掠碰撞检测和接触响应中将其按 0 处理。 若逆矩阵或转换后的局部位移无法表示为有限的 32 位浮点数，也采用相同规则。",
             "de": "Verschiebung im World Space, die bei einem Nicht-Mesh-Collider pro Update angewendet wird. Ist die Welttransformation des Eltern-Nodes singulär, wird diese Verschiebung übersprungen und für die kontinuierliche Kollisionserkennung und Kontaktreaktion als null behandelt. Das gilt auch, wenn die inverse Matrix oder die umgerechnete lokale Verschiebung nicht durch endliche 32-Bit-Gleitkommazahlen darstellbar ist.",
-            "es": "Desplazamiento en espacio mundial aplicado a un collider sin mesh en cada actualización. Si el transform mundial del nodo padre es singular, este desplazamiento no se aplica y se considera cero para la detección de colisiones por barrido y la respuesta de contacto. La misma regla se aplica si la inversa o el desplazamiento local convertido no se pueden representar con valores finitos de 32 bits.",
+            "es": "Desplazamiento en espacio mundial aplicado a un collider sin mesh en cada actualización. Si el transform mundial del nodo padre es singular, este desplazamiento no se aplica y se considera cero para la detección de colisiones por barrido y la respuesta de contacto. La misma regla se aplica si la inversa o el desplazamiento local convertido no se pueden representar con números de punto flotante finitos de 32 bits.",
             "fr": "Déplacement en espace monde appliqué à chaque mise à jour à un collider sans mesh. Si la transformation monde du nœud parent est singulière, ce déplacement n'est pas appliqué et vaut zéro pour la détection continue des collisions et la réponse de contact. La même règle s'applique si l'inverse ou le déplacement local converti ne peuvent pas être représentés par des flottants finis de 32 bits.",
             "it": "Spostamento nello spazio globale applicato a ogni aggiornamento a un collider senza mesh. Se il transform globale del nodo padre è singolare, lo spostamento non viene applicato ed è considerato zero per il rilevamento continuo delle collisioni e la risposta al contatto. La stessa regola vale se l'inversa o lo spostamento locale convertito non sono rappresentabili come float finiti a 32 bit.",
             "ja": "非メッシュコライダーに update ごとに適用されるワールド座標の変位。親ノードのワールド変換が特異行列の場合、この変位は適用されず、スイープ衝突判定と接触応答でも 0 として扱われる。 逆行列または変換後のローカル変位を有限の 32 ビット浮動小数点数で表せない場合も同様。",

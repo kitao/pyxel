@@ -133,7 +133,7 @@ def get_pyxel_app_metadata(pyxel_app_file: str) -> dict[str, str]:
             return metadata
         comment = zf.comment.decode(encoding="utf-8")
 
-    for line in comment.splitlines():
+    for line in re.split(r"\r\n|\r|\n", comment):
         if line.startswith("-"):
             continue
         if ":" in line:

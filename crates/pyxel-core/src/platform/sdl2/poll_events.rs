@@ -251,7 +251,7 @@ impl PlatformSdl2 {
             let (mut gx, mut gy) = (0, 0);
             unsafe { SDL_GetGlobalMouseState(&raw mut gx, &raw mut gy) };
             let (wx, wy) = self.window_pos();
-            (gx - wx, gy - wy)
+            (gx.saturating_sub(wx), gy.saturating_sub(wy))
         };
 
         if mouse_x != self.mouse_x || mouse_y != self.mouse_y {

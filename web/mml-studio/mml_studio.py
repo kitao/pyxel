@@ -17,8 +17,6 @@ class App:
         elif _get_js_var("js_play", False):
             self.start_playback()
 
-        pyxel.run(self.update, self.draw)
-
     def start_playback(self):
         self.loop_enabled = _get_js_var("js_loop", False)
         pyxel.stop()
@@ -79,4 +77,10 @@ def _get_js_var(name, default):
     return getattr(window, name, default)
 
 
-App()
+# Allow reset after a failed MML parse; the browser loop does not return.
+try:
+    app = App()
+finally:
+    window.js_startup_complete = True
+
+pyxel.run(app.update, app.draw)

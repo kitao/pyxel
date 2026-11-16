@@ -131,6 +131,43 @@ class TestListImportedModules:
             "local": [str(pkg / "__init__.py"), str(pkg / "helper.py")],
         }
 
+    @pytest.mark.parametrize("module", ["pkg", "parent.pkg"])
+    @pytest.mark.parametrize(
+        "source",
+        [
+            "import {module}",
+            "from {module} import VALUE",
+            "from .{module} import VALUE",
+        ],
+    )
+    @pytest.mark.parametrize("regular_package", [False, True])
+    def test_local_package_and_module_precedence(
+        self, tmp_path, module, source, regular_package
+    ):
+        script = tmp_path / "main.py"
+        script.write_text(source.format(module=module) + "\n", encoding="utf-8")
+        package = tmp_path.joinpath(*module.split("."))
+        package.mkdir(parents=True)
+        parent_files = []
+        if module == "parent.pkg":
+            parent_init = package.parent / "__init__.py"
+            parent_init.write_text("", encoding="utf-8")
+            parent_files.append(str(parent_init))
+
+        module_file = package.with_suffix(".py")
+        module_file.write_text("import decimal\nVALUE = 1\n", encoding="utf-8")
+        package_init = package / "__init__.py"
+        if regular_package:
+            package_init.write_text("import sqlite3\nVALUE = 2\n", encoding="utf-8")
+
+        result = pyxel.utils.list_imported_modules(str(script))
+        assert result == {
+            "system": ["sqlite3" if regular_package else "decimal"],
+            "local": sorted(
+                [*parent_files, str(package_init if regular_package else module_file)]
+            ),
+        }
+
     @pytest.mark.parametrize("source", ["import helper", "from helper import VALUE"])
     def test_nested_absolute_import_uses_startup_directory(self, tmp_path, source):
         script = tmp_path / "main.py"

@@ -81,6 +81,13 @@ impl Font {
                     .map_err(|_| parse_err())?;
             } else if line.starts_with("BBX") {
                 bbx = Self::parse_bdf_bbox(&line, &parse_err)?;
+                // Bitmap rows are stored as u32; reject glyphs wider than 32 pixels
+                if bbx.width > 32 {
+                    return Err(format!(
+                        "BDF glyph width {} exceeds 32 pixel limit",
+                        bbx.width
+                    ));
+                }
             } else if line.starts_with("BITMAP") {
                 bitmap = Some(Vec::new());
             } else if line.starts_with("ENDCHAR") {
@@ -124,14 +131,6 @@ impl Font {
             .collect::<Result<_, _>>()?;
         if values.len() < 4 {
             return Err(parse_err());
-        }
-
-        // Bitmap rows are stored as u32; reject glyphs wider than 32 pixels
-        if values[0] > 32 {
-            return Err(format!(
-                "BDF glyph width {} exceeds 32 pixel limit",
-                values[0]
-            ));
         }
 
         Ok(BdfBoundingBox {
@@ -186,6 +185,10 @@ impl Font {
         text: &str,
         color: Color,
     ) {
+        if canvas.alpha <= 0.0 || canvas.alpha.is_nan() {
+            return;
+        }
+
         self.for_each_pixel(x, y, text, |px, py| {
             canvas.write_data_with_clipping_i64(px, py, color);
         });
@@ -230,7 +233,7 @@ impl Font {
                 glyphs,
             } => {
                 if let Some(glyph) = glyphs.get(&(c as i32)) {
-                    let gx = x + i64::from(bounding_box.x) + i64::from(glyph.bbx.x);
+                    let gx = x + i64::from(glyph.bbx.x);
                     let gy = y + i64::from(bounding_box.y) + i64::from(bounding_box.height)
                         - i64::from(glyph.bbx.y)
                         - i64::from(glyph.bbx.height);
@@ -390,5 +393,48 @@ mod tests {
             Some(format!("Failed to parse file '{}'", path.to_str().unwrap()))
         );
         std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn test_bdf_glyph_offsets_share_the_font_origin() {
+        let path =
+            std::env::temp_dir().join(format!("pyxel_font_origins_{}.bdf", std::process::id()));
+        for (font_x, glyph_x, expected) in [
+            (-2, -1, [(9, 4), (10, 4), (15, 4), (16, 4), (9, 7), (10, 7)]),
+            (0, 1, [(11, 4), (12, 4), (17, 4), (18, 4), (11, 7), (12, 7)]),
+            (2, 3, [(13, 4), (14, 4), (19, 4), (20, 4), (13, 7), (14, 7)]),
+        ] {
+            std::fs::write(
+                &path,
+                format!(
+                    "FONTBOUNDINGBOX 4 3 {font_x} -1\nSTARTCHAR A\nENCODING 65\nDWIDTH 6 0\nBBX 2 1 {glyph_x} -1\nBITMAP\nC0\nENDCHAR\nSTARTCHAR B\nENCODING 66\nDWIDTH 6 0\nBBX 4 3 {font_x} -1\nBITMAP\nF0\nF0\nF0\nENDCHAR\n"
+                ),
+            )
+            .unwrap();
+            let mut font = Font::parse_bdf(path.to_str().unwrap()).unwrap();
+            std::fs::remove_file(&path).unwrap();
+            let mut pixels = Vec::new();
+            font.for_each_pixel(10, 2, "AA\nA", |x, y| pixels.push((x, y)));
+            assert_eq!(pixels, expected, "font_x={font_x}, glyph_x={glyph_x}");
+            assert_eq!(font.text_width("AA\nA"), 12);
+        }
+    }
+
+    #[test]
+    fn test_bdf_font_box_can_exceed_bitmap_row_width() {
+        let path =
+            std::env::temp_dir().join(format!("pyxel_font_wide_box_{}.bdf", std::process::id()));
+        std::fs::write(
+            &path,
+            "FONTBOUNDINGBOX 40 1 0 0\nSTARTCHAR A\nENCODING 65\nDWIDTH 32 0\nBBX 32 1 0 0\nBITMAP\nFFFFFFFF\nENDCHAR\nSTARTCHAR B\nENCODING 66\nDWIDTH 32 0\nBBX 32 1 8 0\nBITMAP\nFFFFFFFF\nENDCHAR\n",
+        )
+        .unwrap();
+        let mut font = Font::parse_bdf(path.to_str().unwrap()).unwrap();
+        std::fs::remove_file(&path).unwrap();
+        let mut pixels = Vec::new();
+        font.for_each_pixel(0, 0, "AB", |x, y| pixels.push((x, y)));
+        let expected: Vec<_> = (0..32).chain(40..72).map(|x| (x, 0)).collect();
+        assert_eq!(pixels, expected);
+        assert_eq!(font.text_width("AB"), 64);
     }
 }

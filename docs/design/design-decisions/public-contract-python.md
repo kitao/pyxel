@@ -220,6 +220,21 @@ that round trip. These path checks do not make executing a Pyxel app a sandbox.
 
 ## Resources and Capture
 
+### TMX import validation
+
+**Decision:** TMX import requires positive layer dimensions and tileset columns,
+a CSV tile count matching the layer dimensions, and image-tile coordinates
+representable by Pyxel's `u16` storage. Retain the existing file-failure
+`Exception` through `Tilemap.from_tmx` and `Tilemap.load`. This is a specific
+exception to [v2.9.9 input preservation](public-contract-rust-python.md#preserving-established-python-errors).
+
+**Reason:** Filling missing cells or wrapping coordinates silently substitutes
+tiles for data the file does not supply or Pyxel cannot represent. Reporting
+an unusable file lets the caller correct it or choose another. The
+[TMX parser](../../../crates/pyxel-core/src/tmx_parser.rs) owns these checks;
+the bindings do not repeat them. This does not impose additional size limits
+on valid maps or change other accepted TMX inputs.
+
 ### Screenshot and screencast arguments
 
 **Decision:** Keep the filename-first `screenshot` and `screencast` signatures.

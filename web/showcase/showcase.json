@@ -898,18 +898,18 @@
             "uk": "Roguelike-гра від Adam, переможець Pyxel Jam"
           },
           "details": {
-            "en": "Winner of the 1st Pyxel Jam game competition, created by Adam (@helpcomputer). A roguelike dungeon explorer where you navigate procedurally generated maps within a time limit.",
-            "cn": "Adam (@helpcomputer) 制作的第 1 届 Pyxel Jam 游戏竞赛冠军作品。在限定时间内探索随机生成地图的 roguelike 地牢游戏。",
-            "de": "Gewinner des 1. Pyxel-Jam-Spielwettbewerbs, erstellt von Adam (@helpcomputer). Ein Roguelike-Dungeon-Spiel, bei dem man prozedural generierte Karten innerhalb eines Zeitlimits erkundet.",
-            "es": "Ganador de la 1ª competición Pyxel Jam, creado por Adam (@helpcomputer). Un roguelike de exploración de mazmorras con mapas generados proceduralmente dentro de un límite de tiempo.",
-            "fr": "Gagnant de la 1ère compétition Pyxel Jam, créé par Adam (@helpcomputer). Un roguelike d'exploration de donjons avec des cartes générées de manière procédurale et un temps limité.",
-            "it": "Vincitore della 1ª competizione Pyxel Jam, creato da Adam (@helpcomputer). Un roguelike di esplorazione di dungeon con mappe generate proceduralmente entro un limite di tempo.",
-            "ja": "Adam (@helpcomputer) 制作の第 1 回 Pyxel Jam ゲームコンテスト優勝作品。制限時間内にダンジョンを探索するローグライクゲームで、ランダム生成されるマップを攻略します。",
-            "ko": "Adam (@helpcomputer) 제작의 제1회 Pyxel Jam 게임 대회 우승작. 제한 시간 내에 랜덤 생성되는 맵을 탐험하는 로그라이크 던전 게임입니다.",
-            "pt": "Vencedor da 1ª competição Pyxel Jam, criado por Adam (@helpcomputer). Um roguelike de exploração de masmorras com mapas gerados proceduralmente dentro de um limite de tempo.",
-            "ru": "Победитель 1-го конкурса Pyxel Jam от Adam (@helpcomputer). Roguelike-исследование подземелий с процедурно генерируемыми картами и ограничением по времени.",
-            "tr": "Adam (@helpcomputer) tarafından yapılmış 1. Pyxel Jam yarışması birincisi. Süre sınırı içinde rastgele oluşturulan haritalarda zindan keşfi yapılan roguelike oyun.",
-            "uk": "Переможець 1-го конкурсу Pyxel Jam від Adam (@helpcomputer). Roguelike-дослідження підземель з процедурно генерованими картами та обмеженням у часі."
+            "en": "Winner of the 1st Pyxel Jam game competition, created by Adam (@helpcomputer). Explore the castle grounds as day turns to night, and find the key to enter the castle.",
+            "cn": "Adam (@helpcomputer) 制作的第 1 届 Pyxel Jam 游戏竞赛冠军作品。探索昼夜交替的城堡周边，寻找进入城堡的钥匙。",
+            "de": "Gewinner des 1. Pyxel-Jam-Spielwettbewerbs, erstellt von Adam (@helpcomputer). Erkunden Sie die Umgebung der Burg, während sich Tag und Nacht abwechseln, und finden Sie den Schlüssel, um die Burg zu betreten.",
+            "es": "Ganador de la 1ª competición Pyxel Jam, creado por Adam (@helpcomputer). Explore los alrededores del castillo mientras se alternan el día y la noche y encuentre la llave para entrar.",
+            "fr": "Gagnant de la 1ère compétition Pyxel Jam, créé par Adam (@helpcomputer). Explorez les alentours du château au rythme du jour et de la nuit, et trouvez la clé pour y entrer.",
+            "it": "Vincitore della 1ª competizione Pyxel Jam, creato da Adam (@helpcomputer). Esplorare i dintorni del castello mentre si alternano giorno e notte e trovare la chiave per entrare.",
+            "ja": "Adam (@helpcomputer) 制作の第 1 回 Pyxel Jam ゲームコンテスト優勝作品。昼夜が移り変わる城の周辺を探索し、城に入るための鍵を探します。",
+            "ko": "Adam (@helpcomputer) 제작의 제1회 Pyxel Jam 게임 대회 우승작. 낮과 밤이 바뀌는 성 주변을 탐험하며 성에 들어갈 열쇠를 찾습니다.",
+            "pt": "Vencedor da 1ª competição Pyxel Jam, criado por Adam (@helpcomputer). Explore os arredores do castelo enquanto dia e noite se alternam e encontre a chave para entrar.",
+            "ru": "Победитель 1-го конкурса Pyxel Jam от Adam (@helpcomputer). Исследуйте окрестности замка при смене дня и ночи и найдите ключ от его ворот.",
+            "tr": "Adam (@helpcomputer) tarafından yapılmış 1. Pyxel Jam yarışması birincisi. Gece ile gündüz değişirken kalenin çevresini keşfedin ve kaleye girmek için anahtarı bulun.",
+            "uk": "Переможець 1-го конкурсу Pyxel Jam від Adam (@helpcomputer). Досліджуйте околиці замку зі зміною дня й ночі та знайдіть ключ від його воріт."
           }
         },
         {

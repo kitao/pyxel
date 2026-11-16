@@ -45,7 +45,7 @@ pub struct DrawContext {
     // Shared vertices are projected once per prim call without reallocating.
     pub vertex_cache: Vec<ProjectedVertex>,
 
-    // State modifiers reset before each Node.on_draw call
+    // Reset before each on_draw so drawing modifiers cannot leak between nodes.
     pub dither_alpha: f32,
     pub depth_test: bool,
     pub depth_write: bool,
@@ -2183,10 +2183,7 @@ impl Scene {
         }
 
         let sign = component(local_normal, axis).signum();
-        let direction = incident
-            .world
-            .inverse_value()
-            .mul_dir_value(&vec_mul(outward, -1.0));
+        let direction = incident.inverse.mul_dir_value(&vec_mul(outward, -1.0));
         let mut polygon: Vec<_> = box_face(incident_half, incident_radius, direction)
             .into_iter()
             .map(|p| reference_inv.mul_vec_value(&incident.world.mul_vec_value(&p)))
@@ -4784,9 +4781,9 @@ fn narrow_phase_mesh_vs_dynamic(
         .try_inverse_value()
         .map(|inverse| transform_aabb_to_local(&inverse, &dyn_aabb_world));
 
-    // Body-local inverse (rounded-box arm) and world center (sphere arm),
-    // computed once outside the per-triangle callback.
-    let dyn_inv = world_dyn.inverse_value();
+    // Only rounded boxes need a body-local inverse; compute it once per query.
+    let dyn_inv =
+        matches!(shape_dyn, ColliderShape::RoundedBox { .. }).then(|| world_dyn.inverse_value());
     let dyn_center = world_dyn.pos_value();
     let m = rc_ref!(mesh);
     let mut best: Option<ContactGeom> = None;
@@ -4812,6 +4809,7 @@ fn narrow_phase_mesh_vs_dynamic(
                     // Solve in the body-local frame where the box is
                     // axis-aligned, then map the contact back to world
                     // (rotation + translation only, so depth carries).
+                    let dyn_inv = dyn_inv.as_ref().unwrap();
                     let l0 = dyn_inv.mul_vec_value(&v0);
                     let l1 = dyn_inv.mul_vec_value(&v1);
                     let l2 = dyn_inv.mul_vec_value(&v2);

@@ -356,6 +356,7 @@ fn draw_projected_triangle(
     normal: Option<&Vec3>,
     col_flat: i32,
     col_image: Option<&RcImage>,
+    texture_snapshot: &mut Option<RcImage>,
     colkey: Option<i32>,
     state: DrawState,
 ) {
@@ -372,6 +373,7 @@ fn draw_projected_triangle(
             normal,
             col_flat,
             col_image,
+            texture_snapshot,
             colkey,
             state,
         );
@@ -385,9 +387,13 @@ fn draw_clipped_triangle(
     normal: Option<&Vec3>,
     col_flat: i32,
     col_image: Option<&RcImage>,
+    texture_snapshot: &mut Option<RcImage>,
     colkey: Option<i32>,
     state: DrawState,
 ) {
+    if ctx.dither_alpha <= 0.0 {
+        return;
+    }
     let [a, b, c] = vertices;
     if cull != CULL_NONE {
         let area = signed_screen_area(a.screen, b.screen, c.screen);
@@ -403,6 +409,13 @@ fn draw_clipped_triangle(
     let depth_write = ctx.depth_write;
 
     if let Some(img_rc) = col_image {
+        // Copy only when a triangle reaches drawing, then retain the original
+        // texture across every subsequent triangle of this self-textured draw.
+        let img_rc: &RcImage = if std::rc::Rc::ptr_eq(img_rc, &ctx.target) {
+            texture_snapshot.get_or_insert_with(|| new_rc_type!(rc_ref!(img_rc).clone()))
+        } else {
+            img_rc
+        };
         let img_ref = rc_ref!(img_rc);
         if img_ref.width() == 0 || img_ref.height() == 0 {
             return;
@@ -846,11 +859,7 @@ pub fn prim(
                 return Err("uvs must be set when col_img is an Image");
             }
 
-            // Preserve the original texture across every triangle of a self-textured draw.
-            let texture_snapshot = col_image
-                .filter(|image| std::rc::Rc::ptr_eq(image, &ctx.target))
-                .map(|image| new_rc_type!(rc_ref!(image).clone()));
-            let col_image = texture_snapshot.as_ref().or(col_image);
+            let mut texture_snapshot = None;
 
             let normal_mat =
                 (lit && normals.is_some()).then(|| FaceNormalTransform::new(&world_mat));
@@ -900,6 +909,7 @@ pub fn prim(
                         normal.as_ref(),
                         col_flat,
                         col_image,
+                        &mut texture_snapshot,
                         colkey,
                         state,
                     );
@@ -932,6 +942,7 @@ pub fn prim(
                             normal.as_ref(),
                             col_flat,
                             col_image,
+                            &mut texture_snapshot,
                             colkey,
                             state,
                         );
@@ -1293,6 +1304,9 @@ fn draw_decal(
         return;
     }
     let world = prepare_draw(ctx, world_mat, &state);
+    if ctx.dither_alpha <= 0.0 {
+        return;
+    }
     let mut world = scale_axes(&world, w * 0.5, h * 0.5, 1.0);
     // Geometry transforms, like mul_vec_value, use the affine first three rows.
     world.data[3] = [0.0, 0.0, 0.0, 1.0];
@@ -1307,34 +1321,41 @@ fn draw_decal(
         return;
     }
 
-    let mut normal = tri_normal(
-        &world.mul_vec_value(&Vec3 {
-            x: -1.0,
-            y: 1.0,
-            z: 0.0,
-        }),
-        &world.mul_vec_value(&Vec3 {
-            x: 1.0,
-            y: 1.0,
-            z: 0.0,
-        }),
-        &world.mul_vec_value(&Vec3 {
-            x: -1.0,
-            y: -1.0,
-            z: 0.0,
-        }),
-    );
-    if ellipse {
-        normal.x = -normal.x;
-        normal.y = -normal.y;
-        normal.z = -normal.z;
-    }
     let shading = state.shading.filter(|_| state.shaded);
-    let colors = shading.map_or((col, col), |shading| {
-        lookup_ramp(shading, col, Some(&normal))
-    });
-    let level =
-        shading.map(|shading| face_shade_level(&rc_ref!(&shading.direction), Some(&normal)));
+    let mut colors = (col, col);
+    let mut level = None;
+    if let Some(shading) = shading {
+        let mut normal = tri_normal(
+            &world.mul_vec_value(&Vec3 {
+                x: -1.0,
+                y: 1.0,
+                z: 0.0,
+            }),
+            &world.mul_vec_value(&Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 0.0,
+            }),
+            &world.mul_vec_value(&Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: 0.0,
+            }),
+        );
+        if ellipse {
+            normal.x = -normal.x;
+            normal.y = -normal.y;
+            normal.z = -normal.z;
+        }
+        if image.is_some() {
+            level = Some(face_shade_level(
+                &rc_ref!(&shading.direction),
+                Some(&normal),
+            ));
+        } else {
+            colors = lookup_ramp(shading, col, Some(&normal));
+        }
+    }
 
     let snapshot = image
         .filter(|image| std::rc::Rc::ptr_eq(image, &ctx.target))
@@ -2074,7 +2095,7 @@ pub fn text(
     font: Option<&mut Font>,
     state: DrawState,
 ) {
-    if text_str.is_empty() {
+    if text_str.is_empty() || state.dither_alpha <= 0.0 {
         return;
     }
 
@@ -2481,7 +2502,7 @@ mod tests {
 
         for (anchor_x, font_x, glyph_x, visible) in [
             (0.0, 0, 1, true),
-            (-2_147_483_648.0, i32::MAX, 4, true),
+            (-2_147_483_520.0, 2_147_483_523, 2_147_483_523, true),
             (1.0, i32::MAX, i32::MAX, false),
         ] {
             std::fs::write(
@@ -2544,7 +2565,7 @@ mod tests {
         rc_mut!(&camera).ortho_size = Some(4.0);
 
         for (text_str, advance, height, font_x, glyph_x, expected_y) in [
-            ("AA", 2_000_000_000, 2, 1_000_000_000, 1_000_000_000, 2),
+            ("AA", 2_000_000_000, 2, 2_000_000_000, 2_000_000_000, 2),
             ("A\nA", 2, 2_000_000_000, 0, 1, 1),
         ] {
             std::fs::write(

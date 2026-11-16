@@ -3122,13 +3122,13 @@ fn closest_points_segment_aabb_f64(
 //   - 3 box face normals (X, Y, Z)
 //   - 1 triangle face normal
 //   - 9 cross products of box edges with triangle edges
-// The box is origin-centered with half-extents `half` and swept outward
-// by the rounding radius `r` (applied as a uniform extension on every
-// SAT axis: exact on faces and edges, over-reporting by at most
-// r·(√3−1) in corner regions). Triangle vertices are given in the same
-// box-local frame. Choose the shortest separating translation, including
-// triangle edges: a box resting on a ledge must go up, not sideways through
-// the opposite ledge merely because it also touches a vertical triangle.
+// The box is origin-centered with half-extents `half`. Extending every SAT
+// projection by the rounding radius `r` conservatively approximates the rounded
+// box; gaps near rounded edges and corners can still be reported as contacts.
+// Triangle vertices use the same box-local frame. Choose the shortest separating
+// translation, including triangle edges: a box resting on a ledge must go up,
+// not sideways through the opposite ledge merely because it also touches a
+// vertical triangle.
 pub fn local_box_vs_triangle(
     half: Vec3,
     r: f32,

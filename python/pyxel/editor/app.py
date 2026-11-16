@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pyxel
 
+from .canvas_panel import CanvasPanel
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
 from .settings import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE, HELP_MESSAGE_COLOR
@@ -18,19 +19,6 @@ from .widgets.settings import (
 )
 
 _EDITOR_TYPES = {"image": 0, "tilemap": 1, "sound": 2, "music": 3}
-
-
-def _check_palette_size(resource_file):
-    colors = list(pyxel.colors)
-    try:
-        pyxel.load_pal(resource_file)
-        if len(pyxel.colors) > 256 - pyxel.NUM_COLORS:
-            raise ValueError(
-                "Pyxel Editor supports at most 240 colors "
-                "(16 colors are reserved for the editor)"
-            )
-    finally:
-        pyxel.colors[:] = colors
 
 
 class App(Widget):
@@ -72,6 +60,7 @@ class App(Widget):
         pyxel.colors[:] = colors
 
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
+        self._end_capture()
         self._resource_file = resource_file
         self._save_failed = False
         self.new_var("help_message_var", "")
@@ -179,13 +168,14 @@ class App(Widget):
             dropped_file = None
 
         if dropped_file:
-            file_ext = Path(dropped_file).suffix
+            file_ext = Path(dropped_file).suffix.lower()
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
                 colors = list(pyxel.colors)
                 pyxel.colors[:] = colors[pyxel.NUM_COLORS :]
                 try:
                     _check_palette_size(dropped_file)
+                    self._release_capture()
                     pyxel.load(dropped_file)
                 except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
                     print(f"Failed to load resource: {e}")
@@ -210,16 +200,21 @@ class App(Widget):
         self._redo_button.is_enabled_var = self._editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
-            if pyxel.btnp(pyxel.KEY_S):
-                self._save_button.is_pressed_var = True
-
-            if self._editor.can_undo and pyxel.btnp(
+            save_pressed = pyxel.btnp(pyxel.KEY_S)
+            undo_pressed = pyxel.btnp(
                 pyxel.KEY_Z, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
-            ):
-                self._undo_button.is_pressed_var = True
-            elif self._editor.can_redo and pyxel.btnp(
+            )
+            redo_pressed = pyxel.btnp(
                 pyxel.KEY_Y, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
-            ):
+            )
+            if save_pressed or undo_pressed or redo_pressed:
+                CanvasPanel._finish_edit()
+
+            if save_pressed:
+                self._save_button.is_pressed_var = True
+            if self._editor.can_undo and undo_pressed:
+                self._undo_button.is_pressed_var = True
+            elif self._editor.can_redo and redo_pressed:
                 self._redo_button.is_pressed_var = True
 
     def __on_draw(self):
@@ -231,3 +226,16 @@ class App(Widget):
         )
         pyxel.text(93, 2, message, HELP_MESSAGE_COLOR)
         self.help_message_var = ""
+
+
+def _check_palette_size(resource_file):
+    colors = list(pyxel.colors)
+    try:
+        pyxel.load_pal(resource_file)
+        if len(pyxel.colors) > 256 - pyxel.NUM_COLORS:
+            raise ValueError(
+                "Pyxel Editor supports at most 240 colors "
+                "(16 colors are reserved for the editor)"
+            )
+    finally:
+        pyxel.colors[:] = colors

@@ -177,6 +177,14 @@ class TestPyxelAppMetadata:
         assert "Café\x85value" in metadata
         assert "Me" in metadata
 
+        app_file = tmp_path / "metadata.pyxapp"
+        with zipfile.ZipFile(app_file, "w") as app:
+            app.comment = metadata.encode("utf-8")
+        assert pyxel.cli.get_pyxel_app_metadata(str(app_file)) == {
+            "title": "Café\x85value",
+            "author": "Me",
+        }
+
     @pytest.mark.parametrize(
         ("encoding", "header", "title"),
         [

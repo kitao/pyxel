@@ -159,6 +159,14 @@ class Widget:
         capture_info.press_pos = (pyxel.mouse_x, pyxel.mouse_y)
         capture_info.last_pos = capture_info.press_pos
 
+    def _release_capture(self):
+        capture_info = Widget._mouse_capture_info
+        if capture_info.widget:
+            capture_info.widget.trigger_event(
+                "mouse_up", capture_info.key, *capture_info.last_pos
+            )
+            self._end_capture()
+
     def _end_capture(self):
         capture_info = Widget._mouse_capture_info
         capture_info.widget = None

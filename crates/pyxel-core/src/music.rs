@@ -3,7 +3,7 @@ use blip_buf::BlipBuf;
 use crate::audio::Audio;
 use crate::channel::Channel;
 use crate::pyxel;
-use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
+use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_RENDER_STEP_SAMPLES, AUDIO_SAMPLE_RATE};
 
 #[derive(Clone)]
 pub struct Music {
@@ -54,7 +54,7 @@ impl Music {
         drop(pyxel_sounds);
 
         let mut samples = vec![0; num_samples as usize];
-        let mut blip_buf = BlipBuf::new(num_samples);
+        let mut blip_buf = BlipBuf::new(AUDIO_RENDER_STEP_SAMPLES);
         blip_buf
             .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
             .expect("blip_buf rates must be valid");

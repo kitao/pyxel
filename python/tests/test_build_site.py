@@ -106,6 +106,20 @@ def test_rewrite_separates_live_runtime_from_copyable_versioned_snippets(builder
     )
 
 
+def test_canonical_page_omits_legacy_redirect_and_preserves_other_scripts(
+    builder, tmp_path
+):
+    source = tmp_path / "source.html"
+    redirect = '<script data-legacy-redirect>\nconst legacy = "/pyxel/web/";\n</script>'
+    content = '<script>const title = "Pyxel";</script><title>Pyxel</title>'
+    source.write_text(f"<head>\n{redirect}\n{content}</head>")
+    output = tmp_path / "site/pyxel/index.html"
+    builder.copy_page(source, output, "3.0.1", "3.0.1")
+    assert output.read_text() == f"<head>\n{content}</head>"
+    assert redirect in source.read_text()
+    builder.verify_links(tmp_path / "site")
+
+
 def test_link_check_covers_json_rendered_images_and_directory_escapes(
     builder, tmp_path
 ):

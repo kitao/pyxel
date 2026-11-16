@@ -75,6 +75,24 @@ metadata comparisons do not establish compiled Rust/source equivalence. Path
 remapping and `SOURCE_DATE_EPOCH` control build-host paths and timestamps; they
 do not by themselves promise byte-identical builds on every platform.
 
+### Web wheel retention
+
+**Decision:** Commit a Web wheel only as the final artifact for its release
+tag. Keep intermediate development and audit builds out of committed history.
+Verify a retained release wheel against the source at its tag, and a development
+build against the source under test.
+
+**Reason:** The [site builder](../../../scripts/build_site) retrieves released
+runtimes from their tags. Repeated intermediate wheels add binary history
+without serving that release role. Local wheel installation for verification
+does not require committing its output.
+
+Existing applications can load wheels through published runtime URLs, including
+Git-backed CDN URLs. A change to storage or retention must account for those
+consumers under the public contract; removing Git tracking alone does not
+provide a compatible distribution path. Retaining existing tags does not
+require copying past releases into additional repository directories.
+
 ### Release version correspondence
 
 **Decision:** Use Python release spelling in the runtime version, Python

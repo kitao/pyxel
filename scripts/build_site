@@ -383,6 +383,9 @@ def rewrite_urls(text, version, html=False, current_version=None):
     text = text.replace(f"{CDN_URL}/wasm/pyxel.js", runtime_url)
     text = text.replace(f"{CDN_URL}@v{version}/wasm/pyxel.js", runtime_url)
     if html:
+        text = re.sub(
+            r"\s*<script data-legacy-redirect>.*?</script>", "", text, flags=re.DOTALL
+        )
         text = text.replace(f"{SITE_URL}/launcher/source/", "/pyxel/launcher/source/")
         text = re.sub(r"""(["'])pyxel-(screen|editor)\.html\1""", r"\1pyxel-\2\1", text)
         head, separator, body = text.partition("</head>")

@@ -9,10 +9,10 @@ use crate::mml_parser::{parse_mml, total_duration_sec};
 use crate::pcm_decoder::{load_pcm, PcmData};
 use crate::pyxel;
 use crate::settings::{
-    AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
-    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME,
-    SOUND_TICKS_PER_SECOND, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
-    VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
+    AUDIO_CLOCK_RATE, AUDIO_RENDER_STEP_SAMPLES, AUDIO_SAMPLE_RATE, DEFAULT_SOUND_SPEED,
+    EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE,
+    EFFECT_VIBRATO, MAX_VOLUME, SOUND_TICKS_PER_SECOND, TONE_NOISE, TONE_PULSE, TONE_SQUARE,
+    TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
 };
 use crate::tone::ToneMode;
 use crate::utils::simplify_string;
@@ -240,7 +240,7 @@ impl Sound {
         audio_mut!(render_channel).play(vec![render_sound], None, true, false)?;
 
         let mut samples = vec![0; num_samples as usize];
-        let mut blip_buf = BlipBuf::new(num_samples);
+        let mut blip_buf = BlipBuf::new(AUDIO_RENDER_STEP_SAMPLES);
         blip_buf
             .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
             .expect("blip_buf rates must be valid");

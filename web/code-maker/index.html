@@ -1128,8 +1128,9 @@
           e.preventDefault();
           const file = e.dataTransfer.files?.[0];
           if (!file) return;
-          const isCode = file.name.endsWith(".py");
-          if (!isCode && !file.name.endsWith(".pyxres")) return;
+          const filename = file.name.toLowerCase();
+          const isCode = filename.endsWith(".py");
+          if (!isCode && !filename.endsWith(".pyxres")) return;
 
           // Handle project files before Ace or an embedded app handles the drop.
           e.stopPropagation();
@@ -1144,8 +1145,11 @@
               );
               if (load !== window._projectLoad) return;
               text = text.replace(
-                /((?:\w+\.)?\bload\s*\(\s*)(["'])[^"']*\.pyxres\2/g,
-                "$1$2my_resource.pyxres$2",
+                /((?:\w+\.)?\bload\s*\(\s*)(["'])([^"']*)\2/g,
+                (match, call, quote, filename) =>
+                  filename.toLowerCase().endsWith(".pyxres")
+                    ? `${call}${quote}my_resource.pyxres${quote}`
+                    : match,
               );
               document.getElementById("code-tab-button").click();
               window._codeEditor.setValue(text, -1);
@@ -1155,13 +1159,16 @@
               );
             } else {
               const data = await file.arrayBuffer();
+              if (load !== window._projectLoad) return;
               waitForPyxelReady(
                 () => {
+                  if (load !== window._projectLoad) return true;
                   const context = resourceEditor.contentWindow?.pyxelContext;
                   context?.resolveInput?.();
                   return context?.initialized;
                 },
                 () => {
+                  if (load !== window._projectLoad) return;
                   document.getElementById("resource-tab-button").click();
                   resourceEditor.contentWindow.dropFileToPyxel(file.name, data);
                 },
@@ -1328,7 +1335,12 @@ pyxel.utils._normalize_python_source_encoding(source)
         try {
           const filename = PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres";
           pyodide.runPython(
-            `import pyxel; pyxel.save(${JSON.stringify(filename)})`,
+            `
+import pyxel
+from pyxel.editor.canvas_panel import CanvasPanel
+CanvasPanel._finish_edit()
+pyxel.save(${JSON.stringify(filename)})
+`,
           );
           window._project.resource = uint8ToBase64(
             pyodide.FS.readFile(filename),

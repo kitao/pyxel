@@ -814,7 +814,7 @@
     description:
       "Place editable model references, refresh their previews and export visual/collision GLBs.",
     variant: "desktop",
-    min_version: "5.0.0",
+    min_version: "5.2.0",
     onload() {
       properties.push(
         new Property(ModelProject, "object", KEY, { default: {} }),

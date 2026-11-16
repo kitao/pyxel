@@ -76,12 +76,12 @@ prohibits a boundary. Delegated and inline work follow the same criteria.
 **Reason:** Paragraphs make control flow and processing stages visible while
 keeping closely related statements easy to read together. A whole function or
 resource lifecycle is too broad to establish one paragraph, and a different
-statement is too narrow to establish another. Rust's [style
-principles](https://doc.rust-lang.org/style-guide/principles.html) and the
-[standard library's I/O
-implementation](https://doc.rust-lang.org/src/std/io/mod.rs.html) show the same
-authored paragraphing: compact helpers beside paragraphs within substantial
-loops, without fixed spacing around every loop or return.
+statement is too narrow to establish another. These distinctions serve Rust's
+[readability principles](https://doc.rust-lang.org/style-guide/principles.html).
+The [standard library's I/O implementation in Rust
+1.90.0](https://github.com/rust-lang/rust/blob/1.90.0/library/std/src/io/mod.rs#L379-L520)
+illustrates compact helpers beside paragraphs within substantial loops,
+without fixed spacing around every loop or return.
 
 ### Declaration inventories
 

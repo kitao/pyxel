@@ -1,6 +1,6 @@
 # Cube Model References
 
-This local tool for **Blockbench 5 or later on desktop** keeps a scene linked to its original models. Place a model, duplicate and arrange its group, edit the original, then refresh every placement. Exported files are ordinary GLBs; the game uses the existing `Mesh` and `Node` APIs.
+This local tool for **Blockbench 5.2 or later on desktop** keeps a scene linked to its original models. Place a model, duplicate and arrange its group, edit the original, then refresh every placement. Exported files are ordinary GLBs; the game uses the existing `Mesh` and `Node` APIs.
 
 ## Install and place a model
 

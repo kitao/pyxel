@@ -79,17 +79,25 @@ pub fn compute_clip_rect(
     }
 }
 
-// The clip is target-clamped; clearing ignores 2D camera, clip and dithering.
-pub fn clear_viewport(target: &mut Image, clip: &ClipRect, color: u8) {
-    if clip.left > clip.right || clip.top > clip.bottom {
-        return;
-    }
+// Keep the projection viewport intact while clipping its destination pixels.
+pub fn prepare_viewport(target: &Image, x: i32, y: i32, w: i32, h: i32) -> (f32, f32, ClipRect) {
+    let x = (i64::from(x) - i64::from(target.canvas.camera_x)) as f32;
+    let y = (i64::from(y) - i64::from(target.canvas.camera_y)) as f32;
+    let mut clip = compute_clip_rect(x, y, w as f32, h as f32, target.width(), target.height());
+    let target_clip = target.canvas.clip_rect;
+    clip.left = clip.left.max(target_clip.left());
+    clip.top = clip.top.max(target_clip.top());
+    clip.right = clip.right.min(target_clip.right());
+    clip.bottom = clip.bottom.min(target_clip.bottom());
+    (x, y, clip)
+}
 
+pub fn clear_viewport(target: &mut Image, clip: &ClipRect, color: u8) {
     let color = target.palette[color as usize];
-    let stride = target.width() as usize;
     for y in clip.top..=clip.bottom {
-        let row = y as usize * stride;
-        target.canvas.data[row + clip.left as usize..=row + clip.right as usize].fill(color);
+        target
+            .canvas
+            .fill_row_with_dither(clip.left, clip.right, y, color);
     }
 }
 
@@ -578,6 +586,7 @@ fn write_visible_pixel(
     if depth_write {
         depth[i] = z;
     }
+    let col = target.palette[col as usize];
     target.canvas.write_data(x as usize, y as usize, col);
 }
 
@@ -683,6 +692,8 @@ fn edge_inside(w: f32, include_boundary: bool, pos_area: bool) -> bool {
 }
 
 // Interpolate z linearly. Both windings draw; draw::prim handles culling.
+// Rasterizers reject zero opacity before coverage loops; NaN retains
+// visible_pixel_index's behavior of not rejecting pixels through alpha.
 pub fn rasterize_triangle(
     target: &mut Image,
     depth: &mut [f32],
@@ -698,7 +709,7 @@ pub fn rasterize_triangle(
     depth_write: bool,
 ) {
     let area = edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1));
-    if area.abs() < 1e-6 {
+    if dither_alpha <= 0.0 || area.abs() < 1e-6 {
         return;
     }
     let inv_area = 1.0 / area;
@@ -796,7 +807,7 @@ pub fn rasterize_textured_triangle<F>(
     F: Fn(f32, f32, i32, i32) -> Option<i32>,
 {
     let area = edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1));
-    if area.abs() < 1e-6 {
+    if dither_alpha <= 0.0 || area.abs() < 1e-6 {
         return;
     }
     let inv_area = 1.0 / area;
@@ -889,7 +900,7 @@ pub fn rasterize_circle_filled(
     depth_test: bool,
     depth_write: bool,
 ) {
-    if !depth_in_clip_range(z) {
+    if dither_alpha <= 0.0 || !depth_in_clip_range(z) {
         return;
     }
     let x = f32_to_i32(cx);
@@ -981,7 +992,7 @@ pub fn rasterize_circle_border(
     depth_test: bool,
     depth_write: bool,
 ) {
-    if !depth_in_clip_range(z) {
+    if dither_alpha <= 0.0 || !depth_in_clip_range(z) {
         return;
     }
     let x = f32_to_i32(cx);
@@ -1464,6 +1475,9 @@ pub(crate) fn rasterize_border_line(
     depth_write: bool,
     planes: &[ScreenPlane],
 ) {
+    if dither_alpha <= 0.0 {
+        return;
+    }
     let Some((p0, p1)) = clip_screen_line_to_rect(p0, p1, clip) else {
         return;
     };

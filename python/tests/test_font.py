@@ -27,13 +27,13 @@ class TestFont:
     def test_bdf_offsets_cancel_wide_camera_position(self, tmp_path):
         path = tmp_path / "offset.bdf"
         path.write_text(
-            "FONTBOUNDINGBOX 4 1 -2000000000 0\nSTARTCHAR A\nENCODING 65\n"
-            "DWIDTH 4 0\nBBX 4 1 -2000000000 0\nBITMAP\nF0\nENDCHAR\n"
+            "FONTBOUNDINGBOX 4 1 -2147483648 0\nSTARTCHAR A\nENCODING 65\n"
+            "DWIDTH 4 0\nBBX 4 1 -2147483648 0\nBITMAP\nF0\nENDCHAR\n"
         )
 
         img = pyxel.Image(8, 2)
-        img.camera(-2_000_000_000, 0)
-        img.text(2_000_000_000, 0, "A", 7, pyxel.Font(str(path)))
+        img.camera(-128, 0)
+        img.text(2_147_483_520, 0, "A", 7, pyxel.Font(str(path)))
         assert list(img.data_ptr()) == [7] * 4 + [0] * 12
 
     @pytest.mark.parametrize(

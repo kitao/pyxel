@@ -218,8 +218,18 @@ function createDropTarget() {
   };
 }
 
-for (const surface of ["page", "runtime", "resource"]) {
-  test(`Code Maker routes dropped files by extension in the ${surface}`, async () => {
+for (const [surface, codeExtension, resourceExtension] of [
+  ["page", "py", "pyxres"],
+  ["runtime", "py", "pyxres"],
+  ["resource", "py", "pyxres"],
+  ["page", "PY", "PYXRES"],
+  ["runtime", "PY", "PYXRES"],
+  ["resource", "PY", "PYXRES"],
+  ["page", "Py", "PyXrEs"],
+  ["runtime", "Py", "PyXrEs"],
+  ["resource", "Py", "PyXrEs"],
+]) {
+  test(`Code Maker routes .${codeExtension}/.${resourceExtension} files in the ${surface}`, async () => {
     const targets = Object.fromEntries(
       ["page", "runtime", "resource", "code"].map((name) => [
         name,
@@ -274,12 +284,14 @@ for (const surface of ["page", "runtime", "resource"]) {
     setupFileDrop();
 
     const code = [
-      'pyxel.load("assets/test.pyxres")',
+      `pyxel.load("assets/test.${resourceExtension}")`,
       "pyxel.load( 'assets/other.pyxres', exclude_images=True)",
       'pyxel.load (\n    "assets/third.pyxres",\n    exclude_sounds=True,\n)',
       'print("hello")',
       "pyxel.load(resource_path)",
       'pyxel.unload("assets/test.pyxres")',
+      'pyxel.LOAD("assets/test.PYXRES")',
+      'pyxel.load("assets/image.PNG")',
     ].join("\n");
     const expected = [
       'pyxel.load("my_resource.pyxres")',
@@ -288,9 +300,11 @@ for (const surface of ["page", "runtime", "resource"]) {
       'print("hello")',
       "pyxel.load(resource_path)",
       'pyxel.unload("assets/test.pyxres")',
+      'pyxel.LOAD("assets/test.PYXRES")',
+      'pyxel.load("assets/image.PNG")',
     ].join("\n");
     const codeEvent = await targets[surface].drop({
-      name: "example.py",
+      name: `example.${codeExtension}`,
       arrayBuffer: async () => new TextEncoder().encode(code).buffer,
     });
     assert.deepEqual(displayed, [expected]);
@@ -304,7 +318,7 @@ for (const surface of ["page", "runtime", "resource"]) {
 
     const data = new Uint8Array([1, 2, 3]).buffer;
     const resourceEvent = await targets[surface].drop({
-      name: "assets.pyxres",
+      name: `assets.${resourceExtension}`,
       arrayBuffer: async () => data,
     });
     assert.equal(unlocked, true);
@@ -312,7 +326,9 @@ for (const surface of ["page", "runtime", "resource"]) {
 
     resourceEditor.contentWindow.pyxelContext.initialized = true;
     timers.shift()();
-    assert.deepEqual(resources, [{ name: "assets.pyxres", data }]);
+    assert.deepEqual(resources, [
+      { name: `assets.${resourceExtension}`, data },
+    ]);
     assert.deepEqual(selectedTabs, ["code-tab-button", "resource-tab-button"]);
     assert.equal(window._project.resource, "old resource");
     assert.equal(resourceEvent.prevented && resourceEvent.stopped, true);
@@ -334,6 +350,66 @@ for (const surface of ["page", "runtime", "resource"]) {
       });
       assert.equal(window._project.code, "print('after reset')");
     }
+  });
+}
+
+for (const phase of ["file read", "runtime startup"]) {
+  test(`Code Maker discards a resource drop superseded during ${phase}`, async () => {
+    const page = createDropTarget();
+    const effects = [];
+    const timers = [];
+    page.getElementById = (id) => ({ click: () => effects.push(id) });
+    const runtimeScreen = {
+      ...createDropTarget(),
+      contentWindow: { document: createDropTarget() },
+    };
+    const resourceEditor = {
+      ...createDropTarget(),
+      contentWindow: {
+        document: createDropTarget(),
+        pyxelContext: { initialized: false, resolveInput() {} },
+      },
+    };
+    const window = { _projectLoad: Symbol() };
+    loadNamedFunction(source, "setupFileDrop", {
+      document: page,
+      runtimeScreen,
+      resourceEditor,
+      window,
+      waitForPyxelReady: loadArrowFunction(sharedSource, "waitForPyxelReady", {
+        setTimeout: (callback) => timers.push(callback),
+      }),
+    })();
+
+    let finishRead;
+    const data = new Uint8Array([1, 2, 3]).buffer;
+    const pending = page.drop({
+      name: "old.pyxres",
+      arrayBuffer: () => new Promise((resolve) => (finishRead = resolve)),
+    });
+    if (phase === "runtime startup") {
+      finishRead(data);
+      await pending;
+      assert.equal(timers.length, 1);
+    }
+
+    window._projectLoad = Symbol();
+    resourceEditor.contentWindow = {
+      document: createDropTarget(),
+      pyxelContext: {
+        initialized: false,
+        resolveInput: () => effects.push("unlock"),
+      },
+      dropFileToPyxel: () => effects.push("drop"),
+    };
+    if (phase === "file read") {
+      finishRead(data);
+      await pending;
+    } else {
+      timers.shift()();
+    }
+    assert.deepEqual(effects, []);
+    assert.equal(timers.length, 0);
   });
 }
 

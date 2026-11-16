@@ -88,7 +88,7 @@ The editing area selected in the image bank view is displayed magnified. Click a
 
 ![https://kitao.dev/pyxel/editor-manual/images/image_bankview.png](https://kitao.dev/pyxel/editor-manual/images/image_bankview.png)
 
-A thumbnail view of the entire image bank. The white frame indicates the current editing area.
+Displays part of the image bank. The white frame indicates the current editing area.
 
 | Shortcut | Action |
 | --- | --- |
@@ -225,7 +225,7 @@ Drag to select multiple tiles in the tile image view, then draw to repeat that p
 
 ### Loading TMX Files
 
-Drag and drop a TMX file created with Tiled Map Editor ([Tiled](https://www.mapeditor.org/)) onto the Tilemap Editor to load the contents of layer 0 at the editing area position.
+In Tiled Map Editor ([Tiled](https://www.mapeditor.org/)), create a finite map with 8×8-pixel tiles, one embedded tileset, and CSV layer data. Drag and drop the TMX file onto the Tilemap Editor to load layer 0 at the editing area position. Load the tileset image separately into the referenced image bank. Tile flips and rotations are not imported. Empty cells become tile (0, 0), at the top-left of the image bank.
 
 ## Sound Editor
 

@@ -24,9 +24,15 @@ sys.modules["js"] = SimpleNamespace(window=window)
 init = pyxel.init
 pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
 callbacks = []
-pyxel.run = lambda update, draw: callbacks.append(update)
+
+def run(update, draw):
+    assert window.js_startup_complete is True
+    callbacks.append(update)
+
+pyxel.run = run
 
 runpy.run_path(sys.argv[1])
+assert window.js_startup_complete is True
 assert len(callbacks) == 1
 expected = play and not stop
 assert all((pyxel.play_pos(i) is not None) == expected for i in range(4))
@@ -58,6 +64,40 @@ assert all(pyxel.play_pos(i) is None for i in range(4))
             "1" if play else "0",
             "1" if stop else "0",
         ],
+        env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "Failed to initialize audio device" not in result.stdout
+
+
+def test_mml_studio_signals_startup_completion_after_mml_error():
+    code = """
+import runpy
+import sys
+from types import SimpleNamespace
+
+import pyxel
+
+window = SimpleNamespace(js_play=True, js_ch1_mml="T0")
+sys.modules["js"] = SimpleNamespace(window=window)
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+try:
+    runpy.run_path(sys.argv[1])
+except Exception as error:
+    assert type(error) is Exception
+    assert str(error) == "MML:2: 'T' is below minimum 1"
+else:
+    raise AssertionError("Invalid tempo must fail during initial startup")
+assert window.js_startup_complete is True
+"""
+    source = Path(__file__).parents[2] / "web" / "mml-studio" / "mml_studio.py"
+    result = subprocess.run(
+        [sys.executable, "-B", "-c", code, str(source)],
         env={**os.environ, "SDL_AUDIODRIVER": "dummy"},
         capture_output=True,
         text=True,

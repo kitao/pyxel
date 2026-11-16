@@ -4,7 +4,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::RcImage;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::{f32_to_i32, simplify_string};
+use crate::utils::simplify_string;
 
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -264,19 +264,12 @@ impl Tilemap {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
 
-        // Preserve source tiles when the destination overlaps the source.
-        let borrowed;
-        let copied_canvas;
-        let src = if ptr::eq(tilemap.as_ptr(), self) {
-            if f32_to_i32(width) == 0 || f32_to_i32(height) == 0 {
-                return;
-            }
-            copied_canvas = self.canvas.clone();
-            &copied_canvas
+        let borrowed = if ptr::eq(tilemap.as_ptr(), self) {
+            None
         } else {
-            borrowed = rc_ref!(tilemap);
-            &borrowed.canvas
+            Some(rc_ref!(tilemap))
         };
+        let src = borrowed.as_ref().map(|tilemap| &tilemap.canvas);
 
         if rotate != 0.0 || scale != 1.0 {
             self.canvas.blit_with_transform(
@@ -317,6 +310,10 @@ impl Tilemap {
         dy: f32,
         walls: &[Tile],
     ) -> (f32, f32) {
+        if walls.is_empty() {
+            return (dx, dy);
+        }
+
         // Resolve the larger-magnitude axis first for better corner handling
         let mut cur_x = x;
         let mut cur_y = y;
@@ -355,12 +352,12 @@ impl Tilemap {
 
         let tile_size = TILE_SIZE as f32;
         if delta > 0.0 {
-            let cur_edge = pos + size - 1.0;
+            let cur_edge = pos + size;
             let new_edge = cur_edge + delta;
-            let start = ((cur_edge / tile_size).floor() as i32)
-                .saturating_add(1)
-                .max(0);
-            let end = ((new_edge / tile_size).floor() as i32).min(primary_limit.saturating_sub(1));
+            let start = ((cur_edge / tile_size).ceil() as i32).max(0);
+            let end = ((new_edge / tile_size).ceil() as i32)
+                .saturating_sub(1)
+                .min(primary_limit.saturating_sub(1));
 
             for primary in start..=end {
                 for cross in cross_start..=cross_end {
@@ -401,7 +398,8 @@ impl Tilemap {
     ) -> f32 {
         let tile_size = TILE_SIZE as f32;
         let ty0 = ((y / tile_size).floor() as i32).max(0);
-        let ty1 = (((y + height - 1.0) / tile_size).floor() as i32)
+        let ty1 = (((y + height) / tile_size).ceil() as i32)
+            .saturating_sub(1)
             .min((self.canvas.height() as i32).saturating_sub(1));
         self.collide_resolve_axis(
             x,
@@ -426,7 +424,8 @@ impl Tilemap {
     ) -> f32 {
         let tile_size = TILE_SIZE as f32;
         let tx0 = ((x / tile_size).floor() as i32).max(0);
-        let tx1 = (((x + width - 1.0) / tile_size).floor() as i32)
+        let tx1 = (((x + width) / tile_size).ceil() as i32)
+            .saturating_sub(1)
             .min((self.canvas.width() as i32).saturating_sub(1));
         self.collide_resolve_axis(
             y,
@@ -447,5 +446,84 @@ impl Tilemap {
             return false;
         }
         walls.contains(&self.canvas.read_data(tx as usize, ty as usize))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_fractional_wall_contact_is_symmetric() {
+        for vertical in [false, true] {
+            for reverse in [false, true] {
+                let tilemap = Tilemap::new(4, 4, ImageSource::Index(0));
+                let mut tilemap = rc_mut!(tilemap);
+                let wall_axis = if reverse { 1.0 } else { 2.0 };
+                let (tx, ty) = if vertical {
+                    (1.0, wall_axis)
+                } else {
+                    (wall_axis, 1.0)
+                };
+                tilemap.set_tile(tx, ty, (1, 0));
+                for size in [0.5, 7.5, 8.0] {
+                    for gap in [0.0, 0.25, 1.0, 8.0] {
+                        for distance in [0.25_f32, 0.5, 1.0, 3.0, 100.0] {
+                            let (pos, delta, expected) = if reverse {
+                                (16.0 + gap, -distance, -distance.min(gap))
+                            } else {
+                                (16.0 - size - gap, distance, distance.min(gap))
+                            };
+                            let (actual, expected) = if vertical {
+                                (
+                                    tilemap.collide(8.0, pos, 8.0, size, 0.0, delta, &[(1, 0)]),
+                                    (0.0, expected),
+                                )
+                            } else {
+                                (
+                                    tilemap.collide(pos, 8.0, size, 8.0, delta, 0.0, &[(1, 0)]),
+                                    (expected, 0.0),
+                                )
+                            };
+                            assert_eq!(actual, expected, "vertical={vertical} reverse={reverse} size={size} gap={gap} distance={distance}");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_fractional_cross_axis_overlap_and_parallel_sliding() {
+        let tilemap = Tilemap::new(3, 3, ImageSource::Index(0));
+        let mut tilemap = rc_mut!(tilemap);
+        tilemap.set_tile(1.0, 1.0, (1, 0));
+        for vertical in [false, true] {
+            for reverse in [false, true] {
+                for cross in [0.0, 0.5, 8.0, 15.5, 16.0] {
+                    let (pos, delta) = if reverse { (16.0, -2.0) } else { (0.0, 2.0) };
+                    let expected = if cross == 0.0 || cross == 16.0 {
+                        delta
+                    } else {
+                        0.0
+                    };
+                    let (actual, expected) = if vertical {
+                        (
+                            tilemap.collide(cross, pos, 8.0, 8.0, 0.0, delta, &[(1, 0)]),
+                            (0.0, expected),
+                        )
+                    } else {
+                        (
+                            tilemap.collide(pos, cross, 8.0, 8.0, delta, 0.0, &[(1, 0)]),
+                            (expected, 0.0),
+                        )
+                    };
+                    assert_eq!(
+                        actual, expected,
+                        "vertical={vertical} reverse={reverse} cross={cross}"
+                    );
+                }
+            }
+        }
     }
 }

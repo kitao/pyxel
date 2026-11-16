@@ -77,15 +77,15 @@ def test_source_decode_preserves_python_characters_and_utf8_save(
 
 
 @pytest.mark.parametrize(
-    "source",
+    ("source", "expected_exception"),
     [
-        b"# coding: fake_codec\nvalue = 1\n",
-        b'# coding: utf-8\nvalue = "\xff"\n',
-        b"\xef\xbb\xbf# coding: latin-1\nvalue = 1\n",
+        (b"# coding: fake_codec\nvalue = 1\n", SyntaxError),
+        (b'# coding: utf-8\nvalue = "\xff"\n', UnicodeDecodeError),
+        (b"\xef\xbb\xbf# coding: latin-1\nvalue = 1\n", SyntaxError),
     ],
 )
-def test_source_decode_rejects_invalid_encoding(source):
-    with pytest.raises((SyntaxError, UnicodeError)):
+def test_source_decode_rejects_invalid_encoding(source, expected_exception):
+    with pytest.raises(expected_exception):
         decode_editor_source(source)
 
 

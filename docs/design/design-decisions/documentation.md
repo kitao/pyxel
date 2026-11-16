@@ -7,7 +7,7 @@
 ### The introductory description of 16 colors
 
 **Decision:** Keep the concise basic-specification description in the [project
-introduction](../../../README.md) and [user
+introduction](../../../web/index.html) and [user
 guide](../../../web/user-guide/user-guide.json): Pyxel provides a 16-color
 environment. Do not append palette-extension details at every introductory
 mention of the color count. The same scope applies to other introductory tables

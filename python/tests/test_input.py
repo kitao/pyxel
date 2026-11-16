@@ -190,6 +190,30 @@ class TestSetButtonValue:
         pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, -3)
         assert pyxel.mouse_wheel == -3
 
+    def test_mouse_values_before_and_after_first_flip(self):
+        code = """
+import pyxel
+
+pyxel.init(64, 48, headless=True)
+for flipped in [False, True]:
+    if flipped:
+        pyxel.flip()
+    for x, y in [(42, -7), (0, 0), (2**31 - 1, -(2**31))]:
+        pyxel.set_btnv(pyxel.MOUSE_POS_X, x)
+        pyxel.set_btnv(pyxel.MOUSE_POS_Y, y)
+        assert (pyxel.mouse_x, pyxel.mouse_y) == (x, y)
+        assert pyxel.btnv(pyxel.MOUSE_POS_X) == x
+        assert pyxel.btnv(pyxel.MOUSE_POS_Y) == y
+        """
+        result = subprocess.run(
+            [sys.executable, "-B", "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
 
 class TestSetMousePos:
     def test_updates_mouse_coordinates(self):

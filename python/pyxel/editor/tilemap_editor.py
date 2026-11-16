@@ -125,6 +125,7 @@ class TilemapEditor(EditorBase):
         self._restore_state(data, "new")
 
     def __on_drop(self, filename):
+        self._release_capture()
         try:
             pyxel.tilemaps[self.tilemap_index_var].load(
                 self.focus_x_var * 8, self.focus_y_var * 8, filename, 0

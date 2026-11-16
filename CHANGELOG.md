@@ -2,9 +2,29 @@
 
 ## 3.0.2
 
-- Fixed the Web usage guide to reference the released 3.0.1 runtime
-- Reduced drawing cost for Cube's player, coin, and platform sample models
-- Added single-sided GLB export guidance to the Cube user guide
+- Made Node.draw follow the target's 2D camera, clip, pal, and dither settings
+- Improved 2D and Cube drawing performance, including Cube sample models
+- Reduced overhead in tilemap/Cube collisions and Cube coordinate conversions
+- Improved Sound.save and Music.save performance for longer exports
+- Fixed tilemap collisions with fractional rectangle positions and sizes
+- Fixed mouse coordinate conversion and position overrides
+- Fixed mouse wheel movement lost when multiple events arrive in one frame
+- Fixed BDF font bounds validation and horizontal text positioning
+- Fixed app2exe dependency discovery when packages and modules share a name
+- Fixed image-reference getters failing during Python garbage collection
+- Fixed GIF screencasts playing too fast at common frame rates
+- Fixed overflow during infinite MML repeats in debug builds
+- Preserved Unicode line-separator characters in app metadata
+- Prevented delayed resource drops from changing new Code Maker projects
+- Fixed lost or misplaced editor edits during commands and resource drops
+- Fixed uppercase file extensions in editor and Code Maker drops
+- Fixed sound and music editor cursors after undo and at full rows
+- Fixed MML Studio startup playback and removed a redundant runtime load
+- Fixed stale error displays and fatal-error recovery when restarting web apps
+- Forwarded legacy web tool and guide pages to kitao.dev
+- Set Cube Model References' minimum Blockbench version to 5.2
+- Corrected the tileset filename used by the drawing example
+- Updated API descriptions and translations, editor views, and web/GLB guidance
 
 ## 3.0.1
 
