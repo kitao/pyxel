@@ -458,7 +458,7 @@ jobs:
         shell: bash
         env:
           SDL_AUDIODRIVER: dummy
-          GALLIUM_DRIVER: llvmpipe
+          GALLIUM_DRIVER: softpipe
         run: |
           python -m pip install --no-index --no-deps dist/*.whl
           python .github/audit/windows_return.py

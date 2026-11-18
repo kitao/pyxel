@@ -20,17 +20,20 @@ if sys.argv[1:] and sys.argv[1] == "game":
     opengl.glGetString.argtypes = [ctypes.c_uint]
     opengl.glGetString.restype = ctypes.c_char_p
     renderer = opengl.glGetString(0x1F01)
-    if not renderer or b"llvmpipe" not in renderer.lower():
+    requested = os.environ["GALLIUM_DRIVER"]
+    if not renderer or requested.encode() not in renderer.lower():
         raise RuntimeError("Pyxel did not acquire the software OpenGL context")
-    print("Software OpenGL renderer: llvmpipe", flush=True)
+    print(f"Software OpenGL renderer: {requested}", flush=True)
 
     def draw():
         pyxel.cls(4)
+        if pyxel.frame_count == 0:
+            print("First Pyxel draw callback reached", flush=True)
         if pyxel.frame_count >= 5 and not Path(marker).exists():
             Path(marker).touch()
 
     pyxel.run(lambda: None, draw)
-    sys.exit(0)
+    raise RuntimeError("The native frame loop returned unexpectedly")
 
 
 def exercise(mode, folder):
@@ -39,7 +42,14 @@ def exercise(mode, folder):
     returned = folder / f"{mode}.returned"
     batch = folder / f"{mode}.cmd"
     python_line = subprocess.list2cmdline([sys.executable, str(Path(__file__).resolve()), "game", title, str(ready)])
-    batch.write_text("@echo off\n" + python_line + "\nif errorlevel 1 exit /b 1\n" + 'echo returned>"' + str(returned) + '"\n', encoding="utf-8")
+    batch.write_text(
+        "@echo off\n" + python_line + "\n"
+        + 'set "pyxel_status=%errorlevel%"\n'
+        + "echo Game exit code %pyxel_status%\n"
+        + 'if not "%pyxel_status%"=="0" exit /b %pyxel_status%\n'
+        + 'echo returned>"' + str(returned) + '"\n',
+        encoding="utf-8",
+    )
     process = subprocess.Popen(["cmd.exe", "/d", "/c", str(batch)])
     try:
         timeout = time.monotonic() + 45
