@@ -378,3 +378,61 @@ jobs:
             fi
           done
           [ $FAIL -eq 0 ] || exit 1
+
+  audit-linux-loader:
+    name: Audit Linux loader (${{ matrix.arch }})
+    if: github.event_name == 'workflow_dispatch'
+    needs: build-linux
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { arch: x86_64, platform: linux/amd64, os: ubuntu-24.04, target: x86_64-unknown-linux-gnu }
+          - { arch: aarch64, platform: linux/arm64, os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+          - { arch: armv7l, platform: linux/arm/v7, os: ubuntu-24.04, target: armv7-unknown-linux-gnueabihf }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: pyxel-${{ matrix.target }}
+          path: dist
+      - name: Enable ARMv7 userspace emulation
+        if: matrix.arch == 'armv7l'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq qemu-user-static binfmt-support
+          sudo update-binfmts --enable qemu-arm
+      - name: Test bundled and system SDL2 in separate containers
+        shell: bash
+        run: |
+          opts=(--rm --platform "${{ matrix.platform }}" -v "$PWD/dist:/wheels:ro" -v "$PWD/.github/audit:/probe:ro")
+          img=python:3.13-slim-bookworm
+          docker pull --platform "${{ matrix.platform }}" "$img"
+          docker run "${opts[@]}" --network none "$img" python /probe/linux_load.py fallback "${{ matrix.arch }}"
+          docker run "${opts[@]}" "$img" sh -ec 'apt-get update -qq && apt-get install -y -qq --no-install-recommends libsdl2-2.0-0 && python /probe/linux_load.py system "$1"' sh "${{ matrix.arch }}"
+
+  audit-windows-return:
+    name: Audit Windows Arm64 window and console return
+    if: github.event_name == 'workflow_dispatch'
+    needs: build-winmac
+    runs-on: windows-11-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          architecture: x64
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: pyxel-x86_64-pc-windows-msvc
+          path: dist
+      - name: Check normal window close and Escape on the built wheel
+        shell: bash
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: |
+          python -m pip install --no-index --no-deps dist/*.whl
+          python .github/audit/windows_return.py
