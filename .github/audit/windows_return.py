@@ -9,10 +9,20 @@ from ctypes import wintypes
 from pathlib import Path
 
 if sys.argv[1:] and sys.argv[1] == "game":
+    driver = Path(os.environ["SDL_OPENGL_LIBRARY"])
+    dll_directory = os.add_dll_directory(str(driver.parent))
+    gallium = ctypes.WinDLL(str(driver.parent / "libgallium_wgl.dll"))
+    opengl = ctypes.WinDLL(str(driver))
     import pyxel
 
     title, marker = sys.argv[2:]
     pyxel.init(96, 64, title=title)
+    opengl.glGetString.argtypes = [ctypes.c_uint]
+    opengl.glGetString.restype = ctypes.c_char_p
+    renderer = opengl.glGetString(0x1F01)
+    if not renderer or b"llvmpipe" not in renderer.lower():
+        raise RuntimeError("Pyxel did not acquire the software OpenGL context")
+    print("Software OpenGL renderer: llvmpipe", flush=True)
 
     def draw():
         pyxel.cls(4)
