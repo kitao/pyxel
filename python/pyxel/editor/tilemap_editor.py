@@ -71,6 +71,7 @@ class TilemapEditor(EditorBase):
             min_value=0,
             max_value=pyxel.NUM_IMAGES - 1,
             value=pyxel.tilemaps[self.tilemap_index_var].imgsrc,
+            allow_out_of_range=True,
         )
         self._image_picker.add_event_listener("change", self.__on_image_picker_change)
         self.add_number_picker_help(self._image_picker)
@@ -88,6 +89,13 @@ class TilemapEditor(EditorBase):
         self.add_event_listener("drop", self.__on_drop)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
+
+    # Public methods
+
+    def refresh_resource(self):
+        self._tilemap_picker.set_bank_size(len(pyxel.tilemaps))
+        self._image_picker.set_bank_size(len(pyxel.images))
+        self.image_index_var = pyxel.tilemaps[self.tilemap_index_var].imgsrc
 
     # Helpers
 

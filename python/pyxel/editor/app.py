@@ -105,6 +105,8 @@ class App(Widget):
             SoundEditor(self),
             MusicEditor(self),
         ]
+        for editor in self._editors:
+            editor.refresh_resource()
         self.__on_editor_button_change(self.editor_type_var)
 
         self.add_event_listener("update", self.__on_update)
@@ -181,9 +183,8 @@ class App(Widget):
                     print(f"Failed to load resource: {e}")
                 else:
                     pyxel.num_user_colors = len(pyxel.colors)
-                    # Reapply the selected color's palette bound.
-                    self._editors[0].color_var = self._editors[0].color_var
                     for editor in self._editors:
+                        editor.refresh_resource()
                         editor.reset_history()
                 finally:
                     pyxel.colors[:] = colors[: pyxel.NUM_COLORS] + list(pyxel.colors)

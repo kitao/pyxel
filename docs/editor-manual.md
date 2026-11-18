@@ -21,7 +21,7 @@ Launch Pyxel Editor with the following command:
 pyxel edit [PYXEL_RESOURCE_FILE]
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, `my_resource.pyxres` is used. Pyxel Editor can load resources with palettes of up to 240 colors.
+If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, `my_resource.pyxres` is used. Pyxel Editor can load resources with palettes of up to 240 colors. Each bank selector offers only the entries that exist, up to the limit shown in this manual.
 
 ## Common Operations
 
@@ -57,7 +57,7 @@ The created resource file can be loaded and used in a Pyxel application with the
 
 ### Loading Resources
 
-Drop another .pyxres file onto the window to replace all current edits, including unsaved changes. The save destination stays the same.
+Dropping another .pyxres file onto the window replaces the resource types it contains, including any unsaved edits to them. A successful load clears undo history in all four editors. The save destination stays the same.
 
 ## Image Editor
 
@@ -415,7 +415,7 @@ Place sound numbers in playback order across four channels (CH0-CH3). Copy and p
 
 | Shortcut | Action |
 | --- | --- |
-| Up/Down | Switch the editing channel |
+| Up/Down | Move up or down one row, switching channels at the boundary |
 | Left/Right | Move the editing cursor |
 | Delete(fn+delete) | Delete the sound at the current position |
 | Backspace(delete) | Delete the sound before the current position |

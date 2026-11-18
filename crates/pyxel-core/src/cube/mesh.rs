@@ -29,6 +29,7 @@ impl ColImage {
 pub struct Material {
     pub col_img: ColImage,
     pub colkey: Option<i32>,
+    pub fully_masked: bool,
 }
 
 // Part arrays are parallel; validate() enforces parents[i] < i for topological traversal.
@@ -282,6 +283,7 @@ impl Mesh {
         Material {
             col_img: self.col_img.clone(),
             colkey: self.colkey,
+            fully_masked: false,
         }
     }
 
@@ -511,6 +513,7 @@ mod tests {
             m.materials = vec![Material {
                 col_img: ColImage::Color(8),
                 colkey: Some(1),
+                fully_masked: false,
             }];
             m.material_indices = vec![Some(0)];
         }

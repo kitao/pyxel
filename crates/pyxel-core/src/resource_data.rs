@@ -38,7 +38,9 @@ impl ImageData {
     fn to_image(&self) -> RcImage {
         let data = expand_vec2(&self.data, self.height as usize, self.width as usize);
         let image = Image::new(self.width, self.height);
-        rc_mut!(image).canvas.data = data.into_iter().flatten().collect();
+        for (pixel, &value) in rc_mut!(image).canvas.data.iter_mut().zip(data) {
+            *pixel = value;
+        }
         image
     }
 
@@ -82,15 +84,20 @@ impl TilemapData {
     }
 
     fn to_tilemap(&self) -> RcTilemap {
-        let data = expand_vec2(&self.data, self.height as usize, (self.width * 2) as usize);
+        let mut coords = expand_vec2(&self.data, self.height as usize, (self.width * 2) as usize);
         let tilemap = Tilemap::new(self.width, self.height, ImageSource::Index(self.imgsrc));
-        let flat: Vec<_> = data.into_iter().flatten().collect();
-        rc_mut!(tilemap).canvas.data = flat.chunks(2).map(|c| (c[0], c[1])).collect();
+        for tile in &mut rc_mut!(tilemap).canvas.data {
+            *tile = (*coords.next().unwrap(), *coords.next().unwrap());
+        }
         tilemap
     }
 
     fn validate(&self, index: usize, image_count: usize) -> Result<(), String> {
         validate_grid("tilemaps", index, self.width, self.height, &self.data, 2)?;
+        self.validate_imgsrc(index, image_count)
+    }
+
+    fn validate_imgsrc(&self, index: usize, image_count: usize) -> Result<(), String> {
         if self.imgsrc as usize >= image_count {
             return Err(format!(
                 "Invalid resource data: tilemaps[{index}].imgsrc {} is out of range 0..{image_count}",
@@ -265,8 +272,14 @@ impl ResourceData {
         Ok(())
     }
 
-    pub fn to_toml(&self) -> String {
-        toml::to_string(self).unwrap()
+    pub fn to_toml(&self) -> Result<String, String> {
+        // An empty image section leaves tilemap sources relative to the loading runtime.
+        if !self.images.is_empty() {
+            for (index, tilemap) in self.tilemaps.iter().enumerate() {
+                tilemap.validate_imgsrc(index, self.images.len())?;
+            }
+        }
+        Ok(toml::to_string(self).unwrap())
     }
 }
 

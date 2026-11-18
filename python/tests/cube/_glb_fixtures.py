@@ -437,6 +437,7 @@ def write_single_texture_motion_glb(
     tangent_attribute: bool = False,
     alpha_mode: str | None = None,
     alpha_cutoff: float | None = None,
+    base_color_texture: bool = True,
     double_sided: bool | None = None,
 ) -> Path:
     positions = struct.pack(
@@ -524,7 +525,7 @@ def write_single_texture_motion_glb(
 
     materials = []
     for _ in range(material_count):
-        pbr = {"baseColorTexture": {"index": 0}}
+        pbr = {"baseColorTexture": {"index": 0}} if base_color_texture else {}
         if base_color_factor is not None:
             pbr["baseColorFactor"] = base_color_factor
         material = {"pbrMetallicRoughness": pbr}

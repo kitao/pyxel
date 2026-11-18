@@ -116,7 +116,7 @@ impl Sound {
             .map_err(PyException::new_err)
     }
 
-    // MML
+    // MML & PCM
 
     #[pyo3(signature = (code=None))]
     fn mml(&self, code: Option<&str>) -> PyResult<()> {
@@ -126,8 +126,6 @@ impl Sound {
         };
         self.inner_mut().set_mml(code).map_err(PyException::new_err)
     }
-
-    // PCM file operations
 
     #[pyo3(signature = (filename=None))]
     fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
@@ -139,6 +137,8 @@ impl Sound {
             .load_pcm(filename)
             .map_err(PyException::new_err)
     }
+
+    // Export and duration
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
     fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {

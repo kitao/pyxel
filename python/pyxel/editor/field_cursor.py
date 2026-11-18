@@ -20,7 +20,7 @@ class FieldCursor:
         self.parent = parent
         self._max_field_length = max_field_length
         self._field_wrap_length = field_wrap_length
-        self._max_field_values = max_field_values
+        self.max_field_values = max_field_values
         self._get_field = get_field
         self._add_pre_history = add_pre_history
         self._add_post_history = add_post_history
@@ -69,7 +69,7 @@ class FieldCursor:
 
     @property
     def _max_y(self):
-        return len(self._max_field_values) - 1
+        return len(self.max_field_values) - 1
 
     @property
     def _adjusted_cursor_x(self):
@@ -221,7 +221,7 @@ class FieldCursor:
         for i in range(self.x, self.x + self.width):
             value = self.field[i]
             if value >= 0:
-                self.field[i] = clamp(value + offset, 0, self._max_field_values[self.y])
+                self.field[i] = clamp(value + offset, 0, self.max_field_values[self.y])
         self._add_post_history(self.x, self.y)
 
     # Input processing

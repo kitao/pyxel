@@ -55,11 +55,10 @@ impl AudioStreamRenderer {
         }
     }
 
-    fn render(&mut self, out: &mut [i16]) {
-        let channels = pyxel::channels();
+    fn render(&mut self, channels: &[RcChannel], out: &mut [i16]) {
         self.pcm_mix_starts.resize(channels.len(), usize::MAX);
         Audio::render_samples_with_mix_starts(
-            &channels,
+            channels,
             &mut self.blip_buf,
             out,
             &mut self.pcm_mix_starts,
@@ -76,11 +75,12 @@ impl Audio {
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SAMPLES,
             move |out: &mut [i16]| {
-                stream_renderer.render(out);
+                stream_renderer.render(&pyxel::channels(), out);
             },
         );
     }
 
+    #[cfg(test)]
     pub fn render_samples(channels: &[RcChannel], blip_buf: &mut BlipBuf, out: &mut [i16]) {
         let mut pcm_mix_starts = vec![usize::MAX; channels.len()];
         Self::render_samples_with_mix_starts(channels, blip_buf, out, &mut pcm_mix_starts);
@@ -226,7 +226,12 @@ impl Audio {
     }
 
     #[cfg(pyxel_core)]
-    pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) -> Result<(), String> {
+    pub fn save_channels(
+        filename: &str,
+        channels: &[RcChannel],
+        num_samples: u32,
+        use_ffmpeg: bool,
+    ) -> Result<(), String> {
         let spec = WavSpec {
             channels: 1,
             sample_rate: AUDIO_SAMPLE_RATE,
@@ -238,8 +243,19 @@ impl Audio {
         let mut writer = WavWriter::create(&filename, spec)
             .map_err(|_| format!("Failed to create file '{filename}'"))?;
 
-        for &sample in samples {
-            writer.write_sample(sample).map_err(|_| save_err())?;
+        let mut renderer = AudioStreamRenderer::new();
+        let mut samples = [0; AUDIO_BUFFER_SAMPLES as usize];
+        let mut remaining = num_samples;
+        while remaining > 0 {
+            let count = remaining.min(AUDIO_BUFFER_SAMPLES);
+            let chunk = &mut samples[..count as usize];
+            if !channels.is_empty() {
+                renderer.render(channels, chunk);
+            }
+            for &sample in chunk.iter() {
+                writer.write_sample(sample).map_err(|_| save_err())?;
+            }
+            remaining -= count;
         }
         writer.finalize().map_err(|_| save_err())?;
         platform::export_browser_file(&filename);

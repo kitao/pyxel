@@ -39,7 +39,7 @@ format_version = 1
 ...
 ```
 
-The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty fields inside an entry use empty arrays (e.g., `notes = []`), and a section intentionally skipped by `save(..., exclude_*)` is written as an empty array. A save records the current runtime banks, including non-default bank counts and dimensions.
+The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. A section skipped by `save(..., exclude_*)` is written as an empty array. Each image or tilemap must have at least one row, and each row must contain at least one value. A save records the current runtime banks, including non-default bank counts and dimensions.
 
 Pyxel writes `format_version = 1` and accepts format versions up to **4** when loading.
 
@@ -84,7 +84,7 @@ All fields are required.
 | --- | --- | --- |
 | `width` | u32 | Tilemap width in tiles |
 | `height` | u32 | Tilemap height in tiles |
-| `imgsrc` | u32 | Source image bank index (0-based) |
+| `imgsrc` | u32 | Source image bank index (0-based). A tilemap that uses an `Image` instance is saved with index 0 |
 | `data` | array of arrays of u16 | 2D tile data in interleaved format (see below) |
 
 Each tile is an `(image_tx, image_ty)` pair of `u16` coordinates in the source image bank's 8×8 tile grid. TOML rows interleave the pairs as `[tx0, ty0, tx1, ty1, ...]`, with `width × 2` elements per uncompressed row.
@@ -112,11 +112,11 @@ All fields are required. Empty sounds use empty arrays (e.g., `notes = []`).
 | --- | --- | --- |
 | `notes` | array of i8 | Note values. Negative values are rests; 0 = C0, 12 = C1 |
 | `tones` | array of u8 | Index into the tone bank. Default tones: 0 = Triangle, 1 = Square, 2 = Pulse, 3 = Noise |
-| `volumes` | array of u8 | Volume values. 0 = silent, 7 = full volume |
+| `volumes` | array of u8 | 0 is silent, 7 is unity gain, and values above 7 amplify the sound |
 | `effects` | array of u8 | 0 = None, 1 = Slide, 2 = Vibrato, 3 = FadeOut, 4 = Half-FadeOut, 5 = Quarter-FadeOut |
 | `speed` | u16 | Positive playback speed in ticks per note (1 tick = 1/120 second). Default: 30 |
 
-The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the sound and may be shorter than `notes`. During playback, values are read cyclically (index modulo array length), and an empty array falls back to the default: tone 0 (Triangle), volume 7, effect 0 (None).
+The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the sound and may be shorter than `notes`. During playback, values are read cyclically (index modulo array length), and an empty array falls back to tone index 0, volume 7, or effect 0 (None). Custom tone definitions must be set up at runtime.
 
 **Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11. For example, C0=0, A4=57, B4=59.
 
@@ -124,7 +124,7 @@ The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the so
 
 ## Music
 
-By default, **8 music tracks** with **4 channels**. Each track arranges sounds for sequential playback.
+Pyxel starts with **8 empty music tracks** and **4 playback channels**. A track stores a sequence of sound indices for each channel it uses.
 
 ```toml
 [[musics]]

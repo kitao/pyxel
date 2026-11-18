@@ -161,15 +161,16 @@ class ImageViewer(Widget):
 
         # Draw image preview
         pyxel.user_pal()
-        pyxel.blt(
-            self.x + 1,
-            self.y + 1,
-            self.image_index_var,
-            self.viewport_x_var * _GRID_SIZE,
-            self.viewport_y_var * _GRID_SIZE,
-            self.width - 2,
-            self.height - 2,
-        )
+        if self.image_index_var < len(pyxel.images):
+            pyxel.blt(
+                self.x + 1,
+                self.y + 1,
+                self.image_index_var,
+                self.viewport_x_var * _GRID_SIZE,
+                self.viewport_y_var * _GRID_SIZE,
+                self.width - 2,
+                self.height - 2,
+            )
         pyxel.pal()
 
         # Draw focus outline

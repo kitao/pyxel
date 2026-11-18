@@ -205,6 +205,148 @@ assert pyxel.num_user_colors == 240
             pyxel.clip()
             pyxel.resize(*dimensions)
 
+    def test_editor_uses_loaded_bank_counts(self, tmp_path):
+        pyxel.save(str(tmp_path / "full.pyxres"))
+        pyxel.save(
+            str(tmp_path / "skipped.pyxres"),
+            exclude_images=True,
+            exclude_tilemaps=True,
+            exclude_sounds=True,
+            exclude_musics=True,
+        )
+        banks = (pyxel.images, pyxel.tilemaps, pyxel.sounds, pyxel.musics)
+        original = [list(bank) for bank in banks]
+        try:
+            pyxel.images[:] = [*original[0], pyxel.Image(8, 8)]
+            pyxel.tilemaps[:] = [pyxel.Tilemap(8, 8, 3)]
+            pyxel.save(str(tmp_path / "extra.pyxres"))
+            pyxel.images[:] = original[0][:1]
+            pyxel.sounds[:] = original[2][:1]
+            pyxel.save(
+                str(tmp_path / "partial.pyxres"),
+                exclude_tilemaps=True,
+                exclude_musics=True,
+            )
+            pyxel.images[:] = original[0][:2]
+            pyxel.tilemaps[:] = [pyxel.Tilemap(8, 8, 1)]
+            pyxel.sounds[:] = [*original[2][:16], pyxel.Sound()]
+            pyxel.sounds[16].speed = 123
+            pyxel.musics[:] = [pyxel.Music()]
+            pyxel.save(str(tmp_path / "small.pyxres"))
+        finally:
+            for bank, entries in zip(banks, original, strict=True):
+                bank[:] = entries
+
+        code = """
+import sys
+from pathlib import Path
+
+import pyxel
+from pyxel.editor.app import App
+
+folder = Path(sys.argv[1])
+small = str(folder / "small.pyxres")
+full = str(folder / "full.pyxres")
+
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(small, "music")
+image, tilemap, sound, music = app._editors
+pickers = (image._image_picker, tilemap._tilemap_picker, sound._sound_picker, music._music_picker)
+selector = music._sound_selector
+
+def drop(path):
+    pyxel._dropped_files = [path]
+    app.update_all()
+
+def check_small():
+    for panel, (picker, last) in enumerate(zip(pickers, (1, 0, 16, 0), strict=True)):
+        app.editor_type_var = panel
+        picker.value_var = last
+        picker.inc_button.trigger_event("press")
+        assert picker.value_var == last
+        assert not picker.inc_button.is_enabled_var
+        app.update_all()
+        app.draw_all()
+    assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 1
+    assert sound.speed_var == pyxel.sounds[16].speed == 123
+
+check_small()
+drop(full)
+for picker, size in zip(pickers, (3, 8, 64, 8), strict=True):
+    picker.value_var = size - 2
+    assert picker.inc_button.is_enabled_var
+    picker.inc_button.trigger_event("press")
+    assert picker.value_var == size - 1
+last_x, last_y = selector.x + 6 + 15 * 13, selector.y + 5 + 3 * 9
+pyxel.set_mouse_pos(last_x, last_y)
+selector.trigger_event("update")
+selector.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, last_x, last_y)
+assert selector._last_preview_sound == selector._pressed_sound == 63
+drop(small)
+assert selector._last_preview_sound is None and selector._pressed_sound is None
+assert [picker.value_var for picker in pickers] == [1, 0, 16, 0]
+check_small()
+drop(str(folder / "skipped.pyxres"))
+check_small()
+
+for index in (16, 17):
+    x = selector.x + 6 + (index % 16) * 13
+    y = selector.y + 5 + (index // 16) * 9
+    selector.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, x, y)
+    selector.trigger_event("mouse_up", pyxel.MOUSE_BUTTON_LEFT, x, y)
+assert list(music.get_field(0)) == [16]
+music.field_cursor.move_to(0, 0, False)
+music.field_cursor.shift(1)
+assert list(music.get_field(0)) == [16]
+app._save_button.trigger_event("press")
+pyxel.load(full)
+pyxel.load(small)
+assert [len(bank) for bank in (pyxel.images, pyxel.tilemaps, pyxel.sounds, pyxel.musics)] == [2, 1, 17, 1]
+assert list(pyxel.musics[0].seqs[0]) == [16]
+
+app.editor_type_var = 1
+drop(str(folder / "extra.pyxres"))
+app.draw_all()
+assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 3
+pyxel.musics[0].seqs[:] = [[16]]
+drop(str(folder / "partial.pyxres"))
+app.draw_all()
+assert len(pyxel.images) == 1
+assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 3
+before = Path(small).read_bytes()
+app._save_button.trigger_event("press")
+assert app._save_failed and Path(small).read_bytes() == before
+assert pyxel.tilemaps[0].imgsrc == 3
+tilemap._image_picker.dec_button.trigger_event("press")
+assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 0
+app._save_button.trigger_event("press")
+assert not app._save_failed
+pyxel.load(small)
+assert len(pyxel.images) == 1 and pyxel.tilemaps[0].imgsrc == 0
+app.draw_all()
+app.editor_type_var = 3
+app.update_all()
+app.draw_all()
+assert len(pyxel.sounds) == 1
+assert selector._hit_sound_button(selector.x + 6, selector.y + 5) == 0
+assert selector._hit_sound_button(selector.x + 19, selector.y + 5) is None
+music.field_cursor.move_to(1, 0, False)
+music._play(False)
+music._play(True)
+assert not music.is_playing_var and list(music.get_field(0)) == [16]
+assert music._play_button.is_enabled_var
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(tmp_path)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+
     def test_music_view_and_save_preserve_extra_channels(self, tmp_path):
         path = str(tmp_path / "six-channels.pyxres")
         music = pyxel.musics[0]

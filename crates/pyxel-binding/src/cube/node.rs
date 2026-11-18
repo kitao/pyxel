@@ -366,11 +366,13 @@ impl Node {
                 *node.mesh_part_index.borrow_mut() = Some(i);
                 if let Some(primitive) = &mesh_inner.primitives[i] {
                     let material = mesh_inner.material_for_part(i);
-                    *node.drawable_primitive.borrow_mut() = Some(DrawablePrimitive {
-                        primitive: primitive.clone(),
-                        col_img: material.col_img,
-                        colkey: material.colkey,
-                    });
+                    if !material.fully_masked {
+                        *node.drawable_primitive.borrow_mut() = Some(DrawablePrimitive {
+                            primitive: primitive.clone(),
+                            col_img: material.col_img,
+                            colkey: material.colkey,
+                        });
+                    }
                 }
                 nodes.push(node);
             }

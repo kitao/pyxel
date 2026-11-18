@@ -144,7 +144,7 @@ class TestOperators:
         assert m * Vec3(1, 2, 3) == Vec3(11, 22, 33)
 
     def test_eq(self):
-        assert Mat4.IDENTITY == Mat4.IDENTITY
+        assert Mat4() == Mat4.IDENTITY
         assert Mat4.IDENTITY != Mat4.from_translation(Vec3(1, 0, 0))
 
 

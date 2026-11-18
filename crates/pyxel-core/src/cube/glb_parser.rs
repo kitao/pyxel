@@ -14,11 +14,12 @@ use crate::cube::primitive::{
     MODE_TRIANGLES,
 };
 use crate::cube::quat::Quat;
+use crate::cube::shading::srgb_to_linear;
 use crate::cube::vec3::Vec3;
 use crate::image::{Color, Image, RcImage, Rgb24};
 use crate::settings::MAX_COLORS;
 
-type TextureTint = [f32; 3];
+type TextureTint = [[u8; 256]; 3];
 type TextureTintKey = (u32, u32, u32);
 type ImageCacheKey = (usize, TextureTintKey, Option<(i32, u32)>);
 
@@ -102,7 +103,7 @@ fn rgba8_to_pyxel_image(
     height: u32,
     rgba: &[u8],
     colors: &[Rgb24],
-    color_factor: TextureTint,
+    color_factor: &TextureTint,
     alpha_mask: Option<(Color, f32)>,
 ) -> Result<RcImage, String> {
     let width_usize = width as usize;
@@ -150,11 +151,11 @@ fn rgba8_to_pyxel_image(
     Ok(rc)
 }
 
-fn tinted_rgb(rgba: &[u8], base: usize, color_factor: TextureTint) -> (u8, u8, u8) {
+fn tinted_rgb(rgba: &[u8], base: usize, color_factor: &TextureTint) -> (u8, u8, u8) {
     (
-        (rgba[base] as f32 * color_factor[0]).round() as u8,
-        (rgba[base + 1] as f32 * color_factor[1]).round() as u8,
-        (rgba[base + 2] as f32 * color_factor[2]).round() as u8,
+        color_factor[0][rgba[base] as usize],
+        color_factor[1][rgba[base + 1] as usize],
+        color_factor[2][rgba[base + 2] as usize],
     )
 }
 
@@ -194,8 +195,8 @@ fn mask_alpha_cutoff(material: &gltf::Material) -> Result<Option<f32>, String> {
         gltf::material::AlphaMode::Mask => {}
     }
     let cutoff = material.alpha_cutoff().unwrap_or(0.5);
-    if !cutoff.is_finite() || !(0.0..=1.0).contains(&cutoff) {
-        return Err("GLB material alphaCutoff must be between 0.0 and 1.0".to_string());
+    if !cutoff.is_finite() || cutoff < 0.0 {
+        return Err("GLB material alphaCutoff must be finite and nonnegative".to_string());
     }
     Ok(Some(cutoff))
 }
@@ -263,7 +264,7 @@ fn mark_texture_palette_usage(
     height: u32,
     rgba: &[u8],
     colors: &[Rgb24],
-    color_factor: TextureTint,
+    color_factor: &TextureTint,
     alpha_cutoff: Option<f32>,
     used_colors: &mut [bool],
 ) -> Result<bool, String> {
@@ -324,6 +325,15 @@ fn rgb_to_palette_color(rgb: (u8, u8, u8), colors: &[Rgb24]) -> Result<Color, St
     Ok(closest_color)
 }
 
+fn linear_to_srgb8(linear: f32) -> u8 {
+    let srgb = if linear <= 0.003_130_8 {
+        linear * 12.92
+    } else {
+        1.055 * linear.powf(1.0 / 2.4) - 0.055
+    };
+    (srgb * 255.0).round() as u8
+}
+
 // The factor-alpha warning lives in validate_texture_usage; these
 // converters run in both material passes and stay silent.
 fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
@@ -331,9 +341,9 @@ fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
         return Err("GLB material baseColorFactor must be finite".to_string());
     }
     Ok((
-        (factor[0].clamp(0.0, 1.0) * 255.0).round() as u8,
-        (factor[1].clamp(0.0, 1.0) * 255.0).round() as u8,
-        (factor[2].clamp(0.0, 1.0) * 255.0).round() as u8,
+        linear_to_srgb8(factor[0].clamp(0.0, 1.0)),
+        linear_to_srgb8(factor[1].clamp(0.0, 1.0)),
+        linear_to_srgb8(factor[2].clamp(0.0, 1.0)),
     ))
 }
 
@@ -347,7 +357,17 @@ fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTi
         factor[2].clamp(0.0, 1.0),
     ];
     let key = (tint[0].to_bits(), tint[1].to_bits(), tint[2].to_bits());
-    Ok((tint, key))
+    // glTF factors multiply linear RGB; map texture bytes once per channel.
+    let table = tint.map(|factor| {
+        std::array::from_fn(|value| {
+            if factor == 1.0 {
+                value as u8
+            } else {
+                linear_to_srgb8(srgb_to_linear(value as f32 / 255.0) * factor)
+            }
+        })
+    });
+    Ok((table, key))
 }
 
 fn import_materials(
@@ -363,6 +383,10 @@ fn import_materials(
     for material in document.materials() {
         let pbr = material.pbr_metallic_roughness();
         let alpha_cutoff = mask_alpha_cutoff(&material)?;
+        if alpha_cutoff.is_some_and(|cutoff| cutoff > 1.0) {
+            // A fully masked material contributes no opaque palette colors.
+            continue;
+        }
         if let Some(texture_info) = pbr.base_color_texture() {
             let (tint, _) = base_color_factor_to_tint(pbr.base_color_factor())?;
             let image_index = texture_info.texture().source().index();
@@ -373,7 +397,7 @@ fn import_materials(
                     img.height,
                     &rgba,
                     &colors,
-                    tint,
+                    &tint,
                     alpha_cutoff,
                     &mut used_colors,
                 )?;
@@ -416,7 +440,7 @@ fn import_materials(
                     img.height,
                     &rgba,
                     &colors,
-                    tint,
+                    &tint,
                     mask_colkey.map(|(colkey, cutoff)| (colkey as Color, cutoff)),
                 )?;
                 image_cache.insert(cache_key, image.clone());
@@ -432,6 +456,7 @@ fn import_materials(
         materials.push(Material {
             col_img,
             colkey: resolved_colkey,
+            fully_masked: alpha_cutoff.is_some_and(|cutoff| cutoff > 1.0),
         });
     }
 

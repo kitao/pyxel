@@ -149,18 +149,18 @@
       "uk": "Запуск"
     },
     "starting_body": {
-      "en": "Launch Pyxel Editor with the following command:\n{0}\nIf the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, {1} is used. Pyxel Editor can load resources with palettes of up to 240 colors.",
-      "cn": "通过以下命令启动 Pyxel Editor：\n{0}\n如果指定的 Pyxel 资源文件 (.pyxres) 已存在，则加载该文件；如果不存在，则开始编辑新资源，保存时才创建文件。省略文件名时使用 {1}。Pyxel Editor 可加载调色板最多包含 240 色的资源。",
-      "de": "Starten Sie Pyxel Editor mit folgendem Befehl:\n{0}\nFalls die angegebene Pyxel-Ressourcendatei (.pyxres) existiert, wird sie geladen. Andernfalls können Sie eine neue Ressource bearbeiten; die Datei wird erst beim Speichern erstellt. Wird kein Dateiname angegeben, wird {1} verwendet. Pyxel Editor kann Ressourcen mit Paletten von bis zu 240 Farben laden.",
-      "es": "Inicie Pyxel Editor con el siguiente comando:\n{0}\nSi el archivo de recursos Pyxel (.pyxres) especificado existe, se cargará. Si no existe, puede editar un nuevo recurso; el archivo se creará al guardar. Si se omite el nombre del archivo, se usará {1}. Pyxel Editor puede cargar recursos con paletas de hasta 240 colores.",
-      "fr": "Lancez Pyxel Editor avec la commande suivante :\n{0}\nSi le fichier de ressources Pyxel (.pyxres) spécifié existe, il sera chargé. Sinon, vous pouvez modifier une nouvelle ressource ; le fichier sera créé lors de la sauvegarde. Si aucun nom de fichier n'est spécifié, {1} sera utilisé. Pyxel Editor peut charger des ressources dont les palettes contiennent jusqu'à 240 couleurs.",
-      "it": "Avviare Pyxel Editor con il seguente comando:\n{0}\nSe il file di risorse Pyxel (.pyxres) specificato esiste, verrà caricato. Altrimenti puoi modificare una nuova risorsa; il file verrà creato al salvataggio. Se il nome del file viene omesso, verrà usato {1}. Pyxel Editor può caricare risorse con palette fino a 240 colori.",
-      "ja": "Pyxel Editor は次のコマンドで起動します：\n{0}\n指定した Pyxel リソースファイル (.pyxres) が存在する場合は、そのファイルが読み込まれます。存在しない場合は新しいリソースを編集し、保存するとファイルが作成されます。ファイル名を省略した場合は {1} を使用します。Pyxel Editor で読み込めるリソースのパレットは最大 240 色です。",
-      "ko": "다음 명령어로 Pyxel Editor를 실행하세요:\n{0}\n지정한 Pyxel 리소스 파일(.pyxres)이 존재하면 해당 파일을 불러옵니다. 존재하지 않으면 새 리소스를 편집할 수 있으며, 저장할 때 파일이 생성됩니다. 파일명을 생략하면 {1}를 사용합니다. Pyxel Editor는 최대 240색 팔레트의 리소스를 불러올 수 있습니다.",
-      "pt": "Inicie o Pyxel Editor com o seguinte comando:\n{0}\nSe o arquivo de recursos Pyxel (.pyxres) especificado existir, ele será carregado. Caso contrário, você pode editar um novo recurso; o arquivo será criado ao salvar. Se o nome do arquivo for omitido, será usado {1}. O Pyxel Editor pode carregar recursos com paletas de até 240 cores.",
-      "ru": "Запустите Pyxel Editor командой:\n{0}\nЕсли указанный файл ресурсов Pyxel (.pyxres) существует, он будет загружен. Если его нет, можно редактировать новый ресурс; файл будет создан при сохранении. Если имя файла не указано, используется {1}. Pyxel Editor может загружать ресурсы с палитрами до 240 цветов.",
-      "tr": "Pyxel Editor'ü şu komutla başlatın:\n{0}\nBelirtilen Pyxel kaynak dosyası (.pyxres) varsa yüklenir. Yoksa yeni bir kaynağı düzenleyebilirsiniz; dosya kaydettiğinizde oluşturulur. Dosya adı belirtilmezse {1} kullanılır. Pyxel Editor, en fazla 240 renkli paletlere sahip kaynakları yükleyebilir.",
-      "uk": "Запустіть Pyxel Editor командою:\n{0}\nЯкщо вказаний файл ресурсів Pyxel (.pyxres) існує, його буде завантажено. Якщо його немає, можна редагувати новий ресурс; файл буде створено під час збереження. Якщо ім'я файлу не вказано, використовується {1}. Pyxel Editor може завантажувати ресурси з палітрами до 240 кольорів."
+      "en": "Launch Pyxel Editor with the following command:\n{0}\nIf the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, you can edit a new resource; the file is created when you save. If the filename is omitted, {1} is used. Pyxel Editor can load resources with palettes of up to 240 colors. Each bank selector offers only the entries that exist, up to the limit shown in this manual.",
+      "cn": "通过以下命令启动 Pyxel Editor：\n{0}\n如果指定的 Pyxel 资源文件 (.pyxres) 已存在，则加载该文件；如果不存在，则开始编辑新资源，保存时才创建文件。省略文件名时使用 {1}。Pyxel Editor 可加载调色板最多包含 240 色的资源。每个资源库只能选择实际存在的条目，且不能超过本手册所示的范围。",
+      "de": "Starten Sie Pyxel Editor mit folgendem Befehl:\n{0}\nFalls die angegebene Pyxel-Ressourcendatei (.pyxres) existiert, wird sie geladen. Andernfalls können Sie eine neue Ressource bearbeiten; die Datei wird erst beim Speichern erstellt. Wird kein Dateiname angegeben, wird {1} verwendet. Pyxel Editor kann Ressourcen mit Paletten von bis zu 240 Farben laden. In jeder Bank können Sie nur vorhandene Einträge innerhalb des in diesem Handbuch angegebenen Bereichs auswählen.",
+      "es": "Inicie Pyxel Editor con el siguiente comando:\n{0}\nSi el archivo de recursos Pyxel (.pyxres) especificado existe, se cargará. Si no existe, puede editar un nuevo recurso; el archivo se creará al guardar. Si se omite el nombre del archivo, se usará {1}. Pyxel Editor puede cargar recursos con paletas de hasta 240 colores. En cada banco solo puede seleccionar entradas existentes dentro del intervalo indicado en este manual.",
+      "fr": "Lancez Pyxel Editor avec la commande suivante :\n{0}\nSi le fichier de ressources Pyxel (.pyxres) spécifié existe, il sera chargé. Sinon, vous pouvez modifier une nouvelle ressource ; le fichier sera créé lors de la sauvegarde. Si aucun nom de fichier n'est spécifié, {1} sera utilisé. Pyxel Editor peut charger des ressources dont les palettes contiennent jusqu'à 240 couleurs. Dans chaque banque, vous pouvez sélectionner uniquement les entrées présentes, dans les limites indiquées dans ce manuel.",
+      "it": "Avviare Pyxel Editor con il seguente comando:\n{0}\nSe il file di risorse Pyxel (.pyxres) specificato esiste, verrà caricato. Altrimenti puoi modificare una nuova risorsa; il file verrà creato al salvataggio. Se il nome del file viene omesso, verrà usato {1}. Pyxel Editor può caricare risorse con palette fino a 240 colori. In ogni banco è possibile selezionare solo le voci presenti, entro i limiti indicati in questo manuale.",
+      "ja": "Pyxel Editor は次のコマンドで起動します：\n{0}\n指定した Pyxel リソースファイル (.pyxres) が存在する場合は、そのファイルが読み込まれます。存在しない場合は新しいリソースを編集し、保存するとファイルが作成されます。ファイル名を省略した場合は {1} を使用します。Pyxel Editor で読み込めるリソースのパレットは最大 240 色です。各バンクでは、このマニュアルに示す範囲内で、実際に存在する項目だけを選択できます。",
+      "ko": "다음 명령어로 Pyxel Editor를 실행하세요:\n{0}\n지정한 Pyxel 리소스 파일(.pyxres)이 존재하면 해당 파일을 불러옵니다. 존재하지 않으면 새 리소스를 편집할 수 있으며, 저장할 때 파일이 생성됩니다. 파일명을 생략하면 {1}를 사용합니다. Pyxel Editor는 최대 240색 팔레트의 리소스를 불러올 수 있습니다. 각 뱅크에서는 이 매뉴얼에 표시된 범위 안에서 실제로 있는 항목만 선택할 수 있습니다.",
+      "pt": "Inicie o Pyxel Editor com o seguinte comando:\n{0}\nSe o arquivo de recursos Pyxel (.pyxres) especificado existir, ele será carregado. Caso contrário, você pode editar um novo recurso; o arquivo será criado ao salvar. Se o nome do arquivo for omitido, será usado {1}. O Pyxel Editor pode carregar recursos com paletas de até 240 cores. Em cada banco, só é possível selecionar entradas existentes dentro do intervalo indicado neste manual.",
+      "ru": "Запустите Pyxel Editor командой:\n{0}\nЕсли указанный файл ресурсов Pyxel (.pyxres) существует, он будет загружен. Если его нет, можно редактировать новый ресурс; файл будет создан при сохранении. Если имя файла не указано, используется {1}. Pyxel Editor может загружать ресурсы с палитрами до 240 цветов. В каждом банке можно выбрать только существующие элементы в пределах диапазона, указанного в этом руководстве.",
+      "tr": "Pyxel Editor'ü şu komutla başlatın:\n{0}\nBelirtilen Pyxel kaynak dosyası (.pyxres) varsa yüklenir. Yoksa yeni bir kaynağı düzenleyebilirsiniz; dosya kaydettiğinizde oluşturulur. Dosya adı belirtilmezse {1} kullanılır. Pyxel Editor, en fazla 240 renkli paletlere sahip kaynakları yükleyebilir. Her bankada yalnızca mevcut girdileri, bu kılavuzda belirtilen aralık içinde seçebilirsiniz.",
+      "uk": "Запустіть Pyxel Editor командою:\n{0}\nЯкщо вказаний файл ресурсів Pyxel (.pyxres) існує, його буде завантажено. Якщо його немає, можна редагувати новий ресурс; файл буде створено під час збереження. Якщо ім'я файлу не вказано, використовується {1}. Pyxel Editor може завантажувати ресурси з палітрами до 240 кольорів. У кожному банку можна вибрати лише наявні елементи в межах діапазону, вказаного в цьому посібнику."
     },
     "common_title": {
       "en": "Common Operations",
@@ -275,18 +275,18 @@
       "uk": "Завантаження ресурсів"
     },
     "common_load_body": {
-      "en": "Drop another .pyxres file onto the window to replace all current edits, including unsaved changes. The save destination stays the same.",
-      "cn": "将另一个 .pyxres 文件拖放到窗口中，会替换当前所有编辑内容，包括未保存的更改。保存目标不变。",
-      "de": "Ziehen Sie eine andere .pyxres-Datei in das Fenster, um alle aktuellen Bearbeitungen einschließlich ungespeicherter Änderungen zu ersetzen. Das Speicherziel bleibt gleich.",
-      "es": "Suelte otro archivo .pyxres en la ventana para reemplazar todas las ediciones actuales, incluidos los cambios sin guardar. El destino de guardado no cambia.",
-      "fr": "Déposez un autre fichier .pyxres dans la fenêtre pour remplacer toutes les modifications en cours, y compris celles non enregistrées. La destination d'enregistrement reste la même.",
-      "it": "Trascinare un altro file .pyxres nella finestra per sostituire tutte le modifiche attuali, incluse quelle non salvate. La destinazione del salvataggio resta invariata.",
-      "ja": "別の .pyxres ファイルをウィンドウにドロップすると、未保存の変更を含む編集内容をすべて置き換えます。保存先のファイルは変わりません。",
-      "ko": "다른 .pyxres 파일을 창에 드롭하면 저장하지 않은 변경 사항을 포함해 현재 편집 내용이 모두 교체됩니다. 저장 대상은 바뀌지 않습니다.",
-      "pt": "Solte outro arquivo .pyxres na janela para substituir todas as edições atuais, inclusive as alterações não salvas. O destino de salvamento permanece o mesmo.",
-      "ru": "Перетащите другой файл .pyxres в окно, чтобы заменить все текущие правки, включая несохранённые изменения. Место сохранения остаётся прежним.",
-      "tr": "Kaydedilmemiş değişiklikler dahil tüm mevcut düzenlemeleri değiştirmek için pencereye başka bir .pyxres dosyası bırakın. Kayıt hedefi aynı kalır.",
-      "uk": "Перетягніть інший файл .pyxres у вікно, щоб замінити всі поточні правки, включно з незбереженими змінами. Місце збереження залишається тим самим."
+      "en": "Dropping another .pyxres file onto the window replaces the resource types it contains, including any unsaved edits to them. A successful load clears undo history in all four editors. The save destination stays the same.",
+      "cn": "将另一个 .pyxres 文件拖放到窗口中，会替换该文件中保存的资源类型，这些资源中未保存的更改会丢失。加载成功后，四个编辑器的撤销历史都会清空。保存目标不变。",
+      "de": "Wenn Sie eine andere .pyxres-Datei in das Fenster ziehen, werden die darin gespeicherten Ressourcenarten ersetzt. Ungespeicherte Änderungen an diesen Ressourcen gehen verloren. Nach erfolgreichem Laden wird der Rückgängig-Verlauf aller vier Editoren gelöscht. Das Speicherziel bleibt gleich.",
+      "es": "Al soltar otro archivo .pyxres en la ventana, se reemplazan los tipos de recursos que contiene y se pierden los cambios sin guardar en esos recursos. Si la carga se completa, se borra el historial de deshacer de los cuatro editores. El destino de guardado no cambia.",
+      "fr": "Déposez un autre fichier .pyxres dans la fenêtre pour remplacer les types de ressources qu'il contient. Les modifications non enregistrées de ces ressources sont perdues. Si le chargement réussit, l'historique d'annulation des quatre éditeurs est effacé. La destination d'enregistrement reste la même.",
+      "it": "Trascinando un altro file .pyxres nella finestra, si sostituiscono i tipi di risorse presenti nel file e si perdono le modifiche non salvate a tali risorse. Se il caricamento riesce, la cronologia di annullamento viene cancellata in tutti e quattro gli editor. La destinazione del salvataggio resta invariata.",
+      "ja": "別の .pyxres ファイルをウィンドウにドロップすると、そのファイルに保存されている種類のリソースが置き換わり、それらの未保存の変更は失われます。読み込みに成功すると、すべてのエディタの操作履歴が消去されます。保存先は変わりません。",
+      "ko": "다른 .pyxres 파일을 창에 드롭하면 그 파일에 저장된 종류의 리소스가 교체되며, 해당 리소스의 저장하지 않은 변경 사항은 사라집니다. 불러오기에 성공하면 네 에디터의 실행 취소 기록이 모두 지워집니다. 저장 대상은 바뀌지 않습니다.",
+      "pt": "Ao soltar outro arquivo .pyxres na janela, os tipos de recurso que ele contém são substituídos e as alterações não salvas nesses recursos são perdidas. Se o carregamento for concluído, o histórico de desfazer dos quatro editores será apagado. O destino de salvamento permanece o mesmo.",
+      "ru": "При перетаскивании другого файла .pyxres в окно заменяются ресурсы тех типов, которые сохранены в этом файле. Несохранённые изменения этих ресурсов теряются. После успешной загрузки история отмены действий очищается во всех четырёх редакторах. Место сохранения остаётся прежним.",
+      "tr": "Pencereye başka bir .pyxres dosyası bıraktığınızda, dosyada bulunan türlerdeki kaynaklar değiştirilir ve bu kaynaklardaki kaydedilmemiş değişiklikler kaybolur. Yükleme başarılı olursa dört düzenleyicinin de geri alma geçmişi temizlenir. Kayıt hedefi aynı kalır.",
+      "uk": "Якщо перетягнути інший файл .pyxres у вікно, буде замінено ресурси тих типів, які збережено у файлі. Незбережені зміни цих ресурсів буде втрачено. Після успішного завантаження історія скасування дій очищується у всіх чотирьох редакторах. Місце збереження залишається тим самим."
     },
     "image_title": {
       "en": "Image Editor",
@@ -3590,18 +3590,18 @@
     {
       "key": "Up/Down",
       "action": {
-        "en": "Switch the editing channel",
-        "cn": "切换编辑通道",
-        "de": "Bearbeitungskanal wechseln",
-        "es": "Cambiar el canal de edición",
-        "fr": "Changer de canal d'édition",
-        "it": "Cambiare il canale in modifica",
-        "ja": "編集チャンネルを切り替える",
-        "ko": "편집 채널을 전환",
-        "pt": "Alternar canal de edição",
-        "ru": "Переключить канал редактирования",
-        "tr": "Düzenleme kanalını değiştirir",
-        "uk": "Перемкнути канал редагування"
+        "en": "Move up or down one row, switching channels at the boundary",
+        "cn": "向上或向下移动一行，在通道边界处切换到相邻通道",
+        "de": "Eine Zeile nach oben oder unten gehen, am Kanalrand zum benachbarten Kanal wechseln",
+        "es": "Desplazarse una fila hacia arriba o abajo y pasar al canal contiguo al llegar al límite",
+        "fr": "Monter ou descendre d'une ligne et passer au canal voisin à la limite du canal",
+        "it": "Spostarsi di una riga in alto o in basso, passando al canale adiacente al limite del canale",
+        "ja": "上下の行へ移動し、チャンネルの端では隣のチャンネルに移る",
+        "ko": "한 줄 위아래로 이동하며, 채널 경계에서는 인접한 채널로 이동",
+        "pt": "Mover uma linha para cima ou para baixo e passar para o canal adjacente no limite do canal",
+        "ru": "Переместиться на строку вверх или вниз, на границе канала перейти в соседний канал",
+        "tr": "Bir satır yukarı veya aşağı hareket eder, kanal sınırında komşu kanala geçer",
+        "uk": "Переміститися на рядок угору або вниз, на межі каналу перейти до сусіднього каналу"
       }
     },
     {

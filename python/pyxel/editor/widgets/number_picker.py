@@ -30,6 +30,7 @@ class NumberPicker(Widget):
         super().__init__(parent, x, y, width, 7, **kwargs)
         self._min_value = min_value
         self._max_value = max_value
+        self._display_max = max_value
         self._allow_out_of_range = allow_out_of_range
         self.new_var("value_var", self.__on_value_set(value))
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
@@ -43,11 +44,22 @@ class NumberPicker(Widget):
 
         self.add_event_listener("draw", self.__on_draw)
 
+    # Public methods
+
+    def set_bank_size(self, size):
+        self._max_value = min(self._display_max, size - 1)
+        self.value_var = self.value_var
+        self._update_buttons(self.value_var)
+
     # Helpers
 
     @staticmethod
     def _step_delta():
         return 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+
+    def _update_buttons(self, value):
+        self.dec_button.is_enabled_var = value > self._min_value
+        self.inc_button.is_enabled_var = value < self._max_value
 
     # Event handlers
 
@@ -59,8 +71,7 @@ class NumberPicker(Widget):
         )
 
     def __on_value_change(self, value):
-        self.dec_button.is_enabled_var = value > self._min_value
-        self.inc_button.is_enabled_var = value < self._max_value
+        self._update_buttons(value)
         self.trigger_event("change", value)
 
     def __on_dec_button_press(self):

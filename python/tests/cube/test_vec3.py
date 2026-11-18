@@ -164,8 +164,8 @@ class TestTransform:
         assert Vec3(1, 5, 3).max(Vec3(4, 2, 6)) == Vec3(4, 5, 6)
 
     def test_lerp_endpoints(self):
-        a = Vec3(0, 0, 0)
-        b = Vec3(10, 20, 30)
+        a = Vec3(2**25, -(2**25), 100)
+        b = Vec3(1, -1, 0.1)
         assert a.lerp(b, 0.0) == a
         assert a.lerp(b, 1.0) == b
 
@@ -290,7 +290,7 @@ class TestFiniteIntermediates:
         )
 
     @pytest.mark.parametrize("small", [1, 1e-30, 1e-35, 1e-38])
-    @pytest.mark.parametrize("target", [1, -1e-10, 1e-10])
+    @pytest.mark.parametrize("target", [1, -1e-10, 1e-10, 1e18])
     def test_x_projection_with_mixed_norms_retains_stored_value(self, small, target):
         vector = Vec3(small, 0, 0)
         assert tuple(vector.project(Vec3(target, 0, 0))) == pytest.approx(

@@ -71,10 +71,8 @@ class TestFont:
 
     def test_text_width_multiline(self, assets_dir):
         font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
-        w_single = font.text_width("AB")
-        w_multi = font.text_width("AB\nA")
-        # Multiline returns max line width
-        assert w_multi == w_single
+        # A and B each advance six pixels in this BDF.
+        assert font.text_width("A\nAB\nA") == 12
 
     def test_text_width_invisible_chars_skipped(self, assets_dir):
         font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))

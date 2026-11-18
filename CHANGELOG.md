@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.0.3
+
+- Fixed Vec3.lerp missing the target vector at the end of interpolation
+- Fixed Vec3.project losing small vectors when projecting onto large axes
+- Reduced memory use when exporting sound and music to WAV or MP4
+- Reduced memory use when loading compressed image and tilemap data
+- Fixed GLB import and rendering for alpha mask cutoffs greater than 1
+- Fixed flat and textured GLB material tints in linear color space
+- Fixed editor selection and display for resources with fewer banks
+- Kept resource files intact when a tilemap refers outside the saved image bank
+- Clarified the API, MML, editor, and resource format documentation
+
 ## 3.0.2
 
 - Made Node.draw follow the target's 2D camera, clip, pal, and dither settings

@@ -74,6 +74,12 @@ class ImageEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Public methods
+
+    def refresh_resource(self):
+        self._image_picker.set_bank_size(len(pyxel.images))
+        self.color_var = self.color_var
+
     # Helpers
 
     def _restore_state(self, data, prefix):

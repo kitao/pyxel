@@ -536,15 +536,16 @@ class CanvasPanel(Widget):
 
         if self._is_tilemap_mode:
             pyxel.user_pal()
-            pyxel.bltm(
-                self.x + 1,
-                self.y + 1,
-                canvas,
-                offset_x * 8,
-                offset_y * 8,
-                128,
-                128,
-            )
+            if canvas.imgsrc < len(pyxel.images):
+                pyxel.bltm(
+                    self.x + 1,
+                    self.y + 1,
+                    canvas,
+                    offset_x * 8,
+                    offset_y * 8,
+                    128,
+                    128,
+                )
             pyxel.pal()
         else:
             pyxel.user_pal()

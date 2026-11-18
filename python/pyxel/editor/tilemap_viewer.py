@@ -58,6 +58,9 @@ class TilemapViewer(Widget):
 
     def __on_update(self):
         tilemap = pyxel.tilemaps[self.tilemap_index_var]
+        if tilemap.imgsrc >= len(pyxel.images):
+            self._tilemap_image.cls(0)
+            return
         image = pyxel.images[tilemap.imgsrc]
 
         # Refresh a slice of the preview each frame by sampling representative pixels.

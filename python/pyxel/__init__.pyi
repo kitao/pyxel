@@ -634,12 +634,12 @@ class Image:
         rotate: float = 0.0,
         scale: float = 1.0,
     ) -> None:
-        """Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
+        """Copy the region of size (w, h) from (u, v) of image bank img (index or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
         Args:
             x: Destination X
             y: Destination Y
-            img: Image bank number (0-2) or Image instance
+            img: Image bank number or Image instance
             u: Source X in the image bank
             v: Source Y in the image bank
             w: Width (negative to flip)
@@ -661,12 +661,12 @@ class Image:
         rotate: float = 0.0,
         scale: float = 1.0,
     ) -> None:
-        """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
+        """Copy the region of size (w, h) from (u, v) of tilemap tm (index or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
         Args:
             x: Destination X (in pixels)
             y: Destination Y (in pixels)
-            tm: Tilemap number (0-7) or Tilemap instance
+            tm: Tilemap number or Tilemap instance
             u: Source X in the tilemap (in pixels)
             v: Source Y in the tilemap (in pixels)
             w: Width in pixels (negative to flip)
@@ -687,14 +687,14 @@ class Image:
         fov: float = 60.0,
         colkey: int | None = None,
     ) -> None:
-        """Draw the image bank img (0-2 or Image instance) with perspective projection onto the image rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+        """Draw the image bank img (index or Image instance) with perspective projection onto the image rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
         Args:
             x: Destination X
             y: Destination Y
             w: Display width
             h: Display height
-            img: Image bank number (0-2) or Image instance
+            img: Image bank number or Image instance
             pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
             rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
             fov: Field of view in degrees. Defaults to 60.
@@ -712,14 +712,14 @@ class Image:
         fov: float = 60.0,
         colkey: int | None = None,
     ) -> None:
-        """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the image rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+        """Draw the tilemap tm (index or Tilemap instance) with perspective projection onto the image rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
         Args:
             x: Destination X
             y: Destination Y
             w: Display width
             h: Display height
-            tm: Tilemap number (0-7) or Tilemap instance
+            tm: Tilemap number or Tilemap instance
             pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
             rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
             fov: Field of view in degrees. Defaults to 60.
@@ -746,7 +746,7 @@ class Tilemap:
     def height(self) -> int:
         """Tilemap height (in tiles)"""
     imgsrc: int | Image
-    """The image bank (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading."""
+    """The image bank number or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading."""
 
     def __init__(self, width: int, height: int, img: int | Image) -> None:
         """Create a new Tilemap instance.
@@ -754,7 +754,7 @@ class Tilemap:
         Args:
             width: Tilemap width (in tiles)
             height: Tilemap height (in tiles)
-            img: Image bank number (0-2) or Image instance
+            img: Image bank number or Image instance
         """
     @staticmethod
     def from_tmx(filename: str, layer: int) -> Tilemap:
@@ -767,7 +767,7 @@ class Tilemap:
     def data_ptr(self) -> Any:
         """Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty)."""
     def set(self, x: int, y: int, data: list[str]) -> None:
-        """Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.
+        """Set the tilemap at (x, y) using a list of strings. Each group of four hexadecimal digits encodes a tile (image_tx, image_ty). No separator is required. Spaces, tabs, and line breaks are ignored.
 
         Args:
             x: X coordinate (in tiles)
@@ -1003,17 +1003,17 @@ class Tilemap:
         rotate: float = 0.0,
         scale: float = 1.0,
     ) -> None:
-        """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Negative w/h flips the tilemap. tilekey sets the transparent tile. rotate and scale apply transformations.
+        """Copy the region of size (w, h) from (u, v) of tilemap tm (index or Tilemap instance) to (x, y). Negative w/h flips the tilemap. tilekey sets the transparent tile. rotate and scale apply transformations.
 
         Args:
             x: Destination X
             y: Destination Y
-            tm: Tilemap number (0-7) or Tilemap instance
+            tm: Tilemap number or Tilemap instance
             u: Source X in the tilemap
             v: Source Y in the tilemap
             w: Width (negative to flip)
             h: Height (negative to flip)
-            tilekey: Transparent tile
+            tilekey: Transparent tile. If omitted, all tiles are copied.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
             scale: Scale factor (centered on the copy region). Defaults to 1.
         """
@@ -1036,7 +1036,7 @@ class Channel:
         """Play the sound snd on this channel. snd can be a sound number, a list, a Sound instance, a list of Sounds, or an MML string.
 
         Args:
-            snd: Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
+            snd: Sound number, list of numbers, Sound instance, list of Sounds, or MML string
             sec: Playback start position in seconds. Defaults to 0.
             loop: Loop playback. Defaults to False.
             resume: Resume previous sound after playback ends. Defaults to False.
@@ -1067,13 +1067,13 @@ class Tone:
 class Sound:
     @property
     def notes(self) -> list[int]:
-        """List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1."""
+        """Note values in semitones from C0 (0). B4 is 59 and B#4 is 60. With a wavetable tone, A2 (33) is 440 Hz. Negative values are rests."""
     @property
     def tones(self) -> list[int]:
-        """List of tones (0: Triangle, 1: Square, 2: Pulse, 3: Noise)."""
+        """List of tone numbers. The default tones are Triangle (0), Square (1), Pulse (2), and Noise (3)."""
     @property
     def volumes(self) -> list[int]:
-        """List of volumes (0-7)."""
+        """Volume values. 0 is silent, 7 is normal volume, and higher values amplify the sound."""
     @property
     def effects(self) -> list[int]:
         """List of effects (0: None, 1: Slide, 2: Vibrato, 3: FadeOut, 4: Half-FadeOut, 5: Quarter-FadeOut)."""
@@ -1100,7 +1100,7 @@ class Sound:
             speed: Playback speed
         """
     def set_notes(self, notes: str) -> None:
-        """Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Case-insensitive, whitespace is ignored.
+        """Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Letter case, spaces, tabs, and line breaks are ignored.
 
         Args:
             notes: Notes string
@@ -1109,7 +1109,7 @@ class Sound:
             pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")
         """
     def set_tones(self, tones: str) -> None:
-        """Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.
+        """Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Letter case, spaces, tabs, and line breaks are ignored.
 
         Args:
             tones: Tones string
@@ -1118,7 +1118,7 @@ class Sound:
             pyxel.sounds[0].set_tones("ttss pppn")
         """
     def set_volumes(self, volumes: str) -> None:
-        """Set the volumes with a string of 01234567. Whitespace is ignored.
+        """Set the volumes with a string of 01234567. Spaces, tabs, and line breaks are ignored.
 
         Args:
             volumes: Volumes string
@@ -1127,7 +1127,7 @@ class Sound:
             pyxel.sounds[0].set_volumes("7777 7531")
         """
     def set_effects(self, effects: str) -> None:
-        """Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.
+        """Set the effects with a string of NSVFHQ. Letter case, spaces, tabs, and line breaks are ignored.
 
         Args:
             effects: Effects string
@@ -1136,7 +1136,7 @@ class Sound:
             pyxel.sounds[0].set_effects("nfnf nvvs")
         """
     def mml(self, code: str | None = None) -> None:
-        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands (https://kitao.dev/pyxel/mml-studio/mml-commands.html) page. Call without arguments to exit MML mode and return to normal mode.
+        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands (https://kitao.dev/pyxel/mml-studio/mml-commands.html) page. Call without arguments to return to normal playback if MML mode is active.
 
         Args:
             code: MML string
@@ -1145,7 +1145,7 @@ class Sound:
             pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.")
         """
     def pcm(self, filename: str | None = None) -> None:
-        """Load an audio file (WAV/OGG) for playback. Call without arguments to exit PCM mode and return to normal mode.
+        """Load an audio file (WAV/OGG) for playback. Call without arguments to return to normal playback if PCM mode is active.
 
         Args:
             filename: Audio file name (WAV/OGG)
@@ -1171,7 +1171,7 @@ class Sound:
 class Music:
     @property
     def seqs(self) -> list[list[int]]:
-        """A two-dimensional list of sounds (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy."""
+        """A two-dimensional list of sound numbers across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy."""
 
     def __init__(self) -> None:
         """Create a new Music instance."""
@@ -1179,10 +1179,10 @@ class Music:
         self,
         *seqs: list[int],
     ) -> None:
-        """Set the lists of sounds (0-63) for each channel. An empty list means the channel is not used.
+        """Set the lists of sound numbers for each channel. An empty list means the channel is not used.
 
         Args:
-            seq0, seq1, ...: Sound lists for each channel. Empty list = unused.
+            seq0, seq1, ...: Sound numbers for each channel. An empty list leaves the channel unused.
 
         Example::
             pyxel.musics[0].set([0, 1], [], [3])
@@ -1482,9 +1482,9 @@ def set_dropped_files(files: list[str]) -> None:
 colors: list[int]
 """List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette."""
 images: list[Image]
-"""Image banks (Image instances) (0-2)."""
+"""List of image banks. Initially contains 3 Image instances."""
 tilemaps: list[Tilemap]
-"""Tilemaps (Tilemap instances) (0-7)."""
+"""List of tilemaps. Initially contains 8 Tilemap instances."""
 screen: Image
 """The screen image (Image class instance)."""
 cursor: Image
@@ -1701,12 +1701,12 @@ def blt(
     rotate: float = 0.0,
     scale: float = 1.0,
 ) -> None:
-    """Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
+    """Copy the region of size (w, h) from (u, v) of image bank img (index or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
     Args:
         x: Destination X
         y: Destination Y
-        img: Image bank number (0-2) or Image instance
+        img: Image bank number or Image instance
         u: Source X in the image bank
         v: Source Y in the image bank
         w: Width (negative to flip)
@@ -1728,12 +1728,12 @@ def bltm(
     rotate: float = 0.0,
     scale: float = 1.0,
 ) -> None:
-    """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
+    """Copy the region of size (w, h) from (u, v) of tilemap tm (index or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
     Args:
         x: Destination X (in pixels)
         y: Destination Y (in pixels)
-        tm: Tilemap number (0-7) or Tilemap instance
+        tm: Tilemap number or Tilemap instance
         u: Source X in the tilemap (in pixels)
         v: Source Y in the tilemap (in pixels)
         w: Width in pixels (negative to flip)
@@ -1754,14 +1754,14 @@ def blt3d(
     fov: float = 60.0,
     colkey: int | None = None,
 ) -> None:
-    """Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+    """Draw the image bank img (index or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
     Args:
         x: Destination X
         y: Destination Y
         w: Display width
         h: Display height
-        img: Image bank number (0-2) or Image instance
+        img: Image bank number or Image instance
         pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
         rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
         fov: Field of view in degrees. Defaults to 60.
@@ -1779,14 +1779,14 @@ def bltm3d(
     fov: float = 60.0,
     colkey: int | None = None,
 ) -> None:
-    """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+    """Draw the tilemap tm (index or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
     Args:
         x: Destination X
         y: Destination Y
         w: Display width
         h: Display height
-        tm: Tilemap number (0-7) or Tilemap instance
+        tm: Tilemap number or Tilemap instance
         pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
         rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
         fov: Field of view in degrees. Defaults to 60.
@@ -1806,13 +1806,13 @@ def text(x: float, y: float, s: str, col: int, font: Font | None = None) -> None
 
 # Audio
 channels: list[Channel]
-"""Audio channels (Channel instances) (0-3)."""
+"""List of audio channels. Initially contains 4 Channel instances."""
 tones: list[Tone]
-"""Tone definitions (Tone instances) (0-3)."""
+"""List of tone definitions. Initially contains 4 Tone instances."""
 sounds: list[Sound]
-"""Sounds (Sound instances) (0-63)."""
+"""List of sounds. Initially contains 64 Sound instances."""
 musics: list[Music]
-"""Music tracks (Music instances) (0-7)."""
+"""List of music tracks. Initially contains 8 Music instances."""
 
 def play(
     ch: int,
@@ -1821,11 +1821,11 @@ def play(
     loop: bool = False,
     resume: bool = False,
 ) -> None:
-    """Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list of numbers, a Sound instance, a list of Sounds, or an MML string.
+    """Play the sound snd on channel ch. snd can be a sound number, a list of numbers, a Sound instance, a list of Sounds, or an MML string.
 
     Args:
-        ch: Channel number (0-3)
-        snd: Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
+        ch: Channel number
+        snd: Sound number, list of numbers, Sound instance, list of Sounds, or MML string
         sec: Playback start position in seconds. Defaults to 0.
         loop: Loop playback. Defaults to False.
         resume: Resume previous sound after playback ends. Defaults to False.
@@ -1836,26 +1836,26 @@ def playm(
     sec: float = 0,
     loop: bool = False,
 ) -> None:
-    """Play the music msc (0-7).
+    """Play the music msc.
 
     Args:
-        msc: Music number (0-7)
+        msc: Music number
         sec: Playback start position in seconds. Defaults to 0.
         loop: Loop playback. Defaults to False.
     """
 
 def stop(ch: int | None = None) -> None:
-    """Stop playback of the specified channel ch (0-3). Call without arguments to stop playback of all channels.
+    """Stop playback of the specified channel ch. Call without arguments to stop playback of all channels.
 
     Args:
-        ch: Channel number (0-3)
+        ch: Channel number
     """
 
 def play_pos(ch: int) -> tuple[int, float] | None:
-    """Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.
+    """Get the sound playback position of channel ch as a tuple of (sound_index, sec). Return None when playback has stopped.
 
     Args:
-        ch: Channel number (0-3)
+        ch: Channel number
 
     Returns:
         (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.

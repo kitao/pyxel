@@ -71,8 +71,8 @@ def _adapt_for_tilemap(item):
 
     # Adapt blt-specific wording
     desc = desc.replace(
-        "image bank img (0-2 or Image instance)",
-        "tilemap tm (0-7 or Tilemap instance)",
+        "image bank img (index or Image instance)",
+        "tilemap tm (index or Tilemap instance)",
     )
     desc = desc.replace("flips the image", "flips the tilemap")
     desc = desc.replace(
@@ -99,10 +99,12 @@ def _adapt_for_tilemap(item):
             p["description"] = {"en": "Tile (image_tx, image_ty)"}
         elif p["name"] == "colkey":
             p["name"] = "tilekey"
-            p["description"] = {"en": "Transparent tile"}
+            p["description"] = {
+                "en": "Transparent tile. If omitted, all tiles are copied."
+            }
         elif p["name"] == "img":
             p["name"] = "tm"
-            p["description"] = {"en": "Tilemap number (0-7) or Tilemap instance"}
+            p["description"] = {"en": "Tilemap number or Tilemap instance"}
         elif p["name"] in ("u", "v"):
             axis = "X" if p["name"] == "u" else "Y"
             p["description"] = {"en": f"Source {axis} in the tilemap"}
