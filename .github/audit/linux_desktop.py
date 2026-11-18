@@ -1,5 +1,6 @@
 """Exercise a native Pyxel window and the PulseAudio output of a CI desktop."""
 import array
+import ctypes
 from pathlib import Path
 import subprocess
 import sys
@@ -14,6 +15,12 @@ def run_game(markers):
 
     pyxel.init(64, 64, title=TITLE, display_scale=3)
     pyxel.sounds[0].set("c3e3g3", "t", "6", "n", 6)
+    window_probe = ctypes.CDLL(str(Path(__file__).with_name("linux_window.so")))
+    window_probe.current_x11_window.restype = ctypes.c_ulong
+    xid = window_probe.current_x11_window()
+    if not xid:
+        raise RuntimeError("No current X11 window for Pyxel's OpenGL context")
+    (markers / "window").write_text(str(xid))
     color = 1
 
     def update():
@@ -73,8 +80,7 @@ def verify(markers):
     process = subprocess.Popen([sys.executable, __file__, "game", str(markers)])
     try:
         wait_for(markers / "1", process)
-        window = subprocess.check_output(["xdotool", "search", "--onlyvisible", "--name",
-                                          f"^{TITLE}$"], text=True).strip()
+        window = (markers / "window").read_text()
         assert window.isdecimal()
         subprocess.run(["xdotool", "windowfocus", "--sync", window], check=True)
         wait_color(window, "2b335f")
