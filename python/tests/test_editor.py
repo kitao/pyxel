@@ -778,7 +778,7 @@ assert pyxel.images[0].pget(1, 1) == initial
 assert not old_editor.can_undo
 
 # Native initialization runs once; exercise the next App's construction,
-# resource loading, and input handling without simulating the Web reset API.
+# resource loading, and input handling without simulating the web reset API.
 pyxel.init = lambda *args, **kwargs: None
 pyxel.colors[:] = list(pyxel.colors)[: pyxel.NUM_COLORS]
 pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, False)

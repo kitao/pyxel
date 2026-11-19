@@ -5,6 +5,7 @@ import worker from "../worker.mjs";
 const bytes = Uint8Array.from({ length: 20 }, (_, i) => i);
 const url = "https://kitao.dev/pyxel/user-guide/cube/videos/example.mp4";
 let canceled = false;
+
 function assets(status = 200) {
   return {
     ASSETS: {
@@ -35,6 +36,7 @@ function assets(status = 200) {
     },
   };
 }
+
 const data = async (r) => Array.from(new Uint8Array(await r.arrayBuffer()));
 
 test("video ranges contain exactly the requested bytes across stream chunks", async () => {
