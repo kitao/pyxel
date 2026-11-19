@@ -1,4 +1,4 @@
-const PYODIDE_VERSION = "314.0.7";
+const PYODIDE_VERSION = "314.0.8";
 const PYODIDE_URL = `https://kitao.dev/pyxel/pyodide/v${PYODIDE_VERSION}/pyodide.js`;
 const PYODIDE_PACKAGE_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 const PYXEL_WHEEL_PATH =

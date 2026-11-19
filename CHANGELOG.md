@@ -18,6 +18,9 @@
 - Restored the lst keyword for legacy from_list calls
 - Restored MML Studio songs shared with Pyxel 2.5.5
 - Clarified the API, MML, editor, and resource format documentation and examples
+- Updated Pyodide to 314.0.8 and Rust to nightly-2026-11-19
+- Updated zip to 9.8.0, flate2 to 1.1.11, toml to 1.2.1, and sysinfo to 0.40.4
+- Updated rand to 0.10.4 and rand_xoshiro to 0.8.2
 
 ## 3.0.2
 

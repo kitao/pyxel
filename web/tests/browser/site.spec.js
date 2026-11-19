@@ -55,11 +55,6 @@ test("pages on other sites can load the runtime and examples", async ({
     "/pyxel/2.9.9/pyxel.js",
     "/pyxel/3.0.0/pyxel.js",
     "/pyxel/3.0.1/pyxel.js",
-    "/pyxel/pyodide/v314.0.7/pyodide.js",
-    "/pyxel/pyodide/v314.0.7/pyodide.asm.mjs",
-    "/pyxel/pyodide/v314.0.7/pyodide.asm.wasm",
-    "/pyxel/pyodide/v314.0.7/python_stdlib.zip",
-    "/pyxel/pyodide/v314.0.7/pyodide-lock.json",
     "/pyxel/assets/examples/01_hello_pyxel.py",
   ]) {
     const response = await request.get(path);
@@ -89,20 +84,31 @@ test("released runtime bundles are immutable and current previews are not", asyn
   } else {
     expect(currentCacheControl).not.toContain("immutable");
   }
-  expect(await cacheControl("/pyxel/pyodide/v314.0.7/pyodide.asm.wasm")).toBe(
-    "public, max-age=31536000, immutable",
-  );
 });
 
-test("the hosted Pyodide binary has the WebAssembly MIME type", async ({
-  request,
-}) => {
-  const response = await request.get(
-    "/pyxel/pyodide/v314.0.7/pyodide.asm.wasm",
-  );
-  expect(response.status()).toBe(200);
-  expect(response.headers()["content-type"]).toBe("application/wasm");
-});
+for (const version of ["314.0.7", "314.0.8"]) {
+  test(`Pyodide ${version} files are available to other sites`, async ({
+    request,
+  }) => {
+    for (const name of [
+      "pyodide.js",
+      "pyodide.asm.mjs",
+      "pyodide.asm.wasm",
+      "python_stdlib.zip",
+      "pyodide-lock.json",
+    ]) {
+      const response = await request.get(`/pyxel/pyodide/v${version}/${name}`);
+      expect(response.status(), name).toBe(200);
+      expect(response.headers()["access-control-allow-origin"], name).toBe("*");
+      expect(response.headers()["cache-control"], name).toBe(
+        "public, max-age=31536000, immutable",
+      );
+      if (name === "pyodide.asm.wasm") {
+        expect(response.headers()["content-type"]).toBe("application/wasm");
+      }
+    }
+  });
+}
 
 test("without JavaScript the homepage shows English and no language switch", async ({
   browser,
