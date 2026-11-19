@@ -73,6 +73,20 @@ class TestBlt:
 
 
 class TestBlitClipping:
+    @pytest.mark.parametrize("left", [31, 32, 33])
+    def test_clip_across_a_long_scaled_row(self, left):
+        source = pyxel.Image(64, 1)
+        for x in range(64):
+            source.pset(x, 0, 1 + x % 15)
+        target = pyxel.Image(96, 1)
+        target.blt(3, 0, source, 0, 0, 64, 1, scale=1.5)
+        expected = [target.pget(x, 0) for x in range(left, 96)]
+
+        target.cls(0)
+        target.clip(left, 0, 96 - left, 1)
+        target.blt(3, 0, source, 0, 0, 64, 1, scale=1.5)
+        assert [target.pget(x, 0) for x in range(left, 96)] == expected
+
     @pytest.mark.parametrize("tilemap", [False, True])
     @pytest.mark.parametrize("perspective", [False, True])
     def test_clip_preserves_sampled_pixels(self, tilemap, perspective):

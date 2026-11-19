@@ -141,10 +141,28 @@ def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[st
 
 
 def pep440_to_semver(version: str) -> str:
-    m = re.match(r"^(\d+\.\d+\.\d+)(a|b|rc)(\d+)$", version)
-    if m:
-        base, tag, num = m.groups()
-        return f"{base}-{PRE_RELEASE_MAP[tag]}.{num}"
+    part = r"(?:0|[1-9][0-9]*)"
+    match = re.fullmatch(
+        rf"({part})\.({part})\.({part})(?:(a|b|rc)({part})|\+([a-z0-9]+(?:\.[a-z0-9]+)*))?",
+        version,
+    )
+    if match is None:
+        raise ValueError(f"invalid release version: {version!r}")
+
+    major, minor, patch, tag, number, local = match.groups()
+    # Cargo and the wheel builder store numeric release components as u64.
+    maximum = "18446744073709551615"
+    for value in (major, minor, patch, number):
+        if value is not None and (len(value), value) > (len(maximum), maximum):
+            raise ValueError(f"invalid release version: {version!r}")
+    # Wheel filenames normalize purely numeric local parts such as 01 to 1.
+    if local and any(
+        len(label) > 1 and label.startswith("0") and label.isdecimal()
+        for label in local.split(".")
+    ):
+        raise ValueError(f"invalid release version: {version!r}")
+    if tag:
+        return f"{major}.{minor}.{patch}-{PRE_RELEASE_MAP[tag]}.{number}"
     return version
 
 

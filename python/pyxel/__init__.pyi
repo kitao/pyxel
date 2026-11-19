@@ -646,7 +646,7 @@ class Image:
             h: Height (negative to flip)
             colkey: Transparent color. If omitted, no transparency.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-            scale: Scale factor (centered on the copy region). Defaults to 1.
+            scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
         """
     def bltm(
         self,
@@ -673,7 +673,7 @@ class Image:
             h: Height in pixels (negative to flip)
             colkey: Transparent color. If omitted, no transparency.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-            scale: Scale factor (centered on the copy region). Defaults to 1.
+            scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
         """
     def blt3d(
         self,
@@ -1015,7 +1015,7 @@ class Tilemap:
             h: Height (negative to flip)
             tilekey: Transparent tile. If omitted, all tiles are copied.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-            scale: Scale factor (centered on the copy region). Defaults to 1.
+            scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
         """
 
 class Channel:
@@ -1713,7 +1713,7 @@ def blt(
         h: Height (negative to flip)
         colkey: Transparent color. If omitted, no transparency.
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-        scale: Scale factor (centered on the copy region). Defaults to 1.
+        scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
     """
 
 def bltm(
@@ -1740,7 +1740,7 @@ def bltm(
         h: Height in pixels (negative to flip)
         colkey: Transparent color. If omitted, no transparency.
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-        scale: Scale factor (centered on the copy region). Defaults to 1.
+        scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
     """
 
 def blt3d(

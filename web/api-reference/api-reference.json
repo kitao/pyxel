@@ -4858,18 +4858,18 @@
               "name": "scale",
               "type": "float",
               "description": {
-                "en": "Scale factor (centered on the copy region). Defaults to 1.",
-                "cn": "缩放倍率 (以复制区域为中心)。默认为 1。",
-                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
-                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1.",
-                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1.",
-                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1.",
-                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1。",
-                "ko": "배율 (복사 영역 중심 기준). 기본값은 1입니다.",
-                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1.",
-                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1.",
-                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1.",
-                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
+                "en": "Scale factor (centered on the copy region). Defaults to 1 (original size).",
+                "cn": "缩放倍率 (以复制区域为中心)。默认为 1 (原始大小)。",
+                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1 (Originalgröße).",
+                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1 (tamaño original).",
+                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1 (taille d'origine).",
+                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1 (dimensioni originali).",
+                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1（等倍）。",
+                "ko": "배율 (복사 영역 중심 기준). 기본값은 1(원본 크기)입니다.",
+                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1 (tamanho original).",
+                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1 (исходный размер).",
+                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1 (özgün boyut).",
+                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1 (початковий розмір)."
               }
             }
           ],
@@ -5063,18 +5063,18 @@
               "name": "scale",
               "type": "float",
               "description": {
-                "en": "Scale factor (centered on the copy region). Defaults to 1.",
-                "cn": "缩放倍率 (以复制区域为中心)。默认为 1。",
-                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
-                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1.",
-                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1.",
-                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1.",
-                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1。",
-                "ko": "배율 (복사 영역 중심 기준). 기본값은 1입니다.",
-                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1.",
-                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1.",
-                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1.",
-                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
+                "en": "Scale factor (centered on the copy region). Defaults to 1 (original size).",
+                "cn": "缩放倍率 (以复制区域为中心)。默认为 1 (原始大小)。",
+                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1 (Originalgröße).",
+                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1 (tamaño original).",
+                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1 (taille d'origine).",
+                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1 (dimensioni originali).",
+                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1（等倍）。",
+                "ko": "배율 (복사 영역 중심 기준). 기본값은 1(원본 크기)입니다.",
+                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1 (tamanho original).",
+                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1 (исходный размер).",
+                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1 (özgün boyut).",
+                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1 (початковий розмір)."
               }
             }
           ],

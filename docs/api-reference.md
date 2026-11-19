@@ -685,7 +685,7 @@ Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image insta
 - `h` (*float*) — Height (negative to flip)
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
-- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
+- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1 (original size).
 
 ### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
@@ -702,7 +702,7 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instanc
 - `h` (*float*) — Height in pixels (negative to flip)
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
-- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
+- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1 (original size).
 
 ### `blt3d(x, y, w, h, img, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 

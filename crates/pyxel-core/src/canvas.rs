@@ -1,5 +1,6 @@
 use std::f32::consts::PI;
 use std::mem::swap;
+use std::ops::RangeInclusive;
 
 use crate::rect_area::RectArea;
 use crate::utils::{f32_to_i32, f32_to_u32};
@@ -678,17 +679,18 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             macro_rules! scan {
                 (|$val:ident, $di:ident| $body:expr) => {
                     for yi in proj.y1..=proj.y2 {
-                        let (mut sx, mut sy) = proj.src_row_start(yi);
                         let di_row = dst_w * yi as usize;
-                        for xi in proj.x1..=proj.x2 {
-                            let vx = f32_to_i32(sx);
-                            let vy = f32_to_i32(sy);
-                            sx += step_sx;
-                            sy += step_sy;
-                            if vx >= ca_l && vx <= ca_r && vy >= ca_t && vy <= ca_b {
-                                let $val = canvas.data[src_w * vy as usize + vx as usize];
-                                let $di = di_row + xi as usize;
-                                $body
+                        for (pixels, mut sx, mut sy) in proj.src_blocks(yi) {
+                            for xi in pixels {
+                                let vx = f32_to_i32(sx);
+                                let vy = f32_to_i32(sy);
+                                sx += step_sx;
+                                sy += step_sy;
+                                if vx >= ca_l && vx <= ca_r && vy >= ca_t && vy <= ca_b {
+                                    let $val = canvas.data[src_w * vy as usize + vx as usize];
+                                    let $di = di_row + xi as usize;
+                                    $body
+                                }
                             }
                         }
                     }
@@ -710,19 +712,20 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         // Dithering path
         for yi in proj.y1..=proj.y2 {
-            let (mut sx, mut sy) = proj.src_row_start(yi);
-            for xi in proj.x1..=proj.x2 {
-                let vx = f32_to_i32(sx);
-                let vy = f32_to_i32(sy);
-                sx += step_sx;
-                sy += step_sy;
-                if !canvas_area.contains(vx, vy) {
-                    continue;
-                }
+            for (pixels, mut sx, mut sy) in proj.src_blocks(yi) {
+                for xi in pixels {
+                    let vx = f32_to_i32(sx);
+                    let vy = f32_to_i32(sy);
+                    sx += step_sx;
+                    sy += step_sy;
+                    if !canvas_area.contains(vx, vy) {
+                        continue;
+                    }
 
-                let value = canvas.read_data(vx as usize, vy as usize);
-                if let Some(value) = Self::apply_pixel(value, transparent, palette) {
-                    self.write_data(xi as usize, yi as usize, value);
+                    let value = canvas.read_data(vx as usize, vy as usize);
+                    if let Some(value) = Self::apply_pixel(value, transparent, palette) {
+                        self.write_data(xi as usize, yi as usize, value);
+                    }
                 }
             }
         }
@@ -791,26 +794,27 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             macro_rules! scan {
                 (|$val:ident, $di:ident| $body:expr) => {
                     for yi in y1..=y2 {
-                        let (mut wx, mut wy, mut wz) = proj.world_row_start(x1, yi);
                         let di_row = dst_w * yi as usize;
-                        for xi in x1..=x2 {
-                            if wz.abs() >= f32::EPSILON {
-                                let t = -proj.cam_z / wz;
-                                if t > 0.0 {
-                                    let sxi = f32_to_i32(proj.cam_x + t * wx);
-                                    let syi = f32_to_i32(proj.cam_y + t * wy);
-                                    if sxi >= 0 && sxi < src_w && syi >= 0 && syi < src_h {
-                                        let $val =
-                                            canvas.data[src_wu * syi as usize + sxi as usize];
-                                        let $di = di_row + xi as usize;
-                                        $body
+                        for (pixels, mut wx, mut wy, mut wz) in proj.world_blocks(x1, x2, yi) {
+                            for xi in pixels {
+                                if wz.abs() >= f32::EPSILON {
+                                    let t = -proj.cam_z / wz;
+                                    if t > 0.0 {
+                                        let sxi = f32_to_i32(proj.cam_x + t * wx);
+                                        let syi = f32_to_i32(proj.cam_y + t * wy);
+                                        if sxi >= 0 && sxi < src_w && syi >= 0 && syi < src_h {
+                                            let $val =
+                                                canvas.data[src_wu * syi as usize + sxi as usize];
+                                            let $di = di_row + xi as usize;
+                                            $body
+                                        }
                                     }
                                 }
-                            }
 
-                            wx += wx_step;
-                            wy += wy_step;
-                            wz += wz_step;
+                                wx += wx_step;
+                                wy += wy_step;
+                                wz += wz_step;
+                            }
                         }
                     }
                 };
@@ -831,25 +835,27 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         // Dithering path
         for yi in y1..=y2 {
-            let (mut wx, mut wy, mut wz) = proj.world_row_start(x1, yi);
-            for xi in x1..=x2 {
-                if wz.abs() >= f32::EPSILON {
-                    let t = -proj.cam_z / wz;
-                    if t > 0.0 {
-                        let src_xi = f32_to_i32(proj.cam_x + t * wx);
-                        let src_yi = f32_to_i32(proj.cam_y + t * wy);
-                        if src_xi >= 0 && src_xi < src_w && src_yi >= 0 && src_yi < src_h {
-                            let value = canvas.read_data(src_xi as usize, src_yi as usize);
-                            if let Some(value) = Self::apply_pixel(value, transparent, palette) {
-                                self.write_data(xi as usize, yi as usize, value);
+            for (pixels, mut wx, mut wy, mut wz) in proj.world_blocks(x1, x2, yi) {
+                for xi in pixels {
+                    if wz.abs() >= f32::EPSILON {
+                        let t = -proj.cam_z / wz;
+                        if t > 0.0 {
+                            let src_xi = f32_to_i32(proj.cam_x + t * wx);
+                            let src_yi = f32_to_i32(proj.cam_y + t * wy);
+                            if src_xi >= 0 && src_xi < src_w && src_yi >= 0 && src_yi < src_h {
+                                let value = canvas.read_data(src_xi as usize, src_yi as usize);
+                                if let Some(value) = Self::apply_pixel(value, transparent, palette)
+                                {
+                                    self.write_data(xi as usize, yi as usize, value);
+                                }
                             }
                         }
                     }
-                }
 
-                wx += wx_step;
-                wy += wy_step;
-                wz += wz_step;
+                    wx += wx_step;
+                    wy += wy_step;
+                    wz += wz_step;
+                }
             }
         }
     }
@@ -1330,49 +1336,17 @@ impl CopyArea {
     }
 }
 
-// Inside a single sign and exponent the representable values form an evenly
-// spaced grid. One rounded addition settles half-way ties on an even value.
-fn advance_samples(mut value: f32, step: f32, mut count: u32) -> f32 {
-    const FRACTION_BITS: u32 = f32::MANTISSA_DIGITS - 1;
-    const FRACTION_MASK: u32 = (1 << FRACTION_BITS) - 1;
-
-    while count > 16 {
-        let first = value + step;
-        let second = first + step;
-        count -= 1;
-        let old_bits = value.to_bits();
-        value = first;
-        let bits = first.to_bits();
-        let next_bits = second.to_bits();
-        if bits == next_bits || second.is_nan() {
-            return second;
-        }
-        if old_bits >> FRACTION_BITS != bits >> FRACTION_BITS
-            || bits >> FRACTION_BITS != next_bits >> FRACTION_BITS
-        {
-            continue;
-        }
-        // Stop before the lower power of two, where the spacing changes.
-        let mantissa = bits & FRACTION_MASK;
-        let stride = next_bits.abs_diff(bits);
-        let room = if next_bits > bits {
-            FRACTION_MASK - mantissa
-        } else {
-            mantissa.saturating_sub(1)
-        };
-        let skip = count.min(room / stride);
-        let offset = skip * stride;
-        value = f32::from_bits(if next_bits > bits {
-            bits + offset
-        } else {
-            bits - offset
-        });
-        count -= skip;
-    }
-    for _ in 0..count {
-        value += step;
-    }
-    value
+// Start each block at the same pixel with or without clipping. This bounds
+// the work needed to reproduce rounding at the first visible sample.
+fn sample_blocks(row_x: i32, x1: i32, x2: i32) -> impl Iterator<Item = (i32, RangeInclusive<i32>)> {
+    const BLOCK_WIDTH: i32 = 32;
+    let first = x1 - (x1 - row_x) % BLOCK_WIDTH;
+    (first..=x2)
+        .step_by(BLOCK_WIDTH as usize)
+        .map(move |anchor| {
+            let end = x2.min(anchor.saturating_add(BLOCK_WIDTH - 1));
+            (anchor, anchor.max(x1)..=end)
+        })
 }
 
 pub(crate) struct TransformProjection {
@@ -1470,21 +1444,22 @@ impl TransformProjection {
         (self.sign_x * self.cos_s, self.sign_x * self.sin_s)
     }
 
-    // Start from the same physical row origin with or without a user clip.
-    pub(crate) fn src_row_start(&self, yi: i32) -> (f32, f32) {
-        let ox = (self.row_x as f32 - self.dst_cx) * self.sign_x;
+    pub(crate) fn src_blocks(
+        &self,
+        yi: i32,
+    ) -> impl Iterator<Item = (RangeInclusive<i32>, f32, f32)> + '_ {
         let oy = (yi as f32 - self.dst_cy) * self.sign_y;
-        let sx = self.src_cx + ox * self.cos_s - oy * self.sin_s;
-        let sy = self.src_cy + ox * self.sin_s + oy * self.cos_s;
-        let skipped = (self.x1 - self.row_x) as u32;
-        if skipped == 0 {
-            return (sx, sy);
-        }
         let (dx, dy) = self.src_step_per_x();
-        (
-            advance_samples(sx, dx, skipped),
-            advance_samples(sy, dy, skipped),
-        )
+        sample_blocks(self.row_x, self.x1, self.x2).map(move |(anchor, pixels)| {
+            let ox = (anchor as f32 - self.dst_cx) * self.sign_x;
+            let mut sx = self.src_cx + ox * self.cos_s - oy * self.sin_s;
+            let mut sy = self.src_cy + ox * self.sin_s + oy * self.cos_s;
+            for _ in anchor..*pixels.start() {
+                sx += dx;
+                sy += dy;
+            }
+            (pixels, sx, sy)
+        })
     }
 }
 
@@ -1591,28 +1566,30 @@ impl PerspectiveProjection {
         (wx_step, wy_step, wz_step)
     }
 
-    // Start the viewing ray at the same physical row origin as an unclipped draw.
-    pub(crate) fn world_row_start(&self, x1: i32, yi: i32) -> (f32, f32, f32) {
-        let row_x = self.dst_x.max(0);
-        let ndc_x = ((row_x - self.dst_x) as f32 + 0.5 - self.half_width) / self.half_width;
+    pub(crate) fn world_blocks(
+        &self,
+        x1: i32,
+        x2: i32,
+        yi: i32,
+    ) -> impl Iterator<Item = (RangeInclusive<i32>, f32, f32, f32)> + '_ {
         let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_height) / self.half_height;
-        let vx = ndc_x * self.tan_hfov * self.aspect;
         let vy = -ndc_y * self.tan_hfov;
-        let vx2 = vx * self.cos_z + vy * self.sin_z;
-        let vy2 = -vx * self.sin_z + vy * self.cos_z;
-        let wx = self.r00 * vx2 + self.r01 * vy2 - self.r02;
-        let wy = self.r10 * vx2 + self.r11 * vy2 - self.r12;
-        let wz = self.r21 * vy2 - self.r22;
-        let skipped = (x1 - row_x) as u32;
-        if skipped == 0 {
-            return (wx, wy, wz);
-        }
         let (dx, dy, dz) = self.world_step_per_x();
-        (
-            advance_samples(wx, dx, skipped),
-            advance_samples(wy, dy, skipped),
-            advance_samples(wz, dz, skipped),
-        )
+        sample_blocks(self.dst_x.max(0), x1, x2).map(move |(anchor, pixels)| {
+            let ndc_x = ((anchor - self.dst_x) as f32 + 0.5 - self.half_width) / self.half_width;
+            let vx = ndc_x * self.tan_hfov * self.aspect;
+            let vx2 = vx * self.cos_z + vy * self.sin_z;
+            let vy2 = -vx * self.sin_z + vy * self.cos_z;
+            let mut wx = self.r00 * vx2 + self.r01 * vy2 - self.r02;
+            let mut wy = self.r10 * vx2 + self.r11 * vy2 - self.r12;
+            let mut wz = self.r21 * vy2 - self.r22;
+            for _ in anchor..*pixels.start() {
+                wx += dx;
+                wy += dy;
+                wz += dz;
+            }
+            (pixels, wx, wy, wz)
+        })
     }
 }
 
@@ -1620,42 +1597,6 @@ impl PerspectiveProjection {
 mod tests {
     use super::*;
     use crate::image::Color;
-
-    // Projection sampling
-
-    #[test]
-    fn skipped_projection_samples_match_repeated_additions() {
-        let smallest = f32::from_bits(1);
-        let ulp = f32::EPSILON;
-        let cases = [
-            (0.0, 2.0 / 3.0),
-            (-1.5, 0.001),
-            (1.5, -0.001),
-            (1.0 + ulp, ulp / 2.0),
-            (1.0 + ulp, 1.5 * ulp),
-            (2.0 - ulp, ulp),
-            (-2.0 + ulp, -ulp),
-            (f32::MIN_POSITIVE, -smallest),
-            (-smallest, smallest),
-            (-0.0, 0.0),
-            (0.0, -0.0),
-            (-0.0, -0.0),
-            (f32::MAX, f32::MAX),
-            (f32::INFINITY, f32::NEG_INFINITY),
-            (f32::NAN, 1.0),
-        ];
-        for (start, step) in cases {
-            for count in [0, 1, 15, 16, 17, 255, 4097] {
-                let expected = (0..count).fold(start, |v, _| v + step);
-                let actual = advance_samples(start, step, count);
-                if expected.is_nan() {
-                    assert!(actual.is_nan());
-                } else {
-                    assert_eq!(actual.to_bits(), expected.to_bits());
-                }
-            }
-        }
-    }
 
     // CopyArea clipping
 

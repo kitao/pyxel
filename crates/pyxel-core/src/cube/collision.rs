@@ -1590,6 +1590,7 @@ pub(crate) fn ray_vs_sphere_filtered(
     let c = oc.x * oc.x + oc.y * oc.y + oc.z * oc.z - radius * radius;
     let disc = b * b - 4.0 * a * c;
     if (!(a.is_finite() && b.is_finite() && c.is_finite() && disc.is_finite())
+        || disc.is_subnormal()
         || disc.abs() <= 8.0 * f32::EPSILON * (b * b + (4.0 * a * c).abs()))
         && vec_is_finite(origin)
         && vec_is_finite(dir)
@@ -1623,24 +1624,18 @@ pub(crate) fn ray_vs_sphere_filtered(
         let nx = point.x - center.x;
         let ny = point.y - center.y;
         let nz = point.z - center.z;
-        let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
-        let normal = if !nlen.is_finite()
-            && vec_is_finite(point)
+        let length_sq = nx * nx + ny * ny + nz * nz;
+        if !length_sq.is_normal()
+            && radius != 0.0
+            && radius.is_finite()
             && vec_is_finite(center)
             && vec_is_finite(origin)
             && vec_is_finite(dir)
-            && radius.is_finite()
         {
-            let nx = f64::from(point.x) - f64::from(center.x);
-            let ny = f64::from(point.y) - f64::from(center.y);
-            let nz = f64::from(point.z) - f64::from(center.z);
-            let length = (nx * nx + ny * ny + nz * nz).sqrt();
-            Vec3 {
-                x: (nx / length) as f32,
-                y: (ny / length) as f32,
-                z: (nz / length) as f32,
-            }
-        } else if nlen > 1e-12 {
+            return ray_vs_sphere_filtered_wide(origin, dir, center, radius, max_distance, accepts);
+        }
+        let nlen = length_sq.sqrt();
+        let normal = if nlen > 0.0 {
             Vec3 {
                 x: nx / nlen,
                 y: ny / nlen,
@@ -1741,7 +1736,7 @@ fn ray_vs_sphere_filtered_wide(
             continue;
         }
         let length = (nx * nx + ny * ny + nz * nz).sqrt();
-        let normal = if length > f64::from(1e-12_f32) {
+        let normal = if length > 0.0 {
             Vec3 {
                 x: (nx / length) as f32,
                 y: (ny / length) as f32,
@@ -3588,7 +3583,7 @@ mod tests {
 
     #[test]
     fn test_ray_sphere_finite_range_geometry() {
-        for scale in [1e20, 1e37] {
+        for scale in [2.0_f32.powi(-90), 2.0_f32.powi(-44), 1e20, 1e37] {
             let origin = vec3(0.0, 0.0, -5.0 * scale);
             let dir = vec3(0.0, 0.0, 1.0);
             let (t, point, normal) =

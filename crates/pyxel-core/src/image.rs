@@ -734,15 +734,16 @@ impl Image {
             let dst_width = self.canvas.width() as usize;
 
             for yi in proj.y1..=proj.y2 {
-                let (mut sx, mut sy) = proj.src_row_start(yi);
                 let dst_row = dst_width * yi as usize;
-                for xi in proj.x1..=proj.x2 {
-                    let vx = utils::f32_to_i32(sx);
-                    let vy = utils::f32_to_i32(sy);
-                    sx += step_sx;
-                    sy += step_sy;
-                    if let Some(pixel) = sample(vx, vy) {
-                        self.canvas.data[dst_row + xi as usize] = pixel;
+                for (pixels, mut sx, mut sy) in proj.src_blocks(yi) {
+                    for xi in pixels {
+                        let vx = utils::f32_to_i32(sx);
+                        let vy = utils::f32_to_i32(sy);
+                        sx += step_sx;
+                        sy += step_sy;
+                        if let Some(pixel) = sample(vx, vy) {
+                            self.canvas.data[dst_row + xi as usize] = pixel;
+                        }
                     }
                 }
             }
@@ -750,14 +751,15 @@ impl Image {
         }
 
         for yi in proj.y1..=proj.y2 {
-            let (mut sx, mut sy) = proj.src_row_start(yi);
-            for xi in proj.x1..=proj.x2 {
-                let vx = utils::f32_to_i32(sx);
-                let vy = utils::f32_to_i32(sy);
-                sx += step_sx;
-                sy += step_sy;
-                if let Some(pixel) = sample(vx, vy) {
-                    self.canvas.write_data(xi as usize, yi as usize, pixel);
+            for (pixels, mut sx, mut sy) in proj.src_blocks(yi) {
+                for xi in pixels {
+                    let vx = utils::f32_to_i32(sx);
+                    let vy = utils::f32_to_i32(sy);
+                    sx += step_sx;
+                    sy += step_sy;
+                    if let Some(pixel) = sample(vx, vy) {
+                        self.canvas.write_data(xi as usize, yi as usize, pixel);
+                    }
                 }
             }
         }
@@ -866,33 +868,36 @@ impl Image {
 
         // Project each screen pixel back into tilemap source space.
         for yi in y1..=y2 {
-            let (mut wx, mut wy, mut wz) = proj.world_row_start(x1, yi);
-            for xi in x1..=x2 {
-                if wz.abs() >= f32::EPSILON {
-                    let t = -proj.cam_z / wz;
-                    if t > 0.0 {
-                        let src_x = utils::f32_to_i32(proj.cam_x + t * wx);
-                        let src_y = utils::f32_to_i32(proj.cam_y + t * wy);
-                        let tile_x = src_x >> TILE_SHIFT;
-                        let tile_y = src_y >> TILE_SHIFT;
-                        if tile_x >= 0 && tile_x < tm_w && tile_y >= 0 && tile_y < tm_h {
-                            let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
-                            let px = tile.0 as i32 * tile_size + (src_x & TILE_MASK);
-                            let py = tile.1 as i32 * tile_size + (src_y & TILE_MASK);
-                            if px >= 0 && px < img_w && py >= 0 && py < img_h {
-                                let value = image_canvas.read_data(px as usize, py as usize);
-                                if transparent.is_none_or(|tkey| value != tkey) {
-                                    let value = palette.map_or(value, |pal| pal[value.to_index()]);
-                                    self.canvas.write_data(xi as usize, yi as usize, value);
+            for (pixels, mut wx, mut wy, mut wz) in proj.world_blocks(x1, x2, yi) {
+                for xi in pixels {
+                    if wz.abs() >= f32::EPSILON {
+                        let t = -proj.cam_z / wz;
+                        if t > 0.0 {
+                            let src_x = utils::f32_to_i32(proj.cam_x + t * wx);
+                            let src_y = utils::f32_to_i32(proj.cam_y + t * wy);
+                            let tile_x = src_x >> TILE_SHIFT;
+                            let tile_y = src_y >> TILE_SHIFT;
+                            if tile_x >= 0 && tile_x < tm_w && tile_y >= 0 && tile_y < tm_h {
+                                let tile =
+                                    tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+                                let px = tile.0 as i32 * tile_size + (src_x & TILE_MASK);
+                                let py = tile.1 as i32 * tile_size + (src_y & TILE_MASK);
+                                if px >= 0 && px < img_w && py >= 0 && py < img_h {
+                                    let value = image_canvas.read_data(px as usize, py as usize);
+                                    if transparent.is_none_or(|tkey| value != tkey) {
+                                        let value =
+                                            palette.map_or(value, |pal| pal[value.to_index()]);
+                                        self.canvas.write_data(xi as usize, yi as usize, value);
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                wx += wx_step;
-                wy += wy_step;
-                wz += wz_step;
+                    wx += wx_step;
+                    wy += wy_step;
+                    wz += wz_step;
+                }
             }
         }
     }

@@ -6,6 +6,7 @@
 - Fixed Vec3.lerp missing the target vector at the end of interpolation
 - Fixed Vec3.project losing small vectors when projecting onto large axes
 - Fixed missed Cube raycasts and swept collisions at shallow angles
+- Fixed incorrect raycast normals on very small Cube spheres
 - Reduced memory use when loading compressed image and tilemap data
 - Prevented saving images with tilemaps that reference a missing image
 - Fixed flat and textured GLB material tints in linear color space
