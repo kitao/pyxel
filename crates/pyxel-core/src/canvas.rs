@@ -678,7 +678,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             macro_rules! scan {
                 (|$val:ident, $di:ident| $body:expr) => {
                     for yi in proj.y1..=proj.y2 {
-                        let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
+                        let (mut sx, mut sy) = proj.src_row_start(yi);
                         let di_row = dst_w * yi as usize;
                         for xi in proj.x1..=proj.x2 {
                             let vx = f32_to_i32(sx);
@@ -710,7 +710,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         // Dithering path
         for yi in proj.y1..=proj.y2 {
-            let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
+            let (mut sx, mut sy) = proj.src_row_start(yi);
             for xi in proj.x1..=proj.x2 {
                 let vx = f32_to_i32(sx);
                 let vy = f32_to_i32(sy);
@@ -791,7 +791,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             macro_rules! scan {
                 (|$val:ident, $di:ident| $body:expr) => {
                     for yi in y1..=y2 {
-                        let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
+                        let (mut wx, mut wy, mut wz) = proj.world_row_start(x1, yi);
                         let di_row = dst_w * yi as usize;
                         for xi in x1..=x2 {
                             if wz.abs() >= f32::EPSILON {
@@ -831,7 +831,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         // Dithering path
         for yi in y1..=y2 {
-            let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
+            let (mut wx, mut wy, mut wz) = proj.world_row_start(x1, yi);
             for xi in x1..=x2 {
                 if wz.abs() >= f32::EPSILON {
                     let t = -proj.cam_z / wz;
@@ -1330,6 +1330,51 @@ impl CopyArea {
     }
 }
 
+// Inside a single sign and exponent the representable values form an evenly
+// spaced grid. One rounded addition settles half-way ties on an even value.
+fn advance_samples(mut value: f32, step: f32, mut count: u32) -> f32 {
+    const FRACTION_BITS: u32 = f32::MANTISSA_DIGITS - 1;
+    const FRACTION_MASK: u32 = (1 << FRACTION_BITS) - 1;
+
+    while count > 16 {
+        let first = value + step;
+        let second = first + step;
+        count -= 1;
+        let old_bits = value.to_bits();
+        value = first;
+        let bits = first.to_bits();
+        let next_bits = second.to_bits();
+        if bits == next_bits || second.is_nan() {
+            return second;
+        }
+        if old_bits >> FRACTION_BITS != bits >> FRACTION_BITS
+            || bits >> FRACTION_BITS != next_bits >> FRACTION_BITS
+        {
+            continue;
+        }
+        // Stop before the lower power of two, where the spacing changes.
+        let mantissa = bits & FRACTION_MASK;
+        let stride = next_bits.abs_diff(bits);
+        let room = if next_bits > bits {
+            FRACTION_MASK - mantissa
+        } else {
+            mantissa.saturating_sub(1)
+        };
+        let skip = count.min(room / stride);
+        let offset = skip * stride;
+        value = f32::from_bits(if next_bits > bits {
+            bits + offset
+        } else {
+            bits - offset
+        });
+        count -= skip;
+    }
+    for _ in 0..count {
+        value += step;
+    }
+    value
+}
+
 pub(crate) struct TransformProjection {
     src_cx: f32,
     src_cy: f32,
@@ -1345,6 +1390,7 @@ pub(crate) struct TransformProjection {
     pub(crate) width: u32,
     pub(crate) height: u32,
 
+    row_x: i32,
     pub(crate) x1: i32,
     pub(crate) x2: i32,
     pub(crate) y1: i32,
@@ -1395,6 +1441,7 @@ impl TransformProjection {
         let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
         let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
 
+        let row_x = f32_to_i32(dst_cx - bound_x).max(0);
         Some(Self {
             src_cx,
             src_cy,
@@ -1410,7 +1457,8 @@ impl TransformProjection {
             width,
             height,
 
-            x1: f32_to_i32(dst_cx - bound_x).max(clip_rect.left()),
+            row_x,
+            x1: row_x.max(clip_rect.left()),
             x2: f32_to_i32(dst_cx + bound_x).min(clip_rect.right()),
             y1: f32_to_i32(dst_cy - bound_y).max(clip_rect.top()),
             y2: f32_to_i32(dst_cy + bound_y).min(clip_rect.bottom()),
@@ -1422,13 +1470,20 @@ impl TransformProjection {
         (self.sign_x * self.cos_s, self.sign_x * self.sin_s)
     }
 
-    // Base source-space position for a given (xi, yi)
-    pub(crate) fn src_base(&self, xi: i32, yi: i32) -> (f32, f32) {
-        let ox = (xi as f32 - self.dst_cx) * self.sign_x;
+    // Start from the same physical row origin with or without a user clip.
+    pub(crate) fn src_row_start(&self, yi: i32) -> (f32, f32) {
+        let ox = (self.row_x as f32 - self.dst_cx) * self.sign_x;
         let oy = (yi as f32 - self.dst_cy) * self.sign_y;
+        let sx = self.src_cx + ox * self.cos_s - oy * self.sin_s;
+        let sy = self.src_cy + ox * self.sin_s + oy * self.cos_s;
+        let skipped = (self.x1 - self.row_x) as u32;
+        if skipped == 0 {
+            return (sx, sy);
+        }
+        let (dx, dy) = self.src_step_per_x();
         (
-            self.src_cx + ox * self.cos_s - oy * self.sin_s,
-            self.src_cy + ox * self.sin_s + oy * self.cos_s,
+            advance_samples(sx, dx, skipped),
+            advance_samples(sy, dy, skipped),
         )
     }
 }
@@ -1536,18 +1591,27 @@ impl PerspectiveProjection {
         (wx_step, wy_step, wz_step)
     }
 
-    // Base world-space values for a given (xi, yi)
-    pub(crate) fn world_base(&self, xi: i32, yi: i32) -> (f32, f32, f32) {
-        let ndc_x = ((xi - self.dst_x) as f32 + 0.5 - self.half_width) / self.half_width;
+    // Start the viewing ray at the same physical row origin as an unclipped draw.
+    pub(crate) fn world_row_start(&self, x1: i32, yi: i32) -> (f32, f32, f32) {
+        let row_x = self.dst_x.max(0);
+        let ndc_x = ((row_x - self.dst_x) as f32 + 0.5 - self.half_width) / self.half_width;
         let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_height) / self.half_height;
         let vx = ndc_x * self.tan_hfov * self.aspect;
         let vy = -ndc_y * self.tan_hfov;
         let vx2 = vx * self.cos_z + vy * self.sin_z;
         let vy2 = -vx * self.sin_z + vy * self.cos_z;
+        let wx = self.r00 * vx2 + self.r01 * vy2 - self.r02;
+        let wy = self.r10 * vx2 + self.r11 * vy2 - self.r12;
+        let wz = self.r21 * vy2 - self.r22;
+        let skipped = (x1 - row_x) as u32;
+        if skipped == 0 {
+            return (wx, wy, wz);
+        }
+        let (dx, dy, dz) = self.world_step_per_x();
         (
-            self.r00 * vx2 + self.r01 * vy2 - self.r02,
-            self.r10 * vx2 + self.r11 * vy2 - self.r12,
-            self.r21 * vy2 - self.r22,
+            advance_samples(wx, dx, skipped),
+            advance_samples(wy, dy, skipped),
+            advance_samples(wz, dz, skipped),
         )
     }
 }
@@ -1556,6 +1620,42 @@ impl PerspectiveProjection {
 mod tests {
     use super::*;
     use crate::image::Color;
+
+    // Projection sampling
+
+    #[test]
+    fn skipped_projection_samples_match_repeated_additions() {
+        let smallest = f32::from_bits(1);
+        let ulp = f32::EPSILON;
+        let cases = [
+            (0.0, 2.0 / 3.0),
+            (-1.5, 0.001),
+            (1.5, -0.001),
+            (1.0 + ulp, ulp / 2.0),
+            (1.0 + ulp, 1.5 * ulp),
+            (2.0 - ulp, ulp),
+            (-2.0 + ulp, -ulp),
+            (f32::MIN_POSITIVE, -smallest),
+            (-smallest, smallest),
+            (-0.0, 0.0),
+            (0.0, -0.0),
+            (-0.0, -0.0),
+            (f32::MAX, f32::MAX),
+            (f32::INFINITY, f32::NEG_INFINITY),
+            (f32::NAN, 1.0),
+        ];
+        for (start, step) in cases {
+            for count in [0, 1, 15, 16, 17, 255, 4097] {
+                let expected = (0..count).fold(start, |v, _| v + step);
+                let actual = advance_samples(start, step, count);
+                if expected.is_nan() {
+                    assert!(actual.is_nan());
+                } else {
+                    assert_eq!(actual.to_bits(), expected.to_bits());
+                }
+            }
+        }
+    }
 
     // CopyArea clipping
 

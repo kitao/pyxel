@@ -166,6 +166,7 @@ test("homepage and guide keep the language selected on either page", async ({
   );
   await page.goto(guide.pathname);
   await expect(page.locator("#lang-select")).toHaveValue("cn");
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh");
   await page.locator("#lang-select").selectOption("de");
   await page.goto("/pyxel/");
   await expect(page.locator("#lang-select")).toHaveValue("de");

@@ -2,6 +2,7 @@
 
 ## 3.0.3
 
+- Fixed clipping changing pixels inside rotated, scaled, and perspective blits
 - Fixed Vec3.lerp missing the target vector at the end of interpolation
 - Fixed Vec3.project losing small vectors when projecting onto large axes
 - Fixed missed Cube raycasts and swept collisions at shallow angles
@@ -10,6 +11,7 @@
 - Fixed flat and textured GLB material tints in linear color space
 - Fixed the editor overwriting tilemap image bank indices of 3 or higher
 - Fixed editor selection and display for resources with fewer banks
+- Fixed the editor drawing a selection mark outside the visible color palette
 - Preserved notes and music sequence entries beyond the editor grid during edits
 - Fixed app2exe failing on imports from nested namespace packages
 - Restored the lst keyword for legacy from_list calls

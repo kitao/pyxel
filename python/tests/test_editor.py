@@ -21,7 +21,7 @@ from pyxel.editor.piano_roll import PianoRoll
 from pyxel.editor.sound_editor import SoundEditor
 from pyxel.editor.sound_field import SoundField
 from pyxel.editor.tilemap_editor import TilemapEditor
-from pyxel.editor.widgets import NumberPicker, ScrollBar, Widget
+from pyxel.editor.widgets import ColorPicker, NumberPicker, ScrollBar, Widget
 
 RESOURCE_FILE = str(
     Path(__file__).parent.parent / "pyxel" / "examples" / "assets" / "sample.pyxres"
@@ -1201,6 +1201,32 @@ class TestWidget:
             pyxel.set_mouse_pos(*saved_pos)
             pyxel.flip()
             root._end_capture()
+
+
+class TestColorPicker:
+    @pytest.mark.parametrize(
+        "count,color,x,y,expected_pixel",
+        [
+            (16, 15, 60, 12, 7),
+            (64, 63, 62, 14, 7),
+            (65, 64, 2, 18, 1),
+            (240, 239, 62, 58, 1),
+        ],
+    )
+    def test_cursor_stays_in_visible_cells(
+        self, monkeypatch, count, color, x, y, expected_pixel
+    ):
+        original = list(pyxel.colors)
+        monkeypatch.setattr(pyxel, "num_user_colors", count, raising=False)
+        try:
+            pyxel.colors[:] = original[: pyxel.NUM_COLORS] + [0] * count
+            picker = ColorPicker(None, 0, 0, color)
+            pyxel.cls(1)
+            picker.draw_all()
+            assert pyxel.pget(x, y) == expected_pixel
+            assert picker.value_var == color
+        finally:
+            pyxel.colors[:] = original
 
 
 class TestNumberPicker:

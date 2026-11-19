@@ -72,6 +72,46 @@ class TestBlt:
         assert drawn == 4
 
 
+class TestBlitClipping:
+    @pytest.mark.parametrize("tilemap", [False, True])
+    @pytest.mark.parametrize("perspective", [False, True])
+    def test_clip_preserves_sampled_pixels(self, tilemap, perspective):
+        image = pyxel.Image(32, 32)
+        for y in range(32):
+            for x in range(32):
+                image.pset(x, y, (x * 3 + y * 7) % 16)
+        tiles = pyxel.Tilemap(4, 4, image)
+        for y in range(4):
+            for x in range(4):
+                tiles.pset(x, y, (x, y))
+
+        target = pyxel.Image(32, 32)
+        source = tiles if tilemap else image
+        if perspective:
+            draw = target.bltm3d if tilemap else target.blt3d
+            args = (0, 0, 32, 32, source, (15.5, 11.5, 7), (30, 0, 0), 60)
+            left = 3
+        else:
+            draw = target.bltm if tilemap else target.blt
+            args = (
+                (4, 4, source, 2, 1, 4, 4, None, 45, 0.5)
+                if tilemap
+                else (4, 4, source, 2, 1, 8, 4, None, 0, 1.5)
+            )
+            left = 5 if tilemap else 9
+
+        target.cls(15)
+        draw(*args)
+        expected = [
+            target.pget(x, y) if x >= left else 15 for y in range(32) for x in range(32)
+        ]
+        target.cls(15)
+        target.clip(left, 0, 32 - left, 32)
+        draw(*args)
+        target.clip()
+        assert [target.pget(x, y) for y in range(32) for x in range(32)] == expected
+
+
 class TestBltm:
     def test_bltm_with_tilemap_instance(self):
         pyxel.cls(0)

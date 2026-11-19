@@ -734,7 +734,7 @@ impl Image {
             let dst_width = self.canvas.width() as usize;
 
             for yi in proj.y1..=proj.y2 {
-                let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
+                let (mut sx, mut sy) = proj.src_row_start(yi);
                 let dst_row = dst_width * yi as usize;
                 for xi in proj.x1..=proj.x2 {
                     let vx = utils::f32_to_i32(sx);
@@ -750,7 +750,7 @@ impl Image {
         }
 
         for yi in proj.y1..=proj.y2 {
-            let (mut sx, mut sy) = proj.src_base(proj.x1, yi);
+            let (mut sx, mut sy) = proj.src_row_start(yi);
             for xi in proj.x1..=proj.x2 {
                 let vx = utils::f32_to_i32(sx);
                 let vy = utils::f32_to_i32(sy);
@@ -866,7 +866,7 @@ impl Image {
 
         // Project each screen pixel back into tilemap source space.
         for yi in y1..=y2 {
-            let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
+            let (mut wx, mut wy, mut wz) = proj.world_row_start(x1, yi);
             for xi in x1..=x2 {
                 if wz.abs() >= f32::EPSILON {
                     let t = -proj.cam_z / wz;
