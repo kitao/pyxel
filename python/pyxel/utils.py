@@ -184,7 +184,17 @@ def _is_importable_module(name: str) -> bool:
     parts = name.split(".")
     for index in range(len(parts)):
         fullname = ".".join(parts[: index + 1])
-        spec = PathFinder.find_spec(fullname, search_path)
+        try:
+            spec = PathFinder.find_spec(fullname, search_path)
+        except (KeyError, ModuleNotFoundError) as exc:
+            # A nested namespace package normally gets its path from an
+            # imported parent. Search that parent's known locations directly.
+            parent = fullname.rpartition(".")[0]
+            if not parent or (
+                exc.args != (parent,) and getattr(exc, "name", None) != parent
+            ):
+                raise
+            spec = PathFinder.find_spec(parts[index], search_path)
         if spec is None:
             return False
         if index < len(parts) - 1 and spec.submodule_search_locations is None:

@@ -78,6 +78,7 @@ class ImageEditor(EditorBase):
 
     def refresh_resource(self):
         self._image_picker.set_bank_size(len(pyxel.images))
+        # Reapply the selected color's palette bound.
         self.color_var = self.color_var
 
     # Helpers

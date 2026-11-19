@@ -8287,18 +8287,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent palette color for the imported texture. If omitted, Pyxel uses an unused palette color when a MASK texture needs one for transparency. If no color is available, the color key remains unset.",
-                "cn": "导入纹理的透明色索引。省略时，如果 MASK 纹理需要透明色，Pyxel 会使用调色板中未使用的颜色。如果没有可用的颜色，则不设置透明色。",
-                "de": "Index der Transparenzfarbe für die importierte Textur. Ohne Angabe verwendet Pyxel eine freie Palettenfarbe, wenn eine MASK-Textur eine Transparenzfarbe benötigt. Ist keine Farbe frei, bleibt die Transparenzfarbe ungesetzt.",
-                "es": "Índice del color transparente en la paleta para la textura importada. Si se omite y una textura MASK necesita un color transparente, Pyxel usa un color libre de la paleta. Si no hay ninguno, el color transparente queda sin asignar.",
-                "fr": "Indice de la couleur transparente dans la palette pour la texture importée. Si ce paramètre est omis et qu'une texture MASK a besoin d'une couleur transparente, Pyxel utilise une couleur libre de la palette. Si aucune n'est libre, la couleur transparente reste indéfinie.",
-                "it": "Indice del colore trasparente nella tavolozza per la texture importata. Se omesso, Pyxel usa un colore libero della tavolozza quando una texture MASK richiede un colore trasparente. Se non ci sono colori liberi, il colore trasparente resta non impostato.",
-                "ja": "読み込んだテクスチャの透明色にするパレット番号。省略時は、MASK テクスチャに透明色が必要な場合、パレットの未使用色を使う。空きがなければ透明色は設定しない。",
-                "ko": "가져온 텍스처의 투명색으로 사용할 팔레트 인덱스입니다. 생략하면 MASK 텍스처에 투명색이 필요할 때 팔레트에서 사용하지 않은 색을 사용합니다. 남는 색이 없으면 투명색을 설정하지 않습니다.",
-                "pt": "Índice da cor transparente na paleta para a textura importada. Se o parâmetro for omitido e uma textura MASK precisar de uma cor transparente, o Pyxel usa uma cor livre da paleta. Se não houver nenhuma, a cor transparente fica sem definição.",
-                "ru": "Индекс прозрачного цвета в палитре для импортированной текстуры. Если параметр не указан и текстуре MASK нужен прозрачный цвет, Pyxel выбирает свободный цвет палитры. Если свободных цветов нет, прозрачный цвет остаётся незаданным.",
-                "tr": "İçe aktarılan doku için saydam rengin palet indeksi. Belirtilmezse ve bir MASK dokusu saydam renge ihtiyaç duyarsa Pyxel palette kullanılmayan bir renk seçer. Boş renk yoksa saydam renk ayarlanmaz.",
-                "uk": "Індекс прозорого кольору в палітрі для імпортованої текстури. Якщо параметр не вказано й текстурі MASK потрібен прозорий колір, Pyxel вибирає вільний колір палітри. Якщо вільних кольорів немає, прозорий колір залишається невизначеним."
+                "en": "Palette index for texture transparency (0–15 in the default palette).",
+                "cn": "纹理透明色的调色板索引 (默认调色板为 0–15)。",
+                "de": "Palettenindex der Transparenzfarbe für die Textur (0–15 in der Standardpalette).",
+                "es": "Índice del color transparente de la textura (0–15 en la paleta predeterminada).",
+                "fr": "Indice de la couleur transparente de la texture (de 0 à 15 dans la palette par défaut).",
+                "it": "Indice del colore trasparente della texture (0–15 nella tavolozza predefinita).",
+                "ja": "テクスチャの透明色に使う色番号（初期パレットでは 0〜15）。",
+                "ko": "텍스처의 투명색으로 사용할 팔레트 인덱스입니다(기본 팔레트에서는 0~15).",
+                "pt": "Índice da cor transparente da textura (0–15 na paleta padrão).",
+                "ru": "Индекс прозрачного цвета текстуры (0–15 в стандартной палитре).",
+                "tr": "Dokunun saydam rengi için palet indeksi (varsayılan palette 0–15).",
+                "uk": "Індекс прозорого кольору текстури (0–15 у стандартній палітрі)."
               }
             },
             {

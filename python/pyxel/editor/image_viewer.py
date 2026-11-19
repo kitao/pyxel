@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, clamp
+from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, clamp, resolve_image
 from .widgets import ScrollBar, Widget
 
 _GRID_SIZE = 8
@@ -161,11 +161,17 @@ class ImageViewer(Widget):
 
         # Draw image preview
         pyxel.user_pal()
-        if self.image_index_var < len(pyxel.images):
+        source = (
+            pyxel.tilemaps[self.tilemap_index_var].imgsrc
+            if self._is_tilemap_mode
+            else self.image_index_var
+        )
+        image = resolve_image(source)
+        if image is not None:
             pyxel.blt(
                 self.x + 1,
                 self.y + 1,
-                self.image_index_var,
+                image,
                 self.viewport_x_var * _GRID_SIZE,
                 self.viewport_y_var * _GRID_SIZE,
                 self.width - 2,

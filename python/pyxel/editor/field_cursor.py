@@ -157,12 +157,15 @@ class FieldCursor:
     def insert(self, value):
         self._add_pre_history(self.x, self.y)
         x = self.x
-        if self.is_selecting:
-            del self.field[x : x + self.width]
+        selected = self.width if self.is_selecting else 0
         if not isinstance(value, list):
             value = [value]
-        self.field[x:x] = value
-        del self.field[self._max_field_length :]
+        field = self.field
+        field[x : x + selected] = value
+        # Trim only the spill from this edit; existing data beyond the grid is preserved.
+        overflow = len(value) - selected
+        if overflow > 0:
+            del field[self._max_field_length : self._max_field_length + overflow]
         self.move_to(x + len(value), self.y, False)
         self._add_post_history(self.x, self.y)
 

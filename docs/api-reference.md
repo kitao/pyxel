@@ -424,7 +424,7 @@ Set the dropped file list for the current frame. Replaces any existing list. Mai
 
 ### `colors` — variable
 
-List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.
+The default palette has 16 colors (0-15). List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.
 
 - **Type:** `list[int]`
 
@@ -438,7 +438,7 @@ pyxel.colors[:] = old_colors
 
 ### `images` — variable
 
-List of image banks. Initially contains 3 Image instances.
+Image banks (Image instances) (0-2).
 
 - **Type:** `list[Image]`
 
@@ -450,7 +450,7 @@ pyxel.images[0].load(0, 0, "title.png")
 
 ### `tilemaps` — variable
 
-List of tilemaps. Initially contains 8 Tilemap instances.
+Tilemaps (Tilemap instances) (0-7).
 
 - **Type:** `list[Tilemap]`
 
@@ -672,13 +672,13 @@ Fill the area connected with the same color as (x, y) with color col.
 
 ### `blt(x, y, img, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
-Copy the region of size (w, h) from (u, v) of image bank img (index or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
+Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
 **Parameters:**
 
 - `x` (*float*) — Destination X
 - `y` (*float*) — Destination Y
-- `img` (*int | Image*) — Image bank number or Image instance
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 - `u` (*float*) — Source X in the image bank
 - `v` (*float*) — Source Y in the image bank
 - `w` (*float*) — Width (negative to flip)
@@ -689,13 +689,13 @@ Copy the region of size (w, h) from (u, v) of image bank img (index or Image ins
 
 ### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
-Copy the region of size (w, h) from (u, v) of tilemap tm (index or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
+Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
 **Parameters:**
 
 - `x` (*float*) — Destination X (in pixels)
 - `y` (*float*) — Destination Y (in pixels)
-- `tm` (*int | Tilemap*) — Tilemap number or Tilemap instance
+- `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
 - `u` (*float*) — Source X in the tilemap (in pixels)
 - `v` (*float*) — Source Y in the tilemap (in pixels)
 - `w` (*float*) — Width in pixels (negative to flip)
@@ -706,7 +706,7 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (index or Tilemap insta
 
 ### `blt3d(x, y, w, h, img, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
-Draw the image bank img (index or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
 **Parameters:**
 
@@ -714,7 +714,7 @@ Draw the image bank img (index or Image instance) with perspective projection on
 - `y` (*float*) — Destination Y
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
-- `img` (*int | Image*) — Image bank number or Image instance
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 - `pos` (*tuple[float, float, float]*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*tuple[float, float, float]*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
@@ -722,7 +722,7 @@ Draw the image bank img (index or Image instance) with perspective projection on
 
 ### `bltm3d(x, y, w, h, tm, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
-Draw the tilemap tm (index or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
+Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
 **Parameters:**
 
@@ -730,7 +730,7 @@ Draw the tilemap tm (index or Tilemap instance) with perspective projection onto
 - `y` (*float*) — Destination Y
 - `w` (*float*) — Display width
 - `h` (*float*) — Display height
-- `tm` (*int | Tilemap*) — Tilemap number or Tilemap instance
+- `tm` (*int | Tilemap*) — Tilemap number (0-7) or Tilemap instance
 - `pos` (*tuple[float, float, float]*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*tuple[float, float, float]*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
@@ -769,10 +769,10 @@ Draw a string s in color col at (x, y).
 
 ### Resource Constants
 
-- `NUM_COLORS` — 16 — Initial number of palette colors
-- `NUM_IMAGES` — 3 — Initial number of image banks
+- `NUM_COLORS` — 16 — Initial number of palette colors (0-15)
+- `NUM_IMAGES` — 3 — Initial number of image banks (0-2)
 - `IMAGE_SIZE` — 256 — Initial image width and height
-- `NUM_TILEMAPS` — 8 — Initial number of tilemaps
+- `NUM_TILEMAPS` — 8 — Initial number of tilemaps (0-7)
 - `TILEMAP_SIZE` — 256 — Initial tilemap width and height
 - `TILE_SIZE` — 8 — Tile size in pixels
 - `FONT_WIDTH` — 4 — Built-in font width
@@ -782,19 +782,19 @@ Draw a string s in color col at (x, y).
 
 ### `channels` — variable *(Advanced)*
 
-List of audio channels. Initially contains 4 Channel instances.
+Audio channels (Channel instances) (0-3).
 
 - **Type:** `list[Channel]`
 
 ### `tones` — variable *(Advanced)*
 
-List of tone definitions. Initially contains 4 Tone instances.
+Tone definitions (Tone instances) (0-3).
 
 - **Type:** `list[Tone]`
 
 ### `sounds` — variable
 
-List of sounds. Initially contains 64 Sound instances.
+Sounds (Sound instances) (0-63).
 
 - **Type:** `list[Sound]`
 
@@ -806,39 +806,39 @@ pyxel.sounds[0].speed = 60
 
 ### `musics` — variable
 
-List of music tracks. Initially contains 8 Music instances.
+Music tracks (Music instances) (0-7).
 
 - **Type:** `list[Music]`
 
 ### `play(ch, snd, sec=0, loop=False, resume=False)` — function
 
-Play the sound snd on channel ch. snd can be a sound number, a list of numbers, a Sound instance, a list of Sounds, or an MML string.
+Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list of numbers, a Sound instance, a list of Sounds, or an MML string.
 
 **Parameters:**
 
-- `ch` (*int*) — Channel number
-- `snd` (*int | list | Sound | str*) — Sound number, list of numbers, Sound instance, list of Sounds, or MML string
+- `ch` (*int*) — Channel number (0-3)
+- `snd` (*int | list | Sound | str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
 - `sec` (*float*) — Playback start position in seconds. Defaults to 0.
 - `loop` (*bool*) — Loop playback. Defaults to False.
 - `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.
 
 ### `playm(msc, sec=0, loop=False)` — function
 
-Play the music msc.
+Play the music msc (0-7).
 
 **Parameters:**
 
-- `msc` (*int*) — Music number
+- `msc` (*int*) — Music number (0-7)
 - `sec` (*float*) — Playback start position in seconds. Defaults to 0.
 - `loop` (*bool*) — Loop playback. Defaults to False.
 
 ### `stop(ch)` — function
 
-Stop playback of the specified channel ch.
+Stop playback of the specified channel ch (0-3).
 
 **Parameters:**
 
-- `ch` (*int*) — Channel number
+- `ch` (*int*) — Channel number (0-3)
 
 ### `stop()` — function
 
@@ -846,11 +846,11 @@ Stop playback of all channels.
 
 ### `play_pos(ch)` — function
 
-Get the sound playback position of channel ch as a tuple of (sound_index, sec). Return None when playback has stopped.
+Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.
 
 **Parameters:**
 
-- `ch` (*int*) — Channel number
+- `ch` (*int*) — Channel number (0-3)
 
 **Returns:** `tuple[int, float] | None` — (sound_index, sec): sound_index is the zero-based position in the sound sequence; sec is the playback position within that sound, in seconds. None when playback has stopped.
 
@@ -888,10 +888,10 @@ Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, ins
 
 ### Resource Constants
 
-- `NUM_CHANNELS` — 4 — Initial number of audio channels
-- `NUM_TONES` — 4 — Initial number of tone types
-- `NUM_SOUNDS` — 64 — Initial number of sounds
-- `NUM_MUSICS` — 8 — Initial number of music tracks
+- `NUM_CHANNELS` — 4 — Initial number of audio channels (0-3)
+- `NUM_TONES` — 4 — Initial number of tone types (0-3)
+- `NUM_SOUNDS` — 64 — Initial number of sounds (0-63)
+- `NUM_MUSICS` — 8 — Initial number of music tracks (0-7)
 
 ## Math
 
@@ -1164,7 +1164,7 @@ Create a new Tilemap instance.
 
 - `width` (*int*) — Tilemap width (in tiles)
 - `height` (*int*) — Tilemap height (in tiles)
-- `img` (*int | Image*) — Image bank number or Image instance
+- `img` (*int | Image*) — Image bank number (0-2) or Image instance
 
 **Returns:** `Tilemap`
 
@@ -1193,7 +1193,7 @@ Tilemap height (in tiles)
 
 ### `Tilemap.imgsrc` — variable
 
-The image bank number or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading.
+The image bank number (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading.
 
 - **Type:** `int | Image`
 
@@ -1281,7 +1281,7 @@ Create a new Sound instance.
 
 ### `Sound.notes` — variable
 
-Note values in semitones from C0 (0). B4 is 59 and B#4 is 60. With a wavetable tone, A2 (33) is 440 Hz. Negative values are rests.
+Note numbers (0-59), from C0 to B4 in semitone steps. Use -1 for a rest. With a wavetable tone, A2 (33) is 440 Hz.
 
 - **Type:** `list[int]`
 
@@ -1293,7 +1293,7 @@ List of tone numbers. The default tones are Triangle (0), Square (1), Pulse (2),
 
 ### `Sound.volumes` — variable
 
-Volume values. 0 is silent, 7 is normal volume, and higher values amplify the sound.
+List of volumes (0-7), from silence to normal volume.
 
 - **Type:** `list[int]`
 
@@ -1439,17 +1439,17 @@ Create a new Music instance.
 
 ### `Music.seqs` — variable
 
-A two-dimensional list of sound numbers across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy.
+A two-dimensional list of sound numbers (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy.
 
 - **Type:** `list[list[int]]`
 
 ### `Music.set(seq0, seq1, seq2, ...)` — function
 
-Set the lists of sound numbers for each channel. An empty list means the channel is not used.
+Set the lists of sound numbers (0-63) for each channel. An empty list means the channel is not used.
 
 **Parameters:**
 
-- `seq0, seq1, ...` (*list[int]*) — Sound numbers for each channel. An empty list leaves the channel unused.
+- `seq0, seq1, ...` (*list[int]*) — Sound numbers (0-63) for each channel. An empty list leaves the channel unused.
 
 **Example:**
 
@@ -1493,7 +1493,7 @@ Play the sound snd on this channel. snd can be a sound number, a list, a Sound i
 
 **Parameters:**
 
-- `snd` (*int | list | Sound | str*) — Sound number, list of numbers, Sound instance, list of Sounds, or MML string
+- `snd` (*int | list | Sound | str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
 - `sec` (*float*) — Playback start position in seconds. Defaults to 0.
 - `loop` (*bool*) — Loop playback. Defaults to False.
 - `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.

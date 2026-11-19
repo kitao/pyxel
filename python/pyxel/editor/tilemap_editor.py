@@ -70,12 +70,13 @@ class TilemapEditor(EditorBase):
             161,
             min_value=0,
             max_value=pyxel.NUM_IMAGES - 1,
-            value=pyxel.tilemaps[self.tilemap_index_var].imgsrc,
+            value=0,
             allow_out_of_range=True,
         )
         self._image_picker.add_event_listener("change", self.__on_image_picker_change)
         self.add_number_picker_help(self._image_picker)
         self.copy_var("image_index_var", self._image_picker, "value_var")
+        self._sync_image_picker()
 
         self._image_viewer = ImageViewer(self)
         self.copy_var("tile_x_var", self._image_viewer, "focus_x_var")
@@ -95,9 +96,14 @@ class TilemapEditor(EditorBase):
     def refresh_resource(self):
         self._tilemap_picker.set_bank_size(len(pyxel.tilemaps))
         self._image_picker.set_bank_size(len(pyxel.images))
-        self.image_index_var = pyxel.tilemaps[self.tilemap_index_var].imgsrc
+        self._sync_image_picker()
 
     # Helpers
+
+    def _sync_image_picker(self):
+        source = self.canvas_var.imgsrc
+        # A directly assigned Image has no bank number to show in the picker.
+        self.image_index_var = source if isinstance(source, int) else -1
 
     def _restore_state(self, data, prefix):
         self.tilemap_index_var = data["tilemap_index"]
@@ -105,7 +111,8 @@ class TilemapEditor(EditorBase):
             pyxel.tilemaps[self.tilemap_index_var].set_slice(
                 0, 0, data[f"{prefix}_data"]
             )
-            self.image_index_var = data[f"{prefix}_imgsrc"]
+            self.canvas_var.imgsrc = data[f"{prefix}_imgsrc"]
+            self._sync_image_picker()
         else:
             self.focus_x_var, self.focus_y_var = data["focus_pos"]
             self.canvas_var.set_slice(
@@ -118,13 +125,14 @@ class TilemapEditor(EditorBase):
         return pyxel.tilemaps[self.tilemap_index_var]
 
     def __on_tilemap_picker_change(self, value):
-        self.image_index_var = pyxel.tilemaps[value].imgsrc
+        self._sync_image_picker()
 
     def __on_tilemap_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_image_picker_change(self, value):
-        pyxel.tilemaps[self.tilemap_index_var].imgsrc = value
+        if value >= 0:
+            self.canvas_var.imgsrc = value
 
     def __on_undo(self, data):
         self._restore_state(data, "old")
@@ -142,10 +150,7 @@ class TilemapEditor(EditorBase):
             print(f"Failed to load tilemap: {e}")
 
     def __on_update(self):
-        imgsrc = pyxel.tilemaps[self.tilemap_index_var].imgsrc
-        if self.image_index_var != imgsrc:
-            self.image_index_var = imgsrc
-
+        self._sync_image_picker()
         self.check_tool_button_shortcuts()
 
     def __on_draw(self):

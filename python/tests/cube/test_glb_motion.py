@@ -302,19 +302,32 @@ def test_from_glb_uses_mask_alpha_cutoff(tmp_path):
 
 
 @pytest.mark.parametrize("textured", [False, True])
-@pytest.mark.parametrize("cutoff", [1.0, 1.25])
-def test_from_glb_mask_at_maximum_alpha(tmp_path, textured, cutoff):
+def test_from_glb_accepts_maximum_mask_cutoff(tmp_path, textured):
     path = write_single_texture_motion_glb(
         tmp_path / "mask.glb",
         base_color_texture=textured,
         texture_pixels=[(255, 255, 255, 255)] * 4,
         alpha_mode="MASK",
-        alpha_cutoff=cutoff,
+        alpha_cutoff=1.0,
     )
     mesh = Mesh.from_glb(str(path))
     _assert_base_quad(mesh)
     assert mesh.colkey is None
-    assert _render_mesh_colors(mesh) == ({0, 7} if cutoff == 1.0 else {0})
+    assert _render_mesh_colors(mesh) == {0, 7}
+
+
+@pytest.mark.parametrize("textured", [False, True])
+def test_from_glb_rejects_mask_cutoff_above_one(tmp_path, textured):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask.glb",
+        base_color_texture=textured,
+        alpha_mode="MASK",
+        alpha_cutoff=1.25,
+    )
+    with raises_exact(
+        ValueError, "GLB material alphaCutoff must be between 0.0 and 1.0"
+    ):
+        Mesh.from_glb(str(path))
 
 
 def test_from_glb_warns_and_autoselects_mask_colkey_on_collision(tmp_path, capfd):

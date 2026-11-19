@@ -12,6 +12,7 @@ from .settings import (
     TOOL_SELECT,
     clamp,
     is_modifier_pressed,
+    resolve_image,
 )
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
@@ -427,7 +428,7 @@ class CanvasPanel(Widget):
                     pyxel.tilemaps[self.tilemap_index_var].set_slice(
                         0, 0, self._bank_buffer["data"]
                     )
-                    self.image_index_var = self._bank_buffer["imgsrc"]
+                    self.canvas_var.imgsrc = self._bank_buffer["imgsrc"]
                 else:
                     pyxel.images[self.image_index_var].set_slice(
                         0, 0, self._bank_buffer["data"]
@@ -536,7 +537,7 @@ class CanvasPanel(Widget):
 
         if self._is_tilemap_mode:
             pyxel.user_pal()
-            if canvas.imgsrc < len(pyxel.images):
+            if resolve_image(canvas.imgsrc) is not None:
                 pyxel.bltm(
                     self.x + 1,
                     self.y + 1,

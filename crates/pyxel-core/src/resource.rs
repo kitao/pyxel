@@ -91,7 +91,7 @@ impl Pyxel {
             exclude_sounds.unwrap_or(false),
             exclude_musics.unwrap_or(false),
         )
-        .to_toml()?;
+        .to_toml();
 
         let path = Path::new(&filename);
         let file = File::create(path).map_err(|_| format!("Failed to create file '{filename}'"))?;

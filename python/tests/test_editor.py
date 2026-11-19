@@ -45,6 +45,73 @@ def _param_id(editor, palette_count):
 
 
 class TestEditor:
+    def test_direct_image_survives_tilemap_refresh_and_bank_switch(self, monkeypatch):
+        original = pyxel.tilemaps[0]
+        dimensions = pyxel.width, pyxel.height
+        monkeypatch.setattr(pyxel, "num_user_colors", 0, raising=False)
+        image = pyxel.Image(8, 8)
+        image.cls(7)
+        try:
+            pyxel.resize(240, 180)
+            pyxel.tilemaps[0] = pyxel.Tilemap(8, 8, image)
+            parent = Widget(None, 0, 0, 240, 180)
+            parent.new_var("help_message_var", "")
+            editor = TilemapEditor(parent)
+            editor.refresh_resource()
+            editor.tilemap_index_var = 1
+            editor.tilemap_index_var = 0
+            editor.is_visible_var = True
+            editor.update_all()
+            editor.draw_all()
+            y = pyxel.frame_count % 8 * 8
+            assert editor._tilemap_viewer._tilemap_image.pget(0, y) == 7
+            assert (
+                pyxel.pget(editor._image_viewer.x + 4, editor._image_viewer.y + 4) == 7
+            )
+            assert (
+                pyxel.pget(editor._canvas_panel.x + 4, editor._canvas_panel.y + 4) == 7
+            )
+            image.pset(0, 0, 11)
+            assert pyxel.tilemaps[0].imgsrc.pget(0, 0) == 11
+
+            editor._image_picker.inc_button.trigger_event("press")
+            assert pyxel.tilemaps[0].imgsrc == 0
+        finally:
+            pyxel.tilemaps[0] = original
+            pyxel.resize(*dimensions)
+
+    @pytest.mark.parametrize(
+        "editor_class,banks,limit",
+        [(SoundEditor, "sounds", 48), (MusicEditor, "musics", 32)],
+    )
+    def test_audio_field_edits_preserve_data_beyond_grid(
+        self, editor_class, banks, limit
+    ):
+        bank = getattr(pyxel, banks)
+        original = bank[0]
+        try:
+            bank[0] = type(original)()
+            parent = Widget(None, 0, 0, 240, 180)
+            parent.new_var("help_message_var", "")
+            editor = editor_class(parent)
+            field = editor.get_field(0)
+            values = list(range(limit + 3))
+            field[:] = values
+            cursor = editor.field_cursor
+            cursor.move_to(0, 0, True)
+            cursor.insert(7)
+            assert list(field) == [7, *values[1:]]
+            editor.undo()
+            assert list(field) == values
+            editor.redo()
+            assert list(field) == [7, *values[1:]]
+
+            cursor.move_to(limit - 1, 0, False)
+            cursor.insert([8, 9])
+            assert list(field) == [7, *values[1 : limit - 1], 8, *values[limit:]]
+        finally:
+            bank[0] = original
+
     @pytest.mark.parametrize(
         "editor_class,bank_name",
         [(SoundEditor, "sounds"), (MusicEditor, "musics")],
@@ -315,9 +382,8 @@ drop(str(folder / "partial.pyxres"))
 app.draw_all()
 assert len(pyxel.images) == 1
 assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 3
-before = Path(small).read_bytes()
 app._save_button.trigger_event("press")
-assert app._save_failed and Path(small).read_bytes() == before
+assert not app._save_failed
 assert pyxel.tilemaps[0].imgsrc == 3
 tilemap._image_picker.dec_button.trigger_event("press")
 assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 0

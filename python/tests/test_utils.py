@@ -117,6 +117,36 @@ class TestListImportedModules:
         result = pyxel.utils.list_imported_modules(str(script))
         assert result == {"system": ["json"], "local": [str(helper)]}
 
+    def test_discovers_system_submodules_across_nested_namespace_packages(
+        self, tmp_path, monkeypatch
+    ):
+        app = tmp_path / "app"
+        app.mkdir()
+        script = app / "main.py"
+        script.write_text(
+            "from probe_namespace.plugins import first, second\n", encoding="utf-8"
+        )
+        for child in ("first", "second"):
+            root = tmp_path / child
+            portion = root / "probe_namespace" / "plugins"
+            portion.mkdir(parents=True)
+            (portion / f"{child}.py").write_text(
+                "raise RuntimeError('child was imported')\n", encoding="utf-8"
+            )
+            monkeypatch.syspath_prepend(str(root))
+
+        result = pyxel.utils.list_imported_modules(str(script))
+        assert result == {
+            "system": [
+                "probe_namespace.plugins",
+                "probe_namespace.plugins.first",
+                "probe_namespace.plugins.second",
+            ],
+            "local": [],
+        }
+        assert "probe_namespace" not in sys.modules
+        assert "probe_namespace.plugins" not in sys.modules
+
     def test_extracts_local_submodule_imports(self, tmp_path):
         script = tmp_path / "main.py"
         script.write_text("from pkg import helper\n", encoding="utf-8")

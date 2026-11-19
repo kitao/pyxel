@@ -4,12 +4,12 @@
 
 - Fixed Vec3.lerp missing the target vector at the end of interpolation
 - Fixed Vec3.project losing small vectors when projecting onto large axes
-- Reduced memory use when exporting sound and music to WAV or MP4
 - Reduced memory use when loading compressed image and tilemap data
-- Fixed GLB import and rendering for alpha mask cutoffs greater than 1
 - Fixed flat and textured GLB material tints in linear color space
+- Fixed the editor overwriting tilemap image bank indices of 3 or higher
 - Fixed editor selection and display for resources with fewer banks
-- Kept resource files intact when a tilemap refers outside the saved image bank
+- Preserved notes and music sequence entries beyond the editor grid during edits
+- Fixed app2exe failing on imports from nested namespace packages
 - Clarified the API, MML, editor, and resource format documentation
 
 ## 3.0.2

@@ -94,10 +94,6 @@ impl TilemapData {
 
     fn validate(&self, index: usize, image_count: usize) -> Result<(), String> {
         validate_grid("tilemaps", index, self.width, self.height, &self.data, 2)?;
-        self.validate_imgsrc(index, image_count)
-    }
-
-    fn validate_imgsrc(&self, index: usize, image_count: usize) -> Result<(), String> {
         if self.imgsrc as usize >= image_count {
             return Err(format!(
                 "Invalid resource data: tilemaps[{index}].imgsrc {} is out of range 0..{image_count}",
@@ -272,14 +268,8 @@ impl ResourceData {
         Ok(())
     }
 
-    pub fn to_toml(&self) -> Result<String, String> {
-        // An empty image section leaves tilemap sources relative to the loading runtime.
-        if !self.images.is_empty() {
-            for (index, tilemap) in self.tilemaps.iter().enumerate() {
-                tilemap.validate_imgsrc(index, self.images.len())?;
-            }
-        }
-        Ok(toml::to_string(self).unwrap())
+    pub fn to_toml(&self) -> String {
+        toml::to_string(self).unwrap()
     }
 }
 

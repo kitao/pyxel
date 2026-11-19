@@ -110,15 +110,15 @@ All fields are required. Empty sounds use empty arrays (e.g., `notes = []`).
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `notes` | array of i8 | Note values. Negative values are rests; 0 = C0, 12 = C1 |
+| `notes` | array of i8 | Note numbers (0-59, C0 to B4). Use -1 for a rest. All negative values play as rests |
 | `tones` | array of u8 | Index into the tone bank. Default tones: 0 = Triangle, 1 = Square, 2 = Pulse, 3 = Noise |
-| `volumes` | array of u8 | 0 is silent, 7 is unity gain, and values above 7 amplify the sound |
+| `volumes` | array of u8 | Volume (0-7), from silence to normal volume. Values above 7 amplify the sound |
 | `effects` | array of u8 | 0 = None, 1 = Slide, 2 = Vibrato, 3 = FadeOut, 4 = Half-FadeOut, 5 = Quarter-FadeOut |
 | `speed` | u16 | Positive playback speed in ticks per note (1 tick = 1/120 second). Default: 30 |
 
-The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the sound and may be shorter than `notes`. During playback, values are read cyclically (index modulo array length), and an empty array falls back to tone index 0, volume 7, or effect 0 (None). Custom tone definitions must be set up at runtime.
+The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the sound and may be shorter than `notes`. During playback, values are read cyclically (index modulo array length), and an empty array falls back to tone 0 (Triangle by default), volume 7, or effect 0 (None). Custom tone definitions must be set up at runtime.
 
-**Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11. For example, C0=0, A4=57, B4=59.
+**Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11. For example, C0=0, C1=12, A4=57, B4=59, and B#4=60.
 
 **MML and PCM:** Only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are saved to `.pyxres`. Keep MML strings and audio files separately, and call `sound.mml(code)` or `sound.pcm(filename)` at runtime.
 

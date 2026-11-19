@@ -42,6 +42,26 @@ class TestPcmSynthBoundary:
         assert _rms(samples, 0.0, 0.045) > 100, "PCM part is silent"
         assert _rms(samples, 0.06, 0.25) > 100, "synth part after PCM is silent"
 
+    def test_looping_short_pcm_keeps_its_start_times(self, tmp_path):
+        pcm_path = tmp_path / "pulse.wav"
+        with wave.open(str(pcm_path), "wb") as wav:
+            wav.setparams((1, 2, RATE, 37, "NONE", "not compressed"))
+            wav.writeframes(struct.pack("<37h", *([12000] * 37)))
+        pyxel.sounds[60].pcm(str(pcm_path))
+        pyxel.sounds[61].set("rr", "t", "0", "n", 2)
+        pyxel.musics[7].set([60, 61])
+
+        out = tmp_path / "out.wav"
+        pyxel.musics[7].save(str(out), 0.12)
+        samples = _read_samples(out)
+        starts = [
+            i
+            for i, value in enumerate(samples)
+            if value and (i == 0 or not samples[i - 1])
+        ]
+        # Each loop has 37 PCM samples and four ticks at 120 Hz (735 samples).
+        assert starts == [0, 772, 1544, 2316]
+
     def test_music_save_synth_then_pcm(self, tmp_path):
         pcm_path = tmp_path / "pcm.wav"
         _write_pcm_wav(pcm_path)
