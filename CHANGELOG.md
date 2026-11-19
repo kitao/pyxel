@@ -5,6 +5,7 @@
 - Fixed Vec3.lerp missing the target vector at the end of interpolation
 - Fixed Vec3.project losing small vectors when projecting onto large axes
 - Reduced memory use when loading compressed image and tilemap data
+- Prevented saving a resource with tilemaps that reference missing images in the same file
 - Fixed flat and textured GLB material tints in linear color space
 - Fixed the editor overwriting tilemap image bank indices of 3 or higher
 - Fixed editor selection and display for resources with fewer banks

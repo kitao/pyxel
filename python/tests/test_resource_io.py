@@ -277,27 +277,53 @@ class TestSaveLoad:
         assert data[bank_name] == []
         assert data["sounds"][0]["notes"] == [24, 28, 31]
 
-    def test_saved_banks_can_be_loaded_separately(self, tmp_path):
-        path = str(tmp_path / "banks.pyxres")
+    def test_load_banks_separately_from_older_resource(self, tmp_path):
+        path = tmp_path / "banks.pyxres"
+        _write_resource(
+            path,
+            "format_version = 1\nsounds = []\nmusics = []\n"
+            "[[images]]\nwidth = 8\nheight = 8\ndata = [[5]]\n"
+            "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 2\ndata = [[4, 5]]\n",
+        )
         images, tilemaps = list(pyxel.images), list(pyxel.tilemaps)
         try:
-            pyxel.images[:] = [pyxel.Image(8, 8)]
-            pyxel.images[0].pset(2, 3, 5)
-            pyxel.tilemaps[:] = [pyxel.Tilemap(1, 1, 2)]
-            pyxel.tilemaps[0].pset(0, 0, (4, 5))
-            pyxel.save(path, exclude_sounds=True, exclude_musics=True)
-
             pyxel.images[:] = [pyxel.Image(8, 8) for _ in range(3)]
             pyxel.tilemaps[:] = []
-            pyxel.load(path, exclude_images=True)
+            pyxel.load(str(path), exclude_images=True)
             assert len(pyxel.images) == 3
             assert pyxel.tilemaps[0].imgsrc == 2
             assert pyxel.tilemaps[0].pget(0, 0) == (4, 5)
 
             pyxel.tilemaps[:] = []
-            pyxel.load(path, exclude_tilemaps=True)
+            pyxel.load(str(path), exclude_tilemaps=True)
             assert len(pyxel.images) == 1 and pyxel.images[0].pget(2, 3) == 5
             assert not pyxel.tilemaps
+        finally:
+            pyxel.images[:] = images
+            pyxel.tilemaps[:] = tilemaps
+
+    def test_save_checks_tilemap_sources_against_included_images(self, tmp_path):
+        path = tmp_path / "project.pyxres"
+        images, tilemaps = list(pyxel.images), list(pyxel.tilemaps)
+        try:
+            pyxel.images[:] = [pyxel.Image(8, 8)]
+            pyxel.tilemaps[:] = [pyxel.Tilemap(1, 1, 0), pyxel.Tilemap(1, 1, 0)]
+            pyxel.save(str(path))
+            original = path.read_bytes()
+            pyxel.tilemaps[1].imgsrc = 1
+            with raises_exact(
+                Exception,
+                "Invalid resource data: tilemaps[1].imgsrc 1 is out of range 0..1",
+            ):
+                pyxel.save(str(path))
+            assert path.read_bytes() == original
+            assert pyxel.tilemaps[1].imgsrc == 1
+
+            pyxel.save(str(path), exclude_images=True)
+            pyxel.images[:] = [*pyxel.images, pyxel.Image(8, 8)]
+            pyxel.tilemaps[:] = []
+            pyxel.load(str(path))
+            assert len(pyxel.images) == 2 and pyxel.tilemaps[1].imgsrc == 1
         finally:
             pyxel.images[:] = images
             pyxel.tilemaps[:] = tilemaps

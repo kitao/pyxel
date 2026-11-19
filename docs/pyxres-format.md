@@ -87,6 +87,8 @@ All fields are required.
 | `imgsrc` | u32 | Source image bank index (0-based). A tilemap that uses an `Image` instance is saved with index 0 |
 | `data` | array of arrays of u16 | 2D tile data in interleaved format (see below) |
 
+When saving images and tilemaps together, each `imgsrc` must refer to an image in the file. Pyxel reports an invalid index before overwriting the file. With no images in the file, tilemaps refer to the image banks present at load time.
+
 Each tile is an `(image_tx, image_ty)` pair of `u16` coordinates in the source image bank's 8×8 tile grid. TOML rows interleave the pairs as `[tx0, ty0, tx1, ty1, ...]`, with `width × 2` elements per uncompressed row.
 
 For example, a tilemap row of 3 tiles referencing image positions (10, 6), (11, 6), and (12, 6) is stored as `[10, 6, 11, 6, 12, 6]`.

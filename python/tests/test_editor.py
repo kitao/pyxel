@@ -382,8 +382,10 @@ drop(str(folder / "partial.pyxres"))
 app.draw_all()
 assert len(pyxel.images) == 1
 assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 3
+previous_file = Path(small).read_bytes()
 app._save_button.trigger_event("press")
-assert not app._save_failed
+assert app._save_failed
+assert Path(small).read_bytes() == previous_file
 assert pyxel.tilemaps[0].imgsrc == 3
 tilemap._image_picker.dec_button.trigger_event("press")
 assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 0
