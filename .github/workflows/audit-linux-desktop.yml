@@ -28,7 +28,7 @@ jobs:
         with:
           name: pyxel-${{ matrix.target }}
           path: dist
-          run-id: 44447326552
+          run-id: 44453286267
           github-token: ${{ github.token }}
       - name: Set up the virtual display and audio monitor
         run: |
