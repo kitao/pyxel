@@ -1,0 +1,64 @@
+name: Audit Linux x64 desktop on Ubuntu 22.04
+
+on:
+  push:
+    branches: [codex/3.0.3-build-audit-20261118]
+    paths: [.github/workflows/audit-linux-x64-fallback.yml]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  desktop:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: actions/download-artifact@v8
+        with:
+          name: pyxel-x86_64-unknown-linux-gnu
+          path: dist
+          run-id: 44476576506
+          github-token: ${{ github.token }}
+      - name: Set up the virtual display and audio monitor
+        run: |
+          packages=(libsdl2-dev openbox xvfb xauth xdotool x11-apps libgl1-mesa-dri imagemagick pulseaudio pulseaudio-utils python3-venv)
+          apt_options=(-o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
+          cat > "$RUNNER_TEMP/ubuntu-audit.list" <<'MIRRORS'
+          deb https://archive.ubuntu.com/ubuntu jammy main universe
+          deb https://archive.ubuntu.com/ubuntu jammy-updates main universe
+          deb https://security.ubuntu.com/ubuntu jammy-security main universe
+          MIRRORS
+          apt_options+=(-o Dir::Etc::sourcelist="$RUNNER_TEMP/ubuntu-audit.list" -o Dir::Etc::sourceparts=- -o Acquire::ForceIPv4=true)
+          sudo apt-get "${apt_options[@]}" update
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get "${apt_options[@]}" -y install --no-install-recommends "${packages[@]}"
+          cc -shared -fPIC .github/audit/linux_window.c -o .github/audit/linux_window.so $(pkg-config --cflags --libs sdl2)
+          python -m venv "$RUNNER_TEMP/pyxel-audit-python"
+          "$RUNNER_TEMP/pyxel-audit-python/bin/pip" install --no-index --no-deps dist/*.whl
+      - name: Check saved resources in the candidate wheel
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: '"$RUNNER_TEMP/pyxel-audit-python/bin/python" .github/audit/resource_save.py'
+      - name: Check Cube ray intersections in the candidate wheel
+        run: '"$RUNNER_TEMP/pyxel-audit-python/bin/python" .github/audit/cube_queries.py'
+      - name: Exercise the normal X11 window, keyboard, pointer and PulseAudio output
+        env:
+          SDL_VIDEODRIVER: x11
+          SDL_AUDIODRIVER: pulseaudio
+          LIBGL_ALWAYS_SOFTWARE: "true"
+          PULSE_SINK: pyxel_audit
+        run: |
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=pyxel_audit rate=44100
+          xvfb-run -a -s '-screen 0 800x600x24 +extension GLX' bash -euc '
+            openbox > "$RUNNER_TEMP/pyxel-openbox.log" 2>&1 &
+            for i in {1..50}; do
+              if xprop -root _NET_SUPPORTING_WM_CHECK | grep -q "window id"; then break; fi
+              sleep 0.1
+            done
+            "$RUNNER_TEMP/pyxel-audit-python/bin/python" .github/audit/linux_desktop.py
+          '
