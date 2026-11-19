@@ -5,6 +5,7 @@ on:
     branches: [codex/3.0.3-build-audit-20261118]
     paths:
       - .github/audit/linux_desktop.py
+      - .github/audit/cube_queries.py
       - .github/audit/linux_window.c
       - .github/workflows/audit-linux-desktop.yml
 
@@ -28,7 +29,7 @@ jobs:
         with:
           name: pyxel-${{ matrix.target }}
           path: dist
-          run-id: 44467513409
+          run-id: 44476576506
           github-token: ${{ github.token }}
       - name: Set up the virtual display and audio monitor
         run: |
@@ -41,6 +42,8 @@ jobs:
         env:
           SDL_AUDIODRIVER: dummy
         run: '"$RUNNER_TEMP/pyxel-audit-python/bin/python" .github/audit/resource_save.py'
+      - name: Check Cube ray intersections in the candidate wheel
+        run: '"$RUNNER_TEMP/pyxel-audit-python/bin/python" .github/audit/cube_queries.py'
       - name: Exercise the normal X11 window, keyboard, pointer and PulseAudio output
         env:
           SDL_VIDEODRIVER: x11
