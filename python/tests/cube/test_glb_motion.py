@@ -187,9 +187,9 @@ def test_from_glb_converts_gray_texture(tmp_path):
 
 def test_from_glb_converts_gray_alpha_texture(tmp_path):
     path = write_gray_alpha_texture_glb(tmp_path / "gray_alpha.glb")
-    mesh = Mesh.from_glb(str(path), colkey=0)
+    mesh = Mesh.from_glb(str(path), colkey=2)
     assert isinstance(mesh.col_img, Image)
-    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 7, 0]
+    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 2, 0]
 
 
 def test_from_glb_loads_non_indexed_primitive(tmp_path):
@@ -238,12 +238,26 @@ def test_from_glb_loads_motion(tmp_path):
     assert mesh.motions[0].length == 30.0
 
 
-def test_from_glb_ignores_alpha_texture_without_colkey(tmp_path):
-    path = write_alpha_texture_glb(tmp_path / "alpha.glb")
+@pytest.mark.parametrize(
+    ("alpha_mode", "expected_warning"),
+    [
+        (None, ""),
+        (
+            "BLEND",
+            "Pyxel warning: GLB material alpha mode is not supported; alpha is ignored\n",
+        ),
+    ],
+)
+def test_from_glb_treats_default_and_blend_materials_as_opaque(
+    tmp_path, capfd, alpha_mode, expected_warning
+):
+    path = write_alpha_texture_glb(tmp_path / "alpha.glb", alpha_mode=alpha_mode)
     mesh = Mesh.from_glb(str(path))
+
     assert isinstance(mesh.col_img, Image)
     assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 8, 3]
     assert mesh.colkey is None
+    assert capfd.readouterr().err == expected_warning
 
 
 def test_from_glb_converts_mask_alpha_texture_pixels_to_auto_colkey(tmp_path):
@@ -299,6 +313,35 @@ def test_from_glb_uses_mask_alpha_cutoff(tmp_path):
     assert isinstance(mesh.col_img, Image)
     assert mesh.col_img.pget(0, 1) != mesh.colkey
     assert mesh.col_img.pget(1, 1) == mesh.colkey
+
+
+@pytest.mark.parametrize("textured", [False, True])
+def test_from_glb_accepts_maximum_mask_cutoff(tmp_path, textured):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask.glb",
+        base_color_texture=textured,
+        texture_pixels=[(255, 255, 255, 255)] * 4,
+        alpha_mode="MASK",
+        alpha_cutoff=1.0,
+    )
+    mesh = Mesh.from_glb(str(path))
+    _assert_base_quad(mesh)
+    assert mesh.colkey is None
+    assert _render_mesh_colors(mesh) == {0, 7}
+
+
+@pytest.mark.parametrize("textured", [False, True])
+def test_from_glb_rejects_mask_cutoff_above_one(tmp_path, textured):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask.glb",
+        base_color_texture=textured,
+        alpha_mode="MASK",
+        alpha_cutoff=1.25,
+    )
+    with raises_exact(
+        ValueError, "GLB material alphaCutoff must be between 0.0 and 1.0"
+    ):
+        Mesh.from_glb(str(path))
 
 
 def test_from_glb_warns_and_autoselects_mask_colkey_on_collision(tmp_path, capfd):
@@ -407,6 +450,29 @@ def test_from_glb_loads_multiple_flat_materials(tmp_path):
     colors = _render_mesh_colors(mesh)
     assert 8 in colors
     assert 3 in colors
+
+
+@pytest.mark.parametrize(
+    "textured, texel, expected", [(False, 255, 2), (True, 255, 2), (True, 128, 1)]
+)
+def test_from_glb_applies_base_color_factor_in_linear_rgb(
+    tmp_path, textured, texel, expected
+):
+    path = write_single_texture_motion_glb(
+        tmp_path / "linear_tint.glb",
+        base_color_texture=textured,
+        texture_pixels=[(texel, texel, texel, 255)] * 4,
+        base_color_factor=[0.5, 0.5, 0.5, 1.0],
+    )
+    original_colors = list(pyxel.colors)
+    try:
+        # Halving linear light maps sRGB bytes 255 and 128 to 188 and 92.
+        pyxel.colors[:] = [0x404040, 0x5C5C5C, 0xBCBCBC, 0x808080]
+        mesh = Mesh.from_glb(str(path))
+        color = mesh.col_img.pget(0, 0) if textured else mesh.col_img
+        assert color == expected
+    finally:
+        pyxel.colors[:] = original_colors
 
 
 def test_from_glb_loads_multiple_base_color_textures(tmp_path):

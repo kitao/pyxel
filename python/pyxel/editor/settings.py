@@ -74,6 +74,12 @@ def clamp(value, low, high):
     return max(min(value, high), low)
 
 
+def resolve_image(source):
+    if isinstance(source, pyxel.Image):
+        return source
+    return pyxel.images[source] if 0 <= source < len(pyxel.images) else None
+
+
 def is_modifier_pressed():
     return (
         pyxel.btn(pyxel.KEY_SHIFT)

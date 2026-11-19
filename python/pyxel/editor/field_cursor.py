@@ -20,7 +20,7 @@ class FieldCursor:
         self.parent = parent
         self._max_field_length = max_field_length
         self._field_wrap_length = field_wrap_length
-        self._max_field_values = max_field_values
+        self.max_field_values = max_field_values
         self._get_field = get_field
         self._add_pre_history = add_pre_history
         self._add_post_history = add_post_history
@@ -69,7 +69,7 @@ class FieldCursor:
 
     @property
     def _max_y(self):
-        return len(self._max_field_values) - 1
+        return len(self.max_field_values) - 1
 
     @property
     def _adjusted_cursor_x(self):
@@ -157,12 +157,15 @@ class FieldCursor:
     def insert(self, value):
         self._add_pre_history(self.x, self.y)
         x = self.x
-        if self.is_selecting:
-            del self.field[x : x + self.width]
+        selected = self.width if self.is_selecting else 0
         if not isinstance(value, list):
             value = [value]
-        self.field[x:x] = value
-        del self.field[self._max_field_length :]
+        field = self.field
+        field[x : x + selected] = value
+        # Trim only the spill from this edit; existing data beyond the grid is preserved.
+        overflow = len(value) - selected
+        if overflow > 0:
+            del field[self._max_field_length : self._max_field_length + overflow]
         self.move_to(x + len(value), self.y, False)
         self._add_post_history(self.x, self.y)
 
@@ -221,7 +224,7 @@ class FieldCursor:
         for i in range(self.x, self.x + self.width):
             value = self.field[i]
             if value >= 0:
-                self.field[i] = clamp(value + offset, 0, self._max_field_values[self.y])
+                self.field[i] = clamp(value + offset, 0, self.max_field_values[self.y])
         self._add_post_history(self.x, self.y)
 
     # Input processing

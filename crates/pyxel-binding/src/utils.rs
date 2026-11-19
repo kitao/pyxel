@@ -3,7 +3,7 @@ use std::sync::MutexGuard;
 
 use pyo3::prelude::*;
 use pyo3::types::slice::PySliceIndices;
-use pyo3::types::PySlice;
+use pyo3::types::{PyDict, PySlice, PyTuple};
 
 pub(crate) struct MutexFieldMut<'a, T, U> {
     owner: MutexGuard<'a, T>,
@@ -117,6 +117,27 @@ macro_rules! python_type_error {
 }
 
 // Type conversion
+
+pub(crate) fn from_list_arg<'py>(
+    args: &Bound<'py, PyTuple>,
+    kwargs: Option<&Bound<'py, PyDict>>,
+    keyword: &str,
+) -> PyResult<Bound<'py, PyAny>> {
+    if let Some(kwargs) = kwargs.filter(|kwargs| !kwargs.is_empty()) {
+        if args.is_empty() && kwargs.len() == 1 {
+            for name in ["lst", keyword] {
+                if let Some(value) = kwargs.get_item(name)? {
+                    return Ok(value);
+                }
+            }
+        }
+    } else if args.len() == 1 {
+        return args.get_item(0);
+    }
+    python_type_error!(format!(
+        "from_list() requires one argument, passed positionally or as 'lst' or '{keyword}'"
+    ));
+}
 
 // Extraction may invoke Python code; matched branches must revalidate
 // resource indices that conversion could invalidate.
@@ -585,7 +606,13 @@ macro_rules! impl_python_sequence_write {
                 Ok(())
             }
 
-            fn from_list(&self, vec: $list_type) -> PyResult<()> {
+            #[pyo3(signature = (*args, **kwargs), text_signature = "($self, /, vec)")]
+            fn from_list(
+                &self,
+                args: &Bound<'_, pyo3::types::PyTuple>,
+                kwargs: Option<&Bound<'_, pyo3::types::PyDict>>,
+            ) -> PyResult<()> {
+                let vec: $list_type = $crate::utils::from_list_arg(args, kwargs, "vec")?.extract()?;
                 deprecation_warning!(
                     FROM_LIST_ONCE,
                     concat!(stringify!($wrapper_name), ".from_list() is deprecated. Use slice assignment instead.")

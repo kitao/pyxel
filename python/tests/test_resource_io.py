@@ -133,6 +133,32 @@ class TestSaveLoad:
         with raises_exact(Exception, message):
             pyxel.load(str(path))
 
+    def test_load_repeats_compressed_rows_and_tile_coordinates(self, tmp_path):
+        path = tmp_path / "compressed.pyxres"
+        _write_resource(
+            path,
+            "format_version = 1\nsounds = []\nmusics = []\n"
+            "[[images]]\nwidth = 3\nheight = 3\ndata = [[1, 2], [3]]\n"
+            "[[tilemaps]]\nwidth = 3\nheight = 3\nimgsrc = 0\n"
+            "data = [[1, 2, 3], [4, 5]]\n",
+        )
+        images, tilemaps = list(pyxel.images), list(pyxel.tilemaps)
+        try:
+            pyxel.load(str(path), exclude_sounds=True, exclude_musics=True)
+            assert [
+                [pyxel.images[0].pget(x, y) for x in range(3)] for y in range(3)
+            ] == [[1, 2, 2], [3, 3, 3], [3, 3, 3]]
+            assert [
+                [pyxel.tilemaps[0].pget(x, y) for x in range(3)] for y in range(3)
+            ] == [
+                [(1, 2), (3, 3), (3, 3)],
+                [(4, 5), (5, 5), (5, 5)],
+                [(4, 5), (5, 5), (5, 5)],
+            ]
+        finally:
+            pyxel.images[:] = images
+            pyxel.tilemaps[:] = tilemaps
+
     def test_malformed_resource_does_not_partially_commit(self, tmp_path):
         path = tmp_path / "partial-new.pyxres"
         _write_resource(
@@ -250,6 +276,57 @@ class TestSaveLoad:
             data = tomllib.loads(archive.read("pyxel_resource.toml").decode("utf-8"))
         assert data[bank_name] == []
         assert data["sounds"][0]["notes"] == [24, 28, 31]
+
+    def test_load_banks_separately_from_older_resource(self, tmp_path):
+        path = tmp_path / "banks.pyxres"
+        _write_resource(
+            path,
+            "format_version = 1\nsounds = []\nmusics = []\n"
+            "[[images]]\nwidth = 8\nheight = 8\ndata = [[5]]\n"
+            "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 2\ndata = [[4, 5]]\n",
+        )
+        images, tilemaps = list(pyxel.images), list(pyxel.tilemaps)
+        try:
+            pyxel.images[:] = [pyxel.Image(8, 8) for _ in range(3)]
+            pyxel.tilemaps[:] = []
+            pyxel.load(str(path), exclude_images=True)
+            assert len(pyxel.images) == 3
+            assert pyxel.tilemaps[0].imgsrc == 2
+            assert pyxel.tilemaps[0].pget(0, 0) == (4, 5)
+
+            pyxel.tilemaps[:] = []
+            pyxel.load(str(path), exclude_tilemaps=True)
+            assert len(pyxel.images) == 1 and pyxel.images[0].pget(2, 3) == 5
+            assert not pyxel.tilemaps
+        finally:
+            pyxel.images[:] = images
+            pyxel.tilemaps[:] = tilemaps
+
+    def test_save_checks_tilemap_sources_against_included_images(self, tmp_path):
+        path = tmp_path / "project.pyxres"
+        images, tilemaps = list(pyxel.images), list(pyxel.tilemaps)
+        try:
+            pyxel.images[:] = [pyxel.Image(8, 8)]
+            pyxel.tilemaps[:] = [pyxel.Tilemap(1, 1, 0), pyxel.Tilemap(1, 1, 0)]
+            pyxel.save(str(path))
+            original = path.read_bytes()
+            pyxel.tilemaps[1].imgsrc = 1
+            with raises_exact(
+                Exception,
+                "Invalid resource data: tilemaps[1].imgsrc 1 is out of range 0..1",
+            ):
+                pyxel.save(str(path))
+            assert path.read_bytes() == original
+            assert pyxel.tilemaps[1].imgsrc == 1
+
+            pyxel.save(str(path), exclude_images=True)
+            pyxel.images[:] = [*pyxel.images, pyxel.Image(8, 8)]
+            pyxel.tilemaps[:] = []
+            pyxel.load(str(path))
+            assert len(pyxel.images) == 2 and pyxel.tilemaps[1].imgsrc == 1
+        finally:
+            pyxel.images[:] = images
+            pyxel.tilemaps[:] = tilemaps
 
     @pytest.mark.parametrize("bank_name", ["images", "tilemaps"])
     @pytest.mark.parametrize(("width", "height"), [(0, 1), (1, 0)])

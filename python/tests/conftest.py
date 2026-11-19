@@ -63,13 +63,16 @@ def assets_dir():
 
 @pytest.fixture(scope="session")
 def panic_exception():
-    # pyo3_runtime.PanicException is not directly importable; capture the type
-    # from a known panic path.
-    try:
+    # PyO3 creates PanicException in an unimportable module.
+    with pytest.raises(BaseException) as exc_info:
         pyxel.btnv(pyxel.KEY_A)
-    except BaseException as e:  # noqa: BLE001
-        return type(e)
-    raise RuntimeError("expected a Rust panic but pyxel.btnv(KEY_A) returned normally")
+    panic_type = exc_info.type
+    assert not issubclass(panic_type, Exception)
+    assert (panic_type.__module__, panic_type.__name__) == (
+        "pyo3_runtime",
+        "PanicException",
+    )
+    return panic_type
 
 
 @pytest.fixture

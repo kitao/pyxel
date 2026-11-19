@@ -1590,6 +1590,7 @@ pub(crate) fn ray_vs_sphere_filtered(
     let c = oc.x * oc.x + oc.y * oc.y + oc.z * oc.z - radius * radius;
     let disc = b * b - 4.0 * a * c;
     if (!(a.is_finite() && b.is_finite() && c.is_finite() && disc.is_finite())
+        || disc.is_subnormal()
         || disc.abs() <= 8.0 * f32::EPSILON * (b * b + (4.0 * a * c).abs()))
         && vec_is_finite(origin)
         && vec_is_finite(dir)
@@ -1623,24 +1624,18 @@ pub(crate) fn ray_vs_sphere_filtered(
         let nx = point.x - center.x;
         let ny = point.y - center.y;
         let nz = point.z - center.z;
-        let nlen = (nx * nx + ny * ny + nz * nz).sqrt();
-        let normal = if !nlen.is_finite()
-            && vec_is_finite(point)
+        let length_sq = nx * nx + ny * ny + nz * nz;
+        if !length_sq.is_normal()
+            && radius != 0.0
+            && radius.is_finite()
             && vec_is_finite(center)
             && vec_is_finite(origin)
             && vec_is_finite(dir)
-            && radius.is_finite()
         {
-            let nx = f64::from(point.x) - f64::from(center.x);
-            let ny = f64::from(point.y) - f64::from(center.y);
-            let nz = f64::from(point.z) - f64::from(center.z);
-            let length = (nx * nx + ny * ny + nz * nz).sqrt();
-            Vec3 {
-                x: (nx / length) as f32,
-                y: (ny / length) as f32,
-                z: (nz / length) as f32,
-            }
-        } else if nlen > 1e-12 {
+            return ray_vs_sphere_filtered_wide(origin, dir, center, radius, max_distance, accepts);
+        }
+        let nlen = length_sq.sqrt();
+        let normal = if nlen > 0.0 {
             Vec3 {
                 x: nx / nlen,
                 y: ny / nlen,
@@ -1741,7 +1736,7 @@ fn ray_vs_sphere_filtered_wide(
             continue;
         }
         let length = (nx * nx + ny * ny + nz * nz).sqrt();
-        let normal = if length > f64::from(1e-12_f32) {
+        let normal = if length > 0.0 {
             Vec3 {
                 x: (nx / length) as f32,
                 y: (ny / length) as f32,
@@ -1759,81 +1754,110 @@ fn ray_vs_sphere_filtered_wide(
     None
 }
 
-// Ray-AABB intersection via the slab method. Returns (t, point, normal)
-// of the entry face hit in [0, max_distance], or None.
+// An outside ray enters on a face towards which it travels, provided the
+// other two coordinates fall on that face. An inside start uses t = 0 and +X.
 pub fn ray_vs_aabb(
     origin: Vec3,
     dir: Vec3,
     aabb: &Aabb,
     max_distance: f32,
 ) -> Option<(f32, Vec3, Vec3)> {
-    let mut tmin = 0.0_f32;
-    let mut tmax = max_distance;
-    let mut entry_axis: usize = 0;
-    let mut entry_sign = 1.0_f32;
+    if max_distance < 0.0 {
+        return None;
+    }
     let bounds = [
         (origin.x, dir.x, aabb.min.x, aabb.max.x),
         (origin.y, dir.y, aabb.min.y, aabb.max.y),
         (origin.z, dir.z, aabb.min.z, aabb.max.z),
     ];
-
-    for (axis, (o, d, bmin, bmax)) in bounds.iter().enumerate() {
-        if d.abs() < 1e-12 {
-            if o < bmin || o > bmax {
-                return None;
-            }
-            continue;
-        }
-
-        let t1 = (bmin - o) / d;
-        let t2 = (bmax - o) / d;
-        // With nonzero d and bmin < bmax, the entry face's outward normal
-        // has the axis sign opposite the ray direction.
-        let (t_near, t_far, sign_near) = if t1 < t2 {
-            (t1, t2, -1.0)
+    let mut starts_inside = true;
+    'faces: for (axis, (start, delta, lower, upper)) in bounds.into_iter().enumerate() {
+        let face = if start < lower {
+            lower
+        } else if start > upper {
+            upper
         } else {
-            (t2, t1, 1.0)
+            continue;
         };
-
-        if t_near > tmin {
-            tmin = t_near;
-            entry_axis = axis;
-            entry_sign = sign_near;
-        }
-        if t_far < tmax {
-            tmax = t_far;
-        }
-        if tmin > tmax {
+        starts_inside = false;
+        if delta == 0.0 || (delta > 0.0) != (start < lower) {
             return None;
         }
+        let time = (f64::from(face) - f64::from(start)) / f64::from(delta);
+        let distance = time as f32;
+        if distance > max_distance {
+            return None;
+        }
+        let mut point = [face; 3];
+        for (i, slab) in bounds.into_iter().enumerate() {
+            if i != axis {
+                let Some(value) = ray_box_face_coordinate(slab, (start, delta, face), time) else {
+                    continue 'faces;
+                };
+                point[i] = value;
+            }
+        }
+
+        let [x, y, z] = point;
+        let mut normal = [0.0; 3];
+        normal[axis] = -delta.signum();
+        let [nx, ny, nz] = normal;
+        return Some((
+            distance,
+            Vec3 { x, y, z },
+            Vec3 {
+                x: nx,
+                y: ny,
+                z: nz,
+            },
+        ));
     }
-    if tmin > max_distance {
-        return None;
+    starts_inside.then_some((
+        0.0,
+        origin,
+        Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        },
+    ))
+}
+
+fn ray_box_face_coordinate(
+    (origin, direction, lower, upper): (f32, f32, f32, f32),
+    (face_origin, face_direction, face): (f32, f32, f32),
+    time: f64,
+) -> Option<f32> {
+    if direction == 0.0 {
+        return (lower..=upper).contains(&origin).then_some(origin);
     }
 
-    let point = Vec3 {
-        x: origin.x + dir.x * tmin,
-        y: origin.y + dir.y * tmin,
-        z: origin.z + dir.z * tmin,
+    let travel = f64::from(direction) * time;
+    let position = f64::from(origin) + travel;
+    // Bound rounding in the subtraction, division, multiplication, and addition.
+    let error = 4.0 * f64::EPSILON * (f64::from(origin).abs() + travel.abs());
+    let lo = (position - error) as f32;
+    let hi = (position + error) as f32;
+    if hi < lower || lo > upper {
+        return None;
+    }
+    if lo == hi && lower < lo && lo < upper {
+        return Some(lo);
+    }
+
+    // Form the plane intersection before rounding a distant ray parameter.
+    let offset = |boundary: f32| {
+        sum_wide_products([
+            (origin, face_direction),
+            (direction, face),
+            (-face_origin, direction),
+            (-boundary, face_direction),
+        ]) / f64::from(face_direction)
     };
-    let normal = match entry_axis {
-        0 => Vec3 {
-            x: entry_sign,
-            y: 0.0,
-            z: 0.0,
-        },
-        1 => Vec3 {
-            x: 0.0,
-            y: entry_sign,
-            z: 0.0,
-        },
-        _ => Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: entry_sign,
-        },
-    };
-    Some((tmin, point, normal))
+    if (lo <= lower && offset(lower) < 0.0) || (hi >= upper && offset(upper) > 0.0) {
+        return None;
+    }
+    Some(if lo == hi { lo } else { offset(0.0) as f32 })
 }
 
 // Ray-triangle intersection (Möller-Trumbore). Returns (t, point, normal)
@@ -3559,7 +3583,7 @@ mod tests {
 
     #[test]
     fn test_ray_sphere_finite_range_geometry() {
-        for scale in [1e20, 1e37] {
+        for scale in [2.0_f32.powi(-90), 2.0_f32.powi(-44), 1e20, 1e37] {
             let origin = vec3(0.0, 0.0, -5.0 * scale);
             let dir = vec3(0.0, 0.0, 1.0);
             let (t, point, normal) =
@@ -3967,6 +3991,40 @@ mod tests {
 
         assert!(ray_vs_sphere(origin, dir, center, 1.0, 4.5).is_some());
         assert!(ray_vs_sphere(origin, dir, center, 1.0, 3.5).is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_aabb_keeps_distant_entry_face() {
+        let aabb = Aabb {
+            min: vec3(-1.0, -1.0, -1.0),
+            max: vec3(1.0, 1.0, 1.0),
+        };
+        for sign in [-1.0, 1.0] {
+            let origin = vec3(sign * 1e20, 0.25, 0.0);
+            let direction = vec3(-sign, 0.0, 0.0);
+            let (t, point, normal) = ray_vs_aabb(origin, direction, &aabb, f32::INFINITY).unwrap();
+            // Both face distances round to 1e20, but the entry face is unambiguous.
+            assert_eq!(t, 1e20);
+            assert_eq!(point, vec3(sign, 0.25, 0.0));
+            assert_eq!(normal, vec3(sign, 0.0, 0.0));
+        }
+    }
+
+    #[test]
+    fn test_ray_vs_aabb_resolves_distant_diagonal_against_both_axes() {
+        let far = 2.0_f32.powi(80);
+        let origin = vec3(-far, -far, 0.0);
+        let direction = vec3(1.0, 1.0, 0.0);
+        let mut aabb = Aabb {
+            min: vec3(-1.0, 2.0, -1.0),
+            max: vec3(1.0, 3.0, 1.0),
+        };
+        // The ray lies on x = y, outside the box until the two intervals overlap.
+        assert!(ray_vs_aabb(origin, direction, &aabb, f32::INFINITY).is_none());
+        aabb.min.y = 0.5;
+        let (_, point, normal) = ray_vs_aabb(origin, direction, &aabb, f32::INFINITY).unwrap();
+        assert_eq!(point, vec3(0.5, 0.5, 0.0));
+        assert_eq!(normal, vec3(0.0, -1.0, 0.0));
     }
 
     #[test]

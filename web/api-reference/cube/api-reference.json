@@ -313,7 +313,7 @@
             "ko": "pyxel.cube 모듈에서 가져오세요. 벡터 간 +, - 연산과 스칼라와의 *, / 연산, 단항 -, ==, len(), 인덱싱, 반복을 지원합니다.",
             "pt": "Importe-o do módulo pyxel.cube. Suporta + e - entre vetores, * e / com um escalar, - unário, ==, len(), indexação e iteração.",
             "ru": "Импортируйте его из модуля pyxel.cube. Поддерживает + и - между векторами, * и / со скаляром, унарный -, ==, len(), индексацию и итерацию.",
-            "tr": "pyxel.cube modülünden içe aktarın. Vektörler arasında + ve -, skalerle * ve / işlemlerini, tekil -, ==, len(), indeksleme ve yinelemeyi destekler.",
+            "tr": "pyxel.cube modülünden içe aktarın. Vektörler arasında + ve -, skalerle * ve / işlemlerini, tekli -, ==, len(), indeksleme ve yinelemeyi destekler.",
             "uk": "Імпортуйте його з модуля pyxel.cube. Підтримує + і - між векторами, * і / зі скаляром, унарний -, ==, len(), індексацію та ітерацію."
           },
           "advanced": false
@@ -2179,12 +2179,12 @@
             "en": "Return the inverse matrix. Return the identity if no inverse exists or its components cannot be represented as finite 32-bit floats.",
             "cn": "返回逆矩阵。若逆矩阵不存在或其分量无法表示为有限的 32 位浮点数，则返回单位矩阵。",
             "de": "Gibt die inverse Matrix zurück. Existiert sie nicht oder sind ihre Komponenten nicht als endliche 32-Bit-Gleitkommazahlen darstellbar, wird die Identitätsmatrix zurückgegeben.",
-            "es": "Devuelve la matriz inversa. Devuelve la identidad si no existe o sus componentes no se pueden representar como números de punto flotante finitos de 32 bits.",
-            "fr": "Renvoie la matrice inverse. Renvoie l'identité si elle n'existe pas ou si ses composantes ne peuvent pas être représentées par des flottants finis de 32 bits.",
-            "it": "Restituisce la matrice inversa. Restituisce l'identità se non esiste o le sue componenti non sono rappresentabili come float finiti a 32 bit.",
+            "es": "Devuelve la matriz inversa. Si la inversa no existe o sus componentes no se pueden representar como números de punto flotante finitos de 32 bits, devuelve la matriz identidad.",
+            "fr": "Renvoie la matrice inverse. Si l'inverse n'existe pas ou si ses composantes ne sont pas représentables par des flottants finis de 32 bits, renvoie la matrice identité.",
+            "it": "Restituisce la matrice inversa. Se l'inversa non esiste o le sue componenti non sono rappresentabili come float finiti a 32 bit, restituisce la matrice identità.",
             "ja": "逆行列を返す。逆行列が存在しない場合、または各成分を有限の 32 ビット浮動小数点数で表せない場合は単位行列を返す。",
             "ko": "역행렬을 반환합니다. 역행렬이 없거나 성분을 유한한 32비트 부동소수점 수로 표현할 수 없으면 단위 행렬을 반환합니다.",
-            "pt": "Retorna a matriz inversa. Retorna a identidade se ela não existir ou seus componentes não puderem ser representados como floats finitos de 32 bits.",
+            "pt": "Retorna a matriz inversa. Se a inversa não existir ou seus componentes não puderem ser representados como números de ponto flutuante finitos de 32 bits, retorna a matriz identidade.",
             "ru": "Возвращает обратную матрицу. Если она не существует или её компоненты нельзя представить конечными 32-битными числами с плавающей точкой, возвращает единичную матрицу.",
             "tr": "Ters matrisi döndürür. Tersi yoksa veya bileşenleri sonlu 32 bit kayan noktalı sayılarla temsil edilemiyorsa birim matrisi döndürür.",
             "uk": "Повертає обернену матрицю. Якщо вона не існує або її компоненти не можна подати скінченними 32-бітними числами з рухомою комою, повертає одиничну матрицю."
@@ -2539,7 +2539,7 @@
             "ko": "다른 Quat와의 * (합성) 또는 Vec3와의 * (회전 적용), 단항 -, ==, 인덱싱, 반복을 지원합니다. 회전 연산에는 단위 쿼터니언이 필요합니다. 성분을 직접 지정할 때는 normalize()로 정규화하세요.",
             "pt": "Suporta * com outro Quat (composição) ou um Vec3 (aplica a rotação), - unário, ==, indexação e iteração. As operações de rotação exigem um quatérnio unitário. Use normalize() ao especificar os componentes diretamente.",
             "ru": "Поддерживает * с другим Quat (композиция) или Vec3 (применяет вращение), унарный -, ==, индексацию и итерацию. Операции вращения требуют единичного кватерниона. При прямом задании компонентов используйте normalize().",
-            "tr": "Başka bir Quat ile * (bileşim) veya Vec3 ile * (dönmeyi uygular), tekil -, ==, indeksleme ve yinelemeyi destekler. Dönme işlemleri birim kuaterniyon gerektirir. Bileşenleri doğrudan belirtirken normalize() kullanın.",
+            "tr": "Başka bir Quat ile * (bileşim) veya Vec3 ile * (dönmeyi uygular), tekli -, ==, indeksleme ve yinelemeyi destekler. Dönme işlemleri birim kuaterniyon gerektirir. Bileşenleri doğrudan belirtirken normalize() kullanın.",
             "uk": "Підтримує * з іншим Quat (композиція) або Vec3 (застосовує обертання), унарний -, ==, індексацію та ітерацію. Операції обертання потребують одиничного кватерніона. При прямому заданні компонентів використовуйте normalize()."
           },
           "advanced": true
@@ -2862,18 +2862,18 @@
           "type": "class",
           "signature": "Quat.from_direction(forward, up=Vec3.UP)",
           "description": {
-            "en": "Create a rotation facing the forward direction (the forward axis is -Z), keeping up as close as possible.",
-            "cn": "创建面向 forward 方向的旋转 (前方轴为 -Z)，并尽量保持 up 方向接近。",
-            "de": "Erstellt eine Rotation in die forward-Richtung (Vorwärtsachse ist -Z) und hält up so nah wie möglich.",
-            "es": "Crea una rotación orientada hacia la dirección forward (el eje hacia delante es -Z), manteniendo up lo más cerca posible.",
-            "fr": "Crée une rotation orientée vers la direction forward (l'axe avant est -Z), en gardant up aussi proche que possible.",
-            "it": "Crea una rotazione rivolta nella direzione forward (l'asse avanti è -Z), mantenendo up il più vicino possibile.",
-            "ja": "forward の方向を向く回転を作る（前方向は -Z 規約）。up へできるだけ上方向を合わせる。",
-            "ko": "forward 방향(앞쪽 축은 -Z)을 바라보는 회전을 만들고, up은 가능한 한 가깝게 유지합니다.",
-            "pt": "Cria uma rotação voltada para a direção forward (o eixo para frente é -Z), mantendo up o mais próximo possível.",
-            "ru": "Создаёт вращение, направленное по forward (ось вперёд — -Z), сохраняя up как можно ближе.",
-            "tr": "forward yönüne (ileri ekseni -Z) bakan, up değerini olabildiğince yakın tutan bir dönme oluşturur.",
-            "uk": "Створює обертання, спрямоване в напрямку forward (вісь уперед — -Z), зберігаючи up якомога ближче."
+            "en": "Create a rotation that points the local -Z axis along forward and aligns the local +Y axis as closely as possible with up.",
+            "cn": "创建一个旋转，使局部 -Z 轴指向 forward 方向，并使局部 +Y 轴尽可能与 up 方向对齐。",
+            "de": "Erstellt eine Rotation, die die lokale -Z-Achse auf forward ausrichtet. Die lokale +Y-Achse folgt dabei so weit wie möglich der Richtung up.",
+            "es": "Crea una rotación que orienta el eje local -Z en la dirección de forward y alinea el eje local +Y lo máximo posible con up.",
+            "fr": "Crée une rotation qui oriente l'axe local -Z dans la direction de forward et aligne au mieux l'axe local +Y sur up.",
+            "it": "Crea una rotazione che orienta l'asse locale -Z nella direzione di forward e allinea il più possibile l'asse locale +Y a up.",
+            "ja": "ローカルの -Z 軸を forward の方向に向け、ローカルの +Y 軸をできるだけ up の方向に合わせる回転を作る。",
+            "ko": "로컬 -Z축이 forward 방향을 향하고 로컬 +Y축은 up 방향에 최대한 가깝게 정렬되는 회전을 만듭니다.",
+            "pt": "Cria uma rotação que orienta o eixo local -Z na direção de forward e alinha o eixo local +Y com up tanto quanto possível.",
+            "ru": "Создаёт вращение, которое направляет локальную ось -Z вдоль forward, а локальную ось +Y — как можно ближе к направлению up.",
+            "tr": "Yerel -Z eksenini forward yönüne çeviren ve yerel +Y eksenini up yönüne olabildiğince yakın tutan bir dönme oluşturur.",
+            "uk": "Створює обертання, яке спрямовує локальну вісь -Z уздовж forward, а локальну вісь +Y — якомога ближче до напрямку up."
           },
           "params": [
             {
@@ -3453,12 +3453,12 @@
             "en": "Camera used for drawing. None inherits from the closest ancestor that has one.",
             "cn": "用于绘制的 Camera。None 会从最近的带有 Camera 的祖先继承。",
             "de": "Zum Zeichnen verwendete Camera. None erbt von dem nächsten Vorfahren, der eine hat.",
-            "es": "Camera usada para dibujar. None hereda del ancestro más cercano que tenga una.",
-            "fr": "Camera utilisée pour le dessin. None hérite de l'ancêtre le plus proche qui en possède une.",
+            "es": "Instancia de Camera usada para dibujar. None hereda del ancestro más cercano que tenga una.",
+            "fr": "Instance de Camera utilisée pour le dessin. None hérite de l'ancêtre le plus proche qui en possède une.",
             "it": "Camera usata per il disegno. None eredita dall'antenato più vicino che ne possiede una.",
             "ja": "描画に使うカメラ。None なら最も近い設定済みの祖先から継承する。",
             "ko": "그리기에 사용하는 Camera입니다. None이면 Camera가 있는 가장 가까운 조상에서 상속합니다.",
-            "pt": "Camera usada para desenho. None herda do ancestral mais próximo que tenha uma.",
+            "pt": "Instância de Camera usada para desenho. None herda do ancestral mais próximo que tenha uma.",
             "ru": "Camera, используемая для рисования. При значении None она наследуется от ближайшего предка, у которого задана.",
             "tr": "Çizim için kullanılan Camera. None ise, Camera ayarlanmış en yakın atanın değeri devralınır.",
             "uk": "Camera, що використовується для малювання. За значення None вона успадковується від найближчого предка, у якого задана."
@@ -3663,12 +3663,12 @@
             "en": "This node's camera, or the camera of the closest ancestor that has one.",
             "cn": "此节点的 camera，或从最近的已设置 camera 的祖先继承的值。",
             "de": "Die Camera dieses Nodes oder die des nächsten Vorfahren, bei dem eine gesetzt ist.",
-            "es": "La camera de este nodo o la del ancestro más cercano que tenga una configurada.",
-            "fr": "La camera de ce nœud ou celle de l'ancêtre le plus proche qui en possède une.",
+            "es": "La cámara de este nodo o la del ancestro más cercano que tenga una configurada.",
+            "fr": "La caméra de ce nœud ou celle de l'ancêtre le plus proche qui en possède une.",
             "it": "La camera di questo nodo o quella dell'antenato più vicino che ne ha una impostata.",
             "ja": "自分のカメラか、最も近い設定済みの祖先のカメラ。",
             "ko": "이 노드의 camera 또는 camera가 설정된 가장 가까운 조상의 camera입니다.",
-            "pt": "A camera deste nó ou a do ancestral mais próximo que tenha uma definida.",
+            "pt": "A câmera deste nó ou a do ancestral mais próximo que tenha uma definida.",
             "ru": "Камера этого узла или ближайшего предка, у которого она задана.",
             "tr": "Bu düğümün camera değeri veya camera değeri ayarlanmış en yakın atanınki.",
             "uk": "Камера цього вузла або найближчого предка, у якого її задано."
@@ -3811,16 +3811,16 @@
           "description": {
             "en": "Remove a child node.",
             "cn": "移除子节点。",
-            "de": "Entfernt einen Kind-Node.",
-            "es": "Elimina un nodo hijo.",
-            "fr": "Supprime un nœud enfant.",
+            "de": "Trennt einen direkten Kindknoten von diesem Knoten.",
+            "es": "Separa un nodo hijo directo de su padre.",
+            "fr": "Détache un nœud enfant direct.",
             "it": "Rimuove un nodo figlio.",
             "ja": "子ノードを取り外す。",
             "ko": "자식 노드를 제거합니다.",
             "pt": "Remove um nó filho.",
-            "ru": "Удаляет дочерний узел.",
+            "ru": "Отсоединяет непосредственный дочерний узел от этого узла.",
             "tr": "Bir alt düğümü kaldırır.",
-            "uk": "Видаляє дочірній вузол."
+            "uk": "Від'єднує безпосередній дочірній вузол від цього вузла."
           },
           "params": [
             {
@@ -3829,16 +3829,16 @@
               "description": {
                 "en": "The node to remove.",
                 "cn": "要移除的节点。",
-                "de": "Der zu entfernende Node.",
-                "es": "El nodo que se va a eliminar.",
-                "fr": "Le nœud à supprimer.",
+                "de": "Der direkte Kindknoten, der abgetrennt werden soll.",
+                "es": "El nodo hijo que se va a separar.",
+                "fr": "Le nœud enfant à détacher.",
                 "it": "Il nodo da rimuovere.",
                 "ja": "取り外すノード。",
                 "ko": "제거할 노드입니다.",
                 "pt": "O nó a remover.",
-                "ru": "Узел для удаления.",
+                "ru": "Непосредственный дочерний узел, который нужно отсоединить.",
                 "tr": "Kaldırılacak düğüm.",
-                "uk": "Вузол для видалення."
+                "uk": "Безпосередній дочірній вузол, який потрібно від'єднати."
               }
             }
           ],
@@ -3954,18 +3954,18 @@
           "type": "function",
           "signature": "play_motion(motion, *, loop=True, speed=1.0, start_frame=0.0)",
           "description": {
-            "en": "Start per-update playback of a Motion on this Node.from_mesh() subtree.",
-            "cn": "在此 Node.from_mesh() 子树上开始每次更新播放 Motion。",
-            "de": "Startet die Wiedergabe einer Motion pro Update auf diesem Node.from_mesh()-Teilbaum.",
-            "es": "Inicia la reproducción por actualización de un Motion en este subárbol de Node.from_mesh().",
-            "fr": "Démarre la lecture d'une Motion à chaque mise à jour sur ce sous-arbre Node.from_mesh().",
-            "it": "Avvia la riproduzione a ogni aggiornamento di una Motion su questo sottoalbero Node.from_mesh().",
-            "ja": "この Node.from_mesh() 由来のサブツリーで Motion の update ごとの再生を開始する。",
-            "ko": "이 Node.from_mesh() 하위 트리에서 매 업데이트 Motion 재생을 시작합니다.",
-            "pt": "Inicia a reprodução por atualização de uma Motion nesta subárvore Node.from_mesh().",
-            "ru": "Запускает воспроизведение Motion при каждом обновлении на этом поддереве Node.from_mesh().",
-            "tr": "Bu Node.from_mesh() alt ağacında her güncellemede Motion oynatmayı başlatır.",
-            "uk": "Запускає відтворення Motion під час кожного оновлення на цьому піддереві Node.from_mesh()."
+            "en": "Start playing a Motion on this Node.from_mesh() subtree. Each update advances playback.",
+            "cn": "在此 Node.from_mesh() 子树上开始播放 Motion。此后每次更新时，播放位置按 speed 推进。",
+            "de": "Startet die Wiedergabe eines Motion-Clips in diesem mit Node.from_mesh() erstellten Teilbaum. Bei jedem Update läuft die Wiedergabe weiter.",
+            "es": "Inicia la reproducción de una Motion en este subárbol creado con Node.from_mesh(). La reproducción avanza con cada actualización.",
+            "fr": "Lance la lecture d'une Motion sur ce sous-arbre issu de Node.from_mesh(). Chaque mise à jour fait avancer la lecture.",
+            "it": "Avvia la riproduzione di una Motion su questo sottoalbero creato con Node.from_mesh(). La riproduzione avanza a ogni aggiornamento.",
+            "ja": "この Node.from_mesh() 由来のサブツリーで Motion の再生を開始する。以降は update ごとに再生が進む。",
+            "ko": "이 Node.from_mesh() 하위 트리에서 Motion 재생을 시작합니다. 이후 업데이트할 때마다 재생이 진행됩니다.",
+            "pt": "Inicia a reprodução de uma Motion nesta subárvore criada com Node.from_mesh(). A reprodução avança a cada atualização.",
+            "ru": "Запускает воспроизведение клипа Motion в этом поддереве, созданном через Node.from_mesh(). Затем воспроизведение продвигается при каждом обновлении.",
+            "tr": "Bu Node.from_mesh() alt ağacında bir Motion klibinin oynatımını başlatır. Oynatım her güncellemede ilerler.",
+            "uk": "Запускає відтворення кліпу Motion у цьому піддереві, створеному через Node.from_mesh(). Далі відтворення просувається з кожним оновленням."
           },
           "params": [
             {
@@ -4400,7 +4400,7 @@
             "ko": "이 on_draw의 이후 그리기 명령에 대한 깊이 버퍼 쓰기를 전환합니다. 각 노드의 on_draw 시작 시 True로 리셋됩니다.",
             "pt": "Alterna escritas no buffer de profundidade para os comandos de desenho seguintes neste on_draw. Redefine para True no início de cada on_draw do nó.",
             "ru": "Переключает запись в буфер глубины для последующих команд рисования в этом on_draw. Сбрасывается к True в начале каждого on_draw узла.",
-            "tr": "Bu on_draw içindeki sonraki çizim komutları için derinlik buffer yazımlarını açar/kapatır. Her düğümün on_draw başlangıcında True değerine sıfırlanır.",
+            "tr": "Bu on_draw çağrısında, sonraki çizim komutlarının derinlik arabelleğine yazmasını açar veya kapatır. Her düğümün on_draw çağrısının başında True değerine sıfırlanır.",
             "uk": "Перемикає запис у буфер глибини для наступних команд малювання в цьому on_draw. Скидається до True на початку кожного on_draw вузла."
           },
           "params": [
@@ -4418,7 +4418,7 @@
                 "ko": "False이면 깊이 버퍼를 변경하지 않습니다.",
                 "pt": "False deixa o buffer de profundidade intocado.",
                 "ru": "False оставляет буфер глубины без изменений.",
-                "tr": "False derinlik buffer'ına dokunmaz.",
+                "tr": "False olduğunda derinlik arabelleğine yazılmaz.",
                 "uk": "False залишає буфер глибини без змін."
               }
             }
@@ -5543,7 +5543,7 @@
                 "ko": "단색 색 번호 또는 텍스처 Image입니다. 기본값은 7입니다.",
                 "pt": "Número de cor plana ou Image de textura. O padrão é 7.",
                 "ru": "Номер плоского цвета или текстурный Image. По умолчанию 7.",
-                "tr": "Düz renk numarası veya doku Image. Varsayılan değer 7.",
+                "tr": "Düz renk numarası veya doku olarak kullanılacak bir Image örneği. Varsayılan değer 7.",
                 "uk": "Номер плаского кольору або текстурний Image. Типове значення 7."
               }
             },
@@ -5551,18 +5551,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent color of the texture. Defaults to None.",
-                "cn": "纹理的透明色。默认值为 None。",
-                "de": "Transparenzfarbe der Textur. Standardwert ist None.",
-                "es": "Color transparente de la textura. El valor predeterminado es None.",
-                "fr": "Couleur transparente de la texture. La valeur par défaut est None.",
-                "it": "Colore trasparente della texture. Il valore predefinito è None.",
-                "ja": "テクスチャの透明色。デフォルトは None。",
-                "ko": "텍스처의 투명 색상입니다. 기본값은 None입니다.",
-                "pt": "Cor transparente da textura. O padrão é None.",
-                "ru": "Прозрачный цвет текстуры. По умолчанию None.",
-                "tr": "Dokunun saydam rengi. Varsayılan değer None.",
-                "uk": "Прозорий колір текстури. Типове значення None."
+                "en": "Transparent color of the texture. If omitted, no color is skipped.",
+                "cn": "纹理的透明色。省略时不跳过任何颜色。",
+                "de": "Transparenzfarbe der Textur. Ohne Angabe wird keine Farbe übersprungen.",
+                "es": "Color transparente de la textura. Si se omite, se dibujan todos los colores.",
+                "fr": "Couleur transparente de la texture. Si elle est omise, aucune couleur n'est ignorée.",
+                "it": "Colore trasparente della texture. Se omesso, vengono disegnati tutti i colori.",
+                "ja": "テクスチャの透明色。省略時はすべての色を描画する。",
+                "ko": "텍스처의 투명 색상입니다. 생략하면 모든 색상을 그립니다.",
+                "pt": "Cor transparente da textura. Se omitida, todas as cores são desenhadas.",
+                "ru": "Прозрачный цвет текстуры. Если цвет не указан, отрисовываются все цвета.",
+                "tr": "Dokunun saydam rengi. Belirtilmezse tüm renkler çizilir.",
+                "uk": "Прозорий колір текстури. Якщо колір не вказано, відображаються всі кольори."
               }
             }
           ],
@@ -5656,18 +5656,18 @@
           "type": "function",
           "signature": "sphere(pos, r, col_img=7, *, colkey=None)",
           "description": {
-            "en": "Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.",
-            "cn": "绘制填充球体 (细分后的 80 面二十面体)。当 col_img 为 Image 时，会用等距圆柱映射包裹它。",
-            "de": "Zeichnet eine gefüllte Kugel (ein unterteiltes Ikosaeder mit 80 Faces). Wenn col_img ein Image ist, wird es mit einer equirektangularen Abbildung umwickelt.",
-            "es": "Dibuja una esfera rellena (un icosaedro subdividido de 80 caras). Cuando col_img es una Image, se envuelve con un mapeo equirectangular.",
-            "fr": "Dessine une sphère remplie (un icosaèdre subdivisé de 80 faces). Quand col_img est une Image, elle est enveloppée avec un mapping équirectangulaire.",
-            "it": "Disegna una sfera piena (un icosaedro suddiviso di 80 facce). Quando col_img è una Image, viene avvolta con una mappatura equirettangolare.",
+            "en": "Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, its texture is mapped onto the sphere using an equirectangular projection.",
+            "cn": "绘制填充球体 (细分后的 80 面二十面体)。当 col_img 为 Image 时，使用等距圆柱映射将该图像贴到球面上。",
+            "de": "Zeichnet eine gefüllte Kugel (ein unterteiltes Ikosaeder mit 80 Faces). Ist col_img ein Image, wird es mit einer equirektangularen Projektion auf die Kugel abgebildet.",
+            "es": "Dibuja una esfera rellena (un icosaedro subdividido de 80 caras). Cuando col_img es una Image, su textura se aplica a la esfera mediante una proyección equirrectangular.",
+            "fr": "Dessine une sphère remplie (un icosaèdre subdivisé de 80 faces). Quand col_img est une Image, sa texture est appliquée à la sphère par projection équirectangulaire.",
+            "it": "Disegna una sfera piena (un icosaedro suddiviso di 80 facce). Quando col_img è una Image, la sua texture viene applicata alla sfera con una proiezione equirettangolare.",
             "ja": "球（80 面の細分化二十面体）を塗って描く。col_img が Image のときは正距円筒図法でテクスチャを貼る。",
-            "ko": "채워진 구체(80면으로 세분화된 정이십면체)를 그립니다. col_img가 Image이면 정거리 원통 투영 매핑으로 감쌉니다.",
-            "pt": "Desenha uma esfera preenchida (um icosaedro subdividido de 80 faces). Quando col_img é uma Image, ela é envolvida com mapeamento equiretangular.",
-            "ru": "Рисует заполненную сферу (подразделённый икосаэдр из 80 граней). Когда col_img является Image, она оборачивается эквидистантной цилиндрической проекцией.",
-            "tr": "Dolu bir küre çizer (80 yüzlü bölünmüş ikosahedron). col_img bir Image olduğunda equirectangular eşlemeyle sarılır.",
-            "uk": "Малює заповнену сферу (підрозділений ікосаедр із 80 граней). Коли col_img є Image, вона обгортається еквідистантним циліндричним мапінгом."
+            "ko": "채워진 구체(80면으로 세분화된 정이십면체)를 그립니다. col_img가 Image이면 정거리 원통 투영으로 이미지를 구체 표면에 입힙니다.",
+            "pt": "Desenha uma esfera preenchida (um icosaedro subdividido de 80 faces). Quando col_img é uma Image, sua textura é aplicada à esfera por meio de uma projeção equiretangular.",
+            "ru": "Рисует заполненную сферу (подразделённый икосаэдр из 80 граней). Если col_img — объект Image, изображение накладывается на сферу с помощью равнопромежуточной цилиндрической проекции.",
+            "tr": "Dolu bir küre çizer (80 yüzlü bölünmüş ikosahedron). col_img bir Image ise görüntü, eşdikdörtgensel projeksiyonla kürenin yüzeyine kaplanır.",
+            "uk": "Малює заповнену сферу (підрозділений ікосаедр із 80 граней). Якщо col_img — об'єкт Image, зображення накладається на сферу за допомогою рівнопроміжної циліндричної проєкції."
           },
           "params": [
             {
@@ -5720,7 +5720,7 @@
                 "ko": "단색 색 번호 또는 텍스처 Image입니다. 기본값은 7입니다.",
                 "pt": "Número de cor plana ou Image de textura. O padrão é 7.",
                 "ru": "Номер плоского цвета или текстурный Image. По умолчанию 7.",
-                "tr": "Düz renk numarası veya doku Image. Varsayılan değer 7.",
+                "tr": "Düz renk numarası veya doku olarak kullanılacak bir Image örneği. Varsayılan değer 7.",
                 "uk": "Номер плаского кольору або текстурний Image. Типове значення 7."
               }
             },
@@ -5728,18 +5728,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent color of the texture. Defaults to None.",
-                "cn": "纹理的透明色。默认值为 None。",
-                "de": "Transparenzfarbe der Textur. Standardwert ist None.",
-                "es": "Color transparente de la textura. El valor predeterminado es None.",
-                "fr": "Couleur transparente de la texture. La valeur par défaut est None.",
-                "it": "Colore trasparente della texture. Il valore predefinito è None.",
-                "ja": "テクスチャの透明色。デフォルトは None。",
-                "ko": "텍스처의 투명 색상입니다. 기본값은 None입니다.",
-                "pt": "Cor transparente da textura. O padrão é None.",
-                "ru": "Прозрачный цвет текстуры. По умолчанию None.",
-                "tr": "Dokunun saydam rengi. Varsayılan değer None.",
-                "uk": "Прозорий колір текстури. Типове значення None."
+                "en": "Transparent color of the texture. If omitted, no color is skipped.",
+                "cn": "纹理的透明色。省略时不跳过任何颜色。",
+                "de": "Transparenzfarbe der Textur. Ohne Angabe wird keine Farbe übersprungen.",
+                "es": "Color transparente de la textura. Si se omite, se dibujan todos los colores.",
+                "fr": "Couleur transparente de la texture. Si elle est omise, aucune couleur n'est ignorée.",
+                "it": "Colore trasparente della texture. Se omesso, vengono disegnati tutti i colori.",
+                "ja": "テクスチャの透明色。省略時はすべての色を描画する。",
+                "ko": "텍스처의 투명 색상입니다. 생략하면 모든 색상을 그립니다.",
+                "pt": "Cor transparente da textura. Se omitida, todas as cores são desenhadas.",
+                "ru": "Прозрачный цвет текстуры. Если цвет не указан, отрисовываются все цвета.",
+                "tr": "Dokunun saydam rengi. Belirtilmezse tüm renkler çizilir.",
+                "uk": "Прозорий колір текстури. Якщо колір не вказано, відображаються всі кольори."
               }
             }
           ],
@@ -5940,18 +5940,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent color. Defaults to None.",
-                "cn": "透明色。默认值为 None。",
-                "de": "Transparenzfarbe. Standardwert ist None.",
-                "es": "Color transparente. El valor predeterminado es None.",
-                "fr": "Couleur transparente. La valeur par défaut est None.",
-                "it": "Colore trasparente. Il valore predefinito è None.",
-                "ja": "透明色。デフォルトは None。",
-                "ko": "투명 색상입니다. 기본값은 None입니다.",
-                "pt": "Cor transparente. O padrão é None.",
-                "ru": "Прозрачный цвет. По умолчанию None.",
-                "tr": "Saydam renk. Varsayılan değer None.",
-                "uk": "Прозорий колір. Типове значення None."
+                "en": "Transparent color. If omitted, no color is skipped.",
+                "cn": "透明色。省略时不跳过任何颜色。",
+                "de": "Transparenzfarbe. Ohne Angabe wird keine Farbe übersprungen.",
+                "es": "Color transparente. Si se omite, se dibujan todos los colores.",
+                "fr": "Couleur transparente. Si elle est omise, aucune couleur n'est ignorée.",
+                "it": "Colore trasparente. Se omesso, vengono disegnati tutti i colori.",
+                "ja": "透明色。省略時はすべての色を描画する。",
+                "ko": "투명 색상입니다. 생략하면 모든 색상을 그립니다.",
+                "pt": "Cor transparente. Se omitida, todas as cores são desenhadas.",
+                "ru": "Прозрачный цвет. Если цвет не указан, отрисовываются все цвета.",
+                "tr": "Saydam renk. Belirtilmezse tüm renkler çizilir.",
+                "uk": "Прозорий колір. Якщо колір не вказано, відображаються всі кольори."
               }
             }
           ],
@@ -6073,18 +6073,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent color. Defaults to None.",
-                "cn": "透明色。默认值为 None。",
-                "de": "Transparenzfarbe. Standardwert ist None.",
-                "es": "Color transparente. El valor predeterminado es None.",
-                "fr": "Couleur transparente. La valeur par défaut est None.",
-                "it": "Colore trasparente. Il valore predefinito è None.",
-                "ja": "透明色。デフォルトは None。",
-                "ko": "투명 색상입니다. 기본값은 None입니다.",
-                "pt": "Cor transparente. O padrão é None.",
-                "ru": "Прозрачный цвет. По умолчанию None.",
-                "tr": "Saydam renk. Varsayılan değer None.",
-                "uk": "Прозорий колір. Типове значення None."
+                "en": "Transparent color. If omitted, no color is skipped.",
+                "cn": "透明色。省略时不跳过任何颜色。",
+                "de": "Transparenzfarbe. Ohne Angabe wird keine Farbe übersprungen.",
+                "es": "Color transparente. Si se omite, se dibujan todos los colores.",
+                "fr": "Couleur transparente. Si elle est omise, aucune couleur n'est ignorée.",
+                "it": "Colore trasparente. Se omesso, vengono disegnati tutti i colori.",
+                "ja": "透明色。省略時はすべての色を描画する。",
+                "ko": "투명 색상입니다. 생략하면 모든 색상을 그립니다.",
+                "pt": "Cor transparente. Se omitida, todas as cores são desenhadas.",
+                "ru": "Прозрачный цвет. Если цвет не указан, отрисовываются все цвета.",
+                "tr": "Saydam renk. Belirtilmezse tüm renkler çizilir.",
+                "uk": "Прозорий колір. Якщо колір не вказано, відображаються всі кольори."
               }
             },
             {
@@ -6194,7 +6194,7 @@
                 "ko": "단색 색 번호 또는 텍스처 Image입니다. 기본값은 7입니다.",
                 "pt": "Número de cor plana ou Image de textura. O padrão é 7.",
                 "ru": "Номер плоского цвета или текстурный Image. По умолчанию 7.",
-                "tr": "Düz renk numarası veya doku Image. Varsayılan değer 7.",
+                "tr": "Düz renk numarası veya doku olarak kullanılacak bir Image örneği. Varsayılan değer 7.",
                 "uk": "Номер плаского кольору або текстурний Image. Типове значення 7."
               }
             },
@@ -6202,18 +6202,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent color of the texture. Defaults to None.",
-                "cn": "纹理的透明色。默认值为 None。",
-                "de": "Transparenzfarbe der Textur. Standardwert ist None.",
-                "es": "Color transparente de la textura. El valor predeterminado es None.",
-                "fr": "Couleur transparente de la texture. La valeur par défaut est None.",
-                "it": "Colore trasparente della texture. Il valore predefinito è None.",
-                "ja": "テクスチャの透明色。デフォルトは None。",
-                "ko": "텍스처의 투명 색상입니다. 기본값은 None입니다.",
-                "pt": "Cor transparente da textura. O padrão é None.",
-                "ru": "Прозрачный цвет текстуры. По умолчанию None.",
-                "tr": "Dokunun saydam rengi. Varsayılan değer None.",
-                "uk": "Прозорий колір текстури. Типове значення None."
+                "en": "Transparent color of the texture. If omitted, no color is skipped.",
+                "cn": "纹理的透明色。省略时不跳过任何颜色。",
+                "de": "Transparenzfarbe der Textur. Ohne Angabe wird keine Farbe übersprungen.",
+                "es": "Color transparente de la textura. Si se omite, se dibujan todos los colores.",
+                "fr": "Couleur transparente de la texture. Si elle est omise, aucune couleur n'est ignorée.",
+                "it": "Colore trasparente della texture. Se omesso, vengono disegnati tutti i colori.",
+                "ja": "テクスチャの透明色。省略時はすべての色を描画する。",
+                "ko": "텍스처의 투명 색상입니다. 생략하면 모든 색상을 그립니다.",
+                "pt": "Cor transparente da textura. Se omitida, todas as cores são desenhadas.",
+                "ru": "Прозрачный цвет текстуры. Если цвет не указан, отрисовываются все цвета.",
+                "tr": "Dokunun saydam rengi. Belirtilmezse tüm renkler çizilir.",
+                "uk": "Прозорий колір текстури. Якщо колір не вказано, відображаються всі кольори."
               }
             }
           ],
@@ -6574,25 +6574,25 @@
                 "pt": "Quando True, colliders trigger também podem ser atingidos. O padrão é False.",
                 "ru": "Если True, trigger-коллайдеры также могут быть поражены. По умолчанию False.",
                 "tr": "True olduğunda trigger collider'lar da isabet alabilir. Varsayılan değer False.",
-                "uk": "Якщо True, trigger-колайдери також можуть бути влучені. Типове значення False."
+                "uk": "Якщо True, промінь може влучити й у тригерні колайдери. Типове значення False."
               }
             },
             {
               "name": "tags",
               "type": "set[str] | None",
               "description": {
-                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
-                "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",
-                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Standardwert ist None.",
-                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. El valor predeterminado es None.",
-                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. La valeur par défaut est None.",
-                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Il valore predefinito è None.",
-                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。",
-                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 기본값은 None입니다.",
-                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. O padrão é None.",
-                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. По умолчанию None.",
-                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Varsayılan değer None.",
-                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Типове значення None."
+                "en": "When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.",
+                "cn": "设置后，只测试带有任一这些标签的节点。省略时不按标签筛选。",
+                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Ohne Angabe wird die Suche nicht nach Tags gefiltert.",
+                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. Si se omite, la búsqueda no se filtra por etiquetas.",
+                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. Sans ce paramètre, la recherche n'est pas filtrée par tag.",
+                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Se omesso, la ricerca non viene filtrata per tag.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。省略時はタグで絞り込まない。",
+                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 생략하면 태그로 검색 대상을 제한하지 않습니다.",
+                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. Se omitido, a busca não é filtrada por tags.",
+                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. Без этого параметра поиск не ограничивается тегами.",
+                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Belirtilmezse arama etiketlere göre filtrelenmez.",
+                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Без цього параметра пошук не обмежується тегами."
               }
             }
           ],
@@ -6706,25 +6706,25 @@
                 "pt": "Quando True, colliders trigger também podem ser atingidos. O padrão é False.",
                 "ru": "Если True, trigger-коллайдеры также могут быть поражены. По умолчанию False.",
                 "tr": "True olduğunda trigger collider'lar da isabet alabilir. Varsayılan değer False.",
-                "uk": "Якщо True, trigger-колайдери також можуть бути влучені. Типове значення False."
+                "uk": "Якщо True, промінь може влучити й у тригерні колайдери. Типове значення False."
               }
             },
             {
               "name": "tags",
               "type": "set[str] | None",
               "description": {
-                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
-                "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",
-                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Standardwert ist None.",
-                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. El valor predeterminado es None.",
-                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. La valeur par défaut est None.",
-                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Il valore predefinito è None.",
-                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。",
-                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 기본값은 None입니다.",
-                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. O padrão é None.",
-                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. По умолчанию None.",
-                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Varsayılan değer None.",
-                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Типове значення None."
+                "en": "When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.",
+                "cn": "设置后，只测试带有任一这些标签的节点。省略时不按标签筛选。",
+                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Ohne Angabe wird die Suche nicht nach Tags gefiltert.",
+                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. Si se omite, la búsqueda no se filtra por etiquetas.",
+                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. Sans ce paramètre, la recherche n'est pas filtrée par tag.",
+                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Se omesso, la ricerca non viene filtrata per tag.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。省略時はタグで絞り込まない。",
+                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 생략하면 태그로 검색 대상을 제한하지 않습니다.",
+                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. Se omitido, a busca não é filtrada por tags.",
+                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. Без этого параметра поиск не ограничивается тегами.",
+                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Belirtilmezse arama etiketlere göre filtrelenmez.",
+                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Без цього параметра пошук не обмежується тегами."
               }
             }
           ],
@@ -6810,18 +6810,18 @@
               "name": "tags",
               "type": "set[str] | None",
               "description": {
-                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
-                "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",
-                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Standardwert ist None.",
-                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. El valor predeterminado es None.",
-                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. La valeur par défaut est None.",
-                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Il valore predefinito è None.",
-                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。",
-                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 기본값은 None입니다.",
-                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. O padrão é None.",
-                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. По умолчанию None.",
-                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Varsayılan değer None.",
-                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Типове значення None."
+                "en": "When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.",
+                "cn": "设置后，只测试带有任一这些标签的节点。省略时不按标签筛选。",
+                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Ohne Angabe wird die Suche nicht nach Tags gefiltert.",
+                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. Si se omite, la búsqueda no se filtra por etiquetas.",
+                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. Sans ce paramètre, la recherche n'est pas filtrée par tag.",
+                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Se omesso, la ricerca non viene filtrata per tag.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。省略時はタグで絞り込まない。",
+                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 생략하면 태그로 검색 대상을 제한하지 않습니다.",
+                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. Se omitido, a busca não é filtrada por tags.",
+                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. Без этого параметра поиск не ограничивается тегами.",
+                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Belirtilmezse arama etiketlere göre filtrelenmez.",
+                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Без цього параметра пошук не обмежується тегами."
               }
             }
           ],
@@ -6907,18 +6907,18 @@
               "name": "tags",
               "type": "set[str] | None",
               "description": {
-                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
-                "cn": "设置后，只测试带有任一这些标签的节点。默认值为 None。",
-                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Standardwert ist None.",
-                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. El valor predeterminado es None.",
-                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. La valeur par défaut est None.",
-                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Il valore predefinito è None.",
-                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。",
-                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 기본값은 None입니다.",
-                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. O padrão é None.",
-                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. По умолчанию None.",
-                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Varsayılan değer None.",
-                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Типове значення None."
+                "en": "When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.",
+                "cn": "设置后，只测试带有任一这些标签的节点。省略时不按标签筛选。",
+                "de": "Wenn gesetzt, werden nur Nodes getestet, die eines dieser Tags tragen. Ohne Angabe wird die Suche nicht nach Tags gefiltert.",
+                "es": "Cuando se establece, solo se prueban los nodos que tengan cualquiera de estas etiquetas. Si se omite, la búsqueda no se filtra por etiquetas.",
+                "fr": "Si défini, seuls les nœuds portant l'un de ces tags sont testés. Sans ce paramètre, la recherche n'est pas filtrée par tag.",
+                "it": "Se impostato, vengono testati solo i nodi che possiedono uno di questi tag. Se omesso, la ricerca non viene filtrata per tag.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。省略時はタグで絞り込まない。",
+                "ko": "설정하면 이 태그 중 하나라도 가진 노드만 테스트합니다. 생략하면 태그로 검색 대상을 제한하지 않습니다.",
+                "pt": "Quando definido, apenas nós que carregam qualquer uma destas tags são testados. Se omitido, a busca não é filtrada por tags.",
+                "ru": "Если задано, проверяются только узлы, имеющие любой из этих тегов. Без этого параметра поиск не ограничивается тегами.",
+                "tr": "Ayarlandığında yalnızca bu etiketlerden herhangi birini taşıyan düğümler test edilir. Belirtilmezse arama etiketlere göre filtrelenmez.",
+                "uk": "Якщо задано, перевіряються лише вузли, що мають будь-який із цих тегів. Без цього параметра пошук не обмежується тегами."
               }
             }
           ],
@@ -7956,7 +7956,7 @@
           "description": {
             "en": "A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.",
             "cn": "分层 3D 模型资产。primitives、transforms、parents 和 names 是描述部件树的并行数组；父部件必须位于子部件之前 (parents[i] < i)。可用 Node.from_mesh() 实例化，用 Mesh.from_glb() 加载，或设置到 Collider.mesh 作为静态地形。",
-            "de": "Ein hierarchisches 3D-Modell-Asset. primitives, transforms, parents und names sind parallele Arrays, die den Teilbaum beschreiben; Eltern müssen vor Kindern stehen (parents[i] < i). Instanziieren Sie es mit Node.from_mesh(), laden Sie es mit Mesh.from_glb() oder weisen Sie es Collider.mesh als statisches Terrain zu.",
+            "de": "Ein hierarchisches 3D-Modell-Asset. primitives, transforms, parents und names sind parallele Arrays, die die Hierarchie der Modellteile beschreiben; Eltern müssen vor Kindern stehen (parents[i] < i). Instanziieren Sie es mit Node.from_mesh(), laden Sie es mit Mesh.from_glb() oder weisen Sie es Collider.mesh als statisches Terrain zu.",
             "es": "Un asset de modelo 3D jerárquico. primitives, transforms, parents y names son arrays paralelos que describen el árbol de partes; los padres deben venir antes que los hijos (parents[i] < i). Instáncielo con Node.from_mesh(), cárguelo con Mesh.from_glb() o asígnelo a Collider.mesh como terreno estático.",
             "fr": "Une ressource de modèle 3D hiérarchique. primitives, transforms, parents et names sont des tableaux parallèles décrivant l'arbre des parties ; les parents doivent précéder les enfants (parents[i] < i). Instanciez-la avec Node.from_mesh(), chargez-la avec Mesh.from_glb() ou assignez-la à Collider.mesh comme terrain statique.",
             "it": "Un asset di modello 3D gerarchico. primitives, transforms, parents e names sono array paralleli che descrivono l'albero delle parti; i genitori devono precedere i figli (parents[i] < i). Istanziarlo con Node.from_mesh(), caricarlo con Mesh.from_glb() o assegnarlo a Collider.mesh come terreno statico.",
@@ -8054,7 +8054,7 @@
                 "ko": "기본 단색 색 번호 또는 기본 텍스처 Image입니다. 기본값은 7입니다.",
                 "pt": "Número de cor plana padrão, ou Image de textura padrão. O padrão é 7.",
                 "ru": "Номер плоского цвета по умолчанию или текстурный Image по умолчанию. По умолчанию 7.",
-                "tr": "Varsayılan düz renk numarası veya varsayılan doku Image. Varsayılan değer 7.",
+                "tr": "Varsayılan düz renk numarası veya doku olarak kullanılacak bir Image örneği. Varsayılan değer 7.",
                 "uk": "Типовий номер плаского кольору або типовий текстурний Image. Типове значення 7."
               }
             },
@@ -8062,18 +8062,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent color when col_img is an Image. Defaults to None.",
-                "cn": "当 col_img 为 Image 时的透明色。默认值为 None。",
-                "de": "Transparenzfarbe, wenn col_img ein Image ist. Standardwert ist None.",
-                "es": "Color transparente cuando col_img es una Image. El valor predeterminado es None.",
-                "fr": "Couleur transparente quand col_img est une Image. La valeur par défaut est None.",
-                "it": "Colore trasparente quando col_img è una Image. Il valore predefinito è None.",
-                "ja": "col_img が Image のときの透明色。デフォルトは None。",
-                "ko": "col_img가 Image일 때의 투명 색상입니다. 기본값은 None입니다.",
-                "pt": "Cor transparente quando col_img é uma Image. O padrão é None.",
-                "ru": "Прозрачный цвет, когда col_img является Image. По умолчанию None.",
-                "tr": "col_img bir Image olduğunda saydam renk. Varsayılan değer None.",
-                "uk": "Прозорий колір, коли col_img є Image. Типове значення None."
+                "en": "Transparent color when col_img is an Image. If omitted, no color is skipped.",
+                "cn": "当 col_img 为 Image 时的透明色。省略时不跳过任何颜色。",
+                "de": "Transparenzfarbe, wenn col_img ein Image ist. Ohne Angabe wird keine Farbe übersprungen.",
+                "es": "Color transparente cuando col_img es una Image. Si se omite, se dibujan todos los colores.",
+                "fr": "Couleur transparente quand col_img est une Image. Si elle est omise, aucune couleur n'est ignorée.",
+                "it": "Colore trasparente quando col_img è una Image. Se omesso, vengono disegnati tutti i colori.",
+                "ja": "col_img が Image のときの透明色。省略時はすべての色を描画する。",
+                "ko": "col_img가 Image일 때의 투명 색상입니다. 생략하면 모든 색상을 그립니다.",
+                "pt": "Cor transparente quando col_img é uma Image. Se omitida, todas as cores são desenhadas.",
+                "ru": "Прозрачный цвет, когда col_img является Image. Если цвет не указан, отрисовываются все цвета.",
+                "tr": "col_img bir Image olduğunda saydam renk. Belirtilmezse tüm renkler çizilir.",
+                "uk": "Прозорий колір, коли col_img є Image. Якщо колір не вказано, відображаються всі кольори."
               }
             }
           ],
@@ -8087,7 +8087,7 @@
           "notes": {
             "en": "Part-list attributes return copies. Edit entries and assign the list back without changing the part count; the Primitive objects remain shared. To change the part count, create a new Mesh.\n\nImported per-part materials take precedence over col_img and colkey. Replacing these defaults does not replace imported materials or update existing nodes. Editing pixels of a shared Image affects every user of that image. For an imported mesh, col_img exposes the first material's color or image, even if that material is unused; it does not expose all material slots.",
             "cn": "部件列表属性返回副本。修改元素后重新赋给属性时，必须保持部件数量不变；其中的 Primitive 对象仍然共享。要改变部件数量，请创建新的 Mesh。\n\n导入的逐部件材质优先于 col_img 和 colkey。替换这些默认值不会替换导入材质或更新已有节点。编辑共享 Image 的像素会影响该图像的所有使用者。对于导入的网格，col_img 提供第一个材质的颜色或图像，即使该材质未被使用；它不提供所有材质槽。",
-            "de": "Teil-Listenattribute liefern Kopien. Bearbeiten Sie Einträge und weisen Sie die Liste ohne Änderung der Teileanzahl wieder zu; die Primitive-Objekte bleiben gemeinsam genutzt. Erstellen Sie für eine andere Teileanzahl ein neues Mesh.\n\nImportierte Teilmaterialien haben Vorrang vor col_img und colkey. Das Ersetzen dieser Standardwerte ersetzt weder importierte Materialien noch aktualisiert es bestehende Nodes. Pixeländerungen einer gemeinsamen Image wirken auf alle ihre Nutzer. Bei einem importierten Mesh stellt col_img die Farbe oder das Bild des ersten Materials bereit, auch wenn dieses unbenutzt ist; nicht alle Materialplätze sind zugänglich.",
+            "de": "Teil-Listenattribute liefern Kopien. Bearbeiten Sie Einträge und weisen Sie die Liste ohne Änderung der Teileanzahl wieder zu; die Primitive-Objekte bleiben gemeinsam genutzt. Erstellen Sie für eine andere Teileanzahl ein neues Mesh.\n\nImportierte Teilmaterialien haben Vorrang vor col_img und colkey. Das Ersetzen dieser Standardwerte ersetzt weder importierte Materialien noch aktualisiert es bestehende Nodes. Änderungen an den Pixeln eines gemeinsam genutzten Image-Objekts sind überall sichtbar, wo dieses Bild verwendet wird. Bei einem importierten Mesh stellt col_img die Farbe oder das Bild des ersten Materials bereit, auch wenn dieses unbenutzt ist; nicht alle Materialplätze sind zugänglich.",
             "es": "Los atributos de listas de partes devuelven copias. Edite las entradas y reasigne la lista sin cambiar el número de partes; los objetos Primitive siguen compartidos. Para cambiar ese número, cree un Mesh nuevo.\n\nLos materiales importados por parte tienen prioridad sobre col_img y colkey. Sustituir estos valores predeterminados no reemplaza materiales importados ni actualiza nodos existentes. Editar píxeles de una Image compartida afecta a todos sus usuarios. En un Mesh importado, col_img expone el color o la imagen del primer material, aunque no se use; no expone todos los materiales.",
             "fr": "Les attributs de listes de pièces renvoient des copies. Modifiez les entrées puis réaffectez la liste sans changer le nombre de pièces ; les objets Primitive restent partagés. Pour changer ce nombre, créez un nouveau Mesh.\n\nLes matériaux importés par pièce priment sur col_img et colkey. Remplacer ces valeurs par défaut ne remplace pas les matériaux importés et ne met pas à jour les nœuds existants. Modifier les pixels d'une Image partagée affecte tous ses utilisateurs. Pour un Mesh importé, col_img expose la couleur ou l'image du premier matériau, même inutilisé ; il n'expose pas tous les emplacements de matériau.",
             "it": "Gli attributi con liste di parti restituiscono copie. Modificare le voci e riassegnare la lista senza cambiare il numero di parti; gli oggetti Primitive restano condivisi. Per cambiare tale numero, creare un nuovo Mesh.\n\nI materiali importati per parte hanno precedenza su col_img e colkey. Sostituire questi valori predefiniti non cambia i materiali importati né aggiorna i nodi esistenti. Modificare i pixel di un'Image condivisa influisce su tutti i suoi utilizzatori. In un Mesh importato, col_img espone il colore o l'immagine del primo materiale, anche se inutilizzato; non espone tutti gli slot dei materiali.",
@@ -8219,7 +8219,7 @@
             "ko": "기본 단색 색 번호 또는 기본 텍스처 Image입니다.",
             "pt": "Número de cor plana padrão, ou Image de textura padrão.",
             "ru": "Номер плоского цвета по умолчанию или текстурный Image по умолчанию.",
-            "tr": "Varsayılan düz renk numarası veya varsayılan doku Image.",
+            "tr": "Varsayılan düz renk numarası veya doku olarak kullanılacak bir Image örneği.",
             "uk": "Типовий номер плаского кольору або типовий текстурний Image."
           },
           "value_type": "int | Image",
@@ -8287,18 +8287,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Transparent palette color for the imported texture. Defaults to None.",
-                "cn": "导入纹理的透明调色板颜色。默认值为 None。",
-                "de": "Transparente Palettenfarbe für die importierte Textur. Standardwert ist None.",
-                "es": "Color de paleta transparente para la textura importada. El valor predeterminado es None.",
-                "fr": "Couleur de palette transparente pour la texture importée. La valeur par défaut est None.",
-                "it": "Colore di palette trasparente per la texture importata. Il valore predefinito è None.",
-                "ja": "読み込んだテクスチャの透明色にするパレット番号。デフォルトは None。",
-                "ko": "가져온 텍스처의 투명 팔레트 색상입니다. 기본값은 None입니다.",
-                "pt": "Cor de paleta transparente para a textura importada. O padrão é None.",
-                "ru": "Прозрачный цвет палитры для импортированной текстуры. По умолчанию None.",
-                "tr": "İçe aktarılan doku için saydam palet rengi. Varsayılan değer None.",
-                "uk": "Прозорий колір палітри для імпортованої текстури. Типове значення None."
+                "en": "Palette index for texture transparency (0-15 in the default palette). If omitted (None), Pyxel uses an unused palette color when an alpha mask needs one and one is available.",
+                "cn": "纹理透明色的调色板索引 (默认调色板为 0～15)。省略时 (None)，如果透明度遮罩需要透明色且调色板中有未使用的颜色，Pyxel 就会使用该颜色。",
+                "de": "Palettenindex der Transparenzfarbe für die Textur (0-15 in der Standardpalette). Wird der Wert weggelassen (None), verwendet Pyxel eine freie Palettenfarbe, wenn eine Alphamaske eine Transparenzfarbe benötigt und eine verfügbar ist.",
+                "es": "Índice del color transparente de la textura (0-15 en la paleta predeterminada). Si se omite (None), Pyxel usa un color libre de la paleta cuando una máscara alfa necesita un color transparente y hay uno disponible.",
+                "fr": "Indice de la couleur transparente de la texture (de 0 à 15 dans la palette par défaut). Si ce paramètre est omis (None), Pyxel utilise une couleur libre de la palette si un masque alpha a besoin d'une couleur transparente et qu'il en reste une.",
+                "it": "Indice del colore trasparente della texture (0-15 nella tavolozza predefinita). Se il parametro viene omesso (None), Pyxel usa un colore libero della tavolozza quando una maschera alfa richiede un colore trasparente e ne è disponibile uno.",
+                "ja": "テクスチャの透明色に使う色番号（初期パレットでは 0〜15）。省略時 (None) は、アルファマスクに透明色が必要で、パレットに未使用色があれば、その色を使う。",
+                "ko": "텍스처의 투명색으로 사용할 팔레트 인덱스입니다(기본 팔레트에서는 0~15). 생략하면(None) 알파 마스크에 투명색이 필요하고 팔레트에 사용하지 않은 색이 있을 때 그 색을 사용합니다.",
+                "pt": "Índice da cor transparente da textura (0-15 na paleta padrão). Se o parâmetro for omitido (None), o Pyxel usa uma cor livre da paleta quando uma máscara alfa precisa de uma cor transparente e há uma disponível.",
+                "ru": "Индекс прозрачного цвета текстуры (0–15 в стандартной палитре). Если параметр опущен (None) и альфа-маске нужен прозрачный цвет, Pyxel использует свободный цвет палитры, если он есть.",
+                "tr": "Dokunun saydam rengi için palet indeksi (varsayılan palette 0-15). Parametre atlanırsa (None), alfa maskesi saydam bir renge ihtiyaç duyduğunda Pyxel palette kullanılmayan bir renk varsa onu kullanır.",
+                "uk": "Індекс прозорого кольору текстури (0–15 у стандартній палітрі). Якщо параметр пропущено (None) й альфа-масці потрібен прозорий колір, Pyxel використовує вільний колір палітри, якщо він є."
               }
             },
             {
@@ -8366,18 +8366,18 @@
               "name": "i",
               "type": "int",
               "description": {
-                "en": "The root part index.",
-                "cn": "根部件索引。",
-                "de": "Der Index des Wurzelteils.",
-                "es": "El índice de la parte raíz.",
-                "fr": "L'indice de la partie racine.",
-                "it": "L'indice della parte radice.",
+                "en": "Index of the part whose descendants to return.",
+                "cn": "要查找其后代部件的起始部件索引。",
+                "de": "Index des Teils, bei dem die Suche beginnt.",
+                "es": "Índice de la parte cuyos descendientes se van a devolver.",
+                "fr": "Indice de la partie dont il faut renvoyer les descendants.",
+                "it": "Indice della parte di cui restituire i discendenti.",
                 "ja": "起点のパーツインデックス。",
-                "ko": "루트 파트 인덱스입니다.",
-                "pt": "O índice da parte raiz.",
-                "ru": "Индекс корневой части.",
-                "tr": "Kök parça indeksi.",
-                "uk": "Індекс кореневої частини."
+                "ko": "하위 파트를 찾기 시작할 파트의 인덱스입니다.",
+                "pt": "Índice da parte cujos descendentes serão retornados.",
+                "ru": "Индекс части, с которой начинается поиск.",
+                "tr": "Aramaya başlanacak parçanın indeksi.",
+                "uk": "Індекс частини, з якої починається пошук."
               }
             }
           ],
@@ -8521,11 +8521,11 @@
                 "fr": "Dimensions du noyau : Vec3.ZERO sélectionne une sphère, (0, h, 0) une capsule et les autres tailles une boîte arrondie. La valeur par défaut est Vec3.ZERO.",
                 "it": "Dimensioni del nucleo: Vec3.ZERO seleziona una sfera, (0, h, 0) una capsula e le altre dimensioni un box arrotondato. Il valore predefinito è Vec3.ZERO.",
                 "ja": "芯の寸法。Vec3.ZERO なら球、(0, h, 0) ならカプセル、それ以外なら角丸ボックスになる。デフォルトは Vec3.ZERO。",
-                "ko": "핵심 치수입니다. Vec3.ZERO는 구체, (0, h, 0)은 캡슐, 그 밖의 크기는 둥근 모서리 상자를 선택합니다. 기본값은 Vec3.ZERO입니다.",
+                "ko": "반지름을 더하기 전 형상의 치수입니다. Vec3.ZERO는 구체, (0, h, 0)은 캡슐, 그 밖의 크기는 둥근 모서리 상자를 선택합니다. 기본값은 Vec3.ZERO입니다.",
                 "pt": "Dimensões do núcleo: Vec3.ZERO seleciona uma esfera, (0, h, 0) uma cápsula e outros tamanhos uma caixa arredondada. O padrão é Vec3.ZERO.",
-                "ru": "Основные размеры: Vec3.ZERO задаёт сферу, (0, h, 0) — капсулу, другие размеры — скруглённую коробку. По умолчанию Vec3.ZERO.",
+                "ru": "Размеры фигуры до добавления радиуса: Vec3.ZERO задаёт сферу, (0, h, 0) — капсулу, другие размеры — скруглённую коробку. По умолчанию Vec3.ZERO.",
                 "tr": "Çekirdek boyutları: Vec3.ZERO küreyi, (0, h, 0) kapsülü, diğer boyutlar yuvarlatılmış kutuyu seçer. Varsayılan değer Vec3.ZERO.",
-                "uk": "Основні розміри: Vec3.ZERO задає сферу, (0, h, 0) — капсулу, інші розміри — заокруглену коробку. Типове значення Vec3.ZERO."
+                "uk": "Розміри фігури до додавання радіуса: Vec3.ZERO задає сферу, (0, h, 0) — капсулу, інші розміри — заокруглену коробку. Типове значення Vec3.ZERO."
               }
             },
             {
@@ -8704,7 +8704,7 @@
                 "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다.",
                 "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade.",
                 "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию.",
-                "tr": "Yerçekimi ivmesinin büyüklüğü (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır.",
+                "tr": "İşaretli yerçekimi ivmesi (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır.",
                 "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію."
               }
             },
@@ -8732,7 +8732,7 @@
               "description": {
                 "en": "Linear damping per second. Defaults to 0.1.",
                 "cn": "线性：每秒阻尼系数，默认为 0.1。",
-                "de": "Linear: Dämpfung pro Sekunde, Standard 0.1.",
+                "de": "Dämpfung der linearen Geschwindigkeit pro Sekunde. Standardwert ist 0.1.",
                 "es": "Lineal: Amortiguación por segundo, por defecto 0.1.",
                 "fr": "Linéaire : Amortissement par seconde, par défaut 0.1.",
                 "it": "Lineare: Smorzamento al secondo, predefinito 0.1.",
@@ -8750,7 +8750,7 @@
               "description": {
                 "en": "Angular damping per second. Defaults to 0.1.",
                 "cn": "角速度：每秒阻尼系数，默认为 0.1。",
-                "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1.",
+                "de": "Dämpfung der Winkelgeschwindigkeit pro Sekunde. Standardwert ist 0.1.",
                 "es": "Angular: Amortiguación por segundo, por defecto 0.1.",
                 "fr": "Angulaire : Amortissement par seconde, par défaut 0.1.",
                 "it": "Angolare: Smorzamento al secondo, predefinito 0.1.",
@@ -8796,11 +8796,11 @@
             "fr": "Dimensions du noyau et sélection de la forme. Le signe des composantes est ignoré ; pour classer la forme, les composantes dont la valeur absolue est inférieure à 1e-9 sont considérées comme nulles. Si elles sont toutes nulles, une sphère de rayon max(radius, 0) est créée. La valeur (0, h, 0) crée une capsule dont le segment axial central mesure abs(h) et dont la hauteur totale vaut abs(h) + 2 * max(radius, 0). Toute autre valeur crée une boîte arrondie dont les dimensions du noyau sont abs(size) et les dimensions totales abs(size) + 2 * max(radius, 0), composante par composante.",
             "it": "Dimensioni del nucleo e selezione della forma. Il segno dei componenti viene ignorato; per classificare la forma, i componenti con valore assoluto inferiore a 1e-9 sono considerati zero. Se tutti sono zero, si crea una sfera di raggio max(radius, 0). Il valore (0, h, 0) crea una capsula il cui segmento assiale centrale misura abs(h) e la cui altezza totale è abs(h) + 2 * max(radius, 0). Qualsiasi altro valore crea un box arrotondato con dimensioni del nucleo abs(size) e dimensioni totali abs(size) + 2 * max(radius, 0) per ogni asse.",
             "ja": "形状の芯の寸法と種類を指定する。各成分の符号は無視され、形状の判定では絶対値が 1e-9 未満の成分を 0 として扱う。全成分が 0 なら、半径 max(radius, 0) の球になる。(0, h, 0) なら、中心軸上の線分の長さが abs(h)、全高が abs(h) + 2 * max(radius, 0) のカプセルになる。それ以外なら、芯の寸法が abs(size)、各軸の外寸が abs(size) + 2 * max(radius, 0) の角丸ボックスになる。",
-            "ko": "형상의 핵심 치수와 종류를 지정합니다. 각 성분의 부호는 무시되며, 형상을 분류할 때 절댓값이 1e-9 미만인 성분은 0으로 처리됩니다. 모든 성분이 0이면 반지름이 max(radius, 0)인 구체가 됩니다. (0, h, 0)이면 중심축 선분 길이가 abs(h)이고 전체 높이가 abs(h) + 2 * max(radius, 0)인 캡슐이 됩니다. 그 밖의 값은 핵심 치수가 abs(size)이고 각 축의 전체 치수가 abs(size) + 2 * max(radius, 0)인 둥근 모서리 상자가 됩니다.",
+            "ko": "반지름을 더하기 전 형상의 치수와 종류를 지정합니다. 각 성분의 부호는 무시되며, 형상을 분류할 때 절댓값이 1e-9 미만인 성분은 0으로 처리됩니다. 모든 성분이 0이면 반지름이 max(radius, 0)인 구체가 됩니다. (0, h, 0)이면 중심축 선분 길이가 abs(h)이고 전체 높이가 abs(h) + 2 * max(radius, 0)인 캡슐이 됩니다. 그 밖의 값은 내부 상자의 치수가 abs(size)이고 각 축의 전체 치수가 abs(size) + 2 * max(radius, 0)인 둥근 모서리 상자가 됩니다.",
             "pt": "Dimensões do núcleo e seleção da forma. Os sinais dos componentes são ignorados; para classificar a forma, componentes com valor absoluto inferior a 1e-9 são tratados como zero. Se todos forem zero, cria-se uma esfera de raio max(radius, 0). O valor (0, h, 0) cria uma cápsula cujo segmento axial central mede abs(h) e cuja altura total é abs(h) + 2 * max(radius, 0). Qualquer outro valor cria uma caixa arredondada com dimensões centrais abs(size) e dimensões totais abs(size) + 2 * max(radius, 0) em cada eixo.",
-            "ru": "Основные размеры и выбор формы. Знаки компонентов игнорируются; при определении формы компоненты с абсолютным значением меньше 1e-9 считаются нулевыми. Если все компоненты равны нулю, создаётся сфера радиуса max(radius, 0). Значение (0, h, 0) создаёт капсулу с центральным осевым отрезком длиной abs(h) и полной высотой abs(h) + 2 * max(radius, 0). Любое другое значение создаёт скруглённую коробку с основными размерами abs(size) и полными размерами abs(size) + 2 * max(radius, 0) по каждой оси.",
+            "ru": "Размеры фигуры до добавления радиуса и выбор формы. Знаки компонентов игнорируются; при определении формы компоненты с абсолютным значением меньше 1e-9 считаются нулевыми. Если все компоненты равны нулю, создаётся сфера радиуса max(radius, 0). Значение (0, h, 0) создаёт капсулу с центральным осевым отрезком длиной abs(h) и полной высотой abs(h) + 2 * max(radius, 0). Любое другое значение создаёт скруглённую коробку с размерами ядра abs(size) и полными размерами abs(size) + 2 * max(radius, 0) по каждой оси.",
             "tr": "Temel boyutları ve şekil türünü belirler. Bileşenlerin işaretleri yok sayılır; şekil sınıflandırılırken mutlak değeri 1e-9'dan küçük bileşenler sıfır kabul edilir. Tüm bileşenler sıfırsa yarıçapı max(radius, 0) olan bir küre oluşur. (0, h, 0) değeri, merkez eksen parçasının uzunluğu abs(h) ve toplam yüksekliği abs(h) + 2 * max(radius, 0) olan bir kapsül oluşturur. Diğer değerler, çekirdek boyutları abs(size) ve her eksendeki toplam boyutları abs(size) + 2 * max(radius, 0) olan yuvarlatılmış bir kutu oluşturur.",
-            "uk": "Основні розміри та вибір форми. Знаки компонентів ігноруються; під час визначення форми компоненти з абсолютним значенням менше 1e-9 вважаються нульовими. Якщо всі компоненти дорівнюють нулю, створюється сфера радіуса max(radius, 0). Значення (0, h, 0) створює капсулу з центральним осьовим відрізком завдовжки abs(h) і повною висотою abs(h) + 2 * max(radius, 0). Будь-яке інше значення створює заокруглену коробку з основними розмірами abs(size) і повними розмірами abs(size) + 2 * max(radius, 0) уздовж кожної осі."
+            "uk": "Розміри фігури до додавання радіуса та вибір форми. Знаки компонентів ігноруються; під час визначення форми компоненти з абсолютним значенням менше 1e-9 вважаються нульовими. Якщо всі компоненти дорівнюють нулю, створюється сфера радіуса max(radius, 0). Значення (0, h, 0) створює капсулу з центральним осьовим відрізком завдовжки abs(h) і повною висотою abs(h) + 2 * max(radius, 0). Будь-яке інше значення створює заокруглену коробку з розмірами ядра abs(size) і повними розмірами abs(size) + 2 * max(radius, 0) уздовж кожної осі."
           },
           "value_type": "Vec3",
           "advanced": true
@@ -9009,7 +9009,7 @@
             "ko": "중력의 세기(m/s²). 기본값은 9.8이며 0이면 중력을 끕니다. 매 업데이트마다 정규화한 gravity_direction × gravity × 100 / fps²를 velocity에 더합니다. fps는 pyxel.init의 설정값이며 월드 단위 100이 1m입니다. mesh가 없고 mass > 0인 콜라이더에만 적용됩니다. 음수는 방향을 반전합니다. pyxel.init 전에는 fps가 30입니다.",
             "pt": "Intensidade da gravidade em m/s². Padrão: 9.8; 0 desativa a gravidade. Cada atualização soma a velocity gravity_direction normalizada × gravity × 100 / fps², usando fps de pyxel.init e 100 unidades do mundo por metro. Aplica-se apenas sem mesh e com mass > 0. Um valor negativo inverte a direção. Antes de pyxel.init, fps é 30.",
             "ru": "Сила гравитационного ускорения в м/с². По умолчанию 9.8; 0 отключает гравитацию. При каждом обновлении к velocity прибавляется нормализованный gravity_direction × gravity × 100 / fps². fps задаётся в pyxel.init; 100 мировых единиц соответствуют метру. Действует только без mesh и при mass > 0. Отрицательное значение меняет направление на обратное. До pyxel.init значение fps равно 30.",
-            "tr": "Yerçekimi ivmesinin büyüklüğü (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır. Her güncellemede velocity değerine normalize edilmiş gravity_direction × gravity × 100 / fps² eklenir. fps, pyxel.init ayarıdır; 100 dünya birimi bir metredir. Yalnızca mesh olmayan ve mass > 0 olan çarpıştırıcılara uygulanır. Negatif değer yönü tersine çevirir. pyxel.init öncesinde fps 30 olur.",
+            "tr": "İşaretli yerçekimi ivmesi (m/s²). Varsayılan 9.8; 0 yerçekimini kapatır. Her güncellemede velocity değerine normalize edilmiş gravity_direction × gravity × 100 / fps² eklenir. fps, pyxel.init ayarıdır; 100 dünya birimi bir metredir. Yalnızca mesh olmayan ve mass > 0 olan çarpıştırıcılara uygulanır. Negatif değer yönü tersine çevirir. pyxel.init öncesinde fps 30 olur.",
             "uk": "Величина гравітаційного прискорення в м/с². Типово 9.8; 0 вимикає гравітацію. Кожне оновлення додає до velocity нормалізований gravity_direction × gravity × 100 / fps². fps задається в pyxel.init; 100 світових одиниць відповідають метру. Діє лише без mesh і за mass > 0. Від'ємне значення змінює напрямок на протилежний. До pyxel.init значення fps дорівнює 30."
           },
           "value_type": "float",
@@ -9043,7 +9043,7 @@
           "description": {
             "en": "Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
             "cn": "线性：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
-            "de": "Linear: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
+            "de": "Dämpfung der linearen Geschwindigkeit pro Sekunde. Standardwert ist 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
             "es": "Lineal: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
             "fr": "Linéaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
             "it": "Lineare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
@@ -9064,7 +9064,7 @@
           "description": {
             "en": "Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
             "cn": "角速度：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
-            "de": "Winkel: Dämpfung pro Sekunde, Standard 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
+            "de": "Dämpfung der Winkelgeschwindigkeit pro Sekunde. Standardwert ist 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
             "es": "Angular: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
             "fr": "Angulaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
             "it": "Angolare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",

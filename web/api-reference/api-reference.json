@@ -418,14 +418,14 @@
               "type": "int",
               "description": {
                 "en": "Screen capture scale factor. Defaults to 2.",
-                "cn": "屏幕截图缩放倍率。默认为 2。",
+                "cn": "屏幕截图和录屏的缩放倍率。默认为 2。",
                 "de": "Bildschirmaufnahme-Skalierungsfaktor. Standard ist 2.",
-                "es": "Factor de escala de captura. Por defecto es 2.",
-                "fr": "Facteur d'échelle de capture. Par défaut : 2.",
-                "it": "Fattore di scala della cattura. Il valore predefinito è 2.",
+                "es": "Factor de escala de la captura de pantalla. Por defecto es 2.",
+                "fr": "Facteur d'échelle de la capture d'écran. Par défaut : 2.",
+                "it": "Fattore di scala della cattura dello schermo. Il valore predefinito è 2.",
                 "ja": "画面キャプチャの倍率。デフォルトは 2。",
                 "ko": "화면 캡처 배율. 기본값은 2입니다.",
-                "pt": "Fator de escala de captura. O padrão é 2.",
+                "pt": "Fator de escala da captura de tela. O padrão é 2.",
                 "ru": "Масштаб захвата экрана. По умолчанию 2.",
                 "tr": "Ekran yakalama ölçek faktörü. Varsayılan 2.",
                 "uk": "Масштаб захоплення екрана. За замовчуванням 2."
@@ -435,18 +435,18 @@
               "name": "capture_sec",
               "type": "int",
               "description": {
-                "en": "Maximum recording time for screen capture video. Defaults to 10.",
-                "cn": "屏幕录制视频的最大录制时间。默认为 10。",
-                "de": "Maximale Aufnahmezeit für Bildschirmvideo. Standard ist 10.",
-                "es": "Tiempo máximo de grabación de video. Por defecto es 10.",
-                "fr": "Durée maximale d'enregistrement vidéo. Par défaut : 10.",
-                "it": "Tempo massimo di registrazione video. Il valore predefinito è 10.",
-                "ja": "画面キャプチャ動画の最大録画時間。デフォルトは 10。",
-                "ko": "화면 캡처 영상 최대 녹화 시간. 기본값은 10입니다.",
-                "pt": "Tempo máximo de gravação de vídeo. O padrão é 10.",
-                "ru": "Максимальное время записи видео. По умолчанию 10.",
-                "tr": "Ekran kaydı maksimum süresi. Varsayılan 10.",
-                "uk": "Максимальний час запису відео. За замовчуванням 10."
+                "en": "Maximum screen recording duration in seconds. Defaults to 10.",
+                "cn": "屏幕录制的最长时间，单位为秒。默认为 10。",
+                "de": "Maximale Dauer einer Bildschirmaufnahme in Sekunden. Standard ist 10.",
+                "es": "Duración máxima de la grabación de pantalla en segundos. Por defecto es 10.",
+                "fr": "Durée maximale de l'enregistrement de l'écran en secondes. Par défaut : 10.",
+                "it": "Durata massima della registrazione dello schermo in secondi. Il valore predefinito è 10.",
+                "ja": "画面キャプチャ動画の最大録画時間（秒）。デフォルトは 10。",
+                "ko": "최대 화면 녹화 시간(초 단위)입니다. 기본값은 10입니다.",
+                "pt": "Duração máxima da gravação de tela em segundos. O padrão é 10.",
+                "ru": "Максимальная длительность записи экрана в секундах. По умолчанию 10.",
+                "tr": "Ekran kaydının saniye cinsinden en uzun süresi. Varsayılan 10.",
+                "uk": "Максимальна тривалість запису екрана в секундах. За замовчуванням 10."
               }
             },
             {
@@ -2496,7 +2496,7 @@
                 "ko": "숫자 키패드",
                 "pt": "Teclado numérico",
                 "ru": "Цифровая клавиатура",
-                "tr": "Sayısal tuşlar",
+                "tr": "Sayısal tuş takımı",
                 "uk": "Цифрова клавіатура"
               },
               "constants": [
@@ -2882,18 +2882,18 @@
           "type": "variable",
           "signature": "colors",
           "description": {
-            "en": "List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.",
-            "cn": "调色板的显示颜色列表，共 1～256 色，每种颜色用 24 位数值指定。要替换整个调色板，请将列表赋给 pyxel.colors[:]。将列表直接赋给 pyxel.colors 不会更新调色板。",
-            "de": "Liste mit 1–256 Anzeigefarben der Palette, jeweils als 24-Bit-Wert angegeben. Um die gesamte Palette zu ersetzen, weisen Sie pyxel.colors[:] eine Liste zu. Wenn Sie pyxel.colors eine Liste zuweisen, wird die Palette nicht aktualisiert.",
-            "es": "Lista de 1-256 colores de visualización de la paleta, cada uno especificado como un valor de 24 bits. Para sustituir toda la paleta, asigne una lista a pyxel.colors[:]. Asignar una lista a pyxel.colors no actualiza la paleta.",
-            "fr": "Liste de 1-256 couleurs d'affichage de la palette, chacune définie par une valeur sur 24 bits. Pour remplacer toute la palette, affectez une liste à pyxel.colors[:]. Affecter une liste à pyxel.colors ne modifie pas la palette.",
-            "it": "Lista di 1-256 colori di visualizzazione della tavolozza, ciascuno specificato come valore a 24 bit. Per sostituire l'intera tavolozza, assegnare un elenco a pyxel.colors[:]. Assegnare un elenco a pyxel.colors non aggiorna la tavolozza.",
-            "ja": "パレットの表示色リスト（1〜256 色）。各色は 24 ビット数値で指定する。パレット全体を置き換えるには、pyxel.colors[:] にリストを代入する。pyxel.colors にリストを代入しても、Pyxel のパレットは更新されない。",
-            "ko": "팔레트의 표시색 리스트로, 1~256색을 포함합니다. 각 색은 24비트 수치로 지정합니다. 팔레트 전체를 바꾸려면 pyxel.colors[:]에 리스트를 대입하세요. pyxel.colors에 리스트를 대입해도 팔레트는 바뀌지 않습니다.",
-            "pt": "Lista de 1-256 cores de exibição da paleta, cada uma especificada como um valor de 24 bits. Para substituir toda a paleta, atribua uma lista a pyxel.colors[:]. Atribuir uma lista a pyxel.colors não atualiza a paleta.",
-            "ru": "Список из 1–256 отображаемых цветов палитры, каждый задан 24-битным числом. Чтобы заменить всю палитру, присвойте pyxel.colors[:] список. Присваивание списка pyxel.colors не обновляет палитру.",
-            "tr": "Her biri 24 bitlik bir değerle belirtilen 1-256 palet görüntüleme renginin listesi. Paletin tamamını değiştirmek için pyxel.colors[:] ifadesine bir liste atayın. pyxel.colors ifadesine liste atamak paleti güncellemez.",
-            "uk": "Список із 1–256 кольорів палітри для відображення, кожен заданий 24-бітним числом. Щоб замінити всю палітру, присвойте pyxel.colors[:] список. Присвоєння списку pyxel.colors не оновлює палітру."
+            "en": "The default palette has 16 colors (0-15). List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.",
+            "cn": "默认调色板有 16 种颜色 (0-15)。调色板的显示颜色列表，共 1～256 色，每种颜色用 24 位数值指定。要替换整个调色板，请将列表赋给 pyxel.colors[:]。将列表直接赋给 pyxel.colors 不会更新调色板。",
+            "de": "Die Standardpalette enthält 16 Farben (0-15). Liste mit 1–256 Anzeigefarben der Palette, jeweils als 24-Bit-Wert angegeben. Um die gesamte Palette zu ersetzen, weisen Sie pyxel.colors[:] eine Liste zu. Wenn Sie pyxel.colors eine Liste zuweisen, wird die Palette nicht aktualisiert.",
+            "es": "La paleta predeterminada tiene 16 colores (0-15). Lista de 1-256 colores de visualización de la paleta, cada uno especificado como un valor de 24 bits. Para sustituir toda la paleta, asigne una lista a pyxel.colors[:]. Asignar una lista a pyxel.colors no actualiza la paleta.",
+            "fr": "La palette par défaut contient 16 couleurs (0-15). Liste de 1-256 couleurs d'affichage de la palette, chacune définie par une valeur sur 24 bits. Pour remplacer toute la palette, affectez une liste à pyxel.colors[:]. Affecter une liste à pyxel.colors ne modifie pas la palette.",
+            "it": "La tavolozza predefinita contiene 16 colori (0-15). Lista di 1-256 colori di visualizzazione della tavolozza, ciascuno specificato come valore a 24 bit. Per sostituire l'intera tavolozza, assegnare un elenco a pyxel.colors[:]. Assegnare un elenco a pyxel.colors non aggiorna la tavolozza.",
+            "ja": "初期パレットの色番号は 0〜15。パレットの表示色リスト（1〜256 色）。各色は 24 ビット数値で指定する。パレット全体を置き換えるには、pyxel.colors[:] にリストを代入する。pyxel.colors にリストを代入しても、Pyxel のパレットは更新されない。",
+            "ko": "기본 팔레트의 색상 번호는 0~15입니다. 팔레트의 표시색 리스트로, 1~256색을 포함합니다. 각 색은 24비트 수치로 지정합니다. 팔레트 전체를 바꾸려면 pyxel.colors[:]에 리스트를 대입하세요. pyxel.colors에 리스트를 대입해도 팔레트는 바뀌지 않습니다.",
+            "pt": "A paleta padrão tem 16 cores (0-15). Lista de 1-256 cores de exibição da paleta, cada uma especificada como um valor de 24 bits. Para substituir toda a paleta, atribua uma lista a pyxel.colors[:]. Atribuir uma lista a pyxel.colors não atualiza a paleta.",
+            "ru": "В стандартной палитре 16 цветов (0-15). Список из 1–256 отображаемых цветов палитры, каждый задан 24-битным числом. Чтобы заменить всю палитру, присвойте pyxel.colors[:] список. Присваивание списка pyxel.colors не обновляет палитру.",
+            "tr": "Varsayılan palette 16 renk (0-15) bulunur. Her biri 24 bitlik bir değerle belirtilen 1-256 palet görüntüleme renginin listesi. Paletin tamamını değiştirmek için pyxel.colors[:] ifadesine bir liste atayın. pyxel.colors ifadesine liste atamak paleti güncellemez.",
+            "uk": "Стандартна палітра містить 16 кольорів (0-15). Список із 1–256 кольорів палітри для відображення, кожен заданий 24-бітним числом. Щоб замінити всю палітру, присвойте pyxel.colors[:] список. Присвоєння списку pyxel.colors не оновлює палітру."
           },
           "value_type": "list[int]",
           "examples": [
@@ -4689,7 +4689,7 @@
             "pt": "Copia a região de tamanho (w, h) de (u, v) do banco de imagens img (0-2 ou instância Image) para (x, y). Valores negativos de w/h espelham a imagem. colkey define a cor transparente. rotate e scale aplicam transformações.",
             "ru": "Копирует область размером (w, h) из (u, v) банка изображений img (0–2 или экземпляр Image) в (x, y). Отрицательные w/h отражают изображение. colkey задаёт прозрачный цвет. rotate и scale применяют трансформации.",
             "tr": "img görüntü bankasının (0-2 veya Image örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
-            "uk": "Копіює область розміром (w, h) з (u, v) банку зображень img (0–2 або екземпляр Image) у (x, y). Від'ємні w/h дзеркально відображають. colkey задає прозорий колір. rotate та scale застосовують трансформації."
+            "uk": "Копіює область розміром (w, h) з (u, v) банку зображень img (0–2 або екземпляр Image) у (x, y). Від'ємне w віддзеркалює зображення по горизонталі, а від'ємне h — по вертикалі. colkey задає прозорий колір. rotate та scale застосовують трансформації."
           },
           "params": [
             {
@@ -4797,7 +4797,7 @@
                 "pt": "Largura (negativo para inverter)",
                 "ru": "Ширина (отрицательная для отражения)",
                 "tr": "Genişlik (negatifle çevir)",
-                "uk": "Ширина (від'ємна для відображення)"
+                "uk": "Ширина (від'ємна для віддзеркалення по горизонталі)"
               }
             },
             {
@@ -4815,7 +4815,7 @@
                 "pt": "Altura (negativo para inverter)",
                 "ru": "Высота (отрицательная для отражения)",
                 "tr": "Yükseklik (negatifle çevir)",
-                "uk": "Висота (від'ємна для відображення)"
+                "uk": "Висота (від'ємна для віддзеркалення по вертикалі)"
               }
             },
             {
@@ -4858,18 +4858,18 @@
               "name": "scale",
               "type": "float",
               "description": {
-                "en": "Scale factor (centered on the copy region). Defaults to 1.",
-                "cn": "缩放倍率 (以复制区域为中心)。默认为 1。",
-                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
-                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1.",
-                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1.",
-                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1.",
-                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1。",
-                "ko": "배율 (복사 영역 중심 기준). 기본값은 1입니다.",
-                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1.",
-                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1.",
-                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1.",
-                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
+                "en": "Scale factor (centered on the copy region). Defaults to 1 (original size).",
+                "cn": "缩放倍率 (以复制区域为中心)。默认为 1 (原始大小)。",
+                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1 (Originalgröße).",
+                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1 (tamaño original).",
+                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1 (taille d'origine).",
+                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1 (dimensioni originali).",
+                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1（等倍）。",
+                "ko": "배율 (복사 영역 중심 기준). 기본값은 1(원본 크기)입니다.",
+                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1 (tamanho original).",
+                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1 (исходный размер).",
+                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1 (özgün boyut).",
+                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1 (початковий розмір)."
               }
             }
           ],
@@ -4894,7 +4894,7 @@
             "pt": "Copia a região de tamanho (w, h) de (u, v) do tilemap tm (0-7 ou instância Tilemap) para (x, y). Cada tile tem 8x8 pixels armazenado como (image_tx, image_ty). Valores negativos de w/h espelham a imagem. colkey define a cor transparente. rotate e scale aplicam transformações.",
             "ru": "Копирует область размером (w, h) из (u, v) тайловой карты tm (0–7 или экземпляр Tilemap) в (x, y). Каждый тайл — 8x8 пикселей, хранится как (image_tx, image_ty). Отрицательные w/h отражают изображение. colkey задаёт прозрачный цвет. rotate и scale применяют трансформации.",
             "tr": "tm tilemap'inin (0-7 veya Tilemap örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Her karo 8x8 pikseldir ve (image_tx, image_ty) olarak saklanır. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
-            "uk": "Копіює область розміром (w, h) з (u, v) тайлової карти tm (0–7 або екземпляр Tilemap) у (x, y). Кожен тайл — 8x8 пікселів, зберігається як (image_tx, image_ty). Від'ємні w/h дзеркально відображають. colkey задає прозорий колір. rotate та scale застосовують трансформації."
+            "uk": "Копіює область розміром (w, h) з (u, v) тайлової карти tm (0–7 або екземпляр Tilemap) у (x, y). Кожен тайл — 8x8 пікселів, зберігається як (image_tx, image_ty). Від'ємне w віддзеркалює зображення по горизонталі, а від'ємне h — по вертикалі. colkey задає прозорий колір. rotate та scale застосовують трансформації."
           },
           "params": [
             {
@@ -5063,18 +5063,18 @@
               "name": "scale",
               "type": "float",
               "description": {
-                "en": "Scale factor (centered on the copy region). Defaults to 1.",
-                "cn": "缩放倍率 (以复制区域为中心)。默认为 1。",
-                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
-                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1.",
-                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1.",
-                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1.",
-                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1。",
-                "ko": "배율 (복사 영역 중심 기준). 기본값은 1입니다.",
-                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1.",
-                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1.",
-                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1.",
-                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
+                "en": "Scale factor (centered on the copy region). Defaults to 1 (original size).",
+                "cn": "缩放倍率 (以复制区域为中心)。默认为 1 (原始大小)。",
+                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1 (Originalgröße).",
+                "es": "Factor de escala (centrado en la región de copia). Por defecto es 1 (tamaño original).",
+                "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1 (taille d'origine).",
+                "it": "Fattore di scala (centrato sulla regione di copia). Il valore predefinito è 1 (dimensioni originali).",
+                "ja": "拡大縮小率（コピー領域の中心を基準）。デフォルトは 1（等倍）。",
+                "ko": "배율 (복사 영역 중심 기준). 기본값은 1(원본 크기)입니다.",
+                "pt": "Fator de escala (centrado na região de cópia). O padrão é 1 (tamanho original).",
+                "ru": "Масштаб (относительно центра копируемой области). По умолчанию 1 (исходный размер).",
+                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde). Varsayılan 1 (özgün boyut).",
+                "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1 (початковий розмір)."
               }
             }
           ],
@@ -5089,17 +5089,17 @@
           "signature": "blt3d(x, y, w, h, img, pos, rot, fov=60.0, colkey=None)",
           "description": {
             "en": "Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
-            "cn": "将图像库 img (0～2 或 Image 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 设置视野角度。colkey 指定透明色。",
+            "cn": "将图像库 img (0～2 或 Image 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 以度为单位设置视野角。colkey 指定透明色。",
             "de": "Zeichnet die Bildbank img (0-2 oder Image-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). pos ist die Kameraposition, wobei x, y den 2D-Koordinaten entsprechen und z die Höhe ist. rot ist die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
-            "es": "Dibuja el banco de imágenes img (0-2 o instancia de Image) con proyección de perspectiva en el rectángulo (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
-            "fr": "Dessine la banque d'images img (0-2 ou instance Image) avec projection en perspective dans le rectangle (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
-            "it": "Disegna il banco immagini img (0-2 o istanza Image) con proiezione prospettica nel rettangolo (x, y, w, h). pos è la posizione della camera dove x, y corrispondono alle coordinate 2D e z è l'altitudine. rot è la rotazione in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
-            "ja": "イメージバンク img（0〜2 または Image インスタンス）を透視投影で画面矩形 (x, y, w, h) に描画する。pos はカメラ位置で、x, y は 2D 座標と一致し、z は高さ。rot は回転角度（度）。fov は視野角。colkey で透明色を指定。",
-            "ko": "이미지 뱅크 img (0~2 또는 Image 인스턴스)를 원근 투영으로 화면 사각형 (x, y, w, h)에 그립니다. pos는 카메라 위치로 x, y는 2D 좌표와 일치하고 z는 높이입니다. rot는 회전 각도 (도 단위)입니다. fov는 시야각입니다. colkey로 투명색을 지정합니다.",
-            "pt": "Desenha o banco de imagens img (0-2 ou instância Image) com projeção de perspectiva no retângulo (x, y, w, h). pos é a posição da câmera onde x, y correspondem às coordenadas 2D e z é a altitude. rot é a rotação em graus. fov define o campo de visão. colkey define a cor transparente.",
-            "ru": "Рисует банк изображений img (0–2 или экземпляр Image) с перспективной проекцией в экранный прямоугольник (x, y, w, h). pos — позиция камеры, где x, y совпадают с 2D-координатами, а z — высота. rot — углы поворота в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
-            "tr": "img görüntü bankasını (0-2 veya Image örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
-            "uk": "Малює банк зображень img (0–2 або екземпляр Image) з перспективною проєкцією в екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
+            "es": "Dibuja el banco de imágenes img (0-2 o instancia de Image) con proyección de perspectiva en el rectángulo de la pantalla (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión en grados. colkey establece el color transparente.",
+            "fr": "Dessine la banque d'images img (0-2 ou instance Image) avec projection en perspective dans le rectangle de l'écran (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision en degrés. colkey définit la couleur transparente.",
+            "it": "Disegna il banco immagini img (0-2 o istanza Image) con proiezione prospettica nel rettangolo dello schermo (x, y, w, h). pos è la posizione della camera dove x, y corrispondono alle coordinate 2D e z è l'altitudine. rot è la rotazione in gradi. fov imposta il campo visivo in gradi. colkey imposta il colore trasparente.",
+            "ja": "イメージバンク img（0〜2 または Image インスタンス）を透視投影で画面矩形 (x, y, w, h) に描画する。pos はカメラ位置で、x, y は 2D 座標と一致し、z は高さ。rot は回転角度（度）。fov は視野角（度）。colkey で透明色を指定。",
+            "ko": "이미지 뱅크 img (0~2 또는 Image 인스턴스)를 원근 투영으로 화면 사각형 (x, y, w, h)에 그립니다. pos는 카메라 위치로 x, y는 2D 좌표와 일치하고 z는 높이입니다. rot는 회전 각도 (도 단위)입니다. fov는 도 단위의 시야각입니다. colkey로 투명색을 지정합니다.",
+            "pt": "Desenha o banco de imagens img (0-2 ou instância Image) com projeção de perspectiva no retângulo da tela (x, y, w, h). pos é a posição da câmera onde x, y correspondem às coordenadas 2D e z é a altitude. rot é a rotação em graus. fov define o campo de visão em graus. colkey define a cor transparente.",
+            "ru": "Рисует банк изображений img (0–2 или экземпляр Image) с перспективной проекцией в экранный прямоугольник (x, y, w, h). pos — позиция камеры, где x, y совпадают с 2D-координатами, а z — высота. rot — углы поворота в градусах. fov задаёт угол обзора в градусах. colkey задаёт прозрачный цвет.",
+            "tr": "img görüntü bankasını (0-2 veya Image örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş açısını derece cinsinden belirler. colkey saydam rengi belirler.",
+            "uk": "Малює банк зображень img (0–2 або екземпляр Image) з перспективною проєкцією в екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду в градусах. colkey задає прозорий колір."
           },
           "params": [
             {
@@ -5276,17 +5276,17 @@
           "signature": "bltm3d(x, y, w, h, tm, pos, rot, fov=60.0, colkey=None)",
           "description": {
             "en": "Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
-            "cn": "将瓦片地图 tm (0～7 或 Tilemap 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 设置视野角度。colkey 指定透明色。",
+            "cn": "将瓦片地图 tm (0～7 或 Tilemap 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 以度为单位设置视野角。colkey 指定透明色。",
             "de": "Zeichnet die Tilemap tm (0-7 oder Tilemap-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). pos ist die Kameraposition, wobei x, y den 2D-Koordinaten entsprechen und z die Höhe ist. rot ist die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
-            "es": "Dibuja el tilemap tm (0-7 o instancia de Tilemap) con proyección de perspectiva en el rectángulo (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
-            "fr": "Dessine la tilemap tm (0-7 ou instance Tilemap) avec projection en perspective dans le rectangle (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
-            "it": "Disegna la tilemap tm (0-7 o istanza Tilemap) con proiezione prospettica nel rettangolo (x, y, w, h). pos è la posizione della camera dove x, y corrispondono alle coordinate 2D e z è l'altitudine. rot è la rotazione in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
-            "ja": "タイルマップ tm（0〜7 または Tilemap インスタンス）を透視投影で画面矩形 (x, y, w, h) に描画する。pos はカメラ位置で、x, y は 2D 座標と一致し、z は高さ。rot は回転角度（度）。fov は視野角。colkey で透明色を指定。",
-            "ko": "타일맵 tm (0~7 또는 Tilemap 인스턴스)를 원근 투영으로 화면 사각형 (x, y, w, h)에 그립니다. pos는 카메라 위치로 x, y는 2D 좌표와 일치하고 z는 높이입니다. rot는 회전 각도 (도 단위)입니다. fov는 시야각입니다. colkey로 투명색을 지정합니다.",
-            "pt": "Desenha o tilemap tm (0-7 ou instância Tilemap) com projeção de perspectiva no retângulo (x, y, w, h). pos é a posição da câmera onde x, y correspondem às coordenadas 2D e z é a altitude. rot é a rotação em graus. fov define o campo de visão. colkey define a cor transparente.",
-            "ru": "Рисует тайловую карту tm (0–7 или экземпляр Tilemap) с перспективной проекцией в экранный прямоугольник (x, y, w, h). pos — позиция камеры, где x, y совпадают с 2D-координатами, а z — высота. rot — углы поворота в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
-            "tr": "tm tilemap'ini (0-7 veya Tilemap örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
-            "uk": "Малює тайлову карту tm (0–7 або екземпляр Tilemap) з перспективною проєкцією в екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
+            "es": "Dibuja el tilemap tm (0-7 o instancia de Tilemap) con proyección de perspectiva en el rectángulo de la pantalla (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión en grados. colkey establece el color transparente.",
+            "fr": "Dessine la tilemap tm (0-7 ou instance Tilemap) avec projection en perspective dans le rectangle de l'écran (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision en degrés. colkey définit la couleur transparente.",
+            "it": "Disegna la tilemap tm (0-7 o istanza Tilemap) con proiezione prospettica nel rettangolo dello schermo (x, y, w, h). pos è la posizione della camera dove x, y corrispondono alle coordinate 2D e z è l'altitudine. rot è la rotazione in gradi. fov imposta il campo visivo in gradi. colkey imposta il colore trasparente.",
+            "ja": "タイルマップ tm（0〜7 または Tilemap インスタンス）を透視投影で画面矩形 (x, y, w, h) に描画する。pos はカメラ位置で、x, y は 2D 座標と一致し、z は高さ。rot は回転角度（度）。fov は視野角（度）。colkey で透明色を指定。",
+            "ko": "타일맵 tm (0~7 또는 Tilemap 인스턴스)를 원근 투영으로 화면 사각형 (x, y, w, h)에 그립니다. pos는 카메라 위치로 x, y는 2D 좌표와 일치하고 z는 높이입니다. rot는 회전 각도 (도 단위)입니다. fov는 도 단위의 시야각입니다. colkey로 투명색을 지정합니다.",
+            "pt": "Desenha o tilemap tm (0-7 ou instância Tilemap) com projeção de perspectiva no retângulo da tela (x, y, w, h). pos é a posição da câmera onde x, y correspondem às coordenadas 2D e z é a altitude. rot é a rotação em graus. fov define o campo de visão em graus. colkey define a cor transparente.",
+            "ru": "Рисует тайловую карту tm (0–7 или экземпляр Tilemap) с перспективной проекцией в экранный прямоугольник (x, y, w, h). pos — позиция камеры, где x, y совпадают с 2D-координатами, а z — высота. rot — углы поворота в градусах. fov задаёт угол обзора в градусах. colkey задаёт прозрачный цвет.",
+            "tr": "tm tilemap'ini (0-7 veya Tilemap örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş açısını derece cinsinden belirler. colkey saydam rengi belirler.",
+            "uk": "Малює тайлову карту tm (0–7 або екземпляр Tilemap) з перспективною проєкцією в екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду в градусах. colkey задає прозорий колір."
           },
           "params": [
             {
@@ -5635,9 +5635,9 @@
                   "ja": "1 — 紺 (#2b335f)",
                   "ko": "1 — 남색 (#2b335f)",
                   "pt": "1 — Azul-marinho (#2b335f)",
-                  "ru": "1 — Синий (#2b335f)",
+                  "ru": "1 — Тёмно-синий (navy) (#2b335f)",
                   "tr": "1 — Lacivert (#2b335f)",
-                  "uk": "1 — Темно-синій (#2b335f)"
+                  "uk": "1 — Темно-синій (navy) (#2b335f)"
                 },
                 {
                   "en": "2 — Purple (#7e2072)",
@@ -5869,74 +5869,74 @@
               ],
               "details": [
                 {
-                  "en": "16 — Number of palette colors",
-                  "cn": "16 — 调色板颜色数",
-                  "de": "16 — Anzahl der Palettenfarben",
-                  "es": "16 — Número de colores de paleta",
-                  "fr": "16 — Nombre de couleurs de palette",
-                  "it": "16 — Numero di colori della palette",
-                  "ja": "16 — パレットの色数",
-                  "ko": "16 — 팔레트 색상 수",
-                  "pt": "16 — Número de cores da paleta",
-                  "ru": "16 — Количество цветов палитры",
-                  "tr": "16 — Palet renk sayısı",
-                  "uk": "16 — Кількість кольорів палітри"
+                  "en": "16 — Initial number of palette colors (0-15)",
+                  "cn": "16 — 初始调色板颜色数 (0-15)",
+                  "de": "16 — Anzahl der Palettenfarben (bei der Initialisierung) (0-15)",
+                  "es": "16 — Número de colores de paleta (al inicializar) (0-15)",
+                  "fr": "16 — Nombre de couleurs de palette (à l'initialisation) (0-15)",
+                  "it": "16 — Numero di colori della palette (all'inizializzazione) (0-15)",
+                  "ja": "16 — 初期状態のパレットの色数 (0-15)",
+                  "ko": "16 — 초기 팔레트 색상 수 (0-15)",
+                  "pt": "16 — Número de cores da paleta (na inicialização) (0-15)",
+                  "ru": "16 — Количество цветов палитры (при инициализации) (0-15)",
+                  "tr": "16 — Başlangıçtaki palet renk sayısı (0-15)",
+                  "uk": "16 — Кількість кольорів палітри (під час ініціалізації) (0-15)"
                 },
                 {
-                  "en": "3 — Number of image banks (0-2)",
-                  "cn": "3 — 图像库数量 (0-2)",
-                  "de": "3 — Anzahl der Bildbanken (0-2)",
-                  "es": "3 — Número de bancos de imágenes (0-2)",
-                  "fr": "3 — Nombre de banques d'images (0-2)",
-                  "it": "3 — Numero di banchi immagini (0-2)",
-                  "ja": "3 — イメージバンク数 (0-2)",
-                  "ko": "3 — 이미지 뱅크 수 (0-2)",
-                  "pt": "3 — Número de bancos de imagens (0-2)",
-                  "ru": "3 — Количество банков изображений (0-2)",
-                  "tr": "3 — Görüntü bankası sayısı (0-2)",
-                  "uk": "3 — Кількість банків зображень (0-2)"
+                  "en": "3 — Initial number of image banks (0-2)",
+                  "cn": "3 — 初始图像库数量 (0-2)",
+                  "de": "3 — Anzahl der Bildbanken (bei der Initialisierung) (0-2)",
+                  "es": "3 — Número de bancos de imágenes (al inicializar) (0-2)",
+                  "fr": "3 — Nombre de banques d'images (à l'initialisation) (0-2)",
+                  "it": "3 — Numero di banchi immagini (all'inizializzazione) (0-2)",
+                  "ja": "3 — 初期状態のイメージバンク数 (0-2)",
+                  "ko": "3 — 초기 이미지 뱅크 수 (0-2)",
+                  "pt": "3 — Número de bancos de imagens (na inicialização) (0-2)",
+                  "ru": "3 — Количество банков изображений (при инициализации) (0-2)",
+                  "tr": "3 — Başlangıçtaki görüntü bankası sayısı (0-2)",
+                  "uk": "3 — Кількість банків зображень (під час ініціалізації) (0-2)"
                 },
                 {
-                  "en": "256 — Image width and height",
-                  "cn": "256 — 图像的宽度和高度",
-                  "de": "256 — Bildbreite und -höhe",
-                  "es": "256 — Ancho y alto de imagen",
-                  "fr": "256 — Largeur et hauteur d'image",
-                  "it": "256 — Larghezza e altezza dell'immagine",
-                  "ja": "256 — イメージの幅と高さ",
-                  "ko": "256 — 이미지의 너비와 높이",
-                  "pt": "256 — Largura e altura da imagem",
-                  "ru": "256 — Ширина и высота изображения",
-                  "tr": "256 — Görüntü genişliği ve yüksekliği",
-                  "uk": "256 — Ширина та висота зображення"
+                  "en": "256 — Initial image width and height",
+                  "cn": "256 — 初始图像的宽度和高度",
+                  "de": "256 — Bildbreite und -höhe (bei der Initialisierung)",
+                  "es": "256 — Ancho y alto de imagen (al inicializar)",
+                  "fr": "256 — Largeur et hauteur d'image (à l'initialisation)",
+                  "it": "256 — Larghezza e altezza dell'immagine (all'inizializzazione)",
+                  "ja": "256 — 初期状態のイメージの幅と高さ",
+                  "ko": "256 — 초기 이미지의 너비와 높이",
+                  "pt": "256 — Largura e altura da imagem (na inicialização)",
+                  "ru": "256 — Ширина и высота изображения (при инициализации)",
+                  "tr": "256 — Başlangıçtaki görüntü genişliği ve yüksekliği",
+                  "uk": "256 — Ширина та висота зображення (під час ініціалізації)"
                 },
                 {
-                  "en": "8 — Number of tilemaps (0-7)",
-                  "cn": "8 — 瓦片地图数量 (0-7)",
-                  "de": "8 — Anzahl der Tilemaps (0-7)",
-                  "es": "8 — Número de tilemaps (0-7)",
-                  "fr": "8 — Nombre de tilemaps (0-7)",
-                  "it": "8 — Numero di tilemap (0-7)",
-                  "ja": "8 — タイルマップ数 (0-7)",
-                  "ko": "8 — 타일맵 수 (0-7)",
-                  "pt": "8 — Número de tilemaps (0-7)",
-                  "ru": "8 — Количество тайловых карт (0-7)",
-                  "tr": "8 — Tilemap sayısı (0-7)",
-                  "uk": "8 — Кількість тайлових карт (0-7)"
+                  "en": "8 — Initial number of tilemaps (0-7)",
+                  "cn": "8 — 初始瓦片地图数量 (0-7)",
+                  "de": "8 — Anzahl der Tilemaps (bei der Initialisierung) (0-7)",
+                  "es": "8 — Número de tilemaps (al inicializar) (0-7)",
+                  "fr": "8 — Nombre de tilemaps (à l'initialisation) (0-7)",
+                  "it": "8 — Numero di tilemap (all'inizializzazione) (0-7)",
+                  "ja": "8 — 初期状態のタイルマップ数 (0-7)",
+                  "ko": "8 — 초기 타일맵 수 (0-7)",
+                  "pt": "8 — Número de tilemaps (na inicialização) (0-7)",
+                  "ru": "8 — Количество тайловых карт (при инициализации) (0-7)",
+                  "tr": "8 — Başlangıçtaki tilemap sayısı (0-7)",
+                  "uk": "8 — Кількість тайлових карт (під час ініціалізації) (0-7)"
                 },
                 {
-                  "en": "256 — Tilemap width and height",
-                  "cn": "256 — 瓦片地图的宽度和高度",
-                  "de": "256 — Tilemap-Breite und -Höhe",
-                  "es": "256 — Ancho y alto del tilemap",
-                  "fr": "256 — Largeur et hauteur de la tilemap",
-                  "it": "256 — Larghezza e altezza della tilemap",
-                  "ja": "256 — タイルマップの幅と高さ",
-                  "ko": "256 — 타일맵의 너비와 높이",
-                  "pt": "256 — Largura e altura do tilemap",
-                  "ru": "256 — Ширина и высота тайловой карты",
-                  "tr": "256 — Tilemap genişliği ve yüksekliği",
-                  "uk": "256 — Ширина та висота тайлової карти"
+                  "en": "256 — Initial tilemap width and height",
+                  "cn": "256 — 初始瓦片地图的宽度和高度",
+                  "de": "256 — Tilemap-Breite und -Höhe (bei der Initialisierung)",
+                  "es": "256 — Ancho y alto del tilemap (al inicializar)",
+                  "fr": "256 — Largeur et hauteur de la tilemap (à l'initialisation)",
+                  "it": "256 — Larghezza e altezza della tilemap (all'inizializzazione)",
+                  "ja": "256 — 初期状態のタイルマップの幅と高さ",
+                  "ko": "256 — 초기 타일맵의 너비와 높이",
+                  "pt": "256 — Largura e altura do tilemap (na inicialização)",
+                  "ru": "256 — Ширина и высота тайловой карты (при инициализации)",
+                  "tr": "256 — Başlangıçtaki tilemap genişliği ve yüksekliği",
+                  "uk": "256 — Ширина та висота тайлової карти (під час ініціалізації)"
                 },
                 {
                   "en": "8 — Tile size in pixels",
@@ -6757,60 +6757,60 @@
               ],
               "details": [
                 {
-                  "en": "4 — Number of audio channels (0-3)",
-                  "cn": "4 — 音频通道数量 (0-3)",
-                  "de": "4 — Anzahl der Audiokanäle (0-3)",
-                  "es": "4 — Número de canales de audio (0-3)",
-                  "fr": "4 — Nombre de canaux audio (0-3)",
-                  "it": "4 — Numero di canali audio (0-3)",
-                  "ja": "4 — オーディオチャンネル数 (0-3)",
-                  "ko": "4 — 오디오 채널 수 (0-3)",
-                  "pt": "4 — Número de canais de áudio (0-3)",
-                  "ru": "4 — Количество аудиоканалов (0-3)",
-                  "tr": "4 — Ses kanalı sayısı (0-3)",
-                  "uk": "4 — Кількість аудіоканалів (0-3)"
+                  "en": "4 — Initial number of audio channels (0-3)",
+                  "cn": "4 — 初始音频通道数量 (0-3)",
+                  "de": "4 — Anzahl der Audiokanäle (bei der Initialisierung) (0-3)",
+                  "es": "4 — Número de canales de audio (al inicializar) (0-3)",
+                  "fr": "4 — Nombre de canaux audio (à l'initialisation) (0-3)",
+                  "it": "4 — Numero di canali audio (all'inizializzazione) (0-3)",
+                  "ja": "4 — 初期状態のオーディオチャンネル数 (0-3)",
+                  "ko": "4 — 초기 오디오 채널 수 (0-3)",
+                  "pt": "4 — Número de canais de áudio (na inicialização) (0-3)",
+                  "ru": "4 — Количество аудиоканалов (при инициализации) (0-3)",
+                  "tr": "4 — Başlangıçtaki ses kanalı sayısı (0-3)",
+                  "uk": "4 — Кількість аудіоканалів (під час ініціалізації) (0-3)"
                 },
                 {
-                  "en": "4 — Number of tone types (0-3)",
-                  "cn": "4 — 音色类型数量 (0-3)",
-                  "de": "4 — Anzahl der Tontypen (0-3)",
-                  "es": "4 — Número de tipos de tono (0-3)",
-                  "fr": "4 — Nombre de types de timbre (0-3)",
-                  "it": "4 — Numero di tipi di tono (0-3)",
-                  "ja": "4 — トーン種類数 (0-3)",
-                  "ko": "4 — 톤 타입 수 (0-3)",
-                  "pt": "4 — Número de tipos de timbre (0-3)",
-                  "ru": "4 — Количество типов тембров (0-3)",
-                  "tr": "4 — Ton türü sayısı (0-3)",
-                  "uk": "4 — Кількість типів тембрів (0-3)"
+                  "en": "4 — Initial number of tone types (0-3)",
+                  "cn": "4 — 初始音色类型数量 (0-3)",
+                  "de": "4 — Anzahl der Tontypen (bei der Initialisierung) (0-3)",
+                  "es": "4 — Número de tipos de tono (al inicializar) (0-3)",
+                  "fr": "4 — Nombre de types de timbre (à l'initialisation) (0-3)",
+                  "it": "4 — Numero di tipi di tono (all'inizializzazione) (0-3)",
+                  "ja": "4 — 初期状態のトーン種類数 (0-3)",
+                  "ko": "4 — 초기 톤 타입 수 (0-3)",
+                  "pt": "4 — Número de tipos de timbre (na inicialização) (0-3)",
+                  "ru": "4 — Количество типов тембров (при инициализации) (0-3)",
+                  "tr": "4 — Başlangıçtaki ton türü sayısı (0-3)",
+                  "uk": "4 — Кількість типів тембрів (під час ініціалізації) (0-3)"
                 },
                 {
-                  "en": "64 — Number of sounds (0-63)",
-                  "cn": "64 — 声音数量 (0-63)",
-                  "de": "64 — Anzahl der Sounds (0-63)",
-                  "es": "64 — Número de sonidos (0-63)",
-                  "fr": "64 — Nombre de sons (0-63)",
-                  "it": "64 — Numero di suoni (0-63)",
-                  "ja": "64 — サウンド数 (0-63)",
-                  "ko": "64 — 사운드 수 (0-63)",
-                  "pt": "64 — Número de sons (0-63)",
-                  "ru": "64 — Количество звуков (0-63)",
-                  "tr": "64 — Ses sayısı (0-63)",
-                  "uk": "64 — Кількість звуків (0-63)"
+                  "en": "64 — Initial number of sounds (0-63)",
+                  "cn": "64 — 初始声音数量 (0-63)",
+                  "de": "64 — Anzahl der Sounds (bei der Initialisierung) (0-63)",
+                  "es": "64 — Número de sonidos (al inicializar) (0-63)",
+                  "fr": "64 — Nombre de sons (à l'initialisation) (0-63)",
+                  "it": "64 — Numero di suoni (all'inizializzazione) (0-63)",
+                  "ja": "64 — 初期状態のサウンド数 (0-63)",
+                  "ko": "64 — 초기 사운드 수 (0-63)",
+                  "pt": "64 — Número de sons (na inicialização) (0-63)",
+                  "ru": "64 — Количество звуков (при инициализации) (0-63)",
+                  "tr": "64 — Başlangıçtaki ses sayısı (0-63)",
+                  "uk": "64 — Кількість звуків (під час ініціалізації) (0-63)"
                 },
                 {
-                  "en": "8 — Number of music tracks (0-7)",
-                  "cn": "8 — 音乐轨道数量 (0-7)",
-                  "de": "8 — Anzahl der Musikstücke (0-7)",
-                  "es": "8 — Número de pistas de música (0-7)",
-                  "fr": "8 — Nombre de pistes musicales (0-7)",
-                  "it": "8 — Numero di tracce musicali (0-7)",
-                  "ja": "8 — ミュージック数 (0-7)",
-                  "ko": "8 — 뮤직 트랙 수 (0-7)",
-                  "pt": "8 — Número de faixas de música (0-7)",
-                  "ru": "8 — Количество музыкальных треков (0-7)",
-                  "tr": "8 — Müzik parçası sayısı (0-7)",
-                  "uk": "8 — Кількість музичних треків (0-7)"
+                  "en": "8 — Initial number of music tracks (0-7)",
+                  "cn": "8 — 初始音乐轨道数量 (0-7)",
+                  "de": "8 — Anzahl der Musikstücke (bei der Initialisierung) (0-7)",
+                  "es": "8 — Número de pistas de música (al inicializar) (0-7)",
+                  "fr": "8 — Nombre de pistes musicales (à l'initialisation) (0-7)",
+                  "it": "8 — Numero di tracce musicali (all'inizializzazione) (0-7)",
+                  "ja": "8 — 初期状態のミュージック数 (0-7)",
+                  "ko": "8 — 초기 뮤직 트랙 수 (0-7)",
+                  "pt": "8 — Número de faixas de música (na inicialização) (0-7)",
+                  "ru": "8 — Количество музыкальных треков (при инициализации) (0-7)",
+                  "tr": "8 — Başlangıçtaki müzik parçası sayısı (0-7)",
+                  "uk": "8 — Кількість музичних треків (під час ініціалізації) (0-7)"
                 }
               ]
             }
@@ -7187,7 +7187,7 @@
             "ko": "사분면을 고려하여 두 인수 y와 x의 아크탄젠트를 도 단위로 반환합니다.",
             "pt": "Retorna a arcotangente dos dois argumentos y e x em graus, levando em conta o quadrante.",
             "ru": "Возвращает арктангенс двух аргументов y и x в градусах с учётом квадранта.",
-            "tr": "y ve x için iki argümanlı ark tanjantı, bölgeyi dikkate alarak derece cinsinden döndürür.",
+            "tr": "y ve x için iki argümanlı ark tanjantı, (x, y) noktasının bulunduğu çeyreği dikkate alarak derece cinsinden döndürür.",
             "uk": "Повертає арктангенс двох аргументів y і x у градусах з урахуванням квадранта."
           },
           "params": [
@@ -8188,7 +8188,7 @@
             "ko": "Image 인스턴스는 그래픽 섹션의 모든 그리기 함수를 지원합니다. 화면이 아닌 이미지에 그립니다.",
             "pt": "As instâncias de Image suportam todas as funções de desenho da seção de Gráficos. Funcionam da mesma forma, mas desenham na imagem em vez da tela.",
             "ru": "Экземпляры Image поддерживают все функции рисования из раздела «Графика». Они работают так же, но рисуют на изображении вместо экрана.",
-            "tr": "Image örnekleri, Grafikler bölümündeki tüm çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekran yerine görüntü üzerine çizer.",
+            "tr": "Image örnekleri, Grafik bölümündeki tüm çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekran yerine görüntü üzerine çizer.",
             "uk": "Екземпляри Image підтримують усі функції малювання з розділу «Графіка». Вони працюють так само, але малюють на зображенні замість екрана."
           },
           "advanced": false
@@ -8483,18 +8483,18 @@
           "type": "variable",
           "signature": "Tilemap.imgsrc",
           "description": {
-            "en": "The image bank (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading.",
-            "cn": "瓦片地图引用的图像库 (0-2) 或 Image 实例。当此值为 Image 实例时，pyxel.save 会将引用保存为图像库 0。要在保存和加载时保留引用，请指定图像库编号。",
-            "de": "Die Bildbank (0-2) oder Image-Instanz, auf die die Tilemap verweist. Bei einer Image-Instanz speichert pyxel.save stattdessen einen Verweis auf Bildbank 0. Verwenden Sie eine Bildbanknummer, um den Verweis beim Speichern und Laden zu erhalten.",
-            "es": "El banco de imágenes (0-2) o la instancia de Image referenciada por el tilemap. Si este valor es una instancia de Image, pyxel.save guarda la referencia al banco de imágenes 0 en su lugar. Use un número de banco de imágenes para conservar la referencia al guardar y cargar.",
-            "fr": "La banque d'images (0-2) ou l'instance Image référencée par la tilemap. Si cette valeur est une instance Image, pyxel.save enregistre à la place une référence à la banque d'images 0. Utilisez un numéro de banque d'images pour préserver la référence lors de l'enregistrement et du chargement.",
-            "it": "Il banco immagini (0-2) o l'istanza Image a cui fa riferimento la tilemap. Se questo valore è un'istanza Image, pyxel.save salva invece un riferimento al banco immagini 0. Usare un numero di banco immagini per mantenere il riferimento durante il salvataggio e il caricamento.",
-            "ja": "タイルマップが参照するイメージバンク (0-2) または Image インスタンス。Image インスタンスの場合、pyxel.save は参照先をイメージバンク 0 として保存する。保存・読み込みで参照先を保持するには、イメージバンク番号を指定する。",
-            "ko": "타일맵이 참조하는 이미지 뱅크 (0-2) 또는 Image 인스턴스. 이 값이 Image 인스턴스이면 pyxel.save는 참조를 이미지 뱅크 0으로 저장합니다. 저장하고 불러올 때 참조를 유지하려면 이미지 뱅크 번호를 지정하세요.",
-            "pt": "O banco de imagens (0-2) ou a instância de Image referenciada pelo tilemap. Quando este valor é uma instância de Image, pyxel.save salva a referência ao banco de imagens 0 em seu lugar. Use um número de banco de imagens para preservar a referência ao salvar e carregar.",
-            "ru": "Банк изображений (0-2) или экземпляр Image, на который ссылается тайловая карта. Если это экземпляр Image, pyxel.save сохраняет вместо него ссылку на банк изображений 0. Укажите номер банка изображений, чтобы сохранить ссылку при сохранении и загрузке.",
-            "tr": "Tilemap'in referans aldığı görüntü bankası (0-2) veya Image örneği. Bu değer bir Image örneğiyse pyxel.save bunun yerine görüntü bankası 0 referansını kaydeder. Kaydetme ve yükleme sırasında referansı korumak için bir görüntü bankası numarası belirtin.",
-            "uk": "Банк зображень (0-2) або екземпляр Image, на який посилається тайлова карта. Якщо це екземпляр Image, pyxel.save зберігає натомість посилання на банк зображень 0. Укажіть номер банку зображень, щоб зберегти посилання під час збереження та завантаження."
+            "en": "The image bank number (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading.",
+            "cn": "瓦片地图引用的图像库编号 (0-2) 或 Image 实例。当此值为 Image 实例时，pyxel.save 会将引用保存为图像库 0。要在保存和加载时保留引用，请指定图像库编号。",
+            "de": "Die Nummer der Bildbank (0-2) oder die Image-Instanz, auf die die Tilemap verweist. Bei einer Image-Instanz speichert pyxel.save stattdessen einen Verweis auf Bildbank 0. Verwenden Sie eine Bildbanknummer, um den Verweis beim Speichern und Laden zu erhalten.",
+            "es": "Número del banco de imágenes (0-2) o instancia de Image a los que hace referencia el tilemap. Si este valor es una instancia de Image, pyxel.save guarda la referencia al banco de imágenes 0 en su lugar. Use un número de banco de imágenes para conservar la referencia al guardar y cargar.",
+            "fr": "Numéro de banque d'images (0-2) ou instance d'Image que la tilemap utilise. Si cette valeur est une instance Image, pyxel.save enregistre à la place une référence à la banque d'images 0. Utilisez un numéro de banque d'images pour préserver la référence lors de l'enregistrement et du chargement.",
+            "it": "Numero del banco immagini (0-2) o istanza di Image a cui fa riferimento la tilemap. Se questo valore è un'istanza Image, pyxel.save salva invece un riferimento al banco immagini 0. Usare un numero di banco immagini per mantenere il riferimento durante il salvataggio e il caricamento.",
+            "ja": "タイルマップが参照するイメージバンク番号 (0-2) または Image インスタンス。Image インスタンスの場合、pyxel.save は参照先をイメージバンク 0 として保存する。保存・読み込みで参照先を保持するには、イメージバンク番号を指定する。",
+            "ko": "타일맵이 참조하는 이미지 뱅크 번호 (0-2) 또는 Image 인스턴스. 이 값이 Image 인스턴스이면 pyxel.save는 참조를 이미지 뱅크 0으로 저장합니다. 저장하고 불러올 때 참조를 유지하려면 이미지 뱅크 번호를 지정하세요.",
+            "pt": "Número do banco de imagens (0-2) ou instância de Image a que o tilemap se refere. Quando este valor é uma instância de Image, pyxel.save salva a referência ao banco de imagens 0 em seu lugar. Use um número de banco de imagens para preservar a referência ao salvar e carregar.",
+            "ru": "Номер банка изображений (0-2) или экземпляр Image, на который ссылается тайловая карта. Если это экземпляр Image, pyxel.save сохраняет вместо него ссылку на банк изображений 0. Укажите номер банка изображений, чтобы сохранить ссылку при сохранении и загрузке.",
+            "tr": "Tilemap'in referans aldığı görüntü bankasının numarası (0-2) veya Image örneği. Bu değer bir Image örneğiyse pyxel.save bunun yerine görüntü bankası 0 referansını kaydeder. Kaydetme ve yükleme sırasında referansı korumak için bir görüntü bankası numarası belirtin.",
+            "uk": "Номер банку зображень (0-2) або екземпляр Image, на який посилається тайлова карта. Якщо це екземпляр Image, pyxel.save зберігає натомість посилання на банк зображень 0. Укажіть номер банку зображень, щоб зберегти посилання під час збереження та завантаження."
           },
           "value_type": "int | Image",
           "advanced": false
@@ -8504,18 +8504,18 @@
           "type": "function",
           "signature": "Tilemap.set(x, y, data)",
           "description": {
-            "en": "Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.",
-            "cn": "使用字符串列表在 (x, y) 处设置瓦片地图。每个瓦片为 4 位十六进制值，表示 (image_tx, image_ty)，以空格分隔。",
-            "de": "Setzt die Tilemap an (x, y) mit einer Liste von Zeichenketten. Jede Kachel ist ein 4-stelliger Hex-Wert für (image_tx, image_ty), getrennt durch Leerzeichen.",
-            "es": "Establece el tilemap en (x, y) usando una lista de cadenas. Cada tile es un valor hexadecimal de 4 dígitos que representa (image_tx, image_ty). Los valores se separan con espacios.",
-            "fr": "Définit la tilemap à (x, y) à l'aide d'une liste de chaînes. Chaque tuile est une valeur hexadécimale à 4 chiffres représentant (image_tx, image_ty). Les valeurs sont séparées par des espaces.",
-            "it": "Imposta la tilemap a (x, y) usando una lista di stringhe. Ogni tile è un valore esadecimale a 4 cifre che rappresenta (image_tx, image_ty). I valori sono separati da spazi.",
-            "ja": "文字列のリストで (x, y) の位置にタイルマップを設定する。各タイルは (image_tx, image_ty) を表す 4 桁の 16 進数値で、スペースで区切る。",
-            "ko": "문자열 리스트로 (x, y) 위치에 타일맵을 설정합니다. 각 타일은 (image_tx, image_ty)를 나타내는 4자리 16진수 값이며, 공백으로 구분합니다.",
-            "pt": "Define o tilemap em (x, y) usando uma lista de strings. Cada tile é um valor hexadecimal de 4 dígitos representando (image_tx, image_ty). Os valores são separados por espaços.",
-            "ru": "Устанавливает тайловую карту в (x, y) с помощью списка строк. Каждый тайл — 4-значное шестнадцатеричное значение (image_tx, image_ty); значения разделяются пробелами.",
-            "tr": "(x, y) konumunda dize listesiyle tilemap ayarlar. Her karo, (image_tx, image_ty) değerini temsil eden 4 haneli bir onaltılık değerdir. Değerler boşluklarla ayrılır.",
-            "uk": "Встановлює тайлову карту в (x, y) за допомогою списку рядків. Кожен тайл — 4-значне шістнадцяткове значення (image_tx, image_ty); значення розділяються пробілами."
+            "en": "Set the tilemap at (x, y) using a list of strings. Each group of four hexadecimal digits encodes a tile (image_tx, image_ty). No separator is required. Spaces, tabs, and line breaks are ignored.",
+            "cn": "使用字符串列表在 (x, y) 处设置瓦片地图。每 4 个十六进制数字表示一个瓦片 (image_tx, image_ty)。无需分隔符，空格、制表符和换行符会被忽略。",
+            "de": "Setzt die Tilemap an (x, y) mit einer Liste von Zeichenketten. Jede Kachel ist ein 4-stelliger Hex-Wert für (image_tx, image_ty). Trennzeichen sind nicht erforderlich. Leerzeichen, Tabulatoren und Zeilenumbrüche werden ignoriert.",
+            "es": "Establece el tilemap en (x, y) con una lista de cadenas. Cada grupo de cuatro dígitos hexadecimales representa un tile (image_tx, image_ty). No hace falta un separador. Se ignoran los espacios, las tabulaciones y los saltos de línea.",
+            "fr": "Définit la tilemap à (x, y) à l'aide d'une liste de chaînes. Chaque groupe de quatre chiffres hexadécimaux représente une tuile (image_tx, image_ty). Aucun séparateur n'est nécessaire. Les espaces, les tabulations et les sauts de ligne sont ignorés.",
+            "it": "Imposta la tilemap a (x, y) con una lista di stringhe. Ogni gruppo di quattro cifre esadecimali rappresenta un tile (image_tx, image_ty). Non serve alcun separatore. Gli spazi, le tabulazioni e le interruzioni di riga vengono ignorati.",
+            "ja": "文字列のリストで (x, y) の位置にタイルマップを設定する。16 進数 4 桁ごとに 1 つのタイル (image_tx, image_ty) を表す。区切りは不要で、スペース、タブ、改行は無視される。",
+            "ko": "문자열 리스트로 (x, y) 위치에 타일맵을 설정합니다. 16진수 네 자리마다 타일 하나 (image_tx, image_ty)를 나타냅니다. 구분자는 필요 없으며 스페이스, 탭, 줄 바꿈은 무시됩니다.",
+            "pt": "Define o tilemap em (x, y) com uma lista de strings. Cada grupo de quatro dígitos hexadecimais representa um tile (image_tx, image_ty). O separador é opcional. Espaços, tabulações e quebras de linha são ignorados.",
+            "ru": "Устанавливает тайловую карту в (x, y) с помощью списка строк. Каждый тайл — 4-значное шестнадцатеричное значение (image_tx, image_ty); разделители не требуются. Пробелы, табуляции и переводы строк игнорируются.",
+            "tr": "Bir dize listesiyle (x, y) konumundaki karo haritasını ayarlar. Her dört onaltılık basamak bir karoyu (image_tx, image_ty) belirtir. Ayırıcı gerekmez. Boşluklar, sekmeler ve satır sonları yok sayılır.",
+            "uk": "Встановлює тайлову карту в (x, y) за допомогою списку рядків. Кожен тайл — 4-значне шістнадцяткове значення (image_tx, image_ty); роздільники не потрібні. Пробіли, табуляції та переноси рядків ігноруються."
           },
           "params": [
             {
@@ -9087,18 +9087,18 @@
           "type": "variable",
           "signature": "Sound.notes",
           "description": {
-            "en": "List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1.",
-            "cn": "音符列表 (0-59)。数值越大音高越高，33 为 'A2' (440 Hz)。休止符为 -1。",
-            "de": "Liste der Noten (0-59). Höhere Werte erzeugen höhere Tonhöhen. 33 = 'A2' (440 Hz). Pausen sind -1.",
-            "es": "Lista de notas (0-59). Los valores más altos producen tonos más altos. 33 = 'A2' (440 Hz). Los silencios son -1.",
-            "fr": "Liste des notes (0-59). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
-            "it": "Lista delle note (0-59). Valori più alti producono altezze più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
-            "ja": "音程 (0-59) のリスト。数値が大きいほど音程は高く、33 で 'A2' (440Hz)。休符は -1。",
-            "ko": "음정 (0-59) 리스트. 값이 클수록 음이 높아지며, 33은 'A2' (440Hz)입니다. 쉼표는 -1입니다.",
-            "pt": "Lista de notas (0-59). Valores mais altos produzem tons mais altos. 33 = 'A2' (440 Hz). Pausas são -1.",
-            "ru": "Список нот (0-59). Более высокие значения дают более высокий тон. 33 = 'A2' (440 Гц). Паузы обозначаются -1.",
-            "tr": "Nota listesi (0-59). Değer büyüdükçe perde yükselir. 33 = 'A2' (440 Hz). Suslar -1'dir.",
-            "uk": "Список нот (0-59). Більші значення дають вищий тон. 33 = 'A2' (440 Гц). Паузи позначаються -1."
+            "en": "Note numbers (0-59), from C0 to B4 in semitone steps. Use -1 for a rest. With a wavetable tone, A2 (33) is 440 Hz.",
+            "cn": "音符编号 (0-59)，从 C0 到 B4，每升高一个半音加 1。休止符用 -1 表示。使用波表音色时，A2 (33) 为 440 Hz。",
+            "de": "Notennummern (0-59) von C0 bis B4 in Halbtonschritten. Für eine Pause wird -1 verwendet. Bei einem Wavetable-Klang entspricht A2 (33) einer Frequenz von 440 Hz.",
+            "es": "Números de nota (0-59), de C0 a B4 en pasos de un semitono. Use -1 para un silencio. Con un timbre de tabla de ondas, A2 (33) corresponde a 440 Hz.",
+            "fr": "Numéros de note (0-59), de C0 à B4 par demi-tons. Utilisez -1 pour un silence. Avec un timbre à table d'ondes, A2 (33) correspond à 440 Hz.",
+            "it": "Numeri delle note (0-59), da C0 a B4 a intervalli di un semitono. Usare -1 per una pausa. Con un timbro a tabella d'onda, A2 (33) corrisponde a 440 Hz.",
+            "ja": "音程 (0-59) のリスト。C0 から B4 まで半音上がるごとに 1 増える。休符は -1。波形テーブル音色では A2 (33) が 440 Hz に対応する。",
+            "ko": "음정 번호 (0-59) 리스트. C0에서 B4까지 반음마다 1씩 증가합니다. 쉼표에는 -1을 사용합니다. 웨이브테이블 음색에서 A2 (33)는 440Hz입니다.",
+            "pt": "Números das notas (0-59), de C0 a B4 em passos de um semitom. Use -1 para uma pausa. Com um timbre de tabela de ondas, A2 (33) corresponde a 440 Hz.",
+            "ru": "Номера нот (0-59) от C0 до B4 с шагом в полутон. Для паузы используйте -1. Для табличного тембра A2 (33) соответствует частоте 440 Гц.",
+            "tr": "C0 ile B4 arasındaki nota numaraları (0-59). Her yarım seste değer 1 artar. Sus için -1 kullanın. Dalga tablosu kullanan bir tınıda A2 (33) 440 Hz'dir.",
+            "uk": "Номери нот (0-59) від C0 до B4 з кроком у півтону. Для паузи використовуйте -1. Для табличного тембру A2 (33) відповідає частоті 440 Гц."
           },
           "value_type": "list[int]",
           "advanced": false
@@ -9108,18 +9108,18 @@
           "type": "variable",
           "signature": "Sound.tones",
           "description": {
-            "en": "List of tones (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "cn": "音色列表 (0: Triangle, 1: Square, 2: Pulse, 3: Noise)",
-            "de": "Liste der Töne (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "es": "Lista de tonos (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "fr": "Liste des timbres (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "it": "Lista dei toni (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "ja": "音色 (0: Triangle, 1: Square, 2: Pulse, 3: Noise) のリスト",
-            "ko": "음색 (0: Triangle, 1: Square, 2: Pulse, 3: Noise) 리스트",
-            "pt": "Lista de timbres (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "ru": "Список тембров (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "tr": "Ton listesi (0: Triangle, 1: Square, 2: Pulse, 3: Noise).",
-            "uk": "Список тембрів (0: Triangle, 1: Square, 2: Pulse, 3: Noise)."
+            "en": "List of tone numbers. The default tones are Triangle (0), Square (1), Pulse (2), and Noise (3).",
+            "cn": "音色编号列表。默认音色为 0: Triangle, 1: Square, 2: Pulse, 3: Noise。",
+            "de": "Liste der Klangnummern. Die Standardklänge sind 0: Triangle, 1: Square, 2: Pulse, 3: Noise.",
+            "es": "Lista de números de timbre. Los timbres predeterminados son 0: Triangle, 1: Square, 2: Pulse, 3: Noise.",
+            "fr": "Liste des numéros de timbre. Les timbres par défaut sont Triangle (0), Square (1), Pulse (2) et Noise (3).",
+            "it": "Elenco dei numeri dei timbri. I timbri predefiniti sono 0: Triangle, 1: Square, 2: Pulse, 3: Noise.",
+            "ja": "音色番号のリスト。初期設定は 0: Triangle、1: Square、2: Pulse、3: Noise です。",
+            "ko": "음색 번호 리스트입니다. 기본 음색은 0: Triangle, 1: Square, 2: Pulse, 3: Noise입니다.",
+            "pt": "Lista de números de timbre. Os timbres padrão são 0: Triangle, 1: Square, 2: Pulse, 3: Noise.",
+            "ru": "Список номеров тембров. Тембры по умолчанию: 0: Triangle, 1: Square, 2: Pulse, 3: Noise.",
+            "tr": "Tını numaralarının listesi. Varsayılan tınılar: 0: Triangle, 1: Square, 2: Pulse, 3: Noise.",
+            "uk": "Список номерів тембрів. Типові тембри: 0: Triangle, 1: Square, 2: Pulse, 3: Noise."
           },
           "value_type": "list[int]",
           "advanced": false
@@ -9129,18 +9129,18 @@
           "type": "variable",
           "signature": "Sound.volumes",
           "description": {
-            "en": "List of volumes (0-7).",
-            "cn": "音量列表 (0-7)",
-            "de": "Liste der Lautstärken (0-7).",
-            "es": "Lista de volúmenes (0-7).",
-            "fr": "Liste des volumes (0-7).",
-            "it": "Lista dei volumi (0-7).",
-            "ja": "音量 (0-7) のリスト",
-            "ko": "음량 (0-7) 리스트",
-            "pt": "Lista de volumes (0-7).",
-            "ru": "Список громкости (0-7).",
-            "tr": "Ses seviyesi listesi (0-7).",
-            "uk": "Список гучності (0-7)."
+            "en": "List of volumes (0-7), from silence to normal volume.",
+            "cn": "音量列表 (0-7)，0 表示静音，7 表示正常音量。",
+            "de": "Liste der Lautstärken (0-7), von Stille bis zur normalen Lautstärke.",
+            "es": "Lista de volúmenes (0-7), del silencio al volumen normal.",
+            "fr": "Liste des volumes (0-7), du silence au volume normal.",
+            "it": "Elenco dei volumi (0-7), dal silenzio al volume normale.",
+            "ja": "音量 (0-7) のリスト。0 で無音、7 で通常の音量になる。",
+            "ko": "음량 (0-7) 리스트. 0은 무음, 7은 기본 음량입니다.",
+            "pt": "Lista de volumes (0-7), do silêncio ao volume normal.",
+            "ru": "Список значений громкости (0-7), от тишины до обычной громкости.",
+            "tr": "Ses düzeylerinin listesi (0-7). 0 sessizlik, 7 normal ses düzeyidir.",
+            "uk": "Список значень гучності (0-7), від тиші до звичайної гучності."
           },
           "value_type": "list[int]",
           "advanced": false
@@ -9307,18 +9307,18 @@
           "type": "function",
           "signature": "Sound.set_notes(notes)",
           "description": {
-            "en": "Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Case-insensitive, whitespace is ignored.",
-            "cn": "使用音名 (CDEFGAB)、可选的升号 (#) 或降号 (-)、八度 (0-4) 和休止符 (R) 组成的字符串设置音符。不区分大小写，空白被忽略。",
-            "de": "Setzt die Noten mithilfe eines Strings aus Notennamen (CDEFGAB), optionalem Kreuz (#) oder b (-), Oktave (0-4) und Pausen (R). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
-            "es": "Establece las notas usando una cadena de nombres de notas (CDEFGAB), sostenido (#) o bemol (-) opcionales, octava (0-4) y silencios (R). No distingue mayúsculas de minúsculas, los espacios se ignoran.",
-            "fr": "Définit les notes à l'aide d'une chaîne composée de noms de notes (CDEFGAB), dièse (#) ou bémol (-) optionnels, octave (0-4) et silences (R). Insensible à la casse, les espaces sont ignorés.",
-            "it": "Imposta le note usando una stringa di nomi di note (CDEFGAB), diesis (#) o bemolle (-) opzionali, ottava (0-4) e pause (R). Non sensibile alle maiuscole, gli spazi sono ignorati.",
-            "ja": "音名 (CDEFGAB)、任意のシャープ (#) またはフラット (-)、オクターブ (0-4)、休符 (R) からなる文字列で音程を設定する。大文字小文字不問、空白は無視される。",
-            "ko": "음명 (CDEFGAB), 선택적 샤프 (#) 또는 플랫 (-), 옥타브 (0-4), 쉼표 (R)로 구성된 문자열로 음정을 설정합니다. 대소문자 불문, 공백은 무시됩니다.",
-            "pt": "Define as notas usando uma string de nomes de notas (CDEFGAB), sustenido (#) ou bemol (-) opcionais, oitava (0-4) e pausas (R). Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
-            "ru": "Устанавливает ноты с помощью строки из названий нот (CDEFGAB), необязательных диезов (#) или бемолей (-), октавы (0-4) и пауз (R). Регистр не учитывается, пробелы игнорируются.",
-            "tr": "Nota adları (CDEFGAB), isteğe bağlı diyez (#) veya bemol (-), oktav (0-4) ve suslar (R) dizesiyle notaları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
-            "uk": "Встановлює ноти за допомогою рядка з назв нот (CDEFGAB), необов'язкових дієзів (#) або бемолів (-), октави (0-4) та пауз (R). Регістр не враховується, пробіли ігноруються."
+            "en": "Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Letter case, spaces, tabs, and line breaks are ignored.",
+            "cn": "使用音名 (CDEFGAB)、可选的升号 (#) 或降号 (-)、八度 (0-4) 和休止符 (R) 组成的字符串设置音符。不区分大小写，空格、制表符和换行符会被忽略。",
+            "de": "Setzt die Noten mithilfe eines Strings aus Notennamen (CDEFGAB), optionalem Kreuz (#) oder b (-), Oktave (0-4) und Pausen (R). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen, Tabulatoren und Zeilenumbrüche werden ignoriert.",
+            "es": "Establece las notas usando una cadena de nombres de notas (CDEFGAB), sostenido (#) o bemol (-) opcionales, octava (0-4) y silencios (R). No distingue entre mayúsculas y minúsculas. Se ignoran los espacios, las tabulaciones y los saltos de línea.",
+            "fr": "Définit les notes à l'aide d'une chaîne composée de noms de notes (CDEFGAB), dièse (#) ou bémol (-) optionnels, octave (0-4) et silences (R). La casse, les espaces, les tabulations et les sauts de ligne sont ignorés.",
+            "it": "Imposta le note usando una stringa di nomi di note (CDEFGAB), diesis (#) o bemolle (-) opzionali, ottava (0-4) e pause (R). Maiuscole e minuscole sono equivalenti. Spazi, tabulazioni e interruzioni di riga vengono ignorati.",
+            "ja": "音名 (CDEFGAB)、任意のシャープ (#) またはフラット (-)、オクターブ (0-4)、休符 (R) からなる文字列で音程を設定する。大文字小文字不問、スペース、タブ、改行は無視される。",
+            "ko": "음명 (CDEFGAB), 선택적 샤프 (#) 또는 플랫 (-), 옥타브 (0-4), 쉼표 (R)로 구성된 문자열로 음정을 설정합니다. 대소문자 불문, 스페이스, 탭, 줄 바꿈은 무시됩니다.",
+            "pt": "Define as notas usando uma string de nomes de notas (CDEFGAB), sustenido (#) ou bemol (-) opcionais, oitava (0-4) e pausas (R). Não diferencia maiúsculas de minúsculas. Espaços, tabulações e quebras de linha são ignorados.",
+            "ru": "Устанавливает ноты с помощью строки из названий нот (CDEFGAB), необязательных диезов (#) или бемолей (-), октавы (0-4) и пауз (R). Регистр не учитывается, пробелы, табуляции и переводы строк игнорируются.",
+            "tr": "Nota adları (CDEFGAB), isteğe bağlı diyez (#) veya bemol (-), oktav (0-4) ve suslar (R) dizesiyle notaları ayarlar. Büyük ve küçük harfler eşdeğerdir. Boşluklar, sekmeler ve satır sonları yok sayılır.",
+            "uk": "Встановлює ноти за допомогою рядка з назв нот (CDEFGAB), необов'язкових дієзів (#) або бемолів (-), октави (0-4) та пауз (R). Регістр не враховується, пробіли, табуляції та переноси рядків ігноруються."
           },
           "params": [
             {
@@ -9335,7 +9335,7 @@
                 "ko": "notes 문자열",
                 "pt": "String notes",
                 "ru": "Строка notes",
-                "tr": "notes dizesi",
+                "tr": "Nota dizesi",
                 "uk": "Рядок notes"
               }
             }
@@ -9351,18 +9351,18 @@
           "type": "function",
           "signature": "Sound.set_tones(tones)",
           "description": {
-            "en": "Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.",
-            "cn": "使用 TSPN (或 0～9 表示自定义音色编号) 的字符串设置音色。不区分大小写，空白被忽略。",
-            "de": "Setzt die Töne mit einer Zeichenkette aus TSPN (oder 0–9 für benutzerdefinierte Tonnummern). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
-            "es": "Establece los tonos con una cadena de TSPN (o 0-9 para números de tono personalizados). No distingue mayúsculas de minúsculas, los espacios se ignoran.",
-            "fr": "Définit les timbres avec une chaîne de TSPN (ou 0-9 pour des numéros de timbre personnalisés). Insensible à la casse, les espaces sont ignorés.",
-            "it": "Imposta i toni con una stringa di TSPN (o 0-9 per numeri di tono personalizzati). Non sensibile alle maiuscole, gli spazi sono ignorati.",
-            "ja": "TSPN の文字列で音色を設定する（0〜9 でカスタム音色番号も指定可能）。大文字小文字不問、空白は無視される。",
-            "ko": "TSPN 문자열로 음색을 설정합니다 (0~9로 커스텀 음색 번호도 지정 가능). 대소문자 불문, 공백은 무시됩니다.",
-            "pt": "Define os timbres com uma string de TSPN (ou 0-9 para números de timbre personalizados). Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
-            "ru": "Устанавливает тембры с помощью строки из TSPN (или 0–9 для пользовательских номеров тембров). Регистр не учитывается, пробелы игнорируются.",
-            "tr": "TSPN (veya özel ton numaraları için 0-9) dizesiyle tonları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
-            "uk": "Встановлює тембри за допомогою рядка з TSPN (або 0–9 для власних номерів тембрів). Регістр не враховується, пробіли ігноруються."
+            "en": "Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Letter case, spaces, tabs, and line breaks are ignored.",
+            "cn": "使用 TSPN (或 0～9 表示自定义音色编号) 的字符串设置音色。不区分大小写，空格、制表符和换行符会被忽略。",
+            "de": "Setzt die Töne mit einer Zeichenkette aus TSPN (oder 0–9 für benutzerdefinierte Tonnummern). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen, Tabulatoren und Zeilenumbrüche werden ignoriert.",
+            "es": "Establece los tonos con una cadena de TSPN (o 0-9 para números de tono personalizados). No distingue entre mayúsculas y minúsculas. Se ignoran los espacios, las tabulaciones y los saltos de línea.",
+            "fr": "Définit les timbres avec une chaîne de TSPN (ou 0-9 pour des numéros de timbre personnalisés). La casse, les espaces, les tabulations et les sauts de ligne sont ignorés.",
+            "it": "Imposta i toni con una stringa di TSPN (o 0-9 per numeri di tono personalizzati). Maiuscole e minuscole sono equivalenti. Spazi, tabulazioni e interruzioni di riga vengono ignorati.",
+            "ja": "TSPN の文字列で音色を設定する（0〜9 でカスタム音色番号も指定可能）。大文字小文字不問、スペース、タブ、改行は無視される。",
+            "ko": "TSPN 문자열로 음색을 설정합니다 (0~9로 커스텀 음색 번호도 지정 가능). 대소문자 불문, 스페이스, 탭, 줄 바꿈은 무시됩니다.",
+            "pt": "Define os timbres com uma string de TSPN (ou 0-9 para números de timbre personalizados). Não diferencia maiúsculas de minúsculas. Espaços, tabulações e quebras de linha são ignorados.",
+            "ru": "Устанавливает тембры с помощью строки из TSPN (или 0–9 для пользовательских номеров тембров). Регистр не учитывается, пробелы, табуляции и переводы строк игнорируются.",
+            "tr": "TSPN (veya özel ton numaraları için 0-9) dizesiyle tonları ayarlar. Büyük ve küçük harfler eşdeğerdir. Boşluklar, sekmeler ve satır sonları yok sayılır.",
+            "uk": "Встановлює тембри за допомогою рядка з TSPN (або 0–9 для власних номерів тембрів). Регістр не враховується, пробіли, табуляції та переноси рядків ігноруються."
           },
           "params": [
             {
@@ -9379,7 +9379,7 @@
                 "ko": "tones 문자열",
                 "pt": "String tones",
                 "ru": "Строка tones",
-                "tr": "tones dizesi",
+                "tr": "Ton dizesi",
                 "uk": "Рядок tones"
               }
             }
@@ -9395,18 +9395,18 @@
           "type": "function",
           "signature": "Sound.set_volumes(volumes)",
           "description": {
-            "en": "Set the volumes with a string of 01234567. Whitespace is ignored.",
-            "cn": "使用 01234567 的字符串设置音量。空白被忽略。",
-            "de": "Setzt die Lautstärken mit einer Zeichenkette aus 01234567. Leerzeichen werden ignoriert.",
-            "es": "Establece los volúmenes con una cadena de 01234567. Los espacios se ignoran.",
-            "fr": "Définit les volumes avec une chaîne de 01234567. Les espaces sont ignorés.",
-            "it": "Imposta i volumi con una stringa di 01234567. Gli spazi sono ignorati.",
-            "ja": "01234567 の文字列で音量を設定する。空白は無視される。",
-            "ko": "01234567 문자열로 음량을 설정합니다. 공백은 무시됩니다.",
-            "pt": "Define os volumes com uma string de 01234567. Espaços são ignorados.",
-            "ru": "Устанавливает громкость строкой из 01234567. Пробелы игнорируются.",
-            "tr": "01234567 dizesiyle ses seviyelerini ayarlar. Boşluklar yok sayılır.",
-            "uk": "Встановлює гучність рядком з 01234567. Пробіли ігноруються."
+            "en": "Set the volumes with a string of 01234567. Spaces, tabs, and line breaks are ignored.",
+            "cn": "使用 01234567 的字符串设置音量。空格、制表符和换行符会被忽略。",
+            "de": "Setzt die Lautstärken mit einer Zeichenkette aus 01234567. Leerzeichen, Tabulatoren und Zeilenumbrüche werden ignoriert.",
+            "es": "Establece los volúmenes con una cadena de 01234567. Se ignoran los espacios, las tabulaciones y los saltos de línea.",
+            "fr": "Définit les volumes avec une chaîne de 01234567. Les espaces, les tabulations et les sauts de ligne sont ignorés.",
+            "it": "Imposta i volumi con una stringa di 01234567. Gli spazi, le tabulazioni e le interruzioni di riga vengono ignorati.",
+            "ja": "01234567 の文字列で音量を設定する。スペース、タブ、改行は無視される。",
+            "ko": "01234567 문자열로 음량을 설정합니다. 스페이스, 탭, 줄 바꿈은 무시됩니다.",
+            "pt": "Define os volumes com uma string de 01234567. Espaços, tabulações e quebras de linha são ignorados.",
+            "ru": "Устанавливает громкость строкой из 01234567. Пробелы, табуляции и переводы строк игнорируются.",
+            "tr": "01234567 dizesiyle ses seviyelerini ayarlar. Boşluklar, sekmeler ve satır sonları yok sayılır.",
+            "uk": "Встановлює гучність рядком з 01234567. Пробіли, табуляції та переноси рядків ігноруються."
           },
           "params": [
             {
@@ -9423,7 +9423,7 @@
                 "ko": "volumes 문자열",
                 "pt": "String volumes",
                 "ru": "Строка volumes",
-                "tr": "volumes dizesi",
+                "tr": "Ses seviyesi dizesi",
                 "uk": "Рядок volumes"
               }
             }
@@ -9439,18 +9439,18 @@
           "type": "function",
           "signature": "Sound.set_effects(effects)",
           "description": {
-            "en": "Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.",
-            "cn": "使用 NSVFHQ 的字符串设置效果。不区分大小写，空白被忽略。",
-            "de": "Setzt die Effekte mit einer Zeichenkette aus NSVFHQ. Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
-            "es": "Establece los efectos con una cadena de NSVFHQ. No distingue mayúsculas de minúsculas, los espacios se ignoran.",
-            "fr": "Définit les effets avec une chaîne de NSVFHQ. Insensible à la casse, les espaces sont ignorés.",
-            "it": "Imposta gli effetti con una stringa di NSVFHQ. Non sensibile alle maiuscole, gli spazi sono ignorati.",
-            "ja": "NSVFHQ の文字列でエフェクトを設定する。大文字小文字不問、空白は無視される。",
-            "ko": "NSVFHQ 문자열로 효과를 설정합니다. 대소문자 불문, 공백은 무시됩니다.",
-            "pt": "Define os efeitos com uma string de NSVFHQ. Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
-            "ru": "Устанавливает эффекты строкой из NSVFHQ. Регистр не учитывается, пробелы игнорируются.",
-            "tr": "NSVFHQ dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
-            "uk": "Встановлює ефекти рядком з NSVFHQ. Регістр не враховується, пробіли ігноруються."
+            "en": "Set the effects with a string of NSVFHQ. Letter case, spaces, tabs, and line breaks are ignored.",
+            "cn": "使用 NSVFHQ 的字符串设置效果。不区分大小写，空格、制表符和换行符会被忽略。",
+            "de": "Setzt die Effekte mit einer Zeichenkette aus NSVFHQ. Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen, Tabulatoren und Zeilenumbrüche werden ignoriert.",
+            "es": "Establece los efectos con una cadena de NSVFHQ. No distingue entre mayúsculas y minúsculas. Se ignoran los espacios, las tabulaciones y los saltos de línea.",
+            "fr": "Définit les effets avec une chaîne de NSVFHQ. La casse, les espaces, les tabulations et les sauts de ligne sont ignorés.",
+            "it": "Imposta gli effetti con una stringa di NSVFHQ. Maiuscole e minuscole sono equivalenti. Spazi, tabulazioni e interruzioni di riga vengono ignorati.",
+            "ja": "NSVFHQ の文字列でエフェクトを設定する。大文字小文字不問、スペース、タブ、改行は無視される。",
+            "ko": "NSVFHQ 문자열로 효과를 설정합니다. 대소문자 불문, 스페이스, 탭, 줄 바꿈은 무시됩니다.",
+            "pt": "Define os efeitos com uma string de NSVFHQ. Não diferencia maiúsculas de minúsculas. Espaços, tabulações e quebras de linha são ignorados.",
+            "ru": "Устанавливает эффекты строкой из NSVFHQ. Регистр не учитывается, пробелы, табуляции и переводы строк игнорируются.",
+            "tr": "NSVFHQ dizesiyle efektleri ayarlar. Büyük ve küçük harfler eşdeğerdir. Boşluklar, sekmeler ve satır sonları yok sayılır.",
+            "uk": "Встановлює ефекти рядком з NSVFHQ. Регістр не враховується, пробіли, табуляції та переноси рядків ігноруються."
           },
           "params": [
             {
@@ -9467,7 +9467,7 @@
                 "ko": "effects 문자열",
                 "pt": "String effects",
                 "ru": "Строка effects",
-                "tr": "effects dizesi",
+                "tr": "Efekt dizesi",
                 "uk": "Рядок effects"
               }
             }
@@ -9529,18 +9529,18 @@
           "type": "function",
           "signature": "Sound.mml()",
           "description": {
-            "en": "Exit MML mode and return to normal mode.",
-            "cn": "退出 MML 模式，返回普通模式。",
-            "de": "Verlässt den MML-Modus und kehrt zum normalen Modus zurück.",
-            "es": "Sale del modo MML y vuelve al modo normal.",
-            "fr": "Quitte le mode MML et revient au mode normal.",
-            "it": "Esce dalla modalità MML e torna alla modalità normale.",
-            "ja": "MML モードを終了し、通常モードに戻る。",
-            "ko": "MML 모드를 종료하고 일반 모드로 돌아갑니다.",
-            "pt": "Sai do modo MML e retorna ao modo normal.",
-            "ru": "Выходит из режима MML и возвращается в обычный режим.",
-            "tr": "MML modundan çıkar ve normal moda döner.",
-            "uk": "Виходить з режиму MML і повертається до звичайного режиму."
+            "en": "Return to normal playback if MML mode is active.",
+            "cn": "如果当前处于 MML 模式，则恢复正常播放。",
+            "de": "Kehrt zur normalen Wiedergabe zurück, wenn der MML-Modus aktiv ist.",
+            "es": "Vuelve a la reproducción normal si el modo MML está activo.",
+            "fr": "Revient à la lecture normale si le mode MML est actif.",
+            "it": "Torna alla riproduzione normale se è attiva la modalità MML.",
+            "ja": "MML モードの場合は通常の再生に戻る。",
+            "ko": "MML 모드일 때 일반 재생으로 돌아갑니다.",
+            "pt": "Retorna à reprodução normal se o modo MML estiver ativo.",
+            "ru": "Возвращает обычное воспроизведение, если активен режим MML.",
+            "tr": "MML modu etkinse normal çalmaya döner.",
+            "uk": "Повертає звичайне відтворення, якщо ввімкнено режим MML."
           },
           "returns": {
             "type": "None"
@@ -9596,18 +9596,18 @@
           "type": "function",
           "signature": "Sound.pcm()",
           "description": {
-            "en": "Exit PCM mode and return to normal mode.",
-            "cn": "退出 PCM 模式，返回普通模式。",
-            "de": "Verlässt den PCM-Modus und kehrt zum normalen Modus zurück.",
-            "es": "Sale del modo PCM y vuelve al modo normal.",
-            "fr": "Quitte le mode PCM et revient au mode normal.",
-            "it": "Esce dalla modalità PCM e torna alla modalità normale.",
-            "ja": "PCM モードを終了し、通常モードに戻る。",
-            "ko": "PCM 모드를 종료하고 일반 모드로 돌아갑니다.",
-            "pt": "Sai do modo PCM e retorna ao modo normal.",
-            "ru": "Выходит из режима PCM и возвращается в обычный режим.",
-            "tr": "PCM modundan çıkar ve normal moda döner.",
-            "uk": "Виходить з режиму PCM і повертається до звичайного режиму."
+            "en": "Return to normal playback if PCM mode is active.",
+            "cn": "如果当前处于 PCM 模式，则恢复正常播放。",
+            "de": "Kehrt zur normalen Wiedergabe zurück, wenn der PCM-Modus aktiv ist.",
+            "es": "Vuelve a la reproducción normal si el modo PCM está activo.",
+            "fr": "Revient à la lecture normale si le mode PCM est actif.",
+            "it": "Torna alla riproduzione normale se è attiva la modalità PCM.",
+            "ja": "PCM モードの場合は通常の再生に戻る。",
+            "ko": "PCM 모드일 때 일반 재생으로 돌아갑니다.",
+            "pt": "Retorna à reprodução normal se o modo PCM estiver ativo.",
+            "ru": "Возвращает обычное воспроизведение, если активен режим PCM.",
+            "tr": "PCM modu etkinse normal çalmaya döner.",
+            "uk": "Повертає звичайне відтворення, якщо ввімкнено режим PCM."
           },
           "returns": {
             "type": "None"
@@ -9777,18 +9777,18 @@
           "type": "variable",
           "signature": "Music.seqs",
           "description": {
-            "en": "A two-dimensional list of sounds (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy.",
-            "cn": "跨多个通道的声音 (0-63) 二维列表。每个内层序列都引用此 Music 中的一个通道索引。替换、插入或删除通道可能改变它所引用的数据；如果该索引不再存在，访问时会引发 IndexError。要保留独立副本，请使用 list(music.seqs[ch])。",
-            "de": "Eine zweidimensionale Liste von Sounds (0-63) über mehrere Kanäle. Jede innere Sequenz verweist auf einen Kanalindex in diesem Music-Objekt. Das Ersetzen, Einfügen oder Entfernen von Kanälen kann die referenzierten Daten ändern; existiert der Index nicht mehr, löst ein Zugriff IndexError aus. Verwenden Sie list(music.seqs[ch]), um eine unabhängige Kopie zu behalten.",
-            "es": "Una lista bidimensional de sonidos (0-63) a través de múltiples canales. Cada secuencia interna hace referencia a un índice de canal en este Music. Reemplazar, insertar o eliminar canales puede cambiar los datos a los que hace referencia; si ese índice deja de existir, acceder a ella genera IndexError. Use list(music.seqs[ch]) para conservar una copia independiente.",
-            "fr": "Une liste bidimensionnelle de sons (0-63) sur plusieurs canaux. Chaque séquence interne fait référence à un indice de canal dans ce Music. Remplacer, insérer ou supprimer des canaux peut modifier les données référencées ; si cet indice n'existe plus, l'accès à la séquence lève IndexError. Utilisez list(music.seqs[ch]) pour conserver une copie indépendante.",
-            "it": "Una lista bidimensionale di suoni (0-63) su più canali. Ogni sequenza interna fa riferimento a un indice di canale in questo Music. Sostituire, inserire o rimuovere canali può cambiare i dati a cui fa riferimento; se tale indice non esiste più, accedere alla sequenza genera IndexError. Usare list(music.seqs[ch]) per conservare una copia indipendente.",
-            "ja": "サウンド (0-63) のリストをチャンネル数分連ねた 2 次元リスト。各チャンネルの列は、この Music 内のチャンネル番号を参照する。チャンネルの置換・挿入・削除で参照先のデータが変わり、その番号が存在しなくなるとアクセス時に IndexError が発生する。独立したコピーを保持するには list(music.seqs[ch]) を使う。",
-            "ko": "여러 채널에 걸친 사운드 (0-63)의 2차원 리스트. 각 내부 시퀀스는 이 Music의 채널 인덱스를 참조합니다. 채널을 교체, 삽입 또는 삭제하면 참조하는 데이터가 바뀔 수 있으며, 해당 인덱스가 없어지면 접근 시 IndexError가 발생합니다. 독립적인 복사본을 보관하려면 list(music.seqs[ch])를 사용하세요.",
-            "pt": "Uma lista bidimensional de sons (0-63) em múltiplos canais. Cada sequência interna faz referência a um índice de canal neste Music. Substituir, inserir ou remover canais pode mudar os dados referenciados; se esse índice deixar de existir, acessar a sequência gera IndexError. Use list(music.seqs[ch]) para manter uma cópia independente.",
-            "ru": "Двумерный список звуков (0-63) по нескольким каналам. Каждая внутренняя последовательность ссылается на индекс канала в этом Music. Замена, вставка или удаление каналов может изменить данные, на которые она ссылается; если индекс больше не существует, обращение к последовательности вызывает IndexError. Используйте list(music.seqs[ch]), чтобы сохранить независимую копию.",
-            "tr": "Birden fazla kanal genelinde seslerin (0-63) iki boyutlu listesi. Her iç dizi, bu Music içindeki bir kanal indeksine referans verir. Kanalları değiştirmek, eklemek veya kaldırmak referans verilen verileri değiştirebilir; indeks artık mevcut değilse diziye erişmek IndexError oluşturur. Bağımsız bir kopyayı saklamak için list(music.seqs[ch]) kullanın.",
-            "uk": "Двовимірний список звуків (0-63) по кількох каналах. Кожна внутрішня послідовність посилається на індекс каналу в цьому Music. Заміна, вставлення або видалення каналів може змінити дані, на які вона посилається; якщо індекс більше не існує, звернення до послідовності спричиняє IndexError. Використовуйте list(music.seqs[ch]), щоб зберегти незалежну копію."
+            "en": "A two-dimensional list of sound numbers (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy.",
+            "cn": "跨多个通道的声音编号 (0-63) 二维列表。每个内层序列都引用此 Music 中的一个通道索引。替换、插入或删除通道可能改变它所引用的数据；如果该索引不再存在，访问时会引发 IndexError。要保留独立副本，请使用 list(music.seqs[ch])。",
+            "de": "Eine zweidimensionale Liste von Soundnummern (0-63), gegliedert nach Kanälen. Jede innere Sequenz verweist auf einen Kanalindex in diesem Music-Objekt. Das Ersetzen, Einfügen oder Entfernen von Kanälen kann die referenzierten Daten ändern; existiert der Index nicht mehr, löst ein Zugriff IndexError aus. Verwenden Sie list(music.seqs[ch]), um eine unabhängige Kopie zu behalten.",
+            "es": "Lista bidimensional de números de sonido (0-63), con una lista por canal. Cada secuencia interna hace referencia a un índice de canal en este Music. Reemplazar, insertar o eliminar canales puede cambiar los datos a los que hace referencia; si ese índice deja de existir, acceder a ella genera IndexError. Use list(music.seqs[ch]) para conservar una copia independiente.",
+            "fr": "Liste à deux dimensions des numéros de son (0-63), avec une liste par canal. Chaque séquence interne fait référence à un indice de canal dans ce Music. Remplacer, insérer ou supprimer des canaux peut modifier les données référencées ; si cet indice n'existe plus, l'accès à la séquence lève IndexError. Utilisez list(music.seqs[ch]) pour conserver une copie indépendante.",
+            "it": "Lista bidimensionale di numeri di suono (0-63), con una lista per canale. Ogni sequenza interna fa riferimento a un indice di canale in questo Music. Sostituire, inserire o rimuovere canali può cambiare i dati a cui fa riferimento; se tale indice non esiste più, accedere alla sequenza genera IndexError. Usare list(music.seqs[ch]) per conservare una copia indipendente.",
+            "ja": "サウンド番号 (0-63) のリストをチャンネル数分連ねた 2 次元リスト。各チャンネルの列は、この Music 内のチャンネル番号を参照する。チャンネルの置換・挿入・削除で参照先のデータが変わり、その番号が存在しなくなるとアクセス時に IndexError が発生する。独立したコピーを保持するには list(music.seqs[ch]) を使う。",
+            "ko": "여러 채널에 걸친 사운드 번호 (0-63)의 2차원 리스트. 각 내부 시퀀스는 이 Music의 채널 인덱스를 참조합니다. 채널을 교체, 삽입 또는 삭제하면 참조하는 데이터가 바뀔 수 있으며, 해당 인덱스가 없어지면 접근 시 IndexError가 발생합니다. 독립적인 복사본을 보관하려면 list(music.seqs[ch])를 사용하세요.",
+            "pt": "Lista bidimensional de números de som (0-63), com uma lista por canal. Cada sequência interna faz referência a um índice de canal neste Music. Substituir, inserir ou remover canais pode mudar os dados referenciados; se esse índice deixar de existir, acessar a sequência gera IndexError. Use list(music.seqs[ch]) para manter uma cópia independente.",
+            "ru": "Двумерный список номеров звуков (0-63) с отдельным списком для каждого канала. Каждая внутренняя последовательность ссылается на индекс канала в этом Music. Замена, вставка или удаление каналов может изменить данные, на которые она ссылается; если индекс больше не существует, обращение к последовательности вызывает IndexError. Используйте list(music.seqs[ch]), чтобы сохранить независимую копию.",
+            "tr": "Her kanal için ayrı bir liste içeren iki boyutlu ses numarası (0-63) listesi. Her iç dizi, bu Music içindeki bir kanal indeksine referans verir. Kanalları değiştirmek, eklemek veya kaldırmak referans verilen verileri değiştirebilir; indeks artık mevcut değilse diziye erişmek IndexError oluşturur. Bağımsız bir kopyayı saklamak için list(music.seqs[ch]) kullanın.",
+            "uk": "Двовимірний список номерів звуків (0-63) з окремим списком для кожного каналу. Кожна внутрішня послідовність посилається на індекс каналу в цьому Music. Заміна, вставлення або видалення каналів може змінити дані, на які вона посилається; якщо індекс більше не існує, звернення до послідовності спричиняє IndexError. Використовуйте list(music.seqs[ch]), щоб зберегти незалежну копію."
           },
           "value_type": "list[list[int]]",
           "advanced": false
@@ -9798,36 +9798,36 @@
           "type": "function",
           "signature": "Music.set(seq0, seq1, seq2, ...)",
           "description": {
-            "en": "Set the lists of sounds (0-63) for each channel. An empty list means the channel is not used.",
-            "cn": "设置各通道的声音 (0-63) 列表。空列表表示该通道不被使用。",
-            "de": "Setzt die Soundlisten (0-63) für jeden Kanal. Eine leere Liste bedeutet, dass der Kanal nicht verwendet wird.",
-            "es": "Establece las listas de sonidos (0-63) para cada canal. Una lista vacía significa que el canal no se usa.",
-            "fr": "Définit les listes de sons (0-63) pour chaque canal. Une liste vide signifie que le canal n'est pas utilisé.",
-            "it": "Imposta le liste dei suoni (0-63) per ogni canale. Una lista vuota indica che il canale non è utilizzato.",
-            "ja": "チャンネルのサウンド (0-63) のリストを設定する。空リストを指定するとそのチャンネルは再生に使用されない。",
-            "ko": "각 채널의 사운드 (0-63) 리스트를 설정합니다. 빈 리스트는 해당 채널이 사용되지 않음을 의미합니다.",
-            "pt": "Define as listas de sons (0-63) para cada canal. Uma lista vazia significa que o canal não é usado.",
-            "ru": "Устанавливает списки звуков (0-63) для каждого канала. Пустой список означает, что канал не используется.",
-            "tr": "Her kanal için ses listelerini (0-63) ayarlar. Boş liste kanalın kullanılmadığı anlamına gelir.",
-            "uk": "Встановлює списки звуків (0-63) для кожного каналу. Порожній список означає, що канал не використовується."
+            "en": "Set the lists of sound numbers (0-63) for each channel. An empty list means the channel is not used.",
+            "cn": "设置各通道的声音编号 (0-63) 列表。空列表表示该通道不被使用。",
+            "de": "Legt für jeden Kanal die Liste der Soundnummern (0-63) fest. Eine leere Liste bedeutet, dass der Kanal nicht verwendet wird.",
+            "es": "Establece la lista de números de sonido (0-63) de cada canal. Una lista vacía significa que el canal no se usa.",
+            "fr": "Définit la liste des numéros de son (0-63) de chaque canal. Une liste vide signifie que le canal n'est pas utilisé.",
+            "it": "Imposta la lista dei numeri di suono (0-63) per ciascun canale. Una lista vuota indica che il canale non è utilizzato.",
+            "ja": "チャンネルのサウンド番号 (0-63) のリストを設定する。空リストを指定するとそのチャンネルは再生に使用されない。",
+            "ko": "각 채널의 사운드 번호 (0-63) 리스트를 설정합니다. 빈 리스트는 해당 채널이 사용되지 않음을 의미합니다.",
+            "pt": "Define a lista de números de som (0-63) para cada canal. Uma lista vazia significa que o canal não é usado.",
+            "ru": "Задаёт список номеров звуков (0-63) для каждого канала. Пустой список означает, что канал не используется.",
+            "tr": "Her kanal için 0-63 arasındaki ses numaralarının listesini ayarlar. Boş liste kanalın kullanılmadığı anlamına gelir.",
+            "uk": "Задає список номерів звуків (0-63) для кожного каналу. Порожній список означає, що канал не використовується."
           },
           "params": [
             {
               "name": "seq0, seq1, ...",
               "type": "list[int]",
               "description": {
-                "en": "Sound lists for each channel. Empty list = unused.",
-                "cn": "各通道的声音列表。空列表=未使用。",
-                "de": "Soundlisten pro Kanal. Leere Liste = nicht verwendet.",
-                "es": "Listas de sonidos por canal. Lista vacía = no usado.",
-                "fr": "Listes de sons par canal. Liste vide = non utilisé.",
-                "it": "Liste di suoni per canale. Lista vuota = non usato.",
-                "ja": "各チャンネルのサウンドリスト。空リスト=未使用。",
-                "ko": "각 채널의 사운드 리스트. 빈 리스트 = 미사용.",
-                "pt": "Listas de sons por canal. Lista vazia = não usado.",
-                "ru": "Списки звуков для каждого канала. Пустой список = не используется.",
-                "tr": "Her kanal için ses listeleri. Boş liste = kullanılmıyor.",
-                "uk": "Списки звуків для кожного каналу. Порожній список = не використовується."
+                "en": "Sound numbers (0-63) for each channel. An empty list leaves the channel unused.",
+                "cn": "各通道的声音编号 (0-63) 列表。空列表表示不使用该通道。",
+                "de": "Pro Kanal eine Liste von Soundnummern (0-63). Eine leere Liste lässt den Kanal unbenutzt.",
+                "es": "Números de sonido (0-63) de cada canal. Una lista vacía deja el canal sin usar.",
+                "fr": "Numéros de son (0-63) pour chaque canal. Une liste vide laisse le canal inutilisé.",
+                "it": "Numeri di suono (0-63) per ciascun canale. Una lista vuota lascia il canale inutilizzato.",
+                "ja": "各チャンネルのサウンド番号 (0-63) のリスト。空のリストを指定したチャンネルは使用しない。",
+                "ko": "각 채널의 사운드 번호 (0-63) 리스트입니다. 빈 리스트를 지정한 채널은 사용하지 않습니다.",
+                "pt": "Números de som (0-63) para cada canal. Uma lista vazia deixa o canal sem uso.",
+                "ru": "Для каждого канала — список номеров звуков (0-63). Пустой список означает, что канал не используется.",
+                "tr": "Her kanal için 0-63 arasındaki ses numaralarının listesi. Boş liste, kanalın kullanılmadığını belirtir.",
+                "uk": "Для кожного каналу — список номерів звуків (0-63). Порожній список означає, що канал не використовується."
               }
             }
           ],

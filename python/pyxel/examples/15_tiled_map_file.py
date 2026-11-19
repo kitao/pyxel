@@ -21,7 +21,8 @@ class App:
 
         for i in range(3):
             pyxel.tilemaps[i] = pyxel.Tilemap.from_tmx("assets/urban_rpg.tmx", i)
-        # In Tiled, use CSV tile data, an embedded tileset, and 8x8 tiles.
+        # To create a TMX map in the Tiled map editor, use CSV tile data,
+        # an embedded tileset, and 8x8 tiles.
 
         self.player = (160, 80, 1, 0)  # (x, y, u, v)
         self.cars = [  # (x, y, dx, image)
@@ -42,11 +43,13 @@ class App:
         if pyxel.frame_count % 240 == 0:
             pyxel.stop()
 
-            # play=True plays immediately; otherwise gen_bgm returns MML for Sound.mml.
             preset = pyxel.rndi(0, 7)
             transp = pyxel.rndi(-5, 5)
             instr = pyxel.rndi(0, 3)
             seed = pyxel.rndi(0, 10000)
+            # play=True plays the music immediately. To use the list of MML strings:
+            #     mml_list = pyxel.gen_bgm(preset, transp, instr, seed)
+            #     pyxel.sounds[0].mml(mml_list[0])
             pyxel.gen_bgm(preset, transp, instr, seed, play=True)
 
         x, y, u, v = self.player

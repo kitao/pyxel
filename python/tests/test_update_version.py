@@ -36,6 +36,30 @@ def test_update_version_updates_and_verifies_every_runtime_surface(tmp_path):
     )
 
 
+@pytest.mark.parametrize(
+    "version", ["--help", "typo", "3.0", "3.0.0+LOCAL", "3.0.0a1+local"]
+)
+def test_invalid_release_version_preserves_all_files(tmp_path, version):
+    update_version = _load_update_version()
+    _write_version_files(tmp_path)
+    originals = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+
+    with pytest.raises(ValueError, match="invalid release version"):
+        update_version.update_version(version, tmp_path)
+
+    assert all(path.read_bytes() == data for path, data in originals.items())
+
+
+def test_update_version_preserves_local_wheel_spelling(tmp_path):
+    update_version = _load_update_version()
+    _write_version_files(tmp_path)
+
+    update_version.update_version("3.0.0+local.2", tmp_path)
+
+    assert 'version = "3.0.0+local.2"' in (tmp_path / "crates/Cargo.toml").read_text()
+    assert "pyxel-3.0.0+local.2-cp311" in (tmp_path / "wasm/pyxel.js").read_text()
+
+
 def test_update_version_leaves_files_unchanged_when_last_pattern_is_missing(tmp_path):
     update_version = _load_update_version()
     _write_version_files(tmp_path)

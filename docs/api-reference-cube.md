@@ -618,7 +618,7 @@ Returns the same rotation as mat.rot.
 
 ### `Quat.from_direction(forward, up=Vec3.UP)` — class *(Advanced)*
 
-Create a rotation facing the forward direction (the forward axis is -Z), keeping up as close as possible.
+Create a rotation that points the local -Z axis along forward and aligns the local +Y axis as closely as possible with up.
 
 **Parameters:**
 
@@ -879,7 +879,7 @@ Sample a Motion at the given frame, replacing matching local part transforms in 
 
 ### `play_motion(motion, *, loop=True, speed=1.0, start_frame=0.0)` — function
 
-Start per-update playback of a Motion on this Node.from_mesh() subtree.
+Start playing a Motion on this Node.from_mesh() subtree. Each update advances playback.
 
 **Parameters:**
 
@@ -1105,7 +1105,7 @@ Draw a filled box. When col_img is an Image, every face is textured with the who
 - `mat` (*Mat4*) — Placement relative to the node.
 - `size` (*Vec3*) — Edge lengths along each axis.
 - `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
-- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+- `colkey` (*int | None*) — Transparent color of the texture. If omitted, no color is skipped.
 
 **Example:**
 
@@ -1125,14 +1125,14 @@ Draw the 12 edges of a box.
 
 ### `sphere(pos, r, col_img=7, *, colkey=None)` — function
 
-Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.
+Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, its texture is mapped onto the sphere using an equirectangular projection.
 
 **Parameters:**
 
 - `pos` (*Vec3*) — Center position.
 - `r` (*float*) — Radius in node-local units; the node's transform scales it.
 - `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
-- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+- `colkey` (*int | None*) — Transparent color of the texture. If omitted, no color is skipped.
 
 ### `sphereb(pos, r, col)` — function
 
@@ -1155,7 +1155,7 @@ Draw a textured rectangle of size w x h on mat's local XY plane.
 - `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
 - `w` (*float*) — Width along mat's local X axis.
 - `h` (*float*) — Height along mat's local Y axis.
-- `colkey` (*int | None*) — Transparent color. Defaults to None.
+- `colkey` (*int | None*) — Transparent color. If omitted, no color is skipped.
 
 ### `sprite(pos, img, uvs, w, h, *, colkey=None, rotate=0.0)` — function
 
@@ -1168,7 +1168,7 @@ Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 - `uvs` (*tuple*) — UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.
 - `w` (*float*) — Width in world units.
 - `h` (*float*) — Height in world units.
-- `colkey` (*int | None*) — Transparent color. Defaults to None.
+- `colkey` (*int | None*) — Transparent color. If omitted, no color is skipped.
 - `rotate` (*float*) — Counterclockwise rotation as seen from the camera, in degrees. Defaults to 0.0.
 
 **Note:** Width and height are in world units. Node and ancestor transforms move the center but do not scale the sprite's size.
@@ -1182,7 +1182,7 @@ Draw a Primitive asset with its own mode and culling.
 - `mat` (*Mat4*) — Placement relative to the node.
 - `primitive` (*Primitive*) — The vertex data to draw.
 - `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
-- `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
+- `colkey` (*int | None*) — Transparent color of the texture. If omitted, no color is skipped.
 
 ### `text(pos, s, col, *, font=None)` — function
 
@@ -1233,7 +1233,7 @@ Cast a ray against the colliders in this subtree and return the closest hit.
 - `direction` (*Vec3*) — Ray direction.
 - `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
 - `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.
 
 **Returns:** `RaycastHit | None` — The closest hit, or None.
 
@@ -1253,7 +1253,7 @@ Cast a ray and return the nearest hit for each collider hit, sorted by distance.
 - `direction` (*Vec3*) — Ray direction.
 - `max_distance` (*float | None*) — Maximum hit distance. Defaults to None (unlimited).
 - `hit_triggers` (*bool*) — When True, trigger colliders can also be hit. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.
 
 **Returns:** `list`
 
@@ -1266,7 +1266,7 @@ Return every node in this subtree whose collider overlaps the given sphere.
 - `center` (*Vec3*) — Sphere center in world space.
 - `radius` (*float*) — Sphere radius.
 - `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.
 
 **Returns:** `list`
 
@@ -1279,7 +1279,7 @@ Return every node in this subtree whose collider overlaps the given box.
 - `mat` (*Mat4*) — World-space translation, rotation and nonzero scale of the box. Scale is applied to size; reflections are supported. Sheared, non-affine or non-finite matrices raise ValueError.
 - `size` (*Vec3*) — Local edge lengths along each axis. Absolute values are used. Non-finite lengths or scaled dimensions raise ValueError.
 - `hit_triggers` (*bool*) — When True, trigger colliders are also reported. Defaults to False.
-- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. Defaults to None.
+- `tags` (*set[str] | None*) — When set, only nodes carrying any of these tags are tested. If omitted, tags do not restrict the search.
 
 **Returns:** `list`
 
@@ -1564,7 +1564,7 @@ A hierarchical 3D model asset. primitives, transforms, parents, and names are pa
 - `parents` (*list[int]*) — Parent index of each part. -1 is a root. Defaults to empty.
 - `names` (*list[str] | None*) — Node name per part. Defaults to empty strings.
 - `col_img` (*int | Image*) — Default flat color number, or texture Image. Defaults to 7.
-- `colkey` (*int | None*) — Transparent color when col_img is an Image. Defaults to None.
+- `colkey` (*int | None*) — Transparent color when col_img is an Image. If omitted, no color is skipped.
 
 **Example:**
 
@@ -1629,7 +1629,7 @@ Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube p
 **Parameters:**
 
 - `filename` (*str*) — Path to the .glb file.
-- `colkey` (*int | None*) — Transparent palette color for the imported texture. Defaults to None.
+- `colkey` (*int | None*) — Palette index for texture transparency (0-15 in the default palette). If omitted (None), Pyxel uses an unused palette color when an alpha mask needs one and one is available.
 - `fps` (*float*) — Frames per second used to convert glTF animation times into Pyxel frames. Defaults to 30.0.
 
 **Returns:** `Mesh`
@@ -1651,7 +1651,7 @@ Return the indices of every part under part i.
 
 **Parameters:**
 
-- `i` (*int*) — The root part index.
+- `i` (*int*) — Index of the part whose descendants to return.
 
 **Returns:** `list`
 

@@ -77,7 +77,7 @@ do not by themselves promise byte-identical builds on every platform.
 
 ### Web wheel retention
 
-**Decision:** Commit a Web wheel only as the final artifact for its release
+**Decision:** Commit a web wheel only as the final artifact for its release
 tag. Keep intermediate development and audit builds out of committed history.
 Verify a retained release wheel against the source at its tag, and a development
 build against the source under test.

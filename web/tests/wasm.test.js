@@ -1334,14 +1334,19 @@ test("MML URL codec roundtrips UTF-8 and dispatches legacy URL forms", async () 
     LZString: {
       decompressFromEncodedURIComponent: (value) => {
         legacyCalls.push(value);
+        if (value === "QztEO0U7Rg") return "";
+        if (value === "O1QxMjUgVjcgRzQ7Ow") return "·";
         return "legacy MML";
+      },
+      compressToEncodedURIComponent: (text) => {
+        assert.equal(text, "·");
+        return "O1A";
       },
     },
   };
   vm.runInNewContext(sharedSource, context);
   for (const name of [
     "b64urlEncode",
-    "b64urlDecode",
     "compressDeflateRaw",
     "decompressDeflateRaw",
     "encodeMmlToUrl",
@@ -1365,6 +1370,13 @@ test("MML URL codec roundtrips UTF-8 and dispatches legacy URL forms", async () 
     assert.equal(legacyCalls.at(-1), value);
   }
   assert.equal(legacyCalls.length, 3);
+
+  // The original Studio joined four fields and used btoa without compression.
+  assert.equal(await context.decodeMmlFromUrl("QztEO0U7Rg"), "C;D;E;F");
+  assert.equal(
+    await context.decodeMmlFromUrl("O1QxMjUgVjcgRzQ7Ow"),
+    ";T125 V7 G4;;",
+  );
 });
 
 test("MML share updates keep the newest content when compression finishes out of order", async () => {

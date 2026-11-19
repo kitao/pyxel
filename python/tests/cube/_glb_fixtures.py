@@ -437,6 +437,7 @@ def write_single_texture_motion_glb(
     tangent_attribute: bool = False,
     alpha_mode: str | None = None,
     alpha_cutoff: float | None = None,
+    base_color_texture: bool = True,
     double_sided: bool | None = None,
 ) -> Path:
     positions = struct.pack(
@@ -524,7 +525,7 @@ def write_single_texture_motion_glb(
 
     materials = []
     for _ in range(material_count):
-        pbr = {"baseColorTexture": {"index": 0}}
+        pbr = {"baseColorTexture": {"index": 0}} if base_color_texture else {}
         if base_color_factor is not None:
             pbr["baseColorFactor"] = base_color_factor
         material = {"pbrMetallicRoughness": pbr}
@@ -638,28 +639,39 @@ def write_single_texture_motion_glb(
     return _write_glb(path, gltf, bin_blob)
 
 
-def write_alpha_texture_glb(path: Path) -> Path:
+def write_alpha_texture_glb(path: Path, *, alpha_mode: str | None = None) -> Path:
     return write_single_texture_motion_glb(
         path,
+        alpha_mode=alpha_mode,
         texture_pixels=[
             (0, 0, 0, 255),
             (255, 255, 255, 255),
             (255, 0, 0, 128),
-            (0, 255, 0, 255),
+            (0, 255, 0, 0),
         ],
     )
 
 
 def write_rgb_texture_glb(path: Path) -> Path:
-    return write_single_texture_motion_glb(path, png_color_type=2)
+    return write_single_texture_motion_glb(path, png_color_type=2, alpha_mode="MASK")
 
 
 def write_gray_texture_glb(path: Path) -> Path:
-    return write_single_texture_motion_glb(path, png_color_type=0)
+    return write_single_texture_motion_glb(path, png_color_type=0, alpha_mode="MASK")
 
 
 def write_gray_alpha_texture_glb(path: Path) -> Path:
-    return write_single_texture_motion_glb(path, png_color_type=4)
+    return write_single_texture_motion_glb(
+        path,
+        png_color_type=4,
+        texture_pixels=[
+            (0, 0, 0, 255),
+            (255, 255, 255, 255),
+            (255, 255, 255, 0),
+            (0, 0, 0, 255),
+        ],
+        alpha_mode="MASK",
+    )
 
 
 def write_tinted_texture_glb(path: Path) -> Path:

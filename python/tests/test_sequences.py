@@ -607,7 +607,8 @@ class TestDeprecatedSequenceMethods:
         wrapper_name = type(sequence).__name__
         original = list(sequence)
         try:
-            result = sequence.from_list(replacements)  # type: ignore[attr-defined]
+            from_list = sequence.from_list  # type: ignore[attr-defined]
+            result = from_list(replacements)
             assert result is None
             assert sequence_snapshot(case, sequence) == sequence_snapshot(
                 case, replacements
@@ -616,8 +617,41 @@ class TestDeprecatedSequenceMethods:
                 capfd.readouterr().out == f"{wrapper_name}.from_list() is deprecated. "
                 "Use slice assignment instead.\n"
             )
+            for keyword in ("lst", "vec"):
+                sequence[:] = original
+                assert from_list(**{keyword: replacements}) is None
+                assert sequence_snapshot(case, sequence) == sequence_snapshot(
+                    case, replacements
+                )
         finally:
             sequence[:] = original
+
+    @pytest.mark.parametrize("nested", [False, True], ids=["sound-notes", "music-seqs"])
+    def test_from_list_requires_exactly_one_sequence(self, nested):
+        if nested:
+            seq = pyxel.Music().seqs
+            keyword, initial, replacement = "list", [[2]], [[7]]
+        else:
+            seq = pyxel.Sound().notes
+            keyword, initial, replacement = "vec", [2], [7]
+        seq[:] = initial
+        invalid_calls = [
+            ((), {}),
+            ((replacement, replacement), {}),
+            ((replacement,), {keyword: replacement}),
+            ((replacement,), {"lst": None}),
+            ((None,), {"lst": replacement}),
+            ((), {"lst": replacement, keyword: replacement}),
+            ((), {"lst": replacement, keyword: None}),
+            ((), {"lst": None, keyword: replacement}),
+            ((), {"other": replacement}),
+            ((), {"lst": None}),
+            ((), {keyword: [object()]}),
+        ]
+        for args, kwargs in invalid_calls:
+            with pytest.raises(TypeError):
+                seq.from_list(*args, **kwargs)  # type: ignore[attr-defined]
+            assert list(seq) == initial
 
     @pytest.mark.parametrize("case", DEPRECATED_SEQUENCE_CASES)
     def test_to_list_returns_values_and_warns(self, capfd, case):

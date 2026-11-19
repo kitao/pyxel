@@ -77,6 +77,12 @@ class MusicEditor(EditorBase):
 
     # Public methods
 
+    def refresh_resource(self):
+        self._music_picker.set_bank_size(len(pyxel.musics))
+        count = min(len(pyxel.sounds), pyxel.NUM_SOUNDS)
+        self.field_cursor.max_field_values = [count - 1] * 4
+        self._sound_selector.set_sound_count(count)
+
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return None
@@ -113,19 +119,23 @@ class MusicEditor(EditorBase):
     # Helpers
 
     def _play(self, is_partial):
+        tick = 0
+        try:
+            if is_partial:
+                field = self.field_cursor.field
+                for i in range(self.field_cursor.x):
+                    sound = pyxel.sounds[field[i]]
+                    tick += len(sound.notes) * sound.speed
+            pyxel.playm(self.music_index_var, sec=tick / 120, loop=self.should_loop_var)
+        except Exception as e:  # noqa: BLE001 - Native playback raises plain Exception.
+            print(f"Failed to play music: {e}")
+            return
+
         self.is_playing_var = True
         self._music_picker.is_enabled_var = False
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
-
-        tick = 0
-        if is_partial:
-            music = pyxel.musics[self.music_index_var]
-            for i in range(self.field_cursor.x):
-                sound = pyxel.sounds[music.seqs[self.field_cursor.y][i]]
-                tick += len(sound.notes) * sound.speed
-        pyxel.playm(self.music_index_var, sec=tick / 120, loop=self.should_loop_var)
 
     def _stop(self):
         self.is_playing_var = False

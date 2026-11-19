@@ -412,15 +412,27 @@
       }
 
       // A `+` (or its URLSearchParams space form) identifies lz-string data.
-      // For other values, try deflate-raw before the compatible lz-string form.
       async function decodeMmlFromUrl(value) {
         if (value.includes("+") || value.includes(" ")) {
           return LZString.decompressFromEncodedURIComponent(value);
         }
+        let raw;
         try {
-          return await decompressDeflateRaw(b64urlDecode(value));
+          raw = atob(value.replace(/-/g, "+").replace(/_/g, "/"));
+          return await decompressDeflateRaw(
+            Uint8Array.from(raw, (c) => c.charCodeAt(0)),
+          );
         } catch {
-          return LZString.decompressFromEncodedURIComponent(value);
+          const text = LZString.decompressFromEncodedURIComponent(value);
+          // The first Studio encoded four semicolon-separated fields directly.
+          // lz-string can also return short, spurious text for that input.
+          if (
+            raw?.split(";").length === 4 &&
+            (!text || LZString.compressToEncodedURIComponent(text) !== value)
+          ) {
+            return raw;
+          }
+          return text;
         }
       }
 
@@ -444,10 +456,6 @@
           .replace(/\+/g, "-")
           .replace(/\//g, "_")
           .replace(/=+$/, "");
-      }
-
-      function b64urlDecode(s) {
-        return base64ToUint8(s.replace(/-/g, "+").replace(/_/g, "/"));
       }
 
       function setButtonStyle(button, isActive) {

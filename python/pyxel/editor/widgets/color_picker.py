@@ -91,7 +91,7 @@ class ColorPicker(Widget):
 
     def _draw_cursor(self):
         col = self.value_var
-        if col >= pyxel.num_user_colors:
+        if col >= min(pyxel.num_user_colors, self._num_cols * self._num_rows):
             return
 
         cw = self._color_width

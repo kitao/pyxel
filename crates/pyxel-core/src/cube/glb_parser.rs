@@ -14,12 +14,13 @@ use crate::cube::primitive::{
     MODE_TRIANGLES,
 };
 use crate::cube::quat::Quat;
+use crate::cube::shading::srgb_to_linear;
 use crate::cube::vec3::Vec3;
 use crate::image::{Color, Image, RcImage, Rgb24};
 use crate::settings::MAX_COLORS;
 
-type TextureTint = [f32; 3];
-type TextureTintKey = (u32, u32, u32);
+type TextureTint<'a> = Option<[&'a [u8; 256]; 3]>;
+type TextureTintKey = [u32; 3];
 type ImageCacheKey = (usize, TextureTintKey, Option<(i32, u32)>);
 
 pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
@@ -102,7 +103,7 @@ fn rgba8_to_pyxel_image(
     height: u32,
     rgba: &[u8],
     colors: &[Rgb24],
-    color_factor: TextureTint,
+    color_factor: TextureTint<'_>,
     alpha_mask: Option<(Color, f32)>,
 ) -> Result<RcImage, String> {
     let width_usize = width as usize;
@@ -150,12 +151,13 @@ fn rgba8_to_pyxel_image(
     Ok(rc)
 }
 
-fn tinted_rgb(rgba: &[u8], base: usize, color_factor: TextureTint) -> (u8, u8, u8) {
-    (
-        (rgba[base] as f32 * color_factor[0]).round() as u8,
-        (rgba[base + 1] as f32 * color_factor[1]).round() as u8,
-        (rgba[base + 2] as f32 * color_factor[2]).round() as u8,
-    )
+fn tinted_rgb(rgba: &[u8], base: usize, color_factor: TextureTint<'_>) -> (u8, u8, u8) {
+    let (r, g, b) = (rgba[base], rgba[base + 1], rgba[base + 2]);
+    if let Some([red, green, blue]) = color_factor {
+        (red[r as usize], green[g as usize], blue[b as usize])
+    } else {
+        (r, g, b)
+    }
 }
 
 fn image_to_rgba8(img: &gltf::image::Data) -> Result<Vec<u8>, String> {
@@ -263,7 +265,7 @@ fn mark_texture_palette_usage(
     height: u32,
     rgba: &[u8],
     colors: &[Rgb24],
-    color_factor: TextureTint,
+    color_factor: TextureTint<'_>,
     alpha_cutoff: Option<f32>,
     used_colors: &mut [bool],
 ) -> Result<bool, String> {
@@ -324,6 +326,15 @@ fn rgb_to_palette_color(rgb: (u8, u8, u8), colors: &[Rgb24]) -> Result<Color, St
     Ok(closest_color)
 }
 
+fn linear_to_srgb8(linear: f32) -> u8 {
+    let srgb = if linear <= 0.003_130_8 {
+        linear * 12.92
+    } else {
+        1.055 * linear.powf(1.0 / 2.4) - 0.055
+    };
+    (srgb * 255.0).round() as u8
+}
+
 // The factor-alpha warning lives in validate_texture_usage; these
 // converters run in both material passes and stay silent.
 fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
@@ -331,13 +342,13 @@ fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
         return Err("GLB material baseColorFactor must be finite".to_string());
     }
     Ok((
-        (factor[0].clamp(0.0, 1.0) * 255.0).round() as u8,
-        (factor[1].clamp(0.0, 1.0) * 255.0).round() as u8,
-        (factor[2].clamp(0.0, 1.0) * 255.0).round() as u8,
+        linear_to_srgb8(factor[0].clamp(0.0, 1.0)),
+        linear_to_srgb8(factor[1].clamp(0.0, 1.0)),
+        linear_to_srgb8(factor[2].clamp(0.0, 1.0)),
     ))
 }
 
-fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTintKey), String> {
+fn texture_tint_key(factor: [f32; 4]) -> Result<TextureTintKey, String> {
     if factor.iter().any(|component| !component.is_finite()) {
         return Err("GLB material baseColorFactor must be finite".to_string());
     }
@@ -346,8 +357,27 @@ fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTi
         factor[1].clamp(0.0, 1.0),
         factor[2].clamp(0.0, 1.0),
     ];
-    let key = (tint[0].to_bits(), tint[1].to_bits(), tint[2].to_bits());
-    Ok((tint, key))
+    Ok(tint.map(f32::to_bits))
+}
+
+fn texture_tint(key: TextureTintKey, tables: &mut HashMap<u32, [u8; 256]>) -> TextureTint<'_> {
+    if key == [1.0_f32.to_bits(); 3] {
+        return None;
+    }
+    // Materials and both import passes can share the same linear RGB factor.
+    for component in key {
+        tables.entry(component).or_insert_with(|| {
+            let factor = f32::from_bits(component);
+            std::array::from_fn(|value| {
+                if factor == 1.0 {
+                    value as u8
+                } else {
+                    linear_to_srgb8(srgb_to_linear(value as f32 / 255.0) * factor)
+                }
+            })
+        });
+    }
+    Some(key.map(|component| &tables[&component]))
 }
 
 fn import_materials(
@@ -359,21 +389,22 @@ fn import_materials(
     validate_palette(&colors)?;
     let mut used_colors = vec![false; colors.len()];
     let mut needs_mask_colkey = false;
+    let mut tint_tables = HashMap::new();
 
     for material in document.materials() {
         let pbr = material.pbr_metallic_roughness();
         let alpha_cutoff = mask_alpha_cutoff(&material)?;
         if let Some(texture_info) = pbr.base_color_texture() {
-            let (tint, _) = base_color_factor_to_tint(pbr.base_color_factor())?;
             let image_index = texture_info.texture().source().index();
             if let Some(img) = images.get(image_index) {
+                let tint_key = texture_tint_key(pbr.base_color_factor())?;
                 let rgba = image_to_rgba8(img)?;
                 needs_mask_colkey |= mark_texture_palette_usage(
                     img.width,
                     img.height,
                     &rgba,
                     &colors,
-                    tint,
+                    texture_tint(tint_key, &mut tint_tables),
                     alpha_cutoff,
                     &mut used_colors,
                 )?;
@@ -398,7 +429,7 @@ fn import_materials(
         let pbr = material.pbr_metallic_roughness();
         let alpha_cutoff = mask_alpha_cutoff(&material)?;
         let col_img = if let Some(texture_info) = pbr.base_color_texture() {
-            let (tint, tint_key) = base_color_factor_to_tint(pbr.base_color_factor())?;
+            let tint_key = texture_tint_key(pbr.base_color_factor())?;
             let image_index = texture_info.texture().source().index();
             let mask_colkey = resolved_colkey.zip(alpha_cutoff);
             let cache_key = (
@@ -416,7 +447,7 @@ fn import_materials(
                     img.height,
                     &rgba,
                     &colors,
-                    tint,
+                    texture_tint(tint_key, &mut tint_tables),
                     mask_colkey.map(|(colkey, cutoff)| (colkey as Color, cutoff)),
                 )?;
                 image_cache.insert(cache_key, image.clone());

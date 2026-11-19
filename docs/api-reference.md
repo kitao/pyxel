@@ -37,7 +37,7 @@ Initialize the Pyxel application with the screen size (width, height).
 - `quit_key` (*int*) — Key to quit the application. Defaults to KEY_ESCAPE.
 - `display_scale` (*int | None*) — Display scale factor. If omitted, automatically determined.
 - `capture_scale` (*int*) — Screen capture scale factor. Defaults to 2.
-- `capture_sec` (*int*) — Maximum recording time for screen capture video. Defaults to 10.
+- `capture_sec` (*int*) — Maximum screen recording duration in seconds. Defaults to 10.
 - `headless` (*bool*) — Run without a window. Defaults to False.
 
 **Example:**
@@ -424,7 +424,7 @@ Set the dropped file list for the current frame. Replaces any existing list. Mai
 
 ### `colors` — variable
 
-List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.
+The default palette has 16 colors (0-15). List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette.
 
 - **Type:** `list[int]`
 
@@ -685,7 +685,7 @@ Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image insta
 - `h` (*float*) — Height (negative to flip)
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
-- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
+- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1 (original size).
 
 ### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0.0, scale=1.0)` — function
 
@@ -702,7 +702,7 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instanc
 - `h` (*float*) — Height in pixels (negative to flip)
 - `colkey` (*int | None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
-- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
+- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1 (original size).
 
 ### `blt3d(x, y, w, h, img, pos, rot, fov=60.0, colkey=None)` — function *(Advanced)*
 
@@ -769,11 +769,11 @@ Draw a string s in color col at (x, y).
 
 ### Resource Constants
 
-- `NUM_COLORS` — 16 — Number of palette colors
-- `NUM_IMAGES` — 3 — Number of image banks (0-2)
-- `IMAGE_SIZE` — 256 — Image width and height
-- `NUM_TILEMAPS` — 8 — Number of tilemaps (0-7)
-- `TILEMAP_SIZE` — 256 — Tilemap width and height
+- `NUM_COLORS` — 16 — Initial number of palette colors (0-15)
+- `NUM_IMAGES` — 3 — Initial number of image banks (0-2)
+- `IMAGE_SIZE` — 256 — Initial image width and height
+- `NUM_TILEMAPS` — 8 — Initial number of tilemaps (0-7)
+- `TILEMAP_SIZE` — 256 — Initial tilemap width and height
 - `TILE_SIZE` — 8 — Tile size in pixels
 - `FONT_WIDTH` — 4 — Built-in font width
 - `FONT_HEIGHT` — 6 — Built-in font height
@@ -888,10 +888,10 @@ Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, ins
 
 ### Resource Constants
 
-- `NUM_CHANNELS` — 4 — Number of audio channels (0-3)
-- `NUM_TONES` — 4 — Number of tone types (0-3)
-- `NUM_SOUNDS` — 64 — Number of sounds (0-63)
-- `NUM_MUSICS` — 8 — Number of music tracks (0-7)
+- `NUM_CHANNELS` — 4 — Initial number of audio channels (0-3)
+- `NUM_TONES` — 4 — Initial number of tone types (0-3)
+- `NUM_SOUNDS` — 64 — Initial number of sounds (0-63)
+- `NUM_MUSICS` — 8 — Initial number of music tracks (0-7)
 
 ## Math
 
@@ -1193,13 +1193,13 @@ Tilemap height (in tiles)
 
 ### `Tilemap.imgsrc` — variable
 
-The image bank (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading.
+The image bank number (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading.
 
 - **Type:** `int | Image`
 
 ### `Tilemap.set(x, y, data)` — function
 
-Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.
+Set the tilemap at (x, y) using a list of strings. Each group of four hexadecimal digits encodes a tile (image_tx, image_ty). No separator is required. Spaces, tabs, and line breaks are ignored.
 
 **Parameters:**
 
@@ -1281,19 +1281,19 @@ Create a new Sound instance.
 
 ### `Sound.notes` — variable
 
-List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1.
+Note numbers (0-59), from C0 to B4 in semitone steps. Use -1 for a rest. With a wavetable tone, A2 (33) is 440 Hz.
 
 - **Type:** `list[int]`
 
 ### `Sound.tones` — variable
 
-List of tones (0: Triangle, 1: Square, 2: Pulse, 3: Noise).
+List of tone numbers. The default tones are Triangle (0), Square (1), Pulse (2), and Noise (3).
 
 - **Type:** `list[int]`
 
 ### `Sound.volumes` — variable
 
-List of volumes (0-7).
+List of volumes (0-7), from silence to normal volume.
 
 - **Type:** `list[int]`
 
@@ -1323,7 +1323,7 @@ Set notes, tones, volumes, and effects using strings. If the tones, volumes, or 
 
 ### `Sound.set_notes(notes)` — function
 
-Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Case-insensitive, whitespace is ignored.
+Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Letter case, spaces, tabs, and line breaks are ignored.
 
 **Parameters:**
 
@@ -1337,7 +1337,7 @@ pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")
 
 ### `Sound.set_tones(tones)` — function
 
-Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.
+Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Letter case, spaces, tabs, and line breaks are ignored.
 
 **Parameters:**
 
@@ -1351,7 +1351,7 @@ pyxel.sounds[0].set_tones("ttss pppn")
 
 ### `Sound.set_volumes(volumes)` — function
 
-Set the volumes with a string of 01234567. Whitespace is ignored.
+Set the volumes with a string of 01234567. Spaces, tabs, and line breaks are ignored.
 
 **Parameters:**
 
@@ -1365,7 +1365,7 @@ pyxel.sounds[0].set_volumes("7777 7531")
 
 ### `Sound.set_effects(effects)` — function
 
-Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.
+Set the effects with a string of NSVFHQ. Letter case, spaces, tabs, and line breaks are ignored.
 
 **Parameters:**
 
@@ -1393,7 +1393,7 @@ pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.")
 
 ### `Sound.mml()` — function
 
-Exit MML mode and return to normal mode.
+Return to normal playback if MML mode is active.
 
 ### `Sound.pcm(filename)` — function
 
@@ -1411,7 +1411,7 @@ pyxel.sounds[0].pcm("sounds/bgm.ogg")
 
 ### `Sound.pcm()` — function
 
-Exit PCM mode and return to normal mode.
+Return to normal playback if PCM mode is active.
 
 ### `Sound.save(filename, sec, ffmpeg=False)` — function *(Advanced)*
 
@@ -1439,17 +1439,17 @@ Create a new Music instance.
 
 ### `Music.seqs` — variable
 
-A two-dimensional list of sounds (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy.
+A two-dimensional list of sound numbers (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy.
 
 - **Type:** `list[list[int]]`
 
 ### `Music.set(seq0, seq1, seq2, ...)` — function
 
-Set the lists of sounds (0-63) for each channel. An empty list means the channel is not used.
+Set the lists of sound numbers (0-63) for each channel. An empty list means the channel is not used.
 
 **Parameters:**
 
-- `seq0, seq1, ...` (*list[int]*) — Sound lists for each channel. Empty list = unused.
+- `seq0, seq1, ...` (*list[int]*) — Sound numbers (0-63) for each channel. An empty list leaves the channel unused.
 
 **Example:**
 

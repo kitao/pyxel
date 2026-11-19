@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, clamp
+from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, clamp, resolve_image
 from .widgets import Widget
 
 
@@ -58,7 +58,10 @@ class TilemapViewer(Widget):
 
     def __on_update(self):
         tilemap = pyxel.tilemaps[self.tilemap_index_var]
-        image = pyxel.images[tilemap.imgsrc]
+        image = resolve_image(tilemap.imgsrc)
+        if image is None:
+            self._tilemap_image.cls(0)
+            return
 
         # Refresh a slice of the preview each frame by sampling representative pixels.
         start_y = pyxel.frame_count % 8 * 8

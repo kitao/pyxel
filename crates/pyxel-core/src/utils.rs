@@ -99,25 +99,18 @@ pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
         .collect()
 }
 
-pub fn expand_vec<T: Clone>(vec: &[T], new_len: usize) -> Vec<T> {
-    assert!(!vec.is_empty());
-    let mut new_vec = vec.to_vec();
-    let last = new_vec.last().cloned().unwrap();
-    new_vec.resize(new_len, last);
-    new_vec
+fn expand_vec<T>(vec: &[T], new_len: usize) -> impl Iterator<Item = &T> {
+    vec.iter()
+        .chain(std::iter::repeat(vec.last().unwrap()))
+        .take(new_len)
 }
 
-pub fn expand_vec2<T: Clone>(
+pub fn expand_vec2<T>(
     vec: &[Vec<T>],
     new_outer_len: usize,
     new_inner_len: usize,
-) -> Vec<Vec<T>> {
-    assert!(!vec.is_empty());
-    let new_vec: Vec<_> = vec
-        .iter()
-        .map(|inner_vec| expand_vec(inner_vec, new_inner_len))
-        .collect();
-    expand_vec(&new_vec, new_outer_len)
+) -> impl Iterator<Item = &T> {
+    expand_vec(vec, new_outer_len).flat_map(move |row| expand_vec(row, new_inner_len))
 }
 
 pub fn trim_empty_vec<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
@@ -215,42 +208,22 @@ mod tests {
     }
 
     #[test]
-    fn test_expand_vec() {
-        assert_eq!(expand_vec(&[1, 2, 3], 5), vec![1, 2, 3, 3, 3]);
-        assert_eq!(expand_vec(&[4], 3), vec![4, 4, 4]);
-        assert_eq!(expand_vec(&[1, 2, 3], 2), vec![1, 2]);
-    }
-
-    #[test]
-    fn test_expand_vec_same_length() {
-        assert_eq!(expand_vec(&[1, 2, 3], 3), vec![1, 2, 3]);
-    }
-
-    #[test]
     fn test_expand_vec2() {
-        assert_eq!(
-            expand_vec2(&[vec![1, 2], vec![3]], 4, 3),
-            vec![vec![1, 2, 2], vec![3, 3, 3], vec![3, 3, 3], vec![3, 3, 3]]
-        );
-        assert_eq!(
-            expand_vec2(
-                &[
-                    vec![1, 2, 4],
-                    vec![4, 5, 6],
-                    vec![7, 8, 9],
-                    vec![10, 11, 12]
-                ],
-                3,
-                2
-            ),
-            vec![vec![1, 2], vec![4, 5], vec![7, 8]]
+        assert!(expand_vec2(&[vec![1, 2], vec![3]], 4, 3)
+            .copied()
+            .eq([1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3]));
+        assert!(
+            expand_vec2(&[vec![1, 2, 4], vec![4, 5, 6], vec![7, 8, 9]], 2, 2)
+                .copied()
+                .eq([1, 2, 4, 5])
         );
     }
 
     #[test]
     fn test_expand_vec2_same_dimensions() {
-        let input = vec![vec![1, 2], vec![3, 4]];
-        assert_eq!(expand_vec2(&input, 2, 2), input);
+        assert!(expand_vec2(&[vec![1, 2], vec![3, 4]], 2, 2)
+            .copied()
+            .eq([1, 2, 3, 4]));
     }
 
     #[test]

@@ -21,7 +21,7 @@
 | `O <oct>` | Sets the octave. Range: -1 to 9. `O4`'s A is 440 Hz. Default is 4. |
 | `>` | Raises the octave by 1 (max 9). |
 | `<` | Lowers the octave by 1 (min -1). |
-| `L <len>` | Sets the default note/rest length. Range: 1-192 (divisors of 192 only). `L4` is a quarter note, `L8` is an eighth note, and `L12` is an eighth note triplet. Default is 4. |
+| `L <len>` | Sets the default note/rest length. Range: 1-192 (divisors of 192 only). `L4` is a quarter note, `L8` is an eighth note, and `L12` is one note of an eighth-note triplet. Default is 4. |
 | `C/D/E/F/G/A/B` | Plays the specified note. Specify a length after the note, e.g., `F16`, to change the length of that note only. |
 | `R` | Rest. Range: 1-192 (divisors of 192 only). Specify a length after the rest, e.g., `R8`, to change the length of that rest only. |
 | `#` | Placed after a note, raises its pitch by a semitone. |

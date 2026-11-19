@@ -27,6 +27,7 @@ const meta = Object.fromEntries(
     .filter((tag) => "content" in tag)
     .map((tag) => [tag.property ?? tag.name, tag.content]),
 );
+
 // PNG stores big-endian sizes in its header; GIF stores little-endian ones.
 const imageSize = (file) => {
   const bytes = fs.readFileSync(file);

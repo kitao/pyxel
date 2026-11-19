@@ -265,6 +265,10 @@ impl Vec3 {
     }
 
     pub(crate) fn lerp_value(&self, other: &Self, t: f32) -> Self {
+        // Subtracting a large origin can round away the endpoint.
+        if t == 1.0 && self.is_finite() && other.is_finite() {
+            return *other;
+        }
         let value = Self {
             x: self.x + (other.x - self.x) * t,
             y: self.y + (other.y - self.y) * t,
@@ -383,7 +387,7 @@ impl Vec3 {
                 || [(self.x, other.x), (self.y, other.y), (self.z, other.z)]
                     .iter()
                     .any(|&(a, b)| a != 0.0 && b != 0.0 && !(a * b).is_normal()));
-        if (!other_len_sq.is_normal() || !dot.is_finite() || !scale.is_finite() || dot_underflows)
+        if (!other_len_sq.is_normal() || (dot != 0.0 && !scale.is_normal()) || dot_underflows)
             && self.is_finite()
             && other.is_finite()
             && (other.x != 0.0 || other.y != 0.0 || other.z != 0.0)

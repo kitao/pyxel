@@ -646,7 +646,7 @@ class Image:
             h: Height (negative to flip)
             colkey: Transparent color. If omitted, no transparency.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-            scale: Scale factor (centered on the copy region). Defaults to 1.
+            scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
         """
     def bltm(
         self,
@@ -673,7 +673,7 @@ class Image:
             h: Height in pixels (negative to flip)
             colkey: Transparent color. If omitted, no transparency.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-            scale: Scale factor (centered on the copy region). Defaults to 1.
+            scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
         """
     def blt3d(
         self,
@@ -746,7 +746,7 @@ class Tilemap:
     def height(self) -> int:
         """Tilemap height (in tiles)"""
     imgsrc: int | Image
-    """The image bank (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading."""
+    """The image bank number (0-2) or Image instance referenced by the tilemap. When this is an Image instance, pyxel.save records image bank 0 instead. Use an image bank number to preserve the reference when saving and loading."""
 
     def __init__(self, width: int, height: int, img: int | Image) -> None:
         """Create a new Tilemap instance.
@@ -767,7 +767,7 @@ class Tilemap:
     def data_ptr(self) -> Any:
         """Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty)."""
     def set(self, x: int, y: int, data: list[str]) -> None:
-        """Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.
+        """Set the tilemap at (x, y) using a list of strings. Each group of four hexadecimal digits encodes a tile (image_tx, image_ty). No separator is required. Spaces, tabs, and line breaks are ignored.
 
         Args:
             x: X coordinate (in tiles)
@@ -1013,9 +1013,9 @@ class Tilemap:
             v: Source Y in the tilemap
             w: Width (negative to flip)
             h: Height (negative to flip)
-            tilekey: Transparent tile
+            tilekey: Transparent tile. If omitted, all tiles are copied.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-            scale: Scale factor (centered on the copy region). Defaults to 1.
+            scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
         """
 
 class Channel:
@@ -1067,13 +1067,13 @@ class Tone:
 class Sound:
     @property
     def notes(self) -> list[int]:
-        """List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1."""
+        """Note numbers (0-59), from C0 to B4 in semitone steps. Use -1 for a rest. With a wavetable tone, A2 (33) is 440 Hz."""
     @property
     def tones(self) -> list[int]:
-        """List of tones (0: Triangle, 1: Square, 2: Pulse, 3: Noise)."""
+        """List of tone numbers. The default tones are Triangle (0), Square (1), Pulse (2), and Noise (3)."""
     @property
     def volumes(self) -> list[int]:
-        """List of volumes (0-7)."""
+        """List of volumes (0-7), from silence to normal volume."""
     @property
     def effects(self) -> list[int]:
         """List of effects (0: None, 1: Slide, 2: Vibrato, 3: FadeOut, 4: Half-FadeOut, 5: Quarter-FadeOut)."""
@@ -1100,7 +1100,7 @@ class Sound:
             speed: Playback speed
         """
     def set_notes(self, notes: str) -> None:
-        """Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Case-insensitive, whitespace is ignored.
+        """Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Letter case, spaces, tabs, and line breaks are ignored.
 
         Args:
             notes: Notes string
@@ -1109,7 +1109,7 @@ class Sound:
             pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")
         """
     def set_tones(self, tones: str) -> None:
-        """Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.
+        """Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Letter case, spaces, tabs, and line breaks are ignored.
 
         Args:
             tones: Tones string
@@ -1118,7 +1118,7 @@ class Sound:
             pyxel.sounds[0].set_tones("ttss pppn")
         """
     def set_volumes(self, volumes: str) -> None:
-        """Set the volumes with a string of 01234567. Whitespace is ignored.
+        """Set the volumes with a string of 01234567. Spaces, tabs, and line breaks are ignored.
 
         Args:
             volumes: Volumes string
@@ -1127,7 +1127,7 @@ class Sound:
             pyxel.sounds[0].set_volumes("7777 7531")
         """
     def set_effects(self, effects: str) -> None:
-        """Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.
+        """Set the effects with a string of NSVFHQ. Letter case, spaces, tabs, and line breaks are ignored.
 
         Args:
             effects: Effects string
@@ -1136,7 +1136,7 @@ class Sound:
             pyxel.sounds[0].set_effects("nfnf nvvs")
         """
     def mml(self, code: str | None = None) -> None:
-        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands (https://kitao.dev/pyxel/mml-studio/mml-commands.html) page. Call without arguments to exit MML mode and return to normal mode.
+        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands (https://kitao.dev/pyxel/mml-studio/mml-commands.html) page. Call without arguments to return to normal playback if MML mode is active.
 
         Args:
             code: MML string
@@ -1145,7 +1145,7 @@ class Sound:
             pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.")
         """
     def pcm(self, filename: str | None = None) -> None:
-        """Load an audio file (WAV/OGG) for playback. Call without arguments to exit PCM mode and return to normal mode.
+        """Load an audio file (WAV/OGG) for playback. Call without arguments to return to normal playback if PCM mode is active.
 
         Args:
             filename: Audio file name (WAV/OGG)
@@ -1171,7 +1171,7 @@ class Sound:
 class Music:
     @property
     def seqs(self) -> list[list[int]]:
-        """A two-dimensional list of sounds (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy."""
+        """A two-dimensional list of sound numbers (0-63) across multiple channels. Each inner sequence refers to a channel index in this Music. Replacing, inserting, or removing channels can change the data it exposes; if that index no longer exists, accessing it raises IndexError. Use list(music.seqs[ch]) to keep an independent copy."""
 
     def __init__(self) -> None:
         """Create a new Music instance."""
@@ -1179,10 +1179,10 @@ class Music:
         self,
         *seqs: list[int],
     ) -> None:
-        """Set the lists of sounds (0-63) for each channel. An empty list means the channel is not used.
+        """Set the lists of sound numbers (0-63) for each channel. An empty list means the channel is not used.
 
         Args:
-            seq0, seq1, ...: Sound lists for each channel. Empty list = unused.
+            seq0, seq1, ...: Sound numbers (0-63) for each channel. An empty list leaves the channel unused.
 
         Example::
             pyxel.musics[0].set([0, 1], [], [3])
@@ -1225,7 +1225,7 @@ def init(
         quit_key: Key to quit the application. Defaults to KEY_ESCAPE.
         display_scale: Display scale factor. If omitted, automatically determined.
         capture_scale: Screen capture scale factor. Defaults to 2.
-        capture_sec: Maximum recording time for screen capture video. Defaults to 10.
+        capture_sec: Maximum screen recording duration in seconds. Defaults to 10.
         headless: Run without a window. Defaults to False.
 
     Example::
@@ -1480,7 +1480,7 @@ def set_dropped_files(files: list[str]) -> None:
 
 # Graphics
 colors: list[int]
-"""List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette."""
+"""The default palette has 16 colors (0-15). List of 1-256 palette display colors, each specified as a 24-bit value. To replace the entire palette, assign a list to pyxel.colors[:]. Assigning a list to pyxel.colors does not update the palette."""
 images: list[Image]
 """Image banks (Image instances) (0-2)."""
 tilemaps: list[Tilemap]
@@ -1713,7 +1713,7 @@ def blt(
         h: Height (negative to flip)
         colkey: Transparent color. If omitted, no transparency.
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-        scale: Scale factor (centered on the copy region). Defaults to 1.
+        scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
     """
 
 def bltm(
@@ -1740,7 +1740,7 @@ def bltm(
         h: Height in pixels (negative to flip)
         colkey: Transparent color. If omitted, no transparency.
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
-        scale: Scale factor (centered on the copy region). Defaults to 1.
+        scale: Scale factor (centered on the copy region). Defaults to 1 (original size).
     """
 
 def blt3d(

@@ -22,6 +22,7 @@ const pages = [
   "user-guide/cube/index.html",
   "web-usage/index.html",
 ];
+
 const evaluate = (source, url, embedded = false) => {
   const location = new URL(url);
   const redirects = [];

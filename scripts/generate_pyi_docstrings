@@ -99,7 +99,9 @@ def _adapt_for_tilemap(item):
             p["description"] = {"en": "Tile (image_tx, image_ty)"}
         elif p["name"] == "colkey":
             p["name"] = "tilekey"
-            p["description"] = {"en": "Transparent tile"}
+            p["description"] = {
+                "en": "Transparent tile. If omitted, all tiles are copied."
+            }
         elif p["name"] == "img":
             p["name"] = "tm"
             p["description"] = {"en": "Tilemap number (0-7) or Tilemap instance"}

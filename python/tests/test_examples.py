@@ -136,10 +136,14 @@ import pyxel
 import pyxel.cli
 
 init = pyxel.init
+
+
 def init_headless(*args, **kwargs):
     script_dir = Path(sys._getframe(1).f_code.co_filename).parent
     init(*args, **kwargs, headless=True)
     os.chdir(script_dir)
+
+
 pyxel.init = init_headless
 pyxel.run = lambda update, draw: None
 pyxel.cli.play_pyxel_app(sys.argv[1])
@@ -147,9 +151,13 @@ import audio
 
 calls = []
 play = pyxel.play
+
+
 def record_play(*args, **kwargs):
     calls.append(args)
     return play(*args, **kwargs)
+
+
 pyxel.play = record_play
 
 for sound in audio.SOUNDS:
@@ -181,10 +189,14 @@ import pyxel
 import pyxel.cli
 
 init = pyxel.init
+
+
 def init_headless(*args, **kwargs):
     script_dir = Path(sys._getframe(1).f_code.co_filename).parent
     init(*args, **kwargs, headless=True)
     os.chdir(script_dir)
+
+
 pyxel.init = init_headless
 pyxel.run = lambda update, draw: None
 pyxel.cli.play_pyxel_app(sys.argv[1])
@@ -240,10 +252,14 @@ import pyxel
 import pyxel.cli
 
 init = pyxel.init
+
+
 def init_headless(*args, **kwargs):
     script_dir = Path(sys._getframe(1).f_code.co_filename).parent
     init(*args, **kwargs, headless=True)
     os.chdir(script_dir)
+
+
 pyxel.init = init_headless
 pyxel.run = lambda update, draw: None
 pyxel.cli.play_pyxel_app(sys.argv[1])

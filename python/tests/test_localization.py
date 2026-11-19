@@ -26,16 +26,21 @@ def test_localized_text_entries_are_complete_and_keep_placeholders():
         path = ROOT_DIR / relative_path
         document = json.loads(path.read_text(encoding="utf-8"))
         language_codes = {language["code"] for language in document["languages"]}
+        keyboard_notes = document.get("sound_keyboard_layout", {}).get("notes")
 
         for value in iter_json_objects(document):
             keys = set(value)
-            if not keys & language_codes or not any(
-                isinstance(text, str) for text in value.values()
-            ):
+            if not keys & language_codes:
                 continue
 
             assert keys == language_codes, (path, keys)
-            assert all(isinstance(text, str) for text in value.values()), (path, value)
+            if value is keyboard_notes:
+                for code, notes in value.items():
+                    assert isinstance(notes, list) and len(notes) == 12, (path, code)
+                    assert all(isinstance(note, str) and note.strip() for note in notes)
+                continue
+            for code, text in value.items():
+                assert isinstance(text, str) and text.strip(), (path, code, value)
             placeholder_sets = {
                 tuple(sorted(re.findall(r"\{\d+\}", text))) for text in value.values()
             }

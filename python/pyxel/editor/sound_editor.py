@@ -112,6 +112,10 @@ class SoundEditor(EditorBase):
 
     # Public methods
 
+    def refresh_resource(self):
+        self._sound_picker.set_bank_size(len(pyxel.sounds))
+        self._sync_speed_picker()
+
     def get_field(self, index):
         if 0 <= index < len(_SOUND_FIELDS):
             return getattr(pyxel.sounds[self.sound_index_var], _SOUND_FIELDS[index])

@@ -17,7 +17,7 @@ not enumerate the groups of individual files.
 **Decision:** Use the formatting targets in [`make format`](../../../Makefile).
 Rustfmt owns Rust formatting, Ruff owns Python sources, stubs, and the
 explicitly selected extensionless Python scripts, and Prettier owns the selected
-Web/WASM and configuration files. Ruff also formats Python fenced blocks in
+web/WASM and configuration files. Ruff also formats Python fenced blocks in
 Markdown, including the output of
 [generate_docs](../../../scripts/generate_docs). Keep their language-specific
 spacing: ordinary Python method bodies and consecutive one-line stub

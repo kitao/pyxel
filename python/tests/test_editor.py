@@ -21,7 +21,7 @@ from pyxel.editor.piano_roll import PianoRoll
 from pyxel.editor.sound_editor import SoundEditor
 from pyxel.editor.sound_field import SoundField
 from pyxel.editor.tilemap_editor import TilemapEditor
-from pyxel.editor.widgets import NumberPicker, ScrollBar, Widget
+from pyxel.editor.widgets import ColorPicker, NumberPicker, ScrollBar, Widget
 
 RESOURCE_FILE = str(
     Path(__file__).parent.parent / "pyxel" / "examples" / "assets" / "sample.pyxres"
@@ -45,6 +45,73 @@ def _param_id(editor, palette_count):
 
 
 class TestEditor:
+    def test_direct_image_survives_tilemap_refresh_and_bank_switch(self, monkeypatch):
+        original = pyxel.tilemaps[0]
+        dimensions = pyxel.width, pyxel.height
+        monkeypatch.setattr(pyxel, "num_user_colors", 0, raising=False)
+        image = pyxel.Image(8, 8)
+        image.cls(7)
+        try:
+            pyxel.resize(240, 180)
+            pyxel.tilemaps[0] = pyxel.Tilemap(8, 8, image)
+            parent = Widget(None, 0, 0, 240, 180)
+            parent.new_var("help_message_var", "")
+            editor = TilemapEditor(parent)
+            editor.refresh_resource()
+            editor.tilemap_index_var = 1
+            editor.tilemap_index_var = 0
+            editor.is_visible_var = True
+            editor.update_all()
+            editor.draw_all()
+            y = pyxel.frame_count % 8 * 8
+            assert editor._tilemap_viewer._tilemap_image.pget(0, y) == 7
+            assert (
+                pyxel.pget(editor._image_viewer.x + 4, editor._image_viewer.y + 4) == 7
+            )
+            assert (
+                pyxel.pget(editor._canvas_panel.x + 4, editor._canvas_panel.y + 4) == 7
+            )
+            image.pset(0, 0, 11)
+            assert pyxel.tilemaps[0].imgsrc.pget(0, 0) == 11
+
+            editor._image_picker.inc_button.trigger_event("press")
+            assert pyxel.tilemaps[0].imgsrc == 0
+        finally:
+            pyxel.tilemaps[0] = original
+            pyxel.resize(*dimensions)
+
+    @pytest.mark.parametrize(
+        "editor_class,banks,limit",
+        [(SoundEditor, "sounds", 48), (MusicEditor, "musics", 32)],
+    )
+    def test_audio_field_edits_preserve_data_beyond_grid(
+        self, editor_class, banks, limit
+    ):
+        bank = getattr(pyxel, banks)
+        original = bank[0]
+        try:
+            bank[0] = type(original)()
+            parent = Widget(None, 0, 0, 240, 180)
+            parent.new_var("help_message_var", "")
+            editor = editor_class(parent)
+            field = editor.get_field(0)
+            values = list(range(limit + 3))
+            field[:] = values
+            cursor = editor.field_cursor
+            cursor.move_to(0, 0, True)
+            cursor.insert(7)
+            assert list(field) == [7, *values[1:]]
+            editor.undo()
+            assert list(field) == values
+            editor.redo()
+            assert list(field) == [7, *values[1:]]
+
+            cursor.move_to(limit - 1, 0, False)
+            cursor.insert([8, 9])
+            assert list(field) == [7, *values[1 : limit - 1], 8, *values[limit:]]
+        finally:
+            bank[0] = original
+
     @pytest.mark.parametrize(
         "editor_class,bank_name",
         [(SoundEditor, "sounds"), (MusicEditor, "musics")],
@@ -204,6 +271,149 @@ assert pyxel.num_user_colors == 240
         finally:
             pyxel.clip()
             pyxel.resize(*dimensions)
+
+    def test_editor_uses_loaded_bank_counts(self, tmp_path):
+        pyxel.save(str(tmp_path / "full.pyxres"))
+        pyxel.save(
+            str(tmp_path / "skipped.pyxres"),
+            exclude_images=True,
+            exclude_tilemaps=True,
+            exclude_sounds=True,
+            exclude_musics=True,
+        )
+        banks = (pyxel.images, pyxel.tilemaps, pyxel.sounds, pyxel.musics)
+        original = [list(bank) for bank in banks]
+        try:
+            pyxel.images[:] = [*original[0], pyxel.Image(8, 8)]
+            pyxel.tilemaps[:] = [pyxel.Tilemap(8, 8, 3)]
+            pyxel.save(str(tmp_path / "extra.pyxres"))
+            pyxel.images[:] = original[0][:1]
+            pyxel.sounds[:] = original[2][:1]
+            pyxel.save(
+                str(tmp_path / "partial.pyxres"),
+                exclude_tilemaps=True,
+                exclude_musics=True,
+            )
+            pyxel.images[:] = original[0][:2]
+            pyxel.tilemaps[:] = [pyxel.Tilemap(8, 8, 1)]
+            pyxel.sounds[:] = [*original[2][:16], pyxel.Sound()]
+            pyxel.sounds[16].speed = 123
+            pyxel.musics[:] = [pyxel.Music()]
+            pyxel.save(str(tmp_path / "small.pyxres"))
+        finally:
+            for bank, entries in zip(banks, original, strict=True):
+                bank[:] = entries
+
+        code = """
+import sys
+from pathlib import Path
+
+import pyxel
+from pyxel.editor.app import App
+
+folder = Path(sys.argv[1])
+small = str(folder / "small.pyxres")
+full = str(folder / "full.pyxres")
+
+init = pyxel.init
+pyxel.init = lambda *args, **kwargs: init(*args, **kwargs, headless=True)
+pyxel.run = lambda update, draw: None
+app = App(small, "music")
+image, tilemap, sound, music = app._editors
+pickers = (image._image_picker, tilemap._tilemap_picker, sound._sound_picker, music._music_picker)
+selector = music._sound_selector
+
+def drop(path):
+    pyxel._dropped_files = [path]
+    app.update_all()
+
+def check_small():
+    for panel, (picker, last) in enumerate(zip(pickers, (1, 0, 16, 0), strict=True)):
+        app.editor_type_var = panel
+        picker.value_var = last
+        picker.inc_button.trigger_event("press")
+        assert picker.value_var == last
+        assert not picker.inc_button.is_enabled_var
+        app.update_all()
+        app.draw_all()
+    assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 1
+    assert sound.speed_var == pyxel.sounds[16].speed == 123
+
+check_small()
+drop(full)
+for picker, size in zip(pickers, (3, 8, 64, 8), strict=True):
+    picker.value_var = size - 2
+    assert picker.inc_button.is_enabled_var
+    picker.inc_button.trigger_event("press")
+    assert picker.value_var == size - 1
+last_x, last_y = selector.x + 6 + 15 * 13, selector.y + 5 + 3 * 9
+pyxel.set_mouse_pos(last_x, last_y)
+selector.trigger_event("update")
+selector.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, last_x, last_y)
+assert selector._last_preview_sound == selector._pressed_sound == 63
+drop(small)
+assert selector._last_preview_sound is None and selector._pressed_sound is None
+assert [picker.value_var for picker in pickers] == [1, 0, 16, 0]
+check_small()
+drop(str(folder / "skipped.pyxres"))
+check_small()
+
+for index in (16, 17):
+    x = selector.x + 6 + (index % 16) * 13
+    y = selector.y + 5 + (index // 16) * 9
+    selector.trigger_event("mouse_down", pyxel.MOUSE_BUTTON_LEFT, x, y)
+    selector.trigger_event("mouse_up", pyxel.MOUSE_BUTTON_LEFT, x, y)
+assert list(music.get_field(0)) == [16]
+music.field_cursor.move_to(0, 0, False)
+music.field_cursor.shift(1)
+assert list(music.get_field(0)) == [16]
+app._save_button.trigger_event("press")
+pyxel.load(full)
+pyxel.load(small)
+assert [len(bank) for bank in (pyxel.images, pyxel.tilemaps, pyxel.sounds, pyxel.musics)] == [2, 1, 17, 1]
+assert list(pyxel.musics[0].seqs[0]) == [16]
+
+app.editor_type_var = 1
+drop(str(folder / "extra.pyxres"))
+app.draw_all()
+assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 3
+pyxel.musics[0].seqs[:] = [[16]]
+drop(str(folder / "partial.pyxres"))
+app.draw_all()
+assert len(pyxel.images) == 1
+assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 3
+previous_file = Path(small).read_bytes()
+app._save_button.trigger_event("press")
+assert app._save_failed
+assert Path(small).read_bytes() == previous_file
+assert pyxel.tilemaps[0].imgsrc == 3
+tilemap._image_picker.dec_button.trigger_event("press")
+assert tilemap.image_index_var == pyxel.tilemaps[0].imgsrc == 0
+app._save_button.trigger_event("press")
+assert not app._save_failed
+pyxel.load(small)
+assert len(pyxel.images) == 1 and pyxel.tilemaps[0].imgsrc == 0
+app.draw_all()
+app.editor_type_var = 3
+app.update_all()
+app.draw_all()
+assert len(pyxel.sounds) == 1
+assert selector._hit_sound_button(selector.x + 6, selector.y + 5) == 0
+assert selector._hit_sound_button(selector.x + 19, selector.y + 5) is None
+music.field_cursor.move_to(1, 0, False)
+music._play(False)
+music._play(True)
+assert not music.is_playing_var and list(music.get_field(0)) == [16]
+assert music._play_button.is_enabled_var
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(tmp_path)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
 
     def test_music_view_and_save_preserve_extra_channels(self, tmp_path):
         path = str(tmp_path / "six-channels.pyxres")
@@ -568,7 +778,7 @@ assert pyxel.images[0].pget(1, 1) == initial
 assert not old_editor.can_undo
 
 # Native initialization runs once; exercise the next App's construction,
-# resource loading, and input handling without simulating the Web reset API.
+# resource loading, and input handling without simulating the web reset API.
 pyxel.init = lambda *args, **kwargs: None
 pyxel.colors[:] = list(pyxel.colors)[: pyxel.NUM_COLORS]
 pyxel.set_btn(pyxel.MOUSE_BUTTON_LEFT, False)
@@ -991,6 +1201,32 @@ class TestWidget:
             pyxel.set_mouse_pos(*saved_pos)
             pyxel.flip()
             root._end_capture()
+
+
+class TestColorPicker:
+    @pytest.mark.parametrize(
+        "count,color,x,y,expected_pixel",
+        [
+            (16, 15, 60, 12, 7),
+            (64, 63, 62, 14, 7),
+            (65, 64, 2, 18, 1),
+            (240, 239, 62, 58, 1),
+        ],
+    )
+    def test_cursor_stays_in_visible_cells(
+        self, monkeypatch, count, color, x, y, expected_pixel
+    ):
+        original = list(pyxel.colors)
+        monkeypatch.setattr(pyxel, "num_user_colors", count, raising=False)
+        try:
+            pyxel.colors[:] = original[: pyxel.NUM_COLORS] + [0] * count
+            picker = ColorPicker(None, 0, 0, color)
+            pyxel.cls(1)
+            picker.draw_all()
+            assert pyxel.pget(x, y) == expected_pixel
+            assert picker.value_var == color
+        finally:
+            pyxel.colors[:] = original
 
 
 class TestNumberPicker:

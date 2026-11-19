@@ -311,17 +311,17 @@ def copy_runtime(files, target, version=None):
     script = files["pyxel.js"].decode("utf-8")
     match = re.search(r'const PYXEL_WHEEL_PATH\s*=\s*"([^"/]+\.whl)";', script)
     if not match:
-        raise ValueError("The runtime does not identify a Web wheel")
+        raise ValueError("The runtime does not identify a web wheel")
     wheel = match[1]
     with zipfile.ZipFile(io.BytesIO(files[wheel])) as contents:
         if contents.testzip():
-            raise ValueError(f"Corrupt Web wheel: {wheel}")
+            raise ValueError(f"Corrupt web wheel: {wheel}")
         if version:
             metadata = contents.read(f"pyxel-{version}.dist-info/METADATA").decode(
                 "utf-8"
             )
             if f"\nVersion: {version}\n" not in metadata:
-                raise ValueError(f"The Web wheel does not match version {version}")
+                raise ValueError(f"The web wheel does not match version {version}")
     names = {"pyxel.js", "pyxel.css", "import_hook.py", wheel}
     names.update(re.findall(r'const \w+_PATH\s*=\s*"([^"\n]+)";', script))
     names.update(name for name in files if name.startswith("images/"))

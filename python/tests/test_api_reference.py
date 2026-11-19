@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import pytest
+import pyxel
 
 ROOT_DIR = Path(__file__).parents[2]
 
@@ -11,6 +12,44 @@ REFERENCE_STUBS = (
     ("web/api-reference/api-reference.json", "python/pyxel/__init__.pyi"),
     ("web/api-reference/cube/api-reference.json", "python/pyxel/cube/__init__.pyi"),
 )
+
+
+@pytest.mark.parametrize(
+    ("function", "parameter", "bank_size"),
+    [
+        ("blt", "img", pyxel.NUM_IMAGES),
+        ("bltm", "tm", pyxel.NUM_TILEMAPS),
+        ("blt3d", "img", pyxel.NUM_IMAGES),
+        ("bltm3d", "tm", pyxel.NUM_TILEMAPS),
+        ("play", "ch", pyxel.NUM_CHANNELS),
+        ("play", "snd", pyxel.NUM_SOUNDS),
+        ("playm", "msc", pyxel.NUM_MUSICS),
+        ("stop", "ch", pyxel.NUM_CHANNELS),
+        ("play_pos", "ch", pyxel.NUM_CHANNELS),
+        ("Tilemap", "img", pyxel.NUM_IMAGES),
+        ("Channel.play", "snd", pyxel.NUM_SOUNDS),
+        ("Music.set", "seq0, seq1, ...", pyxel.NUM_SOUNDS),
+    ],
+)
+def test_reference_gives_default_bank_indices(function, parameter, bank_size):
+    reference = json.loads(
+        (ROOT_DIR / REFERENCE_STUBS[0][0]).read_text(encoding="utf-8")
+    )
+    item = next(
+        item
+        for category in reference["categories"]
+        for item in category["items"]
+        if item["name"] == function
+    )
+    argument = next(param for param in item["params"] if param["name"] == parameter)
+    bank_range = rf"(?<!\d)0\s*[-–〜～~]\s*{bank_size - 1}(?!\d)"
+    for language in reference["languages"]:
+        code = language["code"]
+        assert re.search(bank_range, argument["description"][code]), (
+            function,
+            parameter,
+            code,
+        )
 
 
 @pytest.mark.parametrize(("reference_path", "stub_path"), REFERENCE_STUBS)

@@ -457,18 +457,18 @@
       "uk": "Перетягування"
     },
     "drag_drop_body": {
-      "en": "Drop files anywhere on the page. A {0} file replaces the code; a {1} file replaces the resources. In the dropped code, the .pyxres file name passed to load() is replaced with my_resource.pyxres.",
-      "cn": "可将文件拖放到页面任意位置。{0} 文件替换代码，{1} 文件替换资源。在拖入的代码中，传给 load() 的 .pyxres 文件名会被替换为 my_resource.pyxres。",
-      "de": "Dateien können überall auf der Seite abgelegt werden. Eine {0}-Datei ersetzt den Code, eine {1}-Datei die Ressourcen. Im abgelegten Code wird der an load() übergebene .pyxres-Dateiname durch my_resource.pyxres ersetzt.",
-      "es": "Suelte archivos en cualquier parte de la página. Un archivo {0} reemplaza el código; un archivo {1} reemplaza los recursos. En el código soltado, el nombre de archivo .pyxres pasado a load() se sustituye por my_resource.pyxres.",
-      "fr": "Déposez les fichiers n'importe où sur la page. Un fichier {0} remplace le code ; un fichier {1} remplace les ressources. Dans le code déposé, le nom de fichier .pyxres passé à load() est remplacé par my_resource.pyxres.",
-      "it": "Trascinare i file in qualsiasi punto della pagina. Un file {0} sostituisce il codice; un file {1} sostituisce le risorse. Nel codice rilasciato, il nome del file .pyxres passato a load() viene sostituito con my_resource.pyxres.",
-      "ja": "画面のどこにでもファイルをドロップできます。{0} ファイルはコードを、{1} ファイルはリソースを置き換えます。ドロップしたコードでは、load() に渡す .pyxres ファイル名が my_resource.pyxres に置き換えられます。",
-      "ko": "페이지 어디에나 파일을 드롭할 수 있습니다. {0} 파일은 코드를, {1} 파일은 리소스를 교체합니다. 드롭한 코드에서는 load()에 전달하는 .pyxres 파일 이름이 my_resource.pyxres로 바뀝니다.",
-      "pt": "Solte arquivos em qualquer lugar da página. Um arquivo {0} substitui o código; um arquivo {1} substitui os recursos. No código solto, o nome de arquivo .pyxres passado para load() é substituído por my_resource.pyxres.",
-      "ru": "Перетащите файлы в любое место страницы. Файл {0} заменяет код, а файл {1} — ресурсы. В перетащенном коде имя файла .pyxres, переданное в load(), заменяется на my_resource.pyxres.",
-      "tr": "Dosyaları sayfanın herhangi bir yerine bırakabilirsiniz. {0} dosyası kodu, {1} dosyası kaynakları değiştirir. Bırakılan kodda load() işlevine verilen .pyxres dosya adı my_resource.pyxres ile değiştirilir.",
-      "uk": "Перетягніть файли в будь-яке місце сторінки. Файл {0} замінює код, а файл {1} — ресурси. У перетягнутому коді ім'я файлу .pyxres, передане в load(), замінюється на my_resource.pyxres."
+      "en": "Drop files anywhere on the page. A {0} file replaces the code; a {1} file replaces only the resource types it contains. In the dropped code, the .pyxres file name passed to load() is replaced with my_resource.pyxres.",
+      "cn": "可将文件拖放到页面任意位置。{0} 文件替换代码，{1} 文件只替换其中保存的资源类型。在拖入的代码中，传给 load() 的 .pyxres 文件名会被替换为 my_resource.pyxres。",
+      "de": "Dateien können überall auf der Seite abgelegt werden. Eine {0}-Datei ersetzt den Code, eine {1}-Datei nur die darin gespeicherten Ressourcenarten. Im abgelegten Code wird der an load() übergebene .pyxres-Dateiname durch my_resource.pyxres ersetzt.",
+      "es": "Suelte archivos en cualquier parte de la página. Un archivo {0} reemplaza el código; un archivo {1} reemplaza solo los tipos de recursos que contiene. En el código soltado, el nombre de archivo .pyxres pasado a load() se sustituye por my_resource.pyxres.",
+      "fr": "Déposez les fichiers n'importe où sur la page. Un fichier {0} remplace le code ; un fichier {1} remplace uniquement les types de ressources qu'il contient. Dans le code déposé, le nom de fichier .pyxres passé à load() est remplacé par my_resource.pyxres.",
+      "it": "Trascinare i file in qualsiasi punto della pagina. Un file {0} sostituisce il codice; un file {1} sostituisce solo i tipi di risorse che contiene. Nel codice rilasciato, il nome del file .pyxres passato a load() viene sostituito con my_resource.pyxres.",
+      "ja": "画面のどこにでもファイルをドロップできます。{0} ファイルはコードを、{1} ファイルはそこに保存されている種類のリソースだけを置き換えます。ドロップしたコードでは、load() に渡す .pyxres ファイル名が my_resource.pyxres に置き換えられます。",
+      "ko": "페이지 어디에나 파일을 드롭할 수 있습니다. {0} 파일은 코드를, {1} 파일은 그 파일에 저장된 종류의 리소스만 교체합니다. 드롭한 코드에서는 load()에 전달하는 .pyxres 파일 이름이 my_resource.pyxres로 바뀝니다.",
+      "pt": "Solte arquivos em qualquer lugar da página. Um arquivo {0} substitui o código; um arquivo {1} substitui apenas os tipos de recurso que contém. No código solto, o nome de arquivo .pyxres passado para load() é substituído por my_resource.pyxres.",
+      "ru": "Перетащите файлы в любое место страницы. Файл {0} заменяет код, а файл {1} — только ресурсы тех типов, которые в нём сохранены. В перетащенном коде имя файла .pyxres, переданное в load(), заменяется на my_resource.pyxres.",
+      "tr": "Dosyaları sayfanın herhangi bir yerine bırakabilirsiniz. {0} dosyası kodu, {1} dosyası ise yalnızca içinde kayıtlı türlerdeki kaynakları değiştirir. Bırakılan kodda load() işlevine verilen .pyxres dosya adı my_resource.pyxres ile değiştirilir.",
+      "uk": "Перетягніть файли в будь-яке місце сторінки. Файл {0} замінює код, а файл {1} — лише ресурси тих типів, які в ньому збережено. У перетягнутому коді ім'я файлу .pyxres, передане в load(), замінюється на my_resource.pyxres."
     },
     "sharing_title": {
       "en": "Sharing via URL",

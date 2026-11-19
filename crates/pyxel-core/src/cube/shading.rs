@@ -376,7 +376,7 @@ fn luminance([r, g, b]: [f32; 3]) -> f32 {
     0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
-fn srgb_to_linear(c: f32) -> f32 {
+pub(super) fn srgb_to_linear(c: f32) -> f32 {
     if c <= 0.04045 {
         c / 12.92
     } else {

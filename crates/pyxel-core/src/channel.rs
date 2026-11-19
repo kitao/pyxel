@@ -568,6 +568,12 @@ impl Channel {
                     self.start_mml_note(*midi_note, ticks, clocks);
                     return;
                 }
+                MmlCommand::Rest { duration_ticks } => {
+                    self.note_duration_clocks =
+                        u64::from(self.clocks_per_tick) * u64::from(*duration_ticks);
+                    return;
+                }
+
                 MmlCommand::Sequence {
                     commands,
                     play_count,
@@ -582,12 +588,6 @@ impl Channel {
                     });
                     self.command_index = 0;
                 }
-                MmlCommand::Rest { duration_ticks } => {
-                    self.note_duration_clocks =
-                        u64::from(self.clocks_per_tick) * u64::from(*duration_ticks);
-                    return;
-                }
-
                 MmlCommand::RepeatStart => {
                     self.repeat_points
                         .push((self.command_index, 0, self.sound_elapsed_clocks));
