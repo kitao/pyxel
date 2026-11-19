@@ -187,9 +187,9 @@ def test_from_glb_converts_gray_texture(tmp_path):
 
 def test_from_glb_converts_gray_alpha_texture(tmp_path):
     path = write_gray_alpha_texture_glb(tmp_path / "gray_alpha.glb")
-    mesh = Mesh.from_glb(str(path), colkey=0)
+    mesh = Mesh.from_glb(str(path), colkey=2)
     assert isinstance(mesh.col_img, Image)
-    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 7, 0]
+    assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 2, 0]
 
 
 def test_from_glb_loads_non_indexed_primitive(tmp_path):
@@ -238,12 +238,26 @@ def test_from_glb_loads_motion(tmp_path):
     assert mesh.motions[0].length == 30.0
 
 
-def test_from_glb_ignores_alpha_texture_without_colkey(tmp_path):
-    path = write_alpha_texture_glb(tmp_path / "alpha.glb")
+@pytest.mark.parametrize(
+    ("alpha_mode", "expected_warning"),
+    [
+        (None, ""),
+        (
+            "BLEND",
+            "Pyxel warning: GLB material alpha mode is not supported; alpha is ignored\n",
+        ),
+    ],
+)
+def test_from_glb_treats_default_and_blend_materials_as_opaque(
+    tmp_path, capfd, alpha_mode, expected_warning
+):
+    path = write_alpha_texture_glb(tmp_path / "alpha.glb", alpha_mode=alpha_mode)
     mesh = Mesh.from_glb(str(path))
+
     assert isinstance(mesh.col_img, Image)
     assert [mesh.col_img.pget(x, y) for y in range(2) for x in range(2)] == [0, 7, 8, 3]
     assert mesh.colkey is None
+    assert capfd.readouterr().err == expected_warning
 
 
 def test_from_glb_converts_mask_alpha_texture_pixels_to_auto_colkey(tmp_path):

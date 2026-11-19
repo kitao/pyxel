@@ -1,0 +1,43 @@
+name: Audit GLB texture interpretation on candidate wheels
+on:
+  push:
+    branches: [codex/3.0.3-build-audit-20261118]
+    paths: [.github/workflows/audit-texture-tests.yml, python/tests/cube/_glb_fixtures.py, python/tests/cube/test_glb_motion.py]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  textures:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-2022, arch: x64, target: x86_64-pc-windows-msvc}
+          - {os: windows-2022, arch: x86, target: i686-pc-windows-msvc}
+          - {os: windows-11-arm, arch: x64, target: x86_64-pc-windows-msvc}
+          - {os: macos-15, arch: arm64, target: aarch64-apple-darwin}
+          - {os: macos-15-intel, arch: x64, target: x86_64-apple-darwin}
+          - {os: ubuntu-24.04, arch: x64, target: x86_64-unknown-linux-gnu}
+          - {os: ubuntu-24.04-arm, arch: arm64, target: aarch64-unknown-linux-gnu}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          architecture: ${{ matrix.arch }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: pyxel-${{ matrix.target }}
+          path: dist
+          run-id: 44509872347
+          github-token: ${{ github.token }}
+      - name: Run texture and motion tests on the installed wheel
+        shell: bash
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: |
+          python -m pip install pytest
+          python -m pip install --no-index --no-deps dist/*.whl
+          python -m pytest -q python/tests/cube/test_glb_motion.py
