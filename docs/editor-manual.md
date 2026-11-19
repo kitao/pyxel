@@ -29,7 +29,7 @@ Operations common to all editors.
 
 ### Menu Bar
 
-The menu bar at the top of the screen contains four editor switching buttons, Undo/Redo buttons, and a Save button. The help message area on the right displays context-sensitive information based on the cursor position.
+The menu bar at the top of the screen contains four editor switching buttons, Undo/Redo buttons, and a Save button. The help message area on the right displays context-sensitive information based on the position of the mouse pointer or the editing cursor.
 
 ![Menu Bar](https://kitao.dev/pyxel/editor-manual/images/ui_menubar.png)
 

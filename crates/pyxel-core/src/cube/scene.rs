@@ -22,8 +22,8 @@ use crate::image::RcImage;
 
 // Per-frame rasterizer context shared across a Node::draw traversal
 
-// One transformed vertex in the prim scratch cache: world position and
-// screen projection (None = at or behind the camera plane).
+// World position and optional screen projection. Lines and near-clipped
+// triangles are projected after clipping.
 pub type ProjectedVertex = (Vec3, Option<(f32, f32, f32)>);
 
 pub struct DrawContext {
@@ -42,7 +42,7 @@ pub struct DrawContext {
     pub depth: Vec<f32>,
     pub depth_w: u32,
     pub depth_h: u32,
-    // Shared vertices are projected once per prim call without reallocating.
+    // Indexed primitives share transformed vertices in this reusable buffer.
     pub vertex_cache: Vec<ProjectedVertex>,
 
     // Reset before each on_draw so drawing modifiers cannot leak between nodes.

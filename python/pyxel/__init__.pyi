@@ -1225,7 +1225,7 @@ def init(
         quit_key: Key to quit the application. Defaults to KEY_ESCAPE.
         display_scale: Display scale factor. If omitted, automatically determined.
         capture_scale: Screen capture scale factor. Defaults to 2.
-        capture_sec: Maximum recording time for screen capture video. Defaults to 10.
+        capture_sec: Maximum screen recording duration in seconds. Defaults to 10.
         headless: Run without a window. Defaults to False.
 
     Example::

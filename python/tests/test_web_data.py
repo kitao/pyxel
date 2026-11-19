@@ -3,7 +3,6 @@ import re
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parents[2]
-EXAMPLES_DIR = ROOT_DIR / "python" / "pyxel" / "examples"
 
 
 def test_showcase_entries_point_to_existing_files():
@@ -12,20 +11,24 @@ def test_showcase_entries_point_to_existing_files():
     )
     missing = []
 
-    for entry in iter_entries(showcase):
-        demo = entry["demo"]
-        if (
-            not demo.startswith("http")
-            and not (ROOT_DIR / "web/showcase" / demo).is_file()
-        ):
-            missing.append(demo)
-        # `file` names the packaged script of an example; for apps and tools it is a label.
-        name = entry.get("file", "")
-        if name.endswith(".py") and not any(
-            (directory / name).is_file()
-            for directory in (EXAMPLES_DIR, EXAMPLES_DIR / "cube")
-        ):
-            missing.append(name)
+    for category in showcase["categories"]:
+        for entry in category["items"]:
+            demo = entry.get("demo")
+            assert isinstance(demo, str) and demo.strip(), (category["id"], entry)
+            if (
+                not demo.startswith(("https://", "http://"))
+                and not (ROOT_DIR / "web/showcase" / demo).is_file()
+            ):
+                missing.append(demo)
+            name = entry["file"]
+            assert isinstance(name, str) and name.strip(), (category["id"], entry)
+            if category["id"] in ("examples", "cube-examples"):
+                prefix = "https://github.com/kitao/pyxel/blob/main/"
+                assert entry["code"].startswith(prefix), entry
+                source = ROOT_DIR / entry["code"].removeprefix(prefix)
+                assert name == source.name, entry
+                if not source.is_file():
+                    missing.append(entry["code"])
 
     assert missing == []
 
@@ -53,14 +56,3 @@ def test_editor_manual_images_exist():
         for name in sorted(images)
         if not (ROOT_DIR / "web/editor-manual" / name).is_file()
     ] == []
-
-
-def iter_entries(value):
-    if isinstance(value, dict):
-        if isinstance(value.get("demo"), str):
-            yield value
-        for child in value.values():
-            yield from iter_entries(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from iter_entries(child)

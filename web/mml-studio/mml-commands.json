@@ -206,7 +206,7 @@
         "ko": "디튠을 cent 단위로 설정합니다. 100이면 반음 올라가고, -100이면 반음 내려갑니다. 기본값은 0입니다.",
         "pt": "Define o detune em cents. 100 sobe um semitom, -100 desce um semitom. Padrão: 0.",
         "ru": "Устанавливает расстройку в центах. 100 повышает на полутон, -100 понижает на полутон. По умолчанию: 0.",
-        "tr": "Detune değerini cent cinsinden ayarlar. 100 yarım ton yükseltir, -100 yarım ton alçaltır. Varsayılan: 0.",
+        "tr": "Detune değerini cent cinsinden ayarlar. 100 cent sesi yarım ton yükseltir, -100 cent ise yarım ton alçaltır. Varsayılan: 0.",
         "uk": "Встановлює розстроювання в центах. 100 підвищує на півтон, -100 знижує на півтон. За замовчуванням: 0."
       }
     },

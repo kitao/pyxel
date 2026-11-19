@@ -346,6 +346,23 @@ class _ContactRecorder(Node):
 
 
 class TestCollisionPipeline:
+    def test_sphere_sweeps_into_box_at_shallow_angle(self):
+        root, body, box = Node(), _ContactRecorder(), Node()
+        half_height = 2**-22
+        box.collider = Collider(size=Vec3(2, 2 * half_height, 2), mass=0)
+        body.transform = Mat4.from_translation(Vec3(-2, half_height + 2**-44, 0))
+        body.collider = Collider(
+            radius=2**-46, velocity=Vec3(4, -(2**-41), 0), gravity=0, linear_damp=0
+        )
+        root.add_child(box)
+        root.add_child(body)
+
+        root.update()
+
+        # At one quarter of the step the center crosses the left face below the top.
+        assert len(body.contacts) == 1
+        assert body.contacts[0][1] == (-1, 0, 0)
+
     @staticmethod
     def _assert_scaled_contacts(body, scale, depth, normal):
         assert body.contacts
@@ -1061,6 +1078,34 @@ class TestMeshColliderRobustness:
 
 
 class TestRaycast:
+    def test_ray_distance_limit_includes_equal_reported_distance(self):
+        target = Node()
+        target.collider = Collider(radius=1)
+        limit = 2**24
+        origin = Vec3(-limit, 0, 0)
+
+        # The first surface is limit + 1 away, which rounds to limit in f32.
+        target.transform = Mat4.from_translation(Vec3(2, 0, 0))
+        hit = target.raycast(origin, Vec3.RIGHT, max_distance=limit)
+        assert hit is not None and hit.distance == limit
+        assert tuple(hit.point) == (1, 0, 0)
+
+        # Moving the surface one unit farther reaches the next representable distance.
+        target.transform = Mat4.from_translation(Vec3(3, 0, 0))
+        assert target.raycast(origin, Vec3.RIGHT, max_distance=limit) is None
+
+    def test_nearly_parallel_ray_reaches_sphere(self):
+        target = Node()
+        target.collider = Collider(radius=1)
+        origin = Vec3(-(2**18), 1 + 2**-23, 0)
+        direction = Vec3(1, -(2**-40), 0)
+
+        # At x = 0 the ray has descended to y = 1 - 2**-23, inside the sphere.
+        hit = target.raycast(origin, direction)
+        assert hit is not None and hit.node is target
+        assert [hit.node for hit in target.raycast_all(origin, direction)] == [target]
+        assert target.raycast(origin, Vec3.RIGHT) is None
+
     @pytest.mark.parametrize("method", ["raycast", "raycast_all"])
     @pytest.mark.parametrize("scale", [0.5, 2**-128])
     def test_mesh_unavailable_inverse_keeps_world_ray_and_cache(self, method, scale):

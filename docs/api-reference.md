@@ -37,7 +37,7 @@ Initialize the Pyxel application with the screen size (width, height).
 - `quit_key` (*int*) — Key to quit the application. Defaults to KEY_ESCAPE.
 - `display_scale` (*int | None*) — Display scale factor. If omitted, automatically determined.
 - `capture_scale` (*int*) — Screen capture scale factor. Defaults to 2.
-- `capture_sec` (*int*) — Maximum recording time for screen capture video. Defaults to 10.
+- `capture_sec` (*int*) — Maximum screen recording duration in seconds. Defaults to 10.
 - `headless` (*bool*) — Run without a window. Defaults to False.
 
 **Example:**

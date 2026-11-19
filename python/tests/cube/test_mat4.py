@@ -202,7 +202,7 @@ class TestMatrixOps:
         # Diagonal inversion has an independent reciprocal expectation, even
         # when the determinant underflows or overflows f32.
         for axis in range(3):
-            assert inverse[axis, axis] == pytest.approx(1 / scale, rel=2e-6)
+            assert inverse[axis, axis] == pytest.approx(1 / scale, rel=2e-6, abs=0)
         assert tuple(inverse * (m * Vec3(1, 2, 3))) == pytest.approx(
             (1, 2, 3), abs=1e-6
         )

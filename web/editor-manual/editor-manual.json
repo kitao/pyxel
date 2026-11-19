@@ -205,7 +205,7 @@
       "uk": "Панель меню"
     },
     "menubar_body": {
-      "en": "The menu bar at the top of the screen contains four editor switching buttons, Undo/Redo buttons, and a Save button. The help message area on the right displays context-sensitive information based on the cursor position.",
+      "en": "The menu bar at the top of the screen contains four editor switching buttons, Undo/Redo buttons, and a Save button. The help message area on the right displays context-sensitive information based on the position of the mouse pointer or the editing cursor.",
       "cn": "画面上方的菜单栏包含 4 个编辑器切换按钮、Undo/Redo 按钮和保存按钮。右侧的帮助信息区域会根据鼠标光标或编辑光标的位置显示辅助信息。",
       "de": "Die Menüleiste am oberen Bildschirmrand enthält vier Editor-Schaltflächen, Undo/Redo-Schaltflächen und eine Speichern-Schaltfläche. Im Hilfebereich rechts werden kontextbezogene Informationen je nach Maus- oder Cursorposition angezeigt.",
       "es": "La barra de menú en la parte superior contiene los 4 botones de cambio de editor, botones de Undo/Redo y el botón de guardar. El área de mensajes de ayuda a la derecha muestra información auxiliar según la posición del cursor del ratón o del cursor de edición.",
@@ -991,16 +991,16 @@
     "music_buttons_body": {
       "en": "Buttons for inserting sound numbers (0-63). Pressing a button inserts the sound number at the editing cursor position. Created sounds are shown in blue, uncreated ones in gray. Hovering over a button previews the sound.",
       "cn": "插入声音编号的按钮 (0-63)。按下按钮可在编辑光标位置插入声音编号。已创建的声音显示为蓝色，未创建显示为灰色。鼠标悬停在按钮上可预览播放该声音。",
-      "de": "Schaltflächen zum Einfügen von Soundnummern (0-63). Durch Klicken wird die Soundnummer an der Cursorposition eingefügt. Erstellte Sounds werden blau, nicht erstellte grau angezeigt. Beim Überfahren mit der Maus wird eine Vorschau abgespielt.",
+      "de": "Schaltflächen zum Einfügen von Soundnummern (0-63). Durch Klicken wird die Soundnummer an der Position des Bearbeitungscursors eingefügt. Erstellte Sounds werden blau, nicht erstellte grau angezeigt. Beim Überfahren mit der Maus wird eine Vorschau abgespielt.",
       "es": "Botones para insertar números de sonido (0-63). Al presionar un botón, el número de sonido se inserta en la posición del cursor de edición. Los sonidos creados se muestran en azul y los no creados en gris. Al pasar el ratón sobre un botón, se reproduce una vista previa del sonido.",
-      "fr": "Boutons d'insertion de numéros de sons (0-63). Appuyez pour insérer un numéro de son à la position du curseur. Les sons créés sont affichés en bleu, les non créés en gris. Survolez un bouton pour pré-écouter le son.",
+      "fr": "Boutons d'insertion de numéros de sons (0-63). Appuyez pour insérer un numéro de son à la position du curseur d'édition. Les sons créés sont affichés en bleu, les non créés en gris. Survolez un bouton pour pré-écouter le son.",
       "it": "Pulsanti per inserire un numero di suono (0-63). Premendo il pulsante, il numero del suono viene inserito alla posizione del cursore di modifica. I suoni creati appaiono in blu, quelli non creati in grigio. Passando il mouse su un pulsante si ascolta un'anteprima del suono.",
       "ja": "サウンド番号を挿入するボタン (0-63) です。ボタンを押すと編集カーソルの位置にサウンド番号が挿入されます。作成済みのサウンドは青、未作成はグレーで表示されます。ボタンにマウスカーソルを重ねるとそのサウンドがプレビュー再生されます。",
       "ko": "사운드 번호를 삽입하는 버튼(0-63)입니다. 버튼을 누르면 편집 커서 위치에 사운드 번호가 삽입됩니다. 작성된 사운드는 파란색, 미작성은 회색으로 표시됩니다. 버튼에 마우스 커서를 올리면 해당 사운드가 미리 재생됩니다.",
       "pt": "Botões para inserir números de som (0-63). Pressionar o botão insere o número do som na posição do cursor de edição. Sons criados são exibidos em azul, não criados em cinza. Ao passar o mouse sobre um botão, o som é reproduzido como prévia.",
-      "ru": "Кнопки вставки номеров звуков (0-63). Нажатие вставляет номер звука в позицию курсора. Созданные звуки отображаются синим, пустые — серым. При наведении курсора мыши звук воспроизводится для предпрослушивания.",
+      "ru": "Кнопки вставки номеров звуков (0-63). Нажатие вставляет номер звука в позицию курсора редактирования. Созданные звуки отображаются синим, пустые — серым. При наведении курсора мыши звук воспроизводится для предпрослушивания.",
       "tr": "Ses numarası ekleme düğmeleri (0-63). Düğmeye basıldığında düzenleme imlecinin konumuna ses numarası eklenir. Oluşturulan sesler mavi, oluşturulmamışlar gri gösterilir. Fare imlecini üzerine getirince ses önizlenir.",
-      "uk": "Кнопки вставки номерів звуків (0-63). Натискання вставляє номер звуку в позицію курсора. Створені звуки відображаються синім, порожні — сірим. При наведенні курсора миші звук відтворюється для попереднього прослуховування."
+      "uk": "Кнопки вставки номерів звуків (0-63). Натискання вставляє номер звуку в позицію курсора редагування. Створені звуки відображаються синім, порожні — сірим. При наведенні курсора миші звук відтворюється для попереднього прослуховування."
     }
   },
   "annotations": {
@@ -3213,16 +3213,16 @@
       "desc": {
         "en": "Triangle wave. Soft and gentle tone. Similar to a flute",
         "cn": "Triangle。柔和温暖的音色。接近长笛",
-        "de": "Triangle. Weicher, sanfter Klang. Ähnlich einer Flöte",
-        "es": "Triangle. Tono suave y delicado. Similar a una flauta",
+        "de": "Dreieckwelle. Weicher, sanfter Klang. Ähnlich einer Flöte",
+        "es": "Onda triangular. Tono suave y delicado. Similar a una flauta",
         "fr": "Onde triangulaire. Son doux et délicat, proche de la flûte",
         "it": "Onda triangolare. Timbro morbido e delicato. Simile al flauto",
         "ja": "三角波。やわらかく優しい音色。フルートに近い",
         "ko": "삼각파. 부드럽고 따뜻한 음색. 플루트에 가까움",
         "pt": "Onda triangular. Timbre suave e delicado. Similar a uma flauta",
-        "ru": "Triangle. Мягкий и нежный тембр, похож на флейту",
-        "tr": "Triangle. Yumuşak ve zarif ses rengi. Flüte benzer",
-        "uk": "Triangle. М'який і ніжний тембр, схожий на флейту"
+        "ru": "Треугольная волна. Мягкий и нежный тембр, похож на флейту",
+        "tr": "Üçgen dalga. Yumuşak ve zarif ses rengi. Flüte benzer",
+        "uk": "Трикутна хвиля. М'який і ніжний тембр, схожий на флейту"
       }
     },
     {
@@ -3244,16 +3244,16 @@
       "desc": {
         "en": "Square wave. Electronic and clear tone. Similar to a clarinet or organ",
         "cn": "Square。电子清晰的音色。接近单簧管或风琴",
-        "de": "Square. Elektronischer, klarer Klang. Ähnlich einer Klarinette oder Orgel",
-        "es": "Square. Tono electrónico y definido. Similar a un clarinete u órgano",
+        "de": "Rechteckwelle. Elektronischer, klarer Klang. Ähnlich einer Klarinette oder Orgel",
+        "es": "Onda cuadrada. Tono electrónico y definido. Similar a un clarinete u órgano",
         "fr": "Onde carrée. Son électronique et net, proche de la clarinette ou de l'orgue",
         "it": "Onda quadra. Timbro elettronico e netto. Simile al clarinetto o all'organo",
         "ja": "矩形波。電子的ではっきりした音色。クラリネットやオルガンに近い",
         "ko": "구형파. 전자적이고 선명한 음색. 클라리넷이나 오르간에 가까움",
         "pt": "Onda quadrada. Timbre eletrônico e nítido. Similar a clarinete ou órgão",
-        "ru": "Square. Электронный и чёткий тембр, похож на кларнет или орган",
-        "tr": "Square. Elektronik ve belirgin ses rengi. Klarnet veya orga benzer",
-        "uk": "Square. Електронний і чіткий тембр, схожий на кларнет або орган"
+        "ru": "Прямоугольная волна. Электронный и чёткий тембр, похож на кларнет или орган",
+        "tr": "Kare dalga. Elektronik ve belirgin ses rengi. Klarnet veya orga benzer",
+        "uk": "Прямокутна хвиля. Електронний і чіткий тембр, схожий на кларнет або орган"
       }
     },
     {
@@ -3275,16 +3275,16 @@
       "desc": {
         "en": "Pulse wave. Bright and flashy tone. Similar to a trumpet",
         "cn": "Pulse。明亮华丽的音色。接近小号",
-        "de": "Pulse. Heller, auffälliger Klang. Ähnlich einer Trompete",
-        "es": "Pulse. Tono brillante y llamativo. Similar a una trompeta",
+        "de": "Pulswelle. Heller, auffälliger Klang. Ähnlich einer Trompete",
+        "es": "Onda de pulso. Tono brillante y llamativo. Similar a una trompeta",
         "fr": "Onde Pulse. Son brillant et éclatant, proche de la trompette",
         "it": "Onda a impulsi. Timbro brillante e vivace. Simile alla tromba",
         "ja": "パルス波。明るく派手な音色。トランペットに近い",
         "ko": "펄스파. 밝고 화려한 음색. 트럼펫에 가까움",
         "pt": "Onda Pulse. Timbre brilhante e vibrante. Similar a trompete",
-        "ru": "Pulse. Яркий и насыщенный тембр, похож на трубу",
-        "tr": "Pulse. Parlak ve gösterişli ses rengi. Trompete benzer",
-        "uk": "Pulse. Яскравий і насичений тембр, схожий на трубу"
+        "ru": "Импульсная волна. Яркий и насыщенный тембр, похож на трубу",
+        "tr": "Darbe dalgası. Parlak ve gösterişli ses rengi. Trompete benzer",
+        "uk": "Імпульсна хвиля. Яскравий і насичений тембр, схожий на трубу"
       }
     },
     {

@@ -19,9 +19,16 @@ REFERENCE_STUBS = (
     [
         ("blt", "img", pyxel.NUM_IMAGES),
         ("bltm", "tm", pyxel.NUM_TILEMAPS),
+        ("blt3d", "img", pyxel.NUM_IMAGES),
+        ("bltm3d", "tm", pyxel.NUM_TILEMAPS),
         ("play", "ch", pyxel.NUM_CHANNELS),
         ("play", "snd", pyxel.NUM_SOUNDS),
         ("playm", "msc", pyxel.NUM_MUSICS),
+        ("stop", "ch", pyxel.NUM_CHANNELS),
+        ("play_pos", "ch", pyxel.NUM_CHANNELS),
+        ("Tilemap", "img", pyxel.NUM_IMAGES),
+        ("Channel.play", "snd", pyxel.NUM_SOUNDS),
+        ("Music.set", "seq0, seq1, ...", pyxel.NUM_SOUNDS),
     ],
 )
 def test_reference_gives_default_bank_indices(function, parameter, bank_size):
@@ -35,10 +42,14 @@ def test_reference_gives_default_bank_indices(function, parameter, bank_size):
         if item["name"] == function
     )
     argument = next(param for param in item["params"] if param["name"] == parameter)
+    bank_range = rf"(?<!\d)0\s*[-–〜～~]\s*{bank_size - 1}(?!\d)"
     for language in reference["languages"]:
         code = language["code"]
-        numbers = re.findall(r"\d+", argument["description"][code])
-        assert {"0", str(bank_size - 1)} <= set(numbers), (function, parameter, code)
+        assert re.search(bank_range, argument["description"][code]), (
+            function,
+            parameter,
+            code,
+        )
 
 
 @pytest.mark.parametrize(("reference_path", "stub_path"), REFERENCE_STUBS)

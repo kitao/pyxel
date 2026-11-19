@@ -11,7 +11,8 @@ EXTENDED_CHANNELS = [
     (0.1, 0),  # Drums
 ]
 # Entries are (gain, detune in cents); 100 cents is one semitone.
-# Keep individual and total simultaneous gain at or below 1.0 to avoid clipping.
+# Set each gain from 0.0 to 1.0. To avoid clipping, keep the total gain of
+# channels playing at the same time at or below 1.0.
 
 EXTENDED_TONES = [
     (  # Custom wave

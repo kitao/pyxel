@@ -888,7 +888,7 @@
         "Cube: Toggle Selected Collision Group",
         () => {
           const group = Group.first_selected;
-          if (!group) throw new Error("Select a collision group.");
+          if (!group) throw new Error("Select a group.");
           Undo.initEdit({ groups: [group] });
           group[COLLISION] = !group[COLLISION];
           Undo.finishEdit("Set Cube collision group");

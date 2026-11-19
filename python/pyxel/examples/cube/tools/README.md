@@ -21,7 +21,7 @@ To change only one placement, select its outer group and choose **Cube: Make Sel
 
 ## Export the scene
 
-Choose **Cube: Refresh and Export Scene…**. This refreshes the previews, then saves:
+Choose **Cube: Refresh and Export Scene…**. This refreshes the previews and lets you choose the scene filename. If you save it as `level.glb`, the exported files are:
 
 - `level.glb`: visible scenery and motions, with embedded textures, scale 1, and armature disabled.
 - `level_collision.glb`: the static collision shapes from the same placements, when any exist.
