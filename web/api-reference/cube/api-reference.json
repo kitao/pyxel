@@ -8287,18 +8287,18 @@
               "name": "colkey",
               "type": "int | None",
               "description": {
-                "en": "Palette index for texture transparency (0–15 in the default palette).",
-                "cn": "纹理透明色的调色板索引 (默认调色板为 0–15)。",
-                "de": "Palettenindex der Transparenzfarbe für die Textur (0–15 in der Standardpalette).",
-                "es": "Índice del color transparente de la textura (0–15 en la paleta predeterminada).",
-                "fr": "Indice de la couleur transparente de la texture (de 0 à 15 dans la palette par défaut).",
-                "it": "Indice del colore trasparente della texture (0–15 nella tavolozza predefinita).",
-                "ja": "テクスチャの透明色に使う色番号（初期パレットでは 0〜15）。",
-                "ko": "텍스처의 투명색으로 사용할 팔레트 인덱스입니다(기본 팔레트에서는 0~15).",
-                "pt": "Índice da cor transparente da textura (0–15 na paleta padrão).",
-                "ru": "Индекс прозрачного цвета текстуры (0–15 в стандартной палитре).",
-                "tr": "Dokunun saydam rengi için palet indeksi (varsayılan palette 0–15).",
-                "uk": "Індекс прозорого кольору текстури (0–15 у стандартній палітрі)."
+                "en": "Palette index for texture transparency (0–15 in the default palette). If omitted (None), Pyxel uses an unused palette color when an alpha mask needs one and one is available.",
+                "cn": "纹理透明色的调色板索引 (默认调色板为 0–15)。省略时 (None)，如果透明度遮罩需要透明色且调色板中有未使用的颜色，Pyxel 就会使用该颜色。",
+                "de": "Palettenindex der Transparenzfarbe für die Textur (0–15 in der Standardpalette). Wird der Wert weggelassen (None), verwendet Pyxel eine freie Palettenfarbe, wenn eine Alphamaske eine Transparenzfarbe benötigt und eine verfügbar ist.",
+                "es": "Índice del color transparente de la textura (0–15 en la paleta predeterminada). Si se omite (None), Pyxel usa un color libre de la paleta cuando una máscara alfa necesita un color transparente y hay uno disponible.",
+                "fr": "Indice de la couleur transparente de la texture (de 0 à 15 dans la palette par défaut). Si ce paramètre est omis (None), Pyxel utilise une couleur libre de la palette si un masque alpha a besoin d’une couleur transparente et qu’il en reste une.",
+                "it": "Indice del colore trasparente della texture (0–15 nella tavolozza predefinita). Se il parametro viene omesso (None), Pyxel usa un colore libero della tavolozza quando una maschera alfa richiede un colore trasparente e ne è disponibile uno.",
+                "ja": "テクスチャの透明色に使う色番号（初期パレットでは 0〜15）。省略時 (None) は、アルファマスクに透明色が必要で、パレットに未使用色があれば、その色を使う。",
+                "ko": "텍스처의 투명색으로 사용할 팔레트 인덱스입니다(기본 팔레트에서는 0~15). 생략하면(None) 알파 마스크에 투명색이 필요하고 팔레트에 사용하지 않은 색이 있을 때 그 색을 사용합니다.",
+                "pt": "Índice da cor transparente da textura (0–15 na paleta padrão). Se o parâmetro for omitido (None), o Pyxel usa uma cor livre da paleta quando uma máscara alfa precisa de uma cor transparente e há uma disponível.",
+                "ru": "Индекс прозрачного цвета текстуры (0–15 в стандартной палитре). Если параметр опущен (None) и альфа-маске нужен прозрачный цвет, Pyxel использует свободный цвет палитры, если он есть.",
+                "tr": "Dokunun saydam rengi için palet indeksi (varsayılan palette 0–15). Parametre atlanırsa (None), alfa maskesi saydam bir renge ihtiyaç duyduğunda Pyxel palette kullanılmayan bir renk varsa onu kullanır.",
+                "uk": "Індекс прозорого кольору текстури (0–15 у стандартній палітрі). Якщо параметр пропущено (None) й альфа-масці потрібен прозорий колір, Pyxel використовує вільний колір палітри, якщо він є."
               }
             },
             {

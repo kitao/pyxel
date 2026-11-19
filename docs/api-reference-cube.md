@@ -1629,7 +1629,7 @@ Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube p
 **Parameters:**
 
 - `filename` (*str*) — Path to the .glb file.
-- `colkey` (*int | None*) — Palette index for texture transparency (0–15 in the default palette).
+- `colkey` (*int | None*) — Palette index for texture transparency (0–15 in the default palette). If omitted (None), Pyxel uses an unused palette color when an alpha mask needs one and one is available.
 - `fps` (*float*) — Frames per second used to convert glTF animation times into Pyxel frames. Defaults to 30.0.
 
 **Returns:** `Mesh`
