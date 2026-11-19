@@ -28,7 +28,7 @@ jobs:
         with:
           name: pyxel-${{ matrix.target }}
           path: dist
-          run-id: 44453286267
+          run-id: 44464593173
           github-token: ${{ github.token }}
       - name: Set up the virtual display and audio monitor
         run: |
@@ -37,6 +37,10 @@ jobs:
           cc -shared -fPIC .github/audit/linux_window.c -o .github/audit/linux_window.so $(pkg-config --cflags --libs sdl2)
           /usr/bin/python3 -m venv "$RUNNER_TEMP/pyxel-audit-python"
           "$RUNNER_TEMP/pyxel-audit-python/bin/pip" install --no-index --no-deps dist/*.whl
+      - name: Check saved resources in the candidate wheel
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: '"$RUNNER_TEMP/pyxel-audit-python/bin/python" .github/audit/resource_save.py'
       - name: Exercise the normal X11 window, keyboard, pointer and PulseAudio output
         env:
           SDL_VIDEODRIVER: x11
