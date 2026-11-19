@@ -290,6 +290,11 @@ list behavior instead.
 the caller. A sound-only save can succeed even when excluded image or tilemap
 data is invalid.
 
+When a resource includes images and tilemaps, `pyxel.save` checks each
+tilemap's image index against the images being saved before opening the
+destination. If the resource contains no images, keep the index so the tilemap
+can use the images present when it is loaded.
+
 An included zero-width or zero-height image or tilemap retains its native
 conversion failure. That conversion already precedes opening the destination;
 preserving the destination therefore does not require a new Python exception.
@@ -300,8 +305,8 @@ Python recovery need.
 after converting every bank. Inspecting excluded data would make an unrelated
 resource prevent the requested save. The [resource
 conversion](../../../crates/pyxel-core/src/resource_data.rs) therefore applies
-each exclusion before converting that bank. This does not change how invalid
-data in an included bank is handled.
+each exclusion before converting that bank. Checking references between banks
+saved together prevents overwriting a file with one that cannot be loaded.
 
 ## Audio
 

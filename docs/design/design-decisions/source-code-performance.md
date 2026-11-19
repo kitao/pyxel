@@ -78,9 +78,9 @@ classes.
 
 ### Primitive raster precision and clipping
 
-**Decision:** Preserve ordinary `f32` pixel rounding in
-[Canvas](../../../crates/pyxel-core/src/canvas.rs). Select wider calculations at
-these boundaries:
+**Decision:** Preserve ordinary `f32` pixel rounding when rasterizing
+primitives in [Canvas](../../../crates/pyxel-core/src/canvas.rs). Select wider
+calculations at these boundaries:
 
 | Primitive | Use `f64` when |
 | --- | --- |
@@ -100,6 +100,18 @@ the wider path while preserving the ordinary path; they are neither input limits
 nor a claim that every intermediate below them is exact. Clipping the iteration
 range reduces offscreen work without restarting interpolation or changing which
 visible samples contribute.
+
+### Sampling in transformed blits
+
+**Decision:** When rotating, scaling, or drawing an image or tilemap in
+perspective, narrowing the destination clip must leave every pixel inside it
+as it would be in the full draw. Small differences from 3.0.2 due to rounding
+are acceptable to keep clipped draws fast.
+
+**Reason:** Matching 3.0.2 rounding exactly adds work when only a narrow part
+of a row is visible. The [blit code](../../../crates/pyxel-core/src/canvas.rs)
+anchors sampling independently of the clip so drawing can start near the first
+visible pixel.
 
 ### Shared graphics and audio ownership
 

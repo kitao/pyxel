@@ -27,6 +27,16 @@ consequences still belong in the documentation for the advanced operation
 itself. This choice preserves the distinction across translations and generated
 documents.
 
+### Default index ranges in the API reference
+
+**Decision:** Where readers choose a resource or channel number in the
+[API reference](../../../web/api-reference/api-reference.json), give the range
+available in the default configuration, such as `(0-2)` for image banks or
+`(0-3)` for sound channels.
+
+**Reason:** Someone making a first game can choose a usable number directly
+from the entry. APIs that extend a bank have their own documentation.
+
 ### Advanced API labels
 
 **Decision:** Keep 「上級者向け」 for the Japanese advanced-API control in the
