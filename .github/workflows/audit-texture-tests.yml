@@ -31,13 +31,13 @@ jobs:
         with:
           name: pyxel-${{ matrix.target }}
           path: dist
-          run-id: 44509872347
+          run-id: 44524188250
           github-token: ${{ github.token }}
-      - name: Run texture and motion tests on the installed wheel
+      - name: Run texture, motion, clipping and palette tests on the installed wheel
         shell: bash
         env:
           SDL_AUDIODRIVER: dummy
         run: |
           python -m pip install pytest
           python -m pip install --no-index --no-deps dist/*.whl
-          python -m pytest -q python/tests/cube/test_glb_motion.py
+          python -m pytest -q python/tests/cube/test_glb_motion.py python/tests/test_graphics.py::TestBlitClipping python/tests/test_editor.py::TestColorPicker

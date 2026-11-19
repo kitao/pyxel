@@ -22,7 +22,7 @@ jobs:
         with:
           name: pyxel-x86_64-unknown-linux-gnu
           path: dist
-          run-id: 44509872347
+          run-id: 44524188250
           github-token: ${{ github.token }}
       - name: Set up the virtual display and audio monitor
         run: |

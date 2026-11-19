@@ -30,7 +30,7 @@ jobs:
         with:
           name: pyxel-x86_64-pc-windows-msvc
           path: dist
-          run-id: 44509872347
+          run-id: 44524188250
           github-token: ${{ github.token }}
       - name: Download original wheel for the window-close regression check
         uses: actions/download-artifact@v8
