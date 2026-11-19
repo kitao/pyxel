@@ -1,0 +1,45 @@
+name: Compare drawing cost on candidate wheels
+on:
+  push:
+    branches: [codex/3.0.3-build-audit-20261118]
+    paths: [.github/workflows/audit-drawing-cost.yml]
+permissions:
+  actions: read
+  contents: read
+jobs:
+  measure:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, arch: x64, target: x86_64-unknown-linux-gnu}
+          - {os: ubuntu-24.04-arm, arch: arm64, target: aarch64-unknown-linux-gnu}
+          - {os: macos-15-intel, arch: x64, target: x86_64-apple-darwin}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          architecture: ${{ matrix.arch }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: pyxel-${{ matrix.target }}
+          path: previous
+          run-id: 44509872347
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: pyxel-${{ matrix.target }}
+          path: candidate
+          run-id: 44524188250
+          github-token: ${{ github.token }}
+      - name: Time the same image and tilemap operations on both native wheels
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: python .github/audit/compare-drawing-times.py > drawing-times.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: drawing-times-${{ matrix.os }}
+          path: drawing-times.json
