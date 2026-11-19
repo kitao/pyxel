@@ -16,7 +16,7 @@ permissions:
 jobs:
   desktop:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -33,8 +33,15 @@ jobs:
           github-token: ${{ github.token }}
       - name: Set up the virtual display and audio monitor
         run: |
-          sudo apt-get -qq update
-          sudo apt-get -y -qq install --no-install-recommends libsdl2-dev openbox xvfb xauth xdotool x11-apps libgl1-mesa-dri imagemagick pulseaudio pulseaudio-utils python3-venv
+          packages=(libsdl2-dev openbox xvfb xauth xdotool x11-apps libgl1-mesa-dri imagemagick pulseaudio pulseaudio-utils python3-venv)
+          apt_options=(-o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
+          if [[ -s /etc/apt/sources.list.d/ubuntu.sources ]]; then
+            apt_options+=(-o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources -o Dir::Etc::sourceparts=-)
+          fi
+          if ! sudo apt-get "${apt_options[@]}" -y install --no-install-recommends "${packages[@]}"; then
+            sudo apt-get "${apt_options[@]}" update
+            sudo apt-get "${apt_options[@]}" -y install --no-install-recommends "${packages[@]}"
+          fi
           cc -shared -fPIC .github/audit/linux_window.c -o .github/audit/linux_window.so $(pkg-config --cflags --libs sdl2)
           /usr/bin/python3 -m venv "$RUNNER_TEMP/pyxel-audit-python"
           "$RUNNER_TEMP/pyxel-audit-python/bin/pip" install --no-index --no-deps dist/*.whl
