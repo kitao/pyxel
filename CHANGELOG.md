@@ -10,6 +10,8 @@
 - Fixed editor selection and display for resources with fewer banks
 - Preserved notes and music sequence entries beyond the editor grid during edits
 - Fixed app2exe failing on imports from nested namespace packages
+- Restored the lst keyword for legacy from_list calls
+- Restored MML Studio songs shared with Pyxel 2.5.5
 - Clarified the API, MML, editor, and resource format documentation
 
 ## 3.0.2

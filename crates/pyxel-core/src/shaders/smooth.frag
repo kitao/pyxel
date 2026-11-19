@@ -2,6 +2,7 @@
    Based on xBR shaders from:
    https://github.com/libretro/common-shaders/tree/master/xbr/shaders
 
+   Pyxel-specific changes are commented in place.
 */
 
 /*
@@ -77,6 +78,7 @@ float getLeftRatio(vec2 center, vec2 origin, vec2 direction, vec2 scale) {
 #define P(x,y) getScreenColor(coord + SourceSize.zw * vec2(x, y))
 
 void main() {
+    // Resolve Pyxel screen coordinates before the xBR pass.
     vec2 screenFragCoord, screenTexCoord;
     getScreenParams(screenFragCoord, screenTexCoord);
     if (!isInScreen(screenTexCoord)) {

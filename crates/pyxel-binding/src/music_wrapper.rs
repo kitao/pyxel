@@ -3,7 +3,9 @@ use std::sync::MutexGuard;
 
 use pyo3::exceptions::{PyException, PyIndexError};
 use pyo3::prelude::*;
-use pyo3::types::{PyList, PySlice, PyTuple};
+use pyo3::types::{PyDict, PyList, PySlice, PyTuple};
+
+use crate::utils::from_list_arg;
 
 // Python sequence wrappers for the mutable music sequences
 
@@ -243,12 +245,19 @@ impl Seqs {
 
     // Deprecated methods
 
-    fn from_list(&self, list: Vec<Vec<u32>>) {
+    #[pyo3(signature = (*args, **kwargs), text_signature = "($self, /, list)")]
+    fn from_list(
+        &self,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<()> {
+        let list = from_list_arg(args, kwargs, "list")?.extract()?;
         deprecation_warning!(
             FROM_LIST_ONCE,
             "Seqs.from_list() is deprecated. Use Music.set(*seqs) instead."
         );
         self.inner_mut().set(list);
+        Ok(())
     }
 
     fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {

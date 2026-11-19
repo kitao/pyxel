@@ -110,7 +110,7 @@ All fields are required. Empty sounds use empty arrays (e.g., `notes = []`).
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `notes` | array of i8 | Note numbers (0-59, C0 to B4). Use -1 for a rest. All negative values play as rests |
+| `notes` | array of i8 | Note numbers are 0-127. The sound editor covers 0-59 (C0 to B4). Use -1 for a rest. All negative values play as rests |
 | `tones` | array of u8 | Index into the tone bank. Default tones: 0 = Triangle, 1 = Square, 2 = Pulse, 3 = Noise |
 | `volumes` | array of u8 | Volume (0-7), from silence to normal volume. Values above 7 amplify the sound |
 | `effects` | array of u8 | 0 = None, 1 = Slide, 2 = Vibrato, 3 = FadeOut, 4 = Half-FadeOut, 5 = Quarter-FadeOut |

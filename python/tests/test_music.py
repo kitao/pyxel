@@ -370,10 +370,15 @@ assert len(seqs) == 0
 
     def test_seqs_from_list_deprecated(self, capfd):
         msc = pyxel.Music()
-        msc.seqs.from_list([[10, 20], [30, 40]])  # type: ignore[attr-defined]
+        from_list = msc.seqs.from_list  # type: ignore[attr-defined]
+        from_list([[10, 20], [30, 40]])
         assert [list(seq) for seq in msc.seqs] == [[10, 20], [30, 40], [], []]
         out = capfd.readouterr().out
         assert out == "Seqs.from_list() is deprecated. Use Music.set(*seqs) instead.\n"
+        from_list(lst=[[5, 6]])
+        assert [list(seq) for seq in msc.seqs] == [[5, 6], [], [], []]
+        from_list(list=[[7]])
+        assert [list(seq) for seq in msc.seqs] == [[7], [], [], []]
 
     def test_seqs_to_list_deprecated(self, capfd):
         msc = pyxel.Music()
