@@ -5,6 +5,7 @@ on:
     branches: [codex/3.0.3-build-audit-20261118]
     paths:
       - .github/audit/windows_return.py
+      - .github/audit/cube_queries.py
       - .github/workflows/audit-windows-desktop.yml
 
 permissions:
@@ -29,7 +30,7 @@ jobs:
         with:
           name: pyxel-x86_64-pc-windows-msvc
           path: dist
-          run-id: 44467513409
+          run-id: 44476576506
           github-token: ${{ github.token }}
       - name: Download original wheel for the window-close regression check
         uses: actions/download-artifact@v8
@@ -61,6 +62,7 @@ jobs:
         run: |
           python -m pip install --no-index --no-deps dist/*.whl
           python .github/audit/resource_save.py
+          python .github/audit/cube_queries.py
           python .github/audit/windows_return.py
           if cmp -s dist/*.whl original/*.whl; then
             echo 'Original wheel is byte-identical to the tested wheel'
