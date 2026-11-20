@@ -226,7 +226,8 @@ class App:
         pyxel.init(320, 240, title="3D Physics")
 
         pyxel.sounds[0].mml(
-            "T240 Q100 @3 V76 O5 C64 @0 V104 O2 @GLI1{1600,8} @ENV1{120,5,78,15,0} E8"
+            "T240 Q100 @2 V120 O5 @GLI1{1900,12} @ENV1{127,12,46} D16 "
+            "@3 V48 O8 @GLI0 @ENV2{72,6,0} A32"
         )
 
         self.scene = Scene()
