@@ -225,7 +225,9 @@ class App:
     def __init__(self):
         pyxel.init(320, 240, title="3D Physics")
 
-        pyxel.sounds[0].mml("T200 Q100 @0 V88 O4 @ENV1{0,2,127,5,48,17,0} C8")
+        pyxel.sounds[0].mml(
+            "T240 Q100 @3 V76 O5 C64 @0 V104 O2 @GLI1{1600,8} @ENV1{120,5,78,15,0} E8"
+        )
 
         self.scene = Scene()
         self.gamepad = False

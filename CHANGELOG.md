@@ -17,6 +17,7 @@
 - Fixed app2exe failing on imports from nested namespace packages
 - Restored the lst keyword for legacy from_list calls
 - Restored MML Studio songs shared with Pyxel 2.5.5
+- Gave the 3D Physics example a shorter, lower-pitched firing sound
 - Clarified the API, MML, editor, and resource format documentation and examples
 - Fixed make run-wasm failing before a new Pyodide version was hosted
 - Updated Pyodide to 314.0.8 and Rust to nightly-2026-11-19
