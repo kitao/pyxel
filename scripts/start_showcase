@@ -139,7 +139,8 @@ class Handler(SimpleHTTPRequestHandler):
                         full_path = index_path
                     break
 
-        if full_path.suffix == ".html":
+        local_runtime = full_path == ROOT_DIR / "wasm" / "pyxel.js"
+        if local_runtime or full_path.suffix == ".html":
             if not full_path.is_file():
                 return super().send_head()
             try:
@@ -147,11 +148,21 @@ class Handler(SimpleHTTPRequestHandler):
             except (OSError, UnicodeDecodeError):
                 return super().send_head()
 
-            injected = _inject_html(text)
-            encoded = injected.encode("utf-8")
+            if local_runtime:
+                # The pinned Pyodide release may not be on kitao.dev yet.
+                text = re.sub(
+                    r"https://kitao\.dev/pyxel/pyodide/(v[^/\s`]+)/pyodide\.js",
+                    r"https://cdn.jsdelivr.net/pyodide/\1/full/pyodide.js",
+                    text,
+                )
+                content_type = "text/javascript"
+            else:
+                text = _inject_html(text)
+                content_type = "text/html"
+            encoded = text.encode("utf-8")
 
             self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Type", f"{content_type}; charset=utf-8")
             self.send_header("Content-Length", str(len(encoded)))
             self.end_headers()
             return io.BytesIO(encoded)

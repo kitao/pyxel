@@ -1,3 +1,5 @@
+import json
+import re
 import sys
 import threading
 from collections.abc import Iterator
@@ -66,6 +68,19 @@ def test_start_showcase_preserves_public_paths(showcase_url: str):
     status, body = _get(showcase_url + "/web/web-usage/index.html")
     assert status == 200
     assert b"https://kitao.dev/pyxel/3.0.1/pyxel.js" in body
+
+
+def test_local_runtime_loads_the_pinned_upstream_pyodide(showcase_url):
+    releases = json.loads((ROOT_DIR / "web/pyodide-files.json").read_text())
+    with urlopen(showcase_url + "/wasm/pyxel.js") as response:
+        assert response.headers.get_content_type() == "text/javascript"
+        script = response.read().decode()
+    version = re.search(r'^const PYODIDE_VERSION = "([^"]+)";', script, re.MULTILINE)[1]
+    loader = re.search(r"^const PYODIDE_URL = `([^`]+)`;", script, re.MULTILINE)[1]
+    assert (
+        loader.replace("${PYODIDE_VERSION}", version)
+        == releases[version]["pyodide.js"]["url"]
+    )
 
 
 def test_main_opens_the_served_address(showcase_module, monkeypatch, capsys):
