@@ -27,8 +27,11 @@ sources](documentation.md#sources-of-generated-guides-and-stub-docstrings).
 
 For separately authored applications bundled as deliverables, preserve the
 original comment language and forms, including explanations for their intended
-learners. Correct factual errors in that language; ownership does not exempt
-behavior, dependencies, or explanatory accuracy from review.
+learners. Exclude their contents from project-wide checks, checks of all
+examples, and consistency edits. Check behavior and dependencies using the
+applications as supplied, and review specific concerns about explanatory
+accuracy. Edit a supplied application only when the maintainer explicitly
+requests that change. Correct factual errors in the original language.
 
 A one-line group label uses sentence case without decorative banners or a
 terminal period. Sentence comments use normal punctuation; a single sentence
