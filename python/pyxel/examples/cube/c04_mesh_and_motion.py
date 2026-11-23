@@ -123,10 +123,10 @@ class App:
         self.shading.direction = Vec3(-0.5, -1.0, 0.8)
 
         self.gazelle = Gazelle()
+        self.gazelle.outline = 13
         self.floor = Floor(self.gazelle.joints)
         self.scene.add_child(self.floor)
         self.scene.add_child(self.gazelle)
-        self.set_shading(False)
 
         self.yaw = 148.0
         self.pitch = math.degrees(math.atan2(119.0, 420.0))
@@ -149,7 +149,10 @@ class App:
                 self.gazelle.play(index)
 
         if pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y):
-            self.set_shading(self.scene.shading is None)
+            self.scene.shading = self.shading if self.scene.shading is None else None
+
+        if pyxel.btnp(pyxel.KEY_O):
+            self.gazelle.outline = 13 if self.gazelle.outline is None else None
 
         turn = (
             pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
@@ -166,10 +169,6 @@ class App:
 
         self.scene.update()
 
-    def set_shading(self, enabled):
-        self.scene.shading = self.shading if enabled else None
-        self.gazelle.outline = None if enabled else 13
-
     def update_camera(self):
         yaw, pitch = math.radians(self.yaw), math.radians(self.pitch)
         eye = Vec3(
@@ -184,7 +183,7 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        pyxel.text(8, 8, "Arrows: Rotate  S: Shading  Q: Quit", 7)
+        pyxel.text(8, 8, "Arrows: Rotate  S: Shading  O: Outline  Q: Quit", 7)
         pyxel.text(8, 18, "1: Walk  2: Run  3: Eat", 7)
 
 

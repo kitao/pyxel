@@ -69,10 +69,10 @@ CAPTURE_PLANS = {
     ],
     "c04_mesh_and_motion": [
         {"frame": 1},
-        {"frame": 45, "press": [pyxel.KEY_2]},
-        {"frame": 91, "press": [pyxel.KEY_RIGHT]},
+        {"frame": 45, "press": [pyxel.KEY_2, pyxel.KEY_S]},
+        {"frame": 91, "press": [pyxel.KEY_RIGHT, pyxel.KEY_O]},
         {"frame": 92, "press": [pyxel.KEY_3, pyxel.KEY_S]},
-        {"frame": 123, "press": [pyxel.KEY_1]},
+        {"frame": 123, "press": [pyxel.KEY_1, pyxel.KEY_O]},
         {"frame": 124, "press": [pyxel.KEY_S]},
     ],
     "c05_3d_collision": [
