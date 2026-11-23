@@ -11,6 +11,7 @@ class MovingPlatform(Node):
     def __init__(self, start, end):
         super().__init__()
 
+        self.outline = 7
         self.add_child(Node.from_mesh(Mesh.from_glb("assets/garden_platform.glb")))
         self.collider = Collider(
             mesh=Mesh.from_glb("assets/garden_platform_collision.glb"), mass=0
@@ -44,6 +45,7 @@ class Player(Node):
         mesh = Mesh.from_glb("assets/garden_player.glb")
         self.motions = {motion.name: motion for motion in mesh.motions}
         self.actor = Node.from_mesh(mesh)
+        self.actor.outline = 5
         self.add_child(self.actor)
 
     def reset(self):
@@ -198,6 +200,7 @@ class App(Node):
         # Share geometry, but give each coin its own collision and motion state.
         for coin in self.coins:
             coin.add_child(Node.from_mesh(coin_mesh))
+            coin.outline = 9
             coin.collider = Collider(radius=5, trigger=True, mass=0)
             coin.tags = {"coin"}
 

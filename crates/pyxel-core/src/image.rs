@@ -30,6 +30,7 @@ macro_rules! palette_opt {
 
 #[derive(Clone)]
 pub struct Image {
+    pub(crate) outline_buffer: crate::cube::outline_buffer::OutlineBuffer,
     pub(crate) canvas: Canvas<Color>,
     pub(crate) palette: [Color; MAX_COLORS as usize],
     pub(crate) palette_is_identity: bool,
@@ -55,6 +56,7 @@ impl Image {
             canvas,
             palette: array::from_fn(|i| i as Color),
             palette_is_identity: true,
+            outline_buffer: crate::cube::outline_buffer::OutlineBuffer::default(),
         }))
     }
 

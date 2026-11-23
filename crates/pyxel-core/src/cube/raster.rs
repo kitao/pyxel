@@ -51,7 +51,60 @@ pub struct ClipRect {
     pub bottom: i32,
 }
 
+pub(crate) const F32_PIXEL_LIMIT: f32 = (1 << 23) as f32;
+
 impl ClipRect {
+    // Only these four strips can supply a four-neighbor outer contour.
+    pub(crate) fn outline_margins(self) -> [Self; 4] {
+        [
+            Self {
+                left: self.left - 1,
+                right: self.left - 1,
+                ..self
+            },
+            Self {
+                left: self.right.saturating_add(1),
+                right: self.right.saturating_add(1),
+                ..self
+            },
+            Self {
+                top: self.top - 1,
+                bottom: self.top - 1,
+                ..self
+            },
+            Self {
+                top: self.bottom.saturating_add(1),
+                bottom: self.bottom.saturating_add(1),
+                ..self
+            },
+        ]
+    }
+
+    // An on-image strip uses the same vertices as an unmasked draw. Beyond the
+    // image there is no destination clip: retain the original projected edges.
+    pub(crate) fn outline_source(self, width: u32, height: u32, wide: bool) -> Option<Self> {
+        let full = Self {
+            left: 0,
+            top: 0,
+            right: width.saturating_sub(1) as i32,
+            bottom: height.saturating_sub(1) as i32,
+        };
+        if full.contains(self.left, self.top) && full.contains(self.right, self.bottom) {
+            Some(full)
+        } else if wide {
+            // Above single-pixel f32 precision, condition the projection near the
+            // destination before interpolation, keeping the sample off the clip edge.
+            Some(Self {
+                left: self.left.saturating_sub(1),
+                top: self.top.saturating_sub(1),
+                right: self.right.saturating_add(1),
+                bottom: self.bottom.saturating_add(1),
+            })
+        } else {
+            None
+        }
+    }
+
     #[inline]
     pub fn contains(&self, x: i32, y: i32) -> bool {
         x >= self.left && x <= self.right && y >= self.top && y <= self.bottom
@@ -531,6 +584,14 @@ pub fn write_pixel(
     depth_test: bool,
     depth_write: bool,
 ) {
+    if target.outline_buffer.active {
+        let key = target.outline_surface(dither_alpha, true, depth_test, depth_write);
+        target.include_outline_bounds(x, y, x, y);
+        target.record_outline_sample(x, y, z, key);
+        if !target.outline_buffer.clip.unwrap().contains(x, y) {
+            return;
+        }
+    }
     let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test) else {
         return;
     };
@@ -550,12 +611,8 @@ fn visible_pixel_index(
     if !depth_in_clip_range(z) {
         return None;
     }
-    if dither_alpha < 1.0 {
-        let bayer = BAYER4[(y.rem_euclid(4)) as usize][(x.rem_euclid(4)) as usize];
-        let threshold = (bayer as f32 + 0.5) / 16.0;
-        if (1.0 - dither_alpha) >= threshold {
-            return None;
-        }
+    if !dither_allows(dither_alpha, x, y) {
+        return None;
     }
 
     let i = (y as usize) * depth_w as usize + x as usize;
@@ -566,7 +623,16 @@ fn visible_pixel_index(
 }
 
 #[inline]
-fn depth_in_clip_range(z: f32) -> bool {
+pub(crate) fn dither_allows(alpha: f32, x: i32, y: i32) -> bool {
+    if alpha < 1.0 {
+        let bayer = BAYER4[(y & 3) as usize][(x & 3) as usize];
+        return 1.0 - alpha < (bayer as f32 + 0.5) / 16.0;
+    }
+    true
+}
+
+#[inline]
+pub(crate) fn depth_in_clip_range(z: f32) -> bool {
     // Projection arithmetic can move exact near/far endpoints a few f32 ULPs.
     const EPSILON: f32 = 8.0 * f32::EPSILON;
     (-1.0 - EPSILON..=1.0 + EPSILON).contains(&z)
@@ -708,6 +774,53 @@ pub fn rasterize_triangle(
     depth_test: bool,
     depth_write: bool,
 ) {
+    if target.tracks_triangle(clip) {
+        rasterize_triangle_pass::<true>(
+            target,
+            depth,
+            depth_w,
+            p0,
+            p1,
+            p2,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+    } else {
+        rasterize_triangle_pass::<false>(
+            target,
+            depth,
+            depth_w,
+            p0,
+            p1,
+            p2,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+    }
+}
+
+fn rasterize_triangle_pass<const TRACK: bool>(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    p0: (f32, f32, f32),
+    p1: (f32, f32, f32),
+    p2: (f32, f32, f32),
+    primary: u8,
+    secondary: u8,
+    clip: ClipRect,
+    dither_alpha: f32,
+    depth_test: bool,
+    depth_write: bool,
+) {
     let area = edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1));
     if dither_alpha <= 0.0 || area.abs() < 1e-6 {
         return;
@@ -733,6 +846,16 @@ pub fn rasterize_triangle(
     let include_w0 = includes_edge_boundary((p1.0, p1.1), (p2.0, p2.1), pos_area);
     let include_w1 = includes_edge_boundary((p2.0, p2.1), (p0.0, p0.1), pos_area);
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
+    if TRACK {
+        target.outline_buffer.slope =
+            ScreenPlane::from_triangle(p0, p1, p2).map_or([0., 0.], |p| [p.dx, p.dy]);
+    }
+    let key = if TRACK {
+        target.include_outline_bounds(bx_min, by_min, bx_max, by_max);
+        target.outline_surface(dither_alpha, false, depth_test, depth_write)
+    } else {
+        0
+    };
     let pixel_bounds = ClipRect {
         left: bx_min,
         top: by_min,
@@ -778,6 +901,17 @@ pub fn rasterize_triangle(
             let bary2 = w2 * inv_area;
             let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
             let col = dither_pick(primary as i32, secondary as i32, x, y);
+            if TRACK {
+                let geometry_z = if p0.2 == p1.2 && p1.2 == p2.2 {
+                    p0.2
+                } else {
+                    z
+                };
+                target.record_outline_sample(x, y, geometry_z, key);
+                if !target.outline_buffer.clip.unwrap().contains(x, y) {
+                    continue;
+                }
+            }
             if let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test)
             {
                 write_visible_pixel(target, depth, i, x, y, z, col, depth_write);
@@ -789,6 +923,61 @@ pub fn rasterize_triangle(
 // UV and z interpolation is affine for the pixel-art scale. The sampler
 // receives screen coordinates for dithering; None skips transparent pixels.
 pub fn rasterize_textured_triangle<F>(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    p0: (f32, f32, f32),
+    p1: (f32, f32, f32),
+    p2: (f32, f32, f32),
+    uv0: (f32, f32),
+    uv1: (f32, f32),
+    uv2: (f32, f32),
+    sampler: F,
+    clip: ClipRect,
+    dither_alpha: f32,
+    depth_test: bool,
+    depth_write: bool,
+) where
+    F: Fn(f32, f32, i32, i32) -> Option<i32>,
+{
+    if target.tracks_triangle(clip) {
+        rasterize_textured_triangle_pass::<true, _>(
+            target,
+            depth,
+            depth_w,
+            p0,
+            p1,
+            p2,
+            uv0,
+            uv1,
+            uv2,
+            sampler,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+    } else {
+        rasterize_textured_triangle_pass::<false, _>(
+            target,
+            depth,
+            depth_w,
+            p0,
+            p1,
+            p2,
+            uv0,
+            uv1,
+            uv2,
+            sampler,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+    }
+}
+
+fn rasterize_textured_triangle_pass<const TRACK: bool, F>(
     target: &mut Image,
     depth: &mut [f32],
     depth_w: u32,
@@ -828,6 +1017,16 @@ pub fn rasterize_textured_triangle<F>(
     let include_w0 = includes_edge_boundary((p1.0, p1.1), (p2.0, p2.1), pos_area);
     let include_w1 = includes_edge_boundary((p2.0, p2.1), (p0.0, p0.1), pos_area);
     let include_w2 = includes_edge_boundary((p0.0, p0.1), (p1.0, p1.1), pos_area);
+    if TRACK {
+        target.outline_buffer.slope =
+            ScreenPlane::from_triangle(p0, p1, p2).map_or([0., 0.], |p| [p.dx, p.dy]);
+    }
+    let key = if TRACK {
+        target.include_outline_bounds(bx_min, by_min, bx_max, by_max);
+        target.outline_surface(dither_alpha, false, depth_test, depth_write)
+    } else {
+        0
+    };
     let pixel_bounds = ClipRect {
         left: bx_min,
         top: by_min,
@@ -871,12 +1070,29 @@ pub fn rasterize_textured_triangle<F>(
             let bary1 = w1 * inv_area;
             let bary2 = w2 * inv_area;
             let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
-            if let Some(i) = visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test)
-            {
+            let visible = if TRACK && !target.outline_buffer.clip.unwrap().contains(x, y) {
+                None
+            } else {
+                visible_pixel_index(depth, depth_w, x, y, z, dither_alpha, depth_test)
+            };
+            if visible.is_some() || TRACK {
                 let u = bary0 * uv0.0 + bary1 * uv1.0 + bary2 * uv2.0;
                 let v = bary0 * uv0.1 + bary1 * uv1.1 + bary2 * uv2.1;
                 if let Some(col) = sampler(u, v, x, y) {
-                    write_visible_pixel(target, depth, i, x, y, z, col as u8, depth_write);
+                    if TRACK {
+                        let geometry_z = if p0.2 == p1.2 && p1.2 == p2.2 {
+                            p0.2
+                        } else {
+                            z
+                        };
+                        target.record_outline_sample(x, y, geometry_z, key);
+                        if !target.outline_buffer.clip.unwrap().contains(x, y) {
+                            continue;
+                        }
+                    }
+                    if let Some(i) = visible {
+                        write_visible_pixel(target, depth, i, x, y, z, col as u8, depth_write);
+                    }
                 }
             }
         }
@@ -1345,7 +1561,7 @@ fn clip_screen_line_to_rect(
     // Keep ordinary rounding and the original nonfinite-input path unchanged.
     if [p0.0, p0.1, p1.0, p1.1]
         .iter()
-        .any(|value| value.abs() > (1 << 23) as f32)
+        .any(|value| value.abs() > F32_PIXEL_LIMIT)
         && [p0.0, p0.1, p0.2, p1.0, p1.1, p1.2]
             .iter()
             .all(|value| value.is_finite())
@@ -1475,11 +1691,72 @@ pub(crate) fn rasterize_border_line(
     depth_write: bool,
     planes: &[ScreenPlane],
 ) {
+    let width = target.width();
+    let height = target.height();
+    let outlined = target.outline_buffer.active;
+    let real = target.outline_buffer.clip.unwrap_or(clip);
+    let mut draw_in = |area, source| {
+        rasterize_border_line_pass(
+            target,
+            depth,
+            depth_w,
+            p0,
+            p1,
+            primary,
+            secondary,
+            area,
+            source,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            planes,
+        );
+    };
+    draw_in(real, Some(real));
+    if !outlined || real.left > real.right || real.top > real.bottom {
+        return;
+    }
+    let wide = [p0.0, p0.1, p1.0, p1.1]
+        .iter()
+        .any(|v| v.abs() > F32_PIXEL_LIMIT);
+    let crosses = [
+        p0.0.min(p1.0) < real.left as f32,
+        p0.0.max(p1.0) >= real.right as f32 + 1.0,
+        p0.1.min(p1.1) < real.top as f32,
+        p0.1.max(p1.1) >= real.bottom as f32 + 1.0,
+    ];
+    for (margin, crosses) in real.outline_margins().into_iter().zip(crosses) {
+        if crosses {
+            draw_in(margin, margin.outline_source(width, height, wide));
+        }
+    }
+}
+
+fn rasterize_border_line_pass(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    p0: (f32, f32, f32),
+    p1: (f32, f32, f32),
+    primary: u8,
+    secondary: u8,
+    clip: ClipRect,
+    source_clip: Option<ClipRect>,
+    dither_alpha: f32,
+    depth_test: bool,
+    depth_write: bool,
+    planes: &[ScreenPlane],
+) {
     if dither_alpha <= 0.0 {
         return;
     }
-    let Some((p0, p1)) = clip_screen_line_to_rect(p0, p1, clip) else {
-        return;
+    let (p0, p1) = if let Some(source) = source_clip {
+        let Some(points) = clip_screen_line_to_rect(p0, p1, source) else {
+            return;
+        };
+        points
+    } else {
+        (p0, p1)
     };
 
     let dx = p1.0 - p0.0;
@@ -1490,8 +1767,13 @@ pub(crate) fn rasterize_border_line(
     } else {
         (p0.1, p1.1)
     };
-    let first = a.min(b).floor() as i32;
-    let last = a.max(b).floor() as i32;
+    let (lower, upper) = if horizontal {
+        (clip.left, clip.right)
+    } else {
+        (clip.top, clip.bottom)
+    };
+    let first = (a.min(b).floor() as i32).max(lower);
+    let last = (a.max(b).floor() as i32).min(upper);
     for coordinate in first..=last {
         let t = if a == b {
             0.0

@@ -88,10 +88,15 @@ impl Sound {
         speed: SoundSpeed,
     ) -> Result<(), String> {
         Self::validate_speed(speed)?;
-        self.set_notes(note_str)?;
-        self.set_tones(tone_str)?;
-        self.set_volumes(volume_str)?;
-        self.set_effects(effect_str)?;
+        let notes = Self::parse_notes(note_str)?;
+        let tones = Self::parse_tones(tone_str)?;
+        let volumes = Self::parse_volumes(volume_str)?;
+        let effects = Self::parse_effects(effect_str)?;
+
+        self.notes = notes;
+        self.tones = tones;
+        self.volumes = volumes;
+        self.effects = effects;
         self.speed = speed;
         Ok(())
     }
@@ -103,11 +108,31 @@ impl Sound {
         Ok(())
     }
 
-    // Parse note symbols into semitone offsets.
     pub fn set_notes(&mut self, note_str: &str) -> Result<(), String> {
+        self.notes = Self::parse_notes(note_str)?;
+        Ok(())
+    }
+
+    pub fn set_tones(&mut self, tone_str: &str) -> Result<(), String> {
+        self.tones = Self::parse_tones(tone_str)?;
+        Ok(())
+    }
+
+    pub fn set_volumes(&mut self, volume_str: &str) -> Result<(), String> {
+        self.volumes = Self::parse_volumes(volume_str)?;
+        Ok(())
+    }
+
+    pub fn set_effects(&mut self, effect_str: &str) -> Result<(), String> {
+        self.effects = Self::parse_effects(effect_str)?;
+        Ok(())
+    }
+
+    // Parse note symbols into semitone offsets.
+    fn parse_notes(note_str: &str) -> Result<Vec<SoundNote>, String> {
         let note_str = simplify_string(note_str);
         let mut chars = note_str.chars();
-        self.notes.clear();
+        let mut notes = Vec::new();
 
         while let Some(c) = chars.next() {
             let mut note: SoundNote;
@@ -142,61 +167,49 @@ impl Sound {
             } else {
                 return Err(format!("Invalid sound note '{c}'"));
             }
-            self.notes.push(note);
+            notes.push(note);
         }
 
-        Ok(())
+        Ok(notes)
     }
 
-    pub fn set_tones(&mut self, tone_str: &str) -> Result<(), String> {
-        self.tones.clear();
-
-        for c in simplify_string(tone_str).chars() {
-            let tone = match c {
-                't' => TONE_TRIANGLE,
-                's' => TONE_SQUARE,
-                'p' => TONE_PULSE,
-                'n' => TONE_NOISE,
-                '0'..='9' => c.to_digit(10).unwrap() as SoundTone,
-                _ => return Err(format!("Invalid sound tone '{c}'")),
-            };
-            self.tones.push(tone);
-        }
-
-        Ok(())
+    fn parse_tones(tone_str: &str) -> Result<Vec<SoundTone>, String> {
+        simplify_string(tone_str)
+            .chars()
+            .map(|c| match c {
+                't' => Ok(TONE_TRIANGLE),
+                's' => Ok(TONE_SQUARE),
+                'p' => Ok(TONE_PULSE),
+                'n' => Ok(TONE_NOISE),
+                '0'..='9' => Ok(c.to_digit(10).unwrap() as SoundTone),
+                _ => Err(format!("Invalid sound tone '{c}'")),
+            })
+            .collect()
     }
 
-    pub fn set_volumes(&mut self, volume_str: &str) -> Result<(), String> {
-        self.volumes.clear();
-
-        for c in simplify_string(volume_str).chars() {
-            if ('0'..='7').contains(&c) {
-                self.volumes.push(c.to_digit(10).unwrap() as SoundVolume);
-            } else {
-                return Err(format!("Invalid sound volume '{c}'"));
-            }
-        }
-
-        Ok(())
+    fn parse_volumes(volume_str: &str) -> Result<Vec<SoundVolume>, String> {
+        simplify_string(volume_str)
+            .chars()
+            .map(|c| match c {
+                '0'..='7' => Ok(c.to_digit(10).unwrap() as SoundVolume),
+                _ => Err(format!("Invalid sound volume '{c}'")),
+            })
+            .collect()
     }
 
-    pub fn set_effects(&mut self, effect_str: &str) -> Result<(), String> {
-        self.effects.clear();
-
-        for c in simplify_string(effect_str).chars() {
-            let effect = match c {
-                'n' => EFFECT_NONE,
-                's' => EFFECT_SLIDE,
-                'v' => EFFECT_VIBRATO,
-                'f' => EFFECT_FADEOUT,
-                'h' => EFFECT_HALF_FADEOUT,
-                'q' => EFFECT_QUARTER_FADEOUT,
-                _ => return Err(format!("Invalid sound effect '{c}'")),
-            };
-            self.effects.push(effect);
-        }
-
-        Ok(())
+    fn parse_effects(effect_str: &str) -> Result<Vec<SoundEffect>, String> {
+        simplify_string(effect_str)
+            .chars()
+            .map(|c| match c {
+                'n' => Ok(EFFECT_NONE),
+                's' => Ok(EFFECT_SLIDE),
+                'v' => Ok(EFFECT_VIBRATO),
+                'f' => Ok(EFFECT_FADEOUT),
+                'h' => Ok(EFFECT_HALF_FADEOUT),
+                'q' => Ok(EFFECT_QUARTER_FADEOUT),
+                _ => Err(format!("Invalid sound effect '{c}'")),
+            })
+            .collect()
     }
 
     // MML & PCM

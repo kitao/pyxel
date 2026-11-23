@@ -1094,6 +1094,105 @@ class TestRaycast:
         target.transform = Mat4.from_translation(Vec3(3, 0, 0))
         assert target.raycast(origin, Vec3.RIGHT, max_distance=limit) is None
 
+    @pytest.mark.parametrize("angle", [0, 37])
+    def test_raycast_reaches_the_surface_of_a_rounded_corner(self, angle):
+        half_extent = 2.0**-13
+        radius = 2.0**-21
+        target = Node()
+        target.collider = Collider(
+            size=Vec3(1, 1, 1) * (2 * half_extent), radius=radius
+        )
+        target.transform = Mat4.from_euler(Vec3(0, angle, 0))
+        outward = Vec3(1, 1, 1).normalize()
+        normal = outward.to_world_dir(target.transform)
+        origin = target.transform * (Vec3(1, 1, 1) * (half_extent + 4 * radius))
+
+        # The ray crosses all three face planes before it reaches the spherical corner.
+        assert target.raycast(origin, -normal, 5.5 * radius) is None
+        assert target.raycast_all(origin, -normal, 5.5 * radius) == []
+        hit = target.raycast(origin, -normal, 6 * radius)
+        assert hit is not None
+        assert hit.distance == pytest.approx(
+            (4 * math.sqrt(3) - 1) * radius, rel=1e-4, abs=0
+        )
+        assert tuple(hit.normal) == pytest.approx(tuple(normal), abs=1e-4)
+
+    @pytest.mark.parametrize(
+        ("capsule", "origin", "normal"),
+        [
+            (True, (0, 256, 0), (3, 4, 0)),
+            (False, (0, 256, 0), (0, 1, 0)),
+            (False, (256, 256, 0), (1, 2, 0)),
+            (False, (256, 256, 256), (1, 2, 3)),
+        ],
+    )
+    def test_raycast_starts_on_the_core_of_a_thin_surface(
+        self, capsule, origin, normal
+    ):
+        radius = 2.0**-48
+        node = Node()
+        node.collider = Collider(
+            size=Vec3(0, 512, 0) if capsule else Vec3(512, 512, 512), radius=radius
+        )
+        direction = Vec3(3, 4, 0).normalize() if capsule else Vec3(1, 2, 3).normalize()
+        normal = Vec3(*normal).normalize()
+        distance = radius / direction.dot(normal)
+        assert node.raycast(Vec3(*origin), direction, distance * 0.75) is None
+        hit = node.raycast_all(Vec3(*origin), direction, distance * 1.25)[0]
+        assert hit.distance == pytest.approx(distance, rel=1e-6, abs=0)
+        assert tuple(hit.normal) == pytest.approx(tuple(normal), abs=1e-6)
+
+    @pytest.mark.parametrize("inside", [False, True])
+    def test_raycast_tiny_capsule_side(self, inside):
+        radius = 2.0**-44
+        node = Node()
+        node.collider = Collider(size=Vec3(0, 2, 0), radius=radius)
+        origin = Vec3.ZERO if inside else Vec3(4 * radius, 0, 0)
+        direction = Vec3.RIGHT if inside else Vec3.LEFT
+        distance = radius if inside else 3 * radius
+
+        assert node.raycast(origin, direction, distance * 0.75) is None
+        hit = node.raycast(origin, direction, distance * 1.25)
+        assert hit is not None
+        assert hit.distance == distance
+        assert tuple(hit.normal) == (1, 0, 0)
+
+    @pytest.mark.parametrize(
+        "size,radius",
+        [
+            ((0, 0, 0), 1),
+            ((0, 2, 0), 1),
+            ((2, 2, 2), 0),
+            ((2, 2, 2), 1),
+            ((2, 2, 2), 0.25),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "surface,expected_offset", [(0.875, 0), (1, 0), (1.125, 2)]
+    )
+    def test_ray_distance_on_either_side_of_the_rounding_boundary(
+        self, size, radius, surface, expected_offset
+    ):
+        limit = 2**24
+        target = Node()
+        target.collider = Collider(size=Vec3(*size), radius=radius)
+        target.transform = Mat4.from_translation(
+            Vec3(size[0] / 2 + radius + surface, 0, 0)
+        )
+        origin = Vec3(-limit, 0, 0)
+        nearest = target.raycast(origin, Vec3.RIGHT)
+        hits = target.raycast_all(origin, Vec3.RIGHT)
+        assert nearest is not None and len(hits) == 1
+        assert nearest.distance == hits[0].distance == limit + expected_offset
+
+        limited = target.raycast(origin, Vec3.RIGHT, limit)
+        limited_hits = target.raycast_all(origin, Vec3.RIGHT, limit)
+        if expected_offset == 0:
+            assert limited is not None and len(limited_hits) == 1
+            assert limited.distance == limited_hits[0].distance == limit
+        else:
+            assert limited is None and limited_hits == []
+
     def test_nearly_parallel_ray_reaches_sphere(self):
         target = Node()
         target.collider = Collider(radius=1)

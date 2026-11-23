@@ -201,8 +201,10 @@ fn integer_scale(enabled: bool) {
 }
 
 #[pyfunction]
-fn screen_mode(scr: u32) {
-    pyxel().set_screen_mode(scr);
+fn screen_mode(scr: u32) -> PyResult<()> {
+    pyxel()
+        .set_screen_mode(scr)
+        .map_err(pyo3::exceptions::PyValueError::new_err)
 }
 
 #[pyfunction]

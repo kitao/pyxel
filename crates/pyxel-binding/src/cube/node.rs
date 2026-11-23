@@ -155,6 +155,14 @@ impl Node {
                 billboard,
                 shading: shading_ref.as_deref(),
             };
+            if !ctx.frozen_styles.is_empty() {
+                let group = ctx.frozen_styles.get(&node_key(&self.inner)).map(|v| v.0);
+                rc_mut!(&ctx.target).set_outline_group(
+                    group,
+                    &ctx.depth,
+                    !ctx.depth_test || !ctx.depth_write || state.dither_alpha < 1.0,
+                );
+            }
             f(ctx, state);
             // Draw preparation writes the effective alpha into the context.
             // Keep the local modifier for the next command instead of multiplying twice.
@@ -443,6 +451,16 @@ impl Node {
     #[setter]
     fn set_visible(&self, v: bool) {
         self.inner_mut().visible = v;
+    }
+
+    #[getter]
+    fn outline(&self) -> Option<u8> {
+        self.inner_ref().outline
+    }
+
+    #[setter]
+    fn set_outline(&self, col: Option<u8>) {
+        InnerNode::set_outline(&self.inner, col);
     }
 
     #[getter]
@@ -1117,8 +1135,17 @@ impl Node {
         let vp = matmul(&proj, &view);
         let clip_row = camera_clip_row(&view);
 
+        let frozen_styles = InnerNode::frozen_outlines();
+        let mut raster_clip = clip;
+        if !frozen_styles.is_empty() && clip.left <= clip.right && clip.top <= clip.bottom {
+            raster_clip.left -= 1;
+            raster_clip.top -= 1;
+            raster_clip.right = raster_clip.right.saturating_add(1);
+            raster_clip.bottom = raster_clip.bottom.saturating_add(1);
+        }
         set_draw_context(DrawContext {
             target: target_rc,
+            frozen_styles,
             vp,
             clip_row,
             vp_x: x,
@@ -1126,6 +1153,7 @@ impl Node {
             vp_w: w as f32,
             vp_h: h as f32,
             clip,
+            raster_clip,
             camera: cam_inner.clone(),
 
             depth,
@@ -1144,6 +1172,11 @@ impl Node {
         let any = slf.into_any();
         let result = traverse_draw(&any);
         if let Some(ctx) = take_draw_context() {
+            if !ctx.frozen_styles.is_empty() {
+                let mut target = rc_mut!(&ctx.target);
+                target.composite_outline(&ctx.depth);
+                target.end_outline();
+            }
             rc_mut!(&cam_inner).depth = ctx.depth;
             rc_mut!(&cam_inner).vertex_scratch = ctx.vertex_cache;
         }
@@ -1396,7 +1429,13 @@ fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
 fn traverse_draw(root: &Bound<'_, PyAny>) -> PyResult<()> {
     let root_inner = root.cast::<Node>()?.borrow().inner.clone();
     let py = root.py();
-    for node in snapshot_nodes(root)? {
+    let nodes = snapshot_nodes(root)?;
+    with_draw_context(|ctx| {
+        if !ctx.frozen_styles.is_empty() {
+            rc_mut!(&ctx.target).begin_outline(ctx.clip);
+        }
+    });
+    for node in nodes {
         let node = node.bind(py);
         let node_bound = node.cast::<Node>()?;
         let inner = node_bound.borrow().inner.clone();

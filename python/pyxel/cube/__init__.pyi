@@ -332,6 +332,9 @@ class Node:
     active: bool  # parent-dominant; gates on_update, playback, and physics
     visible: bool  # parent-dominant; False halts drawing
     opacity: float  # 0-1; multiplied by ancestors and each draw command's dither
+    outline: (
+        int | None
+    )  # Palette color for this subtree; None inherits the nearest outline
     # Camera and shading inherit the closest non-None ancestor value.
     camera: Camera | None
     shading: Shading | None

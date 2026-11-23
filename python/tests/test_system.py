@@ -363,6 +363,10 @@ class TestSystemSetters:
     def _capture_state(self):
         return (pyxel.width, pyxel.height, list(pyxel.colors), pyxel.frame_count)
 
+    def test_screen_mode_rejects_unknown_mode(self):
+        with raises_exact(ValueError, "scr must be between 0 and 2"):
+            pyxel.screen_mode(3)
+
     @pytest.mark.parametrize(
         ("data", "scale", "message"),
         [

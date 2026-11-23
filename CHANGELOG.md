@@ -1,5 +1,12 @@
 # Change Log
 
+## 3.0.4
+
+- Added one-pixel outlines for Cube models and groups of drawing primitives
+- Fixed Cube raycast accuracy on rounded boxes, thin capsules, and distant hits
+- Fixed invalid screen modes causing a crash on the next frame
+- Preserved sound data when a Sound.set or individual setter call fails
+
 ## 3.0.3
 
 - Fixed clipping changing pixels inside rotated, scaled, and perspective blits

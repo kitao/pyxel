@@ -415,6 +415,7 @@ fn init_screen() -> RcImage {
         canvas: Canvas::new(0, 0),
         palette: array::from_fn(|i| i as Color),
         palette_is_identity: true,
+        outline_buffer: crate::cube::outline_buffer::OutlineBuffer::default(),
     })
 }
 
@@ -423,6 +424,7 @@ fn init_cursor_image() -> RcImage {
         canvas: Canvas::new(CURSOR_WIDTH, CURSOR_HEIGHT),
         palette: array::from_fn(|i| i as Color),
         palette_is_identity: true,
+        outline_buffer: crate::cube::outline_buffer::OutlineBuffer::default(),
     });
     rc_mut!(rc)
         .set(0, 0, &CURSOR_DATA)
@@ -437,6 +439,7 @@ fn init_font_image() -> RcImage {
         canvas: Canvas::new(w, h),
         palette: array::from_fn(|i| i as Color),
         palette_is_identity: true,
+        outline_buffer: crate::cube::outline_buffer::OutlineBuffer::default(),
     });
     let mut image = rc_mut!(rc);
 

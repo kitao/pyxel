@@ -435,25 +435,33 @@ class TestMmlErrors:
         with raises_exact(Exception, "MML:0: Unexpected character 'Z'"):
             pyxel.play(0, "Z")
 
-    def test_sound_set_notes_invalid(self):
+    @pytest.mark.parametrize(
+        ("field", "invalid", "message"),
+        [
+            ("notes", "D4Z", "Invalid sound note 'z'"),
+            ("tones", "SZ", "Invalid sound tone 'z'"),
+            ("volumes", "59", "Invalid sound volume '9'"),
+            ("effects", "FZ", "Invalid sound effect 'z'"),
+        ],
+    )
+    @pytest.mark.parametrize("combined", [False, True], ids=["individual", "set"])
+    def test_invalid_sound_data_preserves_previous_sound(
+        self, field, invalid, message, combined
+    ):
         snd = pyxel.Sound()
-        with raises_exact(Exception, "Invalid sound note 'z'"):
-            snd.set_notes("ZZZZZZ!!!")
-
-    def test_sound_set_tones_invalid(self):
-        snd = pyxel.Sound()
-        with raises_exact(Exception, "Invalid sound tone 'z'"):
-            snd.set_tones("ZZZZZZ!!!")
-
-    def test_sound_set_volumes_invalid(self):
-        snd = pyxel.Sound()
-        with raises_exact(Exception, "Invalid sound volume 'z'"):
-            snd.set_volumes("ZZZZZZ!!!")
-
-    def test_sound_set_effects_invalid(self):
-        snd = pyxel.Sound()
-        with raises_exact(Exception, "Invalid sound effect 'z'"):
-            snd.set_effects("ZZZZZZ!!!")
+        snd.set("c4e4", "tp", "76", "nv", 30)
+        with raises_exact(Exception, message):
+            if combined:
+                fields = {"notes": "d4", "tones": "s", "volumes": "5", "effects": "f"}
+                fields[field] = invalid
+                snd.set(**fields, speed=15)
+            else:
+                getattr(snd, f"set_{field}")(invalid)
+        assert list(snd.notes) == [48, 52]
+        assert list(snd.tones) == [0, 2]
+        assert list(snd.volumes) == [7, 6]
+        assert list(snd.effects) == [0, 2]
+        assert snd.speed == 30
 
 
 class TestFileErrors:

@@ -759,6 +759,12 @@ Dithered coverage, clamped to 0-1; defaults to 1. Multiplies ancestor opacity an
 
 - **Type:** `float`
 
+### `outline` — variable
+
+Palette index for a one-pixel outline around the shapes drawn by this node and its descendants. Setting an outline color starts a new group. With None (the default), the node inherits the outline color of the nearest ancestor that sets one. If no ancestor specifies one, no outline is drawn. draw() uses the outline settings in effect at the start of the call and draws the outlines at the end. When opacity or dither() fades a shape, the same dither pattern applies to its outline.
+
+- **Type:** `int | None`
+
 ### `camera` — variable
 
 Camera used for drawing. None inherits from the closest ancestor that has one.

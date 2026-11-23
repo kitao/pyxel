@@ -1,6 +1,8 @@
 const { test, expect } = require("@playwright/test");
 const axe = require("axe-core");
 const { execFileSync } = require("node:child_process");
+const { readFileSync } = require("node:fs");
+const path = require("node:path");
 
 // Badges and fonts load from Shields.io, Ko-fi, and Google Fonts; stand-ins keep the tests
 // independent of the network, and the fonts fall back to local ones.
@@ -66,19 +68,27 @@ test("pages on other sites can load the runtime and examples", async ({
 test("released runtime bundles are immutable and current previews are not", async ({
   request,
 }) => {
-  const cacheControl = async (path) =>
-    (await request.get(path)).headers()["cache-control"];
+  const cacheControl = async (url) => {
+    const response = await request.get(url);
+    expect(response.status(), url).toBe(200);
+    return response.headers()["cache-control"] ?? "";
+  };
   expect(await cacheControl("/pyxel/2.9.9/pyxel.js")).toBe(
     "public, max-age=31536000, immutable",
   );
   expect(await cacheControl("/pyxel/3.0.0/pyxel.js")).toBe(
     "public, max-age=31536000, immutable",
   );
-  const currentTag = execFileSync("git", ["tag", "--list", "v3.0.1"], {
+  const project = readFileSync(
+    path.resolve(__dirname, "../../../python/pyproject.toml"),
+    "utf8",
+  );
+  const version = project.match(/^version = "([^"]+)"/m)[1];
+  const currentTag = execFileSync("git", ["tag", "--list", `v${version}`], {
     cwd: __dirname,
     encoding: "utf8",
   }).trim();
-  const currentCacheControl = await cacheControl("/pyxel/3.0.1/pyxel.js");
+  const currentCacheControl = await cacheControl(`/pyxel/${version}/pyxel.js`);
   if (currentTag) {
     expect(currentCacheControl).toBe("public, max-age=31536000, immutable");
   } else {

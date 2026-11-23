@@ -126,6 +126,7 @@ class App:
         self.floor = Floor(self.gazelle.joints)
         self.scene.add_child(self.floor)
         self.scene.add_child(self.gazelle)
+        self.set_shading(False)
 
         self.yaw = 148.0
         self.pitch = math.degrees(math.atan2(119.0, 420.0))
@@ -148,7 +149,7 @@ class App:
                 self.gazelle.play(index)
 
         if pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y):
-            self.scene.shading = self.shading if self.scene.shading is None else None
+            self.set_shading(self.scene.shading is None)
 
         turn = (
             pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
@@ -164,6 +165,10 @@ class App:
         self.floor.offset = (self.floor.offset + speed * MOTION_SPEED / 30) % 294.0
 
         self.scene.update()
+
+    def set_shading(self, enabled):
+        self.scene.shading = self.shading if enabled else None
+        self.gazelle.outline = None if enabled else 13
 
     def update_camera(self):
         yaw, pitch = math.radians(self.yaw), math.radians(self.pitch)

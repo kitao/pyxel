@@ -295,8 +295,19 @@ impl Pyxel {
         self.system.integer_scale_enabled = enabled;
     }
 
-    pub fn set_screen_mode(&mut self, screen_mode: u32) {
+    pub fn set_screen_mode(&mut self, screen_mode: u32) -> Result<(), String> {
+        if screen_mode >= NUM_SCREEN_MODES {
+            return Err(format!(
+                "scr must be between 0 and {}",
+                NUM_SCREEN_MODES - 1
+            ));
+        }
         self.system.screen_mode = screen_mode;
+        Ok(())
+    }
+
+    fn cycle_screen_mode(&mut self) {
+        self.system.screen_mode = (self.system.screen_mode + 1) % NUM_SCREEN_MODES;
     }
 
     pub fn set_fullscreen(&self, enabled: bool) {
@@ -411,7 +422,7 @@ impl Pyxel {
                 self.set_integer_scale(!self.system.integer_scale_enabled);
             } else if self.is_button_pressed(KEY_9, None, None) {
                 self.reset_key(KEY_9);
-                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_MODES);
+                self.cycle_screen_mode();
             } else if self.is_button_pressed(KEY_0, None, None) {
                 self.reset_key(KEY_0);
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);
@@ -435,7 +446,7 @@ impl Pyxel {
                 self.set_integer_scale(!self.system.integer_scale_enabled);
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_RIGHT, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_RIGHT);
-                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_MODES);
+                self.cycle_screen_mode();
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_UP, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_UP);
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);

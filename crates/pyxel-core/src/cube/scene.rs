@@ -28,6 +28,7 @@ pub type ProjectedVertex = (Vec3, Option<(f32, f32, f32)>);
 
 pub struct DrawContext {
     pub target: RcImage,
+    pub frozen_styles: super::node::OutlineSnapshot,
     pub vp: Mat4x4,
     // Camera-plane clip row for near clipping (raster::camera_clip_row)
     pub clip_row: [f32; 4],
@@ -36,6 +37,8 @@ pub struct DrawContext {
     pub vp_w: f32,
     pub vp_h: f32,
     pub clip: ClipRect,
+    // May extend one pixel beyond the viewport to collect outline coverage.
+    pub raster_clip: ClipRect,
     pub camera: RcCamera,
 
     // The effective camera caches the depth allocation between frames.
@@ -3650,14 +3653,9 @@ impl Scene {
                 ColliderShape::Capsule { half_h, r } => {
                     Self::ray_vs_capsule_collider(origin, direction, world, half_h, r, max_distance)
                 }
-                ColliderShape::RoundedBox { half, r } => Self::ray_vs_rounded_obb_collider(
-                    origin,
-                    direction,
-                    world,
-                    half,
-                    r,
-                    max_distance,
-                ),
+                ColliderShape::RoundedBox { half, r } => {
+                    ray_vs_rigid_collider(origin, direction, world, half, r, max_distance, false)
+                }
             }
         };
 
@@ -3952,202 +3950,25 @@ impl Scene {
         radius: f32,
         max_distance: f32,
     ) -> Option<(f32, Vec3, Vec3)> {
-        let inv = world.inverse_value();
-        let local_origin = inv.mul_vec_value(&origin);
-        let local_direction = inv.mul_dir_value(&direction);
-        if !local_origin.is_finite()
-            && origin.is_finite()
-            && direction.is_finite()
-            && world.data.iter().flatten().all(|value| value.is_finite())
-        {
-            return ray_collider_relative_wide(
-                origin,
-                direction,
-                world,
-                Vec3 {
-                    x: 0.0,
-                    y: half_h,
-                    z: 0.0,
-                },
-                radius,
-                max_distance,
-                true,
-            );
-        }
-        let r = radius.max(0.0);
-        let mut best: Option<(f32, Vec3, Vec3)> = None;
-
-        for center in [
+        ray_vs_rigid_collider(
+            origin,
+            direction,
+            world,
             Vec3 {
                 x: 0.0,
                 y: half_h,
                 z: 0.0,
             },
-            Vec3 {
-                x: 0.0,
-                y: -half_h,
-                z: 0.0,
-            },
-        ] {
-            if let Some((t, point, normal)) = ray_vs_sphere_filtered(
-                local_origin,
-                local_direction,
-                center,
-                r,
-                max_distance,
-                |point| {
-                    if center.y > 0.0 {
-                        point.y >= half_h
-                    } else {
-                        point.y <= -half_h
-                    }
-                },
-            ) {
-                let hit = (t, world.mul_vec_value(&point), world.mul_dir_value(&normal));
-                set_nearer_hit(&mut best, hit, direction);
-            }
-        }
-
-        // Side wall: infinite-cylinder solve in local XZ, hits clamped to the cap span.
-        let a = local_direction.x * local_direction.x + local_direction.z * local_direction.z;
-        if a > 1e-12 {
-            let b = 2.0 * (local_origin.x * local_direction.x + local_origin.z * local_direction.z);
-            let c = local_origin.x * local_origin.x + local_origin.z * local_origin.z - r * r;
-            let disc = b * b - 4.0 * a * c;
-            if (!(a.is_finite() && b.is_finite() && c.is_finite() && disc.is_finite())
-                || disc.abs() <= 8.0 * f32::EPSILON * (b * b + (4.0 * a * c).abs()))
-                && local_origin.is_finite()
-                && local_direction.is_finite()
-                && r.is_finite()
-                && half_h.is_finite()
-            {
-                if let Some((t, point, normal)) = ray_vs_cylinder_side_wide(
-                    local_origin,
-                    local_direction,
-                    Vec3 {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    1,
-                    r,
-                    max_distance,
-                    |point, radial| {
-                        let length = (radial.x * radial.x + radial.z * radial.z).sqrt();
-                        (-half_h..=half_h).contains(&point.y) && length >= 1e-12
-                    },
-                ) {
-                    let length = (f64::from(normal.x).powi(2) + f64::from(normal.z).powi(2)).sqrt();
-                    let normal = Vec3 {
-                        x: (f64::from(normal.x) / length) as f32,
-                        y: 0.0,
-                        z: (f64::from(normal.z) / length) as f32,
-                    };
-                    set_nearer_hit(
-                        &mut best,
-                        (t, world.mul_vec_value(&point), world.mul_dir_value(&normal)),
-                        direction,
-                    );
-                }
-                return best;
-            }
-            if disc >= 0.0 {
-                let sqrt_disc = disc.sqrt();
-                for t in [(-b - sqrt_disc) / (2.0 * a), (-b + sqrt_disc) / (2.0 * a)] {
-                    if !(0.0..=max_distance).contains(&t) {
-                        continue;
-                    }
-
-                    let local_point = Vec3 {
-                        x: local_origin.x + local_direction.x * t,
-                        y: local_origin.y + local_direction.y * t,
-                        z: local_origin.z + local_direction.z * t,
-                    };
-                    if local_point.y < -half_h || local_point.y > half_h {
-                        continue;
-                    }
-
-                    let normal_len =
-                        (local_point.x * local_point.x + local_point.z * local_point.z).sqrt();
-                    if normal_len < 1e-12 {
-                        continue;
-                    }
-                    let local_normal = if !normal_len.is_finite()
-                        && local_point.is_finite()
-                        && local_direction.is_finite()
-                        && r.is_finite()
-                        && half_h.is_finite()
-                    {
-                        let normal_x = f64::from(local_point.x);
-                        let normal_z = f64::from(local_point.z);
-                        let length = (normal_x * normal_x + normal_z * normal_z).sqrt();
-                        Vec3 {
-                            x: (normal_x / length) as f32,
-                            y: 0.0,
-                            z: (normal_z / length) as f32,
-                        }
-                    } else {
-                        Vec3 {
-                            x: local_point.x / normal_len,
-                            y: 0.0,
-                            z: local_point.z / normal_len,
-                        }
-                    };
-                    let hit = (
-                        t,
-                        world.mul_vec_value(&local_point),
-                        world.mul_dir_value(&local_normal),
-                    );
-                    set_nearer_hit(&mut best, hit, direction);
-                }
-            }
-        }
-
-        best
-    }
-
-    fn ray_vs_rounded_obb_collider(
-        origin: Vec3,
-        direction: Vec3,
-        world: &Mat4,
-        half: Vec3,
-        radius: f32,
-        max_distance: f32,
-    ) -> Option<(f32, Vec3, Vec3)> {
-        let inv = world.inverse_value();
-        let local_origin = inv.mul_vec_value(&origin);
-        let local_direction = inv.mul_dir_value(&direction);
-        if !local_origin.is_finite()
-            && origin.is_finite()
-            && direction.is_finite()
-            && world.data.iter().flatten().all(|value| value.is_finite())
-        {
-            return ray_collider_relative_wide(
-                origin,
-                direction,
-                world,
-                half,
-                radius,
-                max_distance,
-                false,
-            );
-        }
-        let (t, local_point, local_normal) =
-            ray_vs_rounded_box(local_origin, local_direction, half, radius, max_distance)?;
-        Some((
-            t,
-            world.mul_vec_value(&local_point),
-            world.mul_dir_value(&local_normal),
-        ))
+            radius,
+            max_distance,
+            true,
+        )
     }
 }
 
 // Ray-vs-collider intersection helpers
 
-// A rigid inverse can overflow its local origin although the final world hit
-// is representable. Keep that relative frame wide through surface selection.
-#[cold]
-fn ray_collider_relative_wide(
+fn ray_vs_rigid_collider(
     origin: Vec3,
     direction: Vec3,
     world: &Mat4,
@@ -4162,37 +3983,81 @@ fn ray_collider_relative_wide(
     let axes: [[f64; 3]; 3] =
         std::array::from_fn(|j| std::array::from_fn(|i| f64::from(world.data[i][j])));
     let relative = std::array::from_fn(|i| coordinates(origin)[i] - center[i]);
-    let origin: [f64; 3] = axes.map(|axis| dot(relative, axis));
-    let direction = axes.map(|axis| dot(coordinates(direction), axis));
     let half = coordinates(half);
     let radius = f64::from(radius.max(0.0));
-    let mut best: Option<(f64, [f64; 3], [f64; 3])> = None;
-    let mut retain = |t: f64, point: [f64; 3], normal: [f64; 3]| {
-        if (0.0..=f64::from(max_distance)).contains(&t) && best.as_ref().is_none_or(|hit| t < hit.0)
+    let feature = if radius > 0.0 {
+        radius
+    } else {
+        half.into_iter()
+            .filter(|&v| v > 0.0)
+            .fold(f64::INFINITY, f64::min)
+    };
+    let local = axes.map(|axis| dot(relative, axis));
+    let gap = (0..3).map(|i| local[i].abs() - half[i]).fold(0.0, f64::max);
+    // Rebase a distant ray before rotation if its travel would erase a
+    // feature. A ray already at the surface keeps its small local offsets.
+    let (origin, start) = if gap * f64::EPSILON > feature * f64::from(f32::EPSILON) {
+        let (relative, start) = ray_at_center_plane(origin, direction, world.pos_value());
+        (axes.map(|axis| dot(relative, axis)), start)
+    } else {
+        (local, 0.0)
+    };
+    let direction = axes.map(|axis| dot(coordinates(direction), axis));
+    // Keep the residual of base + step: a thin cap can move the hit by less
+    // than one local-time ULP, yet that displacement is the whole world hit
+    // distance when the ray starts at the end of a long capsule.
+    let mut best: Option<([f64; 2], [f64; 3], [f64; 3])> = None;
+    let mut retain = |base: f64, step: f64, point: [f64; 3], normal: [f64; 3]| {
+        let sum = base + step;
+        let residual = if base.abs() >= step.abs() {
+            (base - sum) + step
+        } else {
+            (step - sum) + base
+        };
+        let offset = [sum, residual];
+        let distance = (start + sum) + residual;
+        // Inclusive queries use the same precision as the public hit distance.
+        if distance >= 0.0
+            && (distance as f32) <= max_distance
+            && best.as_ref().is_none_or(|hit| {
+                offset < hit.0
+                    || offset == hit.0
+                        && dot(std::array::from_fn(|i| point[i] - hit.1[i]), direction) < 0.0
+            })
         {
-            best = Some((t, point, normal));
+            best = Some((offset, point, normal));
         }
+    };
+    let in_span = |axis: usize, base: f64, step: f64| {
+        let travel = direction[axis] * base;
+        let extra = direction[axis] * step;
+        let upper = (half[axis] - origin[axis]) - travel;
+        let lower = (-half[axis] - origin[axis]) - travel;
+        (lower..=upper).contains(&extra)
     };
 
     if !capsule {
         for axis in 0..3 {
-            if direction[axis].abs() < 1e-12 {
+            if direction[axis] == 0.0 {
                 continue;
             }
             for sign in [-1.0, 1.0] {
-                let plane = sign * (half[axis] + radius);
-                let t = (plane - origin[axis]) / direction[axis];
-                let mut point = std::array::from_fn(|i| origin[i] + direction[i] * t);
-                point[axis] = plane;
-                if (0..3).all(|i| i == axis || point[i].abs() <= half[i] + 1e-6) {
+                let core = sign * half[axis];
+                let base = (core - origin[axis]) / direction[axis];
+                let step = sign * radius / direction[axis];
+                if (0..3).all(|i| i == axis || in_span(i, base, step)) {
+                    let mut point = std::array::from_fn(|i| {
+                        (origin[i] + direction[i] * base) + direction[i] * step
+                    });
+                    point[axis] = core + sign * radius;
                     let mut normal = [0.0; 3];
                     normal[axis] = sign;
-                    retain(t, point, normal);
+                    retain(base, step, point, normal);
                 }
             }
         }
     }
-    if radius > 0.0 {
+    if radius > 0.0 || capsule {
         // A capsule has one axial segment; a rounded box has twelve edge
         // segments, restricted to their outward quarters and hemispheres.
         for axis in 0..3 {
@@ -4211,33 +4076,41 @@ fn ray_collider_relative_wide(
                     center[i] = signs[0] * half[i];
                     center[j] = signs[1] * half[j];
                 }
-                let accepts = |point: [f64; 3]| {
-                    capsule || (point[i] * signs[0] >= half[i] && point[j] * signs[1] >= half[j])
+                let accepts = |radial_i: f64, radial_j: f64| {
+                    capsule || (radial_i * signs[0] >= 0.0 && radial_j * signs[1] >= 0.0)
                 };
-                for sign in [-1.0, 1.0] {
-                    center[axis] = sign * half[axis];
-                    let offset: [f64; 3] = std::array::from_fn(|k| origin[k] - center[k]);
-                    let speed2 = dot(direction, direction);
-                    let midpoint = -dot(offset, direction) / speed2;
-                    let closest: [f64; 3] =
-                        std::array::from_fn(|k| offset[k] + direction[k] * midpoint);
-                    let chord2 = radius * radius - dot(closest, closest);
-                    if chord2 < 0.0 {
-                        continue;
-                    }
-                    let chord = (chord2 / speed2).sqrt();
-                    for dt in [-chord, chord] {
-                        let radial: [f64; 3] =
-                            std::array::from_fn(|k| closest[k] + direction[k] * dt);
-                        let point = std::array::from_fn(|k| center[k] + radial[k]);
-                        if radial[axis] * sign >= 0.0 && accepts(point) {
-                            retain(midpoint + dt, point, radial.map(|v| v / radius));
+                // Each corner belongs to three edges. Test its sphere once.
+                if axis == 1 {
+                    for sign in [-1.0, 1.0] {
+                        center[axis] = sign * half[axis];
+                        let offset: [f64; 3] = std::array::from_fn(|k| origin[k] - center[k]);
+                        let speed2 = dot(direction, direction);
+                        let midpoint = -dot(offset, direction) / speed2;
+                        let closest: [f64; 3] =
+                            std::array::from_fn(|k| offset[k] + direction[k] * midpoint);
+                        let chord2 = radius * radius - dot(closest, closest);
+                        if chord2 < 0.0 {
+                            continue;
+                        }
+                        let chord = (chord2 / speed2).sqrt();
+                        for dt in [-chord, chord] {
+                            let radial: [f64; 3] =
+                                std::array::from_fn(|k| closest[k] + direction[k] * dt);
+                            let point = std::array::from_fn(|k| center[k] + radial[k]);
+                            if radial[axis] * sign >= 0.0 && accepts(radial[i], radial[j]) {
+                                let normal = if radius == 0.0 {
+                                    [0.0, 1.0, 0.0]
+                                } else {
+                                    radial.map(|v| v / radius)
+                                };
+                                retain(midpoint, dt, point, normal);
+                            }
                         }
                     }
                 }
                 center[axis] = 0.0;
                 let speed2 = direction[i] * direction[i] + direction[j] * direction[j];
-                if speed2 < 1e-12 {
+                if speed2 == 0.0 || radius == 0.0 {
                     continue;
                 }
                 let offset = [origin[i] - center[i], origin[j] - center[j]];
@@ -4256,19 +4129,21 @@ fn ray_collider_relative_wide(
                     let t = midpoint + dt;
                     let mut point = center;
                     point[axis] = origin[axis] + direction[axis] * t;
-                    point[i] += closest[0] + direction[i] * dt;
-                    point[j] += closest[1] + direction[j] * dt;
-                    if point[axis].abs() <= half[axis] && accepts(point) {
+                    let radial_i = closest[0] + direction[i] * dt;
+                    let radial_j = closest[1] + direction[j] * dt;
+                    point[i] += radial_i;
+                    point[j] += radial_j;
+                    if in_span(axis, midpoint, dt) && accepts(radial_i, radial_j) {
                         let mut normal = [0.0; 3];
-                        normal[i] = (point[i] - center[i]) / radius;
-                        normal[j] = (point[j] - center[j]) / radius;
-                        retain(t, point, normal);
+                        normal[i] = radial_i / radius;
+                        normal[j] = radial_j / radius;
+                        retain(midpoint, dt, point, normal);
                     }
                 }
             }
         }
     }
-    best.map(|(distance, point, normal)| {
+    best.map(|(offset, point, normal)| {
         let vector = |values: [f64; 3]| Vec3 {
             x: values[0] as f32,
             y: values[1] as f32,
@@ -4278,8 +4153,41 @@ fn ray_collider_relative_wide(
             std::array::from_fn(|i| center[i] + (0..3).map(|j| axes[j][i] * point[j]).sum::<f64>());
         let world_normal =
             std::array::from_fn(|i| (0..3).map(|j| axes[j][i] * normal[j]).sum::<f64>());
-        (distance as f32, vector(world_point), vector(world_normal))
+        (
+            ((start + offset[0]) + offset[1]) as f32,
+            vector(world_point),
+            vector(world_normal),
+        )
     })
+}
+
+// Evaluate the transverse coordinates before rounding the distant ray time.
+// Products of the original f32 inputs retain small translations and offsets.
+fn ray_at_center_plane(origin: Vec3, direction: Vec3, center: Vec3) -> ([f64; 3], f64) {
+    let direction = [direction.x, direction.y, direction.z];
+    let origin = [origin.x, origin.y, origin.z];
+    let center = [center.x, center.y, center.z];
+    let mut axis = 0;
+    for i in 1..3 {
+        if direction[i].abs() > direction[axis].abs() {
+            axis = i;
+        }
+    }
+    let divisor = f64::from(direction[axis]);
+    let start = (f64::from(center[axis]) - f64::from(origin[axis])) / divisor;
+    let relative = std::array::from_fn(|i| {
+        if i == axis {
+            0.0
+        } else {
+            sum_wide_products([
+                (origin[i], direction[axis]),
+                (-center[i], direction[axis]),
+                (-origin[axis], direction[i]),
+                (center[axis], direction[i]),
+            ]) / divisor
+        }
+    });
+    (relative, start)
 }
 
 fn ray_vs_rounded_box(

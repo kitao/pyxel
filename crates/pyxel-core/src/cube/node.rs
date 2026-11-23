@@ -17,6 +17,7 @@ pub struct Node {
     pub active: bool,
     pub visible: bool,
     pub opacity: f32,
+    pub outline: Option<u8>,
     pub camera: Option<RcCamera>,
     pub shading: Option<RcShading>,
     pub collider: Option<RcCollider>,
@@ -32,7 +33,81 @@ pub struct Node {
 
 define_rc_type!(RcNode, Node);
 
+pub type OutlineSnapshot = Rc<std::collections::HashMap<usize, ((usize, u8), WeakNode)>>;
+
+#[derive(Default)]
+struct OutlineRegistry {
+    roots: std::collections::HashMap<usize, WeakNode>,
+    snapshot: Option<OutlineSnapshot>,
+}
+thread_local! {
+    static OUTLINES: RefCell<OutlineRegistry> = RefCell::new(OutlineRegistry::default());
+}
+
+impl Drop for Node {
+    fn drop(&mut self) {
+        if self.outline.is_some() || !self.children.is_empty() {
+            let _ = OUTLINES.try_with(|cell| {
+                let mut registry = cell.borrow_mut();
+                registry.roots.remove(&(std::ptr::from_ref(self) as usize));
+                registry.snapshot = None;
+            });
+        }
+    }
+}
+
 impl Node {
+    pub fn set_outline(node: &RcNode, color: Option<u8>) {
+        let mut receiver = rc_mut!(node);
+        if receiver.outline == color {
+            return;
+        }
+        receiver.outline = color;
+        let key = std::ptr::from_ref(&*receiver) as usize;
+        OUTLINES.with(|cell| {
+            let mut registry = cell.borrow_mut();
+            registry.snapshot = None;
+            if color.is_some() {
+                registry.roots.insert(key, Rc::downgrade(node));
+            } else {
+                registry.roots.remove(&key);
+            }
+        });
+    }
+
+    fn invalidate_outline_snapshot() {
+        OUTLINES.with(|cell| cell.borrow_mut().snapshot = None);
+    }
+
+    pub fn frozen_outlines() -> OutlineSnapshot {
+        OUTLINES.with(|cell| {
+            let mut registry = cell.borrow_mut();
+            if let Some(snapshot) = &registry.snapshot {
+                return Rc::clone(snapshot);
+            }
+            let mut styles = std::collections::HashMap::new();
+            let mut stack = Vec::new();
+            for root in registry.roots.values().filter_map(Weak::upgrade) {
+                let color = rc_ref!(&root).outline.unwrap();
+                let owner = Rc::as_ptr(&root) as usize;
+                stack.push(root);
+                while let Some(node) = stack.pop() {
+                    let id = Rc::as_ptr(&node) as usize;
+                    let state = rc_ref!(&node);
+                    if id != owner && state.outline.is_some() {
+                        continue;
+                    }
+                    stack.extend(state.children.iter().cloned());
+                    // Keep the allocation identity stable without keeping unrelated actors alive.
+                    styles.insert(id, ((owner, color), Rc::downgrade(&node)));
+                }
+            }
+            let snapshot = Rc::new(styles);
+            registry.snapshot = Some(Rc::clone(&snapshot));
+            snapshot
+        })
+    }
+
     pub fn new() -> RcNode {
         new_rc_type!(Node {
             name: String::new(),
@@ -40,6 +115,7 @@ impl Node {
             active: true,
             visible: true,
             opacity: 1.0,
+            outline: None,
             camera: None,
             shading: None,
             collider: None,
@@ -62,6 +138,7 @@ impl Node {
         if Rc::ptr_eq(parent, child) || Self::is_ancestor_of(child, parent) {
             return false;
         }
+        Self::invalidate_outline_snapshot();
         Self::detach(child);
         rc_mut!(child).parent = Some(Rc::downgrade(parent));
         rc_mut!(parent).children.push(child.clone());
@@ -73,6 +150,7 @@ impl Node {
         if !is_direct_child {
             return false;
         }
+        Self::invalidate_outline_snapshot();
         rc_mut!(child).parent = None;
         rc_mut!(parent).children.retain(|c| !Rc::ptr_eq(c, child));
         true
@@ -81,6 +159,7 @@ impl Node {
     pub fn detach(child: &RcNode) {
         let parent_rc = rc_ref!(child).parent.as_ref().and_then(Weak::upgrade);
         if let Some(parent_rc) = parent_rc {
+            Self::invalidate_outline_snapshot();
             rc_mut!(&parent_rc)
                 .children
                 .retain(|c| !Rc::ptr_eq(c, child));

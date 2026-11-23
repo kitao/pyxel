@@ -402,8 +402,10 @@ fn make_draw_context(target_size: u32) -> DrawContext {
     let view = view_matrix(&camera_ref);
     let projection = projection_matrix(&camera_ref, size, size);
     drop(camera_ref);
+    let clip = compute_clip_rect(0.0, 0.0, size, size, target_size, target_size);
 
     DrawContext {
+        frozen_styles: std::rc::Rc::default(),
         target: Image::new(target_size, target_size),
         vp: matmul(&projection, &view),
         clip_row: camera_clip_row(&view),
@@ -411,7 +413,8 @@ fn make_draw_context(target_size: u32) -> DrawContext {
         vp_y: 0.0,
         vp_w: size,
         vp_h: size,
-        clip: compute_clip_rect(0.0, 0.0, size, size, target_size, target_size),
+        clip,
+        raster_clip: clip,
         camera,
 
         depth: vec![f32::INFINITY; (target_size * target_size) as usize],

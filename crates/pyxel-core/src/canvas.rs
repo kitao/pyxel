@@ -1250,7 +1250,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         (x1, y1, x2, y2)
     }
 
-    fn should_write(&self, x: i32, y: i32) -> bool {
+    pub(crate) fn should_write(&self, x: i32, y: i32) -> bool {
         if self.alpha >= 1.0 {
             return true;
         }

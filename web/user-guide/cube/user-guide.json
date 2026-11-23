@@ -548,6 +548,9 @@
               "text": "<p>Methods whose names end in <code class=\"chip\">b</code> draw outlines only. For example, <code class=\"chip\">boxb</code> draws only the edges of a box.</p>"
             },
             {
+              "text": "<p>Set <code class=\"chip\">self.outline = 13</code> in the node's <code class=\"chip\">__init__</code> to draw a one-pixel outline in palette color 13 around the shapes drawn by the node and its descendants. If the node draws two overlapping boxes, the outline follows their combined silhouette.</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Drawing with Images</h3>"
             },
             {
@@ -1222,6 +1225,9 @@
             },
             {
               "text": "<p>名称以 <code class=\"chip\">b</code> 结尾的方法只绘制轮廓。例如，<code class=\"chip\">boxb</code> 只绘制箱体的边。</p>"
+            },
+            {
+              "text": "<p>在节点的 <code class=\"chip\">__init__</code> 中设置 <code class=\"chip\">self.outline = 13</code>，即可用调色板中的 13 号色为该节点及其后代绘制的所有图形加上一像素宽的轮廓。如果同一节点绘制两个重叠的长方体，轮廓会沿着它们合在一起的外形绘制。</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">使用图像绘制</h3>"
@@ -1900,6 +1906,9 @@
               "text": "<p>Methoden mit einem Namen, der auf <code class=\"chip\">b</code> endet, zeichnen nur die Umrisse. Beispielsweise zeichnet <code class=\"chip\">boxb</code> nur die Kanten eines Kastens.</p>"
             },
             {
+              "text": "<p>Setzen Sie im <code class=\"chip\">__init__</code> des Knotens <code class=\"chip\">self.outline = 13</code>, um die Formen des Knotens und seiner Nachkommen mit einer ein Pixel breiten Kontur in der Palettenfarbe 13 zu umgeben. Zeichnet der Knoten zwei überlappende Quader, folgt die Kontur ihrem gemeinsamen Umriss.</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Mit Bildern zeichnen</h3>"
             },
             {
@@ -2574,6 +2583,9 @@
             },
             {
               "text": "<p>Los métodos cuyo nombre termina en <code class=\"chip\">b</code> dibujan solo los contornos. Por ejemplo, <code class=\"chip\">boxb</code> dibuja únicamente las aristas de una caja.</p>"
+            },
+            {
+              "text": "<p>En el método <code class=\"chip\">__init__</code> del nodo, escriba <code class=\"chip\">self.outline = 13</code> para dibujar un contorno de un píxel con el color 13 de la paleta alrededor de las figuras que dibujan el nodo y sus descendientes. Si el nodo dibuja dos cajas superpuestas, el contorno sigue la silueta del conjunto.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Dibujo con imágenes</h3>"
@@ -3252,6 +3264,9 @@
               "text": "<p>Les méthodes dont le nom se termine par <code class=\"chip\">b</code> ne dessinent que les contours. Par exemple, <code class=\"chip\">boxb</code> ne dessine que les arêtes d'une boîte.</p>"
             },
             {
+              "text": "<p>Dans la méthode <code class=\"chip\">__init__</code> du nœud, écrivez <code class=\"chip\">self.outline = 13</code> pour tracer un contour d'un pixel dans la couleur 13 de la palette autour des formes dessinées par le nœud et ses descendants. Si le nœud dessine deux boîtes qui se chevauchent, le contour suit leur silhouette commune.</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Dessin avec des images</h3>"
             },
             {
@@ -3926,6 +3941,9 @@
             },
             {
               "text": "<p>I metodi il cui nome termina con <code class=\"chip\">b</code> disegnano solo i contorni. Per esempio, <code class=\"chip\">boxb</code> disegna soltanto gli spigoli di una scatola.</p>"
+            },
+            {
+              "text": "<p>Impostare <code class=\"chip\">self.outline = 13</code> nel metodo <code class=\"chip\">__init__</code> del nodo per tracciare, con il colore 13 della tavolozza, un contorno di un pixel attorno alle forme disegnate dal nodo e dai suoi discendenti. Se il nodo disegna due parallelepipedi sovrapposti, il contorno segue la sagoma complessiva.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Disegno con immagini</h3>"
@@ -4604,6 +4622,9 @@
               "text": "<p>名前が <code class=\"chip\">b</code> で終わるメソッドは、輪郭だけを描きます。例えば <code class=\"chip\">boxb</code> は箱の辺だけを描きます。</p>"
             },
             {
+              "text": "<p>ノードの <code class=\"chip\">__init__</code> で <code class=\"chip\">self.outline = 13</code> と設定すると、そのノードと子孫が描く図形全体に、パレットの 13 番の色で 1 ピクセル幅の輪郭が付きます。同じノードで箱を 2 つ重ねて描くと、輪郭は 2 つを合わせた外形に沿います。</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">画像を使った描画</h3>"
             },
             {
@@ -5278,6 +5299,9 @@
             },
             {
               "text": "<p>이름이 <code class=\"chip\">b</code>로 끝나는 메서드는 윤곽선만 그립니다. 예를 들어 <code class=\"chip\">boxb</code>는 상자의 모서리만 그립니다.</p>"
+            },
+            {
+              "text": "<p>노드의 <code class=\"chip\">__init__</code>에서 <code class=\"chip\">self.outline = 13</code>을 설정하면 해당 노드와 그 하위 노드가 그리는 도형 전체에 팔레트의 13번 색으로 1픽셀 두께의 윤곽선이 생깁니다. 같은 노드에서 상자 두 개를 겹쳐 그리면 윤곽선은 두 상자를 합친 외곽을 따릅니다.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">이미지를 사용한 그리기</h3>"
@@ -5956,6 +5980,9 @@
               "text": "<p>Os métodos cujos nomes terminam em <code class=\"chip\">b</code> desenham apenas os contornos. Por exemplo, <code class=\"chip\">boxb</code> desenha somente as arestas de uma caixa.</p>"
             },
             {
+              "text": "<p>No método <code class=\"chip\">__init__</code> do nó, escreva <code class=\"chip\">self.outline = 13</code> para traçar um contorno de um pixel com a cor 13 da paleta ao redor das formas desenhadas pelo nó e por seus descendentes. Se o nó desenhar duas caixas sobrepostas, o contorno acompanha a silhueta do conjunto.</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Desenho com imagens</h3>"
             },
             {
@@ -6630,6 +6657,9 @@
             },
             {
               "text": "<p>Методы, имена которых заканчиваются на <code class=\"chip\">b</code>, рисуют только контуры. Например, <code class=\"chip\">boxb</code> рисует только рёбра коробки.</p>"
+            },
+            {
+              "text": "<p>В методе <code class=\"chip\">__init__</code> узла укажите <code class=\"chip\">self.outline = 13</code>, чтобы обвести все фигуры, которые рисуют узел и его потомки, контуром толщиной в один пиксель. Для контура используется цвет 13 из палитры. Если узел рисует две перекрывающиеся коробки, контур повторяет их общий силуэт.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Рисование с изображениями</h3>"
@@ -7308,6 +7338,9 @@
               "text": "<p>Adı <code class=\"chip\">b</code> ile biten metotlar yalnızca ana hatları çizer. Örneğin <code class=\"chip\">boxb</code> yalnızca kutunun kenarlarını çizer.</p>"
             },
             {
+              "text": "<p>Düğümün <code class=\"chip\">__init__</code> metodunda <code class=\"chip\">self.outline = 13</code> yazarak düğümün ve alt düğümlerinin çizdiği şekillerin tamamını paletteki 13 numaralı renkle, bir piksel kalınlığında çevreleyebilirsiniz. Düğüm üst üste gelen iki kutu çizdiğinde çizgi bu kutuların ortak dış sınırını izler.</p>"
+            },
+            {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Görüntülerle çizim</h3>"
             },
             {
@@ -7982,6 +8015,9 @@
             },
             {
               "text": "<p>Методи, назви яких закінчуються на <code class=\"chip\">b</code>, малюють лише контури. Наприклад, <code class=\"chip\">boxb</code> малює лише ребра коробки.</p>"
+            },
+            {
+              "text": "<p>У методі <code class=\"chip\">__init__</code> вузла вкажіть <code class=\"chip\">self.outline = 13</code>, щоб обвести всі фігури, які малюють вузол і його нащадки, контуром завтовшки один піксель. Для контуру використовується колір 13 із палітри. Якщо вузол малює дві коробки, що перекриваються, контур повторює їхній спільний силует.</p>"
             },
             {
               "text": "<h3 class=\"sub-title\" id=\"s-textures\">Малювання із зображеннями</h3>"

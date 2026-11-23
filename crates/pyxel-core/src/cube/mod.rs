@@ -9,6 +9,7 @@ pub mod mat4;
 pub mod mesh;
 pub mod motion;
 pub mod node;
+pub mod outline_buffer;
 pub mod primitive;
 pub mod quat;
 pub mod raster;

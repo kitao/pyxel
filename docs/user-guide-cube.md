@@ -353,6 +353,8 @@ Specify shape coordinates and dimensions in 3D space units. Positions given as `
 
 Methods whose names end in `b` draw outlines only. For example, `boxb` draws only the edges of a box.
 
+Set `self.outline = 13` in the node's `__init__` to draw a one-pixel outline in palette color 13 around the shapes drawn by the node and its descendants. If the node draws two overlapping boxes, the outline follows their combined silhouette.
+
 ### Drawing with Images
 
 You can color 3D shapes with a color index or apply an image to their surfaces. An image applied to a surface is called a **texture**; specify one by passing an image created with Pyxel's [`Image`](https://kitao.dev/pyxel/api-reference/#image) class to a drawing method. For example, passing an image instead of a color index to `box` applies the entire image to each face.

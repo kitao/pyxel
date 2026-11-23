@@ -15,7 +15,7 @@ use crate::cube::raster::{
     dither_pick, edge_function, face_shade_level, lookup_ramp, matmul, narrow_face_normal,
     rasterize_border_line, rasterize_circle_border, rasterize_circle_filled, rasterize_line,
     rasterize_textured_triangle, rasterize_triangle, screen_circle, sprite_corners, tri_normal,
-    world_to_screen, write_pixel, ScreenPlane,
+    world_to_screen, write_pixel, ClipRect, ScreenPlane, F32_PIXEL_LIMIT,
 };
 use crate::cube::scene::DrawContext;
 use crate::cube::shading::Shading;
@@ -50,6 +50,17 @@ struct ClippedTriangle {
 struct ProjectedPolygon {
     vertices: [ProjectedClipVertex; 7],
     len: usize,
+}
+
+impl ProjectedPolygon {
+    fn from_triangle(vertices: [ProjectedClipVertex; 3]) -> Self {
+        let mut polygon = Self {
+            vertices: [vertices[0]; 7],
+            len: 3,
+        };
+        polygon.vertices[..3].copy_from_slice(&vertices);
+        polygon
+    }
 }
 
 // Internal billboard modes for camera-facing draw commands
@@ -289,11 +300,7 @@ fn clip_projected_triangle(
     vertices: [ProjectedClipVertex; 3],
     clip: crate::cube::raster::ClipRect,
 ) -> ProjectedPolygon {
-    let mut polygon = ProjectedPolygon {
-        vertices: [vertices[0]; 7],
-        len: 3,
-    };
-    polygon.vertices[..3].copy_from_slice(&vertices);
+    let mut polygon = ProjectedPolygon::from_triangle(vertices);
 
     for (axis, boundary, sign) in [
         (0, clip.left as f32, 1.0),
@@ -360,28 +367,60 @@ fn draw_projected_triangle(
     colkey: Option<i32>,
     state: DrawState,
 ) {
-    let polygon = clip_projected_triangle(vertices, ctx.clip);
-    for i in 1..polygon.len.saturating_sub(1) {
-        draw_clipped_triangle(
-            ctx,
-            [
-                polygon.vertices[0],
-                polygon.vertices[i],
-                polygon.vertices[i + 1],
-            ],
-            cull,
-            normal,
-            col_flat,
-            col_image,
-            texture_snapshot,
-            colkey,
-            state,
-        );
+    let real = ctx.clip;
+    let outlined = !ctx.frozen_styles.is_empty();
+    let (width, height) = (ctx.depth_w, ctx.depth_h);
+    let mut draw_in = |polygon: &ProjectedPolygon, clip: ClipRect| {
+        for i in 1..polygon.len.saturating_sub(1) {
+            draw_clipped_triangle(
+                ctx,
+                clip,
+                [
+                    polygon.vertices[0],
+                    polygon.vertices[i],
+                    polygon.vertices[i + 1],
+                ],
+                cull,
+                normal,
+                col_flat,
+                col_image,
+                texture_snapshot,
+                colkey,
+                state,
+            );
+        }
+    };
+    draw_in(&clip_projected_triangle(vertices, real), real);
+    if !outlined || real.left > real.right || real.top > real.bottom {
+        return;
+    }
+    let crosses = [
+        vertices.iter().any(|v| v.screen.0 < real.left as f32),
+        vertices
+            .iter()
+            .any(|v| v.screen.0 > real.right as f32 + 1.0),
+        vertices.iter().any(|v| v.screen.1 < real.top as f32),
+        vertices
+            .iter()
+            .any(|v| v.screen.1 > real.bottom as f32 + 1.0),
+    ];
+    let wide = vertices
+        .iter()
+        .any(|v| v.screen.0.abs().max(v.screen.1.abs()) > F32_PIXEL_LIMIT);
+    for (margin, crosses) in real.outline_margins().into_iter().zip(crosses) {
+        if crosses {
+            let polygon = match margin.outline_source(width, height, wide) {
+                Some(source) => clip_projected_triangle(vertices, source),
+                None => ProjectedPolygon::from_triangle(vertices),
+            };
+            draw_in(&polygon, margin);
+        }
     }
 }
 
 fn draw_clipped_triangle(
     ctx: &mut DrawContext,
+    clip: ClipRect,
     vertices: [ProjectedClipVertex; 3],
     cull: i32,
     normal: Option<&Vec3>,
@@ -403,7 +442,6 @@ fn draw_clipped_triangle(
     }
 
     let depth_w = ctx.depth_w;
-    let clip = ctx.clip;
     let dither_alpha = ctx.dither_alpha;
     let depth_test = ctx.depth_test;
     let depth_write = ctx.depth_write;
@@ -971,7 +1009,7 @@ pub fn prim(
                         p1,
                         col_flat as u8,
                         col_flat as u8,
-                        ctx.clip,
+                        ctx.raster_clip,
                         ctx.dither_alpha,
                         ctx.depth_test,
                         ctx.depth_write,
@@ -991,7 +1029,7 @@ pub fn prim(
                 if let Some((sx, sy, sz)) = p0 {
                     let xi = sx.round() as i32;
                     let yi = sy.round() as i32;
-                    if ctx.clip.contains(xi, yi) {
+                    if ctx.raster_clip.contains(xi, yi) {
                         write_pixel(
                             &mut target_mut,
                             depth,
@@ -1176,7 +1214,7 @@ fn draw_border(
             p1,
             col as u8,
             col as u8,
-            ctx.clip,
+            ctx.raster_clip,
             ctx.dither_alpha,
             ctx.depth_test,
             ctx.depth_write,
@@ -1441,6 +1479,7 @@ fn draw_decal(
             } else {
                 dither_pick(colors.0, colors.1, x, y)
             };
+            target.outline_buffer.decal = true;
             write_pixel(
                 &mut target,
                 &mut ctx.depth,
@@ -1453,6 +1492,7 @@ fn draw_decal(
                 false,
                 false,
             );
+            target.outline_buffer.decal = false;
         }
     }
 }
@@ -1845,7 +1885,7 @@ pub fn circ(
             sz,
             col as u8,
             col as u8,
-            ctx.clip,
+            ctx.raster_clip,
             ctx.dither_alpha,
             ctx.depth_test,
             ctx.depth_write,
@@ -1902,7 +1942,7 @@ pub fn circb(
             sz,
             col as u8,
             col as u8,
-            ctx.clip,
+            ctx.raster_clip,
             ctx.dither_alpha,
             ctx.depth_test,
             ctx.depth_write,
@@ -2144,7 +2184,7 @@ pub fn text(
     let mut target_mut = rc_mut!(&ctx.target);
     let depth_w = ctx.depth_w;
     let depth = ctx.depth.as_mut_slice();
-    let clip = ctx.clip;
+    let clip = ctx.raster_clip;
     let col = col as u8;
 
     let mut plot_pixel = |px: i64, py: i64| {
@@ -2187,7 +2227,9 @@ mod tests {
 
     fn draw_context_64(target: &RcImage, camera: &RcCamera, shaded: bool) -> DrawContext {
         let view = view_matrix(&rc_ref!(camera));
+        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         DrawContext {
+            frozen_styles: crate::cube::node::OutlineSnapshot::default(),
             target: target.clone(),
             vp: matmul(&projection_matrix(&rc_ref!(camera), 64.0, 64.0), &view),
             clip_row: camera_clip_row(&view),
@@ -2195,7 +2237,8 @@ mod tests {
             vp_y: 0.0,
             vp_w: 64.0,
             vp_h: 64.0,
-            clip: compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64),
+            clip,
+            raster_clip: clip,
             camera: camera.clone(),
 
             depth: vec![f32::INFINITY; 64 * 64],
