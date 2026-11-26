@@ -15,12 +15,25 @@ body:
     validations:
       required: true
   - type: input
-    id: url
+    id: site
     attributes:
-      label: "Work URL (optional) / 作品 URL（任意）"
-      description: "URL of your published work, if available / 作品を公開している場合は URL を記入してください"
+      label: "Site (optional) / 作品紹介ページ（任意）"
+      description: "A page about your work, such as its website or repository. If people can play on the same page, just enter it under Play. / 作品の紹介ページやリポジトリの URL。同じページで遊べる場合は、次の Play 欄だけで大丈夫です。"
     validations:
       required: false
+  - type: input
+    id: play
+    attributes:
+      label: "Play (optional) / 遊べる URL（任意）"
+      description: "A page where people can play in their browser, or a link to your .pyxapp file. / ブラウザで遊べるページ、または公開している .pyxapp ファイルの URL。"
+    validations:
+      required: false
+  - type: checkboxes
+    id: mobile
+    attributes:
+      label: "Mobile play (optional) / スマホ対応（任意）"
+      options:
+        - label: "I've checked that I can play using only my phone's touchscreen. / スマホの画面操作だけで一通り遊べることを確認しました。"
   - type: input
     id: author
     attributes:
@@ -42,7 +55,8 @@ body:
       description: >
         In your Pyxel app, press Alt(Option)+2 to start recording and
         Alt(Option)+3 to save as GIF. Drag & drop the saved file here.
-        Preferably under 3 MB. / Pyxel アプリの実行中に Alt(Option)+2 で録画開始、
-        Alt(Option)+3 で GIF として保存できます。保存したファイルをここにドラッグ&ドロップしてください。目安 3 MB 以下。
+        Aim for 3 MB or less. We may shorten larger GIFs for the gallery. /
+        Pyxel アプリの実行中に Alt(Option)+2 で録画開始、Alt(Option)+3 で GIF として保存できます。
+        保存したファイルをここにドラッグ&ドロップしてください。3 MB 以下が目安です。超える場合は、掲載時に GIF を短くすることがあります。
     validations:
       required: true
