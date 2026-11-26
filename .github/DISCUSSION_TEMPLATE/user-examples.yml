@@ -7,10 +7,6 @@ body:
         Share what you’ve made with Pyxel! Your work will be featured in [Pyxel User Examples](https://kitao.dev/pyxel/user-examples/).
 
         あなたが Pyxel で作った作品を紹介してください！ 投稿された作品は [Pyxel User Examples](https://kitao.dev/pyxel/user-examples/) に掲載されます。
-
-        **Title of your work / 作品名**
-
-        In the field above, replace “Title of your work / 作品名” with the title of your work. / 上の「Title of your work / 作品名」の欄に、作品名を入力してください。
   - type: input
     id: description
     attributes:
@@ -47,8 +43,12 @@ body:
     id: mobile
     attributes:
       label: "Mobile support / スマホ対応"
+      description: |-
+        Check this box if your work can also be played on a phone using touch controls or an on-screen gamepad.
+
+        スマホ（タッチ操作や仮想ゲームパッド）でも遊べる場合はチェックしてください。
       options:
-        - label: "Check this box if your work can also be played on a phone using touch controls or an on-screen gamepad. / スマホ（タッチ操作や仮想ゲームパッド）でも遊べる場合はチェックしてください。"
+        - label: "Playable on a phone / スマホでプレイ可能"
   - type: input
     id: author
     attributes:
