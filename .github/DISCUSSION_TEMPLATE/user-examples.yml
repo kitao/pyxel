@@ -33,7 +33,7 @@ body:
     attributes:
       label: "Mobile play (optional) / スマホ対応（任意）"
       options:
-        - label: "I've checked that I can play using only my phone's touchscreen. / スマホの画面操作だけで一通り遊べることを確認しました。"
+        - label: "I've checked that all essential controls work by touch in a phone browser. / スマホのブラウザで、必要な操作がすべてタッチでできることを確認しました。"
   - type: input
     id: author
     attributes:
@@ -52,11 +52,11 @@ body:
     id: gif
     attributes:
       label: "Screen Capture GIF / 画面キャプチャ GIF"
-      description: >
-        In your Pyxel app, press Alt(Option)+2 to start recording and
-        Alt(Option)+3 to save as GIF. Drag & drop the saved file here.
-        Aim for 3 MB or less. We may shorten larger GIFs for the gallery. /
-        Pyxel アプリの実行中に Alt(Option)+2 で録画開始、Alt(Option)+3 で GIF として保存できます。
-        保存したファイルをここにドラッグ&ドロップしてください。3 MB 以下が目安です。超える場合は、掲載時に GIF を短くすることがあります。
+      description: |-
+        In Pyxel, press Alt(Option)+2 where you want the clip to start, then Alt(Option)+3 to save the GIF.
+        Drag the file here. Aim for 3 MB or less. We may shorten larger GIFs for the gallery.
+
+        Pyxel で録画したい場面の最初に Alt(Option)+2、最後に Alt(Option)+3 を押すと GIF が保存されます。
+        保存したファイルをここにドラッグしてください。3 MB 以下が目安です。超える場合は、掲載時に GIF を短くすることがあります。
     validations:
       required: true
