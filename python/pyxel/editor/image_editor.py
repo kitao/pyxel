@@ -85,13 +85,10 @@ class ImageEditor(EditorBase):
 
     def _restore_state(self, data, prefix):
         self.image_index_var = data["image_index"]
-        if f"{prefix}_data" in data:
-            pyxel.images[self.image_index_var].set_slice(0, 0, data[f"{prefix}_data"])
-        else:
-            self.focus_x_var, self.focus_y_var = data["focus_pos"]
-            self.canvas_var.set_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, data[f"{prefix}_canvas"]
-            )
+        x, y = data.get("focus_pos", (0, 0))
+        if "focus_pos" in data:
+            self.focus_x_var, self.focus_y_var = x, y
+        self.canvas_var.set_slice(x * 8, y * 8, data[f"{prefix}_data"])
 
     # Event handlers
 

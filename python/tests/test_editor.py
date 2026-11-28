@@ -562,8 +562,8 @@ editor.add_history(
     {
         "image_index": 0,
         "focus_pos": (0, 0),
-        "old_canvas": old_canvas,
-        "new_canvas": pyxel.images[0].get_slice(0, 0, 16, 16),
+        "old_data": old_canvas,
+        "new_data": pyxel.images[0].get_slice(0, 0, 16, 16),
     }
 )
 
@@ -1388,6 +1388,17 @@ class TestImageViewer:
                 )
             else:
                 assert (view.focus_x_var, view.focus_y_var) == (expected, expected)
+
+        pos = (view.x + 24, view.y + 24)
+        view.trigger_event("mouse_up", button, *pos)
+        for delta in (grid - 1, 1):
+            view.trigger_event("mouse_down", button, *pos)
+            view.trigger_event("mouse_drag", button, *pos, delta, delta)
+            view.trigger_event("mouse_up", button, *pos)
+        if bank_view:
+            assert (view.viewport_x_var, view.viewport_y_var) == (8, 8)
+        else:
+            assert (view.focus_x_var, view.focus_y_var) == (8, 8)
 
     @pytest.mark.parametrize("tilemap_mode", [False, True])
     def test_right_drag_keeps_the_viewport_inside_the_image(self, tilemap_mode):

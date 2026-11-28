@@ -1254,29 +1254,68 @@
         if (!/\.pyxres/i.test(source)) return source;
         await pythonModeReady;
         const tokenizer = window._codeEditor.session.getMode().getTokenizer();
-        const calls = new Set();
+        const calls = [];
+        const edits = [];
+        const literal =
+          /([ru]?)("""|'''|["'])(?:(?!\2)[^\\]|\\[\s\S])*?\.pyxres\2(?=\s*(?:#[^\r\n]*[\r\n]\s*)*[,)])/iy;
+        let previous, beforePrevious;
         let state = "start";
         // Keep Ace's multiline string state and the original source offsets.
         for (const line of source.matchAll(/([^\r\n]*)(?:\r\n?|\n|$)/g)) {
           const row = tokenizer.getLineTokens(line[1], state);
           let offset = line.index;
+          let continued = false;
           for (const token of row.tokens) {
+            const { type, value } = token;
+            const start = offset;
+            offset += value.length;
+            if (type === "comment" || !value.trim()) continue;
+            if (type === "text" && value.trim() === "\\") {
+              continued = true;
+              continue;
+            }
+            if (type === "paren.lparen" || type === "paren.rparen") {
+              for (const bracket of value) {
+                if (type === "paren.lparen")
+                  calls.push(
+                    bracket === "(" &&
+                      previous?.value === "load" &&
+                      (previous.type === "identifier" ||
+                        previous.type === "function.support"),
+                  );
+                else calls.pop();
+                beforePrevious = previous;
+                previous = { type, value: bracket };
+              }
+              continue;
+            }
             if (
-              token.value === "load" &&
-              (token.type === "identifier" || token.type === "function.support")
-            )
-              calls.add(offset);
-            offset += token.value.length;
+              type === "string" &&
+              calls.at(-1) &&
+              (previous?.value === "(" ||
+                (beforePrevious?.value === "filename" &&
+                  previous?.value === "="))
+            ) {
+              literal.lastIndex = start;
+              const match = literal.exec(source);
+              if (match)
+                edits.push([
+                  start + match[1].length + match[2].length,
+                  literal.lastIndex - match[2].length,
+                ]);
+            }
+            beforePrevious = previous;
+            previous = token;
           }
+          if (!calls.length && !continued)
+            previous = beforePrevious = undefined;
           state = row.state;
         }
-        return source.replace(
-          /(\bload\s*\(\s*)(["'])(?:\\(?:\r\n|[\s\S])|(?!\2)[^\\\r\n])*\.pyxres\2/gi,
-          (match, call, quote, offset) =>
-            calls.has(offset)
-              ? `${call}${quote}my_resource.pyxres${quote}`
-              : match,
-        );
+        for (const [start, end] of edits.reverse()) {
+          source =
+            source.slice(0, start) + "my_resource.pyxres" + source.slice(end);
+        }
+        return source;
       }
 
       async function decodePythonSource(bytes, load) {

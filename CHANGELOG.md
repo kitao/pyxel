@@ -3,7 +3,7 @@
 ## 3.0.5
 
 - Made image and tilemap imports undoable in Pyxel Editor
-- Made editor dragging scroll the same distance at different mouse event rates
+- Made editor panning consistent across mouse event rates and separate drags
 - Fixed unrelated bubbles moving twice after a merge in the Click Game example
 - Fixed gaps and early stops when looping a sound list with empty entries
 - Sped up copying small regions within the same image or tilemap
@@ -20,7 +20,7 @@
 - Fixed Code Maker failing to open a project stored alongside other Gist files
 - Fixed Code Maker's resource editor ignoring a project ZIP's custom palette
 - Kept files outside a Code Maker project folder from replacing its contents
-- Preserved comments and quoted text when importing Python code into Code Maker
+- Fixed Code Maker resource path imports while preserving comments and strings
 - Made MML Studio generate sharing QR codes in the browser
 - Labeled animation previews and book links in Pyxel Showcase
 - Made localized web pages use the browser's first supported language

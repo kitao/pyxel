@@ -323,13 +323,21 @@ for (const [surface, codeExtension, resourceExtension] of [
     };
     const tokenizer = {
       getLineTokens(line) {
-        const tokens = line.startsWith("pyxel.load")
-          ? [
-              { value: "pyxel." },
-              { value: "load", type: "function.support" },
-              { value: line.slice(10) },
-            ]
-          : [{ value: line, type: "string" }];
+        const tokens = [];
+        for (const [value] of line.matchAll(
+          /#[^\n]*|[ru]?(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\w+|\s+|./gi,
+        )) {
+          let type = "text";
+          if (value === "(") type = "paren.lparen";
+          else if (value === ")") type = "paren.rparen";
+          else if (value === "load")
+            type = line.startsWith("def ")
+              ? "entity.name.function"
+              : "identifier";
+          else if (value.startsWith("#")) type = "comment";
+          else if (/^[ru]?["']/i.test(value)) type = "string";
+          tokens.push({ type, value });
+        }
         return { tokens, state: "start" };
       },
     };
@@ -373,6 +381,11 @@ for (const [surface, codeExtension, resourceExtension] of [
       `pyxel.load("note" + "other.pyxres")`,
       "pyxel.load( 'assets/other.pyxres', exclude_images=True)",
       'pyxel.load (\n    "assets/third.pyxres",\n    exclude_sounds=True,\n)',
+      'pyxel.load(\n    # game data\n    filename=r"assets/level.pyxres")',
+      'pyxel.load(exclude_images=True, filename="assets/level.pyxres")',
+      'pyxel.load("prefix.pyxres" + suffix)',
+      'def load(filename="guide.pyxres"): pass',
+      'reader = pyxel.load\n("example.pyxres", "notes.txt")',
       'print("hello")',
       "pyxel.load(resource_path)",
       'pyxel.unload("assets/test.pyxres")',
@@ -390,6 +403,11 @@ for (const [surface, codeExtension, resourceExtension] of [
       `pyxel.load("note" + "other.pyxres")`,
       "pyxel.load( 'my_resource.pyxres', exclude_images=True)",
       'pyxel.load (\n    "my_resource.pyxres",\n    exclude_sounds=True,\n)',
+      'pyxel.load(\n    # game data\n    filename=r"my_resource.pyxres")',
+      'pyxel.load(exclude_images=True, filename="my_resource.pyxres")',
+      'pyxel.load("prefix.pyxres" + suffix)',
+      'def load(filename="guide.pyxres"): pass',
+      'reader = pyxel.load\n("example.pyxres", "notes.txt")',
       'print("hello")',
       "pyxel.load(resource_path)",
       'pyxel.unload("assets/test.pyxres")',

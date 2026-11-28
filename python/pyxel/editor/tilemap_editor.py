@@ -107,17 +107,13 @@ class TilemapEditor(EditorBase):
 
     def _restore_state(self, data, prefix):
         self.tilemap_index_var = data["tilemap_index"]
-        if f"{prefix}_data" in data:
-            pyxel.tilemaps[self.tilemap_index_var].set_slice(
-                0, 0, data[f"{prefix}_data"]
-            )
+        x, y = data.get("focus_pos", (0, 0))
+        if "focus_pos" in data:
+            self.focus_x_var, self.focus_y_var = x, y
+        self.canvas_var.set_slice(x * 8, y * 8, data[f"{prefix}_data"])
+        if f"{prefix}_imgsrc" in data:
             self.canvas_var.imgsrc = data[f"{prefix}_imgsrc"]
             self._sync_image_picker()
-        else:
-            self.focus_x_var, self.focus_y_var = data["focus_pos"]
-            self.canvas_var.set_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, data[f"{prefix}_canvas"]
-            )
 
     # Event handlers
 

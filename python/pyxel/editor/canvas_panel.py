@@ -161,18 +161,17 @@ class CanvasPanel(Widget):
             data["old_data"] = self.canvas_var.get_slice(0, 0, 256, 256)
         else:
             data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
-            data["old_canvas"] = self.canvas_var.get_slice(
+            data["old_data"] = self.canvas_var.get_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, width, height
             )
 
     def _add_post_history(self):
         data = self._history_data
         self._history_data = None
-        key = "canvas" if "focus_pos" in data else "data"
         x, y = data.get("focus_pos", (0, 0))
-        old = data[f"old_{key}"]
+        old = data["old_data"]
         new = self.canvas_var.get_slice(x * 8, y * 8, old.width, old.height)
-        data[f"new_{key}"] = new
+        data["new_data"] = new
         if "old_imgsrc" in data:
             data["new_imgsrc"] = self.canvas_var.imgsrc
         pixels_changed = bytes(old.data_ptr()) != bytes(new.data_ptr())
@@ -256,6 +255,8 @@ class CanvasPanel(Widget):
     def __on_mouse_down(self, key, x, y):
         # Right click picks the current color or tile.
         if key == pyxel.MOUSE_BUTTON_RIGHT:
+            self._drag_offset_x = 0
+            self._drag_offset_y = 0
             x, y = self._screen_to_focus(x, y)
             x += self.focus_x_var * 8
             y += self.focus_y_var * 8
