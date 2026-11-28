@@ -138,3 +138,37 @@ def test_project_files_are_available_when_code_runs(
     script_path.write_text(dedent(parser.script), encoding="utf-8")
     runpy.run_path(str(script_path))
     assert (work_dir / "ran").exists()
+
+
+@pytest.mark.parametrize("palette", [None, b"", b"123456\nabcdef\n"])
+def test_resource_editor_opens_with_project_palette(monkeypatch, tmp_path, palette):
+    monkeypatch.chdir(tmp_path)
+    files = {"other.pyxpal": base64.b64encode(b"ffffff\n").decode()}
+    if palette is not None:
+        files["my_resource.pyxpal"] = base64.b64encode(palette).decode()
+    project = SimpleNamespace(
+        resource=base64.b64encode(b"resource").decode(),
+        files=SimpleNamespace(**files),
+    )
+    monkeypatch.setitem(
+        sys.modules, "js", SimpleNamespace(parent=SimpleNamespace(_project=project))
+    )
+    opened = []
+
+    def open_resource(filename):
+        resource_path = Path(filename)
+        palette_path = resource_path.with_suffix(".pyxpal")
+        opened.append(
+            (
+                resource_path.read_bytes(),
+                palette_path.read_bytes() if palette_path.exists() else None,
+            )
+        )
+
+    monkeypatch.setattr(pyxel.cli, "edit_pyxel_resource", open_resource)
+    parser = ScriptParser()
+    parser.feed(PAGE_PATH.with_name("pyxel-editor.html").read_text(encoding="utf-8"))
+    script_path = tmp_path / "bootstrap.py"
+    script_path.write_text(dedent(parser.script), encoding="utf-8")
+    runpy.run_path(str(script_path))
+    assert opened == [(b"resource", palette)]

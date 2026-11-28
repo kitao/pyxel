@@ -53,11 +53,11 @@ class App:
         pyxel.rectb(0, -1, pyxel.width, pyxel.height + 2, 5)
 
         for i in range(pyxel.NUM_CHANNELS):
-            total_sec = pyxel.sounds[i].total_sec()
             (_, play_sec) = pyxel.play_pos(i) or (None, None)
             if play_sec is None:
                 continue
 
+            total_sec = pyxel.sounds[i].total_sec()
             if total_sec is None:
                 # Show progress in a fixed window for open-ended playback.
                 play_sec = play_sec % 5

@@ -1,11 +1,24 @@
 # Run documentation capture workers and write palette-preserving GIFs.
 
+import argparse
 import os
 import subprocess
 import sys
 from itertools import pairwise
 
 from PIL import Image
+
+
+def add_name_argument(parser, name, choices):
+    # Python 3.11 checks an empty positional list against argparse's choices.
+    def check_name(value):
+        if value not in choices:
+            raise argparse.ArgumentTypeError(f"unknown name: {value}")
+        return value
+
+    parser.add_argument(
+        name, nargs="*", type=check_name, metavar="{" + ",".join(choices) + "}"
+    )
 
 
 def run_worker(command):

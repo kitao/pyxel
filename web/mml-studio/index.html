@@ -304,11 +304,13 @@
           style="display: block"
         ></a>
 
-        <img id="qr-code-image" alt="QR Code" class="mt-4" />
+        <img id="qr-code-image" alt="QR Code" class="pix mt-4" hidden />
       </div>
     </main>
 
-    <script>
+    <script type="module">
+      import { generate } from "./lean-qr/index.mjs";
+
       const runtimeScreen = document.getElementById("runtime-screen");
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
@@ -387,12 +389,24 @@
         shareUrl.textContent = shareUrl.href = url;
         window.history.replaceState(null, "", url);
 
-        const qrSize = Math.max(128, Math.min(url.length, 400));
-        qrCodeImage.src =
-          `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
-          encodeURIComponent(url);
-        qrCodeImage.width = qrSize;
-        qrCodeImage.height = qrSize;
+        try {
+          const qr = generate(url);
+          // Keep every module and the four-module quiet zone on whole pixels.
+          const modules = qr.size + 8;
+          const targetSize = Math.max(128, Math.min(url.length, 400));
+          qrCodeImage.src = qr.toDataURL({
+            on: [156, 163, 175],
+            off: [0, 0, 0],
+            scale: Math.max(1, Math.round(targetSize / modules)),
+          });
+        } catch (error) {
+          // Lean QR error 4 means the URL exceeds the largest QR code.
+          if (error.code !== 4) throw error;
+          qrCodeImage.removeAttribute("src");
+          qrCodeImage.hidden = true;
+          return;
+        }
+        qrCodeImage.hidden = false;
       }
 
       function resolvePyxelInput() {

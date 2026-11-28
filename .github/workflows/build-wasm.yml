@@ -1,0 +1,57 @@
+name: build-wasm
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  build-wasm:
+    if: github.repository == 'kitao/pyxel'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.15.2"
+
+      - name: Set up the Web toolchain
+        run: |
+          python -m pip install 'maturin>=1.0,<2.0' ruff
+          pyodide=$(sed -n 's/^const PYODIDE_VERSION = "\([0-9.]*\)";$/\1/p' wasm/pyxel.js)
+          test -n "$pyodide"
+          git clone --depth 1 --branch "$pyodide" https://github.com/pyodide/pyodide.git /tmp/pyodide
+          CMAKE_POLICY_VERSION_MINIMUM=3.5 make -C /tmp/pyodide/emsdk
+
+      - name: Build the release wheel
+        run: |
+          # Cargo includes local crate paths in the wheel's SBOM.
+          git worktree add --detach /tmp/pyxel "$GITHUB_SHA"
+          cd /tmp/pyxel
+          source /tmp/pyodide/emsdk/emsdk/emsdk_env.sh
+          make build-wasm
+          git diff --exit-code --name-only HEAD --
+          set -- dist/*.whl
+          test "$#" -eq 1
+          mkdir "$GITHUB_WORKSPACE/dist"
+          cp "$1" "$GITHUB_WORKSPACE/dist/"
+
+      - name: Check the wheel against the committed sources
+        run: python scripts/check_wasm_wheel --release dist/*.whl
+
+      - name: Attest the release wheel
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: dist/*.whl
+          create-storage-record: false
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pyxel-wasm
+          path: dist/*.whl
+          if-no-files-found: error

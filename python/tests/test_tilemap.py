@@ -176,9 +176,12 @@ class TestTilemapBlt:
         finally:
             pyxel.tilemaps[0] = previous
 
-    @pytest.mark.parametrize("rotate", [0, 30])
-    @pytest.mark.parametrize("source_pos", [0, -1])
-    def test_self_blit_matches_source_snapshot(self, rotate, source_pos):
+    @pytest.mark.parametrize(
+        ("width", "height", "rotate"),
+        [(4, 4, 0), (-4, 4, 0), (4, -4, 0), (-4, -4, 0), (-4, 4, 30)],
+    )
+    @pytest.mark.parametrize("source_pos", [0, -1, 5])
+    def test_self_blit_matches_source_snapshot(self, width, height, rotate, source_pos):
         actual, expected, snapshot = [pyxel.Tilemap(8, 8, 0) for _ in range(3)]
         for tm in (actual, expected, snapshot):
             for y in range(8):
@@ -186,7 +189,7 @@ class TestTilemapBlt:
                     tm.pset(x, y, (x, y))
 
         for dst, src in ((expected, snapshot), (actual, actual)):
-            dst.blt(2, 2, src, source_pos, source_pos, -4, 4, rotate=rotate)
+            dst.blt(2, 2, src, source_pos, source_pos, width, height, rotate=rotate)
         assert list(expected.data_ptr()) != list(snapshot.data_ptr())
         assert list(actual.data_ptr()) == list(expected.data_ptr())
 

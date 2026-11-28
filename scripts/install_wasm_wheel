@@ -1,31 +1,107 @@
 #!/usr/bin/env python3
 
+import argparse
 import importlib.util
+import json
+import os
 import re
 import shutil
+import subprocess
 import sys
+import tempfile
 import zipfile
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DIST_DIR = ROOT_DIR / "dist"
 WASM_DIR = ROOT_DIR / "wasm"
 PYPROJECT_PATH = ROOT_DIR / "python" / "pyproject.toml"
 WHEEL_PATH_PATTERN = re.compile(r'(?m)^(const PYXEL_WHEEL_PATH\s*=\s*")[^"]+(";)$')
+REPOSITORY = "kitao/pyxel"
+WORKFLOW = ".github/workflows/build-wasm.yml"
 
 
-def main() -> int:
+def main(run_id) -> int:
+    try:
+        if not re.fullmatch(r"[1-9][0-9]*", run_id):
+            raise ValueError("supply the numeric ID of a successful build-wasm run")
+        with tempfile.TemporaryDirectory() as directory:
+            artifact_dir = Path(directory)
+            download_release_wheel(run_id, artifact_dir)
+            return install_wheel(artifact_dir)
+    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+        print(
+            f"error: could not install the GitHub Actions wheel: {error}",
+            file=sys.stderr,
+        )
+        return 1
+
+
+def github(*args):
+    return subprocess.check_output(
+        ["gh", *args], env={**os.environ, "GH_HOST": "github.com"}, encoding="utf-8"
+    )
+
+
+def download_release_wheel(run_id, directory):
+    git_env = {k: v for k, v in os.environ.items() if not k.upper().startswith("GIT_")}
+    git = ["git", "-C", str(ROOT_DIR)]
+    if subprocess.check_output(
+        [*git, "status", "--porcelain", "--untracked-files=all"], env=git_env
+    ):
+        raise ValueError("the release wheel requires a clean source checkout")
+    commit = subprocess.check_output(
+        [*git, "rev-parse", "HEAD"], env=git_env, text=True
+    ).strip()
+    run = json.loads(github("api", f"repos/{REPOSITORY}/actions/runs/{run_id}"))
+    if not (
+        run["path"] == WORKFLOW
+        and run["event"] == "workflow_dispatch"
+        and run["status"] == "completed"
+        and run["conclusion"] == "success"
+        and run["head_sha"] == commit
+        and (run.get("head_repository") or {}).get("full_name") == REPOSITORY
+    ):
+        raise ValueError(
+            f"run {run_id} is not a successful {WORKFLOW} build of {commit}"
+        )
+    github(
+        "run",
+        "download",
+        run_id,
+        "--repo",
+        REPOSITORY,
+        "--name",
+        "pyxel-wasm",
+        "--dir",
+        str(directory),
+    )
+    files = list(directory.iterdir())
+    if len(files) != 1 or files[0].suffix != ".whl" or not files[0].is_file():
+        raise ValueError("the pyxel-wasm artifact must contain exactly one wheel")
+    github(
+        "attestation",
+        "verify",
+        str(files[0]),
+        "--repo",
+        REPOSITORY,
+        "--signer-workflow",
+        f"{REPOSITORY}/{WORKFLOW}",
+        "--source-digest",
+        commit,
+        "--deny-self-hosted-runners",
+    )
+
+
+def install_wheel(directory):
     try:
         checker_path = Path(__file__).with_name("check_wasm_wheel")
         loader = SourceFileLoader("_pyxel_wheel_checker", str(checker_path))
         spec = importlib.util.spec_from_loader(loader.name, loader)
         checker = importlib.util.module_from_spec(spec)
         loader.exec_module(checker)
-        wheel_path = checker.find_wheel(DIST_DIR, PYPROJECT_PATH)
-        violations = checker.find_wheel_mismatches(
-            wheel_path, PYPROJECT_PATH, PYPROJECT_PATH.parent / "pyxel"
-        )
+        wheel_path = checker.find_wheel(directory, PYPROJECT_PATH)
+        violations = checker.find_release_violations(wheel_path, ROOT_DIR)
         if violations:
             raise ValueError(f"wheel contents failed validation: {violations}")
     except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
@@ -64,4 +140,13 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    parser = argparse.ArgumentParser(
+        description="Install the validated Pyxel WebAssembly wheel."
+    )
+    parser.add_argument(
+        "--github-run",
+        metavar="RUN_ID",
+        required=True,
+        help="install the official build of the current commit",
+    )
+    raise SystemExit(main(parser.parse_args().github_run))

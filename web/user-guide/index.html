@@ -50,7 +50,10 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
+      <div
+        id="page-loading"
+        class="flex justify-center items-center py-12 text-gray-400 text-sm"
+      >
         Loading...
       </div>
     </main>
@@ -200,7 +203,7 @@
           <p class="body">${t("usage_command_body").replaceAll("{0}", chip("pyxel"))}</p>
           <p class="body mt-2">${esc(t("usage_command_noargs"))}</p>
           ${code("pyxel", "sh")}
-          ${code(`Pyxel, a retro game engine for Python
+          ${code(`Pyxel X.Y.Z, a retro game engine for Python
 usage:
     pyxel run PYTHON_SCRIPT_FILE(.py)
     pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)
@@ -251,6 +254,10 @@ def draw():
 pyxel.run(update, draw)`,
             "python",
           )}
+          <p class="body">${t("creating_program_try")
+            .replace("{0}", chip("main.py"))
+            .replace("{1}", chip("pyxel run main.py"))
+            .replace("{2}", link("../code-maker/", "Pyxel Code Maker"))}</p>
           <p class="body">${t("creating_program_run_desc")
             .replace("{0}", chip("run"))
             .replace("{1}", chip("update"))
@@ -288,11 +295,9 @@ pyxel.show()`,
 
           <h3 class="sub-title">${esc(t("creating_run_title"))}</h3>
           <p class="body">${t("creating_run_python").replace("{0}", chip("python"))}</p>
-          ${code("python PYTHON_SCRIPT_FILE", "sh")}
-          <p class="body">${t("creating_run_pyxel").replace("{0}", chip("pyxel run"))}</p>
-          ${code("pyxel run PYTHON_SCRIPT_FILE", "sh")}
+          ${code("python main.py", "sh")}
           <p class="body">${t("creating_run_watch").replace("{0}", chip("pyxel watch"))}</p>
-          ${code("pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE", "sh")}
+          ${code("pyxel watch . main.py", "sh")}
           <p class="body">${t("creating_run_watch_stop").replace("{0}", chip("Ctrl+C"))}</p>
 
           <h3 class="sub-title">${esc(t("creating_keys_title"))}</h3>
@@ -329,10 +334,12 @@ pyxel.show()`,
         document.getElementById("s-dist").innerHTML = `
           <h2 class="section-title">${esc(t("dist_title"))}</h2>
           <p class="body">${esc(t("dist_body"))}</p>
-          <p class="body mt-2">${t("dist_create").replace("{0}", chip("pyxel package"))}</p>
-          ${code("pyxel package APP_DIR STARTUP_SCRIPT_FILE", "sh")}
+          <p class="body mt-2">${t("dist_create")
+            .replace("{0}", chip("my_game"))
+            .replace("{1}", chip("my_game.pyxapp"))}</p>
+          ${code("pyxel package my_game my_game/main.py", "sh")}
           <p class="body">${t("dist_include")
-            .replace("{0}", chip("APP_DIR"))
+            .replace("{0}", chip("my_game"))
             .replace("{1}", chip("pyxel package"))
             .replace("{2}", chip(".gif"))
             .replace("{3}", chip(".zip"))
@@ -350,7 +357,7 @@ pyxel.show()`,
             "python",
           )}
           <p class="body">${t("dist_play").replace("{0}", chip("pyxel play"))}</p>
-          ${code("pyxel play PYXEL_APP_FILE", "sh")}
+          ${code("pyxel play my_game.pyxapp", "sh")}
           <p class="body">${t("dist_convert")
             .replace("{0}", chip("pyxel app2exe"))
             .replace("{1}", chip("pyxel app2html"))
@@ -453,7 +460,7 @@ pyxel.show()`,
           )}</p>`;
 
         setDocLang(lang);
-        hljs.highlightAll();
+        window.hljs?.highlightAll();
       }
 
       function shortcutTable(items) {

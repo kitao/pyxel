@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import hashlib
-import importlib.metadata
-import importlib.util
 import subprocess
 import sys
 from datetime import UTC, datetime
@@ -11,87 +9,78 @@ from pathlib import Path
 NUM_SCREEN_MODES = 3
 FRAME_COUNT = 5
 TIMEOUT_SECONDS = 60
-
-RUNNER = """\
-import sys
-
-import pyxel
-
-mode = int(sys.argv[1])
-frames = 0
-
-
-def update():
-    global frames
-    frames += 1
-    if frames >= {frame_count}:
-        pyxel.quit()
-
-
-def draw():
-    pyxel.cls(1)
-    pyxel.circ(80, 60, 20, 8)
-    pyxel.text(40, 100, "Startup check", 7)
-
-
-pyxel.init(160, 120, title="Startup check")
-pyxel.screen_mode(mode)
-pyxel.run(update, draw)
-"""
+DRAW_COMPLETE = "startup frames drawn"
 
 
 def main() -> int:
-    try:
-        identity = installed_build_identity()
-    except (OSError, StopIteration, importlib.metadata.PackageNotFoundError) as error:
-        print(f"error: installed pyxel not found: {error}", file=sys.stderr)
-        return 1
-
     failures = []
     for mode in range(NUM_SCREEN_MODES):
         try:
-            result = run_startup(mode)
+            result = subprocess.run(
+                [sys.executable, __file__, "--screen-mode", str(mode)],
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=TIMEOUT_SECONDS,
+                check=False,
+            )
         except subprocess.TimeoutExpired:
             failures.append((mode, None, f"no exit within {TIMEOUT_SECONDS} seconds"))
             continue
+        lines = result.stderr.splitlines()
+        diagnostics = "\n".join(line for line in lines if line != DRAW_COMPLETE)
         if result.returncode != 0:
-            failures.append((mode, result.returncode, result.stderr))
-        elif result.stderr.strip():
+            failures.append((mode, result.returncode, diagnostics))
+            if result.returncode < 0:
+                break
+        elif DRAW_COMPLETE not in lines:
+            failures.append(
+                (mode, 0, "window closed before the startup frames were drawn")
+            )
+        elif diagnostics.strip():
             print(f"note: screen mode {mode} wrote to stderr:")
-            _print_indented(result.stderr)
+            _print_indented(diagnostics)
 
     if failures:
-        print(f"error: windowed startup failed with {identity}", file=sys.stderr)
+        print("error: windowed startup failed", file=sys.stderr)
         for mode, code, output in failures:
             status = "timeout" if code is None else f"exit {code}"
             print(f"  - screen mode {mode}: {status}", file=sys.stderr)
             _print_indented(output, file=sys.stderr)
         return 1
 
-    print(f"ok: windowed startup in {NUM_SCREEN_MODES} screen modes with {identity}")
+    print(f"ok: windowed startup in {NUM_SCREEN_MODES} screen modes")
     return 0
 
 
-def installed_build_identity():
-    version = importlib.metadata.version("pyxel")
-    package_dir = Path(importlib.util.find_spec("pyxel").origin).parent
-    binding = next(package_dir.glob("pyxel_binding*"))
+def run_screen_mode(mode):
+    import pyxel
+    from pyxel import pyxel_binding
+
+    binding = Path(pyxel_binding.__file__).resolve()
     digest = hashlib.sha256(binding.read_bytes()).hexdigest()[:12]
-    built = datetime.fromtimestamp(binding.stat().st_mtime, UTC)
-    return (
-        f"pyxel {version} at {package_dir} "
-        f"(binding sha256 {digest}, built {built.strftime('%Y-%m-%dT%H:%M:%SZ')})"
+    modified = datetime.fromtimestamp(binding.stat().st_mtime, UTC)
+    print(
+        f"screen mode {mode}: pyxel {pyxel_binding.VERSION} at {binding} "
+        f"(binding sha256 {digest}, modified {modified:%Y-%m-%dT%H:%M:%SZ})",
+        flush=True,
     )
+    drawn_frames = 0
 
+    def update():
+        if drawn_frames >= FRAME_COUNT:
+            print(DRAW_COMPLETE, file=sys.stderr, flush=True)
+            pyxel.quit()
 
-def run_startup(mode):
-    return subprocess.run(
-        [sys.executable, "-c", RUNNER.format(frame_count=FRAME_COUNT), str(mode)],
-        capture_output=True,
-        text=True,
-        timeout=TIMEOUT_SECONDS,
-        check=False,
-    )
+    def draw():
+        nonlocal drawn_frames
+        pyxel.cls(1)
+        pyxel.circ(80, 60, 20, 8)
+        pyxel.text(40, 100, "Startup check", 7)
+        drawn_frames += 1
+
+    pyxel.init(160, 120, title="Startup check")
+    pyxel.screen_mode(mode)
+    pyxel.run(update, draw)
 
 
 def _print_indented(text, file=sys.stdout):
@@ -100,4 +89,7 @@ def _print_indented(text, file=sys.stdout):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if sys.argv[1:2] == ["--screen-mode"]:
+        run_screen_mode(int(sys.argv[2]))
+    else:
+        sys.exit(main())

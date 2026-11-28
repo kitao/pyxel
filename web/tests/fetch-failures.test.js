@@ -49,7 +49,7 @@ test("loadFromGist rejects a missing truncated file before reading its body", as
     base64ToUint8: () => new Uint8Array(),
     fetch: async () => responses.shift(),
     window: {},
-    loadProjectFromZip: async () => {
+    loadProjectArchive: async () => {
       loadCount += 1;
     },
     updateShareUrl: () => {},
@@ -418,6 +418,8 @@ for (const delay of ["download", "unpack", "decode"]) {
     for (const name of [
       "sanitizeProjectName",
       "decodePythonSource",
+      "findProjectFolder",
+      "loadProjectArchive",
       "loadProjectFromZip",
       "loadFromUrl",
     ]) {
@@ -463,6 +465,11 @@ test("loadProjectFromZip sanitizes the project name at assignment", async () => 
     async: async () => new Uint8Array(),
   };
   const context = {
+    findProjectFolder: loadNamedFunction(
+      codeMakerSource,
+      "findProjectFolder",
+      {},
+    ),
     JSZip: {
       loadAsync: async () => ({
         files: {
@@ -479,6 +486,11 @@ test("loadProjectFromZip sanitizes the project name at assignment", async () => 
     uint8ToBase64: () => "encoded",
     window,
   };
+  context.loadProjectArchive = loadNamedFunction(
+    codeMakerSource,
+    "loadProjectArchive",
+    context,
+  );
   const loadProjectFromZip = loadNamedFunction(
     codeMakerSource,
     "loadProjectFromZip",

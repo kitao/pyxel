@@ -288,6 +288,20 @@
       "tr": "Pencereye başka bir .pyxres dosyası bıraktığınızda, dosyada bulunan türlerdeki kaynaklar değiştirilir ve bu kaynaklardaki kaydedilmemiş değişiklikler kaybolur. Yükleme başarılı olursa dört düzenleyicinin de geri alma geçmişi temizlenir. Kayıt hedefi aynı kalır.",
       "uk": "Якщо перетягнути інший файл .pyxres у вікно, буде замінено ресурси тих типів, які збережено у файлі. Незбережені зміни цих ресурсів буде втрачено. Після успішного завантаження історія скасування дій очищується у всіх чотирьох редакторах. Місце збереження залишається тим самим."
     },
+    "common_load_palette": {
+      "en": "On desktop, dropping a resource also loads the {0} palette with the same base name in the same folder, if present. In the browser, drop the matching palette file onto the editor first, then drop the resource file. Saving the resource does not copy the palette. For {1}, keep a copy of the palette beside it named {2}.",
+      "cn": "在桌面版中，拖入资源文件时，如果同一文件夹中有同名的 {0} 调色板文件，编辑器也会加载该调色板。在浏览器中，先将对应的调色板文件拖入编辑器，再拖入资源文件。保存资源时不会复制调色板。对于 {1}，将调色板的副本命名为 {2}，并放在同一文件夹中。",
+      "de": "In der Desktop-Version lädt der Editor beim Ablegen einer Ressourcendatei auch die {0}-Palette mit demselben Basisnamen, sofern sie im selben Ordner liegt. Ziehen Sie in der Web-Version zuerst die passende Palettendatei auf den Editor und danach die Ressourcendatei. Beim Speichern der Ressource wird die Palette nicht kopiert. Legen Sie für {1} eine Kopie der Palette unter dem Namen {2} im selben Ordner ab.",
+      "es": "En la versión de escritorio, al soltar un archivo de recursos, el editor carga también la paleta {0} con el mismo nombre base si está en la misma carpeta. En el navegador, suelte primero el archivo de paleta correspondiente sobre el editor y, a continuación, el archivo de recursos. Al guardar el recurso no se copia la paleta. Para {1}, conserve en la misma carpeta una copia de la paleta con el nombre {2}.",
+      "fr": "Dans la version de bureau, le dépôt d'un fichier de ressources charge aussi la palette {0} de même nom de base si elle se trouve dans le même dossier. Dans le navigateur, déposez d'abord le fichier de palette correspondant sur l'éditeur, puis le fichier de ressources. L'enregistrement des ressources ne copie pas la palette. Pour {1}, conservez dans le même dossier une copie de la palette nommée {2}.",
+      "it": "Nella versione desktop, trascinando un file di risorse si carica anche la tavolozza {0} con lo stesso nome di base, se presente nella stessa cartella. Nel browser, trascinare prima il file della tavolozza corrispondente sull'editor e poi il file di risorse. Il salvataggio delle risorse non copia la tavolozza. Per {1}, conservare nella stessa cartella una copia della tavolozza con il nome {2}.",
+      "ja": "デスクトップ版では、ドロップしたリソースと同じフォルダに、拡張子を {0} に変えた名前のパレットファイルがあれば、その色も読み込まれます。Web 版では、そのパレットファイルを先にエディタにドロップし、次にリソースファイルをドロップします。リソースを保存してもパレットはコピーされません。{1} 用のパレットは、同じフォルダに {2} という名前で置いてください。",
+      "ko": "데스크톱 버전에서 리소스 파일을 끌어다 놓으면 같은 폴더에 확장자만 다른 같은 이름의 {0} 팔레트 파일이 있을 때 함께 불러옵니다. 브라우저에서는 해당 팔레트 파일을 먼저 에디터에 끌어다 놓은 다음 리소스 파일을 끌어다 놓으세요. 리소스를 저장할 때 팔레트는 복사되지 않습니다. {1}의 팔레트는 같은 폴더에 {2}라는 이름으로 복사해 두세요.",
+      "pt": "Na versão desktop, ao soltar um arquivo de recursos, o editor também carrega a paleta {0} com o mesmo nome base, se ela estiver na mesma pasta. No navegador, solte primeiro o arquivo de paleta correspondente no editor e depois o arquivo de recursos. Salvar o recurso não copia a paleta. Para {1}, mantenha na mesma pasta uma cópia da paleta com o nome {2}.",
+      "ru": "В настольной версии при перетаскивании файла ресурсов редактор также загружает палитру {0}, если она лежит в той же папке и отличается только расширением. В браузере сначала перетащите соответствующий файл палитры в редактор, а затем файл ресурсов. При сохранении ресурсов палитра не копируется. Для {1} сохраните копию палитры под именем {2} в той же папке.",
+      "tr": "Masaüstü sürümünde bir kaynak dosyasını düzenleyiciye bıraktığınızda, aynı klasörde yalnızca uzantısı farklı olan bir {0} palet dosyası varsa o da yüklenir. Tarayıcıda önce ilgili palet dosyasını, ardından kaynak dosyasını düzenleyiciye bırakın. Kaynağı kaydederken palet kopyalanmaz. {1} için paletin bir kopyasını aynı klasörde {2} adıyla saklayın.",
+      "uk": "У настільній версії, коли ви перетягуєте файл ресурсів у редактор, він також завантажує палітру {0}, якщо вона лежить у тій самій папці й відрізняється лише розширенням. У браузері спочатку перетягніть у редактор відповідний файл палітри, а потім файл ресурсів. Під час збереження ресурсів палітра не копіюється. Для {1} залиште копію палітри під назвою {2} у тій самій папці."
+    },
     "image_title": {
       "en": "Image Editor",
       "cn": "图像编辑器",
@@ -415,18 +429,18 @@
       "uk": "При використанні інструмента виділення доступні такі гарячі клавіші."
     },
     "image_palette_body": {
-      "en": "Select a drawing color from the palette, which initially has 16 colors.",
-      "cn": "从调色板中选择绘制颜色。初始调色板包含 16 色。",
-      "de": "Wählen Sie die Zeichenfarbe aus der Palette, die anfangs 16 Farben enthält.",
-      "es": "Seleccione el color de dibujo de la paleta, que inicialmente contiene 16 colores.",
-      "fr": "Sélectionnez la couleur de dessin dans la palette, qui contient initialement 16 couleurs.",
-      "it": "Selezionare il colore di disegno dalla palette, che inizialmente contiene 16 colori.",
-      "ja": "カラーパレットから描画色を選択します。初期状態は 16 色です。",
-      "ko": "색상 팔레트에서 그리기 색상을 선택하세요. 초기 팔레트는 16색입니다.",
-      "pt": "Seleciona a cor de desenho na paleta, que inicialmente contém 16 cores.",
-      "ru": "Выбор цвета рисования из палитры, которая изначально содержит 16 цветов.",
-      "tr": "Başlangıçta 16 renk içeren paletten çizim rengini seçer.",
-      "uk": "Вибір кольору малювання з палітри, яка спочатку містить 16 кольорів."
+      "en": "Select a drawing color from the palette, which initially has 16 colors. If the palette has more than 64 colors, only the first 64 appear here. To select another color, right-click a pixel of that color in the editing area.",
+      "cn": "从调色板中选择绘制颜色。初始调色板包含 16 色。调色板超过 64 色时，这里只显示前 64 色。要选择其余颜色，请在编辑区右键单击该颜色的像素。",
+      "de": "Wählen Sie die Zeichenfarbe aus der Palette, die anfangs 16 Farben enthält. Bei mehr als 64 Farben werden hier nur die ersten 64 angezeigt. Um eine weitere Farbe zu wählen, klicken Sie im Bearbeitungsbereich mit der rechten Maustaste auf einen Pixel dieser Farbe.",
+      "es": "Seleccione el color de dibujo de la paleta, que inicialmente contiene 16 colores. Si la paleta tiene más de 64 colores, aquí se muestran solo los primeros 64. Para seleccionar otro, haga clic con el botón derecho en un píxel de ese color en el área de edición.",
+      "fr": "Sélectionnez la couleur de dessin dans la palette, qui contient initialement 16 couleurs. Si la palette contient plus de 64 couleurs, seules les 64 premières s'affichent ici. Pour en sélectionner une autre, faites un clic droit sur un pixel de cette couleur dans la zone d'édition.",
+      "it": "Selezionare il colore di disegno dalla palette, che inizialmente contiene 16 colori. Se la palette contiene più di 64 colori, qui vengono mostrati solo i primi 64. Per selezionarne un altro, fare clic con il pulsante destro su un pixel di quel colore nell'area di modifica.",
+      "ja": "カラーパレットから描画色を選択します。初期状態は 16 色です。64 色を超えるパレットでは、先頭の 64 色を表示します。それ以外の色は、編集エリア内でその色のピクセルを右クリックして選択できます。",
+      "ko": "색상 팔레트에서 그리기 색상을 선택하세요. 초기 팔레트는 16색입니다. 팔레트에 색상이 64개보다 많으면 처음 64개만 표시됩니다. 다른 색상은 편집 영역에서 해당 색상의 픽셀을 마우스 오른쪽 버튼으로 클릭해 선택하세요.",
+      "pt": "Seleciona a cor de desenho na paleta, que inicialmente contém 16 cores. Se a paleta tiver mais de 64 cores, apenas as primeiras 64 aparecem aqui. Para selecionar outra, clique com o botão direito num pixel dessa cor na área de edição.",
+      "ru": "Выбор цвета рисования из палитры, которая изначально содержит 16 цветов. Если в палитре больше 64 цветов, здесь видны только первые 64. Чтобы выбрать другой цвет, щёлкните правой кнопкой мыши по пикселю этого цвета в области редактирования.",
+      "tr": "Başlangıçta 16 renk içeren paletten çizim rengini seçer. Palette 64'ten fazla renk varsa burada yalnızca ilk 64 renk görünür. Diğer renklerden birini seçmek için düzenleme alanında o renkteki bir piksele sağ tıklayın.",
+      "uk": "Вибір кольору малювання з палітри, яка спочатку містить 16 кольорів. Якщо палітра містить понад 64 кольори, тут відображаються лише перші 64. Щоб вибрати інший колір, клацніть правою кнопкою миші на пікселі цього кольору в області редагування."
     },
     "image_banknum_body": {
       "en": "Switch the target image bank (0-2).",
@@ -2077,6 +2091,7 @@
   ],
   "image_tools": [
     {
+      "icon": "images/tool_select.png",
       "key": "S",
       "desc": {
         "en": "Select a rectangular area",
@@ -2094,6 +2109,7 @@
       }
     },
     {
+      "icon": "images/tool_pencil.png",
       "key": "P",
       "desc": {
         "en": "Draw freehand. Hold Shift for straight lines",
@@ -2111,6 +2127,7 @@
       }
     },
     {
+      "icon": "images/tool_rectb.png",
       "key": "R",
       "desc": {
         "en": "Draw a rectangle outline. Hold Shift for a square",
@@ -2128,6 +2145,7 @@
       }
     },
     {
+      "icon": "images/tool_rect.png",
       "key": "Shift+R",
       "desc": {
         "en": "Draw a filled rectangle. Hold Shift for a square",
@@ -2145,6 +2163,7 @@
       }
     },
     {
+      "icon": "images/tool_circb.png",
       "key": "C",
       "desc": {
         "en": "Draw an ellipse outline. Hold Shift for a circle",
@@ -2162,6 +2181,7 @@
       }
     },
     {
+      "icon": "images/tool_circ.png",
       "key": "Shift+C",
       "desc": {
         "en": "Draw a filled ellipse. Hold Shift for a circle",
@@ -2179,6 +2199,7 @@
       }
     },
     {
+      "icon": "images/tool_bucket.png",
       "key": "B",
       "desc": {
         "en": "Fill a connected region of the same color",

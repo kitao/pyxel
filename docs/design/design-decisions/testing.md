@@ -17,19 +17,23 @@ for manual checks of look, sound, and feel.
 The [Makefile](../../../Makefile) provides one automated entry point,
 `make test`, for Python, Rust, and JavaScript. JavaScript tests run on Node.js.
 Browser tests open the built pages under `wrangler dev` and run the runtime
-selected by the [site builder](../../../scripts/build_site). For an already
-tagged version this is the released wheel. The [audit
-commands](../design-audit.md#commands) cover verification of the candidate
-browser runtime. Automated native tests use headless Pyxel. Browser runtime
-cases exercise GL in a headless browser.
+selected by the [site builder](../../../scripts/build_site). For the current
+version in the runtime settings, it uses the runtime from the matching release
+tag if present. Otherwise it reads the tracked files in `wasm/` from the
+working tree. The site build requires the referenced wheel to contain matching
+version metadata. A missing or mismatched wheel stops the build before the
+browser tests run. The [audit commands](../design-audit.md#commands) cover
+development wheels from `dist/`. Automated native tests use headless Pyxel.
+Browser runtime cases exercise GL in a headless browser.
 
 `make run` installs the native package and runs the [windowed startup
 check](../../../scripts/check_window_startup) in each screen mode. It then
 launches the examples, bundled applications, and editor through the [example
 runner](../../../scripts/run_examples) for interactive inspection.
-`make run-wasm` builds the web wheel and starts the [local
-server](../../../scripts/start_showcase). The server can also run on its own
-for page checks using the wheel already installed in the working tree.
+`make run-wasm` builds the development wheel in `dist/` and starts the [local
+Showcase](../../../scripts/start_showcase) with it. Running
+`scripts/start_showcase` on its own serves the release wheel referenced by
+`wasm/pyxel.js`.
 
 Cover archive creation, startup paths, watcher restarts, and executable export
 in the [CLI tests](../../../python/tests/test_cli.py). The

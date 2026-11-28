@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 
+import argparse
+import io
+import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import tomllib
 import zipfile
 from email.parser import Parser
 from pathlib import Path, PurePosixPath
+from urllib.parse import unquote_to_bytes
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DIST_DIR = ROOT_DIR / "dist"
@@ -30,11 +37,48 @@ HOST_PATH_PATTERNS = (
 )
 
 
-def main() -> int:
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Check the Pyxel WebAssembly wheel.")
+    output = parser.add_mutually_exclusive_group()
+    output.add_argument(
+        "--print-path",
+        action="store_true",
+        help="print the expected local development wheel path",
+    )
+    output.add_argument(
+        "--dist-dir",
+        type=Path,
+        default=DIST_DIR,
+        help="check the wheel in this build output directory",
+    )
+    output.add_argument(
+        "--release",
+        type=Path,
+        metavar="WHEEL",
+        help="verify the retained wheel against the committed package files",
+    )
+    args = parser.parse_args(argv)
     try:
-        wheel_path = find_wheel(DIST_DIR, PYPROJECT_PATH)
-        violations = find_wheel_mismatches(wheel_path, PYPROJECT_PATH, PYXEL_SOURCE_DIR)
-    except (OSError, UnicodeDecodeError, ValueError, zipfile.BadZipFile) as error:
+        if args.print_path:
+            print(DIST_DIR / expected_wheel_name(PYPROJECT_PATH))
+            return 0
+        if args.release:
+            wheel_path = args.release
+            if wheel_path.name != expected_wheel_name(PYPROJECT_PATH):
+                raise ValueError(f"unexpected release wheel: {wheel_path.name}")
+            violations = find_release_violations(wheel_path, ROOT_DIR)
+        else:
+            wheel_path = find_wheel(args.dist_dir, PYPROJECT_PATH)
+            violations = find_wheel_mismatches(
+                wheel_path, PYPROJECT_PATH, PYXEL_SOURCE_DIR
+            )
+    except (
+        OSError,
+        UnicodeDecodeError,
+        ValueError,
+        subprocess.CalledProcessError,
+        zipfile.BadZipFile,
+    ) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
@@ -91,7 +135,11 @@ def find_wheel(dist_dir, pyproject_path):
 def find_violations(wheel_path):
     violations = []
     with zipfile.ZipFile(wheel_path) as wheel_zip:
-        for name in wheel_zip.namelist():
+        names = wheel_zip.namelist()
+        binding = "pyxel/pyxel_binding.abi3.so"
+        if names.count(binding) != 1:
+            violations.append((binding, "expected exactly one WebAssembly binding"))
+        for name in names:
             if "/__pycache__/" in f"/{name}" or name.endswith((".pyc", ".pyo")):
                 violations.append((name, "generated Python bytecode"))
                 continue
@@ -105,12 +153,58 @@ def find_violations(wheel_path):
                 continue
 
             data = wheel_zip.read(name)
+            if name == binding and not data.startswith(b"\x00asm\x01\x00\x00\x00"):
+                violations.append((name, "invalid WebAssembly module header"))
             for pattern in HOST_PATH_PATTERNS:
                 if pattern in data:
                     violations.append((name, f"host path {pattern!r}"))
                     break
 
     return violations
+
+
+def find_release_violations(wheel_path, root):
+    # Compare against the committed source. Checking the build directory would
+    # also accept a private file that the packager copied from that directory.
+    with tempfile.TemporaryDirectory() as tmp:
+        source_dir = extract_package_sources(root, "HEAD", Path(tmp))
+        violations = find_wheel_mismatches(
+            wheel_path, source_dir.parent / "pyproject.toml", source_dir
+        )
+    with zipfile.ZipFile(wheel_path) as archive:
+        sbom = f"pyxel-{wheel_path.name.split('-')[1]}.dist-info/sboms/pyxel-binding.cyclonedx.json"
+        if sbom not in archive.namelist():
+            violations.append((sbom, "missing Rust dependency metadata"))
+        for name in archive.namelist():
+            if ".dist-info/sboms/" in name and name.endswith(".json"):
+                metadata = unquote_to_bytes(archive.read(name))
+                if any(pattern in metadata for pattern in HOST_PATH_PATTERNS):
+                    violations.append((name, "build-host path in the SBOM"))
+    return violations
+
+
+def extract_package_sources(root, revision, destination):
+    snapshot = subprocess.check_output(
+        [
+            "git",
+            "archive",
+            "--format=zip",
+            revision,
+            "--",
+            "python/pyxel",
+            "python/pyproject.toml",
+            "LICENSE",
+            "README.md",
+        ],
+        cwd=root,
+        env={k: v for k, v in os.environ.items() if not k.upper().startswith("GIT_")},
+    )
+    with zipfile.ZipFile(io.BytesIO(snapshot)) as files:
+        files.extractall(destination)
+    source_dir = destination / "python" / "pyxel"
+    for name in ("LICENSE", "README.md"):
+        shutil.copyfile(destination / name, source_dir / name)
+    return source_dir
 
 
 def find_source_mismatches(wheel_path, source_dir):
@@ -148,7 +242,7 @@ def find_source_mismatches(wheel_path, source_dir):
             if (
                 any(part in IGNORED_SOURCE_DIRS for part in relative_path.parts)
                 or relative_path.name in IGNORED_SOURCE_NAMES
-                or relative_path.suffix in COMPILED_SUFFIXES
+                or archive_name == "pyxel/pyxel_binding.abi3.so"
             ):
                 continue
             if archive_name not in expected_names:

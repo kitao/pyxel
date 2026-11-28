@@ -202,12 +202,13 @@ class JsEval:
             label_s, _ = _parse_arg(inner)
             return f"\n#### {self.eval(label_s)}\n"
 
-        # annotatedImg(src, annotations) -> image link (skip annotations)
+        # annotatedImg(src, label, annotations) -> overview image
         if expr.startswith("annotatedImg("):
             inner = expr[13 : _find_matching(expr, 13, "(", ")") - 1]
-            src_s, _ = _parse_arg(inner)
+            src_s, rest = _parse_arg(inner)
+            label_s, _ = _parse_arg(_skip_comma(rest))
             url = _transform_url(self.eval(src_s), self._web_path)
-            return f"\n![{url}]({url})\n"
+            return f"\n![{self.eval(label_s)}]({url})\n"
 
         # areaCrop(editor, index) -> image from annotations
         if expr.startswith("areaCrop("):
@@ -221,31 +222,8 @@ class JsEval:
             if index < len(annotations):
                 aid = annotations[index].get("id", "")
                 url = _transform_url(f"images/{editor}_{aid}.png", self._web_path)
-                return f"\n![{url}]({url})\n"
+                return f"\n![]({url})\n"
             return ""
-
-        # toolIcons() -> tool list with icons from data.image_tools
-        if expr.startswith("toolIcons("):
-            tool_icons = [
-                "tool_select",
-                "tool_pencil",
-                "tool_rectb",
-                "tool_rect",
-                "tool_circb",
-                "tool_circ",
-                "tool_bucket",
-            ]
-            tools = self._data.get("image_tools", [])
-            rows = []
-
-            for i, tool in enumerate(tools):
-                icon = tool_icons[i] if i < len(tool_icons) else ""
-                img = ""
-                if icon:
-                    url = _transform_url(f"images/{icon}.png", self._web_path)
-                    img = f"![{icon}]({url}) "
-                rows.append(f"- {img}{tool['key']} — {localize(tool['desc'])}")
-            return "\n" + "\n".join(rows) + "\n"
 
         # keyboardDiagram() -> keyboard-note mapping table
         if expr.startswith("keyboardDiagram("):
@@ -279,7 +257,7 @@ class JsEval:
             src_s, _ = _parse_arg(inner)
             src = self.eval(src_s)
             url = _transform_url(src, self._web_path)
-            return f"![{src}]({url})"
+            return f"![]({url})"
 
         # table(headers, rows)
         if expr.startswith("table("):
@@ -455,7 +433,7 @@ class JsEval:
         )
 
     def _icon_table(self, inner):
-        items = self._resolve_icon_table_arg(inner)
+        items = self._resolve_data_ref(inner)
         if not isinstance(items, list):
             return ""
         rows = []
@@ -465,7 +443,7 @@ class JsEval:
             if isinstance(key, dict):
                 key = localize(key)
             desc = localize(item.get("desc", ""))
-            img = f"![{icon}]({_transform_url(icon, self._web_path)}) " if icon else ""
+            img = f"![]({_transform_url(icon, self._web_path)}) " if icon else ""
             if key and key != "—":
                 rows.append(f"- {img}{key} — {desc}")
             else:
@@ -507,14 +485,6 @@ class JsEval:
         if m:
             return self._data.get(m.group(1), [])
         return self.eval(inner)
-
-    def _resolve_icon_table_arg(self, inner):
-        inner = inner.strip()
-        # data.xxx.map(b => ({icon: b.icon, key: b.key || <fallback>, desc: b.desc}))
-        m = re.match(r"data\.(\w+)\.map\(", inner)
-        if m:
-            return self._data.get(m.group(1), [])
-        return self._resolve_data_ref(inner)
 
     # Extract JavaScript variables and simple template loops from updateTexts().
     def extract_variables(self, body):
@@ -1015,7 +985,7 @@ def _html_to_markdown(text, output_name, web_path):
         flags=re.DOTALL,
     )
     text = re.sub(r"<code[^>]*>(.*?)</code>", r"`\1`", text)
-    for level in (2, 3, 4):
+    for level in (2, 3, 4, 5):
         text = re.sub(
             rf"<h{level}[^>]*>(.*?)</h{level}>",
             lambda match, level=level: f"\n{'#' * level} {_strip_html(match[1])}\n",

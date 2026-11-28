@@ -45,7 +45,10 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
+      <div
+        id="page-loading"
+        class="flex justify-center items-center py-12 text-gray-400 text-sm"
+      >
         Loading...
       </div>
     </main>
@@ -148,8 +151,8 @@
 
           <h3 class="sub-title">${esc(t("menubar_title"))}</h3>
           <p class="body">${esc(t("menubar_body"))}</p>
-          <img src="images/ui_menubar.png" alt="Menu Bar" class="pix rounded-lg border border-gray-700 my-3 w-full">
-          ${iconTable(data.menubar_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
+          <img src="images/ui_menubar.png" alt="${esc(t("menubar_title"))}" class="pix rounded-lg border border-gray-700 my-3 w-full">
+          ${iconTable(data.menubar_buttons)}
 
           <h3 class="sub-title">${esc(t("other_shortcuts_title"))}</h3>
           ${shortcutTable(data.common_extra_shortcuts)}
@@ -158,7 +161,11 @@
           <p class="body">${esc(t("common_usage_body")).replace("{0}", chip("pyxel.load()"))}</p>
 
           <h3 class="sub-title">${esc(t("common_load_title"))}</h3>
-          <p class="body">${esc(t("common_load_body"))}</p>`;
+          <p class="body">${esc(t("common_load_body"))}</p>
+          <p class="body mt-2">${esc(t("common_load_palette"))
+            .replace("{0}", chip(".pyxpal"))
+            .replace("{1}", chip("my_resource.pyxres"))
+            .replace("{2}", chip("my_resource.pyxpal"))}</p>`;
 
         document.getElementById("s-image-title").textContent = t("image_title");
         document.getElementById("s-image-body").innerHTML = `
@@ -169,7 +176,7 @@
           ${specsGrid(data.image_specs)}
 
           <h3 class="sub-title">${esc(t("image_ui_title"))}</h3>
-          ${annotatedImg("images/image_editor.gif", data.annotations.image)}
+          ${annotatedImg("images/image_editor.gif", t("image_title"), data.annotations.image)}
 
           ${areaTitle(data.annotations.image[0].label, 0)}
           ${areaCrop("image", 0)}
@@ -184,8 +191,8 @@
           ${areaTitle(data.annotations.image[3].label, 3)}
           ${areaCrop("image", 3)}
           <p class="body mb-2">${esc(t("image_tools_body"))}</p>
-          ${toolIcons()}
-          <h4 class="sub-title">${esc(t("image_selection_title"))}</h4>
+          ${iconTable(data.image_tools)}
+          <h5 class="sub-title">${esc(t("image_selection_title"))}</h5>
           <p class="body mb-2">${esc(t("image_selection_body"))}</p>
           ${shortcutTable(data.image_selection_shortcuts)}
 
@@ -211,7 +218,7 @@
           ${specsGrid(data.tilemap_specs)}
 
           <h3 class="sub-title">${esc(t("tilemap_ui_title"))}</h3>
-          ${annotatedImg("images/tilemap_editor.gif", data.annotations.tilemap)}
+          ${annotatedImg("images/tilemap_editor.gif", t("tilemap_title"), data.annotations.tilemap)}
 
           ${areaTitle(data.annotations.tilemap[0].label, 0)}
           ${areaCrop("tilemap", 0)}
@@ -239,7 +246,7 @@
           ${areaTitle(data.annotations.tilemap[4].label, 4)}
           ${areaCrop("tilemap", 4)}
           <p class="body mb-2">${esc(t("image_tools_body"))}</p>
-          ${toolIcons()}
+          ${iconTable(data.image_tools)}
 
           <h3 class="sub-title">${esc(t("tilemap_multi_title"))}</h3>
           <p class="body">${esc(t("tilemap_multi_body"))}</p>
@@ -256,7 +263,7 @@
           ${specsGrid(data.sound_specs)}
 
           <h3 class="sub-title">${esc(t("sound_ui_title"))}</h3>
-          ${annotatedImg("images/sound_editor.gif", data.annotations.sound)}
+          ${annotatedImg("images/sound_editor.gif", t("sound_title"), data.annotations.sound)}
 
           ${areaTitle(data.annotations.sound[0].label, 0)}
           ${areaCrop("sound", 0)}
@@ -268,13 +275,13 @@
 
           ${areaTitle(data.annotations.sound[2].label, 2)}
           ${areaCrop("sound", 2)}
-          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
+          ${iconTable(data.playback_buttons)}
 
           ${areaTitle(data.annotations.sound[4].label, 4)}
           ${areaCrop("sound", 4)}
           <p class="body mb-2">${esc(t("sound_piano_body"))}</p>
           ${shortcutTable(data.sound_piano_shortcuts)}
-          <h4 class="sub-title">${esc(t("sound_range_title"))}</h4>
+          <h5 class="sub-title">${esc(t("sound_range_title"))}</h5>
           ${shortcutTable(data.sound_selection_shortcuts)}
 
           ${areaTitle(data.annotations.sound[3].label, 3)}
@@ -282,22 +289,22 @@
           <p class="body mb-2">${esc(t("sound_octave_body"))}</p>
           ${shortcutTable(data.sound_octave_shortcuts)}
 
-          <h3 class="sub-title">${esc(t("sound_keyboard_title"))}</h3>
-          <p class="body mb-2">${esc(t("sound_keyboard_body"))}</p>
-          ${keyboardDiagram()}
-          ${shortcutTable(data.sound_keyboard_shortcuts)}
-
           ${areaTitle(data.annotations.sound[6].label, 6)}
           ${areaCrop("sound", 6)}
           <p class="body">${esc(t("sound_property_body"))}</p>
-          <h4 class="sub-title">${esc(t("sound_tone_title"))}</h4>
+          <h5 class="sub-title">${esc(t("sound_tone_title"))}</h5>
           <p class="body mb-2">${esc(t("sound_tone_body"))}</p>
           ${propTable(data.sound_tones)}
-          <h4 class="sub-title">${esc(t("sound_volume_title"))}</h4>
+          <h5 class="sub-title">${esc(t("sound_volume_title"))}</h5>
           <p class="body">${esc(t("sound_volume_body"))}</p>
-          <h4 class="sub-title">${esc(t("sound_effect_title"))}</h4>
+          <h5 class="sub-title">${esc(t("sound_effect_title"))}</h5>
           <p class="body mb-2">${esc(t("sound_effect_body"))}</p>
-          ${propTable(data.sound_effects)}`;
+          ${propTable(data.sound_effects)}
+
+          <h3 class="sub-title">${esc(t("sound_keyboard_title"))}</h3>
+          <p class="body mb-2">${esc(t("sound_keyboard_body"))}</p>
+          ${keyboardDiagram()}
+          ${shortcutTable(data.sound_keyboard_shortcuts)}`;
 
         document.getElementById("s-music-title").textContent = t("music_title");
         document.getElementById("s-music-body").innerHTML = `
@@ -308,7 +315,7 @@
           ${specsGrid(data.music_specs)}
 
           <h3 class="sub-title">${esc(t("music_ui_title"))}</h3>
-          ${annotatedImg("images/music_editor.gif", data.annotations.music)}
+          ${annotatedImg("images/music_editor.gif", t("music_title"), data.annotations.music)}
 
           ${areaTitle(data.annotations.music[0].label, 0)}
           ${areaCrop("music", 0)}
@@ -316,7 +323,7 @@
 
           ${areaTitle(data.annotations.music[1].label, 1)}
           ${areaCrop("music", 1)}
-          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
+          ${iconTable(data.playback_buttons)}
 
           ${areaTitle(data.annotations.music[2].label, 2)}
           ${areaCrop("music", 2)}
@@ -372,7 +379,7 @@
           <thead><tr><th class="th" style="width:50px"></th><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const r of rows)
           html += `<tr><td class="td">${icon(r.icon)}</td>
-                <td class="td"><span class="key">${esc(t(r.key))}</span></td>
+                <td class="td"><span class="key">${esc(t(r.key || "—"))}</span></td>
                 <td class="td text-gray-300">${esc(t(r.desc))}</td></tr>`;
         return html + "</tbody></table></div>";
       }
@@ -380,7 +387,7 @@
       function areaTitle(label, annotationIndex) {
         const color =
           ANNOTATION_COLORS[annotationIndex % ANNOTATION_COLORS.length];
-        return `<h3 class="area-title" style="color:${color}; border-color:${color}">${esc(t(label))}</h3>`;
+        return `<h4 class="area-title" style="color:${color}; border-color:${color}">${esc(t(label))}</h4>`;
       }
 
       // Editor diagrams
@@ -392,7 +399,7 @@
         return `<img src="images/${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
       }
 
-      function annotatedImg(src, annotations) {
+      function annotatedImg(src, label, annotations) {
         let svg = "";
         const colors = ANNOTATION_COLORS;
 
@@ -430,7 +437,7 @@
           svg += `<text x="${tx}" y="${ty}" text-anchor="${anc}" dominant-baseline="${bl}" fill="${color}" font-size="10" font-weight="700" paint-order="stroke" stroke="#1f2937" stroke-width="3.5" stroke-linejoin="round">${label}</text>`;
         }
 
-        return `<div class="relative my-3"><img src="${src}" alt="" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>`;
+        return `<div class="relative my-3"><img src="${src}" alt="${esc(label)}" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>`;
       }
 
       function keyboardDiagram() {
@@ -476,25 +483,6 @@
         </div></div>`;
         html += "</div></div>";
         return html;
-      }
-
-      function toolIcons() {
-        const icons = [
-          "select",
-          "pencil",
-          "rectb",
-          "rect",
-          "circb",
-          "circ",
-          "bucket",
-        ];
-        return iconTable(
-          data.image_tools.map((tool, i) => ({
-            icon: `images/tool_${icons[i]}.png`,
-            key: tool.key,
-            desc: tool.desc,
-          })),
-        );
       }
 
       initPage("editor-manual.json", buildPage);

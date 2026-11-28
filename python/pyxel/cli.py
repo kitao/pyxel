@@ -13,6 +13,7 @@ import time
 import uuid
 import zipfile
 from collections.abc import Callable
+from contextlib import contextmanager
 from pathlib import Path, PureWindowsPath
 
 import pyxel
@@ -126,9 +127,8 @@ def watch_and_run_python_script(watch_dir: str, python_script_file: str) -> None
 
 
 def get_pyxel_app_metadata(pyxel_app_file: str) -> dict[str, str]:
-    _check_file_exists(pyxel_app_file)
     metadata: dict[str, str] = {}
-    with zipfile.ZipFile(pyxel_app_file) as zf:
+    with _open_pyxel_app(pyxel_app_file) as zf:
         if not zf.comment:
             return metadata
         comment = zf.comment.decode(encoding="utf-8")
@@ -143,8 +143,7 @@ def get_pyxel_app_metadata(pyxel_app_file: str) -> dict[str, str]:
 
 
 def print_pyxel_app_metadata(pyxel_app_file: str) -> None:
-    _check_file_exists(pyxel_app_file)
-    with zipfile.ZipFile(pyxel_app_file) as zf:
+    with _open_pyxel_app(pyxel_app_file) as zf:
         if zf.comment:
             print(zf.comment.decode(encoding="utf-8"))
 
@@ -155,15 +154,10 @@ def play_pyxel_app(pyxel_app_file: str) -> None:
         pyxel_app_file = _complete_extension(
             pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION
         )
-    _check_file_exists(pyxel_app_file)
-
     print_pyxel_app_metadata(pyxel_app_file)
-    startup_script_file = _extract_pyxel_app(pyxel_app_file)
-    if not startup_script_file:
-        _exit_with_error(f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
-
-    sys.path.insert(0, str(Path(startup_script_file).absolute().parent))
-    runpy.run_path(startup_script_file, run_name="__main__")
+    _, startup_script = _extract_pyxel_app(pyxel_app_file)
+    sys.path.insert(0, str(startup_script.parent))
+    runpy.run_path(str(startup_script), run_name="__main__")
 
 
 def edit_pyxel_resource(
@@ -226,11 +220,9 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
 
             for file in _files_in_dir(app_path):
                 file_path = Path(file)
-                relative_path = file_path.relative_to(app_path)
                 if (
                     # Replacing an output symlink preserves the input it points to.
                     file_path.parent.resolve() / file_path.name == pyxel_app_path
-                    or "__pycache__" in relative_path.parts
                     or file.lower().endswith(_PACKAGE_SKIP_EXTENSIONS)
                 ):
                     continue
@@ -270,12 +262,13 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
                 'pip install "pyxel[app2exe]"'
             )
 
-        startup_script_file = _extract_pyxel_app(pyxel_app_file)
-        if startup_script_file is None:
-            _exit_with_error(f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
-
-        modules = pyxel.utils.list_imported_modules(startup_script_file)["system"]
-        hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]
+        app_dir, startup_script = _extract_pyxel_app(pyxel_app_file)
+        imports = pyxel.utils.list_imported_modules(
+            str(startup_script), app_dir=app_dir
+        )
+        hidden_imports = [
+            arg for m in imports["system"] for arg in ("--hidden-import", m)
+        ]
         command = [
             sys.executable,
             "-m",
@@ -326,11 +319,10 @@ def create_html_from_pyxel_app(pyxel_app_file: str) -> None:
 def copy_pyxel_examples() -> None:
     src_dir = Path(__file__).parent / "examples"
     dst_dir = Path("pyxel_examples")
-    shutil.rmtree(dst_dir, ignore_errors=True)
+    if dst_dir.exists():
+        shutil.rmtree(dst_dir)
 
     for src_file in _files_in_dir(src_dir):
-        if "__pycache__" in Path(src_file).relative_to(src_dir).parts:
-            continue
         dst_file = dst_dir / Path(src_file).relative_to(src_dir)
         dst_file.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src_file, dst_file)
@@ -355,16 +347,13 @@ def _complete_extension(filename, command, valid_ext):
 
 
 def _files_in_dir(dirname):
-    # Exclude dotfiles and dot-directories to avoid OS and tool artifacts.
-    base = Path(dirname)
-    return sorted(
-        str(path)
-        for path in _iter_files_in_dir(base)
-        if not any(part.startswith(".") for part in path.relative_to(base).parts)
-    )
+    def skip(name):
+        return name.startswith(".") or name == "__pycache__"
+
+    return sorted(str(path) for path in _iter_files_in_dir(dirname, skip=skip))
 
 
-def _iter_files_in_dir(dirname, ancestors=()):
+def _iter_files_in_dir(dirname, ancestors=(), skip=None):
     base = Path(dirname)
     resolved = base.resolve()
     if resolved in ancestors:
@@ -372,8 +361,10 @@ def _iter_files_in_dir(dirname, ancestors=()):
     # Track ancestors only, so separate aliases retain their app-relative paths.
     ancestors = (*ancestors, resolved)
     for path in base.glob("*"):
+        if skip is not None and skip(path.name):
+            continue
         if path.is_dir():
-            yield from _iter_files_in_dir(path, ancestors)
+            yield from _iter_files_in_dir(path, ancestors, skip)
         elif path.is_file():
             yield path
 
@@ -463,6 +454,8 @@ def _create_watch_state_file():
 def _timestamps_in_dir(dirname):
     timestamps = {}
     for path in _iter_files_in_dir(dirname):
+        if path.parent.name == "__pycache__" and path.suffix == ".pyc":
+            continue
         try:
             timestamps[str(path)] = path.stat().st_mtime
         except FileNotFoundError:
@@ -479,11 +472,19 @@ def _run_python_script_in_separate_process(python_script_file):
     return worker
 
 
-def _extract_pyxel_app(pyxel_app_file):
+@contextmanager
+def _open_pyxel_app(pyxel_app_file):
     _check_file_exists(pyxel_app_file)
-    app_dir = Path(_create_app_dir())
+    try:
+        with zipfile.ZipFile(pyxel_app_file) as zf:
+            yield zf
+    except zipfile.BadZipFile:
+        _exit_with_error(f"invalid Pyxel app archive: '{pyxel_app_file}'")
 
-    with zipfile.ZipFile(pyxel_app_file) as zf:
+
+def _extract_pyxel_app(pyxel_app_file):
+    with _open_pyxel_app(pyxel_app_file) as zf:
+        app_dir = Path(_create_app_dir())
         app_dir_abs = app_dir.resolve()
         for name in zf.namelist():
             target = (app_dir / name).resolve()
@@ -501,8 +502,8 @@ def _extract_pyxel_app(pyxel_app_file):
             _exit_with_error(
                 f"invalid startup script path in Pyxel app: {startup_path!r}"
             )
-        return str(startup_file)
-    return None
+        return setting_file.parent.resolve(), startup_file
+    _exit_with_error(f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
 
 
 def _make_metadata_comment(startup_script_file):

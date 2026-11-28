@@ -9,12 +9,44 @@ permissions:
   contents: read
 
 jobs:
+  verify-web-wheel:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      attestations: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify the retained WebAssembly wheel and its build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -- wasm/pyxel-*.whl
+          test "$#" -eq 1
+          wheel=$1
+          python3 scripts/check_wasm_wheel --release "$wheel"
+          # The release wheel is installed after its source commit has been built.
+          wheel_commit=$(git log -1 --format=%H -- "$wheel")
+          source=$(git rev-parse "$wheel_commit^")
+          gh attestation verify "$wheel" --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/build-wasm.yml" \
+            --deny-self-hosted-runners --source-digest "$source"
+          git diff --exit-code --no-patch -G'^const PYODIDE_VERSION ' \
+            "$source" HEAD -- wasm/pyxel.js
+          git diff --exit-code --no-patch "$source" HEAD -- crates python/pyxel \
+            python/pyproject.toml python/requirements.txt Makefile rust-toolchain.toml \
+            LICENSE README.md scripts/generate_docs scripts/generate_pyi_docstrings \
+            web/api-reference .github/workflows/build-wasm.yml
+
   build:
     uses: ./.github/workflows/build.yml
 
   publish:
     runs-on: ubuntu-24.04
-    needs: build
+    needs: [build, verify-web-wheel]
     environment:
       name: pypi
       url: https://pypi.org/p/pyxel
@@ -29,6 +61,25 @@ jobs:
           merge-multiple: true
           path: dist
           pattern: pyxel-*
+
+      - name: Verify the wheels selected for publication
+        run: |
+          python3 - <<'PY'
+          import os
+          from importlib.metadata import distributions
+          from pathlib import Path
+
+          expected = os.environ["GITHUB_REF_NAME"].removeprefix("v")
+          wheels = list(Path("dist").iterdir())
+          if not wheels:
+              raise SystemExit("No release wheels were downloaded")
+          for wheel in wheels:
+              if wheel.suffix != ".whl" or not wheel.name.startswith(f"pyxel-{expected}-"):
+                  raise SystemExit(f"Unexpected release artifact: {wheel.name}")
+              project, = distributions(path=[str(wheel)])
+              if project.name != "pyxel" or project.version != expected:
+                  raise SystemExit(f"{wheel.name} contains {project.name} {project.version}")
+          PY
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3

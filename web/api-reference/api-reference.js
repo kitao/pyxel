@@ -354,6 +354,7 @@ function descriptionHtml(text) {
 }
 
 function updateVisibility() {
+  const query = searchQuery.toLowerCase();
   let totalVisible = 0;
 
   for (const cat of data.categories) {
@@ -365,7 +366,9 @@ function updateVisibility() {
         const key = `${cat.id}-${i}`;
         const row = cached("item-key", key);
         if (!row) continue;
-        const visible = isVisible(cat.items[i]);
+        const item = cat.items[i];
+        const visible =
+          (showAdvanced || !item.advanced) && matchesSearch(cat, item, query);
         row.style.display = visible ? "" : "none";
         if (visible) itemsVisible++;
       }
@@ -390,10 +393,11 @@ function updateVisibility() {
             for (let i = 0; i < sec.constants.length; i++) {
               const el = cached("const-key", `${sid}-${i}`);
               if (!el) continue;
-              const visible = constantMatchesQuery(
-                sec.constants[i],
-                searchQuery,
-              );
+              const constant = sec.constants[i];
+              const name = query.includes(".")
+                ? `${data.module}.${constant}`
+                : constant;
+              const visible = name.toLowerCase().includes(query);
               el.style.display = visible ? "" : "none";
               const detailRow = cached("sec-details", sid)?.children[i];
               if (detailRow) detailRow.style.display = visible ? "" : "none";
@@ -471,11 +475,6 @@ function cacheDomRefs() {
 
 const cached = (attr, key) => domCache[attr].get(key);
 
-const constantMatchesQuery = (constant, query) => {
-  if (!query) return true;
-  return constant.toLowerCase().includes(query.toLowerCase());
-};
-
 function badgeColor(type) {
   switch (type) {
     case "function":
@@ -493,19 +492,31 @@ function badgeColor(type) {
 
 // Visibility filtering
 
-function isVisible(item) {
-  if (!showAdvanced && item.advanced) return false;
-  return matchesSearch(item);
-}
+function matchesSearch(category, item, query) {
+  if (
+    !query ||
+    item.name.toLowerCase().includes(query) ||
+    item.signature.toLowerCase().includes(query) ||
+    t(item.description).toLowerCase().includes(query)
+  )
+    return true;
+  if (!query.includes(".")) return false;
 
-function matchesSearch(item) {
-  if (!searchQuery) return true;
-  const q = searchQuery.toLowerCase();
-  return (
-    item.name.toLowerCase().includes(q) ||
-    item.signature.toLowerCase().includes(q) ||
-    t(item.description).toLowerCase().includes(q)
-  );
+  const group = /^(\w+)\.\{([^}]+)\}$/.exec(item.signature);
+  if (group) {
+    return group[2]
+      .split(", ")
+      .some((method) =>
+        `${data.module}.${group[1]}.${method}`.toLowerCase().includes(query),
+      );
+  }
+
+  const first = category.items[0];
+  const owner =
+    first.type === "class" && item !== first && !item.name.includes(".")
+      ? first.name + "."
+      : "";
+  return `${data.module}.${owner}${item.name}`.toLowerCase().includes(query);
 }
 
 // Detail rendering

@@ -108,6 +108,21 @@ test("tools keep their other languages and share English or Japanese with kitao.
   assert.equal(detectLang(languages), "en");
 });
 
+test("tools use the first browser language available on the page", () => {
+  const languages = ["en", "ja", "cn"].map((code) => ({ code }));
+  for (const [preferred, expected] of [
+    [["sv-SE", "ja-JP", "en-US"], "ja"],
+    [["ca-ES", "zh-Hant"], "cn"],
+    [["sv-SE", "fr"], "en"],
+    [[], "ja"],
+  ]) {
+    const { detectLang } = loadShared({
+      navigator: { languages: preferred, language: preferred[0] ?? "ja-JP" },
+    }).__test;
+    assert.equal(detectLang(languages), expected);
+  }
+});
+
 test("tools choose and switch languages when browser storage is blocked", () => {
   const blocked = () => {
     throw new Error("Storage blocked");
@@ -474,48 +489,74 @@ test("initPage leaves an absent fragment target alone", async () => {
   assert.deepEqual(errors, []);
 });
 
-test("initPage rejects an HTTP error before decoding JSON", async () => {
-  let jsonCount = 0;
-  let buildCount = 0;
-  const errors = [];
-  const context = loadShared({
-    console: { error: (...args) => errors.push(args) },
-    fetch: async () => ({
-      ok: false,
-      status: 503,
-      json: async () => {
-        jsonCount += 1;
+for (const [description, response, hasLoadingMessage, expectedError] of [
+  [
+    "HTTP error",
+    { ok: false, status: 503 },
+    true,
+    "Failed to fetch data.json: 503",
+  ],
+  ["invalid JSON", new Response("invalid JSON"), false, SyntaxError],
+  ["network error", null, true, "Offline"],
+]) {
+  test(`initPage offers reload after a ${description} and preserves static content`, async () => {
+    let reloads = 0;
+    const errors = [];
+    const reload = new EventTarget();
+    const status = {
+      isConnected: hasLoadingMessage,
+      setAttribute(name, value) {
+        this[name] = value;
       },
-    }),
-  });
-
-  context.__test.initPage("data.json", () => {
-    buildCount += 1;
-  });
-  await settlePromises();
-  assert.equal(jsonCount, 0);
-  assert.equal(buildCount, 0);
-  assert.equal(errors[0][1].message, "Failed to fetch data.json: 503");
-});
-
-test("initPage reports malformed JSON without building", async () => {
-  let buildCount = 0;
-  const errors = [];
-  const context = loadShared({
-    console: { error: (...args) => errors.push(args) },
-    fetch: async () => ({
-      ok: true,
-      status: 200,
-      json: async () => {
-        throw new SyntaxError("invalid JSON");
+      replaceChildren(...children) {
+        this.children = children;
       },
-    }),
-  });
+    };
+    const content = hasLoadingMessage ? [status] : ["static form"];
+    const context = loadShared({
+      document: {
+        getElementById: () => (hasLoadingMessage ? status : null),
+        createElement: (tag) => (tag === "button" ? reload : status),
+        querySelector: () => ({
+          prepend: (element) => content.unshift(element),
+        }),
+      },
+      location: { reload: () => reloads++ },
+      console: { error: (...args) => errors.push(args) },
+      fetch: async () => {
+        if (!response) throw new Error("Offline");
+        return response;
+      },
+    });
 
-  context.__test.initPage("data.json", () => {
-    buildCount += 1;
+    await context.__test.initPage("data.json", () =>
+      assert.fail("unexpected build"),
+    );
+    if (expectedError === SyntaxError)
+      assert.ok(errors[0][1] instanceof SyntaxError);
+    else assert.equal(errors[0][1].message, expectedError);
+    assert.equal(status.role, "alert");
+    assert.deepEqual(status.children, [
+      "Page data could not be loaded. ",
+      reload,
+    ]);
+    assert.deepEqual(
+      content,
+      hasLoadingMessage ? [status] : [status, "static form"],
+    );
+    reload.dispatchEvent(new Event("click"));
+    assert.equal(reloads, 1);
   });
-  await settlePromises();
-  assert.equal(buildCount, 0);
-  assert.equal(errors[0][1].message, "invalid JSON");
+}
+
+test("initPage lets a page rendering error reach the caller", async () => {
+  const { initPage } = loadShared({
+    fetch: async () => Response.json({ languages: [{ code: "en" }] }),
+  }).__test;
+  await assert.rejects(
+    initPage("data.json", () => {
+      throw new Error("render failed");
+    }),
+    /render failed/,
+  );
 });

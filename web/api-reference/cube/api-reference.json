@@ -49,6 +49,7 @@
       "name": "Українська"
     }
   ],
+  "module": "pyxel.cube",
   "ui": {
     "title": {
       "en": "Pyxel API Reference",
@@ -9063,12 +9064,12 @@
           "signature": "linear_damp",
           "description": {
             "en": "Linear damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
-            "cn": "线性：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
+            "cn": "线性：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max(0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
             "de": "Dämpfung der linearen Geschwindigkeit pro Sekunde. Standardwert ist 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
             "es": "Lineal: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
             "fr": "Linéaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
             "it": "Lineare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
-            "ja": "並進の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
+            "ja": "並進の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max(0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
             "ko": "선형: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
             "pt": "Linear: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
             "ru": "Линейная скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",
@@ -9084,12 +9085,12 @@
           "signature": "angular_damp",
           "description": {
             "en": "Angular damping per second. Defaults to 0.1. Before gravity, each update multiplies the speed by max(0, 1 - max(0, damp) / fps). Applies only to non-mesh colliders with mass > 0; 0 disables damping. This is velocity decay, not aerodynamic drag or contact friction.",
-            "cn": "角速度：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max (0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
+            "cn": "角速度：每秒阻尼系数，默认为 0.1。每次更新先将对应速度乘以 max(0, 1 - max(0, damp) / fps)，再施加重力。仅作用于未设置 mesh 且 mass > 0 的碰撞体；0 表示禁用。这是速度衰减，不是空气动力学阻力或接触摩擦。",
             "de": "Dämpfung der Winkelgeschwindigkeit pro Sekunde. Standardwert ist 0.1. Vor der Gravitation wird die entsprechende Geschwindigkeit pro Update mit max(0, 1 - max(0, damp) / fps) multipliziert. Gilt nur ohne mesh und mit mass > 0; 0 deaktiviert die Dämpfung. Kein aerodynamischer Widerstand und keine Kontaktreibung.",
             "es": "Angular: Amortiguación por segundo, por defecto 0.1. Antes de la gravedad, cada actualización multiplica la velocidad correspondiente por max(0, 1 - max(0, damp) / fps). Solo sin mesh y con mass > 0; 0 la desactiva. No modela resistencia aerodinámica ni fricción de contacto.",
             "fr": "Angulaire : Amortissement par seconde, par défaut 0.1. Avant la gravité, chaque mise à jour multiplie la vitesse correspondante par max(0, 1 - max(0, damp) / fps). Seulement sans mesh et avec mass > 0 ; 0 le désactive. Ne modélise ni la traînée aérodynamique ni le frottement de contact.",
             "it": "Angolare: Smorzamento al secondo, predefinito 0.1. Prima della gravità, ogni aggiornamento moltiplica la velocità corrispondente per max(0, 1 - max(0, damp) / fps). Solo senza mesh e con mass > 0; 0 lo disattiva. Non simula resistenza aerodinamica o attrito di contatto.",
-            "ja": "回転の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max (0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
+            "ja": "回転の毎秒の減衰係数。既定値は 0.1。各更新で重力を加える前に、速度を max(0, 1 - max(0, damp) / fps) 倍する。mesh がなく mass > 0 の場合のみ適用し、0 で無効になる。速度の減衰であり、空気力学的な抗力や接触摩擦ではない。",
             "ko": "각속도: 초당 감쇠 계수이며 기본값은 0.1입니다. 중력 적용 전에 해당 속도에 max(0, 1 - max(0, damp) / fps)를 곱합니다. mesh가 없고 mass > 0일 때만 적용되며 0은 감쇠를 끕니다. 공기역학적 항력이나 접촉 마찰 모델은 아닙니다.",
             "pt": "Angular: Amortecimento por segundo, padrão 0.1. Antes da gravidade, cada atualização multiplica a velocidade correspondente por max(0, 1 - max(0, damp) / fps). Apenas sem mesh e com mass > 0; 0 desativa. Não modela arrasto aerodinâmico nem atrito de contato.",
             "ru": "Угловая скорость: Коэффициент затухания в секунду, по умолчанию 0.1. Перед гравитацией каждое обновление умножает соответствующую скорость на max(0, 1 - max(0, damp) / fps). Только без mesh и при mass > 0; 0 отключает затухание. Это не модель аэродинамического сопротивления или трения контакта.",

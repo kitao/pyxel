@@ -13,13 +13,57 @@ const sharedSource = fs.readFileSync(
   path.join(__dirname, "..", "shared.js"),
   "utf8",
 );
+const findProjectFolder = loadNamedFunction(source, "findProjectFolder", {});
 
-test("Code Maker loads an empty main.py and rejects an absent one", async () => {
+test("Gist loading selects a unique project by its archive contents", async () => {
+  const game = {
+    filename: "my-game.txt",
+    content: "UE",
+    truncated: true,
+    raw_url: "raw",
+  };
+  const notes = { filename: "README.md", content: "# Notes", truncated: true };
+  const other = { filename: "other.zip", content: "UEsDb3RoZXI=" };
+  let files = [notes, other, game];
+  const loaded = [];
+  const context = {
+    findProjectFolder,
+    window: {},
+    fetch: async (url) => {
+      if (url === "raw") return { ok: true, text: async () => "UEsDZ2FtZQ==" };
+      assert.match(url, /^https:\/\/api\.github\.com\/gists\//);
+      return { ok: true, json: async () => ({ files }) };
+    },
+    base64ToUint8: (text) => Buffer.from(text, "base64"),
+    JSZip: {
+      loadAsync: async (bytes) => ({
+        files: bytes.toString().endsWith("game")
+          ? { "folder/main.py": {}, "folder/my_resource.pyxres": {} }
+          : { "folder/main.py": {} },
+      }),
+    },
+    loadProjectArchive: (_zip, name) => loaded.push(name),
+    updateShareUrl() {},
+  };
+  const load = loadNamedFunction(source, "loadFromGist", context);
+  const id = "0123456789abcdef0123";
+  await load(id);
+  assert.deepEqual(loaded, ["my-game"]);
+  files = [other, notes];
+  await assert.rejects(load(id), /No Code Maker project/);
+  files = [game, { ...game, filename: "second.txt" }];
+  await assert.rejects(load(id), /Multiple Code Maker projects/);
+  assert.deepEqual(loaded, ["my-game"]);
+});
+
+test("Code Maker imports only the folder containing both project files", async () => {
   const files = {
     "project/main.py": { async: async () => new Uint8Array() },
     "project/my_resource.pyxres": {
       async: async () => new Uint8Array([1, 2, 3]),
     },
+    "project/assets/map.dat": { async: async () => new Uint8Array([4]) },
+    "examples/main.py": { async: () => assert.fail("unrelated file read") },
   };
   const displayed = [];
   const window = {
@@ -27,8 +71,8 @@ test("Code Maker loads an empty main.py and rejects an absent one", async () => 
     _project: {},
     _codeEditor: { setValue: (code) => displayed.push(code) },
   };
-  const loadProject = loadNamedFunction(source, "loadProjectFromZip", {
-    JSZip: { loadAsync: async () => ({ files }) },
+  const loadProject = loadNamedFunction(source, "loadProjectArchive", {
+    findProjectFolder,
     TextDecoder,
     decodePythonSource: loadNamedFunction(source, "decodePythonSource", {
       TextDecoder,
@@ -42,13 +86,25 @@ test("Code Maker loads an empty main.py and rejects an absent one", async () => 
     resetResourceEditor() {},
   });
 
-  await loadProject(new ArrayBuffer(0), "project");
+  await loadProject({ files }, "project", window._projectLoad);
   assert.equal(window._project.code, "");
   assert.deepEqual(displayed, [""]);
+  assert.deepEqual(Object.keys(window._project.files).sort(), [
+    "assets/map.dat",
+    "main.py",
+    "my_resource.pyxres",
+  ]);
+
+  files["examples/my_resource.pyxres"] = files["project/my_resource.pyxres"];
+  await assert.rejects(
+    loadProject({ files }, "project", window._projectLoad),
+    /Multiple Code Maker projects/,
+  );
+  delete files["examples/my_resource.pyxres"];
 
   delete files["project/main.py"];
-  await assert.rejects(loadProject(new ArrayBuffer(0), "project"), {
-    message: "Missing main.py",
+  await assert.rejects(loadProject({ files }, "project", window._projectLoad), {
+    message: "Missing main.py or my_resource.pyxres in the same project folder",
   });
 });
 
@@ -143,13 +199,10 @@ test("a failed main.py decode leaves the previous project and editor intact", as
     _codeEditor: { setValue: () => assert.fail("editor must remain intact") },
   };
   const entry = { async: async () => new Uint8Array([0xff]) };
-  const load = loadNamedFunction(source, "loadProjectFromZip", {
+  const files = { "app/main.py": entry, "app/my_resource.pyxres": entry };
+  const load = loadNamedFunction(source, "loadProjectArchive", {
+    findProjectFolder,
     window,
-    JSZip: {
-      loadAsync: async () => ({
-        files: { "app/main.py": entry, "app/my_resource.pyxres": entry },
-      }),
-    },
     uint8ToBase64: (bytes) => Buffer.from(bytes).toString("base64"),
     base64ToUint8: (value) => Buffer.from(value, "base64"),
     decodePythonSource: async () => {
@@ -159,7 +212,10 @@ test("a failed main.py decode leaves the previous project and editor intact", as
     resetResourceEditor: () =>
       assert.fail("resource editor must remain intact"),
   });
-  await assert.rejects(load(new ArrayBuffer(0), "new"), /bad encoding/);
+  await assert.rejects(
+    load({ files }, "new", window._projectLoad),
+    /bad encoding/,
+  );
   assert.equal(window._project, previous);
   assert.equal(previous.name, "old");
   assert.equal(previous.code, "old");
@@ -265,7 +321,30 @@ for (const [surface, codeExtension, resourceExtension] of [
       _project: { code: "old", resource: "old resource", files: {} },
       _codeEditor: { setValue: (code) => displayed.push(code) },
     };
+    const tokenizer = {
+      getLineTokens(line) {
+        const tokens = line.startsWith("pyxel.load")
+          ? [
+              { value: "pyxel." },
+              { value: "load", type: "function.support" },
+              { value: line.slice(10) },
+            ]
+          : [{ value: line, type: "string" }];
+        return { tokens, state: "start" };
+      },
+    };
+    window._codeEditor.session = {
+      getMode: () => ({ getTokenizer: () => tokenizer }),
+    };
     const setupFileDrop = loadNamedFunction(source, "setupFileDrop", {
+      adaptDroppedResources: loadNamedFunction(
+        source,
+        "adaptDroppedResources",
+        {
+          pythonModeReady: Promise.resolve(),
+          window,
+        },
+      ),
       document: targets.page,
       runtimeScreen,
       resourceEditor,
@@ -284,7 +363,14 @@ for (const [surface, codeExtension, resourceExtension] of [
     setupFileDrop();
 
     const code = [
+      '# pyxel.load("guide.pyxres")',
+      "help_text = 'Use load(\"map.pyxres\") here'",
       `pyxel.load("assets/test.${resourceExtension}")`,
+      `pyxel.load("assets/pilot's map.pyxres")`,
+      String.raw`pyxel.load('assets/pilot\'s map.pyxres')`,
+      String.raw`pyxel.load("assets/a\"b.pyxres")`,
+      `pyxel.load('assets/a"b.pyxres')`,
+      `pyxel.load("note" + "other.pyxres")`,
       "pyxel.load( 'assets/other.pyxres', exclude_images=True)",
       'pyxel.load (\n    "assets/third.pyxres",\n    exclude_sounds=True,\n)',
       'print("hello")',
@@ -294,7 +380,14 @@ for (const [surface, codeExtension, resourceExtension] of [
       'pyxel.load("assets/image.PNG")',
     ].join("\n");
     const expected = [
+      '# pyxel.load("guide.pyxres")',
+      "help_text = 'Use load(\"map.pyxres\") here'",
       'pyxel.load("my_resource.pyxres")',
+      'pyxel.load("my_resource.pyxres")',
+      "pyxel.load('my_resource.pyxres')",
+      'pyxel.load("my_resource.pyxres")',
+      "pyxel.load('my_resource.pyxres')",
+      `pyxel.load("note" + "other.pyxres")`,
       "pyxel.load( 'my_resource.pyxres', exclude_images=True)",
       'pyxel.load (\n    "my_resource.pyxres",\n    exclude_sounds=True,\n)',
       'print("hello")',

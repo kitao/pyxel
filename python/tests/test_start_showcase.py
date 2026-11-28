@@ -3,6 +3,8 @@ import re
 import sys
 import threading
 from collections.abc import Iterator
+from contextlib import contextmanager
+from functools import partial
 from http.server import ThreadingHTTPServer
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
@@ -25,7 +27,13 @@ def showcase_module() -> ModuleType:
 
 @pytest.fixture
 def showcase_url(showcase_module: ModuleType) -> Iterator[str]:
-    server = ThreadingHTTPServer(("127.0.0.1", 0), showcase_module.Handler)
+    with _serve(showcase_module.Handler) as url:
+        yield url
+
+
+@contextmanager
+def _serve(handler) -> Iterator[str]:
+    server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever)
     thread.start()
     try:
@@ -39,6 +47,10 @@ def showcase_url(showcase_module: ModuleType) -> Iterator[str]:
 
 def test_start_showcase_preserves_public_paths(showcase_url: str):
     expected_paths = [
+        "/web/",
+        "/web/shared.js",
+        "/web/styles.css",
+        "/docs/faq.md",
         "/docs/images/pyxel_thanks.png",
         "/docs/pyxel.gpl",
         "/wasm/pyxel.js",
@@ -83,6 +95,38 @@ def test_local_runtime_loads_the_pinned_upstream_pyodide(showcase_url):
     )
 
 
+@pytest.mark.parametrize("version", ["1.0.0", "1.0.1"])
+def test_showcase_serves_the_selected_wheel(
+    showcase_module, tmp_path, monkeypatch, version
+):
+    wasm = tmp_path / "wasm"
+    dist = tmp_path / "dist"
+    wasm.mkdir()
+    dist.mkdir()
+    retained_name = "pyxel-1.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl"
+    (wasm / retained_name).write_bytes(b"retained wheel")
+    script = f'const PYXEL_WHEEL_PATH =\n  "{retained_name}";\n'
+    (wasm / "pyxel.js").write_text(script)
+    wheel = dist / retained_name.replace("1.0.0", version)
+    wheel.write_bytes(b"development wheel")
+    (dist / "other.txt").write_text("other output")
+    monkeypatch.setattr(showcase_module, "ROOT_DIR", tmp_path)
+    monkeypatch.setattr(showcase_module, "PUBLIC_ROOT_DIRS", (wasm,))
+
+    with _serve(partial(showcase_module.Handler, wheel=wheel)) as url:
+        assert _get(url + "/wasm/pyxel.js") == (
+            200,
+            script.replace(retained_name, wheel.name).encode(),
+        )
+        assert _get(url + "/wasm/" + wheel.name) == (200, b"development wheel")
+        assert _get(url + "/dist/other.txt")[0] == 404
+        assert _get(url + "/dist/" + wheel.name)[0] == 404
+
+    with _serve(showcase_module.Handler) as url:
+        assert _get(url + "/wasm/pyxel.js") == (200, script.encode())
+        assert _get(url + "/wasm/" + retained_name) == (200, b"retained wheel")
+
+
 def test_main_opens_the_served_address(showcase_module, monkeypatch, capsys):
     opened = []
     monkeypatch.setattr(showcase_module, "_get_ip", lambda: "192.0.2.1")
@@ -98,9 +142,21 @@ def test_main_opens_the_served_address(showcase_module, monkeypatch, capsys):
     )
     monkeypatch.setattr(showcase_module.webbrowser, "open", opened.append)
 
-    assert showcase_module.main() == 0
+    assert showcase_module.main([]) == 0
     assert "http://192.0.2.1:8000/" in capsys.readouterr().out
     assert opened == ["http://192.0.2.1:8000/web/showcase/"]
+
+
+def test_main_requires_a_development_wheel_from_dist(
+    showcase_module, tmp_path, monkeypatch
+):
+    wheel = tmp_path / "pyxel-1.0.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl"
+    wheel.write_bytes(b"wheel")
+    monkeypatch.setattr(showcase_module, "ROOT_DIR", tmp_path)
+
+    with pytest.raises(SystemExit) as error:
+        showcase_module.main(["--wheel", str(wheel)])
+    assert error.value.code == 2
 
 
 def test_local_launcher_preserves_hosted_module_bytes(
@@ -158,6 +214,13 @@ def test_inject_html_uses_offsets_from_rewritten_document():
     [
         "/.git/HEAD",
         "/crates/Cargo.toml",
+        "/web/package.json",
+        "/web/scripts/wrangler.mjs",
+        "/web/tests/",
+        "/web/node_modules/",
+        "/web/test-results/",
+        "/docs/design/design-audit.md",
+        "/wasm/images/",
         "/%2e%2e/.git/HEAD",
     ],
 )

@@ -27,16 +27,17 @@ def _ellib2(self, x1, y1, x2, y2, val):
 
 
 def _get_slice(self, x, y, width, height):
-    return [[self.pget(x + xi, y + yi) for xi in range(width)] for yi in range(height)]
+    region = (
+        pyxel.Tilemap(width, height, 0)
+        if isinstance(self, pyxel.Tilemap)
+        else pyxel.Image(width, height)
+    )
+    region.blt(0, 0, self, x, y, width, height)
+    return region
 
 
 def _set_slice(self, x, y, data):
-    width = len(data[0])
-    height = len(data)
-
-    for yi in range(height):
-        for xi in range(width):
-            self.pset(x + xi, y + yi, data[yi][xi])
+    self.blt(x, y, data, 0, 0, data.width, data.height)
 
 
 def _normalize_rect(x1, y1, x2, y2):

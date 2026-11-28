@@ -98,6 +98,8 @@ entry.
 Each entry states the applicable scope and conditions, the resulting choice, and
 sufficient rationale with references that let a reviewer inspect its basis,
 using examples to clarify those conditions rather than to substitute for them.
+A separate **Boundary** paragraph is optional when limits on a decision need
+more explanation.
 Specify the required form independently of the candidate's current form or diff;
 whether a correction is needed is an application result, not the decision. For
 terminology and orthography, the required form comes from the language's
@@ -113,8 +115,8 @@ dependent changes.
 Before adopting a correction, establish why it follows from the reviewed
 decisions and policy, including intended distinctions between comparable sites.
 Use targeted checks that can establish the property being changed, then run the
-complete triggered gates on the settled candidate; repeat them when changed
-inputs or unresolved failures require it, rather than after every intermediate
+triggered commands on the settled candidate; repeat them when changed inputs
+or unresolved failures require it, rather than after every intermediate
 adjustment.
 
 When refining a design, identify who uses it, the task they need to complete,
@@ -129,10 +131,19 @@ Record the comparison in the targeted findings or the exhaustive audit checks.
 
 ### Commands
 
-These requirements apply to every mode. For a release audit, use the previous
-release commit as the comparison base. Otherwise use the requested base, or
-the merge base with the configured upstream if none was requested. Fall back
-to `HEAD` when there is no upstream.
+These requirements apply to every mode. For an exhaustive audit before a
+release tag, use the previous release commit as the comparison base. Otherwise
+use the requested base, or the merge base with the configured upstream if none
+was requested. Fall back to `HEAD` when there is no upstream.
+
+Treat the release version update and the commit adding its validated web wheel
+as one candidate for the gate check. Run the required commands on the candidate
+containing both. For the exhaustive audit, verify the candidate to be tagged.
+
+Before any verification command that builds a wheel, retain the contents or
+SHA-256 hashes of the tracked files the build regenerates. The frozen
+candidate's matching records suffice. After the build, require byte-for-byte
+agreement with those pre-build contents.
 
 | Trigger | Required action |
 | --- | --- |
@@ -141,12 +152,12 @@ to `HEAD` when there is no upstream.
 | Changes affecting lint inputs or configuration, or an exhaustive audit | Run `make lint` and `make lint-wasm` warning-free. Clippy warnings fail the check; each suppression needs a specific justification. |
 | Changes to code, files read by the tests, or test configuration, or an exhaustive audit | Run `make test` before claiming completion; when it stops at an earlier suite, run the remaining recipe lines of `make test` before claiming their result. |
 | Changes to code for GL, shaders, windows, or audio or input devices | Exercise the changed behavior on each affected platform. For native checks, run `make install` and `scripts/check_window_startup`, then use an example that exercises the affected rendering, window, sound, or input. Record the startup output and the observation separately. |
-| Changes compiled into the wheel that alter browser-specific behavior or whose effect requires a browser to verify | Run `make run-wasm` in an isolated copy of the complete candidate. The build installs the wheel and updates the web runtime's wheel reference in `wasm/pyxel.js`. Exercise the affected behavior in a browser, using an automated case where it establishes the result. Record the wheel used and the result. Apply the [retention rule](design-decisions/public-contract-distribution.md#web-wheel-retention) to any wheel proposed for the candidate. |
-| Changes under `wasm/` or `web/` to files a browser loads | Run `scripts/start_showcase`; in a browser, open each changed page and one page that loads each other changed file, start an example on each opened page that runs one, and record the browser console output and the `pyxel.js` URL of each started example. |
+| Changes compiled into the wheel that alter browser-specific behavior or whose effect requires a browser to verify | Run `make run-wasm` on the complete candidate. Exercise the affected behavior in a browser with the development wheel built in `dist/`, using an automated case where it establishes the result. Record the wheel's SHA-256 and the observed result. |
+| Changes under `wasm/` or `web/` to files a browser loads | Use the Showcase started by `make run-wasm` when the page also needs the development wheel. Otherwise start it with `scripts/start_showcase`. In a browser, open each changed page and one page that loads each other changed file, start an example on each opened page that runs one, and record the browser console output and the `pyxel.js` URL of each started example. |
 | Changes to the `app2html` template | Open a page generated by `pyxel app2html` in a browser with its `pyxel.js` reference replaced by the runtime served by `scripts/start_showcase`, and record the `pyxel.js` URL and the browser console output. |
 | Documentation or structured-data changes | Run applicable parsers, generators, and consistency checks. Verify generation at its source; do not hand-edit output. |
 | Base-stub docstring changes | Edit the source data and regenerate with `scripts/generate_pyi_docstrings`. |
-| Changes affecting generated or distributed artifacts | Regenerate affected build outputs from their sources and verify their correspondence. In ordinary tests, compare actual results with the [committed references](design-decisions/testing.md#screenshot-capture-and-actual-launch-coverage) without updating the references. Build affected distributions and follow their [retention rules](design-decisions/public-contract-distribution.md#web-wheel-retention). |
+| Changes affecting generated or distributed artifacts | Regenerate affected build outputs from their sources and verify their correspondence. In ordinary tests, compare actual results with the [committed references](design-decisions/testing.md#screenshot-capture-and-actual-launch-coverage) without updating the references. Prepare affected distributions through their normal build process. For a release web wheel, follow the [retention rule](design-decisions/public-contract-distribution.md#web-wheel-retention). |
 
 Include every automated test in `make test` except the [windowed startup
 check](design-decisions/testing.md#division-between-make-test-and-make-run),
@@ -178,8 +189,8 @@ manual case, also require the same build hash and matching device and operating
 conditions. Judge the observation anew. Repeat the check if a match cannot be
 established or new evidence calls the observation into question. Run the
 [triggered commands](#commands) and their automated checks on the settled
-candidate. The same reuse conditions apply to manual observations required by
-the command table.
+candidate. The same reuse conditions apply to observations from manual cases
+required by the command table.
 
 ## 3. Plan Coverage
 
@@ -389,16 +400,16 @@ referenced dependencies.
 | --- | --- |
 | [Performance](design-decisions/source-code-performance.md) | Executed cost, numeric representations, arithmetic widths, and resource ownership |
 | [Naming](design-decisions/source-code-naming.md) | Naming families and correspondence across interfaces |
-| [Structure and formatting](design-decisions/source-code-structure-and-formatting.md) | Definition order, settings and configuration groups, and file representation |
-| [Blank lines](design-decisions/source-code-blank-lines.md) | Formatting ownership, processing groups, declaration inventories, comment boundaries, and the language-specific boundaries of Rust, Python, Web, GLSL, configuration, and tests |
+| [Structure and formatting](design-decisions/source-code-structure-and-formatting.md) | Definition order, runtime and editor/widget settings, configuration groups, file representation, local outputs and versioned deliverables, and localized page data |
+| [Blank lines](design-decisions/source-code-blank-lines.md) | Formatting ownership, processing groups, declaration inventories, comment boundaries, and the language-specific boundaries of Rust, Python, Web, GLSL, configuration, shell scripts, and tests |
 | [Comments](design-decisions/source-code-comments.md) | Comment forms, concise rationale, group headings, and UI interface summaries |
 | [Cross-file consistency](design-decisions/source-code-cross-file-consistency.md) | Message families, idiom exceptions, coordinate correspondence, and examples |
 | [Rust/Python boundary](design-decisions/public-contract-rust-python.md) | Exception conversion, resource access, native failures, and reentrant Python calls |
-| [Python contracts](design-decisions/public-contract-python.md) | Python APIs and stubs, CLI, resources and capture, audio, editors, and Cube behavior |
-| [Web contracts](design-decisions/public-contract-web.md) | User-visible behavior of the web tools and compatibility routes |
-| [Distribution contracts](design-decisions/public-contract-distribution.md) | Rust crate publication, Python and web compatibility, SDL2 linkage, wheel installation, release versions, optional dependencies, and executable export |
-| [Documentation](design-decisions/documentation.md) | Reader scope, sources of generated text, organization of design documents, translations and per-language conventions, typography, names, and release notes |
-| [Testing](design-decisions/testing.md) | Automated/manual coverage, mechanical correspondence checks, numerical expectations, and audio concurrency |
+| [Python contracts](design-decisions/public-contract-python.md) | Python APIs and stubs, key constants and combined modifiers, app packaging and CLI, resources and capture, audio, editors, and Cube behavior |
+| [Web contracts](design-decisions/public-contract-web.md) | Web runtime and tool behavior, compatibility routes, and the local Showcase server |
+| [Distribution contracts](design-decisions/public-contract-distribution.md) | Rust crate publication, Python and web compatibility, SDL2 linkage, web wheel installation, retention and release procedure, release versions, optional dependencies, and executable export |
+| [Documentation](design-decisions/documentation.md) | Reader scope, generated and handwritten documents, contributor workflows and commands, design document organization, translations and language conventions, typography, names, and release notes |
+| [Testing](design-decisions/testing.md) | Automated and manual coverage, native and browser checks, extensionless Python tools, repository scripts, mechanical correspondence checks, numerical expectations, and audio concurrency |
 
 This is a file index, not the coverage inventory. Shared source choices also
 apply to JavaScript, HTML, CSS, shaders, and other source or configuration
@@ -414,7 +425,7 @@ identifiers in JSON and JSONL records.
 
 | Record | Used in | Required content |
 | --- | --- | --- |
-| `findings.md` | Targeted review | Changed files and relations, excluded decision files and entries with reasons, each selected decision or direct policy obligation with its verdict and evidence, each finding with its correction or pending reason, each gate command with its trigger, governing rule, invocation, working directory, exit status, and log, each required manual case with its build, action, expected and observed result, and any required independent review |
+| `findings.md` | Targeted review | Changed files and relations, excluded decision files and entries with reasons, each selected decision or direct policy obligation with its verdict and evidence, each finding with its correction or pending reason, each triggered command with its trigger, governing rule, invocation, working directory, exit status, and log, each required manual case with its build, action, expected and observed result, and any required independent review |
 | `target.json` | Exhaustive audit | Branch, base and head commits, file inventory with origins, modes, and hashes, and the hash of `changes.patch` |
 | `changes.patch` | Exhaustive audit | Complete base-to-candidate diff, including intended additions, deletions, modes, and binary changes |
 | `plan.json` | Exhaustive audit | Target hash, criteria with source spans, decision inventory and mappings, subject inventory with roles, routing, and exclusions, commands, and expected pairs |

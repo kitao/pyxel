@@ -53,7 +53,10 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
+      <div
+        id="page-loading"
+        class="flex justify-center items-center py-12 text-gray-400 text-sm"
+      >
         Loading...
       </div>
     </main>
@@ -113,7 +116,7 @@
         document.getElementById("guide").innerHTML = renderGuide(guide);
 
         setDocLang(lang);
-        hljs.highlightAll();
+        window.hljs?.highlightAll();
       }
 
       function renderGuide(guide) {

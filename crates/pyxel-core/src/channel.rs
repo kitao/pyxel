@@ -38,6 +38,7 @@ pub struct Channel {
     note_duration_clocks: u64,
     sound_elapsed_clocks: u64,
     total_elapsed_clocks: u64,
+    loop_start_clock: u64,
 
     commands: Arc<[MmlCommand]>,
     command_index: usize,
@@ -78,6 +79,7 @@ impl Channel {
             note_duration_clocks: 0,
             sound_elapsed_clocks: 0,
             total_elapsed_clocks: 0,
+            loop_start_clock: 0,
 
             commands: Arc::from([]),
             command_index: 0,
@@ -200,6 +202,7 @@ impl Channel {
             self.resume_should_loop = self.should_loop;
         }
 
+        self.loop_start_clock = self.total_elapsed_clocks;
         self.sounds = sounds;
         self.is_playing = true;
         self.should_loop = should_loop;
@@ -259,7 +262,7 @@ impl Channel {
                 self.process(None, chunk);
 
                 let consumed = self.total_elapsed_clocks.saturating_sub(before);
-                if consumed == 0 {
+                if consumed == 0 && !self.playing_pcm {
                     return;
                 }
                 clocks -= consumed.min(u64::from(chunk));
@@ -284,20 +287,42 @@ impl Channel {
         }
     }
 
-    pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
-        if self.playing_pcm {
-            if self.voice.needs_processing() {
-                self.voice.process(blip_buf, 0, clock_count);
+    // Resolve zero-duration entries before the renderer chooses a block size.
+    pub(crate) fn prepare_sound(&mut self) {
+        while self.is_playing {
+            if self.playing_pcm {
+                let sound = audio_ref!(self.sounds[self.sound_index]);
+                if sound
+                    .pcm
+                    .as_ref()
+                    .is_some_and(|pcm| self.pcm_position < pcm.samples.len())
+                {
+                    return;
+                }
+            } else {
+                if self.note_duration_clocks > 0 {
+                    return;
+                }
+                self.command_index = 0;
+                self.repeat_points.clear();
+                self.sequence_frames.clear();
+                self.commands = audio_mut!(self.sounds[self.sound_index]).command_snapshot();
+                self.advance_command();
+                if self.note_duration_clocks > 0 || !self.is_playing {
+                    return;
+                }
             }
-            return;
+            self.advance_sound();
         }
+    }
 
+    pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
         let mut blip_buf = blip_buf;
-        let start_clock_count = clock_count;
         let mut clock_count = clock_count;
         let mut clock_offset = 0;
 
         while clock_count > 0 {
+            self.prepare_sound();
             if !self.is_playing {
                 self.voice
                     .process(blip_buf.as_deref_mut(), clock_offset, clock_count);
@@ -312,21 +337,6 @@ impl Channel {
                         .process(blip_buf.as_deref_mut(), clock_offset, clock_count);
                 }
                 return;
-            }
-
-            if self.sound_elapsed_clocks == 0 {
-                self.note_duration_clocks = 0;
-                self.command_index = 0;
-                self.repeat_points.clear();
-                self.sequence_frames.clear();
-                {
-                    let mut sound = audio_mut!(self.sounds[self.sound_index]);
-                    self.commands = sound.command_snapshot();
-                }
-                self.advance_command();
-                if !self.is_playing {
-                    continue;
-                }
             }
 
             let process_clocks = u64::from(clock_count).min(self.note_duration_clocks) as u32;
@@ -346,25 +356,7 @@ impl Channel {
             }
 
             if self.note_duration_clocks == 0 {
-                self.sound_index += 1;
-                self.sound_elapsed_clocks = 0;
-                if self.sound_index < self.sounds.len() {
-                    self.update_playing_pcm();
-                } else if self.should_loop && clock_count < start_clock_count {
-                    self.sound_index = 0;
-                    self.update_playing_pcm();
-                } else if self.should_resume {
-                    let resume_sounds = std::mem::take(&mut self.resume_sounds);
-                    self.play_from_clock(
-                        resume_sounds,
-                        self.total_elapsed_clocks,
-                        self.resume_should_loop,
-                        false,
-                    );
-                } else {
-                    self.is_playing = false;
-                    self.playing_pcm = false;
-                }
+                self.advance_sound();
             }
         }
     }
@@ -636,30 +628,6 @@ impl Channel {
 
     // PCM mixing
 
-    pub(crate) fn prepare_pcm(&mut self) {
-        let mut skipped_sounds = 0;
-
-        while self.is_playing_pcm() {
-            let has_samples = {
-                let sound = audio_ref!(self.sounds[self.sound_index]);
-                sound
-                    .pcm
-                    .as_ref()
-                    .is_some_and(|pcm| self.pcm_position < pcm.samples.len())
-            };
-            if has_samples {
-                return;
-            }
-
-            if skipped_sounds >= self.sounds.len() || !self.advance_pcm_sound() {
-                self.is_playing = false;
-                self.playing_pcm = false;
-                return;
-            }
-            skipped_sounds += 1;
-        }
-    }
-
     pub(crate) fn pcm_samples_until_mode_change(&self, max_samples: usize) -> usize {
         let mut sound_index = self.sound_index;
         let mut pcm_position = self.pcm_position;
@@ -708,6 +676,12 @@ impl Channel {
         let mut offset = 0;
 
         while offset < out.len() {
+            if !self.playing_pcm {
+                self.prepare_sound();
+                if !self.is_playing_pcm() {
+                    return;
+                }
+            }
             let mut to_copy = 0;
             let mut end_reached = false;
             let mut should_advance = false;
@@ -743,7 +717,7 @@ impl Channel {
             }
 
             if should_advance {
-                if !self.advance_pcm_sound() {
+                if !self.advance_sound() {
                     return;
                 }
                 continue;
@@ -757,7 +731,7 @@ impl Channel {
             self.sound_elapsed_clocks = elapsed_clocks;
             offset += to_copy;
 
-            if end_reached && !self.advance_pcm_sound() {
+            if end_reached && !self.advance_sound() {
                 return;
             }
         }
@@ -765,13 +739,14 @@ impl Channel {
 
     // Internal helpers
 
-    fn advance_pcm_sound(&mut self) -> bool {
+    fn advance_sound(&mut self) -> bool {
         self.sound_index += 1;
         self.sound_elapsed_clocks = 0;
         self.pcm_position = 0;
 
         if self.sound_index >= self.sounds.len() {
-            if self.should_loop {
+            if self.should_loop && self.total_elapsed_clocks != self.loop_start_clock {
+                self.loop_start_clock = self.total_elapsed_clocks;
                 self.sound_index = 0;
             } else if self.should_resume {
                 let resume_sounds = std::mem::take(&mut self.resume_sounds);
@@ -930,6 +905,22 @@ mod tests {
         assert!(channel.playing_pcm);
         assert_eq!(channel.sound_index, 1);
         assert_eq!(channel.pcm_position, 0);
+    }
+
+    #[test]
+    fn test_seek_past_empty_sound_into_pcm() {
+        let channel = Channel::new();
+        let mut channel = audio_mut!(channel);
+        channel
+            .play(
+                vec![Sound::new(), pcm_sound(1000)],
+                Some(0.025),
+                false,
+                false,
+            )
+            .unwrap();
+        assert_eq!(channel.sound_index, 1);
+        assert_eq!(channel.pcm_position, 551);
     }
 
     #[test]

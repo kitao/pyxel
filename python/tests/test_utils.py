@@ -328,6 +328,9 @@ class TestListImportedModules:
             "system": ["zlib"],
             "local": [str(pkg / ".." / "helper.py")],
         }
+        assert (
+            pyxel.utils.list_imported_modules("pkg/main.py", app_dir=tmp_path) == result
+        )
 
     @pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
     def test_resolves_imports_relative_to_symlink_path(self, tmp_path, monkeypatch):

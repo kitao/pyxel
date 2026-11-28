@@ -19,7 +19,7 @@ You can also watch the following video tutorials to see the code in action and f
 
 ## Running Examples
 
-To run the examples locally, enter the following command in a terminal. It creates a `pyxel_examples` directory in the current directory and copies the examples into it. If a directory with that name already exists, it will be replaced, so move any edited files elsewhere first.
+This command copies the examples to `pyxel_examples`. If the folder already exists, the command replaces everything in it.
 
 ```sh
 pyxel copy_examples

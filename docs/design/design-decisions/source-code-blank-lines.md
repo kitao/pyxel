@@ -348,7 +348,7 @@ complete sampling passes and expanded corner algorithms need locatable
 boundaries that match under corner rotation. Returning or writing the
 calculated value adds no new calculation stage.
 
-## Configuration and shell
+## Configuration and Shell
 
 ### Configuration records and shell tasks
 

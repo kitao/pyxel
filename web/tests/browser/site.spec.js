@@ -79,14 +79,17 @@ test("released runtime bundles are immutable and current previews are not", asyn
   expect(await cacheControl("/pyxel/3.0.0/pyxel.js")).toBe(
     "public, max-age=31536000, immutable",
   );
-  const project = readFileSync(
-    path.resolve(__dirname, "../../../python/pyproject.toml"),
+  const settings = readFileSync(
+    path.resolve(__dirname, "../../../crates/pyxel-core/src/settings.rs"),
     "utf8",
   );
-  const version = project.match(/^version = "([^"]+)"/m)[1];
+  const version = settings.match(/^pub const VERSION: &str = "([^"]+)";$/m)[1];
   const currentTag = execFileSync("git", ["tag", "--list", `v${version}`], {
     cwd: __dirname,
     encoding: "utf8",
+    env: Object.fromEntries(
+      Object.entries(process.env).filter(([name]) => !/^GIT_/i.test(name)),
+    ),
   }).trim();
   const currentCacheControl = await cacheControl(`/pyxel/${version}/pyxel.js`);
   if (currentTag) {

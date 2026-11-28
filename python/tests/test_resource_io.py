@@ -1,6 +1,7 @@
 import tomllib
 import zipfile
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from uuid import uuid4
 
 import PIL.Image
@@ -465,7 +466,7 @@ class TestScreenshot:
 
 
 class TestUserDataDir:
-    def test_user_data_dir(self):
+    def test_user_data_dir_requires_a_directory(self):
         vendor = f"PyxelTest-{uuid4().hex}"
         result = pyxel.user_data_dir(vendor, "TestApp")
         path = Path(result)
@@ -473,6 +474,13 @@ class TestUserDataDir:
             assert isinstance(result, str)
             assert result
             assert path.is_dir()
+            assert pyxel.user_data_dir(vendor, "TestApp") == result
+            with NamedTemporaryFile(dir=path.parent) as occupied:
+                file_path = Path(occupied.name)
+                with raises_exact(
+                    Exception, f"Failed to create directory '{file_path}'"
+                ):
+                    pyxel.user_data_dir(vendor, file_path.name)
         finally:
             if path.name == "testapp" and path.parent.name == vendor.lower():
                 path.rmdir()

@@ -31,6 +31,50 @@ test("API descriptions render documentation links while escaping literal text", 
   );
 });
 
+test("API search recognizes the names used in Python programs", () => {
+  const context = vm.createContext({ t: (text) => text.en });
+  vm.runInContext(apiReferenceSource, context);
+  for (const [file, cases] of [
+    [
+      "api-reference.json",
+      [
+        ["pyxel.init", "system", "init", true],
+        ["pyxel.load", "image", "Image.load", false],
+        ["pyxel.Image.load", "image", "Image.load", true],
+        ["pyxel.Image.rect", "image", "Image Drawing", true],
+        ["Tilemap.rect", "tilemap", "Tilemap Drawing", true],
+        ["Tilemap.text", "tilemap", "Tilemap Drawing", false],
+      ],
+    ],
+    [
+      "cube/api-reference.json",
+      [
+        ["Node.add_child", "node", "add_child", true],
+        ["pyxel.cube.Node.add_child", "node", "add_child", true],
+        ["pyxel.Node.add_child", "node", "add_child", false],
+        ["Camera.transform", "node", "transform", false],
+        ["pyxel.cube.Mat4.compose", "mat4", "Mat4.compose", true],
+      ],
+    ],
+  ]) {
+    context.reference = JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, "..", "api-reference", file),
+        "utf8",
+      ),
+    );
+    vm.runInContext("data = reference", context);
+    const match = vm.runInContext("matchesSearch", context);
+    for (const [query, id, name, expected] of cases) {
+      const category = context.reference.categories.find(
+        (entry) => entry.id === id,
+      );
+      const item = category.items.find((entry) => entry.name === name);
+      assert.equal(match(category, item, query.toLowerCase()), expected, query);
+    }
+  }
+});
+
 test("API search keeps constants, descriptions and groups together", () => {
   const refs = {};
   const element = (attr, key) => {
@@ -62,6 +106,7 @@ test("API search keeps constants, descriptions and groups together", () => {
   const context = vm.createContext({
     refs,
     fixture: {
+      module: "pyxel",
       categories: [
         {
           id: "input",
@@ -86,7 +131,7 @@ test("API search keeps constants, descriptions and groups together", () => {
   vm.runInContext(apiReferenceSource, context);
 
   vm.runInContext(
-    "data = fixture; Object.assign(domCache, refs); searchQuery = 'key_a'; updateVisibility();",
+    "data = fixture; Object.assign(domCache, refs); searchQuery = 'pyxel.KEY_A'; updateVisibility();",
     context,
   );
   assert.equal(chips[0].style.display, "");

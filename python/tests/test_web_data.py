@@ -45,10 +45,8 @@ def test_editor_manual_images_exist():
         images.add(
             f"images/{editor}_{data['annotations'][editor][int(index)]['id']}.png"
         )
-    tool_icons = re.search(r"const icons = \[(.*?)\];", page, re.DOTALL).group(1)
-    images.update(
-        f"images/tool_{name}.png" for name in re.findall(r'"(\w+)"', tool_icons)
-    )
+    for group in ("menubar_buttons", "image_tools", "playback_buttons"):
+        images.update(row["icon"] for row in data[group])
 
     assert len(images) > 5
     assert [

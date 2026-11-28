@@ -555,18 +555,18 @@
       "uk": "Запуск прикладів"
     },
     "usage_examples_copy": {
-      "en": "The following command copies Pyxel examples into pyxel_examples in the current directory, replacing all contents of that folder if it already exists:",
-      "cn": "以下命令将 Pyxel 示例复制到当前目录的 pyxel_examples 文件夹；如果该文件夹已存在，会替换其中的全部内容：",
-      "de": "Der folgende Befehl kopiert die Pyxel-Beispiele nach pyxel_examples im aktuellen Verzeichnis und ersetzt den gesamten Inhalt dieses Ordners, falls er bereits existiert:",
-      "es": "El siguiente comando copia los ejemplos de Pyxel a pyxel_examples en el directorio actual y reemplaza todo su contenido si la carpeta ya existe:",
-      "fr": "La commande suivante copie les exemples Pyxel dans pyxel_examples dans le répertoire actuel, en remplaçant tout le contenu de ce dossier s'il existe déjà :",
-      "it": "Il seguente comando copia gli esempi di Pyxel in pyxel_examples nella directory corrente, sostituendo tutto il contenuto della cartella se esiste già:",
-      "ja": "次のコマンドで Pyxel のサンプルをカレントディレクトリの pyxel_examples にコピーします。同名のディレクトリがある場合は内容をすべて置き換えます。",
-      "ko": "다음 명령어는 Pyxel 예제를 현재 디렉터리의 pyxel_examples 폴더로 복사하며, 폴더가 이미 있으면 그 안의 내용을 모두 교체합니다.",
-      "pt": "O comando a seguir copia os exemplos do Pyxel para a pasta pyxel_examples no diretório atual, substituindo todo o conteúdo se ela já existir.",
-      "ru": "Следующая команда копирует примеры Pyxel в папку pyxel_examples в текущем каталоге, полностью заменяя её содержимое, если папка уже существует.",
-      "tr": "Aşağıdaki komut, Pyxel örneklerini geçerli dizindeki pyxel_examples klasörüne kopyalar; klasör zaten varsa içeriğinin tamamını yenisiyle değiştirir.",
-      "uk": "Наступна команда копіює приклади Pyxel до папки pyxel_examples у поточному каталозі, повністю замінюючи її вміст, якщо папка вже існує."
+      "en": "This command copies the examples to pyxel_examples. If the folder already exists, the command replaces everything in it.",
+      "cn": "此命令将示例复制到 pyxel_examples 文件夹。如果该文件夹已存在，其内容将被全部替换。",
+      "de": "Dieser Befehl kopiert die Beispiele in den Ordner pyxel_examples. Ist der Ordner bereits vorhanden, wird sein gesamter Inhalt ersetzt.",
+      "es": "Este comando copia los ejemplos en la carpeta pyxel_examples. Si la carpeta ya existe, se reemplaza todo su contenido.",
+      "fr": "Cette commande copie les exemples dans le dossier pyxel_examples. Si ce dossier existe déjà, tout son contenu est remplacé.",
+      "it": "Il comando copia gli esempi nella cartella pyxel_examples. Se la cartella esiste già, tutto il suo contenuto viene sostituito.",
+      "ja": "サンプルを pyxel_examples にコピーします。同名のフォルダーがあれば、中身をすべて置き換えます。",
+      "ko": "예제를 pyxel_examples 폴더에 복사합니다. 같은 이름의 폴더가 이미 있으면 그 내용을 모두 교체합니다.",
+      "pt": "Este comando copia os exemplos para a pasta pyxel_examples. Se a pasta já existir, todo o seu conteúdo será substituído.",
+      "ru": "Команда копирует примеры в папку pyxel_examples. Если папка уже существует, её содержимое полностью заменяется.",
+      "tr": "Bu komut örnekleri pyxel_examples klasörüne kopyalar. Klasör zaten varsa tüm içeriği değiştirilir.",
+      "uk": "Команда копіює приклади до папки pyxel_examples. Якщо папка вже існує, її вміст повністю замінюється."
     },
     "usage_examples_run": {
       "en": "You can run examples locally with the following commands:",
@@ -638,6 +638,20 @@
       "tr": "Python betiğinizde Pyxel'i içe aktarın, Pyxel ekranının boyutunu {0} ile belirtin ve uygulamayı {1} ile başlatın.",
       "uk": "У вашому Python-скрипті імпортуйте Pyxel, вкажіть розмір екрана Pyxel за допомогою {0} і запустіть програму за допомогою {1}."
     },
+    "creating_program_try": {
+      "en": "On desktop, save the code as {0} and run {1}. In {2}, replace the starter code with this example and press Run. A green square appears.",
+      "cn": "在桌面版中，将代码保存为 {0}，然后运行 {1}。如果使用 {2}，用这个示例替换初始代码，再点击 Run。屏幕上会出现一个绿色方块。",
+      "de": "Speichern Sie den Code auf dem Desktop als {0} und führen Sie {1} aus. Ersetzen Sie in {2} den vorgegebenen Code durch dieses Beispiel und klicken Sie auf Run. Ein grünes Quadrat erscheint.",
+      "es": "En la versión de escritorio, guarde el código como {0} y ejecute {1}. En {2}, sustituya el código inicial por este ejemplo y pulse Run. Aparecerá un cuadrado verde.",
+      "fr": "Sur ordinateur, enregistrez le code dans {0} et lancez {1}. Dans {2}, remplacez le code initial par cet exemple et cliquez sur Run. Un carré vert apparaît.",
+      "it": "Nella versione desktop, salvare il codice come {0} ed eseguire {1}. In {2}, sostituire il codice iniziale con questo esempio e premere Run. Sullo schermo appare un quadrato verde.",
+      "ja": "デスクトップ版では、コードを {0} に保存して {1} を実行します。{2} では、最初から入っているコードをこの例に置き換えて Run を押します。緑色の四角形が表示されます。",
+      "ko": "데스크톱에서는 코드를 {0}로 저장하고 {1}을 실행하세요. {2}에서는 기본 코드를 이 예제로 바꾸고 Run을 누르세요. 초록색 정사각형이 나타납니다.",
+      "pt": "No computador, salve o código como {0} e execute {1}. No {2}, substitua o código inicial por este exemplo e clique em Run. Um quadrado verde aparecerá na tela.",
+      "ru": "В настольной версии сохраните код в файле {0} и выполните команду {1}. В {2} замените начальный код этим примером и нажмите Run. На экране появится зелёный квадрат.",
+      "tr": "Masaüstünde kodu {0} adıyla kaydedip {1} komutunu çalıştırın. {2} kullanıyorsanız başlangıç kodunu bu örnekle değiştirip Run düğmesine basın. Ekranda yeşil bir kare belirir.",
+      "uk": "У настільній версії збережіть код у файлі {0} і виконайте команду {1}. У {2} замініть початковий код цим прикладом і натисніть Run. На екрані з'явиться зелений квадрат."
+    },
     "creating_program_run_desc": {
       "en": "Pass {1}, which updates the state each frame, and {2}, which draws the screen, to {0}.",
       "cn": "将每帧更新状态的 {1} 和绘制屏幕的 {2} 传给 {0}。",
@@ -707,20 +721,6 @@
       "ru": "Созданный скрипт можно выполнить с помощью команды {0}.",
       "tr": "Oluşturulan bir betik {0} komutu ile çalıştırılabilir.",
       "uk": "Створений скрипт можна виконати за допомогою команди {0}."
-    },
-    "creating_run_pyxel": {
-      "en": "It can also be run with the {0} command:",
-      "cn": "它也可以使用 {0} 命令运行：",
-      "de": "Es kann auch mit dem {0}-Befehl ausgeführt werden:",
-      "es": "También se puede ejecutar con el comando {0}:",
-      "fr": "Il peut également être exécuté avec la commande {0} :",
-      "it": "Può anche essere eseguito con il comando {0}:",
-      "ja": "{0} コマンドで実行することも可能です。",
-      "ko": "{0} 명령어로도 실행할 수 있습니다.",
-      "pt": "Ele também pode ser executado com o comando {0}.",
-      "ru": "Его также можно запустить с помощью команды {0}.",
-      "tr": "Ayrıca {0} komutu ile de çalıştırılabilir.",
-      "uk": "Його також можна запустити за допомогою команди {0}."
     },
     "creating_run_watch": {
       "en": "The {0} command reruns the program when files in the specified directory change:",
@@ -1017,18 +1017,18 @@
       "uk": "Pyxel підтримує кросплатформений формат розповсюдження, який називається файлом застосунку Pyxel."
     },
     "dist_create": {
-      "en": "Create a Pyxel application file (.pyxapp) with the {0} command:",
-      "cn": "使用 {0} 命令创建 Pyxel 应用程序文件 (.pyxapp)：",
-      "de": "Erstellen Sie eine Pyxel-Anwendungsdatei (.pyxapp) mit dem Befehl {0}:",
-      "es": "Cree un archivo de aplicación Pyxel (.pyxapp) con el comando {0}:",
-      "fr": "Créez un fichier d'application Pyxel (.pyxapp) avec la commande {0} :",
-      "it": "Creare un file dell'applicazione Pyxel (.pyxapp) con il comando {0}:",
-      "ja": "Pyxel アプリケーションファイル (.pyxapp) は、{0} コマンドで作成します。",
-      "ko": "Pyxel 애플리케이션 파일(.pyxapp)은 {0} 명령어로 생성하세요.",
-      "pt": "Crie um arquivo de aplicativo Pyxel (.pyxapp) com o comando {0}.",
-      "ru": "Создайте файл приложения Pyxel (.pyxapp) с помощью команды {0}.",
-      "tr": "Bir Pyxel uygulama dosyası (.pyxapp) {0} komutu kullanılarak oluşturulur.",
-      "uk": "Створіть файл застосунку Pyxel (.pyxapp) за допомогою команди {0}."
+      "en": "If your application is in the {0} folder, run this command from its parent directory. It creates {1} there.",
+      "cn": "如果应用在 {0} 文件夹中，在该文件夹的上一级目录运行以下命令。命令会在当前目录创建 {1}。",
+      "de": "Wenn Ihre Anwendung im Ordner {0} liegt, führen Sie den folgenden Befehl im übergeordneten Verzeichnis aus. Dort wird {1} erstellt.",
+      "es": "Si su aplicación está en la carpeta {0}, ejecute el siguiente comando desde el directorio que la contiene. Allí se creará {1}.",
+      "fr": "Si votre application se trouve dans le dossier {0}, exécutez la commande suivante depuis le répertoire parent. Le fichier {1} y sera créé.",
+      "it": "Se l'applicazione si trova nella cartella {0}, eseguire il comando seguente dalla directory che la contiene. Il file {1} verrà creato in quella directory.",
+      "ja": "アプリケーションが {0} フォルダにある場合は、その親ディレクトリで次のコマンドを実行します。同じディレクトリに {1} が作成されます。",
+      "ko": "애플리케이션이 {0} 폴더에 있다면 그 상위 디렉터리에서 다음 명령을 실행하세요. 해당 디렉터리에 {1} 파일이 생성됩니다.",
+      "pt": "Se o aplicativo estiver na pasta {0}, execute o comando a seguir no diretório que contém essa pasta. O arquivo {1} será criado nesse diretório.",
+      "ru": "Если приложение находится в папке {0}, выполните следующую команду из родительского каталога. В нём будет создан файл {1}.",
+      "tr": "Uygulamanız {0} klasöründeyse aşağıdaki komutu bir üst dizinde çalıştırın. {1} dosyası bu dizinde oluşturulur.",
+      "uk": "Якщо застосунок розташований у папці {0}, виконайте наступну команду з батьківського каталогу. У ньому буде створено файл {1}."
     },
     "dist_include": {
       "en": "To include resources or additional modules, place them in {0}. When collecting files from the application directory, {1} excludes files with the {2} or {3} extension, hidden files and directories, and {4} directories.",

@@ -2,11 +2,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { test, expect } = require("@playwright/test");
 
-const project = fs.readFileSync(
-  path.resolve(__dirname, "../../../python/pyproject.toml"),
+const settings = fs.readFileSync(
+  path.resolve(__dirname, "../../../crates/pyxel-core/src/settings.rs"),
   "utf8",
 );
-const version = project.match(/^version = "([^"]+)"/m)[1];
+const version = settings.match(/^pub const VERSION: &str = "([^"]+)";$/m)[1];
 
 test.use({ serviceWorkers: "block" });
 
@@ -80,6 +80,11 @@ pyxel.run(lambda: None, lambda: pyxel.cls(3))`;
   };
   await reset(game);
   await expectFrames();
+  expect(
+    await page.evaluate(() =>
+      window.pyxelContext.pyodide.runPython("pyxel.VERSION"),
+    ),
+  ).toBe(version);
   await reset(noInit);
   await expect
     .poll(() => page.evaluate(() => window.runtimeExecutions))

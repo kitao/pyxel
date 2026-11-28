@@ -40,9 +40,9 @@ fn init(
 
     let locals = PyDict::new(py);
     locals.set_item("os", &os_mod)?;
-    locals.set_item("inspect", py.import("inspect")?)?;
+    locals.set_item("sys", &sys)?;
     py.run(
-        c"os.chdir(os.path.dirname(inspect.stack()[1].filename) or \".\")",
+        c"os.chdir(os.path.dirname(sys._getframe(1).f_code.co_filename) or \".\")",
         None,
         Some(&locals),
     )?;

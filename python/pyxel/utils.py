@@ -9,11 +9,15 @@ _SYSTEM = "system"
 _LOCAL = "local"
 
 
-def list_imported_modules(filename: str) -> dict[str, list[str]]:
+def list_imported_modules(
+    filename: str, *, app_dir: Path | None = None
+) -> dict[str, list[str]]:
     imports: dict[str, set[str]] = {_SYSTEM: set(), _LOCAL: set()}
-    checked_files: set[str] = set()
+    checked_files: set[Path] = set()
     root_dir = str(Path(filename).parent)
-    _list_imported_modules(imports, filename, checked_files, root_dir)
+    if app_dir is not None:
+        app_dir = app_dir.resolve()
+    _list_imported_modules(imports, filename, checked_files, root_dir, app_dir)
     return {
         _SYSTEM: sorted(imports[_SYSTEM]),
         _LOCAL: sorted(imports[_LOCAL]),
@@ -57,15 +61,20 @@ def _normalize_python_source_encoding(text: str) -> str:
 def _list_imported_modules(
     imports: dict[str, set[str]],
     filename: str,
-    checked_files: set[str],
+    checked_files: set[Path],
     root_dir: str,
+    app_dir: Path | None,
 ) -> None:
-    # Keep import paths lexical; resolve only the visitation identity.
-    resolved_filename = str(Path(filename).resolve())
-    if resolved_filename in checked_files:
+    # Keep import paths lexical while checking file identity and the archive boundary.
+    resolved_path = Path(filename).resolve()
+    if resolved_path in checked_files:
         return
-    checked_files.add(resolved_filename)
+    checked_files.add(resolved_path)
 
+    # A single leading dot stays in the current directory.
+    max_level = (
+        len(resolved_path.relative_to(app_dir).parts) if app_dir is not None else None
+    )
     dir_path = str(Path(filename).parent)
     try:
         root = ast.parse(Path(filename).read_bytes())
@@ -76,10 +85,18 @@ def _list_imported_modules(
         if isinstance(node, ast.Import):
             for alias in node.names:
                 _track_module(
-                    imports, checked_files, dir_path, 0, alias.name, root_dir=root_dir
+                    imports,
+                    checked_files,
+                    dir_path,
+                    0,
+                    alias.name,
+                    root_dir=root_dir,
+                    app_dir=app_dir,
                 )
 
         elif isinstance(node, ast.ImportFrom):
+            if max_level is not None and node.level > max_level:
+                continue
             if node.module:
                 is_local = _track_module(
                     imports,
@@ -88,6 +105,7 @@ def _list_imported_modules(
                     node.level,
                     node.module,
                     root_dir=root_dir,
+                    app_dir=app_dir,
                 )
 
                 # Track from-import targets that resolve as modules.
@@ -100,6 +118,7 @@ def _list_imported_modules(
                         node.level,
                         target,
                         root_dir=root_dir,
+                        app_dir=app_dir,
                         allow_system=(
                             node.level == 0
                             and not is_local
@@ -116,17 +135,19 @@ def _list_imported_modules(
                         node.level,
                         alias.name,
                         root_dir=root_dir,
+                        app_dir=app_dir,
                     )
 
 
 def _track_module(
     imports: dict[str, set[str]],
-    checked_files: set[str],
+    checked_files: set[Path],
     dir_path: str,
     level: int,
     name: str,
     *,
     root_dir: str,
+    app_dir: Path | None,
     allow_system: bool = True,
 ) -> bool:
     # Absolute imports use the startup directory throughout package recursion.
@@ -147,7 +168,7 @@ def _track_module(
 
         for filename in module_files:
             imports[_LOCAL].add(str(Path(filename).absolute()))
-            _list_imported_modules(imports, filename, checked_files, root_dir)
+            _list_imported_modules(imports, filename, checked_files, root_dir, app_dir)
         return True
     elif allow_system and level == 0:
         # Only absolute imports can resolve as system modules.

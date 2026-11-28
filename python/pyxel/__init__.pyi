@@ -1379,7 +1379,7 @@ def reset_screencast() -> None:
     """Reset the screen recording buffer."""
 
 def user_data_dir(vendor_name: str, app_name: str) -> str:
-    """Return the user data directory created based on vendor_name and app_name. If the directory does not exist, it will be created automatically.
+    """Return the path to the data directory for vendor_name and app_name, creating it if needed. In the web version, reloading the page clears files saved here.
 
     Args:
         vendor_name: Vendor name

@@ -112,6 +112,20 @@ class CanvasPanel(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Public methods
+
+    def paste_at_focus(self, source):
+        canvas = self.canvas_var
+        x, y = self.focus_x_var * 8, self.focus_y_var * 8
+        width = min(source.width, canvas.width - x)
+        height = min(source.height, canvas.height - y)
+        if width <= 0 or height <= 0:
+            return
+
+        self._add_pre_history(width=width, height=height)
+        canvas.blt(x, y, source, 0, 0, width, height)
+        self._add_post_history()
+
     # Helpers
 
     @staticmethod
@@ -132,48 +146,38 @@ class CanvasPanel(Widget):
         h = self._select_y2 - self._select_y1 + 1
         return x, y, w, h
 
-    def _add_pre_history(self, *, bank_copy=False):
+    def _add_pre_history(self, *, bank_copy=False, width=16, height=16):
         data = {}
         self._history_data = data
 
+        if self._is_tilemap_mode:
+            data["tilemap_index"] = self.tilemap_index_var
+        else:
+            data["image_index"] = self.image_index_var
+
         if bank_copy:
             if self._is_tilemap_mode:
-                data["tilemap_index"] = self.tilemap_index_var
                 data["old_imgsrc"] = self.canvas_var.imgsrc
-            else:
-                data["image_index"] = self.image_index_var
             data["old_data"] = self.canvas_var.get_slice(0, 0, 256, 256)
         else:
-            if self._is_tilemap_mode:
-                data["tilemap_index"] = self.tilemap_index_var
-            else:
-                data["image_index"] = self.image_index_var
             data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
             data["old_canvas"] = self.canvas_var.get_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
+                self.focus_x_var * 8, self.focus_y_var * 8, width, height
             )
 
-    def _add_post_history(self, *, bank_copy=False):
+    def _add_post_history(self):
         data = self._history_data
-
-        if bank_copy:
-            data["new_data"] = self.canvas_var.get_slice(0, 0, 256, 256)
-            if self._is_tilemap_mode:
-                data["new_imgsrc"] = self.canvas_var.imgsrc
-                changed = (
-                    data["new_data"] != data["old_data"]
-                    or data["new_imgsrc"] != data["old_imgsrc"]
-                )
-            else:
-                changed = data["new_data"] != data["old_data"]
-            if changed:
-                self.add_history(data)
-        else:
-            data["new_canvas"] = self.canvas_var.get_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
-            )
-            if data["new_canvas"] != data["old_canvas"]:
-                self.add_history(data)
+        self._history_data = None
+        key = "canvas" if "focus_pos" in data else "data"
+        x, y = data.get("focus_pos", (0, 0))
+        old = data[f"old_{key}"]
+        new = self.canvas_var.get_slice(x * 8, y * 8, old.width, old.height)
+        data[f"new_{key}"] = new
+        if "old_imgsrc" in data:
+            data["new_imgsrc"] = self.canvas_var.imgsrc
+        pixels_changed = bytes(old.data_ptr()) != bytes(new.data_ptr())
+        if pixels_changed or data.get("old_imgsrc") != data.get("new_imgsrc"):
+            self.add_history(data)
 
     def _reset_edit_canvas(self):
         self._edit_canvas.blt(
@@ -365,11 +369,11 @@ class CanvasPanel(Widget):
             self._drag_offset_y -= dy
 
             if abs(self._drag_offset_x) >= 16:
-                offset = self._drag_offset_x // 16
+                offset = int(self._drag_offset_x / 16)
                 self.focus_x_var += offset
                 self._drag_offset_x -= offset * 16
             if abs(self._drag_offset_y) >= 16:
-                offset = self._drag_offset_y // 16
+                offset = int(self._drag_offset_y / 16)
                 self.focus_y_var += offset
                 self._drag_offset_y -= offset * 16
 
@@ -420,7 +424,7 @@ class CanvasPanel(Widget):
                     pyxel.tilemaps[self.tilemap_index_var].rect(0, 0, 256, 256, (0, 0))
                 else:
                     pyxel.images[self.image_index_var].rect(0, 0, 256, 256, 0)
-                self._add_post_history(bank_copy=True)
+                self._add_post_history()
 
             if pyxel.btnp(pyxel.KEY_V) and self._bank_buffer is not None:
                 self._add_pre_history(bank_copy=True)
@@ -433,7 +437,7 @@ class CanvasPanel(Widget):
                     pyxel.images[self.image_index_var].set_slice(
                         0, 0, self._bank_buffer["data"]
                     )
-                self._add_post_history(bank_copy=True)
+                self._add_post_history()
 
         # Copy/cut/paste canvas (Ctrl/Cmd without Shift)
         if (
@@ -458,16 +462,14 @@ class CanvasPanel(Widget):
 
             if self._canvas_buffer is not None and pyxel.btnp(pyxel.KEY_V):
                 self._add_pre_history()
-                width = len(self._canvas_buffer[0])
-                height = len(self._canvas_buffer)
-                width -= max(self._select_x1 + width - 16, 0)
-                height -= max(self._select_y1 + height - 16, 0)
-                clipped = [row[:width] for row in self._canvas_buffer[:height]]
-
-                self.canvas_var.set_slice(
+                self.canvas_var.blt(
                     self.focus_x_var * 8 + self._select_x1,
                     self.focus_y_var * 8 + self._select_y1,
-                    clipped,
+                    self._canvas_buffer,
+                    0,
+                    0,
+                    min(self._canvas_buffer.width, 16 - self._select_x1),
+                    min(self._canvas_buffer.height, 16 - self._select_y1),
                 )
                 self._add_post_history()
 

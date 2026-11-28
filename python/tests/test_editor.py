@@ -573,7 +573,7 @@ app._save_button.trigger_event("press")
 assert app._editor is editor
 assert pyxel.images[0].pget(0, 0) == 7
 editor.undo()
-assert pyxel.images[0].pget(0, 0) == old_canvas[0][0]
+assert pyxel.images[0].pget(0, 0) == old_canvas.pget(0, 0)
 editor.redo()
 assert pyxel.images[0].pget(0, 0) == 7
 app.update_all()
@@ -718,7 +718,7 @@ assert canvas.pget(8, 8) == expected
 assert Widget._mouse_capture_info.widget is None
 assert editor.can_redo if action == "undo" else editor.can_undo
 if action == "copy":
-    assert panel._bank_buffer["data"][8][8] == ink
+    assert panel._bank_buffer["data"].pget(8, 8) == ink
 
 # Releasing the original mouse gesture must not write into the new target.
 for key in (key, pyxel.KEY_CTRL, pyxel.KEY_SHIFT, pyxel.MOUSE_BUTTON_LEFT):
@@ -858,6 +858,18 @@ pyxel.flip()
 app.update_all()
 assert panel.canvas_var.pget(1, 1) == expected
 assert editor._history_list == history
+if kind in ("png", "tmx"):
+    stroke = (1, 0) if kind == "tmx" else 1
+    empty = (0, 0) if kind == "tmx" else 0
+    editor.undo()
+    assert panel.canvas_var.pget(1, 1) == stroke
+    assert panel.canvas_var.pget(0, 0) == empty
+    editor.undo()
+    assert panel.canvas_var.pget(1, 1) == empty
+    editor.redo()
+    editor.redo()
+    assert panel.canvas_var.pget(1, 1) == expected
+    assert panel.canvas_var.pget(0, 0) == expected
 """
         result = subprocess.run(
             [sys.executable, "-c", code, kind, str(tmp_path)],
@@ -867,6 +879,75 @@ assert editor._history_list == history
             check=False,
         )
         assert result.returncode == 0, result.stderr
+
+    @pytest.mark.parametrize("kind", ["png", "tmx"])
+    def test_drop_history_restores_clipped_region_and_bank(
+        self, kind, tmp_path, monkeypatch
+    ):
+        path = tmp_path / f"import.{kind}"
+        colors = list(pyxel.colors)
+        user_colors = [0, 0xFF0000, 0x0057AC]
+        monkeypatch.setattr(pyxel, "num_user_colors", len(user_colors), raising=False)
+        if kind == "png":
+            banks, bank_var = pyxel.images, "image_index_var"
+            canvas, editor_type = pyxel.Image(30, 27), ImageEditor
+            empty, old, imported = 0, 1, 2
+        else:
+            banks, bank_var = pyxel.tilemaps, "tilemap_index_var"
+            canvas, editor_type = pyxel.Tilemap(30, 27, 1), TilemapEditor
+            empty, old, imported = (0, 0), (1, 0), (300, 513)
+        original = banks[0]
+        try:
+            if kind == "png":
+                pyxel.colors[:] = user_colors
+                image = pyxel.Image(25, 22)
+                image.cls(imported)
+                image.save(str(path), 1)
+            else:
+                gid = 1 + imported[1] * 512 + imported[0]
+                cells = ",".join([str(gid)] * (25 * 22))
+                path.write_text(
+                    '<map tilewidth="8" tileheight="8"><tileset firstgid="1" columns="512"/>'
+                    f'<layer width="25" height="22"><data encoding="csv">{cells}</data></layer></map>'
+                )
+            pyxel.colors[:] = colors + user_colors
+            banks[0] = canvas
+            parent = Widget(None, 0, 0, 240, 180)
+            parent.new_var("help_message_var", "")
+            editor = editor_type(parent)
+            editor.focus_x_var = editor.focus_y_var = 1
+            canvas.pset(8, 8, old)
+            editor.trigger_event("drop", str(path))
+            assert canvas.pget(8, 8) == canvas.pget(29, 26) == imported
+            assert canvas.pget(7, 8) == empty
+            assert list(pyxel.colors) == colors + user_colors
+
+            editor.trigger_event(
+                "drop", str(path)
+            )  # Importing identical data is a no-op.
+            setattr(editor, bank_var, 1)
+            editor.focus_x_var = editor.focus_y_var = 0
+            editor.undo()
+            assert getattr(editor, bank_var) == 0
+            assert (editor.focus_x_var, editor.focus_y_var) == (1, 1)
+            assert canvas.pget(8, 8) == old
+            assert canvas.pget(29, 26) == empty
+            assert not editor.can_undo
+
+            editor.focus_x_var = editor.focus_y_var = 4
+            editor.trigger_event("drop", str(path))  # Entirely outside this small bank.
+            editor.trigger_event("drop", str(tmp_path / "missing"))
+            assert list(pyxel.colors) == colors + user_colors
+            setattr(editor, bank_var, 1)
+            editor.redo()
+            assert getattr(editor, bank_var) == 0
+            assert (editor.focus_x_var, editor.focus_y_var) == (1, 1)
+            assert canvas.pget(8, 8) == canvas.pget(29, 26) == imported
+            if kind == "tmx":
+                assert canvas.imgsrc == 1
+        finally:
+            banks[0] = original
+            pyxel.colors[:] = colors
 
     def test_resource_drop_preserves_editor_palette(self, tmp_path):
         code = """
@@ -1277,6 +1358,37 @@ class TestScrollBar:
 
 
 class TestImageViewer:
+    @pytest.mark.parametrize("bank_view", [False, True])
+    @pytest.mark.parametrize("split", [False, True])
+    def test_right_drag_pans_by_whole_grid_steps(self, monkeypatch, bank_view, split):
+        monkeypatch.setattr(pyxel, "num_user_colors", 16, raising=False)
+        parent = Widget(None, 0, 0, 240, 180)
+        parent.new_var("help_message_var", "")
+        editor = ImageEditor(parent)
+        if bank_view:
+            view, grid = editor._image_viewer, 8
+            view.viewport_x_var = view.viewport_y_var = 8
+        else:
+            view, grid = editor._canvas_panel, 16
+            view.focus_x_var = view.focus_y_var = 8
+
+        button = pyxel.MOUSE_BUTTON_RIGHT
+        view.trigger_event("mouse_down", button, view.x + 24, view.y + 24)
+        steps = [grid, 1] if split else [grid + 1]
+        for direction, expected in [(1, 7), (-1, 8)]:
+            for step in steps:
+                delta = step * direction
+                view.trigger_event(
+                    "mouse_drag", button, view.x + 24, view.y + 24, delta, delta
+                )
+            if bank_view:
+                assert (view.viewport_x_var, view.viewport_y_var) == (
+                    expected,
+                    expected,
+                )
+            else:
+                assert (view.focus_x_var, view.focus_y_var) == (expected, expected)
+
     @pytest.mark.parametrize("tilemap_mode", [False, True])
     def test_right_drag_keeps_the_viewport_inside_the_image(self, tilemap_mode):
         parent = Widget(None, 0, 0, 256, 192)

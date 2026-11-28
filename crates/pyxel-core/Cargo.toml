@@ -34,7 +34,7 @@ serde-xml-rs = "0.8"
 # all-codecs enables every format the Sound.pcm() loader can accept
 symphonia = { features = ["all-codecs"], version = "0.6" }
 toml = "1.0"
-# deflate is the only codec needed for .pyxapp / .pyxres
+# Pyxel resource archives need only the deflate codec.
 zip = { default-features = false, features = ["deflate"], version = "9.1" }
 
 [dev-dependencies]

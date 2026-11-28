@@ -60,8 +60,6 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        num_bubbles = len(self.bubbles)
-
         # Split a clicked bubble into smaller moving bubbles.
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             for i, b in enumerate(self.bubbles):
@@ -88,18 +86,27 @@ class App:
                     break
 
         # Advance bubbles and merge overlapping pairs.
-        for i in reversed(range(num_bubbles)):
+        for bubble in self.bubbles:
+            bubble.update()
+
+        consumed = set()
+        merged = []
+        for i in reversed(range(len(self.bubbles))):
             bi = self.bubbles[i]
-            bi.update()
+            if bi in consumed:
+                continue
 
             for j in reversed(range(i)):
                 bj = self.bubbles[j]
+                if bj in consumed:
+                    continue
                 dx = bi.x - bj.x
                 dy = bi.y - bj.y
                 total_r = bi.r + bj.r
 
                 if dx * dx + dy * dy < total_r * total_r:
-                    self.bubbles.append(
+                    consumed.update((bi, bj))
+                    merged.append(
                         Bubble(
                             (bi.x * bi.r + bj.x * bj.r) / total_r,
                             (bi.y * bi.r + bj.y * bj.r) / total_r,
@@ -109,10 +116,9 @@ class App:
                         )
                     )
 
-                    del self.bubbles[i]
-                    del self.bubbles[j]
-                    num_bubbles -= 1
                     break
+
+        self.bubbles = [b for b in self.bubbles if b not in consumed] + merged
 
     def draw(self):
         pyxel.cls(0)

@@ -105,7 +105,7 @@ impl Audio {
 
             for (i, ch) in channels.iter().enumerate() {
                 let mut channel = audio_mut!(ch);
-                channel.prepare_pcm();
+                channel.prepare_sound();
                 needs_blip |= channel.needs_blip_processing();
                 if channel.is_playing_pcm() {
                     needs_pcm = true;
@@ -449,11 +449,9 @@ mod tests {
         note_sound_with_note(0)
     }
 
-    fn silent_pcm_sound(num_samples: usize) -> RcSound {
+    fn pcm_sound(samples: Vec<i16>) -> RcSound {
         let sound = Sound::new();
-        audio_mut!(sound).pcm = Some(PcmData {
-            samples: vec![0; num_samples],
-        });
+        audio_mut!(sound).pcm = Some(PcmData { samples });
         sound
     }
 
@@ -491,13 +489,10 @@ mod tests {
 
     #[test]
     fn test_synth_to_pcm_transition_starts_at_boundary_sample() {
-        let pcm = Sound::new();
-        audio_mut!(pcm).pcm = Some(PcmData {
-            samples: vec![30_000; 256],
-        });
+        let pcm = pcm_sound(vec![30_000; 256]);
 
         // Silent PCM isolates the transition from the synthesizer's tail.
-        let baseline = render(vec![note_sound(), silent_pcm_sound(256)], 512);
+        let baseline = render(vec![note_sound(), pcm_sound(vec![0; 256])], 512);
         let samples = render(vec![note_sound(), pcm], 512);
         let pcm_start = samples
             .iter()
@@ -512,10 +507,7 @@ mod tests {
 
     #[test]
     fn test_short_pcm_transition_is_render_step_invariant() {
-        let pcm = Sound::new();
-        audio_mut!(pcm).pcm = Some(PcmData {
-            samples: vec![30_000],
-        });
+        let pcm = pcm_sound(vec![30_000]);
         let sounds = vec![note_sound(), pcm, note_sound_with_note(12)];
 
         let whole = render_in_chunks(sounds.clone(), 512, 512);
@@ -530,10 +522,38 @@ mod tests {
     }
 
     #[test]
+    fn test_looping_pcm_skips_trailing_empty_sound() {
+        let channel = Channel::new();
+        let pcm = pcm_sound(vec![1000; 23]);
+        audio_mut!(channel)
+            .play(vec![pcm, Sound::new()], None, true, false)
+            .unwrap();
+        let mut blip_buf = BlipBuf::new(128);
+        blip_buf
+            .set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64)
+            .unwrap();
+        for _ in 0..3 {
+            let mut samples = [0; 128];
+            Audio::render_samples(std::slice::from_ref(&channel), &mut blip_buf, &mut samples);
+            assert!(samples.iter().all(|&sample| sample > 0));
+        }
+    }
+
+    #[test]
+    fn test_empty_sound_between_pcm_clips_after_a_rest() {
+        let a = pcm_sound(vec![1200]);
+        let b = pcm_sound(vec![-3100, 2400, -5200, 1100]);
+        let rest = note_sound_with_note(-1);
+        let baseline = render(vec![rest.clone(), a.clone(), b.clone()], 512);
+        let actual = render(vec![rest, a, Sound::new(), b], 512);
+        assert_eq!(actual, baseline);
+    }
+
+    #[test]
     fn test_looping_empty_pcm_stops_without_hanging() {
         let channel = Channel::new();
         audio_mut!(channel)
-            .play(vec![silent_pcm_sound(0)], None, true, false)
+            .play(vec![pcm_sound(Vec::new())], None, true, false)
             .unwrap();
         let mut blip_buf = BlipBuf::new(64);
         blip_buf
@@ -551,10 +571,8 @@ mod tests {
         let channels: Vec<_> = (0..=NUM_CHANNELS)
             .map(|index| {
                 let channel = Channel::new();
-                let sound = silent_pcm_sound(64);
-                if index == NUM_CHANNELS {
-                    audio_mut!(sound).pcm.as_mut().unwrap().samples.fill(30_000);
-                }
+                let sample = if index == NUM_CHANNELS { 30_000 } else { 0 };
+                let sound = pcm_sound(vec![sample; 64]);
                 audio_mut!(channel)
                     .play(vec![sound], None, false, false)
                     .unwrap();

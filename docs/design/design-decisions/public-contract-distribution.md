@@ -55,37 +55,48 @@ behavior nor audio and graphics quality.
 
 ### Web wheel validation and installation
 
-**Decision:** Validate the selected web wheel before installing it into `wasm/`.
-Check its identity and platform tag, packaged Python sources and metadata, and
-unwanted caches and build-host paths. Install the wheel and update the web
-runtime's wheel reference before removing obsolete wheels.
+**Decision:** Validate the release wheel before installing it into `wasm/`.
+Check its identity, platform tag, packaged Python sources, and metadata. Check
+for unwanted caches, personal paths, and other machine-specific paths. Install
+the wheel and update the web runtime's wheel reference before removing obsolete
+wheels.
 
 **Reason:** A successful import can still load stale Python sources.
 [check_wasm_wheel](../../../scripts/check_wasm_wheel) compares the package with
 its source owners. The [installer](../../../scripts/install_wasm_wheel) uses
-that check before updating the artifact and its consumer, including when the
-[build target](../../../Makefile) invokes it.
+that check before updating the release wheel and the web runtime.
 Packaging exclusions prevent cache inclusion; inspecting the built artifact
 verifies that boundary.
 
 The installer uses separate replacements, not a transaction covering both files.
 A failure can leave an unreferenced new wheel, or replace a same-version wheel
 before the update of the web runtime's wheel reference fails. Source and
-metadata comparisons do not establish compiled Rust/source equivalence. Path
-remapping and `SOURCE_DATE_EPOCH` control build-host paths and timestamps; they
-do not by themselves promise byte-identical builds on every platform.
+metadata comparisons do not establish compiled Rust/source equivalence.
+Compiler flags remap source and home directory paths in compiled code. Rust
+dependency metadata can still contain the original paths. Tools that use
+`SOURCE_DATE_EPOCH` can reproduce timestamps. Byte-identical builds also depend
+on the toolchain and other build inputs.
 
 ### Web wheel retention
 
-**Decision:** Commit a web wheel only as the final artifact for its release
-tag. Keep intermediate development and audit builds out of committed history.
-Verify a retained release wheel against the source at its tag, and a development
-build against the source under test.
+**Decision:** Commit only the final web wheel for each release tag. Keep
+development and audit wheels in `dist/` and test them locally against the
+working sources.
+
+Build each new release wheel on a GitHub-hosted runner with the [WebAssembly
+workflow](../../../.github/workflows/build-wasm.yml) at the release source
+commit. Verify the build attestation against that workflow and source commit.
+Check the Rust dependency metadata for personal and other machine-specific
+paths. Add the wheel in a separate commit whose parent is the source commit.
+Keep the build inputs unchanged through the release tag and verify the wheel
+against the tagged source.
 
 **Reason:** The [site builder](../../../scripts/build_site) retrieves released
 runtimes from their tags. Repeated intermediate wheels add binary history
-without serving that release role. Local wheel installation for verification
-does not require committing its output.
+without serving that release role. Local builds keep iteration fast. Their
+dependency metadata can record personal paths such as the developer's home
+directory. The attestation identifies the workflow and source commit that
+produced the release wheel, even when a local build has the same filename.
 
 Existing applications can load wheels through published runtime URLs, including
 Git-backed CDN URLs. A change to storage or retention must account for those
@@ -102,11 +113,16 @@ remain separate operations.
 
 **Reason:** `3.0.0a1` and `3.0.0-alpha.1` represent the same release in their
 respective package systems. [update_version](../../../scripts/update_version)
-maintains that correspondence across the
-[workspace manifest](../../../crates/Cargo.toml),
-[runtime settings](../../../crates/pyxel-core/src/settings.rs),
+updates the [runtime settings](../../../crates/pyxel-core/src/settings.rs),
 [project metadata](../../../python/pyproject.toml), and
-[web runtime](../../../wasm/pyxel.js).
+[workspace manifest](../../../crates/Cargo.toml). The [web
+runtime](../../../wasm/pyxel.js) keeps pointing to the installed release wheel
+until the [installer](../../../scripts/install_wasm_wheel) replaces it. During
+that interval the runtime and wheel in `wasm/` still work together. The site
+build requires a wheel matching the new source version, so `make test` on the
+release source commit stops before the browser tests. Under the [audit
+commands](../design-audit.md#commands), the gate check and the exhaustive audit
+before a release tag both run on a candidate that includes the new wheel.
 [Release automation](../../../.github/workflows/release.yml) uses the
 `v`-prefixed tag. Literal equality across the two version syntaxes would reject
 valid prereleases. The mapping does not promise every PEP 440 form, and editing

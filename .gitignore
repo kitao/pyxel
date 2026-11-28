@@ -19,17 +19,23 @@ node_modules/
 test-results/
 
 # Cloudflare
+.dev.vars
+.dev.vars.*
 .wrangler/
 
 # Environment
 .env
+.env.*
+!.env.example
 .venv/
 
 # AI tools
 .claude/
+.codex/
 
-# Local shortcuts
+# Local examples
 /examples
+/pyxel_examples/
 
 # OS
 .DS_Store

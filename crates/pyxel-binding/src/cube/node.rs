@@ -1212,8 +1212,9 @@ impl Node {
 
         match hit {
             Some(info) => {
-                let node_index = build_py_node_index(&root_any)?;
-                Ok(Some(wrap_raycast_hit(&node_index, py, info)))
+                let py_node = iter_py_nodes(root_any.cast::<Node>()?)
+                    .find(|node| Rc::ptr_eq(&node.bind(py).borrow().inner, &info.node));
+                Ok(Some(wrap_raycast_hit(py_node, info)))
             }
             None => Ok(None),
         }
@@ -1250,7 +1251,8 @@ impl Node {
         let node_index = build_py_node_index(&root_any)?;
         let mut out: Vec<super::raycast_hit::RaycastHit> = Vec::with_capacity(infos.len());
         for info in infos {
-            out.push(wrap_raycast_hit(&node_index, py, info));
+            let py_node = find_indexed_py_node(&node_index, &info.node, py);
+            out.push(wrap_raycast_hit(py_node, info));
         }
         Ok(out)
     }
@@ -1456,22 +1458,26 @@ fn node_key(node: &pyxel::cube::RcNode) -> usize {
     Rc::as_ptr(node) as usize
 }
 
+fn iter_py_nodes<'py>(root: &Bound<'py, Node>) -> impl Iterator<Item = Py<Node>> + use<'py> {
+    let py = root.py();
+    let mut stack = vec![root.clone().unbind()];
+    std::iter::from_fn(move || {
+        let node = stack.pop()?;
+        for child in node.bind(py).borrow().children.borrow().iter().rev() {
+            stack.push(child.clone_ref(py));
+        }
+        Some(node)
+    })
+}
+
 fn build_py_node_index(root: &Bound<'_, PyAny>) -> PyResult<PyNodeIndex> {
     let py = root.py();
-    let mut index = HashMap::new();
-    let mut stack = vec![root.clone().unbind()];
-
-    while let Some(node) = stack.pop() {
-        let node_bound = node.bind(py).cast::<Node>()?;
-        let node_ref = node_bound.borrow();
-        let key = node_key(&node_ref.inner);
-        for child in node_ref.children.borrow().iter().rev() {
-            stack.push(child.clone_ref(py).into_any());
-        }
-        drop(node_ref);
-        index.insert(key, node_bound.clone().unbind());
-    }
-    Ok(index)
+    Ok(iter_py_nodes(root.cast::<Node>()?)
+        .map(|node| {
+            let key = node_key(&node.bind(py).borrow().inner);
+            (key, node)
+        })
+        .collect())
 }
 
 fn find_indexed_py_node(
@@ -1483,11 +1489,9 @@ fn find_indexed_py_node(
 }
 
 fn wrap_raycast_hit(
-    index: &PyNodeIndex,
-    py: Python<'_>,
+    py_node: Option<Py<Node>>,
     info: pyxel::cube::scene::RaycastHitInfo,
 ) -> RaycastHit {
-    let py_node = find_indexed_py_node(index, &info.node, py);
     let rch = pyxel::cube::RaycastHit::new();
     {
         let mut r = rc_mut!(&rch);

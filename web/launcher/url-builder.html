@@ -162,6 +162,12 @@
               rel="noopener noreferrer"
               class="input-link block"
             ></a>
+            <div role="status">
+              <span id="lookup-error" data-i18n="lookup_error" hidden
+                >Couldn't resolve this GitHub URL. Check the file link and press
+                Enter to retry.</span
+              >
+            </div>
           </div>
         </div>
       </section>
@@ -243,6 +249,8 @@
           document.getElementById("virtual-gamepad").checked;
         const editorScreen = document.getElementById("editor-screen").value;
         const launchLink = document.getElementById("launch-url");
+        const lookupError = document.getElementById("lookup-error");
+        lookupError.hidden = true;
         launchLink.textContent = "";
         launchLink.removeAttribute("href");
 
@@ -259,6 +267,7 @@
         try {
           resolved = await resolveGitHubBlobUrl(startupFile);
         } catch {
+          if (generation === launchBuildGeneration) lookupError.hidden = false;
           return;
         }
         if (generation !== launchBuildGeneration) return;
@@ -321,9 +330,18 @@
 
       let launchBuildGeneration = 0;
 
-      document.getElementById("startup-file").addEventListener("input", () => {
+      const startupFileInput = document.getElementById("startup-file");
+      startupFileInput.addEventListener("input", () => {
         updateOptions();
         buildLaunchUrl();
+      });
+      startupFileInput.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Enter" &&
+          !document.getElementById("lookup-error").hidden
+        ) {
+          buildLaunchUrl();
+        }
       });
       document
         .getElementById("virtual-gamepad")

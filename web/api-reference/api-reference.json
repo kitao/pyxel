@@ -49,6 +49,7 @@
       "name": "Українська"
     }
   ],
+  "module": "pyxel",
   "ui": {
     "title": {
       "en": "Pyxel API Reference",
@@ -1137,18 +1138,18 @@
           "type": "function",
           "signature": "user_data_dir(vendor_name, app_name)",
           "description": {
-            "en": "Return the user data directory created based on vendor_name and app_name. If the directory does not exist, it will be created automatically.",
-            "cn": "返回根据 vendor_name 和 app_name 生成的用户数据保存目录。如果目录不存在，则会自动创建。",
-            "de": "Gibt das Benutzerdatenverzeichnis zurück, das auf Basis von vendor_name und app_name erstellt wurde. Falls das Verzeichnis nicht existiert, wird es automatisch erstellt.",
-            "es": "Devuelve el directorio de datos de usuario creado a partir de vendor_name y app_name. Si el directorio no existe, se creará automáticamente.",
-            "fr": "Renvoie le répertoire de données utilisateur créé à partir de vendor_name et app_name. Si le répertoire n'existe pas, il sera créé automatiquement.",
-            "it": "Restituisce la directory dei dati utente creata in base a vendor_name e app_name. Se la directory non esiste, verrà creata automaticamente.",
-            "ja": "vendor_name と app_name から生成されたユーザーデータ保存用ディレクトリを返す。該当ディレクトリが存在しない場合は自動で作成される。",
-            "ko": "vendor_name과 app_name으로 생성된 사용자 데이터 저장 디렉터리를 반환합니다. 해당 디렉터리가 존재하지 않으면 자동으로 생성됩니다.",
-            "pt": "Retorna o diretório de dados do usuário criado com base em vendor_name e app_name. Se o diretório não existir, será criado automaticamente.",
-            "ru": "Возвращает каталог пользовательских данных, созданный на основе vendor_name и app_name. Если каталог не существует, он будет создан автоматически.",
-            "tr": "vendor_name ve app_name'e göre oluşturulan kullanıcı veri dizinini döndürür. Dizin mevcut değilse otomatik olarak oluşturulur.",
-            "uk": "Повертає каталог даних користувача, створений на основі vendor_name та app_name. Якщо каталог не існує, він буде створений автоматично."
+            "en": "Return the path to the data directory for vendor_name and app_name, creating it if needed. In the web version, reloading the page clears files saved here.",
+            "cn": "返回 vendor_name 和 app_name 对应的数据目录路径，目录不存在时会自动创建。在网页版中，重新加载页面会清除保存在此目录中的文件。",
+            "de": "Gibt den Pfad zum Datenverzeichnis für vendor_name und app_name zurück und legt es bei Bedarf an. In der Web-Version werden die dort gespeicherten Dateien beim Neuladen der Seite gelöscht.",
+            "es": "Devuelve la ruta del directorio de datos de vendor_name y app_name y lo crea si es necesario. En la versión web, al recargar la página se borran los archivos guardados en este directorio.",
+            "fr": "Renvoie le chemin du répertoire de données associé à vendor_name et app_name et le crée si nécessaire. Dans la version web, le rechargement de la page efface les fichiers enregistrés dans ce répertoire.",
+            "it": "Restituisce il percorso della directory dei dati per vendor_name e app_name e la crea se necessario. Nella versione web, ricaricando la pagina si cancellano i file salvati in questa directory.",
+            "ja": "vendor_name と app_name に対応するデータディレクトリのパスを返す。ディレクトリがなければ作成する。Web 版では、ページを再読み込みするとここに保存したファイルは消える。",
+            "ko": "vendor_name과 app_name에 해당하는 데이터 디렉터리의 경로를 반환합니다. 디렉터리가 없으면 생성합니다. 웹 버전에서는 페이지를 새로 고치면 이 디렉터리에 저장한 파일이 사라집니다.",
+            "pt": "Retorna o caminho do diretório de dados de vendor_name e app_name e cria o diretório se necessário. Na versão web, recarregar a página apaga os arquivos salvos nesse diretório.",
+            "ru": "Возвращает путь к каталогу данных для vendor_name и app_name и при необходимости создаёт его. В веб-версии при перезагрузке страницы файлы, сохранённые в этом каталоге, удаляются.",
+            "tr": "vendor_name ve app_name için veri dizininin yolunu döndürür ve gerekirse dizini oluşturur. Web sürümünde sayfa yeniden yüklendiğinde bu dizine kaydedilen dosyalar silinir.",
+            "uk": "Повертає шлях до каталогу даних для vendor_name і app_name та за потреби створює його. У вебверсії після перезавантаження сторінки файли, збережені в цьому каталозі, видаляються."
           },
           "params": [
             {

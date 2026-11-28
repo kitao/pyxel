@@ -143,11 +143,11 @@ class TilemapEditor(EditorBase):
     def __on_drop(self, filename):
         self._release_capture()
         try:
-            pyxel.tilemaps[self.tilemap_index_var].load(
-                self.focus_x_var * 8, self.focus_y_var * 8, filename, 0
-            )
+            tilemap = pyxel.Tilemap.from_tmx(filename, 0)
         except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
             print(f"Failed to load tilemap: {e}")
+            return
+        self._canvas_panel.paste_at_focus(tilemap)
 
     def __on_update(self):
         self._sync_image_picker()

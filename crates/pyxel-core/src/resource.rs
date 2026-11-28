@@ -224,7 +224,7 @@ impl Pyxel {
             .join(Self::sanitize_dir_name(vendor_name))
             .join(Self::sanitize_dir_name(app_name));
 
-        if !app_data_dir.exists() {
+        if !app_data_dir.is_dir() {
             let dir = app_data_dir.to_string_lossy();
             fs::create_dir_all(&app_data_dir)
                 .map_err(|_| format!("Failed to create directory '{dir}'"))?;

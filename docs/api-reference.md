@@ -156,7 +156,7 @@ Load the resource file (.pyxres). If an option is set to True, the corresponding
 
 ### `user_data_dir(vendor_name, app_name)` — function *(Advanced)*
 
-Return the user data directory created based on vendor_name and app_name. If the directory does not exist, it will be created automatically.
+Return the path to the data directory for vendor_name and app_name, creating it if needed. In the web version, reloading the page clears files saved here.
 
 **Parameters:**
 

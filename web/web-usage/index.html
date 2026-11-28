@@ -50,7 +50,10 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
+      <div
+        id="page-loading"
+        class="flex justify-center items-center py-12 text-gray-400 text-sm"
+      >
         Loading...
       </div>
     </main>
@@ -273,7 +276,7 @@ pyxel.show()
           <p class="body">${t("custom_elements_local_access").replace("{0}", chip("http://localhost:8000/test.html"))}</p>`;
 
         setDocLang(lang);
-        hljs.highlightAll();
+        window.hljs?.highlightAll();
       }
 
       function table(headers, rows) {

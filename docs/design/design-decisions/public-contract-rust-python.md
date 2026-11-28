@@ -104,10 +104,11 @@ operations. Pyxel-authored standard diagnostics use CPython's exact wording;
 PyO3's own diagnostics remain owned by PyO3. Do not intercept its errors solely
 to rewrite their presentation.
 
-The [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) tries integer conversion before floating-point conversion. The shared overload helpers
-and sequence comparisons likewise distinguish an unsupported candidate from a
-failure of the selected operation. Propagating every tentative extraction error
-would prevent those supported alternatives from being reached.
+The [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) tries
+integer conversion before floating-point conversion. The shared overload
+helpers and sequence comparisons likewise distinguish an unsupported candidate
+from a failure of the selected operation. Propagating every tentative extraction
+error would prevent those supported alternatives from being reached.
 
 **Reason:** These errors implement the Python operations offered by resource
 lists, Sound sequences, `Tone.wavetable`, and `Music.seqs`. They support normal

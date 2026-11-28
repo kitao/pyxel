@@ -45,7 +45,10 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
+      <div
+        id="page-loading"
+        class="flex justify-center items-center py-12 text-gray-400 text-sm"
+      >
         Loading...
       </div>
     </main>
@@ -103,7 +106,7 @@
             demoButton.target = "_blank";
             demoButton.rel = "noopener noreferrer";
             demoButton.className = "btn-demo";
-            demoButton.dataset.uiKey = "demo";
+            demoButton.dataset.uiKey = item.demo_label ?? "demo";
             buttons.appendChild(demoButton);
 
             if (item.code) {
@@ -112,7 +115,7 @@
               codeButton.target = "_blank";
               codeButton.rel = "noopener noreferrer";
               codeButton.className = "btn-code";
-              codeButton.dataset.uiKey = "code";
+              codeButton.dataset.uiKey = item.code_label ?? "code";
               buttons.appendChild(codeButton);
             }
 

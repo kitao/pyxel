@@ -28,8 +28,12 @@ save-export callback's recursive entry while copying resources.
 
 **Reason:** [Code Maker](../../../web/code-maker/index.html) must not run or
 export stale resource data as though the user's current edits were saved.
-The action reports a failure once and stops, keeping the project and editor
-available for retry. The copy helper propagates the failure to that owner.
+Saving in the embedded editor calls back into JavaScript before the Python
+save returns. Deferring the next Python call lets the first save return. Saving
+the resource for the copy triggers the same export callback, which would start
+another ZIP save. If the copy fails, the helper propagates the error to the
+action that requested it. Run, ZIP save, or Gist sharing reports the failure
+once and stops, keeping the project and editor available for retry.
 Picker cancellation remains silent; other file-write failures do not trigger
 an additional download. This recovery does not change `pyxel.save`'s exception
 contract or introduce a transaction across all project files.
@@ -137,17 +141,20 @@ documenting it again would reverse that removal.
 
 **Decision:** Serve the public web, documentation, runtime, and example assets
 needed by the local Showcase. Keep repository-internal paths outside those
-served roots. Replace executable CDN runtime references in page headers with
-the local runtime; preserve instructional examples in page bodies.
+served roots. For local wheel testing, serve only the chosen development wheel
+from `dist/` at `/wasm/<wheel filename>`. Point executable CDN runtime
+references in page headers to the local runtime and preserve instructional
+examples in page bodies.
 
-**Reason:** [`make run-wasm`](../../../Makefile) builds a local runtime for
-inspection. Loading an unrelated CDN build would defeat that purpose.
-[start_showcase](../../../scripts/start_showcase) limits resolved file paths to
-the asset roots, rewrites page headers, and supplies a service worker where the
-browser supports it. Its network-accessible listener does not make it a general
-repository file server. These choices concern the showcase server; they neither
-prescribe public hosting nor guarantee service-worker support on every HTTP
-origin.
+**Reason:** A page that loads the CDN runtime can run a different build from
+the one being tested locally. [start_showcase](../../../scripts/start_showcase)
+serves the local runtime with its installed wheel by default. When
+[`make run-wasm`](../../../Makefile) supplies a development wheel, the server
+rewrites the wheel reference in the served `pyxel.js` and leaves the file on
+disk intact. Over the local network the server serves its public assets and,
+when specified, one development wheel from `dist/`. These choices apply to the
+local Showcase server and leave public hosting independent. The server supplies
+a service worker on supported origins.
 
 Service-worker registration is optional. Its existing warning handles both a
 synchronous throw and a rejected registration promise; neither reaches the

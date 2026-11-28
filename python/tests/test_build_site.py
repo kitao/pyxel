@@ -245,7 +245,17 @@ def test_previous_release_cannot_change_or_disappear(builder, tmp_path):
         builder.verify_releases(tmp_path / "new", tmp_path / "old")
 
 
-PREVIOUS_BUILD = {"_headers": "previous headers", "pyxel/index.html": "previous site"}
+PREVIOUS_BUILD = {"_headers": "/pyxel*\n", "pyxel/index.html": "previous site"}
+
+
+def test_external_site_with_the_same_top_level_names_is_preserved(builder, tmp_path):
+    (tmp_path / "pyxel").mkdir()
+    (tmp_path / "pyxel/index.html").write_text("personal site")
+    (tmp_path / "_headers").write_text("/*\n  Cache-Control: no-cache\n")
+
+    with pytest.raises(ValueError, match="previous site build"):
+        builder.build_site(tmp_path, ["not-a-tag"])
+    assert (tmp_path / "pyxel/index.html").read_text() == "personal site"
 
 
 @pytest.mark.parametrize(
@@ -253,6 +263,7 @@ PREVIOUS_BUILD = {"_headers": "previous headers", "pyxel/index.html": "previous 
     [
         pytest.param({}, id="empty"),
         pytest.param(PREVIOUS_BUILD, id="build"),
+        pytest.param(PREVIOUS_BUILD | {"_headers": "/pyxel/*\n"}, id="original route"),
         pytest.param(
             PREVIOUS_BUILD | {".DS_Store": "Finder"},
             id="build with every top-level file and .DS_Store",
@@ -384,13 +395,13 @@ def test_current_runtime_uses_tagged_bytes_after_release(builder, tmp_path):
     repository = tmp_path / "repository"
     runtime = repository / "wasm"
     runtime.mkdir(parents=True)
-    project = repository / "python/pyproject.toml"
-    project.parent.mkdir()
+    settings = repository / "crates/pyxel-core/src/settings.rs"
+    settings.parent.mkdir(parents=True)
     subprocess.run(["git", "init", "-q", str(repository)], check=True)
 
     def write_runtime(version, label):
         wheel = f"pyxel-{version}-cp311-abi3-pyemscripten_2026_0_wasm32.whl"
-        project.write_text(f'[project]\nversion = "{version}"\n')
+        settings.write_text(f'pub const VERSION: &str = "{version}";\n')
         (runtime / "pyxel.js").write_text(
             f'const PYXEL_WHEEL_PATH = "{wheel}";\n// {label}\n'
         )
@@ -507,3 +518,31 @@ def test_default_runtime_tags_keep_the_hosted_release_family(builder, tmp_path):
         "v3.0.0",
         "v3.0.1",
     ]
+
+
+def test_deployment_requires_the_official_release_tags(builder, tmp_path, monkeypatch):
+    official = tmp_path / "official"
+    checkout = tmp_path / "checkout"
+    subprocess.run(["git", "init", "-q", str(official)], check=True)
+    git = ["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid"]
+    for tag in ("v2.9.9", "v3.0.0", "v3.0.1"):
+        subprocess.run(
+            [*git, "-C", official, "commit", "--allow-empty", "-qm", tag], check=True
+        )
+        subprocess.run([*git, "-C", official, "tag", tag], check=True)
+    subprocess.run(["git", "clone", "-q", str(official), str(checkout)], check=True)
+    monkeypatch.setattr(builder, "REPOSITORY_URL", str(official))
+    monkeypatch.setenv("WRANGLER_COMMAND", "deploy")
+    assert builder.default_runtime_tags(checkout) == ["v2.9.9", "v3.0.0", "v3.0.1"]
+
+    git = ["git", "-C", checkout]
+    subprocess.run([*git, "tag", "v03.0.0", "v3.0.0"], check=True)
+    with pytest.raises(ValueError, match="release tags differ"):
+        builder.default_runtime_tags(checkout)
+    subprocess.run([*git, "tag", "-d", "v03.0.0"], check=True)
+    subprocess.run([*git, "tag", "-d", "v3.0.0"], check=True)
+    with pytest.raises(ValueError, match="release tags differ"):
+        builder.default_runtime_tags(checkout)
+    subprocess.run([*git, "tag", "v3.0.0", "HEAD"], check=True)
+    with pytest.raises(ValueError, match="release tags differ"):
+        builder.default_runtime_tags(checkout)

@@ -204,6 +204,20 @@
       "tr": "Müzik Düzenleyici",
       "uk": "Редактор музики"
     },
+    "lookup_error": {
+      "en": "Couldn't resolve this GitHub URL. Check the file link and press Enter to retry.",
+      "cn": "无法解析此 GitHub 网址。请检查文件链接，按 Enter 键重试。",
+      "de": "Diese GitHub-URL konnte nicht aufgelöst werden. Prüfen Sie den Dateilink und drücken Sie die Eingabetaste, um es erneut zu versuchen.",
+      "es": "No se pudo resolver esta URL de GitHub. Compruebe el enlace al archivo y pulse Intro para volver a intentarlo.",
+      "fr": "Impossible de résoudre cette URL GitHub. Vérifiez le lien du fichier et appuyez sur Entrée pour réessayer.",
+      "it": "Impossibile risolvere questo URL di GitHub. Controllare il link al file e premere Invio per riprovare.",
+      "ja": "GitHub の URL からファイルを特定できませんでした。ファイルへのリンクを確認し、Enter キーを押して再試行してください。",
+      "ko": "이 GitHub URL에서 파일을 찾을 수 없습니다. 파일 링크를 확인하고 Enter 키를 눌러 다시 시도하세요.",
+      "pt": "Não foi possível resolver esta URL do GitHub. Verifique o link do arquivo e pressione Enter para tentar novamente.",
+      "ru": "Не удалось определить файл по этой ссылке GitHub. Проверьте ссылку на файл и нажмите Enter, чтобы повторить попытку.",
+      "tr": "Bu GitHub adresindeki dosya belirlenemedi. Dosya bağlantısını kontrol edip yeniden denemek için Enter tuşuna basın.",
+      "uk": "Не вдалося визначити файл за цим посиланням GitHub. Перевірте посилання на файл і натисніть Enter, щоб спробувати ще раз."
+    },
     "label_launch_url": {
       "en": "Application Launch URL",
       "cn": "应用程序启动 URL",

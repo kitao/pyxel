@@ -200,7 +200,7 @@
           "title": "Running Examples",
           "blocks": [
             {
-              "text": "<p>To run the examples locally, enter the following command in a terminal. It creates a <code class=\"chip\">pyxel_examples</code> directory in the current directory and copies the examples into it. If a directory with that name already exists, it will be replaced, so move any edited files elsewhere first.</p>"
+              "text": "<p>This command copies the examples to <code class=\"chip\">pyxel_examples</code>. If the folder already exists, the command replaces everything in it.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -879,7 +879,7 @@
           "title": "运行示例",
           "blocks": [
             {
-              "text": "<p>要在本地运行示例，请在终端执行以下命令。该命令会在当前目录下创建 <code class=\"chip\">pyxel_examples</code>，并将示例复制到其中。如果已有同名目录，该目录会被替换，因此请先将修改过的文件移到其他位置。</p>"
+              "text": "<p>此命令将示例复制到 <code class=\"chip\">pyxel_examples</code> 文件夹。如果该文件夹已存在，其内容将被全部替换。</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -1558,7 +1558,7 @@
           "title": "Beispiele ausführen",
           "blocks": [
             {
-              "text": "<p>Um die Beispiele lokal auszuführen, geben Sie den folgenden Befehl im Terminal ein. Er erstellt im aktuellen Verzeichnis ein Verzeichnis namens <code class=\"chip\">pyxel_examples</code> und kopiert die Beispiele hinein. Ein bereits vorhandenes Verzeichnis dieses Namens wird ersetzt. Verschieben Sie daher zuvor alle bearbeiteten Dateien an einen anderen Ort.</p>"
+              "text": "<p>Dieser Befehl kopiert die Beispiele in den Ordner <code class=\"chip\">pyxel_examples</code>. Ist der Ordner bereits vorhanden, wird sein gesamter Inhalt ersetzt.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -2237,7 +2237,7 @@
           "title": "Ejecución de ejemplos",
           "blocks": [
             {
-              "text": "<p>Para ejecutar los ejemplos localmente, introduzca el siguiente comando en una terminal. Se creará el directorio <code class=\"chip\">pyxel_examples</code> en el directorio actual y se copiarán los ejemplos en él. Si ya existe un directorio con ese nombre, se sustituirá; antes de continuar, mueva a otro lugar los archivos que haya modificado.</p>"
+              "text": "<p>Este comando copia los ejemplos en la carpeta <code class=\"chip\">pyxel_examples</code>. Si la carpeta ya existe, se reemplaza todo su contenido.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -2916,7 +2916,7 @@
           "title": "Exécution des exemples",
           "blocks": [
             {
-              "text": "<p>Pour exécuter les exemples localement, saisissez la commande suivante dans un terminal. Elle crée un répertoire <code class=\"chip\">pyxel_examples</code> dans le répertoire courant et y copie les exemples. Si ce répertoire existe déjà, il sera remplacé ; déplacez donc d'abord vos fichiers modifiés vers un autre emplacement.</p>"
+              "text": "<p>Cette commande copie les exemples dans le dossier <code class=\"chip\">pyxel_examples</code>. Si ce dossier existe déjà, tout son contenu est remplacé.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -3595,7 +3595,7 @@
           "title": "Esecuzione degli esempi",
           "blocks": [
             {
-              "text": "<p>Per eseguire gli esempi in locale, immettere il seguente comando in un terminale. Il comando crea la directory <code class=\"chip\">pyxel_examples</code> nella directory corrente e vi copia gli esempi. Se esiste già una directory con questo nome, viene sostituita: spostare prima altrove gli eventuali file modificati.</p>"
+              "text": "<p>Il comando copia gli esempi nella cartella <code class=\"chip\">pyxel_examples</code>. Se la cartella esiste già, tutto il suo contenuto viene sostituito.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -4274,7 +4274,7 @@
           "title": "サンプルの実行",
           "blocks": [
             {
-              "text": "<p>ローカル環境では、ターミナルで次のコマンドを実行すると、現在のディレクトリに <code class=\"chip\">pyxel_examples</code> が作成され、その中にサンプルが展開されます。すでに同名のディレクトリがある場合は置き換えられるため、編集したファイルは先に別の場所へ移してください。</p>"
+              "text": "<p>サンプルを <code class=\"chip\">pyxel_examples</code> にコピーします。同名のフォルダーがあれば、中身をすべて置き換えます。</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -4953,7 +4953,7 @@
           "title": "예제 실행",
           "blocks": [
             {
-              "text": "<p>로컬 환경의 터미널에서 다음 명령어를 실행하면 현재 디렉터리에 <code class=\"chip\">pyxel_examples</code>가 생성되고 그 안에 예제가 복사됩니다. 같은 이름의 디렉터리가 있으면 교체되므로, 수정한 파일은 먼저 다른 위치로 옮기세요.</p>"
+              "text": "<p>예제를 <code class=\"chip\">pyxel_examples</code> 폴더에 복사합니다. 같은 이름의 폴더가 이미 있으면 그 내용을 모두 교체합니다.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -5632,7 +5632,7 @@
           "title": "Execução dos exemplos",
           "blocks": [
             {
-              "text": "<p>Para executar os exemplos localmente, digite o seguinte comando em um terminal. Ele cria o diretório <code class=\"chip\">pyxel_examples</code> no diretório atual e copia os exemplos para ele. Se já existir um diretório com esse nome, ele será substituído; antes de continuar, mova os arquivos que tiver editado para outro local.</p>"
+              "text": "<p>Este comando copia os exemplos para a pasta <code class=\"chip\">pyxel_examples</code>. Se a pasta já existir, todo o seu conteúdo será substituído.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -6311,7 +6311,7 @@
           "title": "Запуск примеров",
           "blocks": [
             {
-              "text": "<p>Чтобы запустить примеры локально, выполните следующую команду в терминале. Она создаст каталог <code class=\"chip\">pyxel_examples</code> в текущем каталоге и скопирует в него примеры. Если каталог с таким именем уже существует, он будет заменён, поэтому заранее перенесите изменённые файлы в другое место.</p>"
+              "text": "<p>Команда копирует примеры в папку <code class=\"chip\">pyxel_examples</code>. Если папка уже существует, её содержимое полностью заменяется.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -6990,7 +6990,7 @@
           "title": "Örnekleri çalıştırma",
           "blocks": [
             {
-              "text": "<p>Örnekleri yerel ortamda çalıştırmak için terminalde aşağıdaki komutu çalıştırın. Geçerli dizinde <code class=\"chip\">pyxel_examples</code> dizini oluşturulur ve örnekler buraya kopyalanır. Aynı adlı bir dizin varsa değiştirileceğinden, düzenlediğiniz dosyaları önce başka bir yere taşıyın.</p>"
+              "text": "<p>Bu komut örnekleri <code class=\"chip\">pyxel_examples</code> klasörüne kopyalar. Klasör zaten varsa tüm içeriği değiştirilir.</p>"
             },
             {
               "code": "pyxel copy_examples",
@@ -7669,7 +7669,7 @@
           "title": "Запуск прикладів",
           "blocks": [
             {
-              "text": "<p>Щоб запустити приклади локально, виконайте наведену команду в терміналі. Вона створить каталог <code class=\"chip\">pyxel_examples</code> у поточному каталозі та скопіює до нього приклади. Якщо каталог із такою назвою вже існує, його буде замінено, тому спочатку перенесіть змінені файли в інше місце.</p>"
+              "text": "<p>Команда копіює приклади до папки <code class=\"chip\">pyxel_examples</code>. Якщо папка вже існує, її вміст повністю замінюється.</p>"
             },
             {
               "code": "pyxel copy_examples",

@@ -10,7 +10,7 @@ from itertools import pairwise
 from math import cos, pi, sin
 from pathlib import Path
 
-from _image_capture import run_worker, save_gif
+from _image_capture import add_name_argument, run_worker, save_gif
 from PIL import Image
 
 _DESCRIPTION = """Generate documentation GIFs for Pyxel Cube examples c01 through c06.
@@ -458,7 +458,7 @@ def generate(name, destination):
 
 def main():
     parser = argparse.ArgumentParser(description=_DESCRIPTION)
-    parser.add_argument("examples", nargs="*", choices=tuple(SETTINGS))
+    add_name_argument(parser, "examples", SETTINGS)
     parser.add_argument("--output-dir", type=Path, default=IMAGES)
     parser.add_argument("--worker", choices=tuple(SETTINGS), help=argparse.SUPPRESS)
     args = parser.parse_args()

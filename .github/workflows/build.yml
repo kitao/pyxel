@@ -353,7 +353,15 @@ jobs:
         shell: bash
         run: |
           pip install dist/*.whl
-          python -c "import pyxel; print(f'Pyxel {pyxel.VERSION} imported successfully')"
+          python - <<'PY'
+          from importlib.metadata import version
+          import pyxel
+
+          packaged = version("pyxel")
+          if pyxel.VERSION != packaged:
+              raise SystemExit(f"Version mismatch: runtime {pyxel.VERSION}, wheel {packaged}")
+          print(f"Pyxel {packaged} imported successfully")
+          PY
 
       - name: Verify SDL2 bundle (Linux)
         if: runner.os == 'Linux'

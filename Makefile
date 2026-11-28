@@ -7,6 +7,7 @@
 # Setup once:
 #   - ./scripts/setup_venv (replaces an existing .venv directory)
 #   - npm ci --prefix web
+#   - npx --prefix web playwright install --with-deps chromium webkit
 #
 # Each new shell:
 #   - macOS/Linux: source .venv/bin/activate
@@ -22,14 +23,21 @@
 #   - Run: make run
 #
 # WASM:
-#   - Requires Emscripten 5.0.3 (the version Pyodide uses)
-#   - Each new shell before WASM commands: source the emsdk environment
+#   - Local lint, build, and run use Pyodide's Emscripten version (5.0.3).
+#     Source its emsdk environment in each new shell.
 #   - Lint: make lint-wasm
-#   - Build: make clean-wasm build-wasm
-#   - Run: make run-wasm
+#   - Build a development wheel in dist/: make build-wasm
+#   - Run the local Showcase with that build: make run-wasm
+#   - Release: run ./scripts/update_version <version>, then
+#     cargo update --workspace --manifest-path crates/Cargo.toml.
+#     Commit the version changes and lockfile, then run the build-wasm
+#     workflow on that source commit.
+#     On that clean checkout, run make setup-wasm-github RUN_ID=<Actions run ID>
+#     with gh installed. Commit the wheel directly on top of the source commit.
 #
 # Web pages:
-#   - Build: make pages
+#   - Rebuild the stylesheet: make pages
+#   - Build the site in dist/site/: ./scripts/build_site
 #   - Social image: node web/scripts/build-og.mjs
 #   - Test: npm test --prefix web (Node.js), npm run test:browser --prefix web
 #
@@ -104,13 +112,13 @@ PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
 	a=platform.architecture()[0]; \
 	print(f'{sys.implementation.name}-{v.major}.{v.minor}-{a}')")
 
-lint build test run: export PYO3_PYTHON := $(PYO3_PYTHON)
-lint build test run: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
+lint build install test run: export PYO3_PYTHON := $(PYO3_PYTHON)
+lint build install test run: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
 endif
 
 .PHONY: \
-	all clean distclean update format lint build install test run \
-	clean-wasm lint-wasm build-wasm run-wasm \
+	all clean distclean update format lint build build-wheel install test run \
+	clean-wasm lint-wasm build-wasm run-wasm setup-wasm-github \
 	pages
 
 all: build
@@ -146,21 +154,36 @@ lint:
 	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS)
 	@ruff check $(ROOT_DIR) $(PYTHON_SCRIPTS)
 
-build:
+# Share the wheel build when several goals include an installation.
+build: $(if $(filter install test run,$(MAKECMDGOALS)),install,build-wheel)
+
+build-wheel install:
+	@$(SCRIPTS_DIR)/update_version --check-build
 	@rustup component add rust-src
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_pyi_docstrings
 	@$(SCRIPTS_DIR)/generate_docs
 	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cp README.md $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); \
+	@mkdir -p "$(DIST_DIR)"
+	@set -e; wheel_dir=$$(mktemp -d "$(abspath $(DIST_DIR))/wheel-XXXXXX"); \
+		trap 'rm -rf "$$wheel_dir"' EXIT; \
+		(cd "$(PYTHON_DIR)" && \
 		RUSTFLAGS="$(RUSTFLAGS)" \
 		CFLAGS="$(CFLAGS)" \
 		CXXFLAGS="$(CXXFLAGS)" \
-		maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS)
-
-install: build
-	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
+		maturin build -o "$$wheel_dir" $(CARGO_OPTS) $(MATURIN_OPTS)); \
+		if [ "$(TARGET)" = "$(WASM_TARGET)" ]; then \
+			$(SCRIPTS_DIR)/check_wasm_wheel --dist-dir "$$wheel_dir"; \
+		fi; \
+		set -- "$$wheel_dir"/*.whl; \
+		if [ "$@" = install ] && { [ "$$#" -ne 1 ] || [ ! -f "$$1" ]; }; then \
+			echo "Expected one wheel to install" >&2; exit 1; \
+		fi; \
+		mv "$$wheel_dir"/* "$(DIST_DIR)/"; \
+		if [ "$@" = install ]; then \
+			pip3 install --force-reinstall "$(DIST_DIR)/$${1##*/}"; \
+		fi
 
 test: install
 	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
@@ -180,14 +203,13 @@ lint-wasm:
 
 build-wasm:
 	@embuilder build sdl2 --pic
-	@rm -f $(DIST_DIR)/pyxel-*-emscripten_*.whl \
-		$(DIST_DIR)/pyxel-*-pyemscripten_*.whl
 	@$(MAKE) build TARGET=$(WASM_TARGET)
-	@$(SCRIPTS_DIR)/check_wasm_wheel
-	@$(SCRIPTS_DIR)/install_wasm_wheel
 
 run-wasm: build-wasm
-	@$(SCRIPTS_DIR)/start_showcase
+	@$(SCRIPTS_DIR)/start_showcase --wheel "$$($(SCRIPTS_DIR)/check_wasm_wheel --print-path)"
+
+setup-wasm-github:
+	@$(SCRIPTS_DIR)/install_wasm_wheel --github-run "$$RUN_ID"
 
 pages:
 	@cd $(ROOT_DIR)/web && npx @tailwindcss/cli -i styles/input.css -o styles.css --minify

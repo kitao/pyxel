@@ -1,5 +1,35 @@
 # Change Log
 
+## 3.0.5
+
+- Made image and tilemap imports undoable in Pyxel Editor
+- Made editor dragging scroll the same distance at different mouse event rates
+- Fixed unrelated bubbles moving twice after a merge in the Click Game example
+- Fixed gaps and early stops when looping a sound list with empty entries
+- Sped up copying small regions within the same image or tilemap
+- Reduced scene traversal overhead when returning a single Cube raycast hit
+- Reduced copying when saving image and tilemap resources
+- Fixed user_data_dir returning a file as a save directory
+- Skipped scanning hidden and cache directories when packaging apps
+- Fixed pyxel watch restarting on imports that create files in `__pycache__`
+- Made the CLI report damaged Pyxel app archives before starting a game
+- Kept app2exe from scanning relative imports above the app directory
+- Made the outline toggle independent of shading in the Mesh and Motion example
+- Made API reference searches recognize qualified Python names
+- Added a retry for GitHub file lookups in the Web Launcher URL Builder
+- Fixed Code Maker failing to open a project stored alongside other Gist files
+- Fixed Code Maker's resource editor ignoring a project ZIP's custom palette
+- Kept files outside a Code Maker project folder from replacing its contents
+- Preserved comments and quoted text when importing Python code into Code Maker
+- Made MML Studio generate sharing QR codes in the browser
+- Labeled animation previews and book links in Pyxel Showcase
+- Made localized web pages use the browser's first supported language
+- Added a reload option when web page data fails to load
+- Clarified first runs, saving game progress, and selecting editor colors
+- Restored GitHub Actions builds and path checks for WebAssembly release wheels
+- Protected unrelated site directories when replacing a previous website build
+- Fixed documentation image generators failing on Python 3.11 with no names
+
 ## 3.0.4
 
 - Added one-pixel outlines for Cube models and groups of drawing primitives

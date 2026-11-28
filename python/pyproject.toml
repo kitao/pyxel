@@ -36,7 +36,7 @@ app2exe = ["pyinstaller>=6.22,<7"]
 
 [project.urls]
 Changelog = "https://github.com/kitao/pyxel/blob/main/CHANGELOG.md"
-Homepage = "https://github.com/kitao/pyxel"
+Homepage = "https://kitao.dev/pyxel/"
 Repository = "https://github.com/kitao/pyxel.git"
 
 [project.scripts]

@@ -106,6 +106,34 @@
       "tr": "Kod",
       "uk": "Код"
     },
+    "animation": {
+      "en": "View animation",
+      "cn": "观看动画",
+      "de": "Animation ansehen",
+      "es": "Ver animación",
+      "fr": "Voir l'animation",
+      "it": "Guarda l'animazione",
+      "ja": "アニメーションを見る",
+      "ko": "애니메이션 보기",
+      "pt": "Ver animação",
+      "ru": "Смотреть анимацию",
+      "tr": "Animasyonu izle",
+      "uk": "Переглянути анімацію"
+    },
+    "book": {
+      "en": "Book",
+      "cn": "图书",
+      "de": "Buch",
+      "es": "Libro",
+      "fr": "Livre",
+      "it": "Libro",
+      "ja": "書籍",
+      "ko": "책",
+      "pt": "Livro",
+      "ru": "Книга",
+      "tr": "Kitap",
+      "uk": "Книга"
+    },
     "details": {
       "en": "Details",
       "cn": "详情",
@@ -797,6 +825,7 @@
         {
           "file": "99_flip_animation.py",
           "demo": "https://kitao.dev/pyxel/assets/images/99_flip_animation.gif",
+          "demo_label": "animation",
           "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py",
           "description": {
             "en": "Animation with flip function (non-web platforms only)",
@@ -1015,6 +1044,7 @@
           "file": "Space Rescue",
           "demo": "apps/space-rescue.html",
           "code": "https://gihyo.jp/book/2025/978-4-297-14657-3",
+          "code_label": "book",
           "description": {
             "en": "One-key astronaut rescue game (Pyxel Official Book sample)",
             "cn": "单键宇航员救援游戏 (Pyxel 官方书籍示例)",
@@ -1048,6 +1078,7 @@
           "file": "Mega Wing",
           "demo": "apps/mega-wing.html",
           "code": "https://gihyo.jp/book/2025/978-4-297-14657-3",
+          "code_label": "book",
           "description": {
             "en": "Bullet-heavy shoot'em up (Pyxel Official Book sample)",
             "cn": "弹幕射击游戏 (Pyxel 官方书籍示例)",
@@ -1081,6 +1112,7 @@
           "file": "Cursed Caverns",
           "demo": "apps/cursed-caverns.html",
           "code": "https://gihyo.jp/book/2025/978-4-297-14657-3",
+          "code_label": "book",
           "description": {
             "en": "Trap-dodging gem-collecting platformer (Pyxel Official Book sample)",
             "cn": "躲避陷阱收集宝石的平台游戏 (Pyxel 官方书籍示例)",

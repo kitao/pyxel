@@ -115,25 +115,32 @@ test("createLaunchUrl emits only editor options for resources", () => {
 test("URL Builder retains the newest source ref and clears stale resolutions", async () => {
   const pending = [];
   const controls = Object.fromEntries(
-    ["startup-file", "virtual-gamepad", "editor-screen", "launch-url"].map(
-      (id) => [
-        id,
-        {
-          value: "",
-          checked: false,
-          addEventListener() {},
-          removeAttribute(name) {
-            delete this[name];
-          },
+    [
+      "startup-file",
+      "virtual-gamepad",
+      "editor-screen",
+      "launch-url",
+      "lookup-error",
+    ].map((id) => [
+      id,
+      {
+        value: "",
+        checked: false,
+        addEventListener(name, handler) {
+          this[name] = handler;
         },
-      ],
-    ),
+        removeAttribute(name) {
+          delete this[name];
+        },
+      },
+    ]),
   );
   const context = {
     URL,
     document: { getElementById: (id) => controls[id] },
     location: { href: "https://example.test/web/launcher/url-builder.html" },
-    resolveGitHubBlobUrl: () => new Promise((resolve) => pending.push(resolve)),
+    resolveGitHubBlobUrl: () =>
+      new Promise((resolve, reject) => pending.push({ resolve, reject })),
     initPage() {},
   };
   vm.runInNewContext(
@@ -154,7 +161,7 @@ test("URL Builder retains the newest source ref and clears stale resolutions", a
   controls["startup-file"].value =
     "https://github.com/example/game/blob/main/new.py";
   const newer = context.buildLaunchUrl();
-  pending[1](target("new"));
+  pending[1].resolve(target("new"));
   await newer;
   const newestUrl = controls["launch-url"].href;
   const url = new URL(newestUrl);
@@ -162,18 +169,33 @@ test("URL Builder retains the newest source ref and clears stale resolutions", a
   assert.equal(url.searchParams.get("ref"), "feature/physics");
   assert.equal(url.searchParams.get("sha"), target("new").sha);
 
-  pending[0](target("old"));
+  pending[0].reject(new Error("Earlier lookup failed"));
   await old;
   assert.equal(controls["launch-url"].href, newestUrl);
+  assert.equal(controls["lookup-error"].hidden, true);
 
   const stale = context.buildLaunchUrl();
   controls["startup-file"].value = "";
   await context.buildLaunchUrl();
 
-  pending[2](target("old"));
+  pending[2].resolve(target("old"));
   await stale;
   assert.equal(controls["launch-url"].href, undefined);
   assert.equal(controls["launch-url"].textContent, "");
+
+  controls["startup-file"].value =
+    "https://github.com/example/game/blob/main/new.py";
+  const failed = context.buildLaunchUrl();
+  pending[3].reject(new Error("Lookup unavailable"));
+  await failed;
+  assert.equal(controls["lookup-error"].hidden, false);
+  assert.equal(controls["launch-url"].href, undefined);
+
+  controls["startup-file"].keydown({ key: "Enter" });
+  assert.equal(controls["lookup-error"].hidden, true);
+  pending[4].resolve(target("new"));
+  await new Promise(setImmediate);
+  assert.equal(controls["launch-url"].href, newestUrl);
 });
 
 test("launcher preserves dotted archive paths and options without a ref lookup", async () => {

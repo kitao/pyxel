@@ -3,6 +3,7 @@
 # Apply language-specific typography while preserving code and link targets.
 
 import json
+import os
 import re
 import subprocess
 import unicodedata
@@ -40,12 +41,17 @@ def main():
 
 
 def _target_files():
-    listing = subprocess.run(
-        ["git", "ls-files"], cwd=ROOT_DIR, capture_output=True, text=True, check=True
-    ).stdout.splitlines()
-    for rel in listing:
+    # A hook or another checkout can supply its own Git directory and index.
+    listing = subprocess.check_output(
+        ["git", "ls-files", "-z"],
+        cwd=ROOT_DIR,
+        env={k: v for k, v in os.environ.items() if not k.upper().startswith("GIT_")},
+    )
+    for rel in os.fsdecode(listing).split("\0"):
         if _is_target(rel):
-            yield ROOT_DIR / rel
+            path = ROOT_DIR / rel
+            if path.is_file() and path.resolve() == path:
+                yield path
 
 
 def _is_target(rel):
@@ -177,8 +183,12 @@ def format_text(text, lang):
         return f"{delimiter}{len(spans) - 1}{delimiter}"
 
     text = _STRUCTURAL_SPAN.sub(protect, text)
-    text = _normalize_api_call_spacing(text)
-    text = _API_CALL_SPAN.sub(protect, text)
+    # Protect inner calls first so their enclosing calls become ordinary spans.
+    while True:
+        text = _normalize_api_call_spacing(text)
+        text, count = _API_CALL_SPAN.subn(protect, text)
+        if count == 0:
+            break
 
     text = _normalize_common(text)
     if lang in ("ja", "cn"):

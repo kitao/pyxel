@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
+import argparse
 import io
+import os
 import re
 import socket
 import sys
 import threading
 import webbrowser
+from functools import partial
 from http.client import HTTPException, HTTPSConnection
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -13,8 +16,15 @@ from urllib.parse import unquote, urlparse, urlsplit
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_ROOT_DIRS = (
-    ROOT_DIR / "docs",
-    ROOT_DIR / "web",
+    ROOT_DIR / "docs" / "images",
+    ROOT_DIR / "web" / "api-reference",
+    ROOT_DIR / "web" / "code-maker",
+    ROOT_DIR / "web" / "editor-manual",
+    ROOT_DIR / "web" / "launcher",
+    ROOT_DIR / "web" / "mml-studio",
+    ROOT_DIR / "web" / "showcase",
+    ROOT_DIR / "web" / "user-guide",
+    ROOT_DIR / "web" / "web-usage",
     ROOT_DIR / "wasm",
     ROOT_DIR / "python" / "pyxel" / "examples",
 )
@@ -61,12 +71,16 @@ INJECT_SNIPPET = """
 
 
 class Handler(SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, wheel=None, **kwargs):
+        self.wheel = wheel
         super().__init__(*args, directory=str(ROOT_DIR), **kwargs)
 
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
+
+    def list_directory(self, path):
+        self.send_error(404, "File not found")
 
     def do_GET(self):
         if self.path.startswith(SOURCE_PREFIX):
@@ -123,6 +137,21 @@ class Handler(SimpleHTTPRequestHandler):
     def send_head(self):
         parsed = urlparse(self.path)
         path = parsed.path
+        if self.wheel is not None and path == f"/wasm/{self.wheel.name}":
+            if self.wheel.resolve() != self.wheel or not self.wheel.is_file():
+                self.send_error(404, "File not found")
+                return None
+            try:
+                stream = self.wheel.open("rb")
+            except OSError:
+                self.send_error(404, "File not found")
+                return None
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Length", str(os.fstat(stream.fileno()).st_size))
+            self.end_headers()
+            return stream
+
         full_path = Path(self.translate_path(path)).resolve()
         if not _is_public_path(full_path):
             self.send_error(404, "File not found")
@@ -155,6 +184,17 @@ class Handler(SimpleHTTPRequestHandler):
                     r"https://cdn.jsdelivr.net/pyodide/\1/full/pyodide.js",
                     text,
                 )
+                if self.wheel is not None:
+                    text, count = re.subn(
+                        r'(?m)^(const PYXEL_WHEEL_PATH\s*=\s*")[^"]+(";)$',
+                        rf"\g<1>{self.wheel.name}\2",
+                        text,
+                    )
+                    if count != 1:
+                        self.send_error(
+                            500, "Expected one PYXEL_WHEEL_PATH in pyxel.js"
+                        )
+                        return None
                 content_type = "text/javascript"
             else:
                 text = _inject_html(text)
@@ -170,10 +210,23 @@ class Handler(SimpleHTTPRequestHandler):
         return super().send_head()
 
 
-def main() -> int:
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--wheel", type=Path, help="serve a development WASM wheel from dist/"
+    )
+    args = parser.parse_args(argv)
+    wheel = args.wheel.resolve() if args.wheel is not None else None
+    if wheel is not None and not (
+        wheel.parent == ROOT_DIR / "dist"
+        and re.fullmatch(r"pyxel-[\w.+-]+_wasm32\.whl", wheel.name, re.ASCII)
+        and wheel.is_file()
+    ):
+        parser.error("--wheel requires a Pyxel WASM wheel in dist/")
+
     ip = _get_ip()
     print(f"Serving HTTP on {ip} port {PORT} (http://{ip}:{PORT}/) ...")
-    server = ThreadingHTTPServer(("", PORT), Handler)
+    server = ThreadingHTTPServer(("", PORT), partial(Handler, wheel=wheel))
     threading.Timer(
         0.5, lambda: webbrowser.open(f"http://{ip}:{PORT}/web/showcase/")
     ).start()
@@ -195,6 +248,22 @@ def _get_ip() -> str:
 
 
 def _is_public_path(path: Path) -> bool:
+    if not path.is_relative_to(ROOT_DIR):
+        return False
+    relative = path.relative_to(ROOT_DIR)
+    if any(part.startswith(".") or part == "__pycache__" for part in relative.parts):
+        return False
+    if relative.parent == Path("docs") and (
+        relative.suffix == ".md" or relative.name == "pyxel.gpl"
+    ):
+        return True
+    if relative.as_posix() in {
+        "web",
+        "web/index.html",
+        "web/shared.js",
+        "web/styles.css",
+    }:
+        return True
     return any(
         path == root_dir or path.is_relative_to(root_dir)
         for root_dir in PUBLIC_ROOT_DIRS

@@ -117,13 +117,13 @@ class ImageEditor(EditorBase):
         # Load dropped images against the user sub-palette instead of system colors.
         pyxel.colors[:] = user_colors
         try:
-            pyxel.images[self.image_index_var].load(
-                self.focus_x_var * 8, self.focus_y_var * 8, filename
-            )
+            image = pyxel.Image.from_image(filename)
         except Exception as e:  # noqa: BLE001 - Native loaders raise plain Exception.
             print(f"Failed to load image: {e}")
+            return
         finally:
             pyxel.colors[:] = colors
+        self._canvas_panel.paste_at_focus(image)
 
     def __on_update(self):
         self.check_tool_button_shortcuts()

@@ -344,6 +344,20 @@
       "tr": "{0} içinde söz dizimi vurgulama ve otomatik tamamlama desteğiyle Python kodu yazın.",
       "uk": "Пишіть код Python у {0} з підсвічуванням синтаксису та автодоповненням."
     },
+    "api_reference": {
+      "en": "Pyxel API Reference",
+      "cn": "Pyxel API 参考",
+      "de": "Pyxel API-Referenz",
+      "es": "Referencia de API de Pyxel",
+      "fr": "Référence API de Pyxel",
+      "it": "Riferimento API di Pyxel",
+      "ja": "Pyxel API リファレンス",
+      "ko": "Pyxel API 레퍼런스",
+      "pt": "Referência de API do Pyxel",
+      "ru": "Справочник API Pyxel",
+      "tr": "Pyxel API Referansı",
+      "uk": "Довідник API Pyxel"
+    },
     "resource_title": {
       "en": "Resource Editor",
       "cn": "资源编辑器",
@@ -371,6 +385,20 @@
       "ru": "Используйте Pyxel Editor для редактирования изображений, тайловых карт, звуков и музыки. Имя файла ресурсов фиксировано: {0}.",
       "tr": "Görüntüleri, tilemap'leri, sesleri ve müziği düzenlemek için Pyxel Editor kullanın. Kaynak dosyasının adı {0} olarak sabittir.",
       "uk": "Використовуйте Pyxel Editor для редагування зображень, тайлових карт, звуків і музики. Ім'я файлу ресурсів фіксоване: {0}."
+    },
+    "editor_manual": {
+      "en": "Pyxel Editor Manual",
+      "cn": "Pyxel Editor 手册",
+      "de": "Pyxel Editor Handbuch",
+      "es": "Manual de Pyxel Editor",
+      "fr": "Manuel de Pyxel Editor",
+      "it": "Manuale di Pyxel Editor",
+      "ja": "Pyxel Editor マニュアル",
+      "ko": "Pyxel Editor 매뉴얼",
+      "pt": "Manual do Pyxel Editor",
+      "ru": "Руководство Pyxel Editor",
+      "tr": "Pyxel Editor Kılavuzu",
+      "uk": "Посібник Pyxel Editor"
     },
     "runtime_title": {
       "en": "Runtime Screen",

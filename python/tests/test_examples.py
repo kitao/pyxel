@@ -913,6 +913,13 @@ def step(frames=1, key=None):
         pyxel.flip()
 
 
+def idle(frames):
+    # Release the controls once. Physics uses a fixed 30 Hz step.
+    step()
+    for _ in range(1, frames):
+        app.update()
+
+
 def bodies():
     return [
         b
@@ -949,7 +956,7 @@ assert any(b.collider.size.x == 0 and b.collider.size.y > 0 for b in initial_bod
 assert all(isinstance(b.paint, pyxel.Image) for b in initial_bodies)
 initial = [b.transform.pos for b in initial_bodies]
 camera_start = app.scene.camera.transform.pos
-step(1800)
+idle(1800)
 assert all((b.transform.pos - p).length() < 2 for b, p in zip(initial_bodies, initial))
 assert any(b.transform != p for b, p in zip(paddles, paddle_start))
 assert app.scene.camera.transform.pos == camera_start
@@ -959,7 +966,7 @@ assert not app.scene.shots
 for _ in range(3):
     step(key=pyxel.KEY_R)
     standing = bodies()
-    step(120)
+    idle(120)
     assert len(standing) == len(initial_bodies)
     assert all(
         (b.transform.pos - p.pos).length() < 2 for b, p in zip(standing, initial_poses)
@@ -990,7 +997,7 @@ app.scene.pitch = 20
 app.scene.move_camera()
 aim(Vec3(240, 412.5, -130))
 step(key=pyxel.MOUSE_BUTTON_LEFT)
-step(600)
+idle(600)
 assert all((b.transform.pos - p).length() > 20 for b, p in zip(floors, initial))
 assert all(b in app.scene.children for b in standing)
 
@@ -1005,7 +1012,7 @@ aim(Vec3(-450, 570, 160))
 for _ in range(3):
     step(key=pyxel.MOUSE_BUTTON_LEFT)
     step(19)
-step(600)
+idle(600)
 assert (bridge.world_transform * Vec3(-140, 0, 0)).y < 60
 assert roller.transform.pos.y < 100
 

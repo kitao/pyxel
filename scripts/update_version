@@ -7,46 +7,28 @@ from email.parser import Parser
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-PYTHON_VERSION_REPLACEMENTS = (
-    (
-        "crates/pyxel-core/src/settings.rs",
-        r'(?m)^(pub const VERSION: &str = ")[^"]+(";)$',
-    ),
-    ("python/pyproject.toml", r'(?m)^(version = ")[^"]+(".*)$'),
-    (
-        "wasm/pyxel.js",
-        r'(?m)^(const PYXEL_WHEEL_PATH\s*=\s*"pyxel-)[^-\"]+(-cp[^\"]+";)$',
-    ),
-)
-CARGO_VERSION_REPLACEMENTS = (("crates/Cargo.toml", r'(?m)^(version = ")[^"]+(".*)$'),)
-VERSION_PATTERNS = (
-    (
-        "crates/pyxel-core/src/settings.rs",
-        r'(?m)^pub const VERSION: &str = "([^"]+)";$',
-        False,
-    ),
-    ("python/pyproject.toml", r'(?m)^version = "([^"]+)"', False),
-    ("crates/Cargo.toml", r'(?m)^version = "([^"]+)"', True),
-    (
-        "wasm/pyxel.js",
-        r'(?m)^const PYXEL_WHEEL_PATH\s*=\s*"pyxel-([^-\"]+)-cp[^\"]+";$',
-        False,
-    ),
-)
-WASM_WHEEL_PATH_PATTERN = r'(?m)^const PYXEL_WHEEL_PATH\s*=\s*"([^"]+)";$'
-WASM_VERSION_PATTERN = r'(?m)^const PYXEL_WHEEL_PATH\s*=\s*"pyxel-([^-\"]+)-cp[^\"]+";$'
+SETTINGS_PATH = "crates/pyxel-core/src/settings.rs"
+CARGO_PATH = "crates/Cargo.toml"
+PROJECT_PATH = "python/pyproject.toml"
+MANIFEST_TABLES = {PROJECT_PATH: "[project]", CARGO_PATH: "[workspace.package]"}
+SETTINGS_VERSION = re.compile(r'(?m)^pub const VERSION: &str = "([^"\n]+)";$')
+MANIFEST_VERSION = re.compile(r'(?m)^version = "([^"\n]+)"')
+WASM_WHEEL_PATH = re.compile(r'(?m)^const PYXEL_WHEEL_PATH\s*=\s*"([^"\n]+)";$')
 EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
 PRE_RELEASE_MAP = {"a": "alpha", "b": "beta", "rc": "rc"}
 
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
-    if argv and argv[0] == "--check":
+    if argv and argv[0] in ("--check", "--check-build"):
         if len(argv) > 2:
-            print("Usage: update_version --check [v<version>]", file=sys.stderr)
+            print(f"Usage: update_version {argv[0]} [v<version>]", file=sys.stderr)
             return 1
         try:
-            errors = version_errors(tag=argv[1] if len(argv) == 2 else None)
+            errors = version_errors(
+                tag=argv[1] if len(argv) == 2 else None,
+                build_only=argv[0] == "--check-build",
+            )
         except ValueError as error:
             print(f"error: {error}", file=sys.stderr)
             return 1
@@ -72,62 +54,65 @@ def main(argv: list[str] | None = None) -> int:
 def update_version(version: str, root_dir: Path = ROOT_DIR) -> None:
     cargo_version = pep440_to_semver(version)
     updates = []
-    for relative_path, pattern in PYTHON_VERSION_REPLACEMENTS:
+    for relative_path in (SETTINGS_PATH, *MANIFEST_TABLES):
         path = root_dir / relative_path
-        updates.append((path, replaced_text(path, pattern, version)))
-    for relative_path, pattern in CARGO_VERSION_REPLACEMENTS:
-        path = root_dir / relative_path
-        updates.append((path, replaced_text(path, pattern, cargo_version)))
+        text = path.read_text(encoding="utf-8")
+        field = _version_field(relative_path, text)
+        value = cargo_version if relative_path == CARGO_PATH else version
+        updates.append((path, text[: field.start(1)] + value + text[field.end(1) :]))
 
     for path, text in updates:
         path.write_text(text, encoding="utf-8")
 
 
-def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[str]:
-    if tag is None:
-        expected = _read_version(
-            root_dir,
-            "python/pyproject.toml",
-            r'(?m)^version = "([^"]+)"',
-        )
-    else:
+def version_errors(
+    root_dir: Path = ROOT_DIR, tag: str | None = None, *, build_only: bool = False
+) -> list[str]:
+    if tag is not None:
         tag = tag.removeprefix("refs/tags/")
         if not tag.startswith("v") or len(tag) == 1:
             return [f"tag: expected v<version>, found {tag}"]
-        expected = tag[1:]
 
+    versions = {
+        path: _version_field(path, (root_dir / path).read_text(encoding="utf-8"))[1]
+        for path in (SETTINGS_PATH, *MANIFEST_TABLES)
+    }
+    expected = tag[1:] if tag is not None else versions[SETTINGS_PATH]
     errors = []
-    for relative_path, pattern, uses_cargo_version in VERSION_PATTERNS:
-        actual = _read_version(root_dir, relative_path, pattern)
+    for relative_path, actual in versions.items():
         surface_expected = (
-            pep440_to_semver(expected) if uses_cargo_version else expected
+            pep440_to_semver(expected) if relative_path == CARGO_PATH else expected
         )
         if actual != surface_expected:
             errors.append(
                 f"{relative_path}: expected {surface_expected}, found {actual}"
             )
 
-    wheel_name = _read_version(
-        root_dir,
-        "wasm/pyxel.js",
-        WASM_WHEEL_PATH_PATTERN,
-    )
-    wasm_version = _read_version(
-        root_dir,
-        "wasm/pyxel.js",
-        WASM_VERSION_PATTERN,
-    )
-    expected_wheel_name = f"pyxel-{wasm_version}-{EXPECTED_WHEEL_TAG}.whl"
-    if wheel_name != expected_wheel_name:
+    if build_only:
+        return errors
+
+    runtime = (root_dir / "wasm/pyxel.js").read_text(encoding="utf-8")
+    reference = WASM_WHEEL_PATH.search(runtime)
+    if reference is None:
+        raise ValueError("wheel path not found in wasm/pyxel.js")
+    wheel_name = reference[1]
+    match = re.fullmatch(rf"pyxel-([a-z0-9.+]+)-{EXPECTED_WHEEL_TAG}\.whl", wheel_name)
+    if match is None:
+        expected_wheel_name = f"pyxel-{expected}-{EXPECTED_WHEEL_TAG}.whl"
         errors.append(
             f"wasm/pyxel.js: expected wheel {expected_wheel_name}, found {wheel_name}"
         )
-
-    wheel_path = root_dir / "wasm" / wheel_name
-    if not wheel_path.is_file():
-        errors.append(f"wasm/pyxel.js: referenced wheel not found: wasm/{wheel_name}")
     else:
-        errors.extend(_wheel_tag_errors(wheel_path, wasm_version))
+        wasm_version = match.group(1)
+        if wasm_version != expected:
+            errors.append(f"wasm/pyxel.js: expected {expected}, found {wasm_version}")
+        wheel_path = root_dir / "wasm" / wheel_name
+        if wheel_path.is_file():
+            errors.extend(_wheel_tag_errors(wheel_path, wasm_version))
+        else:
+            errors.append(
+                f"wasm/pyxel.js: referenced wheel not found: wasm/{wheel_name}"
+            )
 
     wheel_paths = sorted((root_dir / "wasm").glob("pyxel-*.whl"))
     if len(wheel_paths) != 1:
@@ -166,25 +151,21 @@ def pep440_to_semver(version: str) -> str:
     return version
 
 
-def replaced_text(path: Path, pattern: str, version: str) -> str:
-    text = path.read_text(encoding="utf-8")
-    new_text, count = re.subn(
-        pattern,
-        lambda match: f"{match.group(1)}{version}{match.group(2)}",
-        text,
-        count=1,
-    )
-    if count != 1:
-        raise ValueError(f"version pattern not found in {path}")
-    return new_text
-
-
-def _read_version(root_dir: Path, relative_path: str, pattern: str) -> str:
-    text = (root_dir / relative_path).read_text(encoding="utf-8")
-    match = re.search(pattern, text)
+def _version_field(relative_path: str, text: str) -> re.Match:
+    if relative_path == SETTINGS_PATH:
+        match = SETTINGS_VERSION.search(text)
+    else:
+        # A dependency or tool table can declare its own version.
+        table = re.escape(MANIFEST_TABLES[relative_path])
+        header = re.search(rf"(?m)^{table}[ \t]*(?:#.*)?$", text)
+        match = None
+        if header:
+            next_table = text.find("\n[", header.end())
+            end = len(text) if next_table == -1 else next_table
+            match = MANIFEST_VERSION.search(text, header.end(), end)
     if match is None:
         raise ValueError(f"version pattern not found in {relative_path}")
-    return match.group(1)
+    return match
 
 
 def _wheel_tag_errors(wheel_path: Path, version: str) -> list[str]:

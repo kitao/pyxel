@@ -84,18 +84,17 @@ pub fn add_file_extension(filename: &str, ext: &str) -> String {
 
 // Shorten repeated trailing values/rows; expansion repeats the final entry.
 
-pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
+fn compress_vec<T: PartialEq>(vec: &[T]) -> &[T] {
     assert!(!vec.is_empty());
     let last = vec.last().unwrap();
     let new_len = vec.iter().rposition(|v| v != last).map_or(1, |i| i + 2);
-    vec[..new_len].to_vec()
+    &vec[..new_len]
 }
 
 pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
-    assert!(!vec.is_empty());
     compress_vec(vec)
         .iter()
-        .map(|inner_vec| compress_vec(inner_vec))
+        .map(|inner_vec| compress_vec(inner_vec).to_vec())
         .collect()
 }
 

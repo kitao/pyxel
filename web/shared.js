@@ -243,29 +243,38 @@ const waitForPyxelReady = (
   })();
 };
 
-const initPage = (jsonFile, buildFn) => {
-  fetch(jsonFile)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${jsonFile}: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((json) => {
-      data = json;
-      lang = detectLang(data.languages);
-      buildFn();
+const initPage = async (jsonFile, buildFn) => {
+  try {
+    const response = await fetch(jsonFile);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${jsonFile}: ${response.status}`);
+    }
+    data = await response.json();
+  } catch (error) {
+    console.error("Failed to load data:", error);
+    const status =
+      document.getElementById("page-loading") || document.createElement("p");
+    const reload = document.createElement("button");
+    reload.type = "button";
+    reload.className = "btn-chip";
+    reload.textContent = "Reload page";
+    reload.addEventListener("click", () => location.reload());
+    status.setAttribute("role", "alert");
+    status.replaceChildren("Page data could not be loaded. ", reload);
+    if (!status.isConnected) document.querySelector("main").prepend(status);
+    return;
+  }
 
-      const anchor = document.location?.hash.slice(1);
-      if (anchor) {
-        const target = document.getElementById(anchor);
-        if (target) {
-          if (target.tagName === "DETAILS") target.open = true;
-          target.scrollIntoView();
-        }
-      }
-    })
-    .catch((e) => console.error("Failed to load data:", e));
+  lang = detectLang(data.languages);
+  buildFn();
+  const anchor = document.location?.hash.slice(1);
+  if (anchor) {
+    const target = document.getElementById(anchor);
+    if (target) {
+      if (target.tagName === "DETAILS") target.open = true;
+      target.scrollIntoView();
+    }
+  }
 };
 
 const detectLang = (languages) => {
@@ -279,10 +288,13 @@ const detectLang = (languages) => {
   const stored =
     own === null || own === "en" || own === "ja" ? (shared ?? own) : own;
   if (stored && languages.some((l) => l.code === stored)) return stored;
-  const nav = (navigator.language ?? "").toLowerCase();
-  if (nav.startsWith("zh")) return "cn";
-  for (const l of languages) {
-    if (nav.startsWith(l.code)) return l.code;
+  const preferred = navigator.languages?.length
+    ? navigator.languages
+    : [navigator.language ?? ""];
+  for (const locale of preferred) {
+    const language = locale.toLowerCase().split("-")[0];
+    const code = language === "zh" ? "cn" : language;
+    if (languages.some((l) => l.code === code)) return code;
   }
   return "en";
 };

@@ -452,19 +452,54 @@
           throw new Error("Empty Gist");
         }
 
-        const file = gistFiles[0];
-        let content = file.content;
-        if (file.truncated) {
-          const raw = await fetch(file.raw_url);
-          if (!raw.ok) {
-            throw new Error(`Failed to fetch Gist file: ${raw.status}`);
+        const multiple = gistFiles.length > 1;
+        let project;
+        for (const file of gistFiles) {
+          if (load !== window._projectLoad) return;
+          let content = file.content;
+          // A Save > Gist ZIP starts with UEsD. An API preview can be incomplete.
+          const prefix = (content || "")
+            .trimStart()
+            .slice(0, 4)
+            .replace(/\s/g, "");
+          if (multiple && !"UEsD".startsWith(prefix)) continue;
+          if (file.truncated) {
+            const raw = await fetch(file.raw_url);
+            if (!raw.ok) {
+              throw new Error(`Failed to fetch Gist file: ${raw.status}`);
+            }
+            content = await raw.text();
           }
-          content = await raw.text();
+
+          let zip;
+          try {
+            zip = await JSZip.loadAsync(base64ToUint8(content));
+          } catch (error) {
+            if (!multiple) throw error;
+            continue;
+          }
+          if (load !== window._projectLoad) return;
+          const folder = findProjectFolder(zip);
+          if (!folder) continue;
+          if (project)
+            throw new Error(
+              "Multiple Code Maker projects in Gist. Use one project per Gist.",
+            );
+          project = {
+            zip,
+            folder,
+            name: file.filename.replace(/\.[^.]+$/, "") || "untitled",
+          };
         }
 
-        const buf = base64ToUint8(content).buffer;
-        const name = file.filename.replace(/\.[^.]+$/, "") || "untitled";
-        await loadProjectFromZip(buf, name, load);
+        if (!project) throw new Error("No Code Maker project found in Gist");
+        if (load !== window._projectLoad) return;
+        await loadProjectArchive(
+          project.zip,
+          project.name,
+          load,
+          project.folder,
+        );
         if (load !== window._projectLoad) return;
         updateShareUrl("gist", gistId);
       }
@@ -606,6 +641,8 @@
 
       // Initialization
 
+      let pythonModeReady;
+
       function initAceEditor() {
         const codeEditor = ace.edit("code-editor");
         // ACE's hidden textarea has no id by default; set one so browser
@@ -613,7 +650,9 @@
         codeEditor.textInput.getElement().id = "code-editor-input";
 
         codeEditor.setTheme("ace/theme/monokai");
-        codeEditor.session.setMode("ace/mode/python");
+        pythonModeReady = new Promise((ready) =>
+          codeEditor.session.setMode("ace/mode/python", ready),
+        );
         codeEditor.renderer.setScrollMargin(8, 0, 0, 0);
         codeEditor.renderer.setPadding(8);
 
@@ -1139,18 +1178,13 @@
             : window._projectLoad;
           try {
             if (isCode) {
-              let text = await decodePythonSource(
+              const source = await decodePythonSource(
                 new Uint8Array(await file.arrayBuffer()),
                 load,
               );
               if (load !== window._projectLoad) return;
-              text = text.replace(
-                /((?:\w+\.)?\bload\s*\(\s*)(["'])([^"']*)\2/g,
-                (match, call, quote, filename) =>
-                  filename.toLowerCase().endsWith(".pyxres")
-                    ? `${call}${quote}my_resource.pyxres${quote}`
-                    : match,
-              );
+              const text = await adaptDroppedResources(source);
+              if (load !== window._projectLoad) return;
               document.getElementById("code-tab-button").click();
               window._codeEditor.setValue(text, -1);
               window._project.code = text;
@@ -1216,6 +1250,35 @@
 
       // Project helpers
 
+      async function adaptDroppedResources(source) {
+        if (!/\.pyxres/i.test(source)) return source;
+        await pythonModeReady;
+        const tokenizer = window._codeEditor.session.getMode().getTokenizer();
+        const calls = new Set();
+        let state = "start";
+        // Keep Ace's multiline string state and the original source offsets.
+        for (const line of source.matchAll(/([^\r\n]*)(?:\r\n?|\n|$)/g)) {
+          const row = tokenizer.getLineTokens(line[1], state);
+          let offset = line.index;
+          for (const token of row.tokens) {
+            if (
+              token.value === "load" &&
+              (token.type === "identifier" || token.type === "function.support")
+            )
+              calls.add(offset);
+            offset += token.value.length;
+          }
+          state = row.state;
+        }
+        return source.replace(
+          /(\bload\s*\(\s*)(["'])(?:\\(?:\r\n|[\s\S])|(?!\2)[^\\\r\n])*\.pyxres\2/gi,
+          (match, call, quote, offset) =>
+            calls.has(offset)
+              ? `${call}${quote}my_resource.pyxres${quote}`
+              : match,
+        );
+      }
+
       async function decodePythonSource(bytes, load) {
         // Ordinary UTF-8 projects can load before either runtime starts.
         // Route possible cookies to Python instead of duplicating its codec rules.
@@ -1262,24 +1325,39 @@ pyxel.utils._normalize_python_source_encoding(source)
       }
 
       async function loadProjectFromZip(buf, name, load = window._projectLoad) {
-        const zip = await JSZip.loadAsync(buf);
-        const files = {};
+        return loadProjectArchive(await JSZip.loadAsync(buf), name, load);
+      }
 
+      function findProjectFolder(zip) {
+        let folder;
+        for (const path of Object.keys(zip.files)) {
+          if (!/^[^/]+\/main\.py$/.test(path) || zip.files[path].dir) continue;
+          const prefix = path.slice(0, -"main.py".length);
+          const resource = zip.files[prefix + "my_resource.pyxres"];
+          if (!resource || resource.dir) continue;
+          if (folder) throw new Error("Multiple Code Maker projects in ZIP");
+          folder = prefix;
+        }
+        return folder;
+      }
+
+      async function loadProjectArchive(zip, name, load, folder) {
+        if (load !== window._projectLoad) return;
+        folder ??= findProjectFolder(zip);
+        if (!folder)
+          throw new Error(
+            "Missing main.py or my_resource.pyxres in the same project folder",
+          );
+        const files = {};
         for (const [path, entry] of Object.entries(zip.files)) {
-          if (!entry.dir) {
-            const relativePath = path.split("/").slice(1).join("/");
+          if (!entry.dir && path.startsWith(folder)) {
+            const relativePath = path.slice(folder.length);
             const content = await entry.async("uint8array");
             files[relativePath] = uint8ToBase64(content);
           }
         }
 
         if (load !== window._projectLoad) return;
-        if (!Object.hasOwn(files, "main.py")) {
-          throw new Error("Missing main.py");
-        }
-        if (!Object.hasOwn(files, "my_resource.pyxres")) {
-          throw new Error("Missing my_resource.pyxres");
-        }
 
         const code = await decodePythonSource(
           base64ToUint8(files["main.py"]),

@@ -7,7 +7,7 @@ import tempfile
 from itertools import pairwise
 from pathlib import Path
 
-from _image_capture import run_worker, save_gif
+from _image_capture import add_name_argument, run_worker, save_gif
 from PIL import Image
 
 _DESCRIPTION = """Recreate Pyxel Editor GIFs from the bundled sample resource.
@@ -228,7 +228,7 @@ def combine(editors, sources, destination):
 
 def main():
     parser = argparse.ArgumentParser(description=_DESCRIPTION)
-    parser.add_argument("editors", nargs="*", choices=tuple(OUTPUTS))
+    add_name_argument(parser, "editors", OUTPUTS)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--worker", choices=tuple(FRAMES), help=argparse.SUPPRESS)
     args = parser.parse_args()

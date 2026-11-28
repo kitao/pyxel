@@ -10,18 +10,18 @@ EXPECTED_WHEEL_TAG = "cp311-abi3-pyemscripten_2026_0_wasm32"
 WHEEL_SUFFIX = f"-{EXPECTED_WHEEL_TAG}.whl"
 
 
-def test_update_version_updates_and_verifies_every_runtime_surface(tmp_path):
+def test_update_version_prepares_sources_and_preserves_the_retained_runtime(tmp_path):
     update_version = _load_update_version()
     _write_version_files(tmp_path)
 
+    web_runtime = tmp_path / "wasm/pyxel.js"
+    original = web_runtime.read_bytes()
     update_version.update_version("3.0.0a1", tmp_path)
-    (tmp_path / "wasm" / f"pyxel-2.9.7{WHEEL_SUFFIX}").unlink()
-    _write_wasm_wheel(
-        tmp_path / "wasm" / f"pyxel-3.0.0a1{WHEEL_SUFFIX}",
-        "3.0.0a1",
-    )
 
-    assert update_version.version_errors(tmp_path, "v3.0.0a1") == []
+    assert web_runtime.read_bytes() == original
+    assert update_version.version_errors(tmp_path, "v3.0.0a1") == [
+        "wasm/pyxel.js: expected 3.0.0a1, found 2.9.7"
+    ]
     assert 'pub const VERSION: &str = "3.0.0a1";' in (
         tmp_path / "crates/pyxel-core/src/settings.rs"
     ).read_text(encoding="utf-8")
@@ -29,9 +29,6 @@ def test_update_version_updates_and_verifies_every_runtime_surface(tmp_path):
         encoding="utf-8"
     )
     assert 'version = "3.0.0-alpha.1"' in (tmp_path / "crates/Cargo.toml").read_text(
-        encoding="utf-8"
-    )
-    assert "pyxel-3.0.0a1-cp311" in (tmp_path / "wasm/pyxel.js").read_text(
         encoding="utf-8"
     )
 
@@ -50,14 +47,16 @@ def test_invalid_release_version_preserves_all_files(tmp_path, version):
     assert all(path.read_bytes() == data for path, data in originals.items())
 
 
-def test_update_version_preserves_local_wheel_spelling(tmp_path):
+def test_update_version_preserves_local_version_spelling(tmp_path):
     update_version = _load_update_version()
     _write_version_files(tmp_path)
 
     update_version.update_version("3.0.0+local.2", tmp_path)
 
     assert 'version = "3.0.0+local.2"' in (tmp_path / "crates/Cargo.toml").read_text()
-    assert "pyxel-3.0.0+local.2-cp311" in (tmp_path / "wasm/pyxel.js").read_text()
+    assert (
+        'version = "3.0.0+local.2"' in (tmp_path / "python/pyproject.toml").read_text()
+    )
 
 
 def test_update_version_leaves_files_unchanged_when_last_pattern_is_missing(tmp_path):
@@ -91,6 +90,51 @@ def test_version_errors_names_the_mismatched_surface(tmp_path):
 
     errors = update_version.version_errors(tmp_path, "v2.9.7")
     assert errors == ["wasm/pyxel.js: expected 2.9.7, found 2.9.6"]
+
+
+def test_untagged_check_uses_runtime_settings(tmp_path):
+    update_version = _load_update_version()
+    _write_version_files(tmp_path)
+    (tmp_path / "python/pyproject.toml").write_text('[project]\nversion = "2.9.8"\n')
+
+    assert update_version.version_errors(tmp_path) == [
+        "python/pyproject.toml: expected 2.9.7, found 2.9.8"
+    ]
+
+
+@pytest.mark.parametrize(
+    ("path", "other_table"),
+    [
+        ("python/pyproject.toml", "[tool.example]"),
+        ("crates/Cargo.toml", "[workspace.dependencies.example]"),
+    ],
+)
+def test_version_update_only_uses_the_package_table(tmp_path, path, other_table):
+    update_version = _load_update_version()
+    _write_version_files(tmp_path)
+    manifest = tmp_path / path
+    other = f'{other_table}\nversion = "1.2.3"\n\n'
+    original = manifest.read_text()
+    manifest.write_text(other + original)
+
+    assert update_version.version_errors(tmp_path, build_only=True) == []
+    update_version.update_version("2.9.8", tmp_path)
+    assert manifest.read_text() == other + original.replace("2.9.7", "2.9.8")
+
+
+def test_build_check_precedes_wheel_generation(tmp_path):
+    update_version = _load_update_version()
+    _write_version_files(tmp_path)
+    update_version.update_version("3.0.0a1", tmp_path)
+    assert update_version.version_errors(tmp_path, build_only=True) == []
+
+    (tmp_path / "crates/pyxel-core/src/settings.rs").write_text(
+        'pub const VERSION: &str = "3.0.0";\n'
+    )
+    assert update_version.version_errors(tmp_path, build_only=True) == [
+        "python/pyproject.toml: expected 3.0.0, found 3.0.0a1",
+        "crates/Cargo.toml: expected 3.0.0, found 3.0.0-alpha.1",
+    ]
 
 
 def test_version_errors_accepts_prettier_formatted_wasm_constant(tmp_path):

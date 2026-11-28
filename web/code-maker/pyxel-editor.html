@@ -16,6 +16,10 @@
 
         with open('my_resource.pyxres', 'wb') as f:
             f.write(base64.b64decode(js.parent._project.resource))
+        palette = getattr(js.parent._project.files, 'my_resource.pyxpal', None)
+        if palette is not None:
+            with open('my_resource.pyxpal', 'wb') as f:
+                f.write(base64.b64decode(palette))
         pyxel.cli.edit_pyxel_resource('my_resource.pyxres')
       "
     ></pyxel-run>

@@ -1,4 +1,7 @@
 import importlib.util
+import os
+import subprocess
+import sys
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
@@ -12,6 +15,64 @@ _spec = importlib.util.spec_from_loader(_loader.name, _loader)
 assert _spec is not None
 format_prose = importlib.util.module_from_spec(_spec)
 _loader.exec_module(format_prose)
+
+
+@pytest.fixture
+def repository(tmp_path, monkeypatch):
+    for name in os.environ.copy():
+        if name.upper().startswith("GIT_"):
+            monkeypatch.delenv(name)
+    root = tmp_path / "repository"
+    subprocess.run(["git", "init", "-q", root], check=True)
+    monkeypatch.setattr(format_prose, "ROOT_DIR", root.resolve())
+    return root
+
+
+def test_formats_only_existing_files_tracked_by_its_own_repository(
+    repository, tmp_path, monkeypatch
+):
+    readme = repository / "README.md"
+    readme.write_text("Pyxelで\n", encoding="utf-8")
+    docs = repository / "docs"
+    docs.mkdir()
+    deleted = docs / "faq-ja.md"
+    deleted.touch()
+    subprocess.run(["git", "-C", repository, "add", "."], check=True)
+    deleted.unlink()
+
+    other = tmp_path / "other"
+    subprocess.run(["git", "init", "-q", other], check=True)
+    text = '{"ja":"Pyxelで"}'
+    for root in (repository, other):
+        (root / "web").mkdir()
+        (root / "web/local.json").write_text(text, encoding="utf-8")
+    subprocess.run(["git", "-C", other, "add", "web/local.json"], check=True)
+    monkeypatch.setenv("GIT_DIR", str(other / ".git"))
+    monkeypatch.setenv("GIT_INDEX_FILE", str(other / ".git/index"))
+
+    format_prose.main()
+
+    assert readme.read_text(encoding="utf-8") == "Pyxel で\n"
+    assert not deleted.exists()
+    assert (repository / "web/local.json").read_text(encoding="utf-8") == text
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="symlink may require elevation")
+def test_does_not_write_through_a_symlinked_file_or_directory(repository, tmp_path):
+    (repository / "docs").mkdir()
+    for rel in ("README.md", "docs/faq-ja.md"):
+        (repository / rel).write_text("Pyxelで\n", encoding="utf-8")
+    subprocess.run(["git", "-C", repository, "add", "."], check=True)
+    for name in ("README.md", "docs"):
+        path = repository / name
+        target = tmp_path / name
+        path.rename(target)
+        path.symlink_to(target, target_is_directory=target.is_dir())
+
+    format_prose.main()
+
+    for rel in ("README.md", "docs/faq-ja.md"):
+        assert (tmp_path / rel).read_text(encoding="utf-8") == "Pyxelで\n"
 
 
 class TestJapaneseSpacing:
@@ -126,6 +187,10 @@ class TestCodeSpan:
             ),
             ("値max({0}, 0)を使う", "値 max({0}, 0) を使う"),
             ("値max(`radius`, 0)を使う", "値 max(`radius`, 0) を使う"),
+            (
+                "係数max(0, 1 - max(0, damp) / fps)を使う",
+                "係数 max(0, 1 - max(0, damp) / fps) を使う",
+            ),
             (
                 "0とinit()の後で`pyxel`を使う",
                 "0 と init() の後で `pyxel` を使う",

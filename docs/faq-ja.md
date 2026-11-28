@@ -68,7 +68,20 @@ pyxel.play(0, "CDEFG")
 <details>
 <summary>ハイスコアやゲームの進行状況など、アプリケーション固有のデータを保存する方法はありますか？</summary>
 
-`pyxel.user_data_dir(vendor_name, app_name)` に開発者名とアプリ名を渡すと、環境に適した保存用ディレクトリを作成し、そのパスを返します。このディレクトリにデータを保存してください。
+PC では、`pyxel.user_data_dir(vendor_name, app_name)` に開発者名とアプリ名を渡し、返されたディレクトリにファイルを保存してください。
+
+Web 版では、ページを再読み込みすると、このディレクトリ内のファイルは消えます。同じブラウザで同じサイトを再訪したときもハイスコアを読み出すには、`localStorage` にゲーム専用のキーで保存します。次の例では、ゲーム終了時に `record_score(score)` を呼ぶと、自己ベストを更新したときだけ保存します。
+
+```python
+from js import localStorage
+
+
+def record_score(score):
+    key = "my_game.high_score"
+    previous = int(localStorage.getItem(key) or 0)
+    if score > previous:
+        localStorage.setItem(key, str(score))
+```
 
 </details>
 
@@ -124,6 +137,6 @@ Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されていま�
 <details>
 <summary>Pyxel を作者の許可なく商業目的で使用することはできますか？</summary>
 
-MIT ライセンスに従い、ソースコードやライセンス表示用のファイルに著作権およびライセンスの全文を明示すれば、作者の許可を得ることなく自由に販売や配布が可能です。ただし、Pyxel は個人で開発しているため、作者へのご連絡やスポンサーによるご支援をいただけるとありがたいです。
+はい。Pyxel で作ったゲームは、作者の許可を得ずに販売や配布ができます。ゲームに Pyxel 本体またはその相当部分を同梱して配布する場合は、[MIT ライセンス](../LICENSE) にある Pyxel の著作権表示と許諾表示を添えてください。Pyxel は個人で開発しているため、作品のご連絡やスポンサーとしてのご支援をいただけるとありがたいです。
 
 </details>

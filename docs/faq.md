@@ -68,7 +68,20 @@ Relative paths start from the current working directory. `pyxel.init()` changes 
 <details>
 <summary>How can I save application-specific data like high scores or game progress?</summary>
 
-Pass the developer and app names to `pyxel.user_data_dir(vendor_name, app_name)`. It creates a storage directory for the current platform and returns its path. Save your data in this directory.
+On desktop, pass the developer and app names to `pyxel.user_data_dir(vendor_name, app_name)` and save your files in the directory it returns.
+
+In the web version, reloading the page clears files in that directory. To keep a high score between visits to the same site in the same browser, save it in `localStorage` under a key specific to your game. Call `record_score(score)` at the end of a game to save a new personal best.
+
+```python
+from js import localStorage
+
+
+def record_score(score):
+    key = "my_game.high_score"
+    previous = int(localStorage.getItem(key) or 0)
+    if score > previous:
+        localStorage.setItem(key, str(score))
+```
 
 </details>
 
@@ -124,6 +137,6 @@ For details on the new MML syntax, see "[How do I use Pyxel MML?](#api-specifica
 <details>
 <summary>Can I use Pyxel for commercial purposes without the author's permission?</summary>
 
-As long as you comply with the MIT License and clearly display the full text of the copyright and license in the source code or license file, you are free to sell or distribute your work without the author's permission. That said, Pyxel is developed by a single individual, so reaching out to the author or becoming a sponsor would be greatly appreciated.
+Yes. You can sell or distribute games you make with Pyxel without asking the author. If you distribute Pyxel itself or a substantial portion of it with your game, include Pyxel's copyright and permission notices from the [MIT License](../LICENSE). Pyxel is developed by one person, and the author welcomes hearing about your work or receiving your support as a sponsor.
 
 </details>

@@ -98,7 +98,10 @@
 
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-400 text-sm">
+      <div
+        id="page-loading"
+        class="flex justify-center items-center py-12 text-gray-400 text-sm"
+      >
         Loading...
       </div>
     </main>
@@ -228,11 +231,13 @@
 
         document.getElementById("s-code").innerHTML = `
           <h2 class="section-title">${esc(t("code_title"))}</h2>
-          <p class="body">${esc(t("code_body")).replace("{0}", chip("main.py"))}</p>`;
+          <p class="body">${esc(t("code_body")).replace("{0}", chip("main.py"))}</p>
+          <p class="body mt-2">${link("../api-reference/", t("api_reference"))}</p>`;
 
         document.getElementById("s-resource").innerHTML = `
           <h2 class="section-title">${esc(t("resource_title"))}</h2>
-          <p class="body">${esc(t("resource_body")).replace("{0}", chip("my_resource.pyxres"))}</p>`;
+          <p class="body">${esc(t("resource_body")).replace("{0}", chip("my_resource.pyxres"))}</p>
+          <p class="body mt-2">${link("../editor-manual/", t("editor_manual"))}</p>`;
 
         document.getElementById("s-runtime").innerHTML = `
           <h2 class="section-title">${esc(t("runtime_title"))}</h2>

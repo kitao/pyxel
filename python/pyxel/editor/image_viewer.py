@@ -140,11 +140,11 @@ class ImageViewer(Widget):
             self._drag_offset_y -= dy
 
             if abs(self._drag_offset_x) >= _GRID_SIZE:
-                offset = self._drag_offset_x // _GRID_SIZE
+                offset = int(self._drag_offset_x / _GRID_SIZE)
                 self.viewport_x_var += offset
                 self._drag_offset_x -= offset * _GRID_SIZE
             if abs(self._drag_offset_y) >= _GRID_SIZE:
-                offset = self._drag_offset_y // _GRID_SIZE
+                offset = int(self._drag_offset_y / _GRID_SIZE)
                 self.viewport_y_var += offset
                 self._drag_offset_y -= offset * _GRID_SIZE
 

@@ -72,7 +72,7 @@ Run it without arguments to see the list of available commands:
 pyxel
 ```
 ```
-Pyxel, a retro game engine for Python
+Pyxel X.Y.Z, a retro game engine for Python
 usage:
     pyxel run PYTHON_SCRIPT_FILE(.py)
     pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)
@@ -86,7 +86,7 @@ usage:
 
 ### Try Examples
 
-The following command copies Pyxel examples into pyxel_examples in the current directory, replacing all contents of that folder if it already exists:
+This command copies the examples to pyxel_examples. If the folder already exists, the command replaces everything in it.
 
 ```sh
 pyxel copy_examples
@@ -129,6 +129,8 @@ def draw():
 pyxel.run(update, draw)
 ```
 
+On desktop, save the code as `main.py` and run `pyxel run main.py`. In [Pyxel Code Maker](https://kitao.dev/pyxel/code-maker/), replace the starter code with this example and press Run. A green square appears.
+
 Pass `update`, which updates the state each frame, and `draw`, which draws the screen, to `run`.
 
 A class keeps the application state and its methods together:
@@ -170,19 +172,13 @@ pyxel.show()
 A created script can be executed using the `python` command:
 
 ```sh
-python PYTHON_SCRIPT_FILE
-```
-
-It can also be run with the `pyxel run` command:
-
-```sh
-pyxel run PYTHON_SCRIPT_FILE
+python main.py
 ```
 
 The `pyxel watch` command reruns the program when files in the specified directory change:
 
 ```sh
-pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
+pyxel watch . main.py
 ```
 
 Stop directory monitoring by pressing `Ctrl+C`.
@@ -233,13 +229,13 @@ Refer to the [Pyxel API Reference](https://kitao.dev/pyxel/api-reference/) for d
 
 Pyxel supports a cross-platform distribution format called a Pyxel application file.
 
-Create a Pyxel application file (.pyxapp) with the `pyxel package` command:
+If your application is in the `my_game` folder, run this command from its parent directory. It creates `my_game.pyxapp` there.
 
 ```sh
-pyxel package APP_DIR STARTUP_SCRIPT_FILE
+pyxel package my_game my_game/main.py
 ```
 
-To include resources or additional modules, place them in `APP_DIR`. When collecting files from the application directory, `pyxel package` excludes files with the `.gif` or `.zip` extension, hidden files and directories, and `__pycache__` directories.
+To include resources or additional modules, place them in `my_game`. When collecting files from the application directory, `pyxel package` excludes files with the `.gif` or `.zip` extension, hidden files and directories, and `__pycache__` directories.
 
 Metadata can be displayed at runtime by specifying it in the following format within the startup script. When specifying metadata, `title` and `author` are required; the other fields are optional.
 
@@ -255,7 +251,7 @@ Metadata can be displayed at runtime by specifying it in the following format wi
 The created application file can be run using the `pyxel play` command:
 
 ```sh
-pyxel play PYXEL_APP_FILE
+pyxel play my_game.pyxapp
 ```
 
 A Pyxel application file can be converted to an executable with the `pyxel app2exe` command or to an HTML file with the `pyxel app2html` command. Before converting to an executable, install PyInstaller with `pip install "pyxel[app2exe]"`.

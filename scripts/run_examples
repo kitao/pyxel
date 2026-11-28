@@ -10,11 +10,15 @@ EXAMPLES_DIR="$ROOT_DIR/python/pyxel/examples"
 export PYTHONUNBUFFERED=1
 
 BG_PID=0
+EDITOR_DIR=""
 
 cleanup() {
     if [[ "$BG_PID" -ne 0 ]]; then
         kill "$BG_PID" 2>/dev/null || true
         wait "$BG_PID" 2>/dev/null || true
+    fi
+    if [[ -n "$EDITOR_DIR" ]]; then
+        rm -rf -- "$EDITOR_DIR"
     fi
 }
 trap cleanup EXIT
@@ -53,4 +57,7 @@ for f in "$EXAMPLES_DIR"/apps/*.pyxapp; do
     run_bg pyxel play "$f"
 done
 
-run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
+EDITOR_DIR="$(mktemp -d "${TMPDIR:-/tmp}/pyxel-editor.XXXXXXXX")"
+cp "$EXAMPLES_DIR/assets/sample.pyxres" "$EDITOR_DIR/sample.pyxres"
+echo "The editor opens a temporary sample. Changes are discarded when it closes."
+run_bg pyxel edit "$EDITOR_DIR/sample.pyxres"

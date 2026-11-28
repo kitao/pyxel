@@ -11,7 +11,7 @@ const { rawConfig: config } = experimental_readRawConfig({
   config: path.join(WEB_DIR, "wrangler.jsonc"),
 });
 
-// Published sources, read from the build script's path lists and direct web inputs.
+// Build inputs include published files and the metadata used to select them.
 const buildSources = () => {
   const script = fs.readFileSync(
     path.join(ROOT_DIR, "scripts", "build_site"),
@@ -24,16 +24,19 @@ const buildSources = () => {
     ...quoted(script.match(/for name in \(\*PAGE_DIRS, ([^)]*)\)/)[1]),
   ];
   return [
+    "scripts/build_site",
+    ".gitignore", // Tailwind uses the root ignore rules when scanning for classes.
     ...pages.map((name) => `web/${name}`),
     `web/${script.match(/"-i",\s*"([^"]+)"/)[1]}`,
     ...[...script.matchAll(/tracked_files\(root, "([^"]+)"\)/g)].map(
       (match) => match[1],
     ),
-    ...[
-      ...script.matchAll(
-        /root \/ "((?:web|python)\/(?!node_modules\/)[^"]+)"/g,
-      ),
-    ].map((match) => match[1]),
+    ...[...script.matchAll(/\(root \/ "([^"]+)"\)\.read_text\(/g)].map(
+      (match) => match[1],
+    ),
+    ...[...script.matchAll(/shutil\.copyfile\(root \/ "([^"]+)"/g)].map(
+      (match) => match[1],
+    ),
     ...[
       ...script
         .match(/for source_path, target_path in \(([^]*?)\):/)[1]
@@ -70,7 +73,7 @@ test("the Pyxel Worker handles launcher sources and tutorial video ranges", () =
   assert.equal(build.command, "python3 ../scripts/build_site");
 });
 
-test("Wrangler watches exactly the sources the site build publishes", () => {
+test("Wrangler watches the site build inputs", () => {
   // Strict deploys check these paths for uncommitted changes, and wrangler dev rebuilds on them.
   const watched = config.build.watch_dir.map((name) =>
     path.relative(ROOT_DIR, path.join(WEB_DIR, name)).split(path.sep).join("/"),
@@ -79,8 +82,6 @@ test("Wrangler watches exactly the sources the site build publishes", () => {
     source === directory || source.startsWith(`${directory}/`);
   const sources = buildSources();
   assert.ok(sources.includes("web/index.html") && sources.includes("wasm"));
-  // The build script decides what a deploy publishes, so its changes count too.
-  assert.ok(watched.includes("scripts/build_site"));
   for (const source of sources) {
     assert.ok(
       watched.some((directory) => covers(directory, source)),
@@ -90,8 +91,7 @@ test("Wrangler watches exactly the sources the site build publishes", () => {
   for (const directory of watched) {
     assert.ok(fs.existsSync(path.join(ROOT_DIR, directory)), directory);
     assert.ok(
-      directory === "scripts/build_site" ||
-        sources.some((source) => covers(directory, source)),
+      sources.some((source) => covers(directory, source)),
       directory,
     );
   }

@@ -1389,12 +1389,13 @@ test("MML share updates keep the newest content when compression finishes out of
   const qrCodeImage = {};
   const replacedUrls = [];
   const context = {
+    shareUrl,
+    qrCodeImage,
+    shareUrlGeneration: 0,
+    shareUrlUpdateTimer: null,
+    generate: (url) => ({ size: 21, toDataURL: () => `qr:${url}` }),
     document: {
-      getElementById: (id) => {
-        if (id === "share-url") return shareUrl;
-        if (id === "qr-code-image") return qrCodeImage;
-        return textareas[Number(id.slice(2)) - 1];
-      },
+      getElementById: (id) => textareas[Number(id.slice(2)) - 1],
     },
     window: {
       addEventListener() {},
@@ -1405,7 +1406,7 @@ test("MML share updates keep the newest content when compression finishes out of
     location: { origin: "https://example.test", pathname: "/mml-studio/" },
     clearTimeout() {},
   };
-  vm.runInNewContext(source.match(/<script>([\s\S]*?)<\/script>/)[1], context);
+  loadNamedFunction(source, "updateShareUrl", context);
   const pending = [];
   context.encodeMmlToUrl = (text) =>
     new Promise((resolve) => pending.push({ text, resolve }));
@@ -1424,6 +1425,7 @@ test("MML share updates keep the newest content when compression finishes out of
   const newestUrl = "https://example.test/mml-studio/?mml=newer";
   assert.equal(shareUrl.href, newestUrl);
   const newestQr = qrCodeImage.src;
+  assert.equal(newestQr, `qr:${newestUrl}`);
 
   pending[0].resolve("older");
   await old;
@@ -1438,6 +1440,7 @@ test("MML share updates keep the newest content when compression finishes out of
   const emptyUrl = "https://example.test/mml-studio/";
   assert.equal(shareUrl.href, emptyUrl);
   const emptyQr = qrCodeImage.src;
+  assert.equal(emptyQr, `qr:${emptyUrl}`);
 
   pending[2].resolve("stale");
   await stale;

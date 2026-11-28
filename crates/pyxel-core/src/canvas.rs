@@ -528,12 +528,21 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        let snapshot;
-        let canvas = if let Some(canvas) = canvas {
-            canvas
+        let dst_w = self.width() as usize;
+        let width_usize = width as usize;
+        let mut snapshot;
+        let (src_data, src_w) = if let Some(canvas) = canvas {
+            let stride = canvas.width() as usize;
+            let start = src_y as usize * stride + src_x as usize;
+            (&canvas.data[start..], stride)
         } else {
-            snapshot = self.clone();
-            &snapshot
+            // Copy the clipped source before overlapping writes can change it.
+            snapshot = Vec::with_capacity(width_usize * height as usize);
+            for yi in 0..height as usize {
+                let start = (src_y as usize + yi) * dst_w + src_x as usize;
+                snapshot.extend_from_slice(&self.data[start..start + width_usize]);
+            }
+            (snapshot.as_slice(), width_usize)
         };
 
         macro_rules! copy_row {
@@ -567,15 +576,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         // Fast path: no flip, full alpha
         if sign_x == 1 && sign_y == 1 && self.alpha >= 1.0 {
-            let dst_w = self.width() as usize;
-            let src_w = canvas.width() as usize;
-            let width = width as usize;
-
             for yi in 0..height as usize {
                 let di = dst_w * (dst_y as usize + yi) + dst_x as usize;
-                let si = src_w * (src_y as usize + yi) + src_x as usize;
-                let dst = &mut self.data[di..di + width];
-                let src = &canvas.data[si..si + width];
+                let si = src_w * yi;
+                let dst = &mut self.data[di..di + width_usize];
+                let src = &src_data[si..si + width_usize];
                 copy_row!(slice: dst, src);
             }
             return;
@@ -583,24 +588,18 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         // Flip-only path: no dithering, row-level operations
         if self.alpha >= 1.0 {
-            let dst_w = self.width() as usize;
-            let src_w = canvas.width() as usize;
-            let width_usize = width as usize;
-
             for yi in 0..height {
-                let sy = (src_y + sign_y * yi + offset_y) as usize;
+                let sy = (sign_y * yi + offset_y) as usize;
                 let di_base = dst_w * (dst_y + yi) as usize + dst_x as usize;
                 let dst = &mut self.data[di_base..di_base + width_usize];
+                let si = src_w * sy;
+                let src = &src_data[si..si + width_usize];
                 if sign_x == 1 {
                     // Y-flip only: source row is contiguous
-                    let si = src_w * sy + src_x as usize;
-                    let src = &canvas.data[si..si + width_usize];
                     copy_row!(slice: dst, src);
                 } else {
                     // X-flip: reverse pixel order within row
-                    let sx_start = (src_x + offset_x) as usize;
-                    let src_row = &canvas.data[src_w * sy..];
-                    copy_row!(rev: dst, src_row, sx_start);
+                    copy_row!(rev: dst, src, offset_x as usize);
                 }
             }
             return;
@@ -609,9 +608,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         // General path: dithering
         for yi in 0..height {
             for xi in 0..width {
-                let value_x = src_x + sign_x * xi + offset_x;
-                let value_y = src_y + sign_y * yi + offset_y;
-                let value = canvas.read_data(value_x as usize, value_y as usize);
+                let value_x = (sign_x * xi + offset_x) as usize;
+                let value_y = (sign_y * yi + offset_y) as usize;
+                let value = src_data[value_y * src_w + value_x];
                 if let Some(value) = Self::apply_pixel(value, transparent, palette) {
                     self.write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
                 }

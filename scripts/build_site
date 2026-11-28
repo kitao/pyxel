@@ -10,7 +10,6 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
-import tomllib
 import zipfile
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
@@ -30,6 +29,7 @@ PAGE_DIRS = (
 )
 SITE_URL = "https://kitao.dev/pyxel"
 CDN_URL = "https://cdn.jsdelivr.net/gh/kitao/pyxel"
+REPOSITORY_URL = "https://github.com/kitao/pyxel.git"
 
 
 class LocalLinks(HTMLParser):
@@ -51,13 +51,13 @@ def main():
     parser.add_argument(
         "--runtime-tag",
         action="append",
-        help="local release tag; repeat to select releases (default: all from v2.9.9)",
+        help="local release tag for a partial preview; repeat to select releases",
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=ROOT_DIR / "dist" / "site",
-        help="new, empty, or previously built directory (default: dist/site/)",
+        help="output directory; replaces a previous site build in full (default: dist/site/)",
     )
     args = parser.parse_args()
     try:
@@ -165,10 +165,17 @@ def same_path(first, second):
 
 
 def is_replaceable(directory):
-    # A previous build has _headers and pyxel, and at most the build's other files
-    # and the .DS_Store files Finder adds.
+    # Finder can add .DS_Store to a build directory.
     names = {path.name for path in directory.iterdir()} - {".DS_Store"}
-    return not names or names == {"_headers", "pyxel"}
+    if not names:
+        return True
+    headers = directory / "_headers"
+    if names != {"_headers", "pyxel"} or not (directory / "pyxel/index.html").is_file():
+        return False
+    if not headers.is_file():
+        return False
+    with headers.open("rb") as stream:
+        return stream.readline().rstrip(b"\r\n") in {b"/pyxel*", b"/pyxel/*"}
 
 
 def tracked_files(root, pathspec):
@@ -212,11 +219,14 @@ def git_environment(**overrides):
 
 
 def copy_runtimes(root, site, runtime_tags=None):
-    project = tomllib.loads(
-        (root / "python/pyproject.toml").read_text(encoding="utf-8")
-    )["project"]
-    current_version = project["version"]
+    settings = (root / "crates/pyxel-core/src/settings.rs").read_text(encoding="utf-8")
+    match = re.search(r'^pub const VERSION: &str = "([^"]+)";$', settings, re.MULTILINE)
+    if not match:
+        raise ValueError("Missing Pyxel VERSION in settings.rs")
+    current_version = match[1]
     current_tag = f"v{current_version}"
+    if runtime_tags is not None and os.environ.get("WRANGLER_COMMAND") == "deploy":
+        raise ValueError("A deployment must include all hosted release tags")
     tags = (
         list(runtime_tags) if runtime_tags is not None else default_runtime_tags(root)
     )
@@ -251,14 +261,35 @@ def copy_runtimes(root, site, runtime_tags=None):
 
 
 def default_runtime_tags(root):
-    tags = subprocess.check_output(
-        ["git", "-C", str(root), "tag", "--list", "v*"],
-        env=git_environment(GIT_NO_LAZY_FETCH="1"),
+    git = ["git", "-C", str(root)]
+    env = git_environment(GIT_NO_LAZY_FETCH="1")
+    refs = subprocess.check_output(
+        [*git, "for-each-ref", "--format=%(objectname) %(refname)", "refs/tags/v*"],
+        env=env,
         text=True,
-    ).splitlines()
+    )
+    releases = hosted_release_refs(refs)
+    if os.environ.get("WRANGLER_COMMAND") == "deploy":
+        # A fresh build has no previous site to detect a missing or moved tag.
+        official = subprocess.check_output(
+            [*git, "ls-remote", "--tags", "--refs", REPOSITORY_URL, "refs/tags/v*"],
+            env=env,
+            text=True,
+        )
+        if releases != hosted_release_refs(official):
+            raise ValueError(
+                "Local release tags differ from the official Pyxel repository"
+            )
     # Keep the first hosted release required even if the local tag list is incomplete.
-    releases = {(2, 9, 9, 3, 0): "v2.9.9"}
-    for tag in tags:
+    releases.setdefault("v2.9.9", ((2, 9, 9, 3, 0), None))
+    return sorted(releases, key=lambda tag: releases[tag][0])
+
+
+def hosted_release_refs(refs):
+    releases = {}
+    for line in refs.splitlines():
+        object_id, ref = line.split()
+        tag = ref.removeprefix("refs/tags/")
         match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)(?:(a|b|rc)(\d+))?", tag)
         if match:
             version = (
@@ -267,8 +298,8 @@ def default_runtime_tags(root):
                 int(match.group(5) or 0),
             )
             if version >= (2, 9, 9, 3, 0):
-                releases[version] = tag
-    return [releases[version] for version in sorted(releases)]
+                releases[tag] = (version, object_id)
+    return releases
 
 
 def copy_release(root, tag, site):
