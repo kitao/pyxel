@@ -1,48 +1,82 @@
-title: "Your Work Title / 作品名"
+title: "Title of your work / 作品タイトル"
 labels: []
 body:
   - type: markdown
     attributes:
-      value: |
-        Share your Pyxel work! Your submission will be featured on the [Pyxel User Examples](https://kitao.dev/pyxel/user-examples/) page. Enter your work's title in the Title field above.
-        Pyxel で作った作品を投稿してください！投稿された作品は [Pyxel User Examples](https://kitao.dev/pyxel/user-examples/) ページで紹介されます。上の Title に作品名を入力してください。
+      value: |-
+        Share what you’ve made with Pyxel! Your work will be featured in [Pyxel User Examples](https://kitao.dev/pyxel/user-examples/).
+
+        あなたが Pyxel で作った作品を紹介してください！ 投稿された作品は [Pyxel User Examples](https://kitao.dev/pyxel/user-examples/) に掲載されます。
   - type: input
     id: description
     attributes:
-      label: "Description / 作品の説明"
-      description: "Brief one-line description of your work / 作品を一行で説明してください"
-      placeholder: "e.g. Side-scrolling action game / 例: 横スクロールアクションゲーム"
+      label: "About your work / 作品の概要"
+      description: |-
+        Describe what you’ve made in a sentence or so.
+        Example: A puzzle game where you use your own shadow as a platform.
+
+        どんな作品か、一文程度で紹介してください。
+        例：自分の影を足場にして進むパズルゲーム。
     validations:
       required: true
   - type: input
-    id: url
+    id: site
     attributes:
-      label: "Work URL (optional) / 作品 URL（任意）"
-      description: "URL of your published work, if available / 作品を公開している場合は URL を記入してください"
+      label: "Site (optional) / 作品紹介ページ（任意）"
+      description: |-
+        Enter a URL where people can learn about your work, such as its official website or repository.
+
+        作品の公式サイトやリポジトリなど、作品について知ることができるページの URL を入力してください。
     validations:
       required: false
   - type: input
+    id: play
+    attributes:
+      label: "Play URL (optional) / 遊べる URL（任意）"
+      description: |-
+        If you have a link to play your work in a browser, enter it here. This could be a Pyxel Web Launcher link or an itch.io page with a browser version. A link to a public `.pyxapp` file or to the `.py` file on GitHub that launches your work is also fine.
+
+        Pyxel Web Launcher の起動 URL や itch.io の作品ページなど、ブラウザで作品を遊べる URL があれば入力してください。公開している `.pyxapp` ファイルや、GitHub 上の起動用 `.py` ファイルへのリンクでも大丈夫です。
+    validations:
+      required: false
+  - type: checkboxes
+    id: mobile
+    attributes:
+      label: "Mobile support / スマホ対応"
+      description: |-
+        Check this box if your work can also be played on a phone using touch controls or an on-screen gamepad.
+
+        スマホ（タッチ操作や仮想ゲームパッド）でも遊べる場合はチェックしてください。
+      options:
+        - label: "Playable on a phone / スマホでプレイ可能"
+  - type: input
     id: author
     attributes:
-      label: "Your name / あなたの名前"
-      description: "Name to be credited on the examples page / 紹介ページに掲載する名前を記入してください"
+      label: "Author name / 作者名"
+      description: "Enter the author’s name. / 作者の名前を入力してください。"
     validations:
       required: true
   - type: input
     id: contact
     attributes:
-      label: "Contact (optional) / 連絡先（任意）"
-      description: "Email, GitHub, or X account for the examples page / 紹介ページに掲載する連絡先を記入してください（メール、GitHub、X アカウント）"
+      label: "Author contact (optional) / 作者の連絡先（任意）"
+      description: |-
+        Enter the author’s contact details, such as an email address, GitHub account, or X account.
+
+        作者の連絡先（メールアドレス、GitHub アカウント、X アカウントなど）を入力してください。
     validations:
       required: false
   - type: textarea
     id: gif
     attributes:
-      label: "Screen Capture GIF / 画面キャプチャ GIF"
-      description: >
-        In your Pyxel app, press Alt(Option)+2 to start recording and
-        Alt(Option)+3 to save as GIF. Drag & drop the saved file here.
-        Preferably under 3 MB. / Pyxel アプリの実行中に Alt(Option)+2 で録画開始、
-        Alt(Option)+3 で GIF として保存できます。保存したファイルをここにドラッグ&ドロップしてください。目安 3 MB 以下。
+      label: "Screen capture GIF / 画面キャプチャ GIF"
+      description: |-
+        Drag and drop a GIF of your work here. (In Pyxel, press `Alt/Option + 2` to start recording and `Alt/Option + 3` to save the GIF.)
+
+        Aim for 3 MB or less. GIFs over 3 MB may be shortened for the gallery.
+
+        作品の GIF をここにドラッグ＆ドロップしてください（Pyxel の実行中に `Alt/Option + 2` で録画開始、`Alt/Option + 3` で GIF を保存できます）。
+
+        サイズの目安は 3 MB 以下です。3 MB を超える場合は、掲載時に GIF を短くすることがあります。
     validations:
       required: true
