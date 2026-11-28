@@ -51,8 +51,8 @@ changing the label is not a purely cosmetic wording correction.
 ### Reference reading order
 
 **Decision:** The base reference introduces module APIs before class references;
-Cube introduces mathematical values before rendering assets and scene-tree
-facilities. Within a class, keep related properties and operation groups
+the Cube reference introduces mathematical values, then Node, then the types
+used to build a scene. Within a class, keep related properties and operations
 together. Creation facilities precede operations on the resulting object,
 without requiring every factory to appear immediately after the constructor.
 Node's factory follows its property block, before the contiguous tree-edit
@@ -66,8 +66,9 @@ these groups rather than sorting all advanced entries or mechanically pairing
 similarly named operations across them.
 
 **Reason:** The [reference source](../../../web/api-reference/) serves someone
-learning or finding an operation. A writable directory prepares for saving;
-whole-image export differs from loading pixels into an editing region. Such
+learning or finding an operation. Node gives readers the scene context for
+cameras, meshes, and colliders. A writable directory prepares for saving.
+Whole-image export differs from loading pixels into an editing region. Such
 reader relationships can differ from implementation or stub order. Keeping the
 factory before tree editing preserves a continuous task without
 rearranging the class's properties. Generated references use this same source
@@ -93,10 +94,11 @@ without requiring identical page scaffolding.
 
 **Decision:** Separate Japanese text from adjacent alphanumeric tokens with
 one half-width space: 「Web 版 Pyxel」「16 色」「.pyxres ファイル」.
-Preserve literal spacing in code spans. Use full-width parentheses flush with
-Japanese content and half-width parentheses for ASCII-only content, separated
-by spaces except next to punctuation:
-「イメージバンク（Image クラスのインスタンス）のリスト (0-2)」.
+Preserve literal spacing in code spans. For prose in parentheses, use full-width
+parentheses flush with adjacent text when the contents include kana or kanji.
+Otherwise use half-width parentheses, with a space against adjacent words, as
+in 速度 (m/s²). Both forms occur in 「イメージバンク（Image クラスのインスタンス）のリスト (0-2)」.
+Keep function calls and keyboard shortcuts intact.
 
 Use 「ブラウザ」「エディタ」「パラメータ」「バッファ」「コンストラクタ」
 「ユーザー」「サーバー」「コンピュータ」「ディレクトリ」 as the adopted spellings.
@@ -128,12 +130,11 @@ not require generating every language or making both stubs identical in detail.
 ### Handwritten documents and portable instructions
 
 **Decision:** Keep handwritten Markdown's paragraph structure, line breaks, and
-layout under editorial control. The limited typography corrections in
-[format_prose](../../../scripts/format_prose) also apply to its selected
-handwritten inputs, `README.md` and `docs/faq-ja.md`; they do not reflow
-paragraphs or choose their structure. Use relative paths or generic placeholders
-in published instructions; preserve literal code and paths that are part of an
-interface.
+layout under editorial control. On selected handwritten inputs,
+[format_prose](../../../scripts/format_prose) corrects typography without
+reflowing paragraphs or choosing their structure. Use relative paths or generic
+placeholders in published instructions; preserve literal code and paths that
+are part of an interface.
 
 **Reason:** Prose structure needs editorial judgment, while private machine
 paths would make the instructions unusable to other contributors. Generated
@@ -212,10 +213,11 @@ other languages.
 ### Per-language conventions
 
 **Decision:** Apply these conventions to every text of the language in the
-repository, including localized page data, handwritten documents, release
-notes, and source comments, and extend the table when an inconsistency in a
-language is settled. Quotation rows concern prose quotes; a string literal such
-as `"Pyxel"` keeps its straight quotes in every language.
+repository's [review scope](../design-audit.md#1-select-and-resolve-decisions),
+including localized page data, handwritten documents, release notes, and source
+comments. Extend the table when an inconsistency in a language is settled.
+The quotation conventions apply to prose. String literals such as `"Pyxel"`
+keep their straight quotes in every language.
 
 The following conventions are maintainer choices shared across languages:
 

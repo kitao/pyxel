@@ -9,8 +9,8 @@
 **Decision:** Pyxel 3.0 does not support the old MML grammar, `Sound.old_mml`,
 or resource archives from before Pyxel 2.0. Keep the current MML grammar and
 the TOML resource family, including its older supported format versions. Retain
-the other deprecated Python APIs, including
-`tick` and the sequence `from_list` and `to_list` methods.
+the other deprecated Python interfaces, including the playback argument `tick`
+and the sequence methods `from_list` and `to_list`.
 
 **Reason:** These are the maintainer's selected compatibility removals for 3.0,
 giving MML one supported grammar and resources one archive layout. The [sound
@@ -86,9 +86,9 @@ magnification to substitute.
 
 `screenshot` and `screencast` therefore retain `scale=None` in references and
 `scale: int | None = None` in stubs. As recorded under their
-[argument contract](#screenshot-and-screencast-arguments), omission or `None` uses
-the effective capture scale configured by `init`. Explain this dependency rather
-than substituting the initial `capture_scale=2` value for the default.
+[argument contract](#screenshot-and-screencast-arguments), omission or `None`
+uses the effective capture scale configured by `init`. Explain this dependency
+rather than substituting the initial `capture_scale=2` value for the default.
 
 The [system binding](../../../crates/pyxel-binding/src/system_wrapper.rs),
 [initialization](../../../crates/pyxel-core/src/pyxel.rs), and [resource
@@ -310,23 +310,23 @@ saved together prevents overwriting a file with one that cannot be loaded.
 
 ## Audio
 
-### Switching a Sound between MML and PCM
+### Replacing Sound data
 
 **Decision:** Parse new MML or load a new PCM file successfully before clearing
 the other mode in [Sound](../../../crates/pyxel-core/src/sound.rs).
-If that preparation fails, leave the previous sound data in place. The
-no-argument `Sound.mml()` and `Sound.pcm()` calls still explicitly clear their
-respective modes.
+Validate the speed and parse all four strings before `Sound.set` changes the
+sound. Each individual string setter also parses before replacing its field. If
+preparation fails, leave the previous sound data in place. The no-argument
+`Sound.mml()` and `Sound.pcm()` calls explicitly clear their respective modes.
 
 **Reason:** A failed replacement should not discard usable sound data when
 preserving it requires only changing the operation order. The parser and loader
 already return the replacement data, so preparing it first avoids data loss
 without backup or restoration machinery.
 
-**Boundary:** This decision covers `Sound.mml(code)` and `Sound.pcm(filename)`.
-It adds no copied backup, rollback framework, or exception layer, and makes no
-general atomicity promise for every Sound editing operation. Successful
-replacement and existing error diagnostics retain their meanings.
+**Boundary:** Preserve the existing error diagnostics and successful
+replacement behavior. Only the replacements above carry this guarantee. They
+need no copied backup, rollback framework, or additional exception conversion.
 
 ### Stored music sequences and playback channels
 
@@ -418,11 +418,11 @@ startup and resource drop, reject a larger palette. On rejection, preserve the
 active resource, palette, and undo history. Use the existing error path,
 explaining that 16 colors are reserved for the editor, without adding a dialog.
 
-**Reason:** The [editor](../../../python/pyxel/editor/app.py) reserves 16 entries
-of the runtime's 256-color palette for its controls. The editor and resource
-colors therefore occupy distinct indexes within one palette. This loading
-boundary is separate from the runtime API's palette capacity and the color
-picker's editing range.
+**Reason:** The [editor](../../../python/pyxel/editor/app.py) reserves 16
+entries of the runtime's 256-color palette for its controls. The editor and
+resource colors therefore occupy distinct indexes within one palette. This
+loading boundary is separate from the runtime API's palette capacity and the
+color picker's editing range.
 
 ### Editor save failures
 
@@ -456,6 +456,21 @@ The [sound editor](../../../python/pyxel/editor/sound_editor.py) and
 implementation sites.
 
 ## Cube
+
+### Cube node identity and ownership
+
+**Decision:** Preserve original Python node instances through tree operations,
+callbacks, and query results. Handle reference cycles at the layer that owns
+the references.
+
+**Reason:** The [Rust tree](../../../crates/pyxel-core/src/cube/node.rs) owns
+children and holds weak parent links to avoid an `Rc` cycle. The [Python
+wrapper](../../../crates/pyxel-binding/src/cube/node.rs) retains the original
+objects so subclass state, callbacks, and parent identity survive tree
+operations. Its strong Python links participate in cyclic garbage collection.
+[Raycast results](../../../crates/pyxel-binding/src/cube/raycast_hit.rs)
+likewise retain the original node and expose that reference to the collector.
+Rust's weak parent link cannot replace this Python responsibility.
 
 ### Imported motion and scene placement
 

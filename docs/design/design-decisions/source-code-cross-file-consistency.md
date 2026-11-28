@@ -81,7 +81,9 @@ Readers should be drawn to what it produces and be able to understand, modify,
 and reuse the relevant technique. Preserve the behavior and expressive qualities
 that define the intended demonstration when simplifying its implementation;
 reducing the demonstration's scope is a separate design choice. This applies to
-all example families, including basic and advanced graphics, sound, and games.
+Pyxel's own examples, including basic and advanced graphics, sound, and games.
+Separately authored bundled applications have their own
+[review scope](../design-audit.md#1-select-and-resolve-decisions).
 
 Organize code around the objects, operations, and relationships the reader needs
 to follow. Choose grouping and explanations for the knowledge the intended
@@ -114,8 +116,9 @@ serves that connection; deleting the result or moving its implementation out of
 view does not establish it.
 
 The object classes in [Shooter](../../../python/pyxel/examples/09_shooter.py)
-and the direct calls in [Transform](../../../python/pyxel/examples/16_transform.py)
-serve different demonstrations. Their reasons transfer across example families;
+and the direct calls in
+[Transform](../../../python/pyxel/examples/16_transform.py) serve different
+demonstrations. Their reasons transfer across example families;
 their structures are not universal prescriptions. Technical difficulty changes
 the concepts that must be taught, not the obligation to make their relationship
 to the result understandable.
@@ -128,18 +131,3 @@ primary keyboard or mouse controls without listing their gamepad equivalents.
 **Reason:** These instructions help readers try the demonstrated feature.
 [Shooter](../../../python/pyxel/examples/09_shooter.py) displays `PRESS ENTER`
 while also accepting gamepad START, keeping one instruction for one action.
-
-### Cube node identity and ownership
-
-**Decision:** Preserve original Python node instances through tree operations,
-callbacks, and query results. Handle reference cycles at the layer that owns
-the references.
-
-**Reason:** The [Rust tree](../../../crates/pyxel-core/src/cube/node.rs) owns
-children and holds weak parent links to avoid an `Rc` cycle. The [Python
-wrapper](../../../crates/pyxel-binding/src/cube/node.rs) retains the original
-objects so subclass state, callbacks, and parent identity survive tree
-operations. Its strong Python links participate in cyclic garbage collection.
-[Raycast results](../../../crates/pyxel-binding/src/cube/raycast_hit.rs)
-likewise retain the original node and expose that reference to the collector.
-Rust's weak parent link cannot replace this Python responsibility.

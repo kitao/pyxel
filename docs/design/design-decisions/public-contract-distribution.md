@@ -62,9 +62,9 @@ runtime's wheel reference before removing obsolete wheels.
 
 **Reason:** A successful import can still load stale Python sources.
 [check_wasm_wheel](../../../scripts/check_wasm_wheel) compares the package with
-its source owners, while
-[install_wasm_wheel](../../../scripts/install_wasm_wheel) updates the artifact
-and its consumer. The [build target](../../../Makefile) runs them in that order.
+its source owners. The [installer](../../../scripts/install_wasm_wheel) uses
+that check before updating the artifact and its consumer, including when the
+[build target](../../../Makefile) invokes it.
 Packaging exclusions prevent cache inclusion; inspecting the built artifact
 verifies that boundary.
 

@@ -25,13 +25,11 @@ comments, Python docstrings, or JSDoc blocks. Generated docstrings in
 `python/pyxel/__init__.pyi` keep the descriptions supplied by the [documentation
 sources](documentation.md#sources-of-generated-guides-and-stub-docstrings).
 
-For separately authored applications bundled as deliverables, preserve the
-original comment language and forms, including explanations for their intended
-learners. Exclude their contents from project-wide checks, checks of all
-examples, and consistency edits. Check behavior and dependencies using the
-applications as supplied, and review specific concerns about explanatory
-accuracy. Edit a supplied application only when the maintainer explicitly
-requests that change. Correct factual errors in the original language.
+Preserve the original comment language and forms in separately authored bundled
+applications, including explanations for their intended learners. If the
+maintainer requests a factual correction, make it in the original language.
+The [audit procedure](../design-audit.md#1-select-and-resolve-decisions)
+defines their review scope.
 
 A one-line group label uses sentence case without decorative banners or a
 terminal period. Sentence comments use normal punctuation; a single sentence
@@ -136,12 +134,13 @@ Relevance to the component, not the class where a member was first implemented,
 decides the list; common mouse, visibility, update, and draw facilities remain
 described in `Widget` rather than repeated in every component. Keep related
 coordinates together and preserve a readable semantic order: a control's output
-before its supporting inputs, and common groups before specialized groups. This
-does not impose an owned-before-inherited order on every widget; a viewer lists
-its image or tilemap index before the focus within that resource. Neither
-alphabetical order nor the order of variable creation is a reason to rearrange a
-summary. The [blank-line decision](source-code-blank-lines.md#python) specifies
-the separators within and after the summary.
+before its supporting inputs, and common groups before specialized groups.
+Where a panel adds tilemap editing, group the tilemap index and tile selection
+variables after the shared image-editing variables. A viewer lists its resource
+indices together before the focus within that resource. Neither alphabetical
+order nor the order of variable creation is a reason to rearrange a summary.
+The [blank-line decision](source-code-blank-lines.md#python) specifies the
+separators within and after the summary.
 
 **Reason:** `Widget.new_var` creates properties dynamically, `Widget.copy_var`
 shares them, and event interfaces emerge from registration and dispatch, so

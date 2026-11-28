@@ -15,22 +15,24 @@ reference regressions for screenshots and rendered audio, and running samples
 for manual checks of look, sound, and feel.
 
 The [Makefile](../../../Makefile) provides one automated entry point,
-`make test`, for Python, Rust, and JavaScript. The JavaScript tests run on
-Node.js, and the site's browser tests open the built pages under
-`wrangler dev`, including cases that execute the packaged web runtime. Native
-automated tests use headless Pyxel; browser runtime cases exercise its GL context
-in a headless browser. `make run` installs the current native package,
-then runs the [startup check](../../../scripts/check_window_startup), which opens a
-window in every screen mode, draws, exits, and reports the installed build. It then uses
-the [example runner](../../../scripts/run_examples) for native examples,
-bundled apps, and the editor. `make run-wasm` builds the web wheel and
-serves the web runtime locally through
-[start_showcase](../../../scripts/start_showcase), which can also serve the
-working tree for page checks without rebuilding the wheel. `make run` and
-`make run-wasm` distinguish execution environments, not programming languages.
+`make test`, for Python, Rust, and JavaScript. JavaScript tests run on Node.js.
+Browser tests open the built pages under `wrangler dev` and run the runtime
+selected by the [site builder](../../../scripts/build_site). For an already
+tagged version this is the released wheel. The [audit
+commands](../design-audit.md#commands) cover verification of the candidate
+browser runtime. Automated native tests use headless Pyxel. Browser runtime
+cases exercise GL in a headless browser.
 
-Archive creation, startup paths, watcher restarts, and executable export have
-automated coverage in the [CLI tests](../../../python/tests/test_cli.py). The
+`make run` installs the native package and runs the [windowed startup
+check](../../../scripts/check_window_startup) in each screen mode. It then
+launches the examples, bundled applications, and editor through the [example
+runner](../../../scripts/run_examples) for interactive inspection.
+`make run-wasm` builds the web wheel and starts the [local
+server](../../../scripts/start_showcase). The server can also run on its own
+for page checks using the wheel already installed in the working tree.
+
+Cover archive creation, startup paths, watcher restarts, and executable export
+in the [CLI tests](../../../python/tests/test_cli.py). The
 app2exe tests build and launch executables to check resources, imports, and exit
 status; routine creation and startup do not also require a manual checklist.
 Visual, audible, or platform behavior outside those assertions still needs its
@@ -113,9 +115,9 @@ because it exists, nor should it be split into helpers only to enable mocking.
 
 **Decision:** Use executable Python API cases and [type-checker
 cases](../../../python/tests/test_stub_compatibility.py) to verify the behavior
-and type help callers use. Check that the signatures in the API reference data
-agree with the stub signatures through an automated comparison; a mismatch is a
-data defect, not a wording question for reviewers. Keep [generator
+and type help callers use. Compare documented names and call forms with the
+stubs in the [reference tests](../../../python/tests/test_api_reference.py).
+Investigate a mismatch at the owning reference or stub. Keep [generator
 tests](../../../python/tests/test_generate_docs.py) focused on meaningful
 conversion results, such as preserved link pairs and literal text. Do not freeze
 the entire API as a generated inventory or pin editorial wording, document

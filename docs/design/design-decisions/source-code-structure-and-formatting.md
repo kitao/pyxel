@@ -66,8 +66,11 @@ distinction between project build products and local environment material.
 
 **Decision:** Ignore local caches, build outputs, environment files, and
 assistant workspace material. Retain generated artifacts consumed directly
-from the repository, including the web wheel, generated guides, and stylesheet.
-Keep the root `/examples` shortcut separate from the packaged examples.
+from the repository, including the generated guides and stylesheet. For web
+wheels, apply the [release retention
+rule](public-contract-distribution.md#web-wheel-retention) to distinguish the
+versioned artifact from local builds. Keep the root `/examples` shortcut
+separate from the packaged examples.
 
 The root README and LICENSE own the package copies created by
 [`make build`](../../../Makefile). Ignore those copies rather than maintaining
@@ -103,8 +106,8 @@ have a separate reader-oriented sequence.
 ### Text and binary asset representation
 
 **Decision:** Treat BDF fonts and `.pyxpal` palettes as text. Give BDF explicit
-LF endings. Keep encoded image, audio, font, model, and archive payloads binary
-in [.gitattributes](../../../.gitattributes).
+LF endings. Keep encoded image, audio, video, font, model, and archive payloads
+binary in [.gitattributes](../../../.gitattributes).
 
 **Reason:** The [font reader](../../../crates/pyxel-core/src/font.rs) consumes
 line-oriented BDF keywords and bitmap rows. The

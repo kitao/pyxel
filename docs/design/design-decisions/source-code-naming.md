@@ -111,18 +111,6 @@ hooks](../../../crates/pyxel-binding/src/cube/node.rs) are instead selected
 through overriding. Applying the same underscore scheme to both would change
 their dispatch semantics.
 
-### Test names and value semantics
-
-**Decision:** The Mat4 and Vec3 transformation-result groups use
-`TestTransform`. Mutation terminology belongs to tests that exercise changes to
-an existing mutable object, such as Camera or Shading state.
-
-**Reason:** The [matrix](../../../python/tests/cube/test_mat4.py) and
-[vector](../../../python/tests/cube/test_vec3.py) groups verify returned
-transformation results. Calling them mutation tests would misdescribe the
-immutable math interface. This does not require reorganizing unrelated test
-groups or adding assertions solely for a class-name correction.
-
 ## Web
 
 ### JavaScript helpers and cross-language data

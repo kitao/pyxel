@@ -189,13 +189,12 @@ source lines and empty strings emitted into generated content have different
 ownership.
 
 In editor and widget classes, keep the opening interface summary as one comment
-block: a line containing only the indented `#` separates `Variables` from
-`Events` and separates the common image-editing variables from the
-tilemap-specific variables where both exist; entries within a group are
-consecutive; one physical blank line follows the summary, including before a
-class variable. The [interface-list
-decision](source-code-comments.md#ui-interface-list-notation-and-grouping) owns
-which categories and members are listed.
+block: use a line containing only the indented `#` between `Variables` and
+`Events`, and between the variable groups defined by the [interface-list
+decision](source-code-comments.md#ui-interface-list-notation-and-grouping).
+Keep entries within each group consecutive.
+Leave one physical blank line after the summary, including before a class
+variable.
 
 In editor constructors, group base construction, stored state, and simple
 variable/property wiring by responsibility. An assignment becoming `new_var`,
@@ -237,9 +236,8 @@ examples retain the Python attribute's grouping.
 
 Generated Markdown follows its own formatter, including Ruff's two blank lines
 around module-level Python definitions; generate and format it from its source
-and compare logical groups after that normalization. User-entered and
-dynamically fetched programs retain their source's ownership; do not rewrite
-them at runtime.
+and compare logical groups after that normalization. Preserve the formatting
+of user-entered and dynamically fetched programs at runtime.
 
 **Reason:** Definition spacing distinguishes a local helper from the processing
 around it, and readers of a widget need to locate what it owns, how it connects

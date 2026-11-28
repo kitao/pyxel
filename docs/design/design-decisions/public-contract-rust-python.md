@@ -7,10 +7,11 @@
 ### Preserving established Python errors
 
 **Decision:** Preserve the accepted inputs and error classes established in
-v2.9.9 except for separately adopted changes. Convert an additional Rust failure
-only when Python code needs to catch it and choose how to proceed. Otherwise,
-preserve Rust-side failure handling unless a concrete requirement justifies
-conversion and its added code and runtime cost.
+v2.9.9 except for separately adopted changes. For APIs introduced later, use
+their released contracts and subsequently adopted changes. Convert an
+additional Rust failure to a Python exception only when callers need to catch
+it to decide how to proceed and that need justifies the added code and runtime
+cost. Otherwise, preserve Rust-side failure handling.
 
 This preserves the existing distinctions between these argument boundaries:
 
@@ -138,8 +139,10 @@ See the [math binding](../../../crates/pyxel-binding/src/math_wrapper.rs) and
 
 **Decision:** Drawing outside the clip region, stopped playback, and spatial
 queries without a hit keep their no-op, `None`, or empty-result behavior.
-Missing optional palette files leave the palette unchanged. These are normal
-outcomes of the respective operations, not missing error checks.
+A missing palette file leaves the palette unchanged in both `load` and
+`load_pal`. These are normal outcomes of the respective operations, not missing
+error checks. An unreadable or malformed palette follows the established
+[file-operation failure rule](#file-operation-failures-exposed-to-python).
 
 Core parsers and validators own their failure conditions and messages; the
 bindings convert the returned failure at the established Python boundary.

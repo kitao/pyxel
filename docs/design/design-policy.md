@@ -53,8 +53,6 @@ Concrete choices applying these standards and their rationale are recorded in
   demonstrated by measurement or analysis of the executed path. Justify added
   complexity by the cost it removes; a suspicious-looking construct alone is
   not evidence.
-- Outside demonstrated performance-sensitive paths, prefer readability over
-  micro-optimization.
 
 ### Naming
 

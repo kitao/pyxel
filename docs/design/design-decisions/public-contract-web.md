@@ -51,8 +51,10 @@ by other file-loading interfaces.
 
 **Decision:** Choose the destination of a dropped `.py` or `.pyxres` file by
 its extension across the page and both embedded Pyxel views. A Python file
-replaces the code; a resource file goes to the resource editor. Do not require
-the user to drop it over the destination pane.
+replaces the code. For example, `pyxel.load("sample.pyxres")` in the dropped
+code becomes `pyxel.load("my_resource.pyxres")` so it opens the project
+resource. A resource file goes to the resource editor. Both work anywhere on
+the page.
 
 **Reason:** The extension already identifies the destination, so requiring a
 particular pane adds an unnecessary location-dependent rule. The
